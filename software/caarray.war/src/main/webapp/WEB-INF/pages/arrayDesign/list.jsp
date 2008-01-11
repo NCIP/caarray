@@ -1,10 +1,10 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <html>
 <head>
-    <title>Import Array Designs</title>
+    <title>Manage Array Designs</title>
 </head>
 <body>
-    <h1>Import Array Designs</h1>
+    <h1>Manage Array Designs</h1>
     <caarray:helpPrint/>
     <div class="padme">
         <div id="tabboxwrapper_notabs">
@@ -13,7 +13,6 @@
                 <div class="addlink">
                     <caarray:linkButton url="edit.action" actionClass="add" text="Import a New Array Design" />
                 </div>
-                <caarray:successMessages />
             </div>
             <div class="tableboxpad">
                 <c:url value="/protected/ajax/arrayDesign/list.action" var="sortUrl"/>
@@ -27,6 +26,12 @@
                         <display:column property="version" titleKey="arrayDesign.version" sortable="true"/>
                         <display:column property="technologyType.value" titleKey="arrayDesign.technologyType" sortable="true"/>
                         <display:column property="organism.scientificName" titleKey="arrayDesign.organism" sortable="true"/>
+                        <display:column titleKey="button.edit" class="centered" headerClass="centered">
+                            <c:url value="/protected/arrayDesign/edit.action" var="editDesignUrl">
+                                <c:param name="arrayDesign.id" value="${row.id}" />
+                            </c:url>
+                            <a href="${editDesignUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                        </display:column>
                         <display:column sortProperty="designFile.status" titleKey="experiment.files.status" sortable="true" >
                             <c:if test="${not empty row.designFile.status}">
                                 <ajax:anchors target="tabboxlevel2wrapper">

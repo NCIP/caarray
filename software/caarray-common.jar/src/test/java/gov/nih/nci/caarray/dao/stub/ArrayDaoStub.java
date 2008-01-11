@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.AssayType;
 
 public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
 
@@ -125,6 +126,13 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
      * {@inheritDoc}
      */
     public List<ArrayDesign> getArrayDesignsForProvider(Organization provider, boolean importedOnly) {
+        return new ArrayList<ArrayDesign>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<ArrayDesign> getArrayDesigns(Organization provider, AssayType assayType, boolean importedOnly) {
         return new ArrayList<ArrayDesign>();
     }
 
@@ -174,5 +182,7 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
         return null;
     }
 
-
+    public boolean isArrayDesignLocked(Long id) {
+        return false;
+    }
 }

@@ -2,12 +2,16 @@
 <s:if test="${!editMode}">
     <c:set var="theme" value="readonly" scope="request"/>
 </s:if>
+<s:if test="${locked}">
+    <c:set var="lockedTheme" value="readonly"/>
+</s:if>
+
 <html>
 <head>
-    <title>Import Array Designs</title>
+    <title>Manage Array Designs</title>
 </head>
 <body>
-    <h1>Import Array Designs</h1>
+    <h1>Manage Array Designs</h1>
     <div class="pagehelp">
         <a href="javascript:openHelpWindow('')" class="help">Help</a>
         <a href="javascript:printpage()" class="print">Print</a>
@@ -18,10 +22,10 @@
                 <h3>
                     <a href="list.action">Array Designs</a> &gt;
                     <span class="dark">
-                        <s:if test="${empty arrayDesign}">
-                            Import Array Design
+                        <s:if test="${empty arrayDesign.id}">
+                            New Array Design
                         </s:if><s:else>
-                            ${arrayDesign.name}
+                            <c:out value="${arrayDesign.name}"/>
                         </s:else>
                     </span>
                 </h3>
@@ -33,15 +37,20 @@
                     <fmt:message key="experiment.files.processing" /><br><br>
                     <fmt:message key="arraydesign.file.upload.inProgress" /></div>
                 </div>
+                <s:if test="${locked}">
+                    <div class="instructions">
+                       Some details of this array design may not be modified because it is already associated with an existing experiment.
+                    </div>
+                </s:if>
                 <div id="theForm">
                     <s:form action="/protected/arrayDesign/save.action" onsubmit="TabUtils.showSubmittingText(); return true;" cssClass="form" enctype="multipart/form-data" method="post" id="arrayDesignForm">
                         <tbody>
                             <tr><th colspan="2">Array Design Details</th></tr>
-                            <s:textfield required="true" key="arrayDesign.name" size="50" tabindex="1"/>
-                            <s:select required="true" key="arrayDesign.assayType" tabindex="2"
+                            <s:textfield theme="readonly" key="arrayDesign.name" size="50" tabindex="1"/>
+                            <s:select theme="${lockedTheme}" required="true" key="arrayDesign.assayType" tabindex="2"
                                       list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
                                       headerKey="" headerValue="--Please select an Assay Type--"/>
-                            <s:select required="true" key="arrayDesign.provider" tabindex="3"
+                            <s:select theme="${lockedTheme}" required="true" key="arrayDesign.provider" tabindex="3"
                                       list="providers" listKey="id" listValue="name"
                                       headerKey="" headerValue="--Please select a Provider--" value="arrayDesign.provider.id"/>
                             <s:textfield required="true" key="arrayDesign.version" size="50" tabindex="4"/>
@@ -55,11 +64,11 @@
                         </tbody>
                         <tbody>
                             <tr><th colspan="2">Upload Array Design File</th></tr>
-                            <s:if test="${!empty arrayDesign.id}">
+                            <s:if test="${!empty arrayDesign.designFile}">
                                 <s:textfield theme="readonly" key="arrayDesign.designFile.name" label="Current File"/>
                             </s:if>
-                            <s:if test="${editMode}">
-                                <s:file required="true" name="upload" label="Browse to File" tabindex="7"/>
+                            <s:if test="${editMode && !locked}">
+                                <s:file required="${empty arrayDesign.id}" name="upload" label="Browse to File" tabindex="7"/>
                             </s:if>
                         </tbody>
                         <input type="submit" class="enableEnterSubmit"/>
@@ -69,7 +78,12 @@
                         <caarray:action url="${listUrl}" actionClass="cancel" text="Cancel" tabindex="8" />
                         <s:if test="${editMode}">
                             <caarray:action onclick="TabUtils.showSubmittingText(); document.getElementById('arrayDesignForm').submit();" actionClass="save" text="Save" tabindex="9"/>
-                        </s:if>
+                        </s:if><s:else>
+                            <c:url value="/protected/arrayDesign/edit.action" var="editUrl">
+                                <c:param name="arrayDesign.id" value="${arrayDesign.id}"/>
+                            </c:url>
+                            <caarray:action url="${editUrl}" actionClass="edit" text="Edit" tabindex="9"/>
+                        </s:else>
                     </caarray:actions>
                 </div>
             </div>

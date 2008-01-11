@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.util.ArrayList;
@@ -122,6 +123,13 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
+    public List<ArrayDesign> getImportedArrayDesigns(Organization provider, AssayType assayType) {
+        return new ArrayList<ArrayDesign>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public List<ArrayDesign> getArrayDesigns() {
         return new ArrayList<ArrayDesign>();
     }
@@ -147,5 +155,13 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
      */
     public List<Organization> getAllOrganizations() {
         return new ArrayList<Organization>();
+    }
+
+    public boolean isArrayDesignLocked(Long id) {
+        return false;
+    }
+
+    public void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessError {
+        // no op
     }
 }

@@ -96,8 +96,13 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,7 +124,7 @@ public class ArrayDesignActionTest {
     private final LocalFileManagementServiceStub fileManagementServiceStub = new LocalFileManagementServiceStub();
 
     private static final int NUM_DESIGNS = 3;
-    private static final Long DESIGN_ID = new Long(1);
+    private static final Long DESIGN_ID = 1L;
 
     @Before
     public void setUp() throws Exception {
@@ -132,10 +137,16 @@ public class ArrayDesignActionTest {
 
     @Test
     public void testPrepare() {
+        ArrayDesign design = new ArrayDesign();
+        design.setId(DESIGN_ID);
+        arrayDesignAction.setArrayDesign(design);
         arrayDesignAction.prepare();
         assertEquals(1, arrayDesignAction.getOrganisms().size());
         assertEquals(1, arrayDesignAction.getProviders().size());
         assertEquals(10, arrayDesignAction.getFeatureTypes().size());
+
+        design.setId(2L);
+        arrayDesignAction.prepare();
     }
 
     @Test
@@ -167,10 +178,14 @@ public class ArrayDesignActionTest {
     @Test
     public void testSave() throws Exception {
         ArrayDesign design = new ArrayDesign();
-        design.setName("name");
         arrayDesignAction.setArrayDesign(design);
         String result = arrayDesignAction.save();
         assertEquals(Action.SUCCESS, result);
+
+        arrayDesignAction.setUploadFileName("uploadFileName");
+        arrayDesignAction.setUpload(null);
+        result = arrayDesignAction.save();
+        assertEquals(Action.INPUT, result);
     }
 
     @SuppressWarnings("deprecation")
@@ -201,6 +216,20 @@ public class ArrayDesignActionTest {
         }
     }
     private static class LocalVocabularyServiceStub extends VocabularyServiceStub {}
-    private static class LocalFileAccessServiceStub extends FileAccessServiceStub {}
-    private static class LocalFileManagementServiceStub extends FileManagementServiceStub {}
+    private static class LocalFileAccessServiceStub extends FileAccessServiceStub {
+        @Override
+        public CaArrayFile add(File file) {
+            CaArrayFile caArrayFile = new CaArrayFile();
+            return caArrayFile;
+        }
+    }
+    private static class LocalFileManagementServiceStub extends FileManagementServiceStub {
+        @Override
+        public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile) throws InvalidDataFileException {
+            FileValidationResult fvr = new FileValidationResult(null);
+            fvr.addMessage(Type.ERROR, "asdf");
+            throw new InvalidDataFileException(fvr);
+        }
+
+    }
 }

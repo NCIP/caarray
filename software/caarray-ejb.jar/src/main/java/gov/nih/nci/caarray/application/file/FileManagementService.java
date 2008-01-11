@@ -124,13 +124,15 @@ public interface FileManagementService {
     void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet);
 
     /**
-     * Validates and adds the array design (if valid) without adding design details.
+     * Validates and adds/edits the array design (if valid) without adding design details.
      *
      * @param arrayDesign the array design object
      * @param designFile the file containing the array design annotation.
      * @throws InvalidDataFileException if the design file was invalid for import.
+     * @throws IllegalAccessException if trying to modify locked fields on an array design
      */
-    void addArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile) throws InvalidDataFileException;
+    void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile)
+    throws InvalidDataFileException, IllegalAccessException;
 
     /**
      * Imports array design information from the file provided into an <code>ArrayDesign</code> asynchronously.

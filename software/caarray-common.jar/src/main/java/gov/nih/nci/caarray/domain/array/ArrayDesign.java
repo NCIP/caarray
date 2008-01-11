@@ -97,7 +97,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -109,6 +111,7 @@ import org.hibernate.validator.NotNull;
  * The design details for a type of microarray.
  */
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "NAME", "PROVIDER" }) })
 public class ArrayDesign extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
@@ -436,5 +439,4 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     public void setDesignDetails(ArrayDesignDetails designDetails) {
         this.designDetails = designDetails;
     }
-
 }

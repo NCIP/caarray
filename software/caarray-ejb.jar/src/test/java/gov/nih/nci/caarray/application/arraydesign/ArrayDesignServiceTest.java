@@ -311,7 +311,7 @@ public class ArrayDesignServiceTest {
         design.setDesignFile(getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         this.arrayDesignService.importDesign(design);
         CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
-        FileValidationResult result = this.arrayDesignService.validateDesign(designFile);
+        FileValidationResult result = this.arrayDesignService.validateDesign(design);
         assertFalse(result.isValid());
         assertTrue(result.getMessages().iterator().next().getMessage().contains("has already been imported"));
     }
@@ -370,6 +370,11 @@ public class ArrayDesignServiceTest {
                     List<T> entities = new ArrayList<T>();
                     entities.add(entityToMatch);
                     return entities;
+                }
+
+                @Override
+                public boolean isArrayDesignLocked(Long id) {
+                    return id.equals(2L);
                 }
             };
         }

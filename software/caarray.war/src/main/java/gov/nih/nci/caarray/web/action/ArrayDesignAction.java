@@ -87,23 +87,23 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getFileAccessService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getFileManagementService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.Action;
@@ -119,6 +119,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
  *
  */
 @Validation
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public class ArrayDesignAction extends ActionSupport implements Preparable {
     private static final long serialVersionUID = 1L;
 
@@ -131,17 +132,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     private Set<Term> featureTypes;
     private List<Organism> organisms;
     private boolean editMode;
-
-    /**
-     * {@inheritDoc}
-     */
-    public void prepare() {
-        VocabularyService vs = getVocabularyService();
-        ArrayDesignService ads = getArrayDesignService();
-        this.organisms = vs.getOrganisms();
-        this.providers = ads.getAllOrganizations();
-        this.featureTypes = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.TECHNOLOGY_TYPE);
-    }
+    private boolean locked;
 
     /**
      * @return the array design
@@ -221,6 +212,31 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     public boolean isEditMode() {
         return editMode;
     }
+    /**
+     * @return the locked
+     */
+    public boolean isLocked() {
+        return locked;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void prepare() {
+        this.organisms = getVocabularyService().getOrganisms();
+        this.providers = getArrayDesignService().getAllOrganizations();
+        this.featureTypes = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.TECHNOLOGY_TYPE);
+        if (arrayDesign != null && arrayDesign.getId() != null) {
+            ArrayDesign retrieved = getArrayDesignService().getArrayDesign(arrayDesign.getId());
+            if (retrieved == null) {
+                throw new PermissionDeniedException(getArrayDesign(),
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+            } else {
+                arrayDesign = retrieved;
+            }
+            locked = getArrayDesignService().isArrayDesignLocked(arrayDesign.getId());
+        }
+    }
 
     /**
      * Retrieves the list of all array designs.
@@ -239,9 +255,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     @SkipValidation
     public String edit() {
         editMode = true;
-        if (arrayDesign != null && arrayDesign.getId() != null) {
-            arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
-        }
         return Action.INPUT;
     }
 
@@ -252,9 +265,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     @SkipValidation
     public String view() {
         editMode = false;
-        if (arrayDesign != null && arrayDesign.getId() != null) {
-            arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
-        }
         return Action.INPUT;
     }
 
@@ -262,13 +272,10 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      * Save a new or existing array design.
      * @return success
      */
-    // TODO remove this when the edit block is filled in
-    @SuppressWarnings({"PMD.EmptyIfStmt", "PMD.AvoidDuplicateLiterals", "deprecation" })
+    @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "deprecation" })
     @Validations(
         requiredStrings = {
-            @RequiredStringValidator(fieldName = "arrayDesign.name", key = "errors.required", message = ""),
-            @RequiredStringValidator(fieldName = "arrayDesign.version", key = "errors.required", message = ""),
-            @RequiredStringValidator(fieldName = "uploadFileName", key = "fileRequired", message = "")
+            @RequiredStringValidator(fieldName = "arrayDesign.version", key = "errors.required", message = "")
         },
         requiredFields = {
             @RequiredFieldValidator(fieldName = "arrayDesign.assayType", key = "errors.required", message = ""),
@@ -278,28 +285,31 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         }
     )
     public String save() {
-        if (arrayDesign.getId() == null) {
-            CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
-            try {
-                String oldName = arrayDesign.getName();
-                getFileManagementService().addArrayDesign(arrayDesign, designFile);
+        Long id = arrayDesign.getId();
+        if (id == null) {
+          arrayDesign.setName(FilenameUtils.getBaseName(uploadFileName));
+        }
+        try {
+            if (uploadFileName == null) {
+                getArrayDesignService().saveArrayDesign(arrayDesign);
+            } else {
+                CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
+                getFileManagementService().saveArrayDesign(arrayDesign, designFile);
                 getFileManagementService().importArrayDesignDetails(arrayDesign);
-                String newName = arrayDesign.getName();
-                if (!ObjectUtils.equals(oldName, newName)) {
-                    ActionHelper.saveMessage(getText("arrayDesign.nameOverwritten", new String[]{oldName, newName}));
-                }
-            } catch (InvalidDataFileException e) {
-                FileValidationResult result = e.getFileValidationResult();
-                for (ValidationMessage message : result.getMessages()) {
-                    addFieldError("upload", message.getMessage());
-                }
-                // set to null because new array designs have no id
-                arrayDesign.setId(null);
-                editMode = true;
-                return Action.INPUT;
             }
-        } else {
-            // TODO edit an existing array design
+        } catch (InvalidDataFileException e) {
+            FileValidationResult result = e.getFileValidationResult();
+            for (ValidationMessage message : result.getMessages()) {
+                addFieldError("upload", message.getMessage());
+            }
+        } catch (IllegalAccessException iae) {
+            arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
+            addActionError(iae.getMessage());
+        }
+        if (this.hasErrors()) {
+            // addArrayDesign overwrites the id, so reset if there is an error.
+            arrayDesign.setId(id);
+            return edit();
         }
         return Action.SUCCESS;
     }
@@ -311,12 +321,12 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     @SuppressWarnings("unchecked")
     public void validate() {
         super.validate();
+        // upload file is required for new array designs
+        if (!ActionHelper.isSkipValidationSetOnCurrentAction()
+                && arrayDesign.getId() == null && uploadFileName == null) {
+            addFieldError("upload", getText("fileRequired"));
+        }
         if (this.hasErrors()) {
-            Map fieldErrors = this.getFieldErrors();
-            if (fieldErrors.containsKey("uploadFileName")) {
-                String msg = ((List<String>) fieldErrors.get("uploadFileName")).get(0);
-                addFieldError("upload", msg);
-            }
             editMode = true;
         }
     }

@@ -94,9 +94,13 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -150,6 +154,26 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         queryStr.append("order by name asc");
         Query query = getCurrentSession().createQuery(queryStr.toString());
         query.setEntity("provider", provider);
+        if (importedOnly) {
+            query.setString("status", FileStatus.IMPORTED.name());
+        }
+        return query.list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<ArrayDesign> getArrayDesigns(Organization provider, AssayType assayType, boolean importedOnly) {
+        StringBuilder queryStr = new StringBuilder("from ").append(ArrayDesign.class.getName()).append(
+                " ad where ad.provider = :provider and ad.assayType = :assayType ");
+        if (importedOnly) {
+            queryStr.append(" and ad.designFile.status = :status ");
+        }
+        queryStr.append("order by name asc");
+        Query query = getCurrentSession().createQuery(queryStr.toString());
+        query.setEntity("provider", provider);
+        query.setString("assayType", assayType.name());
         if (importedOnly) {
             query.setString("status", FileStatus.IMPORTED.name());
         }
@@ -250,13 +274,36 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      */
     public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
         Query q =            HibernateUtil.getCurrentSession().createQuery(
-                    "from " 
-                    + ArrayDesign.class.getName() 
+                    "from "
+                    + ArrayDesign.class.getName()
                     + " where lsidAuthority = :lsidAuthority and lsidNamespace = :lsidNamespace "
                     + "and lsidObjectId = :lsidObjectId");
         q.setString("lsidAuthority", lsidAuthority);
         q.setString("lsidNamespace", lsidNamespace);
         q.setString("lsidObjectId", lsidObjectId);
         return (ArrayDesign) q.uniqueResult();
+    }
+
+    public boolean isArrayDesignLocked(Long id) {
+        BrowseCategory cat = BrowseCategory.ARRAY_DESIGNS;
+        StringBuffer sb = new StringBuffer();
+        sb.append("SELECT COUNT(DISTINCT p) FROM ")
+          .append(Project.class.getName()).append(" p JOIN ").append(cat.getJoin())
+          .append(" WHERE ").append(cat.getField()).append(".id = :id");
+        Query q = getUnfilteredSession().createQuery(sb.toString());
+        q.setParameter("id", id);
+        boolean locked = ((Number) q.uniqueResult()).intValue() > 0;
+        // restore filters
+        HibernateUtil.getCurrentSession();
+        return locked;
+    }
+
+    private Session getUnfilteredSession() {
+        Session session = HibernateUtil.getCurrentSession();
+        Set<String> filters = session.getSessionFactory().getDefinedFilterNames();
+        for (String filterName : filters) {
+            session.disableFilter(filterName);
+        }
+        return session;
     }
 }

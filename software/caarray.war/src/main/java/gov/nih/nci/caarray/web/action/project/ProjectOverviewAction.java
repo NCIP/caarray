@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
@@ -117,6 +118,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
 
     private Long manufacturerId;
+    private AssayType assayType;
 
     private List<Organism> organisms = new ArrayList<Organism>();
     private List<Organization> manufacturers = new ArrayList<Organization>();
@@ -137,9 +139,9 @@ public class ProjectOverviewAction extends ProjectTabAction {
 
         ArrayDesignService arrayDesignService = getArrayDesignService();
         this.manufacturers = arrayDesignService.getAllOrganizations();
-        if (getExperiment().getManufacturer() != null) {
-            this.arrayDesigns = getArrayDesignService().getImportedArrayDesignsForProvider(
-                    getExperiment().getManufacturer());
+        if (getExperiment().getManufacturer() != null && getExperiment().getAssayTypeEnum() != null) {
+            this.arrayDesigns = getArrayDesignService().getImportedArrayDesigns(
+                    getExperiment().getManufacturer(), getExperiment().getAssayTypeEnum());
         }
     }
 
@@ -165,9 +167,9 @@ public class ProjectOverviewAction extends ProjectTabAction {
      */
     @SkipValidation
     public String retrieveArrayDesigns() {
-        if (this.manufacturerId != null) {
+        if (this.manufacturerId != null && this.assayType != null) {
             Organization provider = getGenericDataService().retrieveEntity(Organization.class, this.manufacturerId);
-            this.arrayDesigns = getArrayDesignService().getImportedArrayDesignsForProvider(provider);
+            this.arrayDesigns = getArrayDesignService().getImportedArrayDesigns(provider, this.assayType);
         }
         return "xmlArrayDesigns";
     }
@@ -212,6 +214,20 @@ public class ProjectOverviewAction extends ProjectTabAction {
      */
     public void setManufacturerId(Long manufacturerId) {
         this.manufacturerId = manufacturerId;
+    }
+
+    /**
+     * @return the assayType
+     */
+    public AssayType getAssayType() {
+        return assayType;
+    }
+
+    /**
+     * @param assayType the assayType to set
+     */
+    public void setAssayType(AssayType assayType) {
+        this.assayType = assayType;
     }
 
     /**
@@ -299,7 +315,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
             xmlBuilder.addItems(Arrays.asList(new LabelValue(getText("experiment.overview.noArrayDesigns"), "")),
                     "label", "value");
         } else {
-            xmlBuilder.addItems(this.arrayDesigns, "name", "id");            
+            xmlBuilder.addItems(this.arrayDesigns, "name", "id");
         }
         return new ByteArrayInputStream(xmlBuilder.toString().getBytes("UTF-8"));
     }

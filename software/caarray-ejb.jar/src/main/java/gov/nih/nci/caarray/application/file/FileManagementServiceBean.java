@@ -147,7 +147,7 @@ public class FileManagementServiceBean implements FileManagementService {
         sendImportJobMessage(targetProject, fileSet);
         LogUtil.logSubsystemExit(LOG);
     }
-    
+
     private void clearValidationMessages(CaArrayFileSet fileSet) {
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
             caArrayFile.setValidationResult(null);
@@ -178,14 +178,22 @@ public class FileManagementServiceBean implements FileManagementService {
     /**
      * {@inheritDoc}
      */
-    public void addArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile) throws InvalidDataFileException {
+    public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile)
+    throws InvalidDataFileException, IllegalAccessException {
+        boolean newArrayDesign = arrayDesign.getId() == null;
+        CaArrayFile oldFile = arrayDesign.getDesignFile();
         designFile.setFileStatus(FileStatus.VALIDATING);
         arrayDesign.setDesignFile(designFile);
         getDaoFactory().getProjectDao().save(designFile);
-        getDaoFactory().getArrayDao().save(arrayDesign);
+        getArrayDesignService().saveArrayDesign(arrayDesign);
         getArrayDesignService().importDesign(arrayDesign);
         if (FileStatus.VALIDATION_ERRORS.equals(designFile.getFileStatus())) {
-            getDaoFactory().getArrayDao().remove(arrayDesign);
+            if (newArrayDesign) {
+                getDaoFactory().getArrayDao().remove(arrayDesign);
+            } else {
+                arrayDesign.setDesignFile(oldFile);
+                getDaoFactory().getArrayDao().save(arrayDesign);
+            }
             throw new InvalidDataFileException(designFile.getValidationResult());
         }
     }

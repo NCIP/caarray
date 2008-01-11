@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.arraydesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.util.List;
@@ -156,6 +157,15 @@ public interface ArrayDesignService {
     List<ArrayDesign> getImportedArrayDesignsForProvider(Organization provider);
 
     /**
+     * Returns the list of ArrayDesigns with the given provider and assay type.
+     *
+     * @param provider the provider
+     * @param assayType the assay type
+     * @return the List&lt;ArrayDesign&gt; of the array designs whose provider is the given provider
+     */
+    List<ArrayDesign> getImportedArrayDesigns(Organization provider, AssayType assayType);
+
+    /**
      * Returns the <code>ArrayDesign</code> with the id given.
      *
      * @param id get <code>ArrayDesign</code> matching this id
@@ -179,4 +189,19 @@ public interface ArrayDesignService {
      */
     ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId);
 
+    /**
+     * Returns true if an array design is locked, meaning that it is associated
+     * with an existing experiment.
+     * @param id the array design id
+     * @return true if the array design is locked
+     */
+    boolean isArrayDesignLocked(Long id);
+
+    /**
+     * Saves an array design.
+     *
+     * @param arrayDesign the array design to save
+     * @throws IllegalAccessException if trying to modify locked fields on an array design
+     */
+    void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException;
 }

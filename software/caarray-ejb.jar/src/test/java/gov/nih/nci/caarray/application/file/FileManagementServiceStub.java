@@ -131,7 +131,7 @@ public class FileManagementServiceStub implements FileManagementService {
         arrayDesign.setAnnotationFile(annotationFile);
     }
 
-    public void addArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile) throws InvalidDataFileException {
+    public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile) throws InvalidDataFileException {
         arrayDesign.setDesignFile(designFile);
     }
 

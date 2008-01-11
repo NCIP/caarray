@@ -63,7 +63,11 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(project.experiment.title)
         <c:if test="${editMode}">
             <ajax:select baseUrl="${getArrayDesignsUrl}"
                 source="projectForm_project_experiment_manufacturer" target="projectForm_project_experiment_arrayDesigns"
-                parameters="manufacturerId={projectForm_project_experiment_manufacturer}"
+                parameters="manufacturerId={projectForm_project_experiment_manufacturer},assayType={projectForm_project_experiment_assayType}"
+                preFunction="startArrayDesignLookup" postFunction="finishArrayDesignLookup"/>
+            <ajax:select baseUrl="${getArrayDesignsUrl}"
+                source="projectForm_project_experiment_assayType" target="projectForm_project_experiment_arrayDesigns"
+                parameters="manufacturerId={projectForm_project_experiment_manufacturer},assayType={projectForm_project_experiment_assayType}"
                 preFunction="startArrayDesignLookup" postFunction="finishArrayDesignLookup"/>
         </c:if>
 

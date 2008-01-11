@@ -216,27 +216,27 @@ public class FileManagementServiceTest {
     }
 
     @Test
-    public void testImportArrayDesignFile() throws InvalidDataFileException {
+    public void testImportArrayDesignFile() throws InvalidDataFileException, IllegalAccessException {
         ArrayDesign design = new ArrayDesign();
         design.setName("design name");
         this.daoFactoryStub.searchDaoStub.save(design);
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
         design.setDesignFile(caArrayFile);
-        this.fileManagementService.addArrayDesign(design, caArrayFile);
+        this.fileManagementService.saveArrayDesign(design, caArrayFile);
         this.fileManagementService.importArrayDesignDetails(design);
         assertTrue(this.arrayDesignServiceStub.importCalled);
     }
 
     @Test
-    public void testErrorHandling() throws InvalidDataFileException {
+    public void testErrorHandling() throws InvalidDataFileException, IllegalAccessException {
         ArrayDesign design = new ArrayDesign();
         design.setName("throw exception");
         this.daoFactoryStub.searchDaoStub.save(design);
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
         design.setDesignFile(caArrayFile);
-        this.fileManagementService.addArrayDesign(design, caArrayFile);
+        this.fileManagementService.saveArrayDesign(design, caArrayFile);
         assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
         try {
             this.fileManagementService.importArrayDesignDetails(design);
@@ -248,14 +248,14 @@ public class FileManagementServiceTest {
     }
 
     @Test(expected = InvalidDataFileException.class)
-    public void testImportArrayDesignFileInvalid() throws InvalidDataFileException {
+    public void testImportArrayDesignFileInvalid() throws InvalidDataFileException, IllegalAccessException {
         ArrayDesign design = new ArrayDesign();
         design.setName("design name");
         this.daoFactoryStub.searchDaoStub.save(design);
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDataFiles.TEST3_CHP);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CHP);
         design.setDesignFile(caArrayFile);
-        this.fileManagementService.addArrayDesign(design, caArrayFile);
+        this.fileManagementService.saveArrayDesign(design, caArrayFile);
     }
 
 

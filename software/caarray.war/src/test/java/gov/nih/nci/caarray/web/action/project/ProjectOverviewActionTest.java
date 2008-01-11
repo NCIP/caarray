@@ -94,6 +94,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
@@ -156,6 +157,7 @@ public class ProjectOverviewActionTest {
     @Test
     public void testRetrieveArrayDesigns() throws Exception {
         this.action.setManufacturerId(1L);
+        this.action.setAssayType(AssayType.GENE_EXPRESSION);
         assertEquals("xmlArrayDesigns", this.action.retrieveArrayDesigns());
         assertEquals(1, this.action.getArrayDesigns().size());
     }
@@ -196,6 +198,19 @@ public class ProjectOverviewActionTest {
             }
             return null;
         }
+        @Override
+        public List<ArrayDesign> getImportedArrayDesigns(Organization provider, AssayType assayType) {
+            if (provider != null && Long.valueOf(1L).equals(provider.getId()) &&
+                    AssayType.GENE_EXPRESSION.equals(assayType)) {
+                List<ArrayDesign> designs = new ArrayList<ArrayDesign>();
+                ArrayDesign d1 = new ArrayDesign();
+                d1.setId(1L);
+                d1.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
+                designs.add(d1);
+                return designs;
+            }
+            return null;
+        }
     }
     @SuppressWarnings("deprecation")
     private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
@@ -208,6 +223,7 @@ public class ProjectOverviewActionTest {
                 Organization o = new Organization();
                 o.setId(1L);
                 p.getExperiment().setManufacturer(o);
+                p.getExperiment().setAssayTypeEnum(AssayType.GENE_EXPRESSION);
             }
             return p;
         }

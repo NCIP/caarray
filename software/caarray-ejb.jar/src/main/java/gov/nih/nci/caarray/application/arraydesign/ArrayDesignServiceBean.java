@@ -91,6 +91,8 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -127,7 +129,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public FileValidationResult validateDesign(CaArrayFile designFile) {
         LogUtil.logSubsystemEntry(LOG, designFile);
-        FileValidationResult result = validateDesign(null, designFile);
+        FileValidationResult result = validateDesignFile(designFile);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -138,19 +140,15 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public FileValidationResult validateDesign(ArrayDesign design) {
         LogUtil.logSubsystemEntry(LOG, design);
-        FileValidationResult result = validateDesign(design, design.getDesignFile());
+        FileValidationResult result = validateDesignFile(design.getDesignFile());
+        result = validateDuplicate(design);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
 
-    private FileValidationResult validateDesign(ArrayDesign arrayDesign, CaArrayFile designFile) {
+    private FileValidationResult validateDesignFile(CaArrayFile designFile) {
         FileValidationResult result;
-        if (arrayDesign != null && isDuplicate(arrayDesign))   {
-            result = new FileValidationResult(null);
-            result.addMessage(Type.ERROR, "An array design already exists with the name "
-                    + arrayDesign.getName()
-                    + " and provider " + arrayDesign.getProvider().getName());
-        } else if (designFile.getType() == null) {
+        if (designFile.getType() == null) {
             result = new FileValidationResult(getFile(designFile));
             result.addMessage(Type.ERROR, "Array design file type was unrecognized");
         } else if (!designFile.getFileType().isArrayDesign()) {
@@ -168,6 +166,24 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         }
         getArrayDao().save(designFile);
         getArrayDao().flushSession();
+        return result;
+    }
+
+    private FileValidationResult validateDuplicate(ArrayDesign arrayDesign) {
+        CaArrayFile designFile = arrayDesign.getDesignFile();
+        if (designFile.getValidationResult() == null) {
+            designFile.setValidationResult(new FileValidationResult(null));
+        }
+        FileValidationResult result = designFile.getValidationResult();
+        if (isDuplicate(arrayDesign))   {
+            result.addMessage(Type.ERROR,
+                    "An array design already exists with the name "
+                    + arrayDesign.getName()
+                    + " and provider " + arrayDesign.getProvider().getName());
+            designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
+            getArrayDao().save(designFile);
+            getArrayDao().flushSession();
+        }
         return result;
     }
 
@@ -197,10 +213,12 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             LOG.warn("importDesign called, but no design file provided. No updates made.");
             return;
         }
-        if (validateDesign(arrayDesign, arrayDesign.getDesignFile()).isValid()) {
+        if (validateDesignFile(arrayDesign.getDesignFile()).isValid()) {
             AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile());
             handler.load(arrayDesign);
-            getArrayDao().save(arrayDesign);
+            if (validateDuplicate(arrayDesign).isValid()) {
+                getArrayDao().save(arrayDesign);
+            }
         }
         LogUtil.logSubsystemExit(LOG);
     }
@@ -277,6 +295,16 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
+    public List<ArrayDesign> getImportedArrayDesigns(Organization provider, AssayType assayType) {
+        LogUtil.logSubsystemEntry(LOG);
+        List<ArrayDesign> designs = getArrayDao().getArrayDesigns(provider, assayType, true);
+        LogUtil.logSubsystemExit(LOG);
+        return designs;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public ArrayDesign getArrayDesign(Long id) {
         return getArrayDao().getArrayDesign(id);
     }
@@ -296,6 +324,36 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         List<ArrayDesign> designs = getArrayDao().getArrayDesigns();
         LogUtil.logSubsystemExit(LOG);
         return designs;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isArrayDesignLocked(Long id) {
+        return getArrayDao().isArrayDesignLocked(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException {
+        LogUtil.logSubsystemEntry(LOG, arrayDesign);
+        Long id = arrayDesign.getId();
+        if (id != null && isArrayDesignLocked(id)) {
+            HibernateUtil.getCurrentSession().evict(arrayDesign);
+            ArrayDesign loadedArrayDesign = getArrayDesign(id);
+            if (!loadedArrayDesign.getProvider().equals(arrayDesign.getProvider())
+                    || !loadedArrayDesign.getAssayType().equals(arrayDesign.getAssayType())
+                    || !loadedArrayDesign.getDesignFile().equals(arrayDesign.getDesignFile())) {
+                throw new IllegalAccessException("Cannot modify locked fields on an array design");
+            }
+            HibernateUtil.getCurrentSession().evict(loadedArrayDesign);
+            HibernateUtil.getCurrentSession().merge(arrayDesign);
+        } else {
+            getArrayDao().save(arrayDesign);
+        }
+        LogUtil.logSubsystemExit(LOG);
     }
 
     CaArrayDaoFactory getDaoFactory() {

@@ -87,6 +87,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -98,6 +99,7 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.List;
@@ -163,6 +165,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         DUMMY_ARRAYDESIGN_1.setVersion("2.0");
         DUMMY_ARRAYDESIGN_1.setProvider(DUMMY_ORGANIZATION);
         DUMMY_ARRAYDESIGN_1.setLsidForEntity("authority:namespace:objectId");
+        DUMMY_ARRAYDESIGN_1.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
         DUMMY_ARRAYDESIGN_2 = new ArrayDesign();
         DUMMY_ARRAYDESIGN_2.setName("DummyTestArrayDesign2");
         DUMMY_ARRAYDESIGN_2.setVersion("2.0");
@@ -193,18 +196,18 @@ public class ArrayDaoTest extends AbstractDaoTest {
             fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
         }
     }
-    
+
     @Test
     public void testGetArrayDesignByLsid() {
         Transaction tx = null;
         try {
             tx = HibernateUtil.beginTransaction();
-            ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getLsidAuthority(), 
+            ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getLsidAuthority(),
                     DUMMY_ARRAYDESIGN_1.getLsidNamespace(), DUMMY_ARRAYDESIGN_1.getLsidObjectId());
             tx.commit();
             assertEquals(DUMMY_ARRAYDESIGN_1, retrievedArrayDesign);
             tx = HibernateUtil.beginTransaction();
-            retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getLsidAuthority(), 
+            retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getLsidAuthority(),
                     DUMMY_ARRAYDESIGN_1.getLsidNamespace(), "incorrectObjectId");
             tx.commit();
             assertNull(retrievedArrayDesign);
@@ -240,6 +243,25 @@ public class ArrayDaoTest extends AbstractDaoTest {
             assertNotNull(org2ImportedDesigns);
             assertEquals(1, org2ImportedDesigns.size());
             assertEquals(DUMMY_ARRAYDESIGN_3, org2ImportedDesigns.get(0));
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Tests retrieving array design providers and array designs by provider
+     */
+    @Test
+    public void testArrayDesignsByProviderAndAssayType() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.beginTransaction();
+            List<ArrayDesign> org1Designs = DAO_OBJECT.getArrayDesigns(DUMMY_ORGANIZATION, AssayType.GENE_EXPRESSION, false);
+            List<ArrayDesign> org2Designs = DAO_OBJECT.getArrayDesigns(DUMMY_ORGANIZATION, AssayType.GENE_EXPRESSION, true);
+            tx.commit();
+            assertNotNull(org1Designs);
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
@@ -353,6 +375,19 @@ public class ArrayDaoTest extends AbstractDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testIsArrayDesignLocked() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.beginTransaction();
+            assertFalse(DAO_OBJECT.isArrayDesignLocked(1L));
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during isArrayDesignLocked: " + e.getMessage());
         }
     }
 

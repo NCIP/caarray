@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.AssayType;
 
 import java.util.List;
 
@@ -136,6 +137,17 @@ public interface ArrayDao extends CaArrayDao {
      * provider is the given provider
      */
     List<ArrayDesign> getArrayDesignsForProvider(Organization provider, boolean importedOnly);
+
+    /**
+     * Returns the list of ArrayDesigns with the given provider and assay type.
+     * @param provider the provider
+     * @param assayType the assay type
+     * @param importedOnly whether to only return ArrayDesigns which have finished importing (ie
+     * whose corresponding design file has a status of IMPORTED). if true only those array designs
+     * are returned, otherwise, all array designs are.
+     * @return the List&lt;ArrayDesign&gt; of the array designs with the given provider and assay type
+     */
+    List<ArrayDesign> getArrayDesigns(Organization provider, AssayType assayType, boolean importedOnly);
 
     /**
      * Returns the list of Organizations that are a provider for at least
@@ -195,4 +207,12 @@ public interface ArrayDao extends CaArrayDao {
      */
     Hybridization getHybridization(Long id);
 
+    /**
+     * Returns true if an array design is associated with an existing experiment.
+     * The provider, type, and design file cannot be modified on a locked array
+     * design.
+     * @param id array design id
+     * @return true if the array design is locked
+     */
+    boolean isArrayDesignLocked(Long id);
 }
