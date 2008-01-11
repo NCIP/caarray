@@ -94,6 +94,7 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -392,8 +393,10 @@ public class ProjectDaoTest extends AbstractDaoTest {
     private static void setFiles() {
         DUMMY_FILE_1.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
         DUMMY_FILE_1.setFileType(FileType.MAGE_TAB_IDF);
+        DUMMY_FILE_1.setFileStatus(FileStatus.UPLOADED);
         DUMMY_FILE_2.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF.getName());
-        DUMMY_FILE_1.setFileType(FileType.MAGE_TAB_SDRF);
+        DUMMY_FILE_2.setFileType(FileType.MAGE_TAB_SDRF);
+        DUMMY_FILE_2.setFileStatus(FileStatus.SUPPLEMENTAL);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_1);
         DUMMY_FILE_1.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_2);
@@ -587,8 +590,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
     private void checkFiles(Project project, Project retrievedProject) {
         assertEquals(project.getFiles().size(), retrievedProject.getFiles().size());
-        assertEquals(DUMMY_FILE_2, retrievedProject.getFiles().first());
-        assertEquals(DUMMY_FILE_1, retrievedProject.getFiles().last());
+        assertEquals(DUMMY_FILE_1, retrievedProject.getFiles().first());
+        assertEquals(DUMMY_FILE_2, retrievedProject.getFiles().last());
     }
 
     /**
@@ -780,7 +783,12 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertFalse(SecurityUtils.canRead(p, UsernameHolder.getCsmUser()));
             assertFalse(SecurityUtils.canWrite(p, UsernameHolder.getCsmUser()));
             assertFalse(SecurityUtils.canModifyPermissions(p, UsernameHolder.getCsmUser()));
+            assertEquals(0, p.getFiles().size());
             HibernateUtil.getCurrentSession().clear();
+            assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_1.getId()));
+            assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_2.getId()));
+            assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_DATA_FILE.getId()));
+            assertFalse(SecurityUtils.canRead(p, UsernameHolder.getCsmUser()));            
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
@@ -793,6 +801,11 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertEquals(p.getHostProfile().getSecurityLevel(), SecurityLevel.READ_WRITE_SELECTIVE);
             e = SEARCH_DAO.retrieve(Experiment.class, experimentId);
             assertNotNull(e);
+
+            assertEquals(2, p.getFiles().size());
+            assertNotNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_1.getId()));
+            assertNotNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_2.getId()));
+            assertNotNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_DATA_FILE.getId()));
 
             List<UserGroupRoleProtectionGroup> list = SecurityUtils.getUserGroupRoleProtectionGroups(p);
             assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
@@ -854,6 +867,11 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                     SecurityUtils.BROWSE_ROLE))));
 
+            assertEquals(1, p.getFiles().size());
+            assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_1.getId()));
+            assertNotNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_2.getId()));
+            assertNotNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_DATA_FILE.getId()));
+
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
@@ -872,6 +890,12 @@ public class ProjectDaoTest extends AbstractDaoTest {
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
             Hibernate.initialize(p.getExperiment().getSamples());
             assertEquals(0, p.getExperiment().getSamples().size());
+            
+            assertEquals(1, p.getFiles().size());
+            assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_1.getId()));
+            assertNotNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_2.getId()));
+            assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_DATA_FILE.getId()));
+            
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
