@@ -324,7 +324,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @Sort(type = SortType.NATURAL)
-    @Filter(name = "Project1", condition = "status = 'IMPORTED' and " + Experiment.FILES_FILTER)
+    @Filter(name = "Project1", condition = "(status = 'IMPORTED' or status = 'IMPORTED_NOT_PARSED') and " 
+        + Experiment.FILES_FILTER)
     private SortedSet<CaArrayFile> getImportedFileSet() {
         return this.importedFiles;
     }
@@ -378,8 +379,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @Sort(type = SortType.NATURAL)
-    @Filter(name = "Project1", condition = "status != 'IMPORTED' and status != 'SUPPLEMENTAL' and "
-            + Experiment.FILES_FILTER)
+    @Filter(name = "Project1", condition = "status != 'IMPORTED' and status != 'IMPORTED_NOT_PARSED' " 
+        + "and status != 'SUPPLEMENTAL' and " + Experiment.FILES_FILTER)
     private SortedSet<CaArrayFile> getUnImportedFileSet() {
         return this.unImportedFiles;
     }

@@ -107,6 +107,26 @@ public enum FileType implements Comparable<FileType>  {
     AFFYMETRIX_CHP,
 
     /**
+     * Affymetrix native DAT image format.
+     */
+    AFFYMETRIX_DAT,
+
+    /**
+     * Affymetrix EXP format.
+     */
+    AFFYMETRIX_EXP,
+
+    /**
+     * Agilent TSV format.
+     */
+    AGILENT_TSV,
+
+    /**
+     * Agilent TXT format.
+     */
+    AGILENT_TXT,
+
+    /**
      * Genepix array design GAL file.
      */
     GENEPIX_GAL,
@@ -117,6 +137,11 @@ public enum FileType implements Comparable<FileType>  {
     GENEPIX_GPR,
 
     /**
+     * Illumina raw array data file.
+     */
+    ILLUMINA_IDAT,
+
+    /**
      * Illumina array data CSV file.
      */
     ILLUMINA_DATA_CSV,
@@ -125,6 +150,11 @@ public enum FileType implements Comparable<FileType>  {
      * Illumina array design CSV file.
      */
     ILLUMINA_DESIGN_CSV,
+
+    /**
+     * Imagene TXT format.
+     */
+    IMAGENE_TXT,
 
     /**
      * The MAGE_TAB Array Design Format file type.
@@ -155,10 +185,14 @@ public enum FileType implements Comparable<FileType>  {
         ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
         ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
         ARRAY_DESIGN_FILE_TYPES.add(GENEPIX_GAL);
+        RAW_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_IDAT);
         RAW_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
+        DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_EXP);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_CSV);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
+        DERIVED_ARRAY_DATA_FILE_TYPES.add(IMAGENE_TXT);
+        DERIVED_ARRAY_DATA_FILE_TYPES.add(AGILENT_TXT);
     }
 
     /**

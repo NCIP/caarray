@@ -123,6 +123,11 @@ public enum FileStatus {
     IMPORTED(false, false, false),
 
     /**
+     * Successfully imported but data not parsed.
+     */
+    IMPORTED_NOT_PARSED(false, false, false),
+
+    /**
      * Failed Import.
      */
     IMPORT_FAILED(true, true, true),
