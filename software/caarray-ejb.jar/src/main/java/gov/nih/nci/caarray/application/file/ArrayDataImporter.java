@@ -120,7 +120,6 @@ final class ArrayDataImporter {
         try {
             this.daoFactory.getSearchDao().refresh(file);
             this.arrayDataService.importData(file, true);
-            file.setFileStatus(FileStatus.IMPORTED);
         } catch (InvalidDataFileException e) {
             file.setFileStatus(FileStatus.VALIDATION_ERRORS);
             file.setValidationResult(e.getFileValidationResult());

@@ -170,6 +170,7 @@ import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
@@ -257,6 +258,13 @@ public class ArrayDataServiceTest {
         CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6);
         this.arrayDataService.importData(illuminaFile, true);
         checkAnnotation(illuminaFile, 19);
+    }
+
+    @Test
+    public void testUnsupportedDataFile() throws InvalidDataFileException {
+        CaArrayFile expFile = getDataCaArrayFile(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_EXP, FileType.AFFYMETRIX_EXP);
+        this.arrayDataService.importData(expFile, true);
+        assertEquals(FileStatus.IMPORTED_NOT_PARSED, expFile.getFileStatus());
     }
 
     private void testCreateAnnotationCel() throws InvalidDataFileException {
