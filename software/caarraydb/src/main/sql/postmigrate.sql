@@ -12,6 +12,5 @@ insert into csm_user_group
 select * from csm_user_group_backup;
 
 drop table csm_user_backup;
-drop table csm_group_backup;
 drop table csm_user_group_backup;
 commit;
