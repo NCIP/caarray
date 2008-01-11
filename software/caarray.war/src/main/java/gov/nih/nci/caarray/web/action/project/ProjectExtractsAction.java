@@ -120,8 +120,8 @@ public class ProjectExtractsAction extends AbstractProjectProtocolAnnotationList
      * Default constructor.
      */
     public ProjectExtractsAction() {
-        super("extract", new PaginatedListImpl<Extract, ExtractSortCriterion>(PAGE_SIZE, ExtractSortCriterion.NAME
-                .name(), ExtractSortCriterion.class));
+        super("extract", "sample", new PaginatedListImpl<Extract, ExtractSortCriterion>(PAGE_SIZE,
+                ExtractSortCriterion.NAME.name(), ExtractSortCriterion.class));
     }
 
     /**

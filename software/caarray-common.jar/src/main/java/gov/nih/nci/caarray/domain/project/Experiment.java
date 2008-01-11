@@ -260,7 +260,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the description
      */
-    @Column(length = LARGE_TEXT_FIELD_LENGTH)
+    @Length(max = LARGE_TEXT_FIELD_LENGTH)
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public String getDescription() {
         return this.description;

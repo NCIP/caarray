@@ -131,8 +131,8 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
      * Default constructor.
      */
     public ProjectHybridizationsAction() {
-        super("hybridization", new PaginatedListImpl<Hybridization, HybridizationSortCriterion>(PAGE_SIZE,
-                HybridizationSortCriterion.NAME.name(), HybridizationSortCriterion.class));
+        super("hybridization", "labeledExtract", new PaginatedListImpl<Hybridization, HybridizationSortCriterion>(
+                PAGE_SIZE, HybridizationSortCriterion.NAME.name(), HybridizationSortCriterion.class));
     }
 
     /**

@@ -122,11 +122,12 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      * default constructor.
      *
      * @param resourceKey the base resouce key.
+     * @param associatedResourceKey the resource key for the associated annotation
      * @param pagedItems the paged list to use for this tab's item list
      */
-    public AbstractProjectProtocolAnnotationListTabAction(String resourceKey,
+    public AbstractProjectProtocolAnnotationListTabAction(String resourceKey, String associatedResourceKey,
             PaginatedListImpl<? extends PersistentObject, ?> pagedItems) {
-        super(resourceKey, pagedItems);
+        super(resourceKey, associatedResourceKey, pagedItems);
     }
 
     private void initForm() {

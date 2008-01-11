@@ -130,7 +130,7 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
      * Default constructor.
      */
     public ProjectSamplesAction() {
-        super("sample", new PaginatedListImpl<Sample, SampleSortCriterion>(PAGE_SIZE,
+        super("sample", "source", new PaginatedListImpl<Sample, SampleSortCriterion>(PAGE_SIZE,
                 SampleSortCriterion.NAME.name(), SampleSortCriterion.class));
     }
 

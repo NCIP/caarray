@@ -105,17 +105,20 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 public abstract class AbstractProjectAnnotationsListTabAction<T extends PersistentObject> extends
     AbstractProjectListTabAction {
 
+    private final String associatedResourceKey;
     private String associatedValueName;
     private Collection<T> unassociatedValues;
 
     /**
      * default constructor.
      * @param resourceKey the base resouce key.
+     * @param associatedResourceKey the resource key for the associated annotation
      * @param pagedItems the paged list to use for this tab's item list
      */
-    public AbstractProjectAnnotationsListTabAction(String resourceKey,
+    public AbstractProjectAnnotationsListTabAction(String resourceKey, String associatedResourceKey,
             PaginatedListImpl<? extends PersistentObject, ?> pagedItems) {
         super(resourceKey, pagedItems);
+        this.associatedResourceKey = associatedResourceKey;
     }
 
     /**
@@ -124,7 +127,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
     @Override
     @SuppressWarnings("unchecked")
     @FieldExpressionValidator(fieldName = "associatedValueName",
-            message = "You must select at least one annotation to associate.",
+            key = "experiment.annotations.associationRequired", message = "",
             expression = "currentAssociationsCollection.size() - itemsToRemove.size() + itemsToAssociate.size() > 0")
     public String save() {
         // ideally this logic, along with the itemsToAssociate collection would be in the base class, but the
@@ -254,5 +257,14 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
      */
     public void setUnassociatedValues(Collection<T> unassociatedValues) {
         this.unassociatedValues = unassociatedValues;
+    }
+
+    /**
+     * @return the resource key suffix for the name of the associated annotation for 
+     * the annotation this action is serving (the to the left of this one, ie Source for Sample).
+     * The full resource key is expected to be <code>'experiment.' + this.getAssociatedResourceKey()</code>
+     */
+    public String getAssociatedResourceKey() {
+        return associatedResourceKey;
     }
 }

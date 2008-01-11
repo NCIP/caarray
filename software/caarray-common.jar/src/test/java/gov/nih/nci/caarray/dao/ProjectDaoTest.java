@@ -1289,7 +1289,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             fail("DAO exception during save of accession collection: " + e.getMessage());
         }
     }
-
+    
     private static class HasRolePredicate implements Predicate {
         private final String role;
 

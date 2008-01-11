@@ -119,8 +119,8 @@ public class ProjectLabeledExtractsAction extends AbstractProjectProtocolAnnotat
      * Default constructor.
      */
     public ProjectLabeledExtractsAction() {
-        super("labeledExtract", new PaginatedListImpl<LabeledExtract, LabeledExtractSortCriterion>(PAGE_SIZE,
-                LabeledExtractSortCriterion.NAME.name(), LabeledExtractSortCriterion.class));
+        super("labeledExtract", "extract", new PaginatedListImpl<LabeledExtract, LabeledExtractSortCriterion>(
+                PAGE_SIZE, LabeledExtractSortCriterion.NAME.name(), LabeledExtractSortCriterion.class));
     }
 
     /**
