@@ -1121,8 +1121,8 @@
     <antcall target="database:populate" />
     <antcall target="database:env-specific-sql" />
   </target>
--->
-  <target name="database:reinitialize" unless="nodbintegration"
+  -->
+  <target name="database:reinitialize" depends="database:init-sql" unless="nodbintegration"
       description="Completely reset caarraydb by dropping database, recreating, and creating schema, and pouplating with initial data">
     <run-sql-script sql.file="${caarraydb.sql.dir}/premigrate.sql" />
     <antcall target="database:drop-schema"/>
