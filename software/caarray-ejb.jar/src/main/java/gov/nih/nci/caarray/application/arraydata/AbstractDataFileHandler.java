@@ -128,7 +128,7 @@ abstract class AbstractDataFileHandler {
         return result;
     }
 
-    abstract void validate(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+    abstract void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
             ArrayDesignService arrayDesignService);
 
 
@@ -163,7 +163,7 @@ abstract class AbstractDataFileHandler {
 
     @SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
     protected void setValue(AbstractDataColumn column, int rowIndex, String value) {
-        Class columnTypeClass = column.getQuantitationType().getTypeClass();
+        Class<?> columnTypeClass = column.getQuantitationType().getTypeClass();
         if (columnTypeClass.equals(Boolean.class)) {
             ((BooleanColumn) column).getValues()[rowIndex] = parseBoolean(value);
         } else if (columnTypeClass.equals(Short.class)) {

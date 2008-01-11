@@ -135,6 +135,7 @@ public class ArrayDesignActionTest {
         locatorStub.addLookup(FileManagementService.JNDI_NAME, this.fileManagementServiceStub);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPrepare() {
         ArrayDesign design = new ArrayDesign();

@@ -135,6 +135,7 @@ public class PersistentObjectTypeConverter extends StrutsTypeConverter {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public String convertToString(Map context, Object o) {
         if (o instanceof PersistentObject) {

@@ -162,7 +162,7 @@ public class BrowseServiceTest {
         }
 
         @Override
-        public List<Project> browseList(PageSortParams params, BrowseCategory cat, Number fieldId) {
+        public List<Project> browseList(PageSortParams<Project> params, BrowseCategory cat, Number fieldId) {
             return Collections.emptyList();
         }
 

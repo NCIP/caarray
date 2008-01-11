@@ -233,6 +233,7 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Collection getAnnotationCollectionToUpdate(LabeledExtract item) {
         return item.getHybridizations();

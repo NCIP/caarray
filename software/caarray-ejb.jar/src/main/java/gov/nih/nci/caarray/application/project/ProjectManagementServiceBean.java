@@ -261,7 +261,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<Project> getMyProjects(boolean showPublic, PageSortParams pageSortParams) {
+    public List<Project> getMyProjects(boolean showPublic, PageSortParams<Project> pageSortParams) {
         LogUtil.logSubsystemEntry(LOG, showPublic);
         List<Project> result = getProjectDao().getProjectsForCurrentUser(showPublic, pageSortParams);
         LogUtil.logSubsystemExit(LOG);
@@ -522,7 +522,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
-    
+
     /**
      * {@inheritDoc}
      */

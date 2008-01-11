@@ -187,6 +187,7 @@ public class ProjectExtractsAction extends AbstractProjectProtocolAnnotationList
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Collection getAnnotationCollectionToUpdate(Sample item) {
         return item.getExtracts();

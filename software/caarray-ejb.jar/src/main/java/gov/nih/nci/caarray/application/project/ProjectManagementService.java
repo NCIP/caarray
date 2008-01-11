@@ -117,7 +117,7 @@ public interface ProjectManagementService {
 
     /**
      * Returns the project corresponding to the id given.
-     * 
+     *
      * @param id the project id
      * @return the corresponding project.
      */
@@ -126,7 +126,7 @@ public interface ProjectManagementService {
     /**
      * Associates a single file with a project. After calling this method, clients can expect a new
      * <code>CaArrayFile</code> to be associated with the project.
-     * 
+     *
      * @param project project to add the file to
      * @param file the file to add to the project
      * @return the new <code>CaArrayFile</code>.
@@ -137,7 +137,7 @@ public interface ProjectManagementService {
     /**
      * Associates a single file with a project. After calling this method, clients can expect a new
      * <code>CaArrayFile</code> to be associated with the project.
-     * 
+     *
      * @param project project to add the file to
      * @param file the file to add to the project
      * @param filename the filename to use for the file. Allows the created CaArrayFile to have a different name from
@@ -152,7 +152,7 @@ public interface ProjectManagementService {
      * Saves a project. The project may be new, or be currently in the draft or in progress state,
      * but it cannot be public.
      * If the project is new, then it is put into the draft state.
-     * 
+     *
      * @param project the project to save
      * @param orphansToDelete any objects orphaned by this save that should be deleted
      * @throws ProposalWorkflowException if the project cannot currently be saved because it is public
@@ -161,7 +161,7 @@ public interface ProjectManagementService {
 
     /**
      * Moves a project into a new workflow status.
-     * 
+     *
      * @param projectId the id of the project to move to the given status
      * @param newStatus the new workflow status
      * @throws ProposalWorkflowException if the project's current status does not allow
@@ -174,35 +174,35 @@ public interface ProjectManagementService {
      * related to the current user are returned. A project is directly related to a user if the user is either the data
      * owner or in a collaboration group which has been granted access to the project. The subset to retrieve depends on
      * the page and sort specifications in pageSortParams
-     * 
+     *
      * Note that this method currently only supports SortCriterions that are either simple properties of the target
      * class or required single-valued associations from it. If a non-required association is used in the sort
      * criterion, then any instances for which that association is null will not be included in the results (as an inner
      * join is used)
-     * 
+     *
      * @param showPublic if true, then only projects in the "Public" workflow status are returned; if false, then only
      *            projects in workflow statuses other than "Public" are returned.
      * @param pageSortParams specifies the sorting to apply and which page of the full result set to return
-     * 
+     *
      * @return public or non-public projects directly related to the current user, as described above
      */
-    List<Project> getMyProjects(boolean showPublic, PageSortParams pageSortParams);
+    List<Project> getMyProjects(boolean showPublic, PageSortParams<Project> pageSortParams);
 
     /**
-     * Gets the count of projects belonging to the current user. The count of either public or non-public projects 
-     * directly related to the current user are returned. A project is directly related to a user if the user is 
+     * Gets the count of projects belonging to the current user. The count of either public or non-public projects
+     * directly related to the current user are returned. A project is directly related to a user if the user is
      * either the data owner or in a collaboration group which has been granted access to the project.
-     * 
+     *
      * @param showPublic if true, then only projects in the "Public" workflow status are included; if false,
-     * then only projects in workflow statuses other than "Public" are included in the count. 
-     * 
+     * then only projects in workflow statuses other than "Public" are included in the count.
+     *
      * @return the count of public or non-public projects directly related to the current user, as described above
-     */    
+     */
     int getMyProjectCount(boolean showPublic);
 
     /**
      * sets whether the project with given id uses the tcga policy.
-     * 
+     *
      * @param projectId the id of the project
      * @param useTcgaPolicy whether the tcga policy should be used
      * @return the modified project
@@ -212,7 +212,7 @@ public interface ProjectManagementService {
 
     /**
      * Adds an empty (no access) profile for the given collaborator group to the given project.
-     * 
+     *
      * @param project the project
      * @param group the group for which to add an access profile
      * @return the new access profile
@@ -222,7 +222,7 @@ public interface ProjectManagementService {
 
     /**
      * Prepares files for download.
-     * 
+     *
      * @param files the files to download
      * @return the single zip archive with all files
      * @throws IOException on I/O error
@@ -255,8 +255,8 @@ public interface ProjectManagementService {
     /**
      * Make a copy of a source belonging to given project, and add it to the new project. The new source's name will be
      * derived from the original source's name according to the scheme described in
-     * {@link GenericDataService#getIncrementingCopyName(Class, String, String)}
-     * 
+     * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
+     *
      * @param project the project to which the source belongs
      * @param sourceId the id of the source to copy
      * @return the new source
@@ -267,8 +267,8 @@ public interface ProjectManagementService {
     /**
      * Make a copy of a factor belonging to given project, and add it to the new project. The new factor's name will be
      * derived from the original factor's name according to the scheme described in
-     * {@link GenericDataService#getIncrementingCopyName(Class, String, String)}
-     * 
+     * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
+     *
      * @param project the project to which the factor belongs
      * @param factorId the id of the factor to copy
      * @return the new factor
@@ -302,12 +302,12 @@ public interface ProjectManagementService {
 
     /**
      * Performs a query for experiments by text matching for the given keyword.
-     * 
+     *
      * Note that this method currently only supports SortCriterions that are either simple properties of the target
      * class or required single-valued associations from it. If a non-required association is used in the sort
      * criterion, then any instances for which that association is null will not be included in the results (as an inner
      * join is used)
-     * 
+     *
      * @param params paging and sorting parameters
      * @param keyword text to search for
      * @param categories Indicates which categories to search. Passing null will search all categories.
@@ -322,7 +322,7 @@ public interface ProjectManagementService {
      * @return number of results
      */
     int searchCount(String keyword, SearchCategory... categories);
-    
+
     /**
      * Get tissue sites for the experiment and category.
      * @param experiment the experiment

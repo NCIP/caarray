@@ -95,7 +95,7 @@ import javax.jms.ObjectMessage;
 @SuppressWarnings("PMD")
 public class StubbedObjectMessage implements ObjectMessage {
 
-    private Serializable object;
+    private final Serializable object;
 
     /**
      * @param object
@@ -290,6 +290,7 @@ public class StubbedObjectMessage implements ObjectMessage {
     /* (non-Javadoc)
      * @see javax.jms.Message#getPropertyNames()
      */
+    @SuppressWarnings("unchecked")
     public Enumeration getPropertyNames() throws JMSException {
         // no-op
         return null;

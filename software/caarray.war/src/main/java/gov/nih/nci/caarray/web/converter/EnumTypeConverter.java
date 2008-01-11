@@ -93,6 +93,7 @@ public class EnumTypeConverter extends com.opensymphony.xwork2.util.EnumTypeConv
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Enum convertFromString(String value, Class toClass) {
         if (StringUtils.isBlank(value)) {

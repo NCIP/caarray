@@ -155,7 +155,7 @@ public class BrowseActionTest {
             return NUM_PROJECTS;
         }
         @Override
-        public List<Project> browseList(PageSortParams params, BrowseCategory cat, Number fieldId) {
+        public List<Project> browseList(PageSortParams<Project> params, BrowseCategory cat, Number fieldId) {
             List<Project> projects = new ArrayList<Project>();
             for (int i=0; i<NUM_PROJECTS; i++) {
                 projects.add(new Project());

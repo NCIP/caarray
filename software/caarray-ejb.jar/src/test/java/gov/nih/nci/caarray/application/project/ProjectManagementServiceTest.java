@@ -170,7 +170,7 @@ public class ProjectManagementServiceTest {
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessService));
         TemporaryFileCacheLocator.resetTemporaryFileCache();
     }
-    
+
     @After
     public void tearDown() {
         transaction.rollback();
@@ -462,7 +462,7 @@ public class ProjectManagementServiceTest {
          * {@inheritDoc}
          */
         @Override
-        public List<Project> getProjectsForCurrentUser(boolean showPublic, PageSortParams pageSortParams) {
+        public List<Project> getProjectsForCurrentUser(boolean showPublic, PageSortParams<Project> pageSortParams) {
             return new ArrayList<Project>();
         }
 

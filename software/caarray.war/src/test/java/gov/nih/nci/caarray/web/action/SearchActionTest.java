@@ -135,7 +135,7 @@ public class SearchActionTest {
 
     private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
         @Override
-        public List<Project> searchByCategory(PageSortParams params, String keyword, SearchCategory... categories) {
+        public List<Project> searchByCategory(PageSortParams<Project> params, String keyword, SearchCategory... categories) {
             List<Project> projects= new ArrayList<Project>();
             for (int i = 0; i < NUM_PROJECTS; i++) {
                 projects.add(new Project());

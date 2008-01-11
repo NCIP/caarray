@@ -298,6 +298,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         return locked;
     }
 
+    @SuppressWarnings("unchecked")
     private Session getUnfilteredSession() {
         Session session = HibernateUtil.getCurrentSession();
         Set<String> filters = session.getSessionFactory().getDefinedFilterNames();

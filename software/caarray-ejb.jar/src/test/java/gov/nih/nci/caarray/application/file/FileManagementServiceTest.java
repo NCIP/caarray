@@ -96,6 +96,7 @@ import org.hibernate.LockMode;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("PMD")
 public class FileManagementServiceTest {
 
     private FileManagementService fileManagementService;

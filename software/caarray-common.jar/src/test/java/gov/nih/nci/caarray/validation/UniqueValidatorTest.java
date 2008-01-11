@@ -50,6 +50,7 @@ import org.junit.Test;
 /**
  * @author dkokotov@vecna.com
  */
+@SuppressWarnings("PMD")
 public class UniqueValidatorTest extends AbstractDaoTest {
     private static final VocabularyDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
 
@@ -67,7 +68,7 @@ public class UniqueValidatorTest extends AbstractDaoTest {
         TermSource t3 = new TermSource();
         t3.setName("name2");
         t3.setVersion("version1");
-        
+
         TermSource t4 = new TermSource();
         t4.setName("name1");
         t4.setUrl("foobar");
@@ -75,7 +76,7 @@ public class UniqueValidatorTest extends AbstractDaoTest {
 
         TermSource t5 = new TermSource();
         t5.setName("name1");
-        
+
         TermSource t6= new TermSource();
         t6.setName("name3");
         t6.setUrl("url2");
@@ -84,7 +85,7 @@ public class UniqueValidatorTest extends AbstractDaoTest {
 
         UniqueConstraintsValidator ucv = new UniqueConstraintsValidator();
         ucv.initialize(t1.getClass().getAnnotation(UniqueConstraints.class));
-        
+
         Transaction tx = null;
         try {
             tx = HibernateUtil.beginTransaction();
@@ -96,22 +97,22 @@ public class UniqueValidatorTest extends AbstractDaoTest {
             assertFalse(ucv.isValid(t4));
             assertTrue(ucv.isValid(t5));
             assertTrue(ucv.isValid(t6));
-            
+
             DAO_OBJECT.save(t2);
             DAO_OBJECT.save(t3);
-            
+
             assertTrue(ucv.isValid(t1));
             assertTrue(ucv.isValid(t2));
             assertTrue(ucv.isValid(t3));
             assertFalse(ucv.isValid(t4));
             assertFalse(ucv.isValid(t5));
             assertTrue(ucv.isValid(t6));
-            
+
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of protocol: " + e.getMessage());
-        }                
+        }
     }
 }
 

@@ -310,6 +310,7 @@ public class ArrayDesignServiceTest {
         ArrayDesign design = new ArrayDesign();
         design.setDesignFile(getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         this.arrayDesignService.importDesign(design);
+        @SuppressWarnings("unused")
         CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
         FileValidationResult result = this.arrayDesignService.validateDesign(design);
         assertFalse(result.isValid());

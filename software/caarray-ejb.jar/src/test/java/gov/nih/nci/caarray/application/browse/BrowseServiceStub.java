@@ -103,7 +103,7 @@ public class BrowseServiceStub implements BrowseService {
     /**
      * {@inheritDoc}
      */
-    public List<Project> browseList(PageSortParams params, BrowseCategory cat, Number fieldId) {
+    public List<Project> browseList(PageSortParams<Project> params, BrowseCategory cat, Number fieldId) {
         return null;
     }
 

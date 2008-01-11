@@ -101,6 +101,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
  * @param <T> the class of the annotations are being managed.
  */
 @Validation
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public abstract class AbstractProjectAnnotationsListTabAction<T extends PersistentObject> extends
     AbstractProjectListTabAction {
 
@@ -172,6 +173,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
      * Gets the set of initialSavedAssociations.
      * @return the set of items.
      */
+    @SuppressWarnings("unchecked")
     public Collection getInitialSavedAssociations() {
         return CollectionUtils.subtract(getCurrentAssociationsCollection(), getItemsToRemove());
     }
@@ -180,6 +182,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
      * does nothing, here to conform to java bean rules for the jsp.
      * @param c the param that will be ignored
      */
+    @SuppressWarnings("unchecked")
     public void setInitialSavedAssociations(Collection c) {
         // here to conform to java bean rules for jsp
     }
@@ -201,6 +204,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
      * @param item the item to retrieve the collection from.
      * @return the collection to update
      */
+    @SuppressWarnings("unchecked")
     public abstract Collection getAnnotationCollectionToUpdate(T item);
 
     /**

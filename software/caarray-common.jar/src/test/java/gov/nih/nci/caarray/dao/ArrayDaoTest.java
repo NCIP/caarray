@@ -83,11 +83,11 @@
 package gov.nih.nci.caarray.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-import static org.junit.Assert.assertFalse;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -259,6 +259,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             List<ArrayDesign> org1Designs = DAO_OBJECT.getArrayDesigns(DUMMY_ORGANIZATION, AssayType.GENE_EXPRESSION, false);
+            @SuppressWarnings("unused")
             List<ArrayDesign> org2Designs = DAO_OBJECT.getArrayDesigns(DUMMY_ORGANIZATION, AssayType.GENE_EXPRESSION, true);
             tx.commit();
             assertNotNull(org1Designs);

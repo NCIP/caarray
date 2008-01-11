@@ -111,6 +111,7 @@ import java.util.Set;
  * Basic sintub -- returns null for all methods returning objects. Subclass and override
  * to provide desired functionality in tests.
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class ProjectManagementServiceStub implements ProjectManagementService {
 
     private int filesAddedCount = 0;
@@ -158,11 +159,11 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public List<Project> getMyProjects(boolean showPublic, PageSortParams pageSortParams) {
+    public List<Project> getMyProjects(boolean showPublic, PageSortParams<Project> pageSortParams) {
         return new ArrayList<Project>();
     }
 
-    
+
     @SuppressWarnings("deprecation")
     public Project getProject(long id) {
         this.projectByIdCount++;
@@ -241,7 +242,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public List<Project> searchByCategory(PageSortParams params, String keyword, SearchCategory... categories) {
+    public List<Project> searchByCategory(PageSortParams<Project> params, String keyword, SearchCategory... categories) {
         return null;
     }
 

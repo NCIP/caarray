@@ -351,6 +351,7 @@ public class UtilsTest {
     }
 
     public static class C implements PersistentObject {
+        private static final long serialVersionUID = 1059753925701216036L;
         private Map<Long, A> mapA = new HashMap<Long, A>();
 
         public C() {
