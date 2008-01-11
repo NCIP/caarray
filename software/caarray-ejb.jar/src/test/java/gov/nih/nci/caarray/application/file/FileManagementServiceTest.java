@@ -266,6 +266,11 @@ public class FileManagementServiceTest {
             arrayDataFile.setFileStatus(FileStatus.VALIDATED);
             return new FileValidationResult(new File(arrayDataFile.getName()));
         }
+
+        @Override
+        public void importData(CaArrayFile caArrayFile, boolean createAnnotation) throws InvalidDataFileException {
+            caArrayFile.setFileStatus(FileStatus.IMPORTED);
+        }
     }
 
     private static class LocalArrayDesignServiceStub extends ArrayDesignServiceStub {
