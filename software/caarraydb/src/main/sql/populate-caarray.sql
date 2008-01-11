@@ -312,8 +312,10 @@ insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_r
 insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank, term_source) select 4577, null, 'Zea mays', 'species', id from term_source where term_source.name='ncbitax';
 
 insert into contact(discriminator, name) values ('O', 'Affymetrix');
+insert into contact(discriminator, name) values ('O', 'Agilent');
 insert into contact(discriminator, name) values ('O', 'GenePix');
 insert into contact(discriminator, name) values ('O', 'Illumina');
+insert into contact(discriminator, name) values ('O', 'Imagene');
 
 insert into country (code, name, printable_name, iso3, numcode) values ('AF','AFGHANISTAN','Afghanistan','AFG','004');
 insert into country (code, name, printable_name, iso3, numcode) values ('AL','ALBANIA','Albania','ALB','008');
