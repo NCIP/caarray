@@ -85,12 +85,13 @@ package gov.nih.nci.caarray.application.translation.magetab;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 /**
  * Interface to component used to translate MAGE-TAB files to the caArray domain model.
  */
 public interface MageTabTranslator {
-    
+
     /**
      * The default JNDI name to use to lookup <code>MageTabTranslator</code>.
      */
@@ -105,5 +106,13 @@ public interface MageTabTranslator {
      * @return the corresponding caArray objects.
      */
     CaArrayTranslationResult translate(MageTabDocumentSet documentSet, CaArrayFileSet fileSet);
+
+    /**
+     * validates translation requirements.
+     * @param documentSet the set of docs to validate
+     * @param fileSet the set of files
+     * @return the validation results.
+     */
+    ValidationResult validate(MageTabDocumentSet documentSet, CaArrayFileSet fileSet);
 
 }

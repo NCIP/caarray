@@ -166,7 +166,6 @@ final class IdfTranslator extends AbstractTranslator {
             publication.setPubMedId(idfPublication.getPubMedId());
             Term statusTerm = getTerm(idfPublication.getStatus());
             publication.setStatus(statusTerm);
-            publication = replaceIfExists(publication);
             publications.add(publication);
         }
         investigation.getPublications().addAll(publications);
@@ -209,7 +208,6 @@ final class IdfTranslator extends AbstractTranslator {
             // TODO Parse the address before putting it in the Address object.
             address.setStreetAddress1(idfPerson.getAddress());
             person.setAddress(address);
-            person = replaceIfExists(person);
             ExperimentContact contact = new ExperimentContact();
             contact.setContact(person);
             Collection<Term> roleTerms = getTerms(idfPerson.getRoles());

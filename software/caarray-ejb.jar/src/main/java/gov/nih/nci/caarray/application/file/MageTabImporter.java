@@ -124,8 +124,14 @@ class MageTabImporter {
         try {
             updateFileStatus(fileSet, FileStatus.VALIDATED);
             handleResult(fileSet, MageTabParser.INSTANCE.validate(inputSet));
+            if (!fileSet.statusesContains(FileStatus.VALIDATION_ERRORS)) {
+                MageTabDocumentSet documentSet = MageTabParser.INSTANCE.parse(inputSet);
+                handleResult(fileSet, translator.validate(documentSet, fileSet));
+            }
         } catch (MageTabParsingException e) {
             updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
+        } catch (InvalidDataException e) {
+            handleInvalidMageTab(fileSet, e);
         }
     }
 

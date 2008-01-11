@@ -173,7 +173,7 @@ public final class CaArrayFileSet implements Serializable {
         return true;
     }
 
-    private boolean statusesContains(FileStatus status) {
+    public boolean statusesContains(FileStatus status) {
         for (CaArrayFile file : files) {
             if (status.equals(file.getFileStatus())) {
                 return true;

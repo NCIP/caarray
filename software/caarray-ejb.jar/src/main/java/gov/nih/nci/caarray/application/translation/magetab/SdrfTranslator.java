@@ -174,6 +174,33 @@ final class SdrfTranslator extends AbstractTranslator {
         getTranslationResult().removeOrganismTerms();
     }
 
+    void validate() {
+        for (SdrfDocument document : getDocumentSet().getSdrfDocuments()) {
+            validateSdrf(document);
+        }
+    }
+
+    private void validateSdrf(SdrfDocument document) {
+        validateArrayDesigns(document);
+    }
+
+    private void validateArrayDesigns(SdrfDocument document) {
+        for (gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign : document.getAllArrayDesigns()) {
+            String arrayDesignName = sdrfArrayDesign.getName();
+            if (sdrfArrayDesign.isArrayDesignRef()) {
+                ArrayDesign arrayDesign = new ArrayDesign();
+                arrayDesign.setLsidForEntity(arrayDesignName);
+                if (getDaoFactory().getArrayDao().queryEntityAndAssociationsByExample(arrayDesign).isEmpty()) {
+                    document.addErrorMessage("Your reference to '" + arrayDesignName + "' can not be resolved because "
+                            + "an array design with that LSID is not in caArray.  Please import it and try again.");
+                }
+            } else {
+                document.addErrorMessage("Your reference to '" + arrayDesignName + "' can not be resolved because "
+                        + "array design files are not currently supported.");
+            }
+        }
+    }
+
     private void translateSdrf(SdrfDocument document) {
         translateNodesToEntities(document);
         linkNodes(document);
@@ -461,10 +488,12 @@ final class SdrfTranslator extends AbstractTranslator {
     private ArrayDesign processArrayDesignRef(String arrayDesignName) {
         ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setLsidForEntity(arrayDesignName);
-        arrayDesign.setName(arrayDesign.getLsidObjectId());
-        // Look up database for ArrayDesign with this lsid. If doesn't exist, create.
-        arrayDesign = replaceIfExists(arrayDesign);
-        return arrayDesign;
+        List<ArrayDesign> designs = getDaoFactory().getArrayDao().queryEntityAndAssociationsByExample(arrayDesign);
+        if (designs.isEmpty()) {
+            return null;
+        } else {
+            return designs.get(0);
+        }
     }
 
     // Processes an array design for which a file is included in the MAGE-TAB document set.

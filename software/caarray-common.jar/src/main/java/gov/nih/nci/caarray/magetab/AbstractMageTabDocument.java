@@ -243,7 +243,7 @@ public abstract class AbstractMageTabDocument implements Serializable {
      * @param message message content.
      * @return the message.
      */
-    protected final ValidationMessage addErrorMessage(String message) {
+    public final ValidationMessage addErrorMessage(String message) {
         return addMessage(ValidationMessage.Type.ERROR, message);
     }
 

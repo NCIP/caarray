@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -123,6 +124,15 @@ public class MageTabTranslatorBean implements MageTabTranslator {
         return translationResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+    public ValidationResult validate(MageTabDocumentSet documentSet, CaArrayFileSet fileSet) {
+        validateSdrfs(documentSet, fileSet);
+        return documentSet.getValidationResult();
+    }
+
     private void translateTermSources(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult) {
         new TermSourceTranslator(documentSet, translationResult, getVocabularyService(), this.daoFactory).translate();
     }
@@ -140,6 +150,11 @@ public class MageTabTranslatorBean implements MageTabTranslator {
             MageTabTranslationResult translationResult) {
         new SdrfTranslator(documentSet, fileSet, translationResult, this.daoFactory, getVocabularyService()).
                 translate();
+    }
+
+    private void validateSdrfs(MageTabDocumentSet documentSet, CaArrayFileSet fileSet) {
+        new SdrfTranslator(documentSet, fileSet, null, this.daoFactory, getVocabularyService()).
+                validate();
     }
 
     private VocabularyService getVocabularyService() {
