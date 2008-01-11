@@ -101,13 +101,23 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
+import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * Collaborator group management action.
  */
 @Validation
+@Validations(
+        requiredFields = @RequiredFieldValidator(
+                fieldName = "groupName", key = "struts.validator.requiredString", message = ""),
+        stringLengthFields = @StringLengthFieldValidator(
+                fieldName = "groupName", maxLength="254", message="", key="struts.validator.stringLength"
+        )
+)
 public class CollaboratorsAction extends ActionSupport {
 
     private static final long serialVersionUID = 1L;
