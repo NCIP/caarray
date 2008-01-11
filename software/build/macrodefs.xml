@@ -47,6 +47,7 @@
         <attribute name="sql.file" />
         <attribute name="sql.delimiter" default=";" />
         <attribute name="sql.delimitertype" default="normal" />
+        <attribute name="onerror" default="abort" />
         <attribute name="database.url" default="${database.url}" />
         <attribute name="database.user" default="${database.user}" />
         <attribute name="database.password" default="${database.password}" />
@@ -56,7 +57,7 @@
                  userid="@{database.user}"
                  password="@{database.password}"
                  src="@{sql.file}"
-                 onerror="abort"
+                 onerror="@{onerror}"
                  autocommit="true"
                  delimiter="@{sql.delimiter}"
                  delimitertype="@{sql.delimitertype}"

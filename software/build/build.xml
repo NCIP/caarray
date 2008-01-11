@@ -1090,7 +1090,7 @@
   <target name="database:generate-schema-sql" depends="database:generate-drop-schema-sql, database:generate-create-schema-sql" />
 
   <target name="database:drop-schema" depends="database:generate-drop-schema-sql" description="Drop DB schema">
-    <run-sql-script sql.file="${caarraydb.sql.dir}/drop_schema.sql" />
+    <run-sql-script onerror="continue" sql.file="${caarraydb.sql.dir}/drop_schema.sql" />
     <run-sql-script sql.file="${caarraydb.sql.dir}/drop-caarray-schema.sql" />
     <run-sql-script sql.file="${caarraydb.sql.dir}/drop-csm-schema.sql" />
   </target>
@@ -1131,7 +1131,6 @@
     <antcall target="database:env-specific-sql" />
     <run-sql-script sql.file="${caarraydb.sql.dir}/postmigrate.sql" />
   </target>
-
 
   <target name="database:recreate-database" depends="database:init-sql" description="Drops and recreates caarraydb database">
     <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
