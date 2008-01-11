@@ -105,6 +105,8 @@ final class ArrayDataHandlerFactory {
             return new GenepixGprHandler();
         } else if (FileType.ILLUMINA_DATA_CSV.equals(type)) {
             return new IlluminaDataHandler();
+        } else if (type.isArrayData()) {
+            return new UnsupportedDataFormatHandler();
         } else {
             throw new IllegalArgumentException("Unsupported type " + type);
         }

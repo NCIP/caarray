@@ -106,6 +106,7 @@ final class TypeRegistrationManager {
         initialize(AffymetrixArrayDataTypes.values());
         initialize(GenepixArrayDataTypes.values());
         initialize(IlluminaArrayDataTypes.values());
+        initialize(UnsupportedDataFormatDescriptor.INSTANCE);
     }
 
     private void initialize(ArrayDataTypeDescriptor[] types) {

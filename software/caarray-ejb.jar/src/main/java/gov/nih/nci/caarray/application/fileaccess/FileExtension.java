@@ -95,11 +95,15 @@ enum FileExtension {
     CEL(FileType.AFFYMETRIX_CEL),
     CHP(FileType.AFFYMETRIX_CHP),
     CSV(FileType.ILLUMINA_DESIGN_CSV),
+    DAT(FileType.AFFYMETRIX_DAT),
+    EXP(FileType.AFFYMETRIX_EXP),
     GAL(FileType.GENEPIX_GAL),
     GPR(FileType.GENEPIX_GPR),
     ADF(FileType.MAGE_TAB_ADF),
+    IDAT(FileType.ILLUMINA_IDAT),
     IDF(FileType.MAGE_TAB_IDF),
     SDRF(FileType.MAGE_TAB_SDRF),
+    TSV(FileType.AGILENT_TSV),
     DATA(FileType.MAGE_TAB_DATA_MATRIX);
 
     private final FileType type;

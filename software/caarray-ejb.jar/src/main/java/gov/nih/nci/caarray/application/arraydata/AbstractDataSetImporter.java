@@ -92,7 +92,6 @@ import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -131,7 +130,7 @@ abstract class AbstractDataSetImporter {
         getArrayData().setDataSet(new DataSet());
         addHybridizationDatas();
         addColumns();
-        getArrayData().getDataFile().setFileStatus(FileStatus.IMPORTED);
+        getArrayData().getDataFile().setFileStatus(getDataFileHandler().getImportedStatus());
         if (StringUtils.isBlank(getArrayData().getName())) {
             getArrayData().setName(getCaArrayFile().getName());
         }
