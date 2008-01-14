@@ -200,7 +200,9 @@ final class IdfTranslator extends AbstractTranslator {
             person.setLastName(idfPerson.getLastName());
             person.setMiddleInitials(idfPerson.getMidInitials());
             Organization affiliatedOrg = getOrCreateOrganization(idfPerson.getAffiliation());
-            person.getAffiliations().add(affiliatedOrg);
+            if (affiliatedOrg != null) {
+                person.getAffiliations().add(affiliatedOrg);
+            }
             person.setEmail(idfPerson.getEmail());
             person.setFax(idfPerson.getFax());
             person.setPhone(idfPerson.getPhone());

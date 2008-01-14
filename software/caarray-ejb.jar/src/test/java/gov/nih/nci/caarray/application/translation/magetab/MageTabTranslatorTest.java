@@ -82,9 +82,9 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
@@ -92,12 +92,16 @@ import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
@@ -208,6 +212,21 @@ public class MageTabTranslatorTest {
         checkHybridizationsHaveRawDataAndFiles(investigation.getHybridizations());
     }
 
+    @Test
+    public void testTranslatePersonsWithNullAffiliation() {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
+        MageTabDocumentSet documentSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_SET;
+        documentSet.getIdfDocuments().iterator().next().getInvestigation().getPersons().iterator().next().setAffiliation(null);
+        CaArrayTranslationResult result = this.translator.translate(documentSet, fileSet);
+        Experiment experiment = result.getInvestigations().iterator().next();
+        for (ExperimentContact contact : experiment.getExperimentContacts()) {
+            Person person = (Person) contact.getContact();
+            for (Organization organization : person.getAffiliations()) {
+                assertNotNull(organization);
+            }
+        }
+    }
+    
     private void checkHybridizationsHaveRawDataAndFiles(Set<Hybridization> hybridizations) {
         for (Hybridization hybridization : hybridizations) {
             assertNotNull(hybridization.getArrayData());
