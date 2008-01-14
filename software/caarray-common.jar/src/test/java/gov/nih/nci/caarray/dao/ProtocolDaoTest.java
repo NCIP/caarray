@@ -412,6 +412,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testGetParameters() {
         Transaction tx = null;
 
