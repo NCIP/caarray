@@ -1114,7 +1114,7 @@
   </target>
 
 
-  <target name="database:reinitialize2" unless="nodbintegration"
+  <target name="database:reinitialize" unless="nodbintegration"
       description="Completely reset caarraydb by dropping database, recreating, and creating schema, and pouplating with initial data">
     <antcall target="database:recreate-database" />
     <antcall target="database:create-schema" />
