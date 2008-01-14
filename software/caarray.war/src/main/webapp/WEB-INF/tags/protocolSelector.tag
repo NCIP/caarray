@@ -29,4 +29,16 @@
 </s:if>
 <s:else>
     <s:textfield name="currentProtocol.name" key="protocol" />
+    <c:if test="${not empty currentProtocolApplication.values}">
+        <tr>
+            <td class="tdLabel"><label class="label">Protocol Parameters</label></td>
+            <td>
+                <ul>
+                <c:forEach items="${currentProtocolApplication.values}" var="value">
+                    <li>${value.parameter.name} : ${value.value} </li>
+                </c:forEach>
+                </ul>
+            </td>
+        </tr>
+    </c:if>
 </s:else>

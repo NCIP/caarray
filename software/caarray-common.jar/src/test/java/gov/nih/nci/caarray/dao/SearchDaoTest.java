@@ -130,8 +130,8 @@ public class SearchDaoTest {
     private static final Category DUMMY_CATEGORY = new Category();
     private static final Term DUMMY_TERM_1 = new Term();
     private static final Protocol DUMMY_PROTOCOL_1 = new Protocol("DummyTestProtocol1", DUMMY_TERM_1, new TermSource());
-    private static final Parameter DUMMY_PARAMETER_1 = new Parameter(DUMMY_PROTOCOL_1);
-    private static final Parameter DUMMY_PARAMETER_2 = new Parameter(DUMMY_PROTOCOL_1);
+    private static final Parameter DUMMY_PARAMETER_1 = new Parameter("param 1", DUMMY_PROTOCOL_1);
+    private static final Parameter DUMMY_PARAMETER_2 = new Parameter("param 2", DUMMY_PROTOCOL_1);
 
     private static final SearchDao SEARCH_DAO = CaArrayDaoFactory.INSTANCE.getSearchDao();
     private static final ProtocolDao PROTOCOL_DAO = CaArrayDaoFactory.INSTANCE.getProtocolDao();

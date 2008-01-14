@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
@@ -105,4 +106,12 @@ public interface ProtocolDao extends CaArrayDao {
      * @return the protocol, or null if none found.
      */
     Protocol getProtocol(String name, TermSource source);
+
+    /**
+     * Get the parameter with the given characteristics.
+     * @param name the name of the param.
+     * @param protocol the protocol the param is associated with.
+     * @return the param.
+     */
+    Parameter getParameter(String name, Protocol protocol);
 }

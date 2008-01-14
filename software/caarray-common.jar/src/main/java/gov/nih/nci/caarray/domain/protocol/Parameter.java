@@ -1,13 +1,21 @@
 package gov.nih.nci.caarray.domain.protocol;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.validation.UniqueConstraint;
+import gov.nih.nci.caarray.validation.UniqueConstraintField;
+import gov.nih.nci.caarray.validation.UniqueConstraints;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import org.hibernate.validator.NotNull;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -96,6 +104,8 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
    */
 @Entity
+@UniqueConstraints(constraints = {@UniqueConstraint(fields = {@UniqueConstraintField(name = "name"),
+        @UniqueConstraintField(name = "protocol") }) })
 public class Parameter extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -107,16 +117,19 @@ public class Parameter extends AbstractCaArrayEntity {
     private Protocol protocol;
 
     /**
+     * @param name the name
      * @param protocol the protocol this paramater is attached to
      */
-    public Parameter(Protocol protocol) {
+    public Parameter(String name, Protocol protocol) {
+        this.name = name;
         this.protocol = protocol;
     }
 
     /**
      * Default constructor.
      */
-    public Parameter() {
+    @Deprecated
+    protected Parameter() {
         // empty constructor
     }
 
@@ -165,8 +178,9 @@ public class Parameter extends AbstractCaArrayEntity {
      * @return the protocol
      */
     @ManyToOne
-    @JoinColumn(nullable = false, updatable = false)
+    @JoinColumn(updatable = false)
     @ForeignKey(name = "PARAMETER_PROTOCOL_FK")
+    @NotNull
     public Protocol getProtocol() {
         return this.protocol;
     }
@@ -187,4 +201,40 @@ public class Parameter extends AbstractCaArrayEntity {
             .append("name", this.name)
             .toString();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+
+        if (!(o instanceof Parameter)) {
+            return false;
+        }
+
+        if (o == this) {
+            return true;
+        }
+
+        if (getId() == null) {
+            // by default, two transient instances cannot ever be equal
+            return false;
+        }
+
+        Parameter rhs = (Parameter) o;
+        return new EqualsBuilder().append(getName(), rhs.getName()).append(getProtocol(), rhs.getProtocol()).isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(getName()).append(getProtocol()).toHashCode();
+    }
+
+
 }

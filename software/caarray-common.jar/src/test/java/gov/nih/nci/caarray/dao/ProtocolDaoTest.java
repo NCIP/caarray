@@ -121,8 +121,8 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
     private static Protocol DUMMY_PROTOCOL_1;
     private static Protocol DUMMY_PROTOCOL_2;
     private static Protocol DUMMY_PROTOCOL_3;
-    private static Parameter DUMMY_PARAMETER_1 = new Parameter(DUMMY_PROTOCOL_1);
-    private static Parameter DUMMY_PARAMETER_2 = new Parameter(DUMMY_PROTOCOL_1);
+    private static Parameter DUMMY_PARAMETER_1 = new Parameter("param 1", DUMMY_PROTOCOL_1);
+    private static Parameter DUMMY_PARAMETER_2 = new Parameter("param 2", DUMMY_PROTOCOL_1);
     private static ProtocolApplication DUMMY_PROTOCOL_APPLICATION_1 = new ProtocolApplication();
     private static ProtocolApplication DUMMY_PROTOCOL_APPLICATION_2 = new ProtocolApplication();
 
@@ -146,8 +146,8 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         DUMMY_PROTOCOL_1 = new Protocol("DummyTestProtocol1", DUMMY_TERM_1, DUMMY_TERM_SOURCE_1);
         DUMMY_PROTOCOL_2 = new Protocol("DummyTestProtocol2", DUMMY_TERM_2, DUMMY_TERM_SOURCE_1);
         DUMMY_PROTOCOL_3 = new Protocol("DummyTestProtocol3", DUMMY_TERM_2, DUMMY_TERM_SOURCE_1);
-        DUMMY_PARAMETER_1 = new Parameter(DUMMY_PROTOCOL_1);
-        DUMMY_PARAMETER_2 = new Parameter(DUMMY_PROTOCOL_1);
+        DUMMY_PARAMETER_1 = new Parameter("param 1", DUMMY_PROTOCOL_1);
+        DUMMY_PARAMETER_2 = new Parameter("param 2", DUMMY_PROTOCOL_1);
         DUMMY_PROTOCOL_APPLICATION_1 = new ProtocolApplication();
         DUMMY_PROTOCOL_APPLICATION_2 = new ProtocolApplication();
         initializeParametersAndParamValues();
@@ -383,5 +383,53 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         exampleTerm.setValue(DUMMY_TERM_2.getValue());
         exampleProtocol.setType(exampleTerm);
         return exampleProtocol;
+    }
+
+    @Test
+    public void testGetProtocolByUniquefields() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.beginTransaction();
+            DAO_OBJECT.save(DUMMY_PROTOCOL_1);
+            Protocol retrievedProtocol = DAO_OBJECT.getProtocol(DUMMY_PROTOCOL_1.getName(), DUMMY_PROTOCOL_1.getSource());
+            if (DUMMY_PROTOCOL_1.equals(retrievedProtocol)) {
+                // The retrieved protocol is the same as the saved protocol. Test passed.
+                assertTrue(true);
+            } else {
+                fail("Retrieved protocol is different from saved protocol.");
+            }
+            assertEquals(null,  DAO_OBJECT.getProtocol("   ", DUMMY_PROTOCOL_1.getSource()));
+            assertEquals(null,  DAO_OBJECT.getProtocol(DUMMY_PROTOCOL_1.getName(), null));
+            TermSource s = new TermSource();
+            s.setName("foo");
+            assertEquals(null,  DAO_OBJECT.getProtocol(DUMMY_PROTOCOL_1.getName(), s));
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during save and retrieve of protocol: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetParameters() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.beginTransaction();
+            DAO_OBJECT.save(DUMMY_PROTOCOL_1);
+            Parameter param1 = DAO_OBJECT.getParameter(DUMMY_PARAMETER_1.getName(), DUMMY_PARAMETER_1.getProtocol());
+            Parameter param2 = DAO_OBJECT.getParameter(DUMMY_PARAMETER_1.getName() +  "foo", DUMMY_PARAMETER_1.getProtocol());
+            Parameter param3 = DAO_OBJECT.getParameter(DUMMY_PARAMETER_1.getName(), null);
+            Parameter param4 = DAO_OBJECT.getParameter(DUMMY_PARAMETER_1.getName(), new Protocol());
+            tx.commit();
+            assertEquals(DUMMY_PARAMETER_1, param1);
+            assertEquals(null, param2);
+            assertEquals(null, param3);
+            assertEquals(null, param4);
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during save and retrieve of protocol: " + e.getMessage());
+        }
     }
 }

@@ -130,6 +130,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.log4j.Logger;
 
 /**
@@ -158,6 +159,7 @@ final class SdrfTranslator extends AbstractTranslator {
     private final Map<ProtocolKey, Protocol> importedProtocolMap = new HashMap<ProtocolKey, Protocol>();
     private final Map<Term, Organism> termToOrganism = new HashMap<Term, Organism>();
     private final VocabularyService vocabularyService;
+    private final MultiKeyMap paramMap = new MultiKeyMap();
 
     SdrfTranslator(MageTabDocumentSet documentSet, CaArrayFileSet fileSet, MageTabTranslationResult translationResult,
             CaArrayDaoFactory daoFactory, VocabularyService vocabularyService) {
@@ -435,14 +437,14 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private ProtocolApplication getProtocolApplicationFromMageTabProtocolApplication(
             gov.nih.nci.caarray.magetab.ProtocolApplication mageTabProtocolApplication) {
+        Protocol protocol = getProtocolFromMageTabProtocol(mageTabProtocolApplication.getProtocol());
         ProtocolApplication protocolApplication = new ProtocolApplication();
-        protocolApplication.setProtocol(getProtocolFromMageTabProtocol(mageTabProtocolApplication.getProtocol()));
+        protocolApplication.setProtocol(protocol);
         for (gov.nih.nci.caarray.magetab.ParameterValue mageTabValue
                 : mageTabProtocolApplication.getParameterValues()) {
             ParameterValue value = new ParameterValue();
             if (mageTabValue.getParameter() != null) {
-                Parameter param = new Parameter();
-                param.setName(mageTabValue.getParameter().getName());
+                Parameter param = getOrCreateParameter(mageTabValue.getParameter().getName(), protocol);
                 value.setParameter(param);
             }
             value.setValue(mageTabValue.getValue());
@@ -450,6 +452,18 @@ final class SdrfTranslator extends AbstractTranslator {
             protocolApplication.getValues().add(value);
         }
         return protocolApplication;
+    }
+
+    private Parameter getOrCreateParameter(String name, Protocol protocol) {
+        Parameter param = (Parameter) paramMap.get(name, protocol);
+        if (param == null) {
+            param = this.getDaoFactory().getProtocolDao().getParameter(name, protocol);
+        }
+        if (param == null) {
+            param = new Parameter(name, protocol);
+            paramMap.put(name, protocol, param);
+        }
+        return param;
     }
 
     private AbstractCharacteristic translateCharacteristic(

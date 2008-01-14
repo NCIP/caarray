@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.ProtocolDao;
+import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
@@ -103,6 +104,13 @@ public class ProtocolDaoStub extends AbstractDaoStub implements ProtocolDao {
      */
     public Protocol getProtocol(String name, TermSource source) {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Parameter getParameter(String name, Protocol protocol) {
         return null;
     }
 }

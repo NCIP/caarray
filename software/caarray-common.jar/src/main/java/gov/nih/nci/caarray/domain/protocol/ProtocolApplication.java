@@ -114,6 +114,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     private AbstractBioMaterial bioMaterial;
     private AbstractArrayData arrayData;
     private String notes;
+    private Set<ParameterValue> values = new HashSet<ParameterValue>();
 
     /**
      * Gets the protocol.
@@ -155,11 +156,6 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     public void setImage(final Image image) {
         this.image = image;
     }
-
-    /**
-     * The values set.
-     */
-    private Set<ParameterValue> values = new HashSet<ParameterValue>();
 
     /**
      * Gets the values.

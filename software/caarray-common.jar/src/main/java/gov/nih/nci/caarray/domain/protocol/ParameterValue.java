@@ -1,12 +1,14 @@
 package gov.nih.nci.caarray.domain.protocol;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -95,7 +97,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
    */
 @Entity
-public class ParameterValue  extends AbstractCaArrayEntity {
+public class ParameterValue extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
      */

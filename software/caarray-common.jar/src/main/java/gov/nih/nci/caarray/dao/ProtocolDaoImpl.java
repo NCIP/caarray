@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
@@ -121,6 +122,20 @@ class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolDao {
         q.setString("name", name);
         q.setEntity("source", source);
         return (Protocol) q.uniqueResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Parameter getParameter(String name, Protocol protocol) {
+        if (protocol == null || protocol.getId() == null) {
+            return null;
+        }
+        String hsql = "from " + Parameter.class.getName() + " where name = :name and protocol = :protocol";
+        Query q = getCurrentSession().createQuery(hsql);
+        q.setString("name", name);
+        q.setEntity("protocol", protocol);
+        return (Parameter) q.uniqueResult();
     }
 
     @Override

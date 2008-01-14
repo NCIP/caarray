@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.magetab.MageTabOntologyCategory;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
 import gov.nih.nci.caarray.magetab.MageTabParsingRuntimeException;
 import gov.nih.nci.caarray.magetab.OntologyTerm;
+import gov.nih.nci.caarray.magetab.Parameter;
 import gov.nih.nci.caarray.magetab.ParameterValue;
 import gov.nih.nci.caarray.magetab.Protocol;
 import gov.nih.nci.caarray.magetab.ProtocolApplication;
@@ -296,7 +297,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleMaterialType(column, value);
             break;
         case PARAMETER_VALUE:
-            handleParameterValue(value);
+            handleParameterValue(column, value);
             break;
         case TERM_SOURCE_REF:
             handleTermSourceRef(value);
@@ -518,9 +519,12 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
     }
 
-    private void handleParameterValue(String value) {
+    private void handleParameterValue(SdrfColumn column, String value) {
         ParameterValue parameterValue = new ParameterValue();
         parameterValue.setValue(value);
+        Parameter param = new Parameter();
+        param.setName(column.getHeading().getQualifier());
+        parameterValue.setParameter(param);
         currentUnitable = parameterValue;
         currentProtocolApp.getParameterValues().add(parameterValue);
     }
