@@ -468,8 +468,8 @@ public class ProjectFilesActionTest {
         assertTrue(action.getAllExtensions().isEmpty());
 
         assertNull(action.getFileType());
-        action.setFileType(FileType.AFFYMETRIX_CDF);
-        assertEquals(FileType.AFFYMETRIX_CDF, action.getFileType());
+        action.setFileType(FileType.AFFYMETRIX_CDF.toString());
+        assertEquals(FileType.AFFYMETRIX_CDF.toString(), action.getFileType());
 
     }
 }

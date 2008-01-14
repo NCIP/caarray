@@ -158,13 +158,28 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private String listAction;
     private String extensionFilter;
     private Set<String> allExtensions = new TreeSet<String>();
-    private FileType fileType;
+    private String fileType;
+    private List<String> fileTypes = new ArrayList<String>();
+    private static final String UNKNOWN_FILE_TYPE = "(Unknown File Types)";
+    private static final String KNOWN_FILE_TYPE = "(Known File Types)";
+
+    private void initFileTypes() {
+        fileTypes.add(KNOWN_FILE_TYPE);
+        fileTypes.add(UNKNOWN_FILE_TYPE);
+        for (FileType ft : FileType.values()) {
+            fileTypes.add(ft.toString());
+        }
+    }
 
     private String prepListUnimportedPage() {
+        initFileTypes();
         setListAction(ACTION_UNIMPORTED);
         setFiles(new HashSet<CaArrayFile>());
         for (CaArrayFile f : getProject().getUnImportedFiles()) {
-            if (getFileType() == null || getFileType().equals(f.getFileType())) {
+            if (getFileType() == null
+                    || (f.getFileType() != null && f.getFileType().toString().equals(getFileType()))
+                    || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null)
+                    || (UNKNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() == null)) {
                 getFiles().add(f);
             }
         }
@@ -702,17 +717,31 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     /**
-     * @return currently selected file type to filter for
+     * @return the fileType
      */
-    public FileType getFileType() {
+    public String getFileType() {
         return this.fileType;
     }
 
     /**
-     * @param fileType file type to filter for
+     * @param fileType the fileType to set
      */
-    public void setFileType(FileType fileType) {
+    public void setFileType(String fileType) {
         this.fileType = fileType;
+    }
+
+    /**
+     * @return the fileTypes
+     */
+    public List<String> getFileTypes() {
+        return this.fileTypes;
+    }
+
+    /**
+     * @param fileTypes the fileTypes to set
+     */
+    public void setFileTypes(List<String> fileTypes) {
+        this.fileTypes = fileTypes;
     }
 
     /**
