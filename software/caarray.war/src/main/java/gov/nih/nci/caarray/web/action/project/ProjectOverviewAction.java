@@ -138,7 +138,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
         this.organisms = vocabService.getOrganisms();
 
         ArrayDesignService arrayDesignService = getArrayDesignService();
-        this.manufacturers = arrayDesignService.getAllOrganizations();
+        this.manufacturers = arrayDesignService.getAllProviders();
         if (getExperiment().getManufacturer() != null && getExperiment().getAssayTypeEnum() != null) {
             this.arrayDesigns = getArrayDesignService().getImportedArrayDesigns(
                     getExperiment().getManufacturer(), getExperiment().getAssayTypeEnum());

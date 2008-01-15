@@ -100,8 +100,9 @@ class ContactDaoImpl extends AbstractCaArrayDaoImpl implements ContactDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<Organization> getAllOrganizations() {
-        return getCurrentSession().createQuery("FROM " + Organization.class.getName() + "  order by name").list();
+    public List<Organization> getAllProviders() {
+        return getCurrentSession().createQuery("FROM " + Organization.class.getName()
+                + " where provider = true order by name").list();
     }
 
     @Override

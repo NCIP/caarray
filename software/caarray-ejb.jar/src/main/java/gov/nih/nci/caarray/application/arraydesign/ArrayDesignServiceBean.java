@@ -265,9 +265,9 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
-    public List<Organization> getAllOrganizations() {
+    public List<Organization> getAllProviders() {
         LogUtil.logSubsystemEntry(LOG);
-        List<Organization> orgs = getDaoFactory().getContactDao().getAllOrganizations();
+        List<Organization> orgs = getDaoFactory().getContactDao().getAllProviders();
         LogUtil.logSubsystemExit(LOG);
         return orgs;
     }

@@ -99,6 +99,7 @@ public class Organization extends AbstractContact {
     private static final long serialVersionUID = 1234567890L;
 
     private String name;
+    private boolean provider = false;
 
     /**
      * Gets the name.
@@ -117,6 +118,20 @@ public class Organization extends AbstractContact {
      */
     public void setName(final String nameVal) {
         this.name = nameVal;
+    }
+
+    /**
+     * @return the provider
+     */
+    public boolean isProvider() {
+        return this.provider;
+    }
+
+    /**
+     * @param provider the provider to set
+     */
+    public void setProvider(boolean provider) {
+        this.provider = provider;
     }
 
     /**

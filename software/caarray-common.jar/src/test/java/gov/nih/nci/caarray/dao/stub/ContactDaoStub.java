@@ -95,7 +95,7 @@ public class ContactDaoStub extends AbstractDaoStub implements ContactDao {
     /**
      * {@inheritDoc}
      */
-    public List<Organization> getAllOrganizations() {
+    public List<Organization> getAllProviders() {
         return new ArrayList<Organization>();
     }
 }

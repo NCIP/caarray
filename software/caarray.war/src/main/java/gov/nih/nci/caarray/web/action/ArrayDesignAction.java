@@ -224,7 +224,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      */
     public void prepare() {
         this.organisms = getVocabularyService().getOrganisms();
-        this.providers = getArrayDesignService().getAllOrganizations();
+        this.providers = getArrayDesignService().getAllProviders();
         this.featureTypes = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.TECHNOLOGY_TYPE);
         if (arrayDesign != null && arrayDesign.getId() != null) {
             ArrayDesign retrieved = getArrayDesignService().getArrayDesign(arrayDesign.getId());

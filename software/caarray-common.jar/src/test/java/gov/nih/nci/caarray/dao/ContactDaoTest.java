@@ -100,7 +100,7 @@ public class ContactDaoTest extends AbstractDaoTest {
     @Test
     public void testGetAll() {
         Transaction tx = HibernateUtil.beginTransaction();
-        assertEquals(0, DAO_OBJECT.getAllOrganizations().size());
+        assertEquals(0, DAO_OBJECT.getAllProviders().size());
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
@@ -108,14 +108,15 @@ public class ContactDaoTest extends AbstractDaoTest {
         Organization o = new Organization();
         o.setName("Foo");
         o.setEmail("foo@bar.org");
+        o.setProvider(true);
         s.save(o);
         tx.commit();
 
 
         tx = HibernateUtil.beginTransaction();
         s = HibernateUtil.getCurrentSession();
-        assertEquals(1, DAO_OBJECT.getAllOrganizations().size());
-        assertEquals("Foo", DAO_OBJECT.getAllOrganizations().get(0).getName());
+        assertEquals(1, DAO_OBJECT.getAllProviders().size());
+        assertEquals("Foo", DAO_OBJECT.getAllProviders().get(0).getName());
         tx.commit();
     }
 }

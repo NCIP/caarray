@@ -153,7 +153,7 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
-    public List<Organization> getAllOrganizations() {
+    public List<Organization> getAllProviders() {
         return new ArrayList<Organization>();
     }
 

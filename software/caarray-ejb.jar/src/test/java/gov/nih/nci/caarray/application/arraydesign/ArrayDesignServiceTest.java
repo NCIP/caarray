@@ -337,12 +337,13 @@ public class ArrayDesignServiceTest {
 
     @Test
     public void testOrganizations() {
-        assertEquals(0, this.arrayDesignService.getAllOrganizations().size());
+        assertEquals(0, this.arrayDesignService.getAllProviders().size());
         Organization o = new Organization();
         o.setName("Foo");
+        o.setProvider(true);
         this.caArrayDaoFactoryStub.getSearchDao().save(o);
-        assertEquals(1, this.arrayDesignService.getAllOrganizations().size());
-        assertEquals("Foo", this.arrayDesignService.getAllOrganizations().get(0).getName());
+        assertEquals(1, this.arrayDesignService.getAllProviders().size());
+        assertEquals("Foo", this.arrayDesignService.getAllProviders().get(0).getName());
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
@@ -416,7 +417,7 @@ public class ArrayDesignServiceTest {
                  * {@inheritDoc}
                  */
                 @Override
-                public List<Organization> getAllOrganizations() {
+                public List<Organization> getAllProviders() {
                     List<Organization> orgs = new ArrayList<Organization>();
                     CollectionUtils.select(LocalDaoFactoryStub.this.objectMap.values(), PredicateUtils.instanceofPredicate(Organization.class), orgs);
                     return orgs;

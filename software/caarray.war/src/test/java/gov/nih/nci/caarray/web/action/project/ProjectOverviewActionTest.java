@@ -172,7 +172,7 @@ public class ProjectOverviewActionTest {
     @SuppressWarnings("deprecation")
     private static class LocalArrayDesignServiceStub extends ArrayDesignServiceStub {
         @Override
-        public List<Organization> getAllOrganizations() {
+        public List<Organization> getAllProviders() {
             List<Organization> providers = new ArrayList<Organization>();
             Organization p1 = new Organization();
             p1.setId(1L);

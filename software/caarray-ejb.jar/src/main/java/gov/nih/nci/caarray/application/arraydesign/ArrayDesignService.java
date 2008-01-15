@@ -134,9 +134,9 @@ public interface ArrayDesignService {
     void importDesignDetails(ArrayDesign arrayDesign);
 
     /**
-     * @return the list of all Organizations  in the system.
+     * @return the list of all providers in the system.
      */
-    List<Organization> getAllOrganizations();
+    List<Organization> getAllProviders();
 
     /**
      * Returns the list of Organizations that are a provider for at least

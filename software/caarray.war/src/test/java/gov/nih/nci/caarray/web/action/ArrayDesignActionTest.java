@@ -210,7 +210,7 @@ public class ArrayDesignActionTest {
             return DESIGN_ID.equals(id) ? new ArrayDesign() : null;
         }
         @Override
-        public List<Organization> getAllOrganizations() {
+        public List<Organization> getAllProviders() {
             List<Organization> orgs = new ArrayList<Organization>();
             orgs.add(new Organization());
             return orgs;

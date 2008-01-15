@@ -91,9 +91,9 @@ import java.util.List;
  *
  * @author Dan Kokotov
  */
-public interface ContactDao extends CaArrayDao {    
+public interface ContactDao extends CaArrayDao {
     /**
      * @return all Organizations in system.
      */
-    List<Organization> getAllOrganizations();
+    List<Organization> getAllProviders();
 }
