@@ -161,7 +161,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private String fileType;
     private List<String> fileTypes = new ArrayList<String>();
     private static final String UNKNOWN_FILE_TYPE = "(Unknown File Types)";
-    private static final String KNOWN_FILE_TYPE = "(Known File Types)";
+    private static final String KNOWN_FILE_TYPE = "(Supported File Types)";
 
     private void initFileTypes() {
         fileTypes.add(KNOWN_FILE_TYPE);
