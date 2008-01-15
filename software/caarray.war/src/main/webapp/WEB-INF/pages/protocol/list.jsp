@@ -6,7 +6,7 @@
         <h3>Manage ${tabTitle}</h3>
         <div class="addlink">
             <c:url value="/protected/ajax/protocol/edit.action" var="addProtocolUrl" />
-            <caarray:linkButton actionClass="add" text="Add ${tabTitle}" onclick="TabUtils.loadLinkInTab('${tabTitle}', '${addProtocolUrl}'); return false;"/>
+            <caarray:linkButton actionClass="add" text="Add Protocol" onclick="TabUtils.loadLinkInTab('${tabTitle}', '${addProtocolUrl}'); return false;"/>
         </div>
     </div>
 

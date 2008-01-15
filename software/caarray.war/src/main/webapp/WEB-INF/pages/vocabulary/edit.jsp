@@ -9,13 +9,13 @@
     </div>
     <div class="boxpad">
         <p class="instructions">Required fields are marked with <span class="required">*asterisks*</span>.</p>
-        <s:form action="ajax/vocabulary/save" cssClass="form" id="termForm">
+        <s:form action="ajax/vocabulary/save" cssClass="form" id="termForm" onsubmit="submitTermForm(); return false;">
             <tr><th colspan="2">Term</th></tr>
             <tr>
               <td colspan="2">
                 <s:fielderror>
                   <s:param>currentTerm</s:param>
-                </s:fielderror>              
+                </s:fielderror>
               </td>
             </tr>
             <s:textfield key="currentTerm.value" required="true" size="80" tabindex="1"/>
@@ -31,10 +31,10 @@
             </tbody>
             <tbody id="newSource" <s:if test="createNewSource == false">style="display: none"</s:if>>
             <tr>
-              <td colspan="2">
+              <td colspan="2" valign="top" align="center">
                 <s:fielderror>
                   <s:param>newSource</s:param>
-                </s:fielderror>              
+                </s:fielderror>
               </td>
             </tr>
             <s:textfield key="newSource.name" size="80" tabindex="5" required="true" />
@@ -93,12 +93,12 @@
         $('newSource')[$('termForm_createNewSourcetrue').checked ? 'show' : 'hide']();
         if ($('termForm_createNewSourcetrue').checked) {
              $('termForm_currentTerm_source').selectedIndex = 0;
-        }             
+        }
     }
-    
+
     submitTermForm = function() {
-        $('termForm_currentTerm_source').disabled = $('termForm_createNewSourcetrue').checked;    
-        TabUtils.submitTabForm('termForm', 'tabboxwrapper'); 
+        $('termForm_currentTerm_source').disabled = $('termForm_createNewSourcetrue').checked;
+        TabUtils.submitTabForm('termForm', 'tabboxwrapper');
         return false;
     }
 </script>

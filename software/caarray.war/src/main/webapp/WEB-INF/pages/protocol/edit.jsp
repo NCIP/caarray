@@ -42,6 +42,13 @@
                     listKey="id" listValue="name" value="protocol.source.id" tabindex="9" required="true" />
             </tbody>
             <tbody id="newSource" <s:if test="createNewSource == false">style="display: none"</s:if>>
+                <tr>
+                  <td colspan="2" valign="top" align="center">
+                    <s:fielderror>
+                      <s:param>newSource</s:param>
+                    </s:fielderror>
+                  </td>
+                </tr>
                 <s:textfield key="newSource.name" size="80" tabindex="10" required="true" />
                 <s:textfield key="newSource.url" size="80" tabindex="11" />
                 <s:textfield key="newSource.version" size="80" tabindex="12"/>
