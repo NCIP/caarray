@@ -421,6 +421,15 @@ var TabUtils = {
         if ($('loadingText')) {
             $('loadingText').show();
             $('theForm').hide();
+        } else {
+            tabwrapperdiv = $('tabboxlevel2wrapper');
+            if (!tabwrapperdiv) {
+                tabwrapperdiv = $('tabboxwrapper');
+            }
+            if (tabwrapperdiv) {
+                // write out the loading text
+                tabwrapperdiv.innerHTML = '<div><img alt="Indicator" align="absmiddle" src="' + contextPath + '/images/indicator.gif"/>&nbsp;Loading...</div>';
+            }
         }
         if ($('tabHeader')) {
             $('tabHeader').hide();
