@@ -59,11 +59,13 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 /**
@@ -122,6 +124,9 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
         return (Term) criteria.uniqueResult();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Organism getOrganism(TermSource source, String scientificName) {
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Organism.class);
         criteria.add(Restrictions.eq("scientificName", scientificName).ignoreCase());
@@ -156,6 +161,25 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      */
     public Term getTermById(Long id) {
         return (Term) getCurrentSession().load(Term.class, id);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public Term findTermInAllTermSourceVersions(TermSource termSource, String value) {
+        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Term.class);
+        criteria.add(Restrictions.eq("value", value).ignoreCase());
+        criteria.createAlias("source", "ts");
+        if (termSource.getUrl() == null) {
+            criteria.add(Restrictions.eq("ts.name", termSource.getName()));
+        } else {
+            criteria.add(Restrictions.or(Restrictions.eq("ts.name", termSource.getName()), Restrictions.eq("ts.url",
+                    termSource.getUrl())));
+        }
+        criteria.addOrder(Order.desc("ts.version"));
+        List<Term> terms = criteria.list();
+        return terms.isEmpty() ? null : terms.get(0);
     }
 
     @Override

@@ -312,20 +312,20 @@ public final class IdfDocument extends AbstractMageTabDocument {
             break;
         case QUALITY_CONTROL_TERM_SOURCE_REF:
         case QUALITY_CONTROL_TYPES_TERM_SOURCE_REF:
-            handleQualityControlTermSourceRef(value);
+            handleQualityControlTermSourceRef(value, valueIndex);
             break;
         case REPLICATE_TYPE:
             handleReplicateType(value);
             break;
         case REPLICATE_TERM_SOURCE_REF:
         case REPLICATE_TYPE_TERM_SOURCE_REF:
-            handleReplicateTypeTermSourceRef(value);
+            handleReplicateTypeTermSourceRef(value, valueIndex);
             break;
         case NORMALIZATION_TYPE:
             handleNormalizationType(value);
             break;
         case NORMALIZATION_TERM_SOURCE_REF:
-            handleNormalizationTypeTermSourceRef(value);
+            handleNormalizationTypeTermSourceRef(value, valueIndex);
             break;
         case DATE_OF_EXPERIMENT:
             handleExperimentDate(value);
@@ -349,7 +349,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handlePublicationStatus(value, valueIndex);
             break;
         case PUBLICATION_STATUS_TERM_SOURCE_REF:
-            handlePublicationStatusTermSourceRef(value);
+            handlePublicationStatusTermSourceRef(value, valueIndex);
             break;
         case EXPERIMENT_DESCRIPTION:
             handleExperimentDescription(value);
@@ -460,20 +460,19 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleProtocolType(String value, int valueIndex) {
         Protocol protocol = investigation.getOrCreateProtcol(valueIndex);
-        protocol.setType(addMgedOntologyTerm(MageTabOntologyCategory.PROTOCOL_TYPE, value));
+        protocol.setType(addOntologyTerm(MageTabOntologyCategory.PROTOCOL_TYPE, value));
     }
 
     private void handleProtocolTermSourceRef(String value, int valueIndex) {
-        if (value.trim().equals("")) {
-            return;
-        } else {
-            Iterator<Protocol> protocols = investigation.getProtocols().iterator();
-            while (protocols.hasNext()) {
-                Protocol protocol = protocols.next();
+        if (valueIndex < investigation.getProtocols().size()) {
+            if (!StringUtils.isBlank(value)) {
+                Protocol protocol = investigation.getProtocols().get(valueIndex);
                 if (protocol.getType() != null) {
                     protocol.getType().setTermSource(getOrCreateTermSource(value));
                 }
             }
+        } else {
+            addWarningMessage("Term Source specified for blank Protocol column");
         }
     }
 
@@ -506,11 +505,15 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleExperimentalDesign(String value) {
-        investigation.getDesigns().add(addMgedOntologyTerm(MageTabOntologyCategory.EXPERIMENTAL_DESIGN_TYPE, value));
+        investigation.getDesigns().add(addOntologyTerm(MageTabOntologyCategory.EXPERIMENTAL_DESIGN_TYPE, value));
     }
 
     private void handleExperimentalDesignTermSourceRef(String value, int valueIndex) {
-        investigation.getDesigns().get(valueIndex).setTermSource(getOrCreateTermSource(value));
+        if (valueIndex < investigation.getDesigns().size()) {
+            investigation.getDesigns().get(valueIndex).setTermSource(getOrCreateTermSource(value));            
+        } else {
+            addWarningMessage("Term Source specified for blank Experimental Design column");
+        }
     }
 
     private void handleExperimentalFactorName(String value, int valueIndex) {
@@ -519,12 +522,16 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleExperimentalFactorType(String value, int valueIndex) {
         ExperimentalFactor factor = investigation.getOrCreateFactor(valueIndex);
-        factor.setType(addMgedOntologyTerm(MageTabOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY, value));
+        factor.setType(addOntologyTerm(MageTabOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY, value));
     }
 
     private void handleExperimentalFactorTermSourceRef(String value, int valueIndex) {
-        ExperimentalFactor factor = investigation.getFactors().get(valueIndex);
-        factor.getType().setTermSource(getOrCreateTermSource(value));
+        if (valueIndex < investigation.getFactors().size()) {
+            ExperimentalFactor factor = investigation.getFactors().get(valueIndex);
+            factor.getType().setTermSource(getOrCreateTermSource(value));
+        } else {
+            addWarningMessage("Term Source specified for blank Experimental Factor column");
+        }
     }
 
     private void handlePersonLastName(String value, int valueIndex) {
@@ -568,14 +575,18 @@ public final class IdfDocument extends AbstractMageTabDocument {
         Iterator<String> rolesIter = roles.iterator();
         while (rolesIter.hasNext()) {
             investigation.getOrCreatePerson(valueIndex).getRoles().add(
-                    addMgedOntologyTerm(MageTabOntologyCategory.ROLES, rolesIter.next()));
+                    addOntologyTerm(MageTabOntologyCategory.ROLES, rolesIter.next()));
         }
     }
 
     private void handlePersonRoleTermSourceRef(String value, int valueIndex) {
-        Iterator<OntologyTerm> roles = investigation.getPersons().get(valueIndex).getRoles().iterator();
-        while (roles.hasNext()) {
-            roles.next().setTermSource(getOrCreateTermSource(value));
+        if (valueIndex < investigation.getPersons().size()) {
+            Iterator<OntologyTerm> roles = investigation.getPersons().get(valueIndex).getRoles().iterator();
+            while (roles.hasNext()) {
+                roles.next().setTermSource(getOrCreateTermSource(value));
+            }
+        } else {
+            addWarningMessage("Term Source specified for blank Person Role column");
         }
     }
 
@@ -597,56 +608,63 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handlePublicationStatus(String value, int valueIndex) {
         investigation.getOrCreatePublication(valueIndex).setStatus(
-                addMgedOntologyTerm(MageTabOntologyCategory.PUBLICATION_STATUS, value));
+                addOntologyTerm(MageTabOntologyCategory.PUBLICATION_STATUS, value));
     }
 
-    private void handlePublicationStatusTermSourceRef(String value) {
-        if (!value.trim().equals("")) {
-            Iterator<Publication> publications = investigation.getPublications().iterator();
-            while (publications.hasNext()) {
-                publications.next().getStatus().setTermSource(getOrCreateTermSource(value));
+    private void handlePublicationStatusTermSourceRef(String value, int valueIndex) {
+        if (valueIndex < investigation.getPublications().size()) {
+            if (!StringUtils.isBlank(value)) {
+                Publication publication = investigation.getPublications().get(valueIndex);
+                if (publication.getStatus() != null) {
+                    publication.getStatus().setTermSource(getOrCreateTermSource(value));
+                }
             }
+        } else {
+            addWarningMessage("Term Source specified for blank Publication column");
         }
     }
 
     private void handleQualityControlType(String value) {
         investigation.getQualityControlTypes().add(
-                addMgedOntologyTerm(MageTabOntologyCategory.QUALITY_CONTROL_TYPE, value));
+                addOntologyTerm(MageTabOntologyCategory.QUALITY_CONTROL_TYPE, value));
     }
 
-    private void handleQualityControlTermSourceRef(String value) {
-        if (!value.trim().equals("")) {
-            Iterator<OntologyTerm> qcTypes = investigation.getQualityControlTypes().iterator();
-            while (qcTypes.hasNext()) {
-                qcTypes.next().setTermSource(getOrCreateTermSource(value));
+    private void handleQualityControlTermSourceRef(String value, int valueIndex) {
+        if (valueIndex < investigation.getQualityControlTypes().size()) {
+            if (!StringUtils.isBlank(value)) {
+                investigation.getQualityControlTypes().get(valueIndex).setTermSource(getOrCreateTermSource(value));
             }
+        } else {
+            addWarningMessage("Term Source specified for blank Quality Control Typecolumn");
         }
     }
 
     private void handleReplicateType(String value) {
-        investigation.getReplicateTypes().add(addMgedOntologyTerm(MageTabOntologyCategory.REPLICATE_TYPE, value));
+        investigation.getReplicateTypes().add(addOntologyTerm(MageTabOntologyCategory.REPLICATE_TYPE, value));
     }
 
-    private void handleReplicateTypeTermSourceRef(String value) {
-        if (!value.trim().equals("")) {
-            Iterator<OntologyTerm> replTypes = investigation.getReplicateTypes().iterator();
-            while (replTypes.hasNext()) {
-                replTypes.next().setTermSource(getOrCreateTermSource(value));
+    private void handleReplicateTypeTermSourceRef(String value, int valueIndex) {
+        if (valueIndex < investigation.getReplicateTypes().size()) {
+            if (!StringUtils.isBlank(value)) {
+                investigation.getReplicateTypes().get(valueIndex).setTermSource(getOrCreateTermSource(value));
             }
+        } else {
+            addWarningMessage("Term Source specified for blank Replicate Type column");
         }
     }
 
     private void handleNormalizationType(String value) {
         investigation.getNormalizationTypes().add(
-                addMgedOntologyTerm(MageTabOntologyCategory.NORMALIZATION_TYPE, value));
+                addOntologyTerm(MageTabOntologyCategory.NORMALIZATION_TYPE, value));
     }
 
-    private void handleNormalizationTypeTermSourceRef(String value) {
-        if (!value.trim().equals("")) {
-            Iterator<OntologyTerm> normTypes = investigation.getNormalizationTypes().iterator();
-            while (normTypes.hasNext()) {
-                normTypes.next().setTermSource(getOrCreateTermSource(value));
+    private void handleNormalizationTypeTermSourceRef(String value, int valueIndex) {
+        if (valueIndex < investigation.getNormalizationTypes().size()) {
+            if (!StringUtils.isBlank(value)) {
+                investigation.getNormalizationTypes().get(valueIndex).setTermSource(getOrCreateTermSource(value));
             }
+        } else {
+            addWarningMessage("Term Source specified for blank Normalization Type column");
         }
     }
 

@@ -98,6 +98,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.validator.Length;
@@ -243,4 +244,13 @@ public class Organism implements PersistentObject {
         this.termSource = termSource;
     }
 
+    /**
+     * @return the value and the term source of this term, which identify
+     * the term unambiguously
+     */
+    @Transient
+    public String getNameAndSource() {
+        return new StringBuilder(getScientificName()).append(" (").append(getTermSource().getName()).append(
+                ")").toString();
+    }
 }

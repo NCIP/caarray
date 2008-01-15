@@ -339,7 +339,7 @@
 
   <target name="configure-datasource-for-test">
     <copy todir="${caarray-common.test.classes.dir}" overwrite="true">
-      <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml" />
+      <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml,MGEDOntology.owl" />
     </copy>
     <replace dir="${caarray-common.test.classes.dir}" includes="*.cfg.xml">
       <replacefilter token="@HIBERNATE_CONFIG_START@" value="${comment.end}" />
@@ -405,6 +405,7 @@
         <pathelement location="${caGrid-1.1-sdkQuery32-core.jar}"/>
         <pathelement location="${commons-configuration.jar}" />
         <pathelement location="${log4j.jar}" />
+        <pathelement location="${dom4j.jar}" />
       </classpath>
     </javac>
   </target>
@@ -784,6 +785,7 @@
         <pathelement location="${csmapi.jar}"/>
         <pathelement location="${log4j.jar}" />
         <pathelement location="${cglib.jar}" />
+        <pathelement location="${dom4j.jar}" />
       </classpath>
     </javac>
   </target>
@@ -869,7 +871,7 @@
   </target>
 
   <target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,test:unpack-test-data">
-    <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar}:${cglib.jar};${commons-io.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${mysql-connector.jar};${c3p0.jar};${cglib.jar};${clm.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};" />
+    <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar};${cglib.jar};${commons-io.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${mysql-connector.jar};${c3p0.jar};${cglib.jar};${clm.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};" />
   </target>
 
   <target name="test:junit-report">
@@ -1089,6 +1091,20 @@
 
   <target name="database:generate-schema-sql" depends="database:generate-drop-schema-sql, database:generate-create-schema-sql" />
 
+  <target name="database:generate-mged-sql" depends="compile:caarray-common.jar, database:init-sql">
+    <java classname="gov.nih.nci.caarray.util.owlparser.ParseMgedOntology">
+      <arg value="${caarraydb.sql.dir}"/>
+      <classpath>
+        <pathelement location="${caarray-common.classes.dir}" />
+        <pathelement location="${caarray-common.resources.dir}" />
+        <fileset dir="${lib.dir}">
+          <include name="**/*.jar"/>
+          <exclude name="checkstyle*.jar"/>
+        </fileset>
+      </classpath>      
+    </java>
+  </target>
+
   <target name="database:drop-schema" depends="database:generate-drop-schema-sql" description="Drop DB schema">
     <run-sql-script onerror="continue" sql.file="${caarraydb.sql.dir}/drop_schema.sql" />
     <run-sql-script sql.file="${caarraydb.sql.dir}/drop-caarray-schema.sql" />
@@ -1103,9 +1119,10 @@
 
   <target name="database:initialize-schema" depends="database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
 
-  <target name="database:populate" description="populates db with initial data">
+  <target name="database:populate" description="populates db with initial data" depends="database:generate-mged-sql">
     <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm.sql" />
     <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm2.sql" />
+    <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-mged.sql" />
     <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />
   </target>
 

@@ -147,4 +147,17 @@ public interface VocabularyDao extends CaArrayDao {
      * @return the organism matching the above, or null if no matches
      */
     Organism getOrganism(TermSource source, String scientificName);
+    
+    /**
+     * Given a term value and a term source, searches for a term with that value in
+     * all term sources in the database which are considered
+     * to be other versions of the same term source. Two TermSources are considered
+     * to be versions of the same term source if they have the same name or the same url.
+     * @param termSource the term source whose other versions to retrieve. If any matches exist,
+     * returns the match from the term source with the latest (using alphabetical ordering) version 
+     * @param value value of the term to find (case insensitive)
+     * @return a Term with given value from the Term Source with latest version from among all term sources
+     * with the same version as the given source; null if no matching terms are found
+     */ 
+    Term findTermInAllTermSourceVersions(TermSource termSource, String value);
 }

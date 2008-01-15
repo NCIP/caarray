@@ -797,10 +797,9 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * @param experimentDesignType the experimentDesignType to set
+     * @param experimentDesignTypes the experimentDesignTypes to set
      */
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setExperimentDesignTypes(Set<Term> experimentDesignTypes) {
+    public void setExperimentDesignTypes(Set<Term> experimentDesignTypes) {
         this.experimentDesignTypes = experimentDesignTypes;
     }
 

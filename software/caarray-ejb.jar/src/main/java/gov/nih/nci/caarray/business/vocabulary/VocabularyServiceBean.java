@@ -257,6 +257,12 @@ public class VocabularyServiceBean implements VocabularyService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public Term findTermInAllTermSourceVersions(TermSource termSource, String value) {
+        return getVocabularyDao().findTermInAllTermSourceVersions(termSource, value);
+    }
+    /**
      * Method to take a get a unique result from a set and return it or null.
      * 
      * @param <T> the type of the returned object

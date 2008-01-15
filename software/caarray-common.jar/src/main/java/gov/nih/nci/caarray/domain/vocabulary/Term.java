@@ -97,6 +97,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -256,6 +257,16 @@ public class Term extends AbstractCaArrayEntity implements Comparable<Term> {
      */
     public void setSource(final TermSource sourceVal) {
         this.source = sourceVal;
+    }
+    
+    /**
+     * @return the value and the term source of this term, which identify
+     * the term unambiguously
+     */
+    @Transient
+    public String getValueAndSource() {
+        return new StringBuilder(getValue()).append(" (").append(getSource().getName()).append(")")
+                .toString();
     }
 
     /**

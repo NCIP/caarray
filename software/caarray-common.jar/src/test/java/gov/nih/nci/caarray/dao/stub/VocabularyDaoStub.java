@@ -141,4 +141,8 @@ public class VocabularyDaoStub extends AbstractDaoStub implements VocabularyDao 
     public Organism getOrganism(TermSource source, String scientificName) {
         return null;
     }
+    
+    public Term findTermInAllTermSourceVersions(TermSource termSource, String value) {
+        return null;
+    }
 }

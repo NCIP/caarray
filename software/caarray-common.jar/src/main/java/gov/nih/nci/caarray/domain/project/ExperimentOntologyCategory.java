@@ -159,9 +159,9 @@ public enum ExperimentOntologyCategory {
     TECHNOLOGY_TYPE("TechnologyType", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
-     * ComplextAction category, used for experimental factors.
+     * ExperimentalFactorCategory category, for experimental factor types.
      */
-    COMPLEX_ACTION("ComplexAction", ExperimentOntology.MGED_ONTOLOGY),
+    EXPERIMENTAL_FACTOR_CATEGORY("ExperimentalFactorCategory", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * ProtocolType category, used for protocol types.

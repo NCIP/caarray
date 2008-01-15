@@ -108,7 +108,7 @@ import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 
 /**
  * Action implementing the factors tab.
- *
+ * 
  * @author Dan Kokotov
  */
 public class ProjectFactorsAction extends AbstractProjectListTabAction {
@@ -121,12 +121,13 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      * Default constructor.
      */
     public ProjectFactorsAction() {
-        super("factor", new PaginatedListImpl<Factor, FactorSortCriterion>(PAGE_SIZE,
-                FactorSortCriterion.NAME.name(), FactorSortCriterion.class));
+        super("factor", new PaginatedListImpl<Factor, FactorSortCriterion>(PAGE_SIZE, FactorSortCriterion.NAME.name(),
+                FactorSortCriterion.class));
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @throws VocabularyServiceException
      */
     @Override
@@ -136,8 +137,8 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
         if (this.currentFactor.getId() != null) {
             Factor retrieved = getGenericDataService().retrieveEntity(Factor.class, this.currentFactor.getId());
             if (retrieved == null) {
-                throw new PermissionDeniedException(this.currentFactor,
-                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+                throw new PermissionDeniedException(this.currentFactor, SecurityUtils.PERMISSIONS_PRIVILEGE,
+                        UsernameHolder.getUser());
             } else {
                 this.currentFactor = retrieved;
             }
@@ -149,7 +150,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      */
     @Override
     public String view() {
-        setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.COMPLEX_ACTION));
+        setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
         return super.view();
     }
 
@@ -159,7 +160,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     @Override
     @SkipValidation
     public String edit() {
-        setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.COMPLEX_ACTION));
+        setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
         return super.edit();
     }
 
@@ -170,12 +171,13 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     public void validate() {
         super.validate();
         if (hasErrors()) {
-            setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.COMPLEX_ACTION));
+            setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
         }
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @throws ProposalWorkflowException
      */
     @Override
@@ -202,8 +204,8 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     /**
      * @return the currentFactor
      */
-    @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "resourceKeyBase",
-            value = "experiment.factors"))
+    @CustomValidator(type = "hibernate", parameters = 
+        @ValidationParameter(name = "resourceKeyBase", value = "experiment.factors"))
     public Factor getCurrentFactor() {
         return this.currentFactor;
     }

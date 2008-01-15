@@ -435,6 +435,40 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         }
         assertTrue(true);
     }
+    
+    @Test
+    public void testFindTermInAllSourceVersions() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.beginTransaction();
+            setupTestGetTermsRecursive();
+            
+            TermSource DUMMY_SOURCE_1_V2 = new TermSource();
+            DUMMY_SOURCE_1_V2.setName("Some name");
+            DUMMY_SOURCE_1_V2.setUrl(DUMMY_SOURCE_1.getUrl());
+            DUMMY_SOURCE_1_V2.setVersion("2.0");
+            Term t = new Term();
+            t.setValue("bazfoo");
+            t.setAccession("MO23");
+            t.setSource(DUMMY_SOURCE_1_V2);            
+            DAO_OBJECT.save(DUMMY_SOURCE_1_V2);
+            DAO_OBJECT.save(t);
+            
+            Term result = DAO_OBJECT.findTermInAllTermSourceVersions(DUMMY_SOURCE_1, "bazfoo");
+            assertEquals(t, result);
+            result = DAO_OBJECT.findTermInAllTermSourceVersions(DUMMY_SOURCE_2, "bazfoo");
+            assertNull(result);
+            result = DAO_OBJECT.findTermInAllTermSourceVersions(DUMMY_SOURCE_1_V2, "bazfoo");
+            assertEquals(t, result);
+            result = DAO_OBJECT.findTermInAllTermSourceVersions(DUMMY_SOURCE_1, "bazfoo2");
+            assertNull(result);
+            
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during save of source collection: " + e.getMessage());
+        }
+    }
 
     /**
      * Methods to check if we got the expected results from the tests.

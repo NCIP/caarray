@@ -124,9 +124,9 @@ public class ProjectExperimentalDesignAction extends ProjectTabAction {
     @Override
     @Validations(
         fieldExpressions = {
-            @FieldExpressionValidator(fieldName = "project.experiment.experimentDesignType",
+            @FieldExpressionValidator(fieldName = "project.experiment.experimentDesignTypes",
                 message = "", key = "struts.validator.requiredString",
-                expression = "project.experiment.experimentDesignType != null")
+                expression = "!project.experiment.experimentDesignTypes.isEmpty")
         }
     )
     @SuppressWarnings("PMD.UselessOverridingMethod")

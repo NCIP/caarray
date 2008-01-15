@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+<%@page import="gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory"%>
 
 <c:if test="${!editMode}">
     <c:set var="theme" value="readonly" scope="request"/>
@@ -8,15 +9,18 @@
     <div class="boxpad">
         <p class="instructions">Required fields are marked with <span class="required">*asterisks*</span>.</p>
         <s:form action="ajax/project/tab/ExperimentalDesign/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxlevel2wrapper'); return false;">
-            <s:select required="true" multiple="true" key="project.experiment.experimentDesignTypes" tabindex="1"
-                      list="experimentDesignTypes" listKey="id" listValue="value" value="%{project.experiment.experimentDesignTypes.{id}}"/>
-            <s:textarea required="true" key="project.experiment.experimentDesignDescription" cols="80" rows="8" tabindex="2"/>
-            <s:select multiple="true" key="project.experiment.qualityControlTypes" tabindex="4"
-                      list="qualityControlTypes" listKey="id" listValue="value" value="%{project.experiment.qualityControlTypes.{id}}" />
-            <s:textarea key="project.experiment.qualityControlDescription" cols="80" rows="8" tabindex="3"/>
-            <s:select multiple="true" key="project.experiment.replicateTypes" tabindex="4"
-                      list="replicateTypes" listKey="id" listValue="value" value="%{project.experiment.replicateTypes.{id}}" />
-            <s:textarea key="project.experiment.replicateDescription" cols="80" rows="8" tabindex="5"/>
+            <caarray:termSelector baseId="experimentDesignTypes" category="<%= ExperimentOntologyCategory.EXPERIMENT_DESIGN_TYPE %>" termField="${project.experiment.experimentDesignTypes}"
+                tabIndex="1" termFieldName="project.experiment.experimentDesignTypes" returnInitialTab1="annotations" returnInitialTab2="experimentalDesign" 
+                hideAddButton="true" required="true" multiple="true"/>
+            <s:textarea required="true" key="project.experiment.experimentDesignDescription" cols="80" rows="4" tabindex="2"/>
+            <caarray:termSelector baseId="qualityControlTypes" category="<%= ExperimentOntologyCategory.QUALITY_CONTROL_TYPE %>" termField="${project.experiment.qualityControlTypes}"
+                tabIndex="3" termFieldName="project.experiment.qualityControlTypes" returnInitialTab1="annotations" returnInitialTab2="experimentalDesign" 
+                hideAddButton="true" multiple="true"/>
+            <s:textarea key="project.experiment.qualityControlDescription" cols="80" rows="4" tabindex="4"/>
+            <caarray:termSelector baseId="replicateTypes" category="<%= ExperimentOntologyCategory.REPLICATE_TYPE %>" termField="${project.experiment.replicateTypes}"
+                tabIndex="5" termFieldName="project.experiment.replicateTypes" returnInitialTab1="annotations" returnInitialTab2="experimentalDesign" 
+                hideAddButton="true" multiple="true"/>
+            <s:textarea key="project.experiment.replicateDescription" cols="80" rows="4" tabindex="6"/>
             <s:hidden name="project.id" />
             <s:hidden name="editMode" />
             <input type="submit" class="enableEnterSubmit"/>

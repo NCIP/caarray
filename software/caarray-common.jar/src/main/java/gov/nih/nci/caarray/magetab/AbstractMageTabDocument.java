@@ -50,7 +50,6 @@
  */
 package gov.nih.nci.caarray.magetab;
 
-import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
@@ -142,6 +141,19 @@ public abstract class AbstractMageTabDocument implements Serializable {
     }
 
     /**
+     * Returns an <code>OntologyTerm</code> matching the category and name given. Reuses an
+     * existing matching <code>OntologyTerm</code> in the document set if one exists,
+     * otherwise creates one.
+     *
+     * @param category category of the term
+     * @param value value of the term
+     * @return the new or matching term.
+     */
+    protected final OntologyTerm addOntologyTerm(MageTabOntologyCategory category, String value) {
+        return addOntologyTerm(category.getCategoryName(), value);
+    }
+
+    /**
      * Returns a <code>ArrayDesign</code> that has the given name. Reuses an existing matching
      * <code>ArrayDesign</code> if one exists, otherwise creates one.
      *
@@ -202,19 +214,6 @@ public abstract class AbstractMageTabDocument implements Serializable {
      */
     protected final EntryHeading createHeading(String headingString) {
         return new EntryHeading(headingString);
-    }
-
-    /**
-     * Returns a term that should originate from the MGED ontology.
-     *
-     * @param category category of the term.
-     * @param value the term.
-     * @return the term object.
-     */
-    protected final OntologyTerm addMgedOntologyTerm(MageTabOntologyCategory category, String value) {
-        OntologyTerm term = addOntologyTerm(category.getCategoryName(), value);
-        term.setTermSource(getTermSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName()));
-        return term;
     }
 
     /**

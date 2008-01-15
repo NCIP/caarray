@@ -115,8 +115,7 @@ public final class AdfDocument extends AbstractMageTabDocument {
      */
     @Override
     protected void parse() throws MageTabParsingException {
-        // TODO Auto-generated method stub
-
+        // unimplemented         
     }
 
 }

@@ -59,10 +59,10 @@
                                       headerKey="" headerValue="--Please select a Provider--" value="arrayDesign.provider.id"/>
                             <s:textfield required="true" key="arrayDesign.version" size="50" tabindex="4"/>
                             <s:select required="true" key="arrayDesign.technologyType" tabindex="5"
-                                      list="featureTypes" listKey="id" listValue="value" value="arrayDesign.technologyType.id"
+                                      list="featureTypes" listKey="id" listValue="valueAndSource" value="arrayDesign.technologyType.id"
                                       headerKey="" headerValue="--Please select a Feature Type--"/>
                             <s:select required="true" key="arrayDesign.organism" tabindex="6"
-                                      list="organisms" listKey="id" listValue="scientificName" value="arrayDesign.organism.id"
+                                      list="organisms" listKey="id" listValue="nameAndSource" value="arrayDesign.organism.id"
                                       headerKey="" headerValue="--Please select an Organism--"/>
                             <s:hidden name="arrayDesign.id"/>
                         </tbody>

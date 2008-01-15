@@ -64,7 +64,7 @@
                                             <p class="nopad" style="clear: both"><br>Edit access to the experiment by anonymous users</p>
                                             <p>
                                             The following access profiles can be managed to grant visibility into the summary 
-                                            and/or contents of an experiment prior to it's publication. The profiles are:
+                                            and/or contents of an experiment prior to its publication. The profiles are:
                                             </p>
                                             <ul id="profile_legend">
                                                 <li>

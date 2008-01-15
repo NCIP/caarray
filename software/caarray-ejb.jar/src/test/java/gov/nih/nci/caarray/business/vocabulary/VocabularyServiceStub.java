@@ -244,4 +244,8 @@ public class VocabularyServiceStub implements VocabularyService {
     public Protocol getProtocol(String name, TermSource source) {
         return null;
     }
+    
+    public Term findTermInAllTermSourceVersions(TermSource termSource, String value) {
+        return null;
+    }
 }

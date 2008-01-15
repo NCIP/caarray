@@ -447,7 +447,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private void handleLabel(SdrfColumn column, String value) {
         LabeledExtract labeledExtract = (LabeledExtract) currentNode;
-        labeledExtract.setLabel(addMgedOntologyTerm(MageTabOntologyCategory.LABEL_COMPOUND, value));
+        labeledExtract.setLabel(addOntologyTerm(MageTabOntologyCategory.LABEL_COMPOUND, value));
         currentTermSourceable = labeledExtract.getLabel();
     }
 
@@ -474,7 +474,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private void handleMaterialType(SdrfColumn column, String value) {
-        OntologyTerm materialType = addMgedOntologyTerm(MageTabOntologyCategory.MATERIAL_TYPE, value);
+        OntologyTerm materialType = addOntologyTerm(MageTabOntologyCategory.MATERIAL_TYPE, value);
         ((AbstractBioMaterial) currentNode).setMaterialType(materialType);
         currentTermSourceable = materialType;
     }

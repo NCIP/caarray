@@ -1,66 +1,37 @@
 -- Placeholder file for caarray object populate
 
-insert into term_source (name, url, version) values ('MO', 'http://mged.sourceforge.net/ontologies/MGEDontology.php', '1.3.1.1');
 insert into term_source (name, url) values ('ncbitax', 'http://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/');
+insert into term_source (name, url, version) values ('NCI_Thesaurus', 'http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do', '07.12a');
 insert into term_source (name, version) values ('Caarray', '0.1');
 
-insert into category (source, name) select id, 'OrganismPart' from term_source where name='MO';
-insert into category (source, name) select id, 'MaterialType' from term_source where name='MO';
-insert into category (source, name) select id, 'CellType' from term_source where name='MO';
-insert into category (source, name) select id, 'DiseaseState' from term_source where name='MO';
-insert into category (source, name) select id, 'ExperimentDesignType' from term_source where name='MO';
-insert into category (source, name) select id, 'QualityControlDescriptionType' from term_source where name='MO';
-insert into category (source, name) select id, 'ReplicateDescriptionType' from term_source where name='MO';
-insert into category (source, name) select id, 'Roles' from term_source where name='MO';
-insert into category (source, name) select id, 'PublicationType' from term_source where name='MO';
-insert into category (source, name) select id, 'PublicationStatus' from term_source where name='MO';
-insert into category (source, name) select id, 'TechnologyType' from term_source where name='MO';
-insert into category (source, name) select id, 'ComplexAction' from term_source where name='MO';
-insert into category (source, name) select id, 'ProtocolType' from term_source where name='MO';
-insert into category (source, name) select term_source.id, 'ExperimentalProtocolType' from term_source where term_source.name='MO';
-insert into category_parents (category_id, parent_category_id) select c1.id, c2.id from category c1, category c2 where c1.name='ExperimentalProtocolType' and c2.name = 'ProtocolType';
-insert into category (source, name) select term_source.id, 'DataTransformationProtocolType' from term_source where term_source.name='MO';
-insert into category_parents (category_id, parent_category_id) select c1.id, c2.id from category c1, category c2 where c1.name='DataTransformationProtocolType' and c2.name = 'ProtocolType';
-insert into category (source, name) select term_source.id, 'HigherLevelAnalysisProtocolType' from term_source where term_source.name='MO';
-insert into category_parents (category_id, parent_category_id) select c1.id, c2.id from category c1, category c2 where c1.name='HigherLevelAnalysisProtocolType' and c2.name = 'ProtocolType';
+insert into category (source, name) select id, 'PublicationStatus' from term_source where name='Caarray';
 
 -- OrganismParts
-insert into term (value, source) select 'Brain', term_source.id from term_source where term_source.name='MO';
+insert into term (value, accession, url, source) select 'Brain', 'C12439', 'http://nciterms.nci.nih.gov/NCIBrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C12439&bookmarktag=2', term_source.id from term_source where term_source.name='NCI_Thesaurus';
 insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Brain' and category.name='OrganismPart';
-insert into term (value, source) select 'Leg', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Leg' and category.name = 'OrganismPart';
+insert into term (value, accession, url, source) select 'Lung', 'C12468', 'http://nciterms.nci.nih.gov/NCIBrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C12468&bookmarktag=2', term_source.id from term_source where term_source.name='NCI_Thesaurus';
+insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Lung' and category.name = 'OrganismPart';
+insert into term (value, accession, url, source) select 'Ovary', 'C12404', 'http://nciterms.nci.nih.gov/NCIBrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C12404&bookmarktag=2', term_source.id from term_source where term_source.name='NCI_Thesaurus';
+insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Ovary' and category.name = 'OrganismPart';
+insert into term (value, accession, url, source) select 'Breast', 'C12971', 'http://nciterms.nci.nih.gov/NCIBrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C12971&bookmarktag=2', term_source.id from term_source where term_source.name='NCI_Thesaurus';
+insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Breast' and category.name = 'OrganismPart';
 
--- MaterialTypes
-insert into term (value, source) select 'cell', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'cell' and category.name = 'MaterialType';
-insert into term (value, source) select 'cell lysate', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'cell lysate' and category.name = 'MaterialType';
-insert into term (value, source) select 'total RNA', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'total RNA' and category.name = 'MaterialType';
-insert into term (value, source) select 'DNA', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'DNA' and category.name = 'MaterialType';
-insert into term (value, source) select 'Brain Tissue', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Brain Tissue' and category.name = 'CellType';
-insert into term (value, source) select 'Chromaphine Cells', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Chromaphine Cells' and category.name = 'CellType';
+-- CellTypes
+insert into term (value, accession, url, source) select 'astrocyte', 'C12477', 'http://nciterms.nci.nih.gov/NCIBrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C12477&bookmarktag=2', term_source.id from term_source where term_source.name='NCI_Thesaurus';
+insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'astrocyte' and category.name = 'CellType';
+insert into term (value, accession, url, source) select 'germinal epithelium', 'C32676', 'http://nciterms.nci.nih.gov/NCIBrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C32676&bookmarktag=2', term_source.id from term_source where term_source.name='NCI_Thesaurus';
+insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'germinal epithelium' and category.name = 'CellType';
+insert into term (value, accession, url, source) select 'squamous epithelium', 'C12848', 'http://nciterms.nci.nih.gov/NCIBrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C12848&bookmarktag=2', term_source.id from term_source where term_source.name='NCI_Thesaurus';
+insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'squamous epithelium' and category.name = 'CellType';
+
 
 -- DieseaseStates
-insert into term (value, source) select 'Adrenocortical Carcinoma', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Adrenocortical Carcinoma' and category.name = 'DiseaseState';
-
--- Roles
-insert into term (value, source) select 'investigator', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'investigator' and category.name = 'Roles';
-insert into term (value, source) select 'submitter', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'submitter' and category.name = 'Roles';
-
--- PublicationTypes
-insert into term (value, source) select 'Book', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Book' and category.name = 'PublicationType';
-insert into term (value, source) select 'Journal', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Journal' and category.name = 'PublicationType';
-insert into term (value, source) select 'Review', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Review' and category.name = 'PublicationType';
+insert into term (value, accession, url, source) select 'Glioblastoma Multiforme', 'C3058', 'http://nciterms.nci.nih.gov/NCIBrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C3058&bookmarktag=2', term_source.id from term_source where term_source.name='NCI_Thesaurus';
+insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Glioblastoma Multiforme' and category.name = 'DiseaseState';
+insert into term (value, accession, url, source) select 'Serous Cystadenocarcinoma', 'C3778', 'http://nciterms.nci.nih.gov/NCIBrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C3778&bookmarktag=2', term_source.id from term_source where term_source.name='NCI_Thesaurus';
+insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Serous Cystadenocarcinoma' and category.name = 'DiseaseState';
+insert into term (value, accession, url, source) select 'Squamous Carcinoma', 'C2929', 'http://nciterms.nci.nih.gov/NCIBrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C2929&bookmarktag=2', term_source.id from term_source where term_source.name='NCI_Thesaurus';
+insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Squamous Carcinoma' and category.name = 'DiseaseState';
 
 -- PublicationStatuses
 insert into term (value, source) select 'Submitted', term_source.id from term_source where term_source.name='Caarray';
@@ -69,211 +40,6 @@ insert into term (value, source) select 'In Preparation', term_source.id from te
 insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'In Preparation' and category.name = 'PublicationStatus';
 insert into term (value, source) select 'Published', term_source.id from term_source where term_source.name='Caarray';
 insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Published' and category.name = 'PublicationStatus';
-
--- ExperimentDesignType
-insert into term (value, source) select 'pharmacogenomic', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'pharmacogenomic' and category.name = 'ExperimentDesignType';
-insert into term (value, source) select 'subclassification', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'subclassification' and category.name = 'ExperimentDesignType';
-insert into term (value, source) select 'time_series_design', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'time_series_design' and category.name = 'ExperimentDesignType';
-
--- QualityControlDescriptionType
-insert into term (value, source) select 'biological_replicate', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'biological_replicate' and category.name = 'QualityControlDescriptionType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'biological_replicate' and category.name = 'ReplicateDescriptionType';
-insert into term (value, source) select 'dye_swap_quality_control', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'dye_swap_quality_control' and category.name = 'QualityControlDescriptionType';
-insert into term (value, source) select 'peer_review_quality_control', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'peer_review_quality_control' and category.name = 'QualityControlDescriptionType';
-insert into term (value, source) select 'real_time_PCR_quality_control', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'real_time_PCR_quality_control' and category.name = 'QualityControlDescriptionType';
-insert into term (value, source) select 'reverse_transcription_PCR_quality_control', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'reverse_transcription_PCR_quality_control' and category.name = 'QualityControlDescriptionType';
-insert into term (value, source) select 'spike_quality_control', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'spike_quality_control' and category.name = 'QualityControlDescriptionType';
-insert into term (value, source) select 'technical_replicate', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'technical_replicate' and category.name = 'QualityControlDescriptionType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'technical_replicate' and category.name = 'ReplicateDescriptionType';
-
--- ReplicateDescriptionType
-insert into term (value, source) select 'dye_swap_replicate', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'dye_swap_replicate' and category.name = 'ReplicateDescriptionType';
-
--- TechnologyTypes
-insert into term (value, source) select 'in_situ_oligo_features', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'in_situ_oligo_features' and category.name = 'TechnologyType';
-insert into term (value, source) select 'spotted_antibody_features', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'spotted_antibody_features' and category.name = 'TechnologyType';
-insert into term (value, source) select 'spotted_colony_features', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'spotted_colony_features' and category.name = 'TechnologyType';
-insert into term (value, source) select 'spotted_ds_DNA_features', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'spotted_ds_DNA_features' and category.name = 'TechnologyType';
-insert into term (value, source) select 'spotted_protein_features', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'spotted_protein_features' and category.name = 'TechnologyType';
-insert into term (value, source) select 'spotted_ss_PCR_amplicon_features', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'spotted_ss_PCR_amplicon_features' and category.name = 'TechnologyType';
-insert into term (value, source) select 'spotted_ss_oligo_features', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'spotted_ss_oligo_features' and category.name = 'TechnologyType';
-
--- ComplexActions
-insert into term (value, source) select 'PCR_amplification', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'PCR_amplification' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'PCR_amplification' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'acclimatization', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'acclimatization' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'acclimatization' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'behavioral_stimulus', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'behavioral_stimulus' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'behavioral_stimulus' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'biological_fluid_collection', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'biological_fluid_collection' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'biological_fluid_collection' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'biopsy', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'biopsy' and category.name = 'ComplexAction';
-insert into term (value, source) select 'change_biomaterial_characteristics', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'change_biomaterial_characteristics' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'change_biomaterial_characteristics' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'compound_based_treatment', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'compound_based_treatment' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'compound_based_treatment' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'decontaminate', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'decontaminate' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'decontaminate' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'dissect', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'dissect' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'dissect' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'fractionate', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'fractionate' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'fractionate' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'genetic_modification', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'genetic_modification' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'genetic_modification' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'grow', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'grow' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'grow' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'harvest', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'harvest' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'harvest' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'histological_slide_preparation', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'histological_slide_preparation' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'histological_slide_preparation' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'hybridization', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'hybridization' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'hybridization' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'incubate', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'incubate' and category.name = 'ComplexAction';
-insert into term (value, source) select 'inoculate', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'inoculate' and category.name = 'ComplexAction';
-insert into term (value, source) select 'irradiate', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'irradiate' and category.name = 'ComplexAction';
-insert into term (value, source) select 'labeling', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'labeling' and category.name = 'ComplexAction';
-insert into term (value, source) select 'linear_amplification', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'linear_amplification' and category.name = 'ComplexAction';
-insert into term (value, source) select 'nucleic_acid_extraction', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'nucleic_acid_extraction' and category.name = 'ComplexAction';
-insert into term (value, source) select 'pool', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'pool' and category.name = 'ComplexAction';
-insert into term (value, source) select 'preservation', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'preservation' and category.name = 'ComplexAction';
-insert into term (value, source) select 'purify', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'purify' and category.name = 'ComplexAction';
-insert into term (value, source) select 'reverse_transcription', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'reverse_transcription' and category.name = 'ComplexAction';
-insert into term (value, source) select 'sacrifice', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'sacrifice' and category.name = 'ComplexAction';
-insert into term (value, source) select 'specified_biomaterial_action', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'specified_biomaterial_action' and category.name = 'ComplexAction';
-insert into term (value, source) select 'split', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'split' and category.name = 'ComplexAction';
-insert into term (value, source) select 'starvation', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'starvation' and category.name = 'ComplexAction';
-insert into term (value, source) select 'store', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'store' and category.name = 'ComplexAction';
-insert into term (value, source) select 'timepoint', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'timepoint' and category.name = 'ComplexAction';
-insert into term (value, source) select 'transfect', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'transfect' and category.name = 'ComplexAction';
-insert into term (value, source) select 'wash', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'wash' and category.name = 'ComplexAction';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'incubate' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'inoculate' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'irradiate' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'labeling' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'linear_amplification' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'nucleic_acid_extraction' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'pool' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'preservation' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'purify' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'reverse_transcription' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'sacrifice' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'specified_biomaterial_action' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'split' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'starvation' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'store' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'transfect' and category.name = 'ExperimentalProtocolType';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'wash' and category.name = 'ExperimentalProtocolType';
-
--- ExperimentalProtocolTypes
-insert into term (value, source) select 'unknown_protocol_type', term_source.id from term_source where term_source.name='Caarray';
-insert into term_categories (term_id, category_id) select term.id, category.id from term join term_source ts on term.source = ts.id, category where term.value = 'unknown_protocol_type' and ts.name='Caarray' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'array_manufacturing', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'array_manufacturing' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'element_design', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'element_design' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'feature_extraction', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'feature_extraction' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'image_acquisition', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'image_acquisition' and category.name = 'ExperimentalProtocolType';
-insert into term (value, source) select 'unknown_protocol_type', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term join term_source ts on term.source = ts.id, category where term.value = 'unknown_protocol_type' and ts.name='MO' and category.name = 'ExperimentalProtocolType';
-
--- DataTransformationProtocolType
-insert into term (value, source) select 'across_bioassay_data_set_function', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'across_bioassay_data_set_function' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'dye_swap_merge', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'dye_swap_merge' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'flag_filter', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'flag_filter' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'linlog_transformation', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'linlog_transformation' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'loess_global_normalization', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'loess_global_normalization' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'loess_group_normalization', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'loess_group_normalization' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'loess_scaled_group_normalization', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'loess_scaled_group_normalization' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'lowess_global_normalization', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'lowess_global_normalization' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'lowess_group_normalization', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'lowess_group_normalization' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'lowess_scaled_group_normalization', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'lowess_scaled_group_normalization' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'mean_log_normalization', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'mean_log_normalization' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'median_log_normalization', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'median_log_normalization' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'moving_average', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'moving_average' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'quantile_normalization_protocol_type', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'quantile_normalization_protocol_type' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'replicate_analysis', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'replicate_analysis' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'total_intensity_normalization_paired', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'total_intensity_normalization_paired' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'total_intensity_normalization_single', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'total_intensity_normalization_single' and category.name = 'DataTransformationProtocolType';
-insert into term (value, source) select 'within_bioassay_data_set_function', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'within_bioassay_data_set_function' and category.name = 'DataTransformationProtocolType';
-
--- HigherLevelAnalysisProtocolType
-insert into term (value, source) select 'condition_specificity', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'condition_specificity' and category.name = 'HigherLevelAnalysisProtocolType';
-insert into term (value, source) select 'differential_expression', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'differential_expression' and category.name = 'HigherLevelAnalysisProtocolType';
-insert into term (value, source) select 'multiple_testing_correction', term_source.id from term_source where term_source.name='MO';
-insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'multiple_testing_correction' and category.name = 'HigherLevelAnalysisProtocolType';
 
 insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank, term_source) select 9606, 'human', 'Homo sapiens', 'species', id from term_source where term_source.name='ncbitax';
 insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank, term_source) select 10090, 'house mouse', 'Mus musculus', 'species', id from term_source where term_source.name='ncbitax';

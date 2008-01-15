@@ -31,7 +31,7 @@
 </tr>
 </s:if>
 <tr>
-    <td class="tdLabel"><label class="label">${termLabel}<c:if test="${multiple == 'true'}">s</c:if><c:if test="${required == 'true'}"><span class="required">*</span></c:if>:</label></td>
+    <td class="tdLabel"><label class="label">${termLabel}<c:if test="${required == 'true'}"><span class="required">*</span></c:if>:</label></td>
     <td>
         <s:if test="${editMode}">
             <div class="selectListWrapper">
@@ -56,17 +56,17 @@
                     <div id="${baseId}AutocompleteDiv"></div>
                 </div>
                 <div class="selectionside">
-                    <h4>Selected ${termLabel}s</h4>
+                    <h4>Selected ${termLabel}</h4>
                     <div>
                         <input name="${termFieldName}" type="hidden" value=""/>
                         <ul id="${baseId}SelectedItemDiv" class="selectedItemList">
                             <c:choose>
                                 <c:when test="${multiple != 'true' && !empty termField}">
-                                    <li onclick="TermPickerUtils.removeSelection(this); "><input name="${termFieldName}" type="hidden" value="${termField.id}"/>${termField.value}</li>
+                                    <li onclick="TermPickerUtils.removeSelection(this); "><input name="${termFieldName}" type="hidden" value="${termField.id}"/>${termField.valueAndSource}</li>
                                 </c:when>
                                 <c:otherwise>
                                     <c:forEach items="${termField}" var="currentItem">
-                                        <li onclick="TermPickerUtils.removeSelection(this); "><input name="${termFieldName}" type="hidden" value="${currentItem.id}"/>${currentItem.value}</li>
+                                        <li onclick="TermPickerUtils.removeSelection(this); "><input name="${termFieldName}" type="hidden" value="${currentItem.id}"/>${currentItem.valueAndSource}</li>
                                     </c:forEach>
                                 </c:otherwise>
                             </c:choose>
@@ -82,11 +82,11 @@
         <s:else>
             <c:choose>
                 <c:when test="${multiple != 'true'}">
-                    ${termField.value}
+                    ${termField.valueAndSource}
                 </c:when>
                 <c:otherwise>
                     <c:forEach items="${termField}" var="currentItem" varStatus="status">
-                        <c:if test="${!status.first}">, </c:if>${currentItem.value}
+                        <c:if test="${!status.first}">, </c:if>${currentItem.valueAndSource}
                     </c:forEach>
                 </c:otherwise>
             </c:choose>

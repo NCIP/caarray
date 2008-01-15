@@ -171,8 +171,11 @@ final class TermTranslator extends AbstractTranslator {
 
     private Term getOrCreateTerm(TermSource source, Category category, String value) {
         Term term = null;
-        if (source != null && source.getId() != null) {
+        if (source.getId() != null) {
             term = this.service.getTerm(source, value);
+        }        
+        if (term == null) {
+            term = this.service.findTermInAllTermSourceVersions(source, value);
         }
         if (term == null) {
             term = getTermFromCache(value, source);
