@@ -141,7 +141,7 @@ public enum ExperimentOntologyCategory {
     /**
      * PublicationStatus category, used for status of Publications.
      */
-    PUBLICATION_STATUS("PublicationStatus", ExperimentOntology.MGED_ONTOLOGY),
+    PUBLICATION_STATUS("PublicationStatus", ExperimentOntology.CAARRAY),
 
     /**
      * Clinical Diagnosis category, one of annotation fields allowed by TCGA policy.

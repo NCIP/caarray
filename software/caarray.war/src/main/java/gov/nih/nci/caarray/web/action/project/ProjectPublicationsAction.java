@@ -100,6 +100,9 @@ import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.UrlValidator;
+
 /**
  * Action implementing the publications tab.
  *
@@ -142,6 +145,12 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
         this.publicationTypes = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PUBLICATION_TYPE);
         this.publicationStatuses = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PUBLICATION_STATUS);
     }
+    
+    @Override
+    @UrlValidator(message = "", fieldName = "currentPublication.uri", key = "struts.validator.url")
+    public String save() {
+        return super.save();
+    }
 
     /**
      * {@inheritDoc}
@@ -170,6 +179,7 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
     /**
      * @return the currentPublication
      */
+    @CustomValidator(type = "hibernate")
     public Publication getCurrentPublication() {
         return this.currentPublication;
     }

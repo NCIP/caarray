@@ -170,6 +170,11 @@
             <result name="input">/error.jsp</result>
         </action>
 
+        <action name="ajax/project/files/deleteSupplementalFiles" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="deleteSupplementalFiles">
+            <result name="input">/WEB-INF/pages/project/files/listSupplemental.jsp</result>
+            <result name="listSupplemental">/WEB-INF/pages/project/files/listSupplemental.jsp</result>
+        </action>
+
         <action name="ajax/project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
             <result name="input">/WEB-INF/pages/project/files/listUnimported.jsp</result>
             <result name="listImported">/WEB-INF/pages/project/files/listImported.jsp</result>

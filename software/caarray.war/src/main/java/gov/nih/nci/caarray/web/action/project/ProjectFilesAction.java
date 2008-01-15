@@ -117,6 +117,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.ExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
@@ -751,7 +752,13 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     public void validate() {
         super.validate();
         if (hasErrors()) {
-            prepListUnimportedPage();
+            // crappy, but see no other way
+            String actionName = ActionContext.getContext().getName();
+            if (actionName.contains("Supplemental")) {
+                prepListSupplementalPage();
+            } else {
+                prepListUnimportedPage();                
+            }
         }
     }
 }
