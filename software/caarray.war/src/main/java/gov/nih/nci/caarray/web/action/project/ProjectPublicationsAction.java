@@ -146,9 +146,12 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
         this.publicationStatuses = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PUBLICATION_STATUS);
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @UrlValidator(message = "", fieldName = "currentPublication.uri", key = "struts.validator.url")
-    public String save() {
+    public String save() { //NOPMD
         return super.save();
     }
 
