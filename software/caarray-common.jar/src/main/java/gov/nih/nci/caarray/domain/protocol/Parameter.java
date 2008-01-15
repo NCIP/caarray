@@ -127,10 +127,11 @@ public class Parameter extends AbstractCaArrayEntity {
 
     /**
      * Default constructor.
+     * @deprecated for hibernate and castor only
      */
     @Deprecated
-    protected Parameter() {
-        // empty constructor
+    public Parameter() {
+        // empty constructor for castor & hibernate
     }
 
     /**
