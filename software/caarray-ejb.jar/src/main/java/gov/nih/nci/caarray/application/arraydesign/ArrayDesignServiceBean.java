@@ -96,6 +96,7 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
@@ -171,16 +172,17 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
 
     private FileValidationResult validateDuplicate(ArrayDesign arrayDesign) {
         CaArrayFile designFile = arrayDesign.getDesignFile();
-        if (designFile.getValidationResult() == null) {
-            designFile.setValidationResult(new FileValidationResult(null));
-        }
         FileValidationResult result = designFile.getValidationResult();
+        if (result == null) {
+            result = new FileValidationResult(null);
+        }
         if (isDuplicate(arrayDesign))   {
             result.addMessage(Type.ERROR,
                     "An array design already exists with the name "
                     + arrayDesign.getName()
                     + " and provider " + arrayDesign.getProvider().getName());
             designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
+            designFile.setValidationResult(result);
             getArrayDao().save(designFile);
             getArrayDao().flushSession();
         }
@@ -337,18 +339,17 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException {
+    public void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException, InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, arrayDesign);
+        if (!validateDuplicate(arrayDesign).isValid()) {
+            throw new InvalidDataFileException(arrayDesign.getDesignFile().getValidationResult());
+        }
         Long id = arrayDesign.getId();
         if (id != null && isArrayDesignLocked(id)) {
             HibernateUtil.getCurrentSession().evict(arrayDesign);
-            ArrayDesign loadedArrayDesign = getArrayDesign(id);
-            if (!loadedArrayDesign.getProvider().equals(arrayDesign.getProvider())
-                    || !loadedArrayDesign.getAssayType().equals(arrayDesign.getAssayType())
-                    || !loadedArrayDesign.getDesignFile().equals(arrayDesign.getDesignFile())) {
+            if (!validateLockedDesign(arrayDesign)) {
                 throw new IllegalAccessException("Cannot modify locked fields on an array design");
             }
-            HibernateUtil.getCurrentSession().evict(loadedArrayDesign);
             HibernateUtil.getCurrentSession().merge(arrayDesign);
         } else {
             getArrayDao().save(arrayDesign);
@@ -375,5 +376,15 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
 
     private VocabularyService getVocabularyService() {
         return (VocabularyService) ServiceLocatorFactory.getLocator().lookup(VocabularyService.JNDI_NAME);
+    }
+    private boolean validateLockedDesign(ArrayDesign arrayDesign) {
+        ArrayDesign loadedArrayDesign = getArrayDesign(arrayDesign.getId());
+        if (!loadedArrayDesign.getProvider().equals(arrayDesign.getProvider())
+                || !loadedArrayDesign.getAssayType().equals(arrayDesign.getAssayType())
+                || !loadedArrayDesign.getDesignFile().equals(arrayDesign.getDesignFile())) {
+            return false;
+        }
+        HibernateUtil.getCurrentSession().evict(loadedArrayDesign);
+        return true;
     }
 }

@@ -90,10 +90,7 @@ import gov.nih.nci.caarray.domain.search.SortCriterion;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.hibernate.Query;
 
@@ -103,31 +100,6 @@ import org.hibernate.Query;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class BrowseDaoImpl implements BrowseDao {
-    /**
-     * Entry in the count cache.
-     * @author Winston Cheng
-     */
-    private class CountEntry {
-        // expiration period of a count entry in milliseconds
-        private static final long EXP_PERIOD = 3600000;
-        private final Date lastUpdated;
-        private final int count;
-        public CountEntry(int count) {
-            this.count = count;
-            this.lastUpdated = new Date();
-        }
-        public boolean isExpired() {
-            Date now = new Date();
-            return lastUpdated.getTime() < now.getTime() - EXP_PERIOD;
-        }
-        public int getCount() {
-            return this.count;
-        }
-    }
-    private static final Map<String, CountEntry> COUNT_CACHE = new HashMap<String, CountEntry>();
-    private static final String USER = "User";
-    private static final String HYBRIDIZATION = "Hybridization";
-    private static final String INSTITUTION = "Institution";
 
     /**
      * {@inheritDoc}
@@ -152,44 +124,43 @@ public class BrowseDaoImpl implements BrowseDao {
      * {@inheritDoc}
      */
     public int countByBrowseCategory(BrowseCategory cat) {
-        CountEntry entry = COUNT_CACHE.get(cat.toString());
-        if (entry == null || entry.isExpired()) {
-            entry = updateCategoryCount(cat);
+        StringBuffer sb = new StringBuffer();
+        sb.append("SELECT COUNT(DISTINCT ")
+          .append(cat.getField())
+          .append(") FROM ")
+          .append(Project.class.getName())
+          .append(" p");
+        if (cat.getJoin() != null) {
+            sb.append(" JOIN ").append(cat.getJoin());
         }
-        return entry.getCount();
+        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        return ((Number) q.uniqueResult()).intValue();
     }
 
     /**
      * {@inheritDoc}
      */
     public int hybridizationCount() {
-        CountEntry entry = COUNT_CACHE.get(HYBRIDIZATION);
-        if (entry == null || entry.isExpired()) {
-            entry = updateHybridizationCount();
-        }
-        return entry.getCount();
+        String queryStr = "SELECT COUNT(DISTINCT h) FROM " + Hybridization.class.getName() + " h";
+        Query q = HibernateUtil.getCurrentSession().createQuery(queryStr);
+        return ((Number) q.uniqueResult()).intValue();
     }
 
     /**
      * {@inheritDoc}
      */
     public int institutionCount() {
-        CountEntry entry = COUNT_CACHE.get(INSTITUTION);
-        if (entry == null || entry.isExpired()) {
-            entry = updateInstitutionCount();
-        }
-        return entry.getCount();
+        // TODO fill in query when institutions are implemented
+        return 0;
     }
 
     /**
      * {@inheritDoc}
      */
     public int userCount() {
-        CountEntry entry = COUNT_CACHE.get(USER);
-        if (entry == null || entry.isExpired()) {
-            entry = updateUserCount();
-        }
-        return entry.getCount();
+        String queryStr = "SELECT COUNT(DISTINCT u) FROM " + User.class.getName() + " u";
+        Query q = HibernateUtil.getCurrentSession().createQuery(queryStr);
+        return ((Number) q.uniqueResult()).intValue();
     }
 
     /**
@@ -239,8 +210,8 @@ public class BrowseDaoImpl implements BrowseDao {
         }
         if (!count && sortCrit != null) {
             sb.append(" ORDER BY p.").append(sortCrit.getOrderField());
-            if (params.isDesc()) { 
-                sb.append(" desc"); 
+            if (params.isDesc()) {
+                sb.append(" desc");
             }
         }
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
@@ -248,58 +219,5 @@ public class BrowseDaoImpl implements BrowseDao {
             q.setParameter("id", fieldId);
         }
         return q;
-    }
-
-    private synchronized CountEntry updateCategoryCount(BrowseCategory cat) {
-        CountEntry entry = COUNT_CACHE.get(cat.toString());
-        if (entry == null || entry.isExpired()) {
-            // The query is built dynamically, but is not vulnerable to SQL injection
-            // because the fields are pulled from an enum.
-            StringBuffer sb = new StringBuffer();
-            sb.append("SELECT COUNT(DISTINCT ")
-              .append(cat.getField())
-              .append(") FROM ")
-              .append(Project.class.getName())
-              .append(" p");
-            if (cat.getJoin() != null) {
-                sb.append(" JOIN ").append(cat.getJoin());
-            }
-            Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
-            entry = new CountEntry(((Number) q.uniqueResult()).intValue());
-            COUNT_CACHE.put(cat.toString(), entry);
-        }
-        return entry;
-    }
-
-    private synchronized CountEntry updateUserCount() {
-        CountEntry entry = COUNT_CACHE.get(USER);
-        if (entry == null || entry.isExpired()) {
-            String queryStr = "SELECT COUNT(DISTINCT u) FROM " + User.class.getName() + " u";
-            Query q = HibernateUtil.getCurrentSession().createQuery(queryStr);
-            entry = new CountEntry(((Number) q.uniqueResult()).intValue());
-            COUNT_CACHE.put(USER, entry);
-        }
-        return entry;
-    }
-
-    private synchronized CountEntry updateHybridizationCount() {
-        CountEntry entry = COUNT_CACHE.get(HYBRIDIZATION);
-        if (entry == null || entry.isExpired()) {
-            String queryStr = "SELECT COUNT(DISTINCT h) FROM " + Hybridization.class.getName() + " h";
-            Query q = HibernateUtil.getCurrentSession().createQuery(queryStr);
-            entry = new CountEntry(((Number) q.uniqueResult()).intValue());
-            COUNT_CACHE.put(HYBRIDIZATION, entry);
-        }
-        return entry;
-    }
-
-    private synchronized CountEntry updateInstitutionCount() {
-        CountEntry entry = COUNT_CACHE.get(INSTITUTION);
-        if (entry == null || entry.isExpired()) {
-            // TODO fill in query when institutions are implemented
-            entry = new CountEntry(0);
-            COUNT_CACHE.put(INSTITUTION, entry);
-        }
-        return entry;
     }
 }

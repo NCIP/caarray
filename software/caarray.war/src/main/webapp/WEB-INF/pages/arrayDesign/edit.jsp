@@ -4,7 +4,9 @@
 </s:if>
 <s:if test="${locked}">
     <c:set var="lockedTheme" value="readonly"/>
-</s:if>
+</s:if><s:else>
+    <c:set var="lockedTheme" value="xhtml"/>
+</s:else>
 
 <html>
 <head>
@@ -46,7 +48,9 @@
                     <s:form action="/protected/arrayDesign/save.action" onsubmit="TabUtils.showSubmittingText(); return true;" cssClass="form" enctype="multipart/form-data" method="post" id="arrayDesignForm">
                         <tbody>
                             <tr><th colspan="2">Array Design Details</th></tr>
-                            <s:textfield theme="readonly" key="arrayDesign.name" size="50" tabindex="1"/>
+                            <s:if test="${!empty arrayDesign.id}">
+                                <s:textfield theme="readonly" key="arrayDesign.name" size="50" tabindex="1"/>
+                            </s:if>
                             <s:select theme="${lockedTheme}" required="true" key="arrayDesign.assayType" tabindex="2"
                                       list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
                                       headerKey="" headerValue="--Please select an Assay Type--"/>

@@ -98,9 +98,9 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.UnfilteredCallback;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -284,27 +284,23 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         return (ArrayDesign) q.uniqueResult();
     }
 
-    public boolean isArrayDesignLocked(Long id) {
-        BrowseCategory cat = BrowseCategory.ARRAY_DESIGNS;
-        StringBuffer sb = new StringBuffer();
-        sb.append("SELECT COUNT(DISTINCT p) FROM ")
-          .append(Project.class.getName()).append(" p JOIN ").append(cat.getJoin())
-          .append(" WHERE ").append(cat.getField()).append(".id = :id");
-        Query q = getUnfilteredSession().createQuery(sb.toString());
-        q.setParameter("id", id);
-        boolean locked = ((Number) q.uniqueResult()).intValue() > 0;
-        // restore filters
-        HibernateUtil.getCurrentSession();
-        return locked;
-    }
-
-    @SuppressWarnings("unchecked")
-    private Session getUnfilteredSession() {
-        Session session = HibernateUtil.getCurrentSession();
-        Set<String> filters = session.getSessionFactory().getDefinedFilterNames();
-        for (String filterName : filters) {
-            session.disableFilter(filterName);
-        }
-        return session;
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isArrayDesignLocked(final Long id) {
+        UnfilteredCallback u = new UnfilteredCallback() {
+            public Object doUnfiltered(Session s) {
+                BrowseCategory cat = BrowseCategory.ARRAY_DESIGNS;
+                StringBuffer sb = new StringBuffer();
+                sb.append("SELECT COUNT(DISTINCT p) FROM ")
+                  .append(Project.class.getName()).append(" p JOIN ").append(cat.getJoin())
+                  .append(" WHERE ").append(cat.getField()).append(".id = :id");
+                Query q = s.createQuery(sb.toString());
+                q.setParameter("id", id);
+                return q.uniqueResult();
+            }
+        };
+        Number count = (Number) HibernateUtil.doUnfiltered(u);
+        return count.intValue() > 0;
     }
 }

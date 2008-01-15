@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.util.List;
 
@@ -202,6 +203,7 @@ public interface ArrayDesignService {
      *
      * @param arrayDesign the array design to save
      * @throws IllegalAccessException if trying to modify locked fields on an array design
+     * @throws InvalidDataFileException if array is duplicate
      */
-    void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException;
+    void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException, InvalidDataFileException;
 }

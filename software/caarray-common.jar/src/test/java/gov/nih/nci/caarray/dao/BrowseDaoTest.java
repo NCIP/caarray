@@ -177,46 +177,30 @@ public class BrowseDaoTest extends AbstractDaoTest {
     @Test
     public void testCountByBrowseCategory() {
         saveProjects();
-        // cache miss
         Transaction tx = HibernateUtil.beginTransaction();
         assertEquals(2, DAO_OBJECT.countByBrowseCategory(BrowseCategory.ORGANISMS));
         tx.commit();
-
-        // cache hit
-        assertEquals(2, DAO_OBJECT.countByBrowseCategory(BrowseCategory.ORGANISMS));
     }
 
     @Test
     public void testHybridizationCount() {
-        // cache miss
         Transaction tx = HibernateUtil.beginTransaction();
         DAO_OBJECT.hybridizationCount();
         tx.commit();
-
-        // cache hit
-        DAO_OBJECT.hybridizationCount();
     }
 
     @Test
     public void testInstitutionCount() {
-        // cache miss
         Transaction tx = HibernateUtil.beginTransaction();
         DAO_OBJECT.institutionCount();
         tx.commit();
-
-        // cache hit
-        DAO_OBJECT.institutionCount();
     }
 
     @Test
     public void testUserCount() {
-        // cache miss
         Transaction tx = HibernateUtil.beginTransaction();
         DAO_OBJECT.userCount();
         tx.commit();
-
-        // cache hit
-        DAO_OBJECT.userCount();
     }
 
     @Test

@@ -88,6 +88,7 @@ import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHelper;
 
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.ConnectionReleaseMode;
@@ -253,5 +254,32 @@ public final class HibernateUtil {
      */
     public static SessionFactory getSessionFactory() {
         return SESSION_FACTORY;
+    }
+
+    /**
+     * Do something in an unfiltered session.
+     * @param uc callback class
+     * @return the result
+     */
+    public static Object doUnfiltered(UnfilteredCallback uc) {
+        Session session = SESSION_FACTORY.getCurrentSession();
+        disableFilters(session);
+        try {
+          return uc.doUnfiltered(session);
+        } finally {
+            enableFilters(session);
+        }
+    }
+    private static void disableFilters(Session session) {
+        Set<String> filters = session.getSessionFactory().getDefinedFilterNames();
+        for (String filterName : filters) {
+            session.disableFilter(filterName);
+        }
+    }
+    private static void enableFilters(Session session) {
+        if (filtersEnabled) {
+            InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), session, SecurityUtils
+                    .getAuthorizationManager());
+        }
     }
 }
