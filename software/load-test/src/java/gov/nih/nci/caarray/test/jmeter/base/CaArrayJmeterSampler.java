@@ -118,4 +118,12 @@ public class CaArrayJmeterSampler {
     protected static String getDefaultGridServicePort() {
         return DEFAULT_GRID_SERVICE_PORT;
     }
+
+    protected StringBuilder buildStackTrace(Throwable t) {
+        StringBuilder trace = new StringBuilder();
+        for (StackTraceElement ste : t.getStackTrace()) {
+            trace.append(ste + "\n");
+        }
+        return trace;
+    }
 }

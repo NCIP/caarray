@@ -154,11 +154,13 @@ public class CQLSearchHybridization extends CaArrayJmeterSampler implements Java
             results.setResponseMessage("Retrieved " + cqlResults.getObjectResult().length + " hybridizations of name " + hybridizationName + ".");
         } catch (RuntimeException e) {
             results.setSuccessful(false);
-            results.setResponseCode("Runtime exception: " + e);
+            StringBuilder trace = buildStackTrace(e);
+            results.setResponseCode("Runtime exception: " + e + "\nTrace: " + trace);
         } catch (Throwable t) {
             // Catches things like out-of-memory errors and logs them in the test output.
             results.setSuccessful(false);
-            results.setResponseCode("Throwable: " + t);
+            StringBuilder trace = buildStackTrace(t);
+            results.setResponseCode("Throwable: " + t + "\nTrace: " + trace);
         }
         return results;
     }

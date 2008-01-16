@@ -181,7 +181,7 @@ public class DataSetDownload extends CaArrayJmeterSampler implements JavaSampler
             lookupQuantitationTypes(searchService, request);
             CaArraySvcClient client = new CaArraySvcClient(System.getProperty(TEST_SERVICE_URL));
             results.sampleStart();
-            DataSet dataSet = client.getDataSetByDataRetrievalRequest(request);
+            DataSet dataSet = client.getDataSet(request);
             int numValuesRetrieved = 0;
 
             // Check if the retrieved number of hybridizations and quantitation types are as requested.
@@ -234,14 +234,17 @@ public class DataSetDownload extends CaArrayJmeterSampler implements JavaSampler
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
-            results.setResponseCode("Server connection exception: " + e);
+            StringBuilder trace = buildStackTrace(e);
+            results.setResponseCode("Server connection exception: " + e + "\nTrace: " + trace);
         } catch (RuntimeException e) {
             results.setSuccessful(false);
-            results.setResponseCode("Runtime exception: " + e);
+            StringBuilder trace = buildStackTrace(e);
+            results.setResponseCode("Runtime exception: " + e + "\nTrace: " + trace);
         } catch (Throwable t) {
             // Catches things like out-of-memory errors and logs them in the test output.
             results.setSuccessful(false);
-            results.setResponseCode("Throwable: " + t);
+            StringBuilder trace = buildStackTrace(t);
+            results.setResponseCode("Throwable: " + t + "\nTrace: " + trace);
         }
         return results;
     }

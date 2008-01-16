@@ -16,11 +16,13 @@
 	<classpathentry kind="lib" path="lib/cog-axis.jar"/>
 	<classpathentry kind="lib" path="lib/cog-jglobus.jar"/>
 	<classpathentry kind="lib" path="lib/javassist.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-1.2.13.jar"/>
 	<classpathentry kind="lib" path="lib/wsrf_core_stubs.jar"/>
 	<classpathentry kind="lib" path="lib/wsrf_core.jar"/>
 	<classpathentry kind="lib" path="C:/ncicb_svn/caarray2/software/CaArraySvc/build/lib/CaArraySvc-client.jar"/>
 	<classpathentry kind="lib" path="C:/ncicb_svn/caarray2/software/CaArraySvc/build/lib/CaArraySvc-stubs.jar"/>
 	<classpathentry kind="lib" path="C:/ncicb_svn/caarray2/software/CaArraySvc/build/lib/CaArraySvc-common.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/build/lib/caGrid-1.1-ServiceSecurityProvider-client.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/build/lib/caGrid-1.1-ServiceSecurityProvider-common.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/build/lib/caGrid-1.1-ServiceSecurityProvider-stubs.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

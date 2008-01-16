@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.test.jmeter.search;
 
-import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.services.CaArrayServer;
@@ -163,14 +162,17 @@ public class SearchTermByExample extends CaArrayJmeterSampler implements JavaSam
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
-            results.setResponseCode("Server connection exception: " + e);
+            StringBuilder trace = buildStackTrace(e);
+            results.setResponseCode("Server connection exception: " + e + "\nTrace: " + trace);
         } catch (RuntimeException e) {
             results.setSuccessful(false);
-            results.setResponseCode("Runtime exception: " + e);
+            StringBuilder trace = buildStackTrace(e);
+            results.setResponseCode("Runtime exception: " + e + "\nTrace: " + trace);
         } catch (Throwable t) {
             // Catches things like out-of-memory errors and logs them in the test output.
             results.setSuccessful(false);
-            results.setResponseCode("Throwable: " + t);
+            StringBuilder trace = buildStackTrace(t);
+            results.setResponseCode("Throwable: " + t + "\nTrace: " + trace);
         }
         return results;
     }

@@ -161,14 +161,17 @@ public class SearchPersonByExample extends CaArrayJmeterSampler implements JavaS
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
-            results.setResponseCode("Server connection exception: " + e);
+            StringBuilder trace = buildStackTrace(e);
+            results.setResponseCode("Server connection exception: " + e + "\nTrace: " + trace);
         } catch (RuntimeException e) {
             results.setSuccessful(false);
-            results.setResponseCode("Runtime exception: " + e);
+            StringBuilder trace = buildStackTrace(e);
+            results.setResponseCode("Runtime exception: " + e + "\nTrace: " + trace);
         } catch (Throwable t) {
             // Catches things like out-of-memory errors and logs them in the test output.
             results.setSuccessful(false);
-            results.setResponseCode("Throwable: " + t);
+            StringBuilder trace = buildStackTrace(t);
+            results.setResponseCode("Throwable: " + t + "\nTrace: " + trace);
         }
         return results;
     }
