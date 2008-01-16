@@ -128,7 +128,7 @@ class UnsupportedDataFormatHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         // no-op, data parsing not supported for the current type
     }
@@ -136,6 +136,11 @@ class UnsupportedDataFormatHandler extends AbstractDataFileHandler {
     @Override
     FileStatus getImportedStatus() {
         return FileStatus.IMPORTED_NOT_PARSED;
+    }
+
+    @Override
+    FileStatus getValidatedStatus() {
+        return FileStatus.VALIDATED_NOT_PARSED;
     }
 
 }

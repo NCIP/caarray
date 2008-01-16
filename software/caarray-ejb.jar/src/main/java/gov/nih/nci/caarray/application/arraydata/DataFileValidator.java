@@ -113,7 +113,7 @@ final class DataFileValidator {
         FileValidationResult result = handler.validate(arrayDataFile, file, arrayDesignService);
         getArrayDataFile().setValidationResult(result);
         if (result.isValid()) {
-            getArrayDataFile().setFileStatus(FileStatus.VALIDATED);
+            getArrayDataFile().setFileStatus(handler.getValidatedStatus());
         } else {
             getArrayDataFile().setFileStatus(FileStatus.VALIDATION_ERRORS);
         }

@@ -211,4 +211,8 @@ abstract class AbstractDataFileHandler {
         return FileStatus.IMPORTED;
     }
 
+    FileStatus getValidatedStatus() {
+        return FileStatus.VALIDATED;
+    }
+
 }

@@ -196,9 +196,14 @@ public class FileManagementServiceTest {
 
     private void addFiles(Project project, Set<CaArrayFile> files) {
         for (CaArrayFile file : files) {
-            project.getFiles().add(file);
-            file.setProject(project);
+            addFile(project, file);
         }
+    }
+
+    private void addFile(Project project, CaArrayFile file) {
+        project.getFiles().add(file);
+        file.setProject(project);
+        this.daoFactoryStub.searchDaoStub.save(file);
     }
 
     private void saveFiles(SortedSet<CaArrayFile> files) {
@@ -259,18 +264,57 @@ public class FileManagementServiceTest {
         this.fileManagementService.saveArrayDesign(design, caArrayFile);
     }
 
+    @Test
+    public void testValidateMageTabAndUnparsedDataFile() {
+        Project project = getTgaBroadTestProject();
+        CaArrayFile expFile = this.fileAccessServiceStub.add(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_EXP);
+        expFile.setFileType(FileType.AFFYMETRIX_EXP);
+        addFile(project, expFile);
+        this.fileManagementService.validateFiles(project, project.getFileSet());
+        for (CaArrayFile file : project.getFiles()) {
+            if (expFile.equals(file)) {
+                assertEquals(FileStatus.VALIDATED_NOT_PARSED, file.getFileStatus());
+            } else {
+                assertEquals(FileStatus.VALIDATED, file.getFileStatus());
+            }
+        }
+    }
+
+    @Test
+    public void testImportMageTabAndUnparsedDataFile() {
+        Project project = getTgaBroadTestProject();
+        CaArrayFile expFile = this.fileAccessServiceStub.add(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_EXP);
+        expFile.setFileType(FileType.AFFYMETRIX_EXP);
+        addFile(project, expFile);
+        this.fileManagementService.importFiles(project, project.getFileSet());
+        for (CaArrayFile file : project.getFiles()) {
+            if (expFile.equals(file)) {
+                assertEquals(FileStatus.IMPORTED_NOT_PARSED, file.getFileStatus());
+            } else {
+                assertEquals(FileStatus.IMPORTED, file.getFileStatus());
+            }
+        }
+    }
 
     private static class LocalArrayDataServiceStub extends ArrayDataServiceStub {
 
         @Override
         public FileValidationResult validate(CaArrayFile arrayDataFile) {
-            arrayDataFile.setFileStatus(FileStatus.VALIDATED);
+            if (arrayDataFile.getFileType().isParseableData()) {
+                arrayDataFile.setFileStatus(FileStatus.VALIDATED);
+            } else {
+                arrayDataFile.setFileStatus(FileStatus.VALIDATED_NOT_PARSED);
+            }
             return new FileValidationResult(new File(arrayDataFile.getName()));
         }
 
         @Override
         public void importData(CaArrayFile caArrayFile, boolean createAnnotation) throws InvalidDataFileException {
-            caArrayFile.setFileStatus(FileStatus.IMPORTED);
+            if (caArrayFile.getFileType().isParseableData()) {
+                caArrayFile.setFileStatus(FileStatus.IMPORTED);
+            } else {
+                caArrayFile.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
+            }
         }
     }
 
@@ -372,6 +416,8 @@ public class FileManagementServiceTest {
         public File getFile(CaArrayFile caArrayFile) {
             if (new File(MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY, caArrayFile.getName()).exists()) {
                 return new File(MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY, caArrayFile.getName());
+            } else if (new File(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_DIRECTORY, caArrayFile.getName()).exists()) {
+                return new File(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_DIRECTORY, caArrayFile.getName());
             } else if (new File(AffymetrixArrayDesignFiles.TEST3_CDF.getParentFile(), caArrayFile.getName()).exists()) {
                 return new File(AffymetrixArrayDesignFiles.TEST3_CDF.getParentFile(), caArrayFile.getName());
             } else {
