@@ -111,6 +111,11 @@ public final class TestMageTabSets {
     /**
      * Example set of documents included with MAGE-TAB specification.
      */
+    public static final MageTabInputFileSet MAGE_TAB_UNSUPPORTED_DATA_INPUT_SET = getUnsupportedDataInputSet();
+
+    /**
+     * Example set of documents included with MAGE-TAB specification.
+     */
     public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_INPUT_SET = getSpecificationInputSet();
 
     /**
@@ -211,6 +216,17 @@ public final class TestMageTabSets {
         fileSet.addAdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
         fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY);
+        return fileSet;
+    }
+
+    private static MageTabInputFileSet getUnsupportedDataInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_IDF);
+        fileSet.addSdrf(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_SDRF);
+        fileSet.addAdf(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_ADF);
+        fileSet.addDataMatrix(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_DATA_MATRIX);
+        addCelFiles(fileSet, MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_DIRECTORY);
+        fileSet.addNativeData(new File(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_DIRECTORY, "unsupported.mas5.exp"));
         return fileSet;
     }
 

@@ -128,6 +128,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private AbstractSampleDataRelationshipNode currentNode;
     private Unitable currentUnitable;
     private TermSourceable currentTermSourceable;
+    private AbstractBioMaterial currentBioMaterial;
     private final List<AbstractSampleDataRelationshipNode> leftmostNodes =
         new ArrayList<AbstractSampleDataRelationshipNode>();
     private ProtocolApplication currentProtocolApp;
@@ -277,6 +278,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         case SAMPLE_NAME:
         case EXTRACT_NAME:
         case LABELED_EXTRACT_NAME:
+            handleBioMaterial(column, value);
+            break;
         case SCAN_NAME:
         case NORMALIZATION_NAME:
             handleNode(column, value);
@@ -339,7 +342,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             // handleDate(value);
             break;
         case DESCRIPTION:
-            // handleDescription(value);
+            handleDescription(value);
             break;
         case COMMENT:
             // handleComment(column, value);
@@ -347,6 +350,20 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         default:
             break;
         }
+    }
+
+    private void handleDescription(String value) {
+        if (currentBioMaterial == null) {
+            addErrorMessage(currentLineNumber, currentColumnNumber,
+                    "Description must be preceded by a Source, Sample, Extract, or LabeledExtract");
+        } else {
+            currentBioMaterial.setDescription(value);
+        }
+    }
+
+    private void handleBioMaterial(SdrfColumn column, String value) {
+        handleNode(column, value);
+        currentBioMaterial = (AbstractBioMaterial) currentNode;
     }
 
     private boolean isBlank(String value) {

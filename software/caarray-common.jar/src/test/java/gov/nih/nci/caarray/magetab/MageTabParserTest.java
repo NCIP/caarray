@@ -82,9 +82,14 @@
  */
 package gov.nih.nci.caarray.magetab;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.idf.Investigation;
+import gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
 import gov.nih.nci.caarray.magetab.sdrf.Hybridization;
@@ -218,6 +223,23 @@ public class MageTabParserTest {
         ArrayDesign arrayDesign = sdrfDocument.getAllArrayDesigns().get(0);
         for (Hybridization hybridization : sdrfDocument.getAllHybridizations()) {
             assertEquals(arrayDesign, hybridization.getArrayDesign());
+        }
+    }
+
+    @Test
+    public void testSourceDescriptionTranslation() throws InvalidDataException, MageTabParsingException {
+        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_UNSUPPORTED_DATA_INPUT_SET;
+        MageTabDocumentSet documentSet = parser.parse(fileSet);
+        SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
+        checkBioMaterialDescriptions(sdrfDocument.getAllSources(), "Source description ");
+        checkBioMaterialDescriptions(sdrfDocument.getAllSamples(), "Sample description ");
+        checkBioMaterialDescriptions(sdrfDocument.getAllExtracts(), "Extract description ");
+        checkBioMaterialDescriptions(sdrfDocument.getAllLabeledExtracts(), "LabeledExtract description ");
+    }
+
+    private void checkBioMaterialDescriptions(List<? extends AbstractBioMaterial> materials, String description) {
+        for (int i = 0; i < materials.size(); i++) {
+            assertEquals(description + (i + 1), materials.get(i).getDescription());
         }
     }
 
