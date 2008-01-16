@@ -194,6 +194,7 @@ public enum FileType implements Comparable<FileType>  {
     private static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = new HashSet<FileType>();
     private static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
     private static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
+    private static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
 
 
     static {
@@ -211,6 +212,10 @@ public enum FileType implements Comparable<FileType>  {
         DERIVED_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(IMAGENE_TXT);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AGILENT_TXT);
+        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
+        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
+        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_CSV);
+        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
     }
 
     /**
@@ -218,6 +223,13 @@ public enum FileType implements Comparable<FileType>  {
      */
     public boolean isArrayDesign() {
         return ARRAY_DESIGN_FILE_TYPES.contains(this);
+    }
+
+    /**
+     * @return true if the system supports parsing this data format.
+     */
+    public boolean isParseableData() {
+        return PARSEABLE_ARRAY_DATA_FILE_TYPES.contains(this);
     }
 
     /**

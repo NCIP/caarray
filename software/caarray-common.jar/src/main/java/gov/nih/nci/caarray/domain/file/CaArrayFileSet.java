@@ -95,9 +95,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Provides functionality to handle multiple <code>CaArrayFiles</code> as a single set.
- *
- * TODO Unit tests
  */
+@SuppressWarnings("PMD.CyclomaticComplexity") // Complex rules for checking aggregate file status
 public final class CaArrayFileSet implements Serializable {
 
     private static final long serialVersionUID = -831461553674445009L;
@@ -151,6 +150,10 @@ public final class CaArrayFileSet implements Serializable {
     public FileStatus getStatus() {
         if (allStatusesEqual(FileStatus.IMPORTED)) {
             return FileStatus.IMPORTED;
+        } else if (allStatusesEqual(FileStatus.IMPORTED_NOT_PARSED)) {
+            return FileStatus.IMPORTED_NOT_PARSED;
+        } else if (allStatusesEqual(FileStatus.IMPORTED, FileStatus.IMPORTED_NOT_PARSED)) {
+            return FileStatus.IMPORTED;
         } else if (statusesContains(FileStatus.IMPORTING)) {
             return FileStatus.IMPORTING;
         } else if (statusesContains(FileStatus.VALIDATING)) {
@@ -159,18 +162,24 @@ public final class CaArrayFileSet implements Serializable {
             return FileStatus.VALIDATION_ERRORS;
         } else if (allStatusesEqual(FileStatus.VALIDATED)) {
             return FileStatus.VALIDATED;
+        } else if (allStatusesEqual(FileStatus.VALIDATED_NOT_PARSED)) {
+            return FileStatus.VALIDATED_NOT_PARSED;
+        } else if (allStatusesEqual(FileStatus.VALIDATED, FileStatus.VALIDATED_NOT_PARSED)) {
+            return FileStatus.VALIDATED;
         } else {
             return FileStatus.UPLOADED;
         }
     }
 
-    private boolean allStatusesEqual(FileStatus status) {
+    private boolean allStatusesEqual(FileStatus... statuses) {
+        Set<FileStatus> fileSetStatuses = new HashSet<FileStatus>();
         for (CaArrayFile file : files) {
-            if (!status.equals(file.getFileStatus())) {
-                return false;
-            }
+            fileSetStatuses.add(file.getFileStatus());
         }
-        return true;
+        for (FileStatus status : statuses) {
+            fileSetStatuses.remove(status);
+        }
+        return fileSetStatuses.isEmpty();
     }
 
     /**

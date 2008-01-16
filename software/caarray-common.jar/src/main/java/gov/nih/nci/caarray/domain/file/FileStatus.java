@@ -103,6 +103,11 @@ public enum FileStatus {
     VALIDATING(false, false, false),
 
     /**
+     * Included non-parsed data format in validation.
+     */
+    VALIDATED_NOT_PARSED(true, true, true),
+
+    /**
      * Successfully validated.
      */
     VALIDATED(true, true, true),
