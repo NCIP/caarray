@@ -100,14 +100,25 @@ public enum AssayType implements ResourceBasedEnum {
      */
     SNP("assayType.snp"),
     /**
-     * Array design used to interrogate aCGH.
-     */
-    ACGH("assayType.acgh"),
-    /**
      * Array design used to interrogate exons; the sequences of a gene that are present in the final, mature, spliced
      * messenger RNA molecule from that gene.
      */
-    EXON("assayType.exon");
+    EXON("assayType.exon"),
+    /**
+     * Array design used to interrogate aCGH.
+     */
+    ACGH("assayType.acgh"),
+
+    /**
+     * Assay type used to interrogate miRNA.
+     */
+    MICRORNA("assayType.microRna"),
+
+    /**
+     * Assay type used to interrogate methylation.
+     */
+    METHYLATION("assayType.methylation");
+
 
     private final String resourceKey;
 
