@@ -1,5 +1,10 @@
 package gov.nih.nci.cagrid.caarray.client;
 
+import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.cagrid.caarray.common.CaArraySvcI;
 import gov.nih.nci.cagrid.caarray.stubs.CaArraySvcPortType;
@@ -99,19 +104,6 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
 		if(!(args.length < 2)){
 			if(args[0].equals("-url")){
 			  CaArraySvcClient client = new CaArraySvcClient(args[1]);
-/*
-			  try {
-			      System.out.println("TCPTCP: " + client.getDataSet(null));
-			  } catch (Exception e) {
-			      e.printStackTrace();
-			  }
-
-			  Thread.sleep(1000);
-
-			  System.out.println("\n\n TCPTCPTCPTCPTCP \n\n");
-
-			  client.getDesignDetails(null);
-*/
 
               CQLQuery cqlQuery = new CQLQuery();
 
@@ -146,7 +138,22 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
                   }
               }
 
-			  // place client calls here if you want to use this main as a
+              DataRetrievalRequest drr = new DataRetrievalRequest();
+              Hybridization hyb = new Hybridization();
+              hyb.setId(2L);
+              drr.getHybridizations().add(hyb);
+              QuantitationType qt = new QuantitationType();
+              qt.setId(18L);
+              drr.addQuantitationType(qt);
+              DataSet dataSet = client.getDataSet(drr);
+              System.out.println(dataSet);
+
+              CaArrayFile file = new CaArrayFile();
+              file.setId(2L);
+              byte[] bytes = client.readFile(file);
+              System.out.println("Bytes: " + bytes);
+
+              // place client calls here if you want to use this main as a
 			  // test....
 			} else {
 				usage();
@@ -162,14 +169,14 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
 		}
 	}
 
-  public gov.nih.nci.caarray.domain.data.DataSet getDataSetByDataRetrievalRequest(gov.nih.nci.caarray.domain.data.DataRetrievalRequest dataRetrievalRequest) throws RemoteException {
+  public gov.nih.nci.caarray.domain.data.DataSet getDataSet(gov.nih.nci.caarray.domain.data.DataRetrievalRequest dataRetrievalRequest) throws RemoteException {
     synchronized(portTypeMutex){
-      configureStubSecurity((Stub)portType,"getDataSetByDataRetrievalRequest");
-    gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestRequest params = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestRequest();
-    gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestRequestDataRetrievalRequest dataRetrievalRequestContainer = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestRequestDataRetrievalRequest();
+      configureStubSecurity((Stub)portType,"getDataSet");
+    gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequest params = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequest();
+    gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequestDataRetrievalRequest dataRetrievalRequestContainer = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequestDataRetrievalRequest();
     dataRetrievalRequestContainer.setDataRetrievalRequest(dataRetrievalRequest);
     params.setDataRetrievalRequest(dataRetrievalRequestContainer);
-    gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestResponse boxedResult = portType.getDataSetByDataRetrievalRequest(params);
+    gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse boxedResult = portType.getDataSet(params);
     return boxedResult.getDataSet();
     }
   }
@@ -195,18 +202,6 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
     params.setArrayDesign(arrayDesignContainer);
     gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsResponse boxedResult = portType.getDesignDetails(params);
     return boxedResult.getArrayDesignDetails();
-    }
-  }
-
-  public gov.nih.nci.caarray.domain.data.DataSet getDataSet(gov.nih.nci.caarray.domain.data.AbstractArrayData abstractArrayData) throws RemoteException {
-    synchronized(portTypeMutex){
-      configureStubSecurity((Stub)portType,"getDataSet");
-    gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequest params = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequest();
-    gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequestAbstractArrayData abstractArrayDataContainer = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequestAbstractArrayData();
-    abstractArrayDataContainer.setAbstractArrayData(abstractArrayData);
-    params.setAbstractArrayData(abstractArrayDataContainer);
-    gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse boxedResult = portType.getDataSet(params);
-    return boxedResult.getDataSet();
     }
   }
 

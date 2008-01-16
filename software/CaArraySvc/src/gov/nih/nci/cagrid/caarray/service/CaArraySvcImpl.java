@@ -2,7 +2,6 @@ package gov.nih.nci.cagrid.caarray.service;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.services.arraydesign.ArrayDesignDetailsService;
@@ -89,20 +88,13 @@ public class CaArraySvcImpl extends CaArraySvcImplBase {
         return fileRetrievalService.readFile(caArrayFile);
     }
 
-    public DataSet getDataSet(AbstractArrayData abstractArrayData) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getDataSet(" + abstractArrayData + ")");
-        }
-
-        return dataRetrievalService.getDataSet(abstractArrayData);
-    }
-
-    public DataSet getDataSetByDataRetrievalRequest(DataRetrievalRequest dataRetrievalRequest) throws RemoteException {
+    public DataSet getDataSet(DataRetrievalRequest dataRetrievalRequest) throws RemoteException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getDataSetByDataRetrievalRequest(" + dataRetrievalRequest + ")");
         }
 
         return dataRetrievalService.getDataSet(dataRetrievalRequest);
     }
+
 }
 

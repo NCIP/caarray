@@ -63,17 +63,12 @@ public class CaArraySvcAuthorization implements PDP {
 		
 	}
 					
-	public static void authorizeGetDataSet() throws RemoteException {
-		
-		
-	}
-					
 	public static void authorizeReadFile() throws RemoteException {
 		
 		
 	}
 					
-	public static void authorizeGetDataSetByDataRetrievalRequest() throws RemoteException {
+	public static void authorizeGetDataSet() throws RemoteException {
 		
 		
 	}
@@ -109,14 +104,6 @@ public class CaArraySvcAuthorization implements PDP {
 				e.printStackTrace();
 				return false;
 			}
-		} else if(operation.getLocalPart().equals("getDataSet")){
-			try{
-				authorizeGetDataSet();
-				return true;
-			} catch (Exception e){
-				e.printStackTrace();
-				return false;
-			}
 		} else if(operation.getLocalPart().equals("readFile")){
 			try{
 				authorizeReadFile();
@@ -125,9 +112,9 @@ public class CaArraySvcAuthorization implements PDP {
 				e.printStackTrace();
 				return false;
 			}
-		} else if(operation.getLocalPart().equals("getDataSetByDataRetrievalRequest")){
+		} else if(operation.getLocalPart().equals("getDataSet")){
 			try{
-				authorizeGetDataSetByDataRetrievalRequest();
+				authorizeGetDataSet();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();

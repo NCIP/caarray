@@ -12,7 +12,7 @@ import java.rmi.RemoteException;
  */
 public interface CaArraySvcI {
 
-  public gov.nih.nci.caarray.domain.data.DataSet getDataSetByDataRetrievalRequest(gov.nih.nci.caarray.domain.data.DataRetrievalRequest dataRetrievalRequest) throws RemoteException ;
+  public gov.nih.nci.caarray.domain.data.DataSet getDataSet(gov.nih.nci.caarray.domain.data.DataRetrievalRequest dataRetrievalRequest) throws RemoteException ;
 
   /**
    * The standard caGrid Data Service query method.
@@ -28,8 +28,6 @@ public interface CaArraySvcI {
   public gov.nih.nci.cagrid.cqlresultset.CQLQueryResults query(gov.nih.nci.cagrid.cqlquery.CQLQuery cqlQuery) throws RemoteException, gov.nih.nci.cagrid.data.faults.QueryProcessingExceptionType, gov.nih.nci.cagrid.data.faults.MalformedQueryExceptionType ;
 
   public gov.nih.nci.caarray.domain.array.ArrayDesignDetails getDesignDetails(gov.nih.nci.caarray.domain.array.ArrayDesign arrayDesign) throws RemoteException ;
-
-  public gov.nih.nci.caarray.domain.data.DataSet getDataSet(gov.nih.nci.caarray.domain.data.AbstractArrayData abstractArrayData) throws RemoteException ;
 
   public byte[] readFile(gov.nih.nci.caarray.domain.file.CaArrayFile caArrayFile) throws RemoteException ;
 

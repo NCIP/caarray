@@ -54,26 +54,6 @@
           </sequence>
         </complexType>
       </element>
-      <element name="GetDataSetRequest">
-        <complexType>
-          <sequence>
-            <element name="abstractArrayData">
-              <complexType>
-                <sequence>
-                  <element ref="ns3:AbstractArrayData" minOccurs="1" maxOccurs="1" />
-                </sequence>
-              </complexType>
-            </element>
-          </sequence>
-        </complexType>
-      </element>
-      <element name="GetDataSetResponse">
-        <complexType>
-          <sequence>
-            <element ref="ns3:DataSet" minOccurs="1" maxOccurs="1" />
-          </sequence>
-        </complexType>
-      </element>
       <element name="ReadFileRequest">
         <complexType>
           <sequence>
@@ -94,7 +74,7 @@
           </sequence>
         </complexType>
       </element>
-      <element name="GetDataSetByDataRetrievalRequestRequest">
+      <element name="GetDataSetRequest">
         <complexType>
           <sequence>
             <element name="dataRetrievalRequest">
@@ -107,7 +87,7 @@
           </sequence>
         </complexType>
       </element>
-      <element name="GetDataSetByDataRetrievalRequestResponse">
+      <element name="GetDataSetResponse">
         <complexType>
           <sequence>
             <element ref="ns3:DataSet" minOccurs="1" maxOccurs="1" />
@@ -131,23 +111,17 @@
   <message name="GetDesignDetailsResponse">
     <part name="parameters" element="tns:GetDesignDetailsResponse" />
   </message>
-  <message name="GetDataSetRequest">
-    <part name="parameters" element="tns:GetDataSetRequest" />
-  </message>
-  <message name="GetDataSetResponse">
-    <part name="parameters" element="tns:GetDataSetResponse" />
-  </message>
   <message name="ReadFileRequest">
     <part name="parameters" element="tns:ReadFileRequest" />
   </message>
   <message name="ReadFileResponse">
     <part name="parameters" element="tns:ReadFileResponse" />
   </message>
-  <message name="GetDataSetByDataRetrievalRequestRequest">
-    <part name="parameters" element="tns:GetDataSetByDataRetrievalRequestRequest" />
+  <message name="GetDataSetRequest">
+    <part name="parameters" element="tns:GetDataSetRequest" />
   </message>
-  <message name="GetDataSetByDataRetrievalRequestResponse">
-    <part name="parameters" element="tns:GetDataSetByDataRetrievalRequestResponse" />
+  <message name="GetDataSetResponse">
+    <part name="parameters" element="tns:GetDataSetResponse" />
   </message>
   <!--============================================================
 
@@ -159,17 +133,13 @@
       <input message="tns:GetDesignDetailsRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDesignDetailsRequest" />
       <output message="tns:GetDesignDetailsResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDesignDetailsResponse" />
     </operation>
-    <operation name="getDataSet">
-      <input message="tns:GetDataSetRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetRequest" />
-      <output message="tns:GetDataSetResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetResponse" />
-    </operation>
     <operation name="readFile">
       <input message="tns:ReadFileRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/ReadFileRequest" />
       <output message="tns:ReadFileResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/ReadFileResponse" />
     </operation>
-    <operation name="getDataSetByDataRetrievalRequest">
-      <input message="tns:GetDataSetByDataRetrievalRequestRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetByDataRetrievalRequestRequest" />
-      <output message="tns:GetDataSetByDataRetrievalRequestResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetByDataRetrievalRequestResponse" />
+    <operation name="getDataSet">
+      <input message="tns:GetDataSetRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetRequest" />
+      <output message="tns:GetDataSetResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetResponse" />
     </operation>
     <operation name="GetResourceProperty">
       <input name="GetResourcePropertyRequest" message="wsrpw:GetResourcePropertyRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetResourceProperty" />

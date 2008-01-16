@@ -55,6 +55,8 @@ public class ServiceConfiguration {
 	
 	private String dataService_classMappingsFilename;
 	
+	private String dataService_auditorsConfigFile;
+	
 
 	
 	public String getQueryProcessorClass() {
@@ -124,6 +126,16 @@ public class ServiceConfiguration {
 	
 	public void setDataService_classMappingsFilename(String dataService_classMappingsFilename) {
 		this.dataService_classMappingsFilename = dataService_classMappingsFilename;
+	}
+
+	
+	public String getDataService_auditorsConfigFile() {
+		return ContainerConfig.getBaseDirectory() + File.separator + dataService_auditorsConfigFile;
+	}
+	
+	
+	public void setDataService_auditorsConfigFile(String dataService_auditorsConfigFile) {
+		this.dataService_auditorsConfigFile = dataService_auditorsConfigFile;
 	}
 
 	

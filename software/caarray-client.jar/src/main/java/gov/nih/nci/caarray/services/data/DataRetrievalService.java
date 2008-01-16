@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.services.data;
 
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.domain.data.DataSet;
 
@@ -90,27 +89,15 @@ import gov.nih.nci.caarray.domain.data.DataSet;
  * Returns requested array data from caArray.
  */
 public interface DataRetrievalService {
-    
+
     /**
      * The JNDI name to look up the remote <code>ArrayDesignDetailsService</code> service.
      */
     String JNDI_NAME = "caarray/DataRetrievalServiceBean/remote";
 
     /**
-     * Returns the data associated with the given <code>AbstractArrayData</code> object.
-     * 
-     * The returned <code>DataSet</code> and the associated object graph will be fully populated
-     * up to any associated <code>Hybridizations</code> which will have their attributes populated but
-     * their associations trimmed (i.e. all <code>Hybridizations</code> will be leaf nodes.
-     *
-     * @param arrayData retrieve data contents for this set of data.
-     * @return the corresponding data values.
-     */
-    DataSet getDataSet(AbstractArrayData arrayData);
-
-    /**
      * Returns the requested data as configured within the request object.
-     * 
+     *
      * The returned <code>DataSet</code> and the associated object graph will be fully populated
      * up to any associated <code>Hybridizations</code> which will have their attributes populated but
      * their associations trimmed (i.e. all <code>Hybridizations</code> will be leaf nodes.

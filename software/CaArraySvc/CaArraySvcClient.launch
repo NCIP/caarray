@@ -14,4 +14,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="gov.nih.nci.cagrid.caarray.client.CaArraySvcClient"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-url ${string_prompt:the service url}"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="CaArraySvc"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx512M"/>
 </launchConfiguration>

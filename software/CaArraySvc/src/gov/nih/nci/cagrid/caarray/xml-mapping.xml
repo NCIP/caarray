@@ -968,7 +968,7 @@
       <bind-xml name="ncbiTaxonomyId" node="attribute" />
     </field>
     <field name="additionalOrganismNameCollection" type="edu.georgetown.pir.AdditionalOrganismName" collection="collection">
-      <bind-xml name="AdditionalOrganismNameCollection" type="edu.georgetown.pir.AdditionalOrganismName" location="additionalOrganismNameCollection" node="element" />
+      <bind-xml name="AdditionalOrganismName" type="edu.georgetown.pir.AdditionalOrganismName" location="additionalOrganismNameCollection" node="element" />
     </field>
   </class>
   <class name="edu.georgetown.pir.AdditionalOrganismName" identity="id">
@@ -986,19 +986,19 @@
       <bind-xml name="id" node="attribute" />
     </field>
     <field name="organismCollection" type="edu.georgetown.pir.Organism" collection="collection">
-      <bind-xml name="OrganismCollection" type="edu.georgetown.pir.Organism" location="organismCollection" node="element" />
+      <bind-xml name="Organism" type="edu.georgetown.pir.Organism" location="organismCollection" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.DataRetrievalRequest">
     <map-to xml="DataRetrievalRequest" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data" />
     <field name="designElements" type="gov.nih.nci.caarray.domain.array.AbstractDesignElement" collection="collection">
-      <bind-xml name="designElements" type="gov.nih.nci.caarray.domain.array.AbstractDesignElement" location="designElements" node="element" />
+      <bind-xml name="AbstractDesignElement" type="gov.nih.nci.caarray.domain.array.AbstractDesignElement" location="designElements" node="element" />
     </field>
     <field name="hybridizations" type="gov.nih.nci.caarray.domain.hybridization.Hybridization" collection="collection">
-      <bind-xml name="hybridizations" type="gov.nih.nci.caarray.domain.hybridization.Hybridization" location="hybridizations" node="element" />
+      <bind-xml name="Hybridization" type="gov.nih.nci.caarray.domain.hybridization.Hybridization" location="hybridizations" node="element" />
     </field>
     <field name="quantitationTypes" type="gov.nih.nci.caarray.domain.data.QuantitationType" collection="collection">
-      <bind-xml name="quantitationTypes" type="gov.nih.nci.caarray.domain.data.QuantitationType" location="quantitationTypes" node="element" />
+      <bind-xml name="QuantitationType" type="gov.nih.nci.caarray.domain.data.QuantitationType" location="quantitationTypes" node="element" />
     </field>
   </class>
 </mapping>

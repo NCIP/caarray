@@ -115,19 +115,11 @@ import org.jboss.annotation.ejb.TransactionTimeout;
  */
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 @TransactionTimeout(DataRetrievalServiceBean.TIMEOUT_SECONDS)
-@Interceptors({ DataSetConfiguringInterceptor.class, HibernateSessionInterceptor.class })
+@Interceptors({ HibernateSessionInterceptor.class, DataSetConfiguringInterceptor.class })
 public class DataRetrievalServiceBean implements DataRetrievalService {
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     static final int TIMEOUT_SECONDS = 1800;
-
-    /**
-     * {@inheritDoc}
-     */
-    public DataSet getDataSet(AbstractArrayData arrayData) {
-        AbstractArrayData retrievedArrayData = getDaoFactory().getArrayDao().getArrayData(arrayData.getId());
-        return getArrayDataService().getData(retrievedArrayData);
-    }
 
     /**
      * {@inheritDoc}

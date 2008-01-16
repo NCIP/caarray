@@ -97,9 +97,9 @@ public class DataRetrievalRequest implements Serializable {
 
     private static final long serialVersionUID = 408918013610243473L;
 
-    private final List<AbstractDesignElement> designElements = new ArrayList<AbstractDesignElement>();
-    private final List<Hybridization> hybridizations = new ArrayList<Hybridization>();
-    private final List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
+    private List<AbstractDesignElement> designElements = new ArrayList<AbstractDesignElement>();
+    private List<Hybridization> hybridizations = new ArrayList<Hybridization>();
+    private List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
 
     /**
      * Creates a new, empty request instance.
@@ -155,6 +155,22 @@ public class DataRetrievalRequest implements Serializable {
      */
     public List<QuantitationType> getQuantitationTypes() {
         return quantitationTypes;
+    }
+
+    // Setters are required for castor
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
+    private void setQuantitationTypes(List<QuantitationType> elements) {
+        this.quantitationTypes = elements;
+    }
+
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
+    private void setDesignElements(List<AbstractDesignElement> elements) {
+        this.designElements = elements;
+    }
+
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
+    private void setHybridizations(List<Hybridization> elements) {
+        this.hybridizations = elements;
     }
 
 }

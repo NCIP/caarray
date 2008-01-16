@@ -82,15 +82,20 @@
  */
 package gov.nih.nci.caarray.services.data;
 
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.util.CaArrayUtils;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
+import org.hibernate.Hibernate;
+
 /**
- * Ensures that the <code>Hybridizations</code> within a <code>DataSet</code> are made leaves, 
+ * Ensures that the <code>Hybridizations</code> within a <code>DataSet</code> are made leaves,
  * preventing lazy initialization errors.
  */
 public class DataSetConfiguringInterceptor {
@@ -109,13 +114,29 @@ public class DataSetConfiguringInterceptor {
         if (returnValue instanceof DataSet) {
             prepareDataSet((DataSet) returnValue);
         }
+
+        // TODO see EntityConfiguringInterceptor for discussion of hibernate flush/clear issue
+
+        // keep hibernate from performing write behind of all the cutting we just did
+        HibernateUtil.getCurrentSession().clear();
+
         return returnValue;
     }
 
     private void prepareDataSet(DataSet dataSet) {
+        // Need to perform our own cutting here - the default isn't what users will expect.
         for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
             CaArrayUtils.makeLeaf(hybridizationData.getHybridization());
+            hybridizationData.setDataSet(null);
+            for (AbstractDataColumn adc : hybridizationData.getColumns()) {
+                adc.setHybridizationData(null);
+                Hibernate.initialize(adc.getQuantitationType());
+            }
         }
+        for (AbstractDesignElement ade : dataSet.getDesignElements()) {
+            CaArrayUtils.makeLeaf(ade);
+        }
+        Hibernate.initialize(dataSet.getQuantitationTypes());
     }
 
 }

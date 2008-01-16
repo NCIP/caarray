@@ -26,21 +26,15 @@ public class CaArraySvcProviderImpl{
 	}
 	
 
-    public gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestResponse getDataSetByDataRetrievalRequest(gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestRequest params) throws RemoteException {
-    gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestResponse();
-    boxedResult.setDataSet(impl.getDataSetByDataRetrievalRequest(params.getDataRetrievalRequest().getDataRetrievalRequest()));
+    public gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse getDataSet(gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequest params) throws RemoteException {
+    gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse();
+    boxedResult.setDataSet(impl.getDataSet(params.getDataRetrievalRequest().getDataRetrievalRequest()));
     return boxedResult;
   }
 
     public gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsResponse getDesignDetails(gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsRequest params) throws RemoteException {
     gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsResponse();
     boxedResult.setArrayDesignDetails(impl.getDesignDetails(params.getArrayDesign().getArrayDesign()));
-    return boxedResult;
-  }
-
-    public gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse getDataSet(gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequest params) throws RemoteException {
-    gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse();
-    boxedResult.setDataSet(impl.getDataSet(params.getAbstractArrayData().getAbstractArrayData()));
     return boxedResult;
   }
 

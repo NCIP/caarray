@@ -58,6 +58,10 @@
           <name>dataService_classMappingsFilename</name>
           <value>ETC-PATH/@dataService_classMappingsFilename@</value>
         </parameter>
+        <parameter>
+          <name>dataService_auditorsConfigFile</name>
+          <value>ETC-PATH/@dataService_auditorsConfigFile@</value>
+        </parameter>
       </resourceParams>
     </resource>
     <resource name="home" type="gov.nih.nci.cagrid.caarray.service.globus.resource.BaseResourceHome">
