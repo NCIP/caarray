@@ -12,7 +12,7 @@
     }
 </script>
 
-<c:url value="/ajax/project/files/listUnimported.action" var="unimportedDataUrl">
+<c:url value="/protected/ajax/project/files/listUnimported.action" var="unimportedDataUrl">
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
 </c:url>
@@ -34,16 +34,16 @@
 
 <ajax:tabPanel panelStyleId="tablevel2" panelStyleClass="tablevel2" currentStyleClass="selected" contentStyleId="tabboxlevel2wrapper" contentStyleClass="tabboxlevel2wrapper"
         postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.showTabLoadingText">
-	<c:if test="${pageContext.request.remoteUser != null}">        
-    <caarray:tab caption="${unimportedDataTitle}" baseUrl="${unimportedDataUrl}" defaultTab="${param.initialTab2 == null || param.initialTab2 == 'unimportedData'}" />
+    <c:if test="${pageContext.request.remoteUser != null}">
+        <caarray:tab caption="${unimportedDataTitle}" baseUrl="${unimportedDataUrl}" defaultTab="${param.initialTab2 == null || param.initialTab2 == 'unimportedData'}" />
     </c:if>
     <caarray:tab caption="${importedDataTitle}" baseUrl="${importedDataUrl}" defaultTab="${param.initialTab2 == 'importedData'}" />
     <caarray:tab caption="${supplementalDataTitle}" baseUrl="${supplementalFilesUrl}" defaultTab="${param.initialTab2 == 'supplementalFiles'}" />
-	<c:if test="${pageContext.request.remoteUser != null}">        
-	    <caarray:tab caption="${downloadDataTitle}" baseUrl="${downloadDataUrl}" defaultTab="${param.initialTab2 == 'downloadData'}" />
+    <c:if test="${pageContext.request.remoteUser != null}">
+        <caarray:tab caption="${downloadDataTitle}" baseUrl="${downloadDataUrl}" defaultTab="${param.initialTab2 == 'downloadData'}" />
     </c:if>
-	<c:if test="${pageContext.request.remoteUser == null}">        
-    	<caarray:tab caption="${downloadDataTitle}" baseUrl="${downloadDataUrl}" defaultTab="${param.initialTab2 == null || param.initialTab2 == 'downloadData'}" />
+    <c:if test="${pageContext.request.remoteUser == null}">
+        <caarray:tab caption="${downloadDataTitle}" baseUrl="${downloadDataUrl}" defaultTab="${param.initialTab2 == null || param.initialTab2 == 'downloadData'}" />
     </c:if>
 </ajax:tabPanel>
 
