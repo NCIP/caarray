@@ -220,10 +220,19 @@ public class CollaboratorsAction extends ActionSupport {
      * Removes the seleted users from the current collaborator group.
      * @return success
      * @throws CSTransactionException on CSM error
+     * @throws CSObjectNotFoundException on CSM error
      */
     @SkipValidation
-    public String removeUsers() throws CSTransactionException {
-        getPermissionsManagementService().removeUsers(getTargetGroup(), getUsers());
+    public String removeUsers() throws CSTransactionException, CSObjectNotFoundException {
+        if (CollectionUtils.isNotEmpty(getUsers())) {
+            getPermissionsManagementService().removeUsers(getTargetGroup(), getUsers());
+            String s = "Users";
+            if (getUsers().size() == 1) {
+                User u = SecurityUtils.getAuthorizationManager().getUserById(getUsers().get(0));
+                s = u.getFirstName() + " " + u.getLastName() + " (" + u.getLoginName() + ")";
+            }
+            ActionHelper.saveMessage(getText("collaboration.group.removed", new String[] {s}));
+        }
         return Action.INPUT;
     }
 

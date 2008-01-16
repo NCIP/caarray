@@ -24,6 +24,7 @@
         </h3>
       </div>
       <div class="boxpad" style="padding-bottom: 10px;">
+        <caarray:successMessages />
         <c:if test="${empty targetGroup}">
           <p class="instructions" style="margin-bottom: 10px;">Choose a name for the group.</p>
         </c:if>
