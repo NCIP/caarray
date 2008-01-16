@@ -190,10 +190,11 @@
 	  expected="true"
 	  actual="${database.port.running}"
 	  casesensitive="true"/>
+  	<!--
 	<au:assertEquals message="Unable to reach ${globoss.server.hostname}:${globoss.server.http.port}" 
 	  expected="true"
 	  actual="${globoss.server.http.port.running}"
-	  casesensitive="true"/>
+	  casesensitive="true"/> -->
 	<au:assertEquals message="Unable to reach ${globoss.server.hostname}:${globoss.server.jndi.port}" 
 	  expected="true"
 	  actual="${globoss.server.jndi.port.running}"
