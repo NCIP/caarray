@@ -184,7 +184,7 @@ public class CollaboratorsActionTest {
     }
 
     @Test
-    public void testRemoveUsers() throws CSTransactionException {
+    public void testRemoveUsers() throws CSTransactionException, CSObjectNotFoundException {
         User owner = new User();
         Group group = new Group();
         CollaboratorGroup cg = new CollaboratorGroup(group, owner);
