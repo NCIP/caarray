@@ -1,5 +1,7 @@
 package gov.nih.nci.cagrid.caarray.client;
 
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -136,6 +138,15 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
                   } catch (Exception e) {
                       e.printStackTrace();
                   }
+              }
+
+              ArrayDesign arrayDesign = new ArrayDesign();
+              arrayDesign.setId(1L);
+              ArrayDesignDetails designDetails = client.getDesignDetails(arrayDesign );
+              System.out.println("DesignDetails: " + designDetails);
+
+              if (1 == 1) {
+                  System.exit(1);
               }
 
               DataRetrievalRequest drr = new DataRetrievalRequest();
