@@ -97,6 +97,7 @@ enum FileExtension {
     CSV(FileType.ILLUMINA_DESIGN_CSV),
     DAT(FileType.AFFYMETRIX_DAT),
     EXP(FileType.AFFYMETRIX_EXP),
+    RPT(FileType.AFFYMETRIX_RPT),
     GAL(FileType.GENEPIX_GAL),
     GPR(FileType.GENEPIX_GPR),
     ADF(FileType.MAGE_TAB_ADF),
