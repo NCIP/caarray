@@ -379,18 +379,23 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * Method to validate the files.
      * @return the string matching the result to follow
      */
-    @SuppressWarnings("PMD.ExcessiveMethodLength")  // validation checks can't be easily refactored to smaller methods.
+    @SuppressWarnings({ "PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
+    // validation checks can't be easily refactored to smaller methods.
     public String validateFiles() {
         int validatedFiles = 0;
         int skippedFiles = 0;
         int arrayDesignFiles = 0;
         int unknownFiles = 0;
+        int unparseableFiles = 0;
+        boolean includesSdrf = includesType(getSelectedFiles(), FileType.MAGE_TAB_SDRF);
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         for (CaArrayFile file : getSelectedFiles()) {
             if (file.getFileType() == null) {
                 unknownFiles++;
             } else if (file.getFileType().isArrayDesign()) {
                 arrayDesignFiles++;
+            } else if (!includesSdrf && !file.getFileType().isParseableData()) {
+                unparseableFiles++;
             } else if (file.getFileStatus().isValidatable()) {
                 fileSet.add(file);
                 validatedFiles++;
@@ -411,11 +416,24 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             ActionHelper.saveMessage(getText("project.fileValidate.error.invalidStatus",
                     new String[] {String.valueOf(skippedFiles)}));
         }
+        if (unparseableFiles > 0) {
+            ActionHelper.saveMessage(getText("project.fileValidate.error.unparseableFiles",
+                    new String[] {String.valueOf(unparseableFiles)}));
+        }
         if (unknownFiles > 0) {
             ActionHelper.saveMessage(getText("project.fileValidate.error.unknownType",
                     new String[] {String.valueOf(unknownFiles)}));
         }
         return prepListUnimportedPage();
+    }
+
+    private boolean includesType(List<CaArrayFile> fileList, FileType type) {
+        for (CaArrayFile file : fileList) {
+            if (type.equals(file.getFileType())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -757,7 +775,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             if (actionName.contains("Supplemental")) {
                 prepListSupplementalPage();
             } else {
-                prepListUnimportedPage();                
+                prepListUnimportedPage();
             }
         }
     }

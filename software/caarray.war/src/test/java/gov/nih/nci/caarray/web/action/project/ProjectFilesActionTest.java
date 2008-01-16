@@ -277,6 +277,30 @@ public class ProjectFilesActionTest {
     }
 
     @Test
+    public void testValidateUnparsedDataFiles() throws Exception {
+        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        this.action.setSelectedFiles(selectedFiles);
+
+        CaArrayFile file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADED);
+        file.setFileType(FileType.AFFYMETRIX_RPT);
+        selectedFiles.add(file);
+
+        assertEquals(LIST_UNIMPORTED, this.action.validateFiles());
+        assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
+
+        file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADED);
+        file.setFileType(FileType.MAGE_TAB_SDRF);
+        selectedFiles.add(file);
+
+        assertEquals(LIST_UNIMPORTED, this.action.validateFiles());
+        assertEquals(2, fileManagementServiceStub.getValidatedFileCount());
+    }
+
+    @Test
     public void testImport() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
