@@ -83,17 +83,17 @@
 
 package gov.nih.nci.caarray.domain.publication;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.validator.Length;
-import org.hibernate.validator.NotNull;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 /**
  *
@@ -225,7 +225,6 @@ public class Publication extends AbstractCaArrayEntity {
      *
      * @return the title
      */
-    @NotNull
     @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getTitle() {
         return title;

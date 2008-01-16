@@ -101,6 +101,7 @@ import java.util.Set;
 import org.apache.commons.lang.NotImplementedException;
 
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.UrlValidator;
 
 /**
@@ -151,6 +152,8 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
      */
     @Override
     @UrlValidator(message = "", fieldName = "currentPublication.uri", key = "struts.validator.url")
+    @RequiredFieldValidator(message = "", fieldName = "currentPublication.title", 
+            key = "struts.validator.requiredString")    
     public String save() { //NOPMD
         return super.save();
     }
