@@ -104,6 +104,8 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
+import gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.util.ArrayList;
@@ -226,7 +228,40 @@ public class MageTabTranslatorTest {
             }
         }
     }
-    
+
+    @Test
+    public void testTranslateBioMaterialSourceDescriptions() {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
+        MageTabDocumentSet documentSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_SET;
+        SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
+        addDescriptionToBioMaterials(sdrfDocument);
+        CaArrayTranslationResult result = this.translator.translate(documentSet, fileSet);
+        Experiment experiment = result.getInvestigations().iterator().next();
+        checkDescription(experiment.getSources(), "Source description");
+        checkDescription(experiment.getSamples(), "Sample description");
+        checkDescription(experiment.getExtracts(), "Extract description");
+        checkDescription(experiment.getLabeledExtracts(), "LabeledExtract description");
+    }
+
+    private void checkDescription(Set<? extends gov.nih.nci.caarray.domain.sample.AbstractBioMaterial> materials, String description) {
+        for (gov.nih.nci.caarray.domain.sample.AbstractBioMaterial material : materials) {
+            assertEquals(description, material.getDescription());
+        }
+    }
+
+    private void addDescriptionToBioMaterials(SdrfDocument sdrfDocument) {
+        addDescriptionToBioMaterials(sdrfDocument.getAllSources(), "Source description");
+        addDescriptionToBioMaterials(sdrfDocument.getAllSamples(), "Sample description");
+        addDescriptionToBioMaterials(sdrfDocument.getAllExtracts(), "Extract description");
+        addDescriptionToBioMaterials(sdrfDocument.getAllLabeledExtracts(), "LabeledExtract description");
+    }
+
+    private void addDescriptionToBioMaterials(List<? extends AbstractBioMaterial> materials, String description) {
+        for (AbstractBioMaterial material : materials) {
+            material.setDescription(description);
+        }
+    }
+
     private void checkHybridizationsHaveRawDataAndFiles(Set<Hybridization> hybridizations) {
         for (Hybridization hybridization : hybridizations) {
             assertNotNull(hybridization.getArrayData());
