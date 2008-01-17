@@ -172,6 +172,21 @@ public enum FileType implements Comparable<FileType>  {
     IMAGENE_TXT,
 
     /**
+     * Imagene TIF format.
+     */
+    IMAGENE_TIF,
+
+    /**
+     * Nimblegen TXT format.
+     */
+    NIMBLEGEN_TXT,
+
+    /**
+     * Nimblegen GFF format.
+     */
+    NIMBLEGEN_GFF,
+
+    /**
      * The MAGE_TAB Array Design Format file type.
      */
     MAGE_TAB_ADF,
@@ -212,6 +227,8 @@ public enum FileType implements Comparable<FileType>  {
         DERIVED_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(IMAGENE_TXT);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AGILENT_TXT);
+        DERIVED_ARRAY_DATA_FILE_TYPES.add(NIMBLEGEN_GFF);
+        DERIVED_ARRAY_DATA_FILE_TYPES.add(NIMBLEGEN_TXT);
         PARSEABLE_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
         PARSEABLE_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
         PARSEABLE_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_CSV);
