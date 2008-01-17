@@ -5,5 +5,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar"/>
 	<classpathentry kind="lib" path="/lib/caGrid-1.1-data-stubs.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/caarray-ejb-jar"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>
