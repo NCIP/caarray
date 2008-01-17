@@ -1130,7 +1130,7 @@
     <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/${config.sql.file}" />
   </target>
 
-
+<!--
   <target name="database:reinitialize" unless="nodbintegration"
       description="Completely reset caarraydb by dropping database, recreating, and creating schema, and pouplating with initial data">
     <antcall target="database:recreate-database" />
@@ -1138,9 +1138,10 @@
     <antcall target="database:populate" />
     <antcall target="database:env-specific-sql" />
   </target>
-<!--
+-->
   <target name="database:reinitialize" depends="database:init-sql" unless="nodbintegration"
-      description="Completely reset caarraydb by dropping database, recreating, and creating schema, and pouplating with initial data">
+      description="Completely reset caarraydb by dropping database, recreating, and creating schema, and populating with initial data">
+    <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/assign-permissions.sql" />
     <run-sql-script sql.file="${caarraydb.sql.dir}/premigrate.sql" />
     <antcall target="database:drop-schema"/>
     <antcall target="database:create-schema" />
@@ -1148,7 +1149,7 @@
     <antcall target="database:env-specific-sql" />
     <run-sql-script sql.file="${caarraydb.sql.dir}/postmigrate.sql" />
   </target>
--->
+
   <target name="database:recreate-database" depends="database:init-sql" description="Drops and recreates caarraydb database">
     <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
   </target>
