@@ -161,10 +161,12 @@ public class SearchExperimentByExample extends CaArrayJmeterSampler implements J
             if (isResultOkay(experimentList)) {
                 results.setSuccessful(true);
                 results.setResponseCodeOK();
-                results.setResponseMessage("Retrieved " + experimentList.size() + " experiments.");
+                results.setResponseMessage("Retrieved " + experimentList.size() + " experiments with array provider = "
+                        + manufacturer + " and organism = " + organism + ".");
             } else {
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request. Retrieved " + experimentList.size() + " experiments.");
+                results.setResponseCode("Error: Response did not match request. Retrieved " + experimentList.size()
+                        + " experiments with array provider = " + manufacturer + " and organism = " + organism + ".");
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
