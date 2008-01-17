@@ -124,5 +124,37 @@
 
     </project>
 
+    <project name="caarray2-remote-build" buildafterfailed="false">
+
+	        <modificationset quietperiod="0">
+	            <svn localworkingcopy="projects/caarray2/software/build" />
+	        </modificationset>
+
+	        <schedule interval="60">
+				<ant anthome="C:\dev\tools\apache-ant-1.7.0"
+					buildfile="remote-build.xml" target="all" uselogger="true"
+					usedebug="false">
+				  <property name="notest" value="true"/>
+				  <property name="build.tag_built" value="trunk-remoteDeployfromCC"/>
+				  <property name="envpropertyfile" value="C:/dev/scm-private/trunk/caarray2/properties/DEV.properties"/>
+				</ant>
+	        </schedule>
+
+	        <log dir="logs\${project.name}">
+	            <gzip every="1" unit="WEEK"/>
+	            <delete every="2" unit="WEEK" ignoreSuffix="true"/>
+	        </log>
+
+	        <publishers>
+	            <currentbuildstatuspublisher file="logs/${project.name}/buildstatus.txt" />
+	            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}">
+	                <always address="duvallp@mail.nih.gov" />
+	                <always address="gursesl@mail.nih.gov" />
+					<always address="masonwi@mail.nih.gov" />
+	            </htmlemail>
+	        </publishers>
+
+    </project>
+
 
 </cruisecontrol>
