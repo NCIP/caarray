@@ -182,6 +182,7 @@ public class SearchArrayDesignByExample extends CaArrayJmeterSampler implements 
 
         Organization organization = new Organization();
         organization.setName(provider);
+        organization.setProvider(true);
         exampleArrayDesign.setProvider(organization);
 
         return exampleArrayDesign;

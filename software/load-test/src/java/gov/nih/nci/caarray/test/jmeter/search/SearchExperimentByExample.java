@@ -190,6 +190,7 @@ public class SearchExperimentByExample extends CaArrayJmeterSampler implements J
 
         Organization organization = new Organization();
         organization.setName(manufacturer);
+        organization.setProvider(true);
         exampleExperiment.setManufacturer(organization);
 
         Organism organismCriterion = new Organism();
