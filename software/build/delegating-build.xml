@@ -40,6 +40,18 @@
         </svn>
     </target>
 
+    <target name="remote" description="Invoke the nightly build target">
+        <svn username="${svn.username}" password="${svn.password}">
+            <update dir="${basedir}" />
+        </svn>
+        <ant antfile="build/remote-build.xml" dir="software" target="all">
+	      <property name="notest" value="true"/>
+		  <property name="nocheck" value="true"/>
+		  <property name="buildNumber" value="CRUISE"/>
+		  <property name="build.tag_built" value="trunk-remoteDeployfromCC"/>
+		  <property name="envpropertyfile" value="C:/dev/scm-private/trunk/caarray2/properties/DEV.properties"/>
+		</ant>
+    </target>
 
     <target name="remove-old-artifacts-publisher-antpublisher" if="cclastgoodbuildtimestamp" description="Experimental (TODO): Use to remove CC build artifacts older than the last successful build">
     	<!--  CC will pass the following needed property:
