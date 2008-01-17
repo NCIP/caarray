@@ -152,17 +152,6 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-    <!--
-        <xs:element name="CharacterColumn" type="CharacterColumn" />
-        <xs:complexType name="CharacterColumn">
-        <xs:complexContent>
-        <xs:extension base="AbstractDataColumn">
-        <xs:sequence />
-        <xs:attribute name="values" type="xs:char" />
-        </xs:extension>
-        </xs:complexContent>
-        </xs:complexType>
-    -->
     <xs:element name="FloatColumn" type="FloatColumn" />
     <xs:complexType name="FloatColumn">
         <xs:complexContent>
@@ -286,6 +275,7 @@
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
+        <xs:attribute name="id" type="xs:long" />
     </xs:complexType>
 </xs:schema>
 

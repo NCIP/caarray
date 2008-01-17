@@ -17,7 +17,7 @@
       <bind-xml name="id" node="attribute" />
     </field>
   </class>
-  <class name="gov.nih.nci.caarray.domain.array.ArrayGroup" identity="id">
+  <class name="gov.nih.nci.caarray.domain.array.ArrayGroup" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
     <map-to xml="ArrayGroup" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
@@ -991,6 +991,9 @@
   </class>
   <class name="gov.nih.nci.caarray.domain.data.DataRetrievalRequest">
     <map-to xml="DataRetrievalRequest" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
     <field name="designElements" type="gov.nih.nci.caarray.domain.array.AbstractDesignElement" collection="collection">
       <bind-xml name="AbstractDesignElement" type="gov.nih.nci.caarray.domain.array.AbstractDesignElement" location="designElements" node="element" />
     </field>
