@@ -211,7 +211,7 @@
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.name">arrayDesign.provider</stringProp>
-                  <stringProp name="Argument.value">2</stringProp>
+                  <stringProp name="Argument.value">4</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 </elementProp>
