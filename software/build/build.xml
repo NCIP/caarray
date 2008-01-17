@@ -366,11 +366,12 @@
         compile:caarray.war,
         compile:caarray-svc"/>
 
-  <target name="compile:caarray-client.jar" depends="compile:caarray-common.jar">
+  <target name="compile:caarray-client.jar" depends="compile:caarray-common.jar,compile:caarray-ejb.jar">
     <mkdir dir="${caarray-client.classes.dir}" />
     <javac srcdir="${caarray-client.src.dir}" destdir="${caarray-client.classes.dir}" debug="true">
       <classpath>
         <pathelement location="${caarray-common.classes.dir}" />
+        <pathelement location="${caarray-ejb.classes.dir}" />
         <pathelement location="${javaee.jar}" />
         <pathelement location="${commons-collections.jar}" />
         <pathelement location="${commons-io.jar}" />
@@ -431,11 +432,10 @@
     </instrument>
   </target>
 
-  <target name="compile:caarray-ejb.jar" depends="compile:caarray-common.jar,compile:caarray-client.jar">
+  <target name="compile:caarray-ejb.jar" depends="compile:caarray-common.jar">
     <mkdir dir="${caarray-ejb.classes.dir}" />
     <javac srcdir="${caarray-ejb.src.dir}" destdir="${caarray-ejb.classes.dir}" debug="true">
       <classpath>
-        <pathelement location="${caarray-client.classes.dir}" />
         <pathelement location="${caarray-common.classes.dir}" />
         <pathelement location="${commons-beanutils.jar}" />
         <pathelement location="${commons-collections.jar}" />
@@ -506,7 +506,7 @@
         build:caarray.ear,
         build:caarray-svc" description="Builds the application without deploying." />
 
-    <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar">
+    <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar">
         <mkdir dir="${caarray-client.target.dir}" />
         <jar destfile="${caarray-client.jar}">
             <zipfileset src="${hibernate.jar}" />
@@ -524,8 +524,11 @@
               <include name="**/validation/**" />
               <include name="**/georgetown/**"/>
               <include name="**/Protectable*"/>
-                <include name="**/security/PermissionDeniedException*"/>
-                <include name="**/security/Attribute*"/>
+              <include name="**/security/PermissionDeniedException*"/>
+              <include name="**/security/Attribute*"/>
+            </fileset>
+            <fileset dir="${caarray-ejb.classes.dir}">
+              <include name="**/services/**/*Service.class" />
             </fileset>
         </jar>
     </target>
@@ -618,7 +621,7 @@
     </war>
   </target>
 
-  <target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar,build:caarray-client.jar">
+  <target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar">
     <mkdir dir="${caarray-ear.target.dir}" />
     <mkdir dir="${caarray-ear.target.dir}/xml" />
     <copy todir="${caarray-ear.target.dir}/xml">
@@ -638,9 +641,6 @@
       </fileset>
       <fileset dir="${caarray-ejb.target.dir}">
         <include name="caarray-ejb.jar" />
-      </fileset>
-      <fileset dir="${caarray-client.target.dir}">
-        <include name="caarray-client.jar" />
       </fileset>
       <fileset dir="${caarray-common.target.dir}">
         <include name="caarray-common.jar" />
@@ -932,12 +932,13 @@
     <echo taskname="selenium-shutdown" message="DGF Errors during shutdown are expected" />
   </target>
 
-  <target name="test:functional:compile-tests" depends="compile:caarray-common.jar,compile:caarray-client.jar">
+  <target name="test:functional:compile-tests" depends="compile:caarray-common.jar,compile:caarray-client.jar,compile:caarray-ejb.jar">
     <mkdir dir="${test.classes.dir}" />
     <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true">
       <classpath>
         <pathelement location="${caarray-client.classes.dir}" />
         <pathelement location="${caarray-common.classes.dir}" />
+        <pathelement location="${caarray-ejb.classes.dir}" />
         <pathelement location="${test.data.classes.dir}" />
         <pathelement location="${selenium-java-client-driver.jar}" />
         <pathelement location="${selenium-java-client-driver-tests.jar}" />
@@ -1101,7 +1102,7 @@
           <include name="**/*.jar"/>
           <exclude name="checkstyle*.jar"/>
         </fileset>
-      </classpath>      
+      </classpath>
     </java>
   </target>
 
@@ -1138,7 +1139,7 @@
     <antcall target="database:populate" />
     <antcall target="database:env-specific-sql" />
   </target>
-<!--  
+<!--
   <target name="database:reinitialize" depends="database:init-sql" unless="nodbintegration"
       description="Completely reset caarraydb by dropping database, recreating, and creating schema, and pouplating with initial data">
     <run-sql-script sql.file="${caarraydb.sql.dir}/premigrate.sql" />
