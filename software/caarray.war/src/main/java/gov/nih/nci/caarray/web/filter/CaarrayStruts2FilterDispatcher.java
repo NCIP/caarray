@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common-jar Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,61 +80,46 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain;
+package gov.nih.nci.caarray.web.filter;
+
+import gov.nih.nci.caarray.domain.ConfigParamEnum;
+import gov.nih.nci.caarray.web.helper.ConfigurationHelper;
+
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.FilterConfig;
+
+import org.apache.commons.configuration.DataConfiguration;
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.StrutsConstants;
+import org.apache.struts2.dispatcher.Dispatcher;
+import org.apache.struts2.dispatcher.FilterDispatcher;
 
 /**
- * Various configuration parameters.
+ * filter to initialize struts 2 fof caarray 2.
+ * @author Scott Miller
  */
-public enum ConfigParamEnum {
-    /**
-     * The email address to send email from.
-     */
-    EMAIL_FROM,
-    /**
-     * Boolean property on whether to send an confirmation email to the end user
-     * after registering.
-     */
-    SEND_CONFIRM_EMAIL,
-    /**
-     * Subject line of the confirmation email.
-     */
-    CONFIRM_EMAIL_SUBJECT,
-    /**
-     * Content of the confirmation email.
-     */
-    CONFIRM_EMAIL_CONTENT,
-    /**
-     * Boolean property on whether to send an email to the administrator
-     * after registering.
-     */
-    SEND_ADMIN_EMAIL,
-    /**
-     * What email address to send registration information to (ie, the helpdesk email address).
-     */
-    REG_EMAIL_TO,
-    /**
-     * Subject line of the registration email.
-     */
-    REG_EMAIL_SUBJECT,
-    /**
-     * The thankyou for registering text that should appear after a user submits their registration.
-     */
-    THANKS_MESSAGE,
-    /**
-     * the subject for the submit experiment email.
-     */
-    SUBMIT_EXPERIMENT_EMAIL_SUBJECT,
-    /**
-     * the html content for the submit experiment email.
-     */
-    SUBMIT_EXPERIMENT_EMAIL_HTML_CONTENT,
-    /**
-     * the plain-text content for the submit experiment email.
-     */
-    SUBMIT_EXPERIMENT_EMAIL_PLAIN_CONTENT,
+public class CaarrayStruts2FilterDispatcher extends FilterDispatcher {
 
     /**
-     * the location to save uploaded files too.
+     * {@inheritDoc}
      */
-    STRUTS_MULTIPART_SAVEDIR;
+    @Override
+    protected Dispatcher createDispatcher(FilterConfig filterConfig) {
+        Map<String, String> params = new HashMap<String, String>();
+        for (Enumeration e = filterConfig.getInitParameterNames(); e.hasMoreElements();) {
+            String name = (String) e.nextElement();
+            String value = filterConfig.getInitParameter(name);
+            params.put(name, value);
+        }
+
+        DataConfiguration config = ConfigurationHelper.getConfiguration();
+        String multiPartSaveDir = config.getString(ConfigParamEnum.STRUTS_MULTIPART_SAVEDIR.name());
+        if (StringUtils.isNotBlank(multiPartSaveDir)) {
+            params.put(StrutsConstants.STRUTS_MULTIPART_SAVEDIR, multiPartSaveDir);
+        }
+        return new Dispatcher(filterConfig.getServletContext(), params);
+    }
 }

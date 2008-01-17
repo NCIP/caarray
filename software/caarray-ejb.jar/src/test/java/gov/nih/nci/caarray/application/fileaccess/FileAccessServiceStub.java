@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -182,5 +183,15 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
      */
     public void closeFiles() {
         // nothing to do
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public CaArrayFile add(InputStream stream, String filename) {
+        CaArrayFile caArrayFile = new CaArrayFile();
+        caArrayFile.setName(filename);
+        this.nameToFile.put(caArrayFile.getName(), new File(filename));
+        return caArrayFile;
     }
 }

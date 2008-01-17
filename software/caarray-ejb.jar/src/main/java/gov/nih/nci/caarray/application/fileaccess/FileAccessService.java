@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.fileaccess;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -113,6 +114,15 @@ public interface FileAccessService {
      * @return the caArray file object.
      */
     CaArrayFile add(File file, String filename);
+
+    /**
+     * Adds a new file to caArray file storage.
+     *
+     * @param stream the file to store
+     * @param filename the filename for the new CaArrayFile -- may be different from file.getName()
+     * @return the caArray file object.
+     */
+    CaArrayFile add(InputStream stream, String filename);
 
     /**
      * Removes a file from caArray file storage.

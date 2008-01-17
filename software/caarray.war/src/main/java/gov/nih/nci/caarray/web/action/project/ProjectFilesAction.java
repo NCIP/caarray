@@ -95,24 +95,17 @@ import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.set.TransformedSet;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -519,94 +512,26 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * @throws IOException on io error
      */
     @SkipValidation
-    @SuppressWarnings("PMD.ExcessiveMethodLength")
     public String upload() throws IOException {
-        unzipFiles();
-
-        Set<String> existingFileNameSet = new HashSet<String>();
-        for (CaArrayFile file : getProject().getFiles()) {
-            existingFileNameSet.add(file.getName());
+        List<String> conflictingFiles = new ArrayList<String>();
+        int count = 0;
+        try {
+            count = getProjectManagementService().uploadFiles(getProject(), getUpload(), getUploadFileName(),
+                    conflictingFiles);
+        } catch (Exception e) {
+            String msg = "Unable to upload file: " + e.getMessage();
+            LOG.error(msg, e);
+            addActionError(getText("errorUploading"));
+            return INPUT;
         }
 
-        int index = 0;
-        int fileCount = 0;
-        for (File uploadedFile : getUpload()) {
-            try {
-                String fileName = getUploadFileName().get(index);
-                if (StringUtils.isNotBlank(fileName)) {
-                    if (existingFileNameSet.contains(fileName)) {
-                        ActionHelper.saveMessage(getText("experiment.files.upload.filename.exists",
-                                                 new String[] {fileName }));
-                    } else {
-                        getProjectManagementService().addFile(getProject(), uploadedFile, fileName);
-                        existingFileNameSet.add(fileName);
-                        fileCount++;
-                    }
-                }
-            } catch (Exception e) {
-                String msg = "Unable to upload file: " + e.getMessage();
-                LOG.error(msg, e);
-                addActionError(getText("errorUploading"));
-                return INPUT;
-            }
-            index++;
-        } // end for
+        for (String conflict : conflictingFiles) {
+            ActionHelper.saveMessage(getText("experiment.files.upload.filename.exists",
+                    new String[] {conflict }));
+        }
 
-        ActionHelper.saveMessage(fileCount + " files uploaded.");
+        ActionHelper.saveMessage(count + " files uploaded.");
         return "upload";
-    }
-
-    /**
-     * unzips a .zip file, removes it from uploads and adds files present in zip to uploads.
-     *
-     * @throws IOException
-     */
-    private void unzipFiles() throws IOException {
-        Pattern p = Pattern.compile(".zip$");
-        int index = 0;
-        while (index < getUploadFileName().size()) {
-            Matcher m = p.matcher(getUploadFileName().get(index).toLowerCase());
-            if (m.find()) {
-                File uploadedFile = getUpload().get(index);
-                String uploadedFileName = uploadedFile.getAbsolutePath();
-                String directoryPath = uploadedFile.getParent();
-                ZipFile zipFile = new ZipFile(uploadedFileName);
-
-                Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                while (entries.hasMoreElements()) {
-                    handleEntry(directoryPath, zipFile, entries.nextElement());
-                }
-                zipFile.close();
-                this.uploads.remove(index);
-                this.uploadFileNames.remove(index);
-            } else {
-                index++;
-            }
-        }
-    }
-
-    private void handleEntry(String directoryPath, ZipFile zipFile, ZipEntry entry)
-            throws IOException {
-        String name = entry.getName();
-        if (name.charAt(0) == '/') {
-            name = name.substring(1);
-        }
-        if (name.endsWith("/")) {
-            // ignore directory entries
-            return;
-        }
-        int idx = name.lastIndexOf('/');
-        if (idx != -1) {
-            String dir = name.substring(0, idx);
-            File dirFile = new File(directoryPath + "/" + dir);
-            dirFile.mkdirs();
-        }
-        File entryFile = new File(directoryPath + "/" + name);
-        FileOutputStream fos = new FileOutputStream(entryFile);
-        IOUtils.copy(zipFile.getInputStream(entry), fos);
-        IOUtils.closeQuietly(fos);
-        this.uploads.add(entryFile);
-        this.uploadFileNames.add(entry.getName());
     }
 
     /**

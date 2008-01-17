@@ -80,61 +80,46 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain;
+package gov.nih.nci.caarray.dao;
+
+import static org.junit.Assert.assertEquals;
+import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.util.HibernateUtil;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.junit.Test;
 
 /**
- * Various configuration parameters.
+ * @author Scott Miller
+ *
  */
-public enum ConfigParamEnum {
-    /**
-     * The email address to send email from.
-     */
-    EMAIL_FROM,
-    /**
-     * Boolean property on whether to send an confirmation email to the end user
-     * after registering.
-     */
-    SEND_CONFIRM_EMAIL,
-    /**
-     * Subject line of the confirmation email.
-     */
-    CONFIRM_EMAIL_SUBJECT,
-    /**
-     * Content of the confirmation email.
-     */
-    CONFIRM_EMAIL_CONTENT,
-    /**
-     * Boolean property on whether to send an email to the administrator
-     * after registering.
-     */
-    SEND_ADMIN_EMAIL,
-    /**
-     * What email address to send registration information to (ie, the helpdesk email address).
-     */
-    REG_EMAIL_TO,
-    /**
-     * Subject line of the registration email.
-     */
-    REG_EMAIL_SUBJECT,
-    /**
-     * The thankyou for registering text that should appear after a user submits their registration.
-     */
-    THANKS_MESSAGE,
-    /**
-     * the subject for the submit experiment email.
-     */
-    SUBMIT_EXPERIMENT_EMAIL_SUBJECT,
-    /**
-     * the html content for the submit experiment email.
-     */
-    SUBMIT_EXPERIMENT_EMAIL_HTML_CONTENT,
-    /**
-     * the plain-text content for the submit experiment email.
-     */
-    SUBMIT_EXPERIMENT_EMAIL_PLAIN_CONTENT,
+public class OrganismDaoTest extends AbstractDaoTest {
 
-    /**
-     * the location to save uploaded files too.
-     */
-    STRUTS_MULTIPART_SAVEDIR;
+    private static final OrganismDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getOrganismDao();
+
+    @Test
+    public void testGetAll() {
+        Transaction tx = HibernateUtil.beginTransaction();
+        assertEquals(0, DAO_OBJECT.getAllOrganisms().size());
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        Session s = HibernateUtil.getCurrentSession();
+        Organism o = new Organism();
+        o.setScientificName("testscientificname");
+        TermSource t = new TermSource();
+        t.setName("testtermsource");
+        o.setTermSource(t);
+        s.save(o);
+        tx.commit();
+
+
+        tx = HibernateUtil.beginTransaction();
+        s = HibernateUtil.getCurrentSession();
+        assertEquals(1, DAO_OBJECT.getAllOrganisms().size());
+        assertEquals("testscientificname", DAO_OBJECT.getOrganism(o.getId()).getScientificName());
+        tx.commit();
+    }
 }

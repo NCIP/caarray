@@ -199,19 +199,62 @@ public class ProjectManagementServiceTest {
             assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName(), file.getName());
             assertEquals(1, project.getFiles().size());
             assertNotNull(project.getFiles().iterator().next().getProject());
-            assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+            assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
         } catch (ProposalWorkflowException e) {
             fail("Should not have gotten a workflow exception adding files");
         }
     }
 
-    private void assertContains(Set<CaArrayFile> caArrayFiles, File file) {
+    @Test
+    public void testUploadFiles() throws Exception {
+        Project project = this.projectManagementService.getProject(123L);
+        try {
+            List<String> conflicts = new ArrayList<String>();
+            List<String> fileNames = new ArrayList<String>();
+            List<File> files = new ArrayList<File>();
+            files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP);
+            fileNames.add("specification.zip");
+
+            files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+            fileNames.add("  ");
+
+            files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE);
+            fileNames.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
+
+            files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+            fileNames.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
+            int count = this.projectManagementService.uploadFiles(project, files, fileNames, conflicts);
+            assertEquals(13, count);
+            assertEquals(13, project.getFiles().size());
+            assertNotNull(project.getFiles().iterator().next().getProject());
+            assertContains(project.getFiles(), "Test1.zip");
+            assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
+            assertContains(project.getFiles(), "folder1/Test1.txt");
+            assertEquals(1, conflicts.size());
+            assertTrue(conflicts.contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
+
+            conflicts = new ArrayList<String>();
+            count = this.projectManagementService.uploadFiles(project, files, fileNames, conflicts);
+            assertEquals(0, count);
+            assertEquals(13, project.getFiles().size());
+            assertNotNull(project.getFiles().iterator().next().getProject());
+            assertContains(project.getFiles(), "Test1.zip");
+            assertContains(project.getFiles(), "folder1/Test1.txt");
+            assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
+            assertEquals(14, conflicts.size());
+            assertTrue(conflicts.contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
+        } catch (ProposalWorkflowException e) {
+            fail("Should not have gotten a workflow exception adding files");
+        }
+    }
+
+    private void assertContains(Set<CaArrayFile> caArrayFiles, String file) {
         for (CaArrayFile caArrayFile : caArrayFiles) {
-            if (file.getName().equals(caArrayFile.getName())) {
+            if (file.equals(caArrayFile.getName())) {
                 return;
             }
         }
-        fail("CaArrayFileSet did not contain " + file.getAbsolutePath());
+        fail("CaArrayFileSet did not contain " + file);
     }
 
     /**

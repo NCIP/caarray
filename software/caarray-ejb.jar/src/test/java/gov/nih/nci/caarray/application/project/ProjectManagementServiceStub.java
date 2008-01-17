@@ -321,4 +321,13 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         terms.add(t1);
         return terms;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> conflictingFiles)
+            throws ProposalWorkflowException, IOException {
+        this.filesAddedCount += files.size();
+        return files.size();
+    }
 }

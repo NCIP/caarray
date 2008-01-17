@@ -139,6 +139,20 @@ public class FileAccessServiceBean implements FileAccessService {
         return caArrayFile;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public CaArrayFile add(InputStream stream, String filename) {
+        CaArrayFile caArrayFile = createCaArrayFile(filename);
+        try {
+            caArrayFile.writeContents(stream);
+        } catch (IOException e) {
+            throw new FileAccessException("Stream " + filename + " couldn't be written", e);
+        }
+        return caArrayFile;
+    }
+
+
     private CaArrayFile doAddFile(File file, String filename) {
         CaArrayFile caArrayFile = createCaArrayFile(filename);
         try {

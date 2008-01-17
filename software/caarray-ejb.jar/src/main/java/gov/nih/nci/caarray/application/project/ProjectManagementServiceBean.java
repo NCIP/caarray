@@ -120,9 +120,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
@@ -134,6 +139,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -168,6 +174,60 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> conflictingFiles)
+        throws ProposalWorkflowException, IOException {
+        // create set of existing files
+        Set<String> existingFileNameSet = new HashSet<String>();
+        for (CaArrayFile file : project.getFiles()) {
+            existingFileNameSet.add(file.getName());
+        }
+
+        int count = 0;
+        int index = 0;
+        for (File currentFile : files) {
+            count += processUploadedFile(project, currentFile, fileNames.get(index),
+                    existingFileNameSet, conflictingFiles);
+            index++;
+        }
+        return count;
+    }
+
+    private int processUploadedFile(Project project, File file, String fileName, Set<String> existingFileNameSet,
+            List<String> conflictingFiles) throws ProposalWorkflowException, IOException {
+        Pattern p = Pattern.compile(".zip$");
+        Matcher m = p.matcher(fileName.toLowerCase()); // NOPMD
+        int count = 0;
+        if (m.find()) {
+            ZipFile zipFile = new ZipFile(file);
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if (existingFileNameSet.contains(entry.getName())) {
+                    conflictingFiles.add(entry.getName());
+                } else {
+                    doAddStream(project, zipFile.getInputStream(entry), entry.getName());
+                    existingFileNameSet.add(entry.getName());
+                    count++;
+                }
+            }
+            zipFile.close();
+        } else if (StringUtils.isNotBlank(fileName)) {
+            if (existingFileNameSet.contains(fileName)) {
+                conflictingFiles.add(fileName);
+            } else {
+                addFile(project, file, fileName);
+                existingFileNameSet.add(fileName);
+                count++;
+            }
+        }
+        return count;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public CaArrayFile addFile(Project project, File file) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, project, file);
         checkIfProjectSaveAllowed(project);
@@ -188,9 +248,21 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return caArrayFile;
     }
 
+    private CaArrayFile doAddStream(Project project, InputStream stream, String filename)
+            throws ProposalWorkflowException  {
+        checkIfProjectSaveAllowed(project);
+        CaArrayFile caArrayFile = getFileAccessService().add(stream, filename);
+        addCaArrayFileToProject(project, caArrayFile);
+        return caArrayFile;
+    }
+
     private CaArrayFile doAddFile(Project project, File file, String filename) {
-        CaArrayFile caArrayFile = null;
-        caArrayFile = getFileAccessService().add(file, filename);
+        CaArrayFile caArrayFile = getFileAccessService().add(file, filename);
+        addCaArrayFileToProject(project, caArrayFile);
+        return caArrayFile;
+    }
+
+    private void addCaArrayFileToProject(Project project, CaArrayFile caArrayFile) {
         project.getFiles().add(caArrayFile);
         caArrayFile.setProject(project);
         getProjectDao().save(caArrayFile);
@@ -198,7 +270,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         HibernateUtil.getCurrentSession().flush();
         HibernateUtil.getCurrentSession().evict(caArrayFile);
         caArrayFile.clearContents();
-        return caArrayFile;
     }
 
     /**

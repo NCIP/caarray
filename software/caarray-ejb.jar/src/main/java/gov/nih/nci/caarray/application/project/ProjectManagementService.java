@@ -123,6 +123,20 @@ public interface ProjectManagementService {
      */
     Project getProject(long id);
 
+
+    /**
+     * Handle uploaded files.
+     * @param project the project the files are being uploaded in to.
+     * @param files the files being uploaded.
+     * @param fileNames the file names to use.
+     * @param conflictingFiles out param for files that conflict with existing files in the project.
+     * @return the count of imported files.
+     * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status
+     * @throws IOException if there is an error handling the files.
+     */
+    int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> conflictingFiles)
+        throws ProposalWorkflowException, IOException;
+
     /**
      * Associates a single file with a project. After calling this method, clients can expect a new
      * <code>CaArrayFile</code> to be associated with the project.

@@ -100,12 +100,9 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
@@ -167,65 +164,19 @@ public class ProjectFilesActionTest {
     }
 
     @Test
-    public void testUpload() throws Exception {
-        this.action.setUpload(new ArrayList<File>());
-        assertEquals(UPLOAD, this.action.upload());
-        assertEquals(0, projectManagementServiceStub.getFilesAddedCount());
-
-        List<String> fileNames = new ArrayList<String>();
-        fileNames.add("testfile1.cel");
-        this.action.setUploadFileName(fileNames);
-
-        List<File> files = new ArrayList<File>();
-        files.add(new File("testfile1.cel"));
-        this.action.setUpload(files);
-
-        assertEquals(UPLOAD, this.action.upload());
-        assertEquals(0, projectManagementServiceStub.getFilesAddedCount());
-
-        fileNames.add("  ");
-        files.add(new File("other.cel"));
-
-        assertEquals(UPLOAD, this.action.upload());
-        assertEquals(0, projectManagementServiceStub.getFilesAddedCount());
-
-        fileNames.add("other.cel");
-        files.add(new File("other.cel"));
-
-        assertEquals(UPLOAD, this.action.upload());
-        assertEquals(1, projectManagementServiceStub.getFilesAddedCount());
-    }
-
-    @Test
     public void testZipUpload() throws Exception {
-        File zipFile = File.createTempFile("tmp", ".zip");
-        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
-        ZipEntry ze = new ZipEntry("test");
-        zos.putNextEntry(ze);
-        zos.write(new byte[] {1, 2, 3});
-        zos.closeEntry();
-
-        ze = new ZipEntry("/testdir/");
-        zos.putNextEntry(ze);
-        zos.closeEntry();
-
-        ze = new ZipEntry("/testdir/test");
-        zos.putNextEntry(ze);
-        zos.write(new byte[] {1, 2, 3});
-        zos.closeEntry();
-
-        zos.close();
+        File file = File.createTempFile("tmp", ".zip");
 
         List<File> files = new ArrayList<File>();
         List<String> fileNames = new ArrayList<String>();
         List<String> contentTypes = new ArrayList<String>();
-        files.add(zipFile);
-        fileNames.add(zipFile.getName());
+        files.add(file);
+        fileNames.add(file.getName());
         contentTypes.add("test");
         this.action.setUpload(files);
         this.action.setUploadFileName(fileNames);
         assertEquals(UPLOAD, this.action.upload());
-        assertEquals(2, projectManagementServiceStub.getFilesAddedCount());
+        assertEquals(1, projectManagementServiceStub.getFilesAddedCount());
     }
 
     @Test

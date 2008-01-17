@@ -107,6 +107,12 @@ public class MageTabDataFiles {
     public static final File SPECIFICATION_ZIP =
         new File(MageTabDataFiles.class.getResource("/magetab/specification/specification.zip").getFile());
 
+    public static final File SPECIFICATION_ZIP_WITH_NEXTED_ZIP =
+        new File(MageTabDataFiles.class.getResource("/magetab/specificiation_with_zip/specification.zip").getFile());
+
+    public static final File SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE =
+        new File(MageTabDataFiles.class.getResource("/magetab/specificiation_with_zip/Test1.txt").getFile());
+
     public static final File SPECIFICATION_EXAMPLE_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/specification").getFile());
 
