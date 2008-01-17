@@ -112,14 +112,17 @@
 	<tstamp prefix="caarray">
 		<format property="TODAY" pattern="MM/dd/yyyy h:mm a" locale="en,US"/>
 	</tstamp>
-	
-	<target name="remote-deployment-createtag" if="create.tag">
+
+	<target name="about-application">
         <tstamp>
           <format property="touch.time" pattern="MM/dd/yyyy hh:mm aa" unit="hour"/>
         </tstamp>	    
+		<property name="build.date_time" value="'${touch.time}'" />
+	</target>
+	
+	<target name="remote-deployment-createtag" if="create.tag"> 
 	    <echo> svn.user.name is ${svn.user.name} and svn.user.pwd is ${svn.user.pwd} and touch.time is ${touch.time} </echo>
 	    <echo message="Deploying to ${ssh.server.hostname} and adding SVN tag ${svn.tag}..." />
-		<property name="build.date_time" value="'${touch.time}'" />
 	    <antcall target="svn:scorch" />
 		<antcall target="svn:checkout-caarray" />
 		<antcall target="svn:checkout-caarray-tag" />
@@ -198,6 +201,6 @@
 	  </copy>
 	</target>
 	
-	<target name="all" depends="diagnostics, fail-if-no-tag, remote-deployment-createtag, remote-deployment" />	   
+	<target name="all" depends="diagnostics, about-application, fail-if-no-tag, remote-deployment-createtag, remote-deployment" />	   
 
 </project> 
