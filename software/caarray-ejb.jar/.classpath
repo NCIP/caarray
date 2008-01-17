@@ -16,7 +16,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/lib/commons-io-1.3.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/test-data"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/caarray-client-jar"/>
 	<classpathentry kind="lib" path="/lib/commons-beanutils-1.7.0.jar"/>
 	<classpathentry kind="lib" path="/lib/commons-lang-2.3.jar"/>
 	<classpathentry kind="lib" path="/lib/csmapi.jar" sourcepath="/lib/src/csmapi-4.0.1-src.jar"/>
