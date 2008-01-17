@@ -96,7 +96,7 @@ public enum ExperimentOntology {
     /**
      * CAArray Local (aka User-defined) Ontology.
      */
-    CAARRAY("Caarray", "0.1");    
+    CAARRAY("Caarray", "2.0");    
 
     private final String ontologyName;
     private final String version;

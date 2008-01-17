@@ -146,12 +146,22 @@ public enum ExperimentOntologyCategory {
     /**
      * Clinical Diagnosis category, one of annotation fields allowed by TCGA policy.
      */
-    CLINICAL_DIAGNOSIS("ClinicalDiagnosis", ExperimentOntology.MGED_ONTOLOGY),
+    CLINICAL_DIAGNOSIS("Clinical Diagnosis", ExperimentOntology.CAARRAY),
 
     /**
      * Histologic Diagnosis category, one of annotation fields allowed by TCGA policy.
      */
-    HISTOLOGIC_DIAGNOSIS("HistologicDiagnosis", ExperimentOntology.MGED_ONTOLOGY),
+    HISTOLOGIC_DIAGNOSIS("Histologic Diagnosis", ExperimentOntology.CAARRAY),
+
+    /**
+     * Pathologic Status category, one of annotation fields allowed by TCGA policy.
+     */
+    PATHOLOGIC_STATUS("Pathologic Status", ExperimentOntology.CAARRAY),
+
+    /**
+     * Tissue Anatomic Site  category, one of annotation fields allowed by TCGA policy.
+     */
+    TISSUE_ANATOMIC_SITE("Tissue Anatomic Site", ExperimentOntology.CAARRAY),
 
     /**
      * TechnologyType category, used for array designs.

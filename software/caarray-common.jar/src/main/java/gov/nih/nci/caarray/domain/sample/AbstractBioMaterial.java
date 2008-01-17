@@ -317,7 +317,8 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
         private static final String[] ALLOWED_CHARACTERISTIC_CATEGORIES =
                 {ExperimentOntologyCategory.CLINICAL_DIAGNOSIS.getCategoryName(),
                         ExperimentOntologyCategory.HISTOLOGIC_DIAGNOSIS.getCategoryName(),
-                        ExperimentOntologyCategory.DISEASE_STATE.getCategoryName() };
+                        ExperimentOntologyCategory.PATHOLOGIC_STATUS.getCategoryName(),
+                        ExperimentOntologyCategory.TISSUE_ANATOMIC_SITE.getCategoryName()};
 
         /**
          * {@inheritDoc}

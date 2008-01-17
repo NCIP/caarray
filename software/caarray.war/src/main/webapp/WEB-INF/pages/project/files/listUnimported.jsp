@@ -17,8 +17,6 @@
     doFilter = function() {
       Caarray.submitAjaxForm('selectFilesForm', 'unimportedForm', {url: '${listUnimportedFormUrl}'});
     }
-
-    setExperimentTitleHeader('${project.experiment.title}');
 </script>
 
 <caarray:tabPane subtab="true" submittingPaneMessageKey="experiment.files.processing">

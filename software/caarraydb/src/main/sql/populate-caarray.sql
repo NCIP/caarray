@@ -2,9 +2,14 @@
 
 insert into term_source (name, url) values ('ncbitax', 'http://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/');
 insert into term_source (name, url, version) values ('NCI_Thesaurus', 'http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do', '07.12a');
-insert into term_source (name, version) values ('Caarray', '0.1');
+insert into term_source (name, version) values ('Caarray', '2.0');
+insert into term_source (name, url, version) values ('caDSR', 'http://ncicb.nci.nih.gov/NCICB/infrastructure/cacore_overview/cadsr', '3.2');
 
 insert into category (source, name) select id, 'PublicationStatus' from term_source where name='Caarray';
+insert into category (source, name) select id, 'Clinical Diagnosis' from term_source where name='Caarray';
+insert into category (source, name) select id, 'Histologic Diagnosis' from term_source where name='Caarray';
+insert into category (source, name) select id, 'Pathologic Status' from term_source where name='Caarray';
+insert into category (source, name) select id, 'Tissue Anatomic Site' from term_source where name='Caarray';
 
 -- OrganismParts
 insert into term (value, accession, url, source) select 'Brain', 'C12439', 'http://nciterms.nci.nih.gov/NCIBrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C12439&bookmarktag=2', term_source.id from term_source where term_source.name='NCI_Thesaurus';
