@@ -380,14 +380,14 @@ Dr. Zhivago</stringProp>
                   <elementProp name="" elementType="HTTPArgument">
                     <boolProp name="HTTPArgument.always_encode">false</boolProp>
                     <stringProp name="Argument.name">currentPublication.type</stringProp>
-                    <stringProp name="Argument.value">13</stringProp>
+                    <stringProp name="Argument.value">47</stringProp>
                     <stringProp name="Argument.metadata">=</stringProp>
                     <boolProp name="HTTPArgument.use_equals">true</boolProp>
                   </elementProp>
                   <elementProp name="" elementType="HTTPArgument">
                     <boolProp name="HTTPArgument.always_encode">false</boolProp>
                     <stringProp name="Argument.name">currentPublication.status</stringProp>
-                    <stringProp name="Argument.value">17</stringProp>
+                    <stringProp name="Argument.value">680</stringProp>
                     <stringProp name="Argument.metadata">=</stringProp>
                     <boolProp name="HTTPArgument.use_equals">true</boolProp>
                   </elementProp>
