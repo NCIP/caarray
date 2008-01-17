@@ -124,6 +124,7 @@
 
     </project>
 
+
     <project name="caarray2-remote-build" buildafterfailed="false">
 
 	        <modificationset quietperiod="0">
@@ -132,7 +133,7 @@
 
 	        <schedule interval="60">
 				<ant anthome="C:\dev\tools\apache-ant-1.7.0"
-					buildfile="remote-build.xml" target="all" uselogger="true"
+					buildfile="projects\${project.name}\software\build\remote-build.xml" target="all" uselogger="true"
 					usedebug="false">
 				  <property name="notest" value="true"/>
 				  <property name="nocheck" value="true"/>
@@ -142,8 +143,9 @@
 	        </schedule>
 
 	        <log dir="logs\${project.name}">
-	            <gzip every="1" unit="WEEK"/>
+<!--	            <gzip every="1" unit="WEEK"/>
 	            <delete every="2" unit="WEEK" ignoreSuffix="true"/>
+-->
 	        </log>
 
 	        <publishers>
@@ -156,6 +158,7 @@
 	        </publishers>
 
     </project>
+
 
 
 </cruisecontrol>
