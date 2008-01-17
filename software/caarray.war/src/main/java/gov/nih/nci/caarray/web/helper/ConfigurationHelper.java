@@ -114,6 +114,9 @@ public final class ConfigurationHelper {
         return new DataConfiguration(config);
     }
 
+    /**
+     * @return whether this is a development deployment, or a production deployment
+     */
     public static boolean isDev() {
         return getConfiguration().getBoolean(ConfigParamEnum.DEVELOPMENT_MODE.name(), false);
     }
