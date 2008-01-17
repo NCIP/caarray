@@ -117,7 +117,7 @@ public class CaArray2xGrid extends TestCase {
         /*QA URL*/
 //        System.setProperty("test.serviceUrl", "http://cbvapp-q1001.nci.nih.gov:59580/wsrf/services/cagrid/CaArraySvc");
         /*DEV URL*/
-//        System.setProperty("test.serviceUrl", "http://cbvapp-d1002.nci.nih.gov:8080/wsrf/services/cagrid/CaArraySvc");
+//        System.setProperty("test.serviceUrl", "http://cbvapp-d1002.nci.nih.gov:59580/wsrf/services/cagrid/CaArraySvc");
         /*DEV URL*/
 //        System.setProperty("test.serviceUrl", "http://cbvapp-d1002.nci.nih.gov:59580/wsrf/services/cagrid/CaArraySvc");
         /*Local URL*/

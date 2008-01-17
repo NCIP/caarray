@@ -136,5 +136,10 @@ public enum ConfigParamEnum {
     /**
      * the location to save uploaded files too.
      */
-    STRUTS_MULTIPART_SAVEDIR;
+    STRUTS_MULTIPART_SAVEDIR,
+
+    /**
+     * Development mode flag.  Should only be true for local development purposes.
+     */
+    DEVELOPMENT_MODE;
 }
