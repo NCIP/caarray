@@ -151,6 +151,13 @@ public interface ProjectDao extends CaArrayDao {
     int searchCount(String keyword, SearchCategory... categories);
     
     /**
+     * Retrieve a project based on its public identifier.
+     * @param publicId the public identifier of the requested project
+     * @return the Project with given public id, or null if no such Project
+     */
+    Project getProjectByPublicId(String publicId);
+    
+    /**
      * Get tissue sites for the experiment and category.
      * @param experiment the experiment
      * @return the list of terms

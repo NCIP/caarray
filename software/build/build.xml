@@ -427,7 +427,6 @@
     <instrument verbose="true">
         <fileset dir="${caarray-common.classes.dir}/gov/nih/nci/caarray/domain">
             <include name="file/CaArrayFile.class"/>
-            <include name="project/Experiment.class"/>
         </fileset>
     </instrument>
   </target>

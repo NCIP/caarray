@@ -113,6 +113,8 @@
         </action>
 
         <action name="project/details" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="details">
+            <result name="login-details-id" type="redirect-action">/protected/project/details?project.id=${project.id}</result>
+            <result name="login-details-publicid" type="redirect-action">/protected/project/details?project.experiment.publicIdentifier=${project.experiment.publicIdentifier}</result>
             <result name="workspace" type="redirect-action">/protected/project/workspace</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
         </action>
@@ -188,6 +190,11 @@
     </package>
 
     <package name="protected" namespace="/protected" extends="default">
+        <action name="project/details" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="details">
+            <result name="workspace" type="redirect-action">project/workspace</result>
+            <result name="input">/WEB-INF/pages/project/form.jsp</result>
+        </action>
+
         <action name="project/workspace" class="gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction" method="workspace">
             <result name="success">/WEB-INF/pages/project/workspace/tabs.jsp</result>
         </action>

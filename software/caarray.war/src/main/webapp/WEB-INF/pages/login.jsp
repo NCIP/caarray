@@ -21,7 +21,14 @@ to become a caArray user.
                     <script type="text/javascript">
                       function startLogin() {
                         $('login_progress').show();
+                        <c:choose>
+                            <c:when test="${param.fromAjax == 'true'}">
                         new Ajax.Request('<c:url value="/protected/project/workspace.action"/>', { onSuccess: completeLogin });
+                            </c:when>
+                            <c:otherwise>
+                        completeLogin();                            
+                            </c:otherwise>
+                        </c:choose>                            
                       }
 
                       function completeLogin() {

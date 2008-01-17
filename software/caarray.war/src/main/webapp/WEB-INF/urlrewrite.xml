@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 2.6//EN"
+        "http://tuckey.org/res/dtds/urlrewrite2.6.dtd">
+
+<urlrewrite>
+    <rule>
+        <from>/project/(.{1,5}-\d{5})</from>
+        <to type="redirect">%{context-path}/project/details.action?project.experiment.publicIdentifier=$1</to>
+    </rule>
+
+    <outbound-rule>
+        <from>/project/details.action?project.experiment.publicIdentifier=(.{1,5}-\d{5})</from>
+        <to>%{context-path}/project/$1</to>
+    </outbound-rule>
+</urlrewrite>
+

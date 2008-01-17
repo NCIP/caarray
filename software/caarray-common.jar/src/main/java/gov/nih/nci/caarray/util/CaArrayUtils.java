@@ -319,4 +319,15 @@ public final class CaArrayUtils {
 
         return result;
     }
+    
+    /**
+     * Method to take a get a unique result from a set and return it or null.
+     * 
+     * @param <T> the type of the returned object
+     * @param results the set of results returned from a query
+     * @return the first result in the set or null
+     */
+    public static <T> T uniqueResult(Collection<T> results) {
+        return results.isEmpty() ? null : results.iterator().next();
+    }
 }

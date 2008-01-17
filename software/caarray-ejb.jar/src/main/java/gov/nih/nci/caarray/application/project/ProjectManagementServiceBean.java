@@ -169,6 +169,16 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         LogUtil.logSubsystemExit(LOG);
         return project;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Project getProjectByPublicId(String publicId) {
+        LogUtil.logSubsystemEntry(LOG, publicId);
+        Project project = getProjectDao().getProjectByPublicId(publicId);
+        LogUtil.logSubsystemExit(LOG);
+        return project;
+    }
 
     /**
      * {@inheritDoc}
@@ -306,6 +316,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         if (project.getId() == null && UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
             throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
         }
+
+        if (project.getId() == null) {
+            // for the initial save, we will need to save experiment first since we need to assign a public
+            // identifer, which requires the id to be set
+            getProjectDao().save(project.getExperiment());
+        }
+        // need to save twice, since we need to update the public
+        project.recalculatePublicId();
         getProjectDao().save(project);
         for (PersistentObject obj : orphansToDelete) {
             if (obj != null) {

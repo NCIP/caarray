@@ -145,7 +145,7 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
             Sample retrieved = getGenericDataService().retrieveEntity(Sample.class, this.currentSample.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentSample,
-                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
             } else {
                 this.currentSample = retrieved;
             }

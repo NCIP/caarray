@@ -34,11 +34,9 @@
     </c:choose>
     <ul class="${pageContext.request.remoteUser != null ? 'aboutmenu' : 'welcomemenu' }">
         <li class="liheader">About caArray</li>
-        <li><a href="<c:url value="/notYetImplemented.jsp" />">What is caArray?</a></li>
-        <li><a href="<c:url value="/notYetImplemented.jsp" />">Install caArray</a></li>
-        <li><a href="<c:url value="/notYetImplemented.jsp" />">User Guide</a></li>
-        <li><a href="<c:url value="/notYetImplemented.jsp" />">Release Notes</a></li>
-        <li><a href="<c:url value="/notYetImplemented.jsp" />">Technical Documentation</a></li>
+        <li><a href="http://caarray.nci.nih.gov/">What is caArray?</a></li>
+        <li><a href="https://gforge.nci.nih.gov/frs/shownotes.php?release_id=1984">Release Notes</a></li>
+        <li><a href="http://caarray.nci.nih.gov/">Technical Documentation</a></li>
         <li><a href="javascript:openHelpWindow('')">Help</a></li>
     </ul>
     <ul class="quicklinks">

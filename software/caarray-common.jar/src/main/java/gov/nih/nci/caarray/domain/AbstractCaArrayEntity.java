@@ -96,8 +96,17 @@ public abstract class AbstractCaArrayEntity extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = 2732929116326299995L;
 
-    private static final String CAARRAY_LSID_AUTHORITY = "gov.nih.nci.caarray";
-    private static final String CAARRAY_LSID_NAMESPACE = "domain";
+    /**
+     * LSID Authority for CAARRAY. Used for entities which require an LSID but do not have one assigned
+     * from elsewhere
+     */
+    public static final String CAARRAY_LSID_AUTHORITY = "caarray.nci.nih.gov";
+
+    /**
+     * LSID Namespace for CAARRAY. Used for entities which require an LSID but do not have one assigned
+     * from elsewhere
+     */
+    public static final String CAARRAY_LSID_NAMESPACE = "domain";
 
     private String lsidAuthority;
     private String lsidNamespace;

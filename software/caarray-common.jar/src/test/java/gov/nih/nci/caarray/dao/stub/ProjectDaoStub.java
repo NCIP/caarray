@@ -102,6 +102,10 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
     public int getProjectCountForCurrentUser(boolean showPublic) {
         return 0;
     }
+    
+    public Project getProjectByPublicId(String publicId) {
+        return null;
+    }
 
     /**
      * {@inheritDoc}

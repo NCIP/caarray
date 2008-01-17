@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.arraydesign;
 
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
@@ -112,6 +113,9 @@ import org.apache.log4j.Logger;
  * format.
  */
 final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
+
+    private static final String LSID_AUTHORITY = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;
+    private static final String LSID_NAMESPACE = AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE;
 
     private static final int NUMBER_OF_BLOCK_INFORMATION_FIELDS = 7;
     private static final Logger LOG = Logger.getLogger(GenepixGalDesignHandler.class);
@@ -283,6 +287,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
     @Override
     void load(ArrayDesign arrayDesign) {
         arrayDesign.setName(FilenameUtils.getBaseName(getDesignFile().getName()));
+        arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + arrayDesign.getName());        
         arrayDesign.setNumberOfFeatures(getNumberOfFeatures());
     }
 

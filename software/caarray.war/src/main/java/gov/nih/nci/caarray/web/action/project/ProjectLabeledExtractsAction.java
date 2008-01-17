@@ -136,7 +136,7 @@ public class ProjectLabeledExtractsAction extends AbstractProjectProtocolAnnotat
                                                                                this.currentLabeledExtract.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentLabeledExtract,
-                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
             } else {
                 this.currentLabeledExtract = retrieved;
             }

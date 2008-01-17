@@ -137,7 +137,7 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
                     this.currentPublication.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentPublication,
-                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
             } else {
                 this.currentPublication = retrieved;
             }

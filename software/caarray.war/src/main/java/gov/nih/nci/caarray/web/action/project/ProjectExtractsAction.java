@@ -137,7 +137,7 @@ public class ProjectExtractsAction extends AbstractProjectProtocolAnnotationList
             Extract retrieved = getGenericDataService().retrieveEntity(Extract.class, this.currentExtract.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentExtract,
-                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
             } else {
                 this.currentExtract = retrieved;
             }

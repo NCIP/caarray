@@ -3,6 +3,7 @@ package gov.nih.nci.caarray.web.action.project;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.helper.EmailHelper;
@@ -86,26 +87,16 @@ public class ProjectAction extends AbstractBaseProjectAction {
     }
 
     /**
-     * show browse view for a project.
-     *
-     * @return path String
-     */
-    @SkipValidation
-    public String browse() {
-        if (getProject().getId() == null) {
-            return projectNotFound();
-        }
-        setEditMode(false);
-        return "browse";
-    }
-
-    /**
      * handles the case where an attempt is made to view/edit a non-existent project.
      * @return the result name
      */
     private String projectNotFound() {
-        ActionHelper.saveMessage(getText("project.notFound"));
-        return WORKSPACE_RESULT;
+        if (UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
+            return loggedinDetails();
+        } else {
+            ActionHelper.saveMessage(getText("project.notFound"));
+            return WORKSPACE_RESULT;            
+        }
     }
 
     /**
@@ -114,10 +105,25 @@ public class ProjectAction extends AbstractBaseProjectAction {
      * @return the result name
      */
     private String permissionDenied(String roleKey) {
-        List<String> args = new ArrayList<String>();
-        args.add(getText(roleKey));
-        ActionHelper.saveMessage(getText("project.permissionDenied", args));
-        return WORKSPACE_RESULT;
+        if (UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
+            return loggedinDetails();
+        } else {
+            List<String> args = new ArrayList<String>();
+            args.add(getText(roleKey));
+            ActionHelper.saveMessage(getText("project.permissionDenied", args));
+            return WORKSPACE_RESULT;
+        }
+    }
+    
+    private String loggedinDetails() {
+        if (getProject().getId() != null) {
+            return "login-details-id";
+        } else if (getProject().getExperiment().getPublicIdentifier() != null) {
+            return "login-details-publicid";
+        } else {
+            return WORKSPACE_RESULT;
+        }
+                 
     }
 
     /**
@@ -158,9 +164,8 @@ public class ProjectAction extends AbstractBaseProjectAction {
         String ctxPath = request.getContextPath();
         String requestUri = request.getRequestURI();
         String fullUrl = request.getRequestURL().toString();
-        String projectLink =
-                getProjectDetailsLink(StringUtils.substringBefore(fullUrl, requestUri) + ctxPath, getProject()
-                        .getId());
+        String projectLink = getProjectDetailsLink(StringUtils.substringBefore(fullUrl, requestUri) + ctxPath,
+                getProject().getExperiment().getPublicIdentifier());
         EmailHelper.sendSubmitExperimentEmail(getProject(), projectLink);
     }
 
@@ -168,11 +173,11 @@ public class ProjectAction extends AbstractBaseProjectAction {
      * Returns the view details link for a project with given id.
      * @param urlBase the URL Base - this should include everything up to and including the context path, e.g.
      * http://array.dev.nih.gov/carray
-     * @param projectId the id of the project to link to
+     * @param projectPublicId the public id of the project to link to
      * @return the link URL
      */
-    public static String getProjectDetailsLink(String urlBase, Long projectId) {
-        return urlBase + "/project/details.action?project.id=" + projectId;        
+    public static String getProjectDetailsLink(String urlBase, String projectPublicId) {
+        return urlBase + "/project/" + projectPublicId;
     }
 
     /**

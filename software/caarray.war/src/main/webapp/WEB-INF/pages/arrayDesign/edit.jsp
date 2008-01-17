@@ -2,9 +2,10 @@
 <s:if test="${!editMode}">
     <c:set var="theme" value="readonly" scope="request"/>
 </s:if>
-<s:if test="${locked}">
+<s:if test="${locked || !editMode}">
     <c:set var="lockedTheme" value="readonly"/>
-</s:if><s:else>
+</s:if>
+<s:else>
     <c:set var="lockedTheme" value="xhtml"/>
 </s:else>
 
@@ -14,10 +15,7 @@
 </head>
 <body>
     <h1>Manage Array Designs</h1>
-    <div class="pagehelp">
-        <a href="javascript:openHelpWindow('')" class="help">Help</a>
-        <a href="javascript:printpage()" class="print">Print</a>
-    </div>
+    <caarray:helpPrint/>
     <div class="padme">
         <div id="tabboxwrapper_notabs">
             <div class="boxpad2">
@@ -26,8 +24,9 @@
                     <span class="dark">
                         <s:if test="${empty arrayDesign.id}">
                             New Array Design
-                        </s:if><s:else>
-                            <c:out value="${arrayDesign.name}"/>
+                        </s:if>
+                        <s:else>
+                            ${arrayDesign.name}
                         </s:else>
                     </span>
                 </h3>
@@ -50,18 +49,19 @@
                             <tr><th colspan="2">Array Design Details</th></tr>
                             <s:if test="${!empty arrayDesign.id}">
                                 <s:textfield theme="readonly" key="arrayDesign.name" size="50" tabindex="1"/>
+                                <s:textfield theme="readonly" key="arrayDesign.lsid" size="50" tabindex="2"/>
                             </s:if>
-                            <s:select theme="${lockedTheme}" required="true" key="arrayDesign.assayType" tabindex="2"
+                            <s:select theme="${lockedTheme}" required="true" key="arrayDesign.assayType" tabindex="3"
                                       list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
                                       headerKey="" headerValue="--Please select an Assay Type--"/>
-                            <s:select theme="${lockedTheme}" required="true" key="arrayDesign.provider" tabindex="3"
+                            <s:select theme="${lockedTheme}" required="true" key="arrayDesign.provider" tabindex="4"
                                       list="providers" listKey="id" listValue="name"
                                       headerKey="" headerValue="--Please select a Provider--" value="arrayDesign.provider.id"/>
-                            <s:textfield required="true" key="arrayDesign.version" size="50" tabindex="4"/>
-                            <s:select required="true" key="arrayDesign.technologyType" tabindex="5"
+                            <s:textfield required="true" key="arrayDesign.version" size="50" tabindex="5"/>
+                            <s:select required="true" key="arrayDesign.technologyType" tabindex="6"
                                       list="featureTypes" listKey="id" listValue="valueAndSource" value="arrayDesign.technologyType.id"
                                       headerKey="" headerValue="--Please select a Feature Type--"/>
-                            <s:select required="true" key="arrayDesign.organism" tabindex="6"
+                            <s:select required="true" key="arrayDesign.organism" tabindex="7"
                                       list="organisms" listKey="id" listValue="nameAndSource" value="arrayDesign.organism.id"
                                       headerKey="" headerValue="--Please select an Organism--"/>
                             <s:hidden name="arrayDesign.id"/>
@@ -72,7 +72,7 @@
                                 <s:textfield theme="readonly" key="arrayDesign.designFile.name" label="Current File"/>
                             </s:if>
                             <s:if test="${editMode && !locked}">
-                                <s:file required="${empty arrayDesign.id}" name="upload" label="Browse to File" tabindex="7"/>
+                                <s:file required="${empty arrayDesign.id}" name="upload" label="Browse to File" tabindex="8"/>
                             </s:if>
                         </tbody>
                         <input type="submit" class="enableEnterSubmit"/>

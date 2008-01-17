@@ -176,38 +176,21 @@ public class ProjectActionTest {
     public void testEdit() {
         this.action.setProject(this.getTestProject(null));
         assertEquals(WORKSPACE, this.action.edit());
-        assertEquals(1, ActionHelper.getMessages().size());
         this.action.setProject(this.getTestProject((2l)));
-        assertEquals(WORKSPACE, this.action.edit());
-        assertEquals(2, ActionHelper.getMessages().size());
+        assertEquals("login-details-id", this.action.edit());
         this.action.setProject(this.getTestProject((1l)));
         assertEquals(Action.INPUT, this.action.edit());
         assertTrue(this.action.isEditMode());
-        assertEquals(2, ActionHelper.getMessages().size());
     }
 
     @Test
     public void testDetails() {
         this.action.setProject(this.getTestProject(null));
         assertEquals(WORKSPACE, this.action.details());
-        assertEquals(1, ActionHelper.getMessages().size());
         this.action.setProject(this.getTestProject((2l)));
-        assertEquals(WORKSPACE, this.action.details());
-        assertEquals(2, ActionHelper.getMessages().size());
+        assertEquals("login-details-id", this.action.details());
         this.action.setProject(this.getTestProject((1l)));
         assertEquals(Action.INPUT, this.action.details());
-        assertFalse(this.action.isEditMode());
-        assertEquals(2, ActionHelper.getMessages().size());
-    }
-
-    @Test
-    public void testBrowse() {
-        this.action.setProject(this.getTestProject(null));
-        assertEquals(WORKSPACE, this.action.browse());
-        assertEquals(1, ActionHelper.getMessages().size());
-        this.action.setProject(this.getTestProject((2l)));
-        assertEquals("browse", this.action.browse());
-        assertEquals(1, ActionHelper.getMessages().size());
         assertFalse(this.action.isEditMode());
     }
 

@@ -15,6 +15,7 @@
             tabIndex="4" termFieldName="currentLabeledExtract.materialType" returnInitialTab1="annotations" returnInitialTab2="labeledExtracts" returnInitialTab2Url="${thisUrl}" />
         <caarray:protocolSelector returnInitialTab1="annotations" returnInitialTab2="labeledExtracts" returnInitialTab2Url="${thisUrl}" tabIndex1="5" tabIndex2="6" />
         <caarray:annotationCharacteristics item="${currentLabeledExtract}"/>
+        <s:textfield theme="readonly" label="Label" name="currentLabeledExtract.label.value"/>        
         <s:hidden name="currentLabeledExtract.id" />
         <s:hidden name="project.id" />
         <s:hidden name="editMode" />

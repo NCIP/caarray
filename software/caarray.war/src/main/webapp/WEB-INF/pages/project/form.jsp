@@ -48,7 +48,7 @@
                 </c:when>
                 <c:when test="${project.public}">
                     <c:set var="newWorkflowStatus" value="<%= ProposalStatus.IN_PROGRESS %>"/>
-                    <c:set var="buttonTitle" value="Make Experiment Not Public"/>
+                    <c:set var="buttonTitle" value="Retract Experiment from Public Accessibility"/>
                 </c:when>
             </c:choose>
             <c:if test="${!empty newWorkflowStatus}">
@@ -104,7 +104,13 @@
     <div class="padme">
         <h2>
             <span class="dark">Experiment:</span>
-            <span id="experimentTitleHeader"><c:out value="${project.experiment.title}" default="New Experiment"/></span>
+            <span id="experimentTitleHeader">
+                <c:out value="${project.experiment.title}" default="New Experiment"/>
+                <c:if test="${!empty project.id}">
+                    <c:url value="/project/${project.experiment.publicIdentifier}" var="permalinkUrl"/>
+                    (<a href="${permalinkUrl}">Permalink</a>)
+                </c:if>    
+            </span>
         </h2>
         <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"
                 postFunction="TabUtils.setSelectedTab" preFunction="TabUtils.preFunction">

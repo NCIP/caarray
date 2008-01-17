@@ -171,6 +171,12 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         p.setId(id);
         return p;
     }
+    
+    public Project getProjectByPublicId(String publicId) {
+        Project p = new Project();
+        p.getExperiment().setPublicIdentifier(publicId);
+        return p;
+    }
 
     public Organization getOrganization(long id) {
         return null;

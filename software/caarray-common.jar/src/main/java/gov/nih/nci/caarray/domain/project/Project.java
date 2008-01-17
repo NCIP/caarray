@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -122,6 +123,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.CharSetUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -137,10 +140,11 @@ import org.hibernate.validator.Valid;
  * A microarray project.
  */
 @Entity
-@SuppressWarnings("PMD.AvoidDuplicateLiterals")
+@SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.TooManyFields", "PMD.ExcessiveClassLength" })
 public class Project extends AbstractCaArrayEntity implements Comparable<Project>, Protectable {
-
     private static final long serialVersionUID = 1234567890L;
+    
+    private static final int PUBLIC_ID_COMPONENT_LENGTH = 5;
 
     private ProposalStatus status = ProposalStatus.DRAFT;
     private Experiment experiment = new Experiment();
@@ -154,6 +158,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private boolean useTcgaPolicy = false;
     private transient Set<User> owners;
     private Date lastUpdated = new Date();
+    private boolean publicIdLocked = false;
 
     /**
      * Hibernate and castor constructor.
@@ -204,9 +209,11 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     public void setStatus(ProposalStatus status) {
         setStatusInternal(status);
         // in progress projects get automatically set to browsable, if they weren't before
-        if (status == ProposalStatus.IN_PROGRESS
-                && getPublicProfile().getSecurityLevel() == SecurityLevel.NO_VISIBILITY) {
-            getPublicProfile().setSecurityLevel(SecurityLevel.VISIBLE);
+        if (status == ProposalStatus.IN_PROGRESS) {
+            setPublicIdLocked(true);
+            if (getPublicProfile().getSecurityLevel() == SecurityLevel.NO_VISIBILITY) {
+                getPublicProfile().setSecurityLevel(SecurityLevel.VISIBLE);
+            }               
         }
 
         // public projects are effectively read rights to all and write rights to no one
@@ -580,6 +587,42 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     public void setLastUpdated(final Date lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+        
+    /**
+     * If the public id has not been locked, recalculate the experiment's public id value based on the 
+     * algorithm specified in @see getPublicId from the current values of the PI and persistent identifier.
+     * If the public id has been locked, then this method is a no-op.
+     */
+    public void recalculatePublicId() {
+        if (isPublicIdLocked()) {
+            return;
+        }
+        if (getExperiment().getId() == null) {
+            return;
+        }
+        Person pi = (Person) getExperiment().getPrimaryInvestigator().getContact();        
+        String piComponent = StringUtils.substring(
+                CharSetUtils.keep(StringUtils.lowerCase(pi.getLastName()), "A-Za-z"), 0, PUBLIC_ID_COMPONENT_LENGTH);
+        String idComponent = StringUtils.leftPad(getExperiment().getId().toString(), PUBLIC_ID_COMPONENT_LENGTH, "0");
+        getExperiment().setPublicIdentifier(piComponent + "-" + idComponent);
+    }
+
+    /**
+     * @return whether the public identifier has been locked from further editing
+     */
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
+    public boolean isPublicIdLocked() {
+        return publicIdLocked;
+    }
+
+    /**
+     * For hibernate use only.
+     * @param publicIdLocked whether the public identifier has been locked from further editing
+     */
+    @SuppressWarnings({"unused", "PMD.unused" })
+    private void setPublicIdLocked(boolean publicIdLocked) {
+        this.publicIdLocked = publicIdLocked;
     }
 
     /**

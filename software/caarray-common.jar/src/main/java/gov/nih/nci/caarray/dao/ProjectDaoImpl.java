@@ -107,7 +107,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Restrictions;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
@@ -142,6 +144,15 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         return LOG;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Project getProjectByPublicId(String publicId) {
+        Criteria c = HibernateUtil.getCurrentSession().createCriteria(Project.class);
+        c.createCriteria("experiment").add(Restrictions.eq("publicIdentifier", publicId).ignoreCase());
+        return (Project) c.uniqueResult();
+    }
+    
     @SuppressWarnings(UNCHECKED)
     public List<Project> getProjectsForCurrentUser(boolean showPublic, PageSortParams pageSortParams) {
         Query q = getProjectsForUserQuery(showPublic, false, pageSortParams);

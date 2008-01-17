@@ -192,7 +192,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 for (int columnIndex = 1; columnIndex < lineContents.size(); columnIndex++) {
                     currentColumnNumber = columnIndex + 1;
                     int valueIndex = columnIndex - 1;
-                    String value = lineContents.get(columnIndex);
+                    String value = StringUtils.trim(lineContents.get(columnIndex));
                     if (!StringUtils.isEmpty(value)) {
                         handleValue(idfRow, value, valueIndex);
                     }

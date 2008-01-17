@@ -119,10 +119,18 @@ public interface ProjectManagementService {
      * Returns the project corresponding to the id given.
      *
      * @param id the project id
-     * @return the corresponding project.
+     * @return the corresponding project, or null if there is no project corresponding to that id
      */
     Project getProject(long id);
 
+
+    /**
+     * Returns the project with the given public identifier.
+     *
+     * @param publicId the project public identifier
+     * @return the project with given public identifier, or null if there is no project with that public identifier
+     */
+    Project getProjectByPublicId(String publicId);
 
     /**
      * Handle uploaded files.
@@ -363,5 +371,5 @@ public interface ProjectManagementService {
      * @param experiment the experiment
      * @return the list of terms
      */
-    List<Term> getDiseaseStatesForExperiment(Experiment experiment);
+    List<Term> getDiseaseStatesForExperiment(Experiment experiment); 
 }

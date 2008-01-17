@@ -259,7 +259,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         if (!isComment(values)) {
             for (int i = 0; i < values.size(); i++) {
                 currentColumnNumber = i + 1;
-                handleValue(columns.get(i), values.get(i));
+                handleValue(columns.get(i), StringUtils.trim(values.get(i)));
             }
             currentNode = null;
             currentArrayDesign = null;

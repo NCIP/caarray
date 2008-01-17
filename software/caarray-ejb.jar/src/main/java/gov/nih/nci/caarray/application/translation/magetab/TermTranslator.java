@@ -236,7 +236,7 @@ final class TermTranslator extends AbstractTranslator {
          */
         @Override
         public int hashCode() {
-            return HashCodeBuilder.reflectionHashCode(this);
+            return new HashCodeBuilder().append(value).append(termSource).toHashCode();
         }
 
         /*
@@ -252,7 +252,8 @@ final class TermTranslator extends AbstractTranslator {
             if (this == obj) {
                 return true;
             }
-            return EqualsBuilder.reflectionEquals(this, obj);
+            TermKey tk = (TermKey) obj;
+            return new EqualsBuilder().append(this.value, tk.value).append(this.termSource, tk.termSource).isEquals();
         }
     }
 }

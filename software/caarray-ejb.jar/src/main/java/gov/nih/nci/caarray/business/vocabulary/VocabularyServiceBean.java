@@ -91,9 +91,9 @@ import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -164,7 +164,7 @@ public class VocabularyServiceBean implements VocabularyService {
         TermSource querySource = new TermSource();
         querySource.setName(name);
         querySource.setVersion(version);
-        return uniqueResult(getVocabularyDao().queryEntityByExample(querySource, MatchMode.EXACT, false,
+        return CaArrayUtils.uniqueResult(getVocabularyDao().queryEntityByExample(querySource, MatchMode.EXACT, false,
                 new String[] {"url" }, Order.desc(VERSION_FIELD)));
     }
 
@@ -185,7 +185,7 @@ public class VocabularyServiceBean implements VocabularyService {
         TermSource querySource = new TermSource();
         querySource.setUrl(url);
         querySource.setVersion(version);
-        return uniqueResult(getVocabularyDao().queryEntityByExample(querySource, MatchMode.EXACT, false,
+        return CaArrayUtils.uniqueResult(getVocabularyDao().queryEntityByExample(querySource, MatchMode.EXACT, false,
                 new String[] {"name" }, Order.desc(VERSION_FIELD)));
     }
 
@@ -261,16 +261,6 @@ public class VocabularyServiceBean implements VocabularyService {
      */
     public Term findTermInAllTermSourceVersions(TermSource termSource, String value) {
         return getVocabularyDao().findTermInAllTermSourceVersions(termSource, value);
-    }
-    /**
-     * Method to take a get a unique result from a set and return it or null.
-     * 
-     * @param <T> the type of the returned object
-     * @param results the set of results returned from a query
-     * @return the first result in the set or null
-     */
-    private <T> T uniqueResult(Collection<T> results) {
-        return results.isEmpty() ? null : results.iterator().next();
     }
 
     /**
