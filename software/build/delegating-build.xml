@@ -44,6 +44,9 @@
         <svn username="${svn.username}" password="${svn.password}">
             <update dir="${basedir}" />
         </svn>
+        <svn username="${svn.username}" password="${svn.password}">
+          <update dir="C:/dev/scm-private/trunk/caarray2/properties" />
+        </svn>
         <ant antfile="build/remote-build.xml" dir="software" target="all">
 	      <property name="notest" value="true"/>
 		  <property name="nocheck" value="true"/>
