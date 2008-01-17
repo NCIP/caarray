@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaArrayDataTypes
 import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaExpressionQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaGenotypingQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
@@ -110,6 +111,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -117,6 +119,10 @@ import org.apache.log4j.Logger;
  * Handles reading of Illumina data.
  */
 class IlluminaDataHandler extends AbstractDataFileHandler {
+
+    private static final String ARRAY_CONTENT_HEADER = "Array Content";
+    private static final String LSID_AUTHORITY = "illumina.com";
+    private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
 
     private static final String GROUP_ID_HEADER = "GroupID";
     private static final Map<String, IlluminaExpressionQuantitationType> EXPRESSION_TYPE_MAP =
@@ -372,9 +378,58 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     }
 
     private void validateHeaders(DelimitedFileReader reader, FileValidationResult result) {
+        validateHasArrayContentHeader(reader, result);
         List<String> headers = getHeaders(reader);
         if (headers == null) {
             result.addMessage(Type.ERROR, "No headers found");
+        }
+    }
+
+    private void validateHasArrayContentHeader(DelimitedFileReader reader, FileValidationResult result) {
+        if (getArrayContentValue(reader) == null) {
+            result.addMessage(Type.ERROR, "Data file doesn not contain required header \"Array Content\"");
+        }
+    }
+
+    private String getArrayContentValue(DelimitedFileReader reader) {
+        Map<String, String[]> fileHeaders = getFileHeaders(reader);
+        String[] arrayContentValues = fileHeaders.get(ARRAY_CONTENT_HEADER);
+        if (arrayContentValues == null || arrayContentValues.length == 0 
+                || StringUtils.isEmpty(arrayContentValues[0])) {
+            return null;
+        } else {
+            return arrayContentValues[0].trim();
+        }
+    }
+
+    private Map<String, String[]> getFileHeaders(DelimitedFileReader reader) {
+        reset(reader);
+        Map<String, String[]> fileHeaders = new HashMap<String, String[]>();
+        while (reader.hasNextLine()) {
+            List<String> values = reader.nextLine();
+            if (isBlankLine(values)) {
+                return fileHeaders;
+            } else if (isFileHeader(values)) {
+                addFileHeader(fileHeaders, values);
+            }
+        }
+        return fileHeaders;
+    }
+
+    private boolean isBlankLine(List<String> values) {
+        return values.isEmpty() || (values.size() == 1 && StringUtils.isEmpty(values.get(0)));
+    }
+
+    private boolean isFileHeader(List<String> values) {
+        return !values.isEmpty() && values.get(0).contains("=");
+    }
+
+    private void addFileHeader(Map<String, String[]> fileHeaders, List<String> values) {
+        String[] parts = values.get(0).split("=");
+        String header = parts[0].trim();
+        if (parts.length > 1) {
+            String[] headerValues = parts[1].split(",");
+            fileHeaders.put(header, headerValues);
         }
     }
 
@@ -387,6 +442,13 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
                 message.setLine(reader.getCurrentLineNumber());
             }
         }
+    }
+
+    @Override
+    ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
+        String galFile = getArrayContentValue(getReader(file));
+        String galName = FilenameUtils.getBaseName(galFile);
+        return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, galName);
     }
 
 

@@ -195,6 +195,12 @@ import affymetrix.fusion.chp.FusionGenotypeProbeSetResults;
 @SuppressWarnings("PMD")
 public class ArrayDataServiceTest {
 
+
+    private static final String GAL_DERISI_LSID_OBJECT_ID = "JoeDeRisi-fix";
+    private static final String GAL_YEAST1_LSID_OBJECT_ID = "Yeast1";
+    private static final String AFFY_TEST3_LSID_OBJECT_ID = "Test3";
+    private static final String HG_FOCUS_LSID_OBJECT_ID = "HG-Focus";
+    private static final String ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID = "Human_WG-6";
     private ArrayDataService arrayDataService;
     FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
@@ -240,7 +246,7 @@ public class ArrayDataServiceTest {
     }
 
     private void testExistingAnnotationNotOverwritten() throws InvalidDataFileException {
-        CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
+        CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, AFFY_TEST3_LSID_OBJECT_ID);
         RawArrayData celData = new RawArrayData();
         Hybridization hybridization = new Hybridization();
         celData.setHybridization(hybridization);
@@ -255,7 +261,7 @@ public class ArrayDataServiceTest {
     }
 
     private void testCreateAnnotationIllumina() throws InvalidDataFileException {
-        CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6);
+        CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
         this.arrayDataService.importData(illuminaFile, true);
         checkAnnotation(illuminaFile, 19);
     }
@@ -268,13 +274,13 @@ public class ArrayDataServiceTest {
     }
 
     private void testCreateAnnotationCel() throws InvalidDataFileException {
-        CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
+        CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, AFFY_TEST3_LSID_OBJECT_ID);
         this.arrayDataService.importData(celFile, true);
         checkAnnotation(celFile, 1);
     }
 
     private void testCreateAnnotationChp() throws InvalidDataFileException {
-        CaArrayFile chpFile = getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CHP);
+        CaArrayFile chpFile = getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CHP, AFFY_TEST3_LSID_OBJECT_ID);
         this.arrayDataService.importData(chpFile, true);
         checkAnnotation(chpFile, 1);
     }
@@ -300,7 +306,7 @@ public class ArrayDataServiceTest {
     }
 
     private void testImportGenepixFile(File gprFile, QuantitationTypeDescriptor[] expectedTypes, int expectedNumberOfSamples) throws InvalidDataFileException {
-        CaArrayFile gprCaArrayFile = getGprCaArrayFile(gprFile);
+        CaArrayFile gprCaArrayFile = getGprCaArrayFile(gprFile, GAL_DERISI_LSID_OBJECT_ID);
         this.arrayDataService.importData(gprCaArrayFile, true);
         DerivedArrayData data = this.daoFactoryStub.getArrayDao().getDerivedArrayData(gprCaArrayFile);
         assertNotNull(data);
@@ -399,23 +405,23 @@ public class ArrayDataServiceTest {
 
     @Test
     public void testValidate() {
-        testCelValidation();
-        testChpValidation();
         testIlluminaValidation();
         testGenepixValidation();
+        testCelValidation();
+        testChpValidation();
     }
 
     private void testGenepixValidation() {
-        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_3_0_6));
-        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_0_1));
-        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_1_1));
-        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_5_0_1));
-        testInvalidFile(getGprCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL));
+        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_3_0_6, GAL_DERISI_LSID_OBJECT_ID));
+        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_0_1, GAL_DERISI_LSID_OBJECT_ID));
+        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_1_1, GAL_DERISI_LSID_OBJECT_ID));
+        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_5_0_1, GAL_YEAST1_LSID_OBJECT_ID));
+        testInvalidFile(getGprCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, GAL_DERISI_LSID_OBJECT_ID));
     }
 
 
     private void testIlluminaValidation() {
-        testValidFile(getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6));
+        testValidFile(getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID));
     }
 
     private void testValidFile(CaArrayFile caArrayFile) {
@@ -424,7 +430,6 @@ public class ArrayDataServiceTest {
         if (FileStatus.VALIDATION_ERRORS.equals(caArrayFile.getFileStatus())) {
             System.out.println(caArrayFile.getValidationResult());
         }
-        System.out.println(caArrayFile.getValidationResult());
         assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
     }
 
@@ -435,18 +440,18 @@ public class ArrayDataServiceTest {
     }
 
     private void testChpValidation() {
-        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CALVIN_CHP));
-        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP));
-        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP));
-        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CHP));
-        testInvalidFile(getChpCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
+        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CALVIN_CHP, AFFY_TEST3_LSID_OBJECT_ID));
+        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP, HG_FOCUS_LSID_OBJECT_ID));
+        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID));
+        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CHP, AFFY_TEST3_LSID_OBJECT_ID));
+        testInvalidFile(getChpCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF, AFFY_TEST3_LSID_OBJECT_ID));
     }
 
     private void testCelValidation() {
-        testValidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL));
-        testInvalidFile(getCelCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
-        testInvalidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_DATA_CEL));
-        testInvalidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_HEADER_CEL));
+        testValidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, AFFY_TEST3_LSID_OBJECT_ID));
+        testInvalidFile(getCelCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF, AFFY_TEST3_LSID_OBJECT_ID));
+        testInvalidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_DATA_CEL, AFFY_TEST3_LSID_OBJECT_ID));
+        testInvalidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_HEADER_CEL, AFFY_TEST3_LSID_OBJECT_ID));
     }
 
     @Test
@@ -462,7 +467,7 @@ public class ArrayDataServiceTest {
     }
 
     private void testGenepixData() throws InvalidDataFileException {
-        CaArrayFile gprFile = getGprCaArrayFile(GenepixArrayDataFiles.GPR_5_0_1);
+        CaArrayFile gprFile = getGprCaArrayFile(GenepixArrayDataFiles.GPR_5_0_1, GAL_DERISI_LSID_OBJECT_ID);
         this.arrayDataService.importData(gprFile, true);
         DerivedArrayData gprData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(gprFile);
         DataSet dataSet = this.arrayDataService.getData(gprData);
@@ -477,7 +482,7 @@ public class ArrayDataServiceTest {
     }
 
     private void testIlluminaData() throws InvalidDataFileException {
-        CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6_SMALL);
+        CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
         this.arrayDataService.importData(illuminaFile, true);
         DerivedArrayData illuminaData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(illuminaFile);
         DataSet dataSet = this.arrayDataService.getData(illuminaData);
@@ -582,7 +587,7 @@ public class ArrayDataServiceTest {
         Hybridization hybridization = createAffyHybridization(cdf);
         RawArrayData celData = new RawArrayData();
         celData.setType(this.daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_CEL));
-        celData.setDataFile(getCelCaArrayFile(cel));
+        celData.setDataFile(getCelCaArrayFile(cel, AFFY_TEST3_LSID_OBJECT_ID));
         celData.setHybridization(hybridization);
         this.daoFactoryStub.addData(celData);
         hybridization.setArrayData(celData);
@@ -609,27 +614,39 @@ public class ArrayDataServiceTest {
         Hybridization hybridization = createAffyHybridization(cdf);
         DerivedArrayData chpData = new DerivedArrayData();
         chpData.setType(this.daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CHP));
-        chpData.setDataFile(getChpCaArrayFile(file));
+        chpData.setDataFile(getChpCaArrayFile(file, AFFY_TEST3_LSID_OBJECT_ID));
         chpData.getHybridizations().add(hybridization);
         hybridization.getDerivedDataCollection().add(chpData);
         this.daoFactoryStub.addData(chpData);
         return chpData;
     }
 
-    private CaArrayFile getGprCaArrayFile(File gpr) {
-        return getDataCaArrayFile(gpr, FileType.GENEPIX_GPR);
+    private CaArrayFile getGprCaArrayFile(File gpr, String lsidObjectId) {
+        CaArrayFile caArrayFile = getDataCaArrayFile(gpr, FileType.GENEPIX_GPR);
+        ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
+        caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
+        return caArrayFile;
     }
 
-    private CaArrayFile getCelCaArrayFile(File cel) {
-        return getDataCaArrayFile(cel, FileType.AFFYMETRIX_CEL);
+    private CaArrayFile getCelCaArrayFile(File cel, String lsidObjectId) {
+        CaArrayFile caArrayFile = getDataCaArrayFile(cel, FileType.AFFYMETRIX_CEL);
+        ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
+        caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
+        return caArrayFile;
     }
 
-    private CaArrayFile getChpCaArrayFile(File chp) {
-        return getDataCaArrayFile(chp, FileType.AFFYMETRIX_CHP);
+    private CaArrayFile getChpCaArrayFile(File chp, String lsidObjectId) {
+        CaArrayFile caArrayFile = getDataCaArrayFile(chp, FileType.AFFYMETRIX_CHP);
+        ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
+        caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
+        return caArrayFile;
     }
 
-    private CaArrayFile getIlluminaCaArrayFile(File file) {
-        return getDataCaArrayFile(file, FileType.ILLUMINA_DATA_CSV);
+    private CaArrayFile getIlluminaCaArrayFile(File file, String lsidObjectId) {
+        CaArrayFile caArrayFile = getDataCaArrayFile(file, FileType.ILLUMINA_DATA_CSV);
+        ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
+        caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
+        return caArrayFile;
     }
 
     private CaArrayFile getDataCaArrayFile(File file, FileType type) {
@@ -650,23 +667,34 @@ public class ArrayDataServiceTest {
 
         private final Map<CaArrayFile, AbstractArrayData> fileDataMap = new HashMap<CaArrayFile, AbstractArrayData>();
 
+        private Map<String, ArrayDesign> arrayDesignMap = new HashMap<String, ArrayDesign>();
+
         @Override
         public ArrayDao getArrayDao() {
             return new ArrayDaoStub() {
+                
 
                 @Override
                 public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-                    if ("Test3".equals(lsidObjectId)) {
-                        return createArrayDesign(126, 126);
-                    } else if ("HG-Focus".equals(lsidObjectId)) {
-                        return createArrayDesign(448, 448);
+                    if (arrayDesignMap.containsKey(lsidObjectId)) {
+                        return arrayDesignMap.get(lsidObjectId);
+                    } else if (AFFY_TEST3_LSID_OBJECT_ID.equals(lsidObjectId)) {
+                        return createArrayDesign(lsidObjectId, 126, 126);
+                    } else if (ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID.equals(lsidObjectId)) {
+                        return createArrayDesign(lsidObjectId, 126, 126);
+                    } else if (GAL_DERISI_LSID_OBJECT_ID.equals(lsidObjectId)) {
+                        return createArrayDesign(lsidObjectId, 126, 126);
+                    } else if (GAL_YEAST1_LSID_OBJECT_ID.equals(lsidObjectId)) {
+                        return createArrayDesign(lsidObjectId, 126, 126);
+                    } else if (HG_FOCUS_LSID_OBJECT_ID.equals(lsidObjectId)) {
+                        return createArrayDesign(lsidObjectId, 448, 448);
                     } else {
                         return null;
                     }
                 }
 
                 @SuppressWarnings("deprecation")
-                private ArrayDesign createArrayDesign(int rows, int columns) {
+                private ArrayDesign createArrayDesign(String lsidObjectId, int rows, int columns) {
                     ArrayDesign arrayDesign = new ArrayDesign();
                     ArrayDesignDetails details = new ArrayDesignDetails();
                     for (short row = 0; row < rows; row++) {
@@ -679,6 +707,7 @@ public class ArrayDataServiceTest {
                     }
                     arrayDesign.setNumberOfFeatures(details.getFeatures().size());
                     arrayDesign.setDesignDetails(details);
+                    arrayDesignMap.put(lsidObjectId, arrayDesign);
                     return arrayDesign;
                 }
 

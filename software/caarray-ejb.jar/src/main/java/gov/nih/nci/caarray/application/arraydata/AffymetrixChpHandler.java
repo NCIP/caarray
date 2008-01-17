@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataT
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
@@ -360,6 +361,13 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         default:
             throw new IllegalArgumentException("Unsupported Affymetrix CHP type");
         }
+    }
+
+    @Override
+    ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
+        FusionCHPLegacyData chpData = getChpData(file);
+        String lsidObjectId = chpData.getHeader().getChipType();
+        return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, lsidObjectId);
     }
 
 }

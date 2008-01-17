@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -141,6 +142,18 @@ class UnsupportedDataFormatHandler extends AbstractDataFileHandler {
     @Override
     FileStatus getValidatedStatus() {
         return FileStatus.VALIDATED_NOT_PARSED;
+    }
+
+    @Override
+    ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
+        // data parsing not supported for the current type
+        return null;
+    }
+
+    @Override
+    void validateArrayDesignInExperiment(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+            ArrayDesignService arrayDesignService) {
+        // no-op, data parsing not supported for the current type
     }
 
 }

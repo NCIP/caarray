@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
@@ -121,6 +122,9 @@ abstract class AbstractDataFileHandler {
         FileValidationResult result = new FileValidationResult(file);
         try {
             validate(caArrayFile, file, result, arrayDesignService);
+            if (result.isValid()) {
+                validateArrayDesignInExperiment(caArrayFile, file, result, arrayDesignService);
+            }
         } catch (RuntimeException e) {
             getLog().error("Unexpected RuntimeException validating data file", e);
             result.addMessage(Type.ERROR, "Unexpected error validating data file: " + e.getMessage());
@@ -128,9 +132,21 @@ abstract class AbstractDataFileHandler {
         return result;
     }
 
+    void validateArrayDesignInExperiment(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+            ArrayDesignService arrayDesignService) {
+        ArrayDesign design = getArrayDesign(arrayDesignService, file);
+        if (design == null) {
+            result.addMessage(Type.ERROR, "The array design referenced by this data file could not be found.");
+        } else if (!caArrayFile.getProject().getExperiment().getArrayDesigns().contains(design)) {
+            result.addMessage(Type.ERROR, "The array design referenced by this data file (" + design.getName() 
+                    + ") is not associated with this experiment");
+        }
+    }
+    
+    abstract ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file);
+
     abstract void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
             ArrayDesignService arrayDesignService);
-
 
     abstract void loadData(DataSet dataSet, List<QuantitationType> types, File file);
 

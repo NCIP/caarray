@@ -85,6 +85,8 @@ package gov.nih.nci.caarray.application.arraydata;
 import gov.nih.nci.caarray.application.arraydata.genepix.GenepixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
@@ -107,6 +109,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -115,12 +118,13 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("PMD.CyclomaticComplexity")
 final class GenepixGprHandler extends AbstractDataFileHandler {
 
-    /**
-     *
-     */
+    private static final String LSID_AUTHORITY = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;
+    private static final String LSID_NAMESPACE = AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE;
+
     private static final int REQUIRED_INITIAL_ROW_HEADER_LENGTH = 3;
     private static final String WAVELENGTHS_HEADER = "Wavelengths";
     private static final String IMAGE_NAME_HEADER = "ImageName";
+    private static final String GAL_FILE_HEADER = "GalFile";
     private static final String ROW_HEADER = "Row";
     private static final String COLUMN_HEADER = "Column";
     private static final String BLOCK_HEADER = "Block";
@@ -285,8 +289,10 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     private void addHeader(Map<String, String[]> headers, List<String> values) {
         String[] parts = values.get(0).split("=");
         String header = parts[0];
-        String[] headerValues = parts[0].split("\t");
-        headers.put(header, headerValues);
+        if (parts.length > 1) {
+            String[] headerValues = parts[1].split("\t");
+            headers.put(header, headerValues);
+        }
     }
 
     @Override
@@ -499,6 +505,8 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         readAndValidateCountLine(reader, result);
         if (getColumnHeaders(reader) == null) {
             result.addMessage(Type.ERROR, "The GPR file doesn't contain a valid header line.");
+        } else {
+            validateHasGalFile(reader, result);
         }
     }
 
@@ -540,6 +548,29 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
             return Float.NaN;
         } else {
             return super.parseFloat(value);
+        }
+    }
+
+    private void validateHasGalFile(DelimitedFileReader reader, FileValidationResult result) {
+        if (getGalFile(reader) == null) {
+            result.addMessage(Type.ERROR, "This file doesn't contain the required header entry \"GalFile\"");
+        }
+    }
+
+    @Override
+    ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
+        String galFile = getGalFile(getReader(file));
+        String galName = FilenameUtils.getBaseName(galFile);
+        return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, galName);
+    }
+
+    private String getGalFile(DelimitedFileReader reader) {
+        Map<String, String[]> headers = getHeaders(reader);
+        String[] galFileHeader = headers.get(GAL_FILE_HEADER);
+        if (galFileHeader == null || galFileHeader.length == 0 || StringUtils.isEmpty(galFileHeader[0])) {
+            return null;
+        } else {
+            return galFileHeader[0].trim();
         }
     }
 

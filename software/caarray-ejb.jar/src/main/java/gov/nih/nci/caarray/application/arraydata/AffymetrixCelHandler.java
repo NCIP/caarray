@@ -283,6 +283,20 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         return AffymetrixArrayDataTypes.AFFYMETRIX_CEL;
     }
 
+    @Override
+    ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
+        String objectId = null;
+        try {
+            celData = new FusionCELData();
+            celData.setFileName(file.getAbsolutePath());
+            readCelData(celData.getFileName());
+            objectId = getLsidObjectId();
+        } finally {
+            closeCelData();
+        }
+        return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, objectId);
+    }
+
 }
 
 
