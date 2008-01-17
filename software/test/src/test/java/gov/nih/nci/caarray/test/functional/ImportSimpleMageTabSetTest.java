@@ -106,6 +106,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 10;
     private static final int TWO_MINUTES = 12;
+    private static final String ARRAY_DESIGN_NAME = "Test3";
 
     @Test
     public void testImportAndRetrieval() throws Exception {
@@ -118,7 +119,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
 
         // Create project
-        createExperiment(title);
+        createExperiment(title,ARRAY_DESIGN_NAME);
 
         // - go to the data tab
         selenium.click("link=Data");
@@ -189,13 +190,12 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
     }
 
     private void importArrayDesign(File arrayDesign) throws Exception {
-        String arrayDesignName = "Test3";
         selenium.click("link=Manage Array Designs");
         selenium.waitForPageToLoad("30000");
-        if (!doesArrayDesignExists(arrayDesignName)) {
-            addArrayDesign(arrayDesignName, arrayDesign);
+        if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
+            addArrayDesign(ARRAY_DESIGN_NAME, arrayDesign);
             // get the array design row so we do not find the wrong Imported text
-            int column = getExperimentRow(arrayDesignName, ZERO_COLUMN);
+            int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
             // wait for array design to be imported
             waitForArrayDesignImport(TWO_MINUTES, column);
         }

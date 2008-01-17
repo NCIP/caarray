@@ -119,7 +119,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         loginAsPrincipalInvestigator();
         importArrayDesign("HT_HG-U133A", AffymetrixArrayDesignFiles.HT_HG_U133A_CDF);
         // - Create Experiment
-        createExperiment(title);
+        createExperiment(title, "HT_HG-U133A");
 
         // - go to the data tab
         this.selenium.click("link=Data");

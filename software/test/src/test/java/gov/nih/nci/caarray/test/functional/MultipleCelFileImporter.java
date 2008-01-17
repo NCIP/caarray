@@ -96,11 +96,13 @@ import org.junit.Test;
 public class MultipleCelFileImporter extends AbstractSeleniumTest {
 
     private static final int NUM_SETS_OF_TEN = 1;
+    private static final String ARRAY_DESIGN_NAME = "HG-U133_Plus_2";
+
 
     @Test
     public void testUploadFiles() throws Exception {
         loginAsPrincipalInvestigator();
-        importArrayDesign("HG-U133_Plus_2", AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
+        importArrayDesign(ARRAY_DESIGN_NAME, AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
         for (int i = 0; i < NUM_SETS_OF_TEN; i++) {
             importTenFiles();
         }
@@ -123,7 +125,7 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
     public void importTenFiles() throws Exception {
         String title = "test" + System.currentTimeMillis();
         // Create experiment
-        createExperiment(title);
+        createExperiment(title, ARRAY_DESIGN_NAME);
         // go to the data tab
         selenium.click("link=Data");
         waitForTab();

@@ -135,12 +135,8 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         findTitleAcrossMultiPages(experimentId);
 
         // - Browse by Unique Array Designs
-        selenium.click("link=Login");
-        selenium.waitForPageToLoad("3000");
-        selenium.click("link=Unique Array Designs");
-        waitForText("found");
-        // - Assert the Experiment is visible without logging in
-        findTitleAcrossMultiPages(experimentId);
+        //  - no array design set on the experiment
+        
 
     }
 
