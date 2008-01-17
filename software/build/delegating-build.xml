@@ -18,6 +18,7 @@
         <ant antfile="build/build.xml"
             dir="software"
             target="continuous-integration" />
+        <echo>svn.username is ${svn.username} and svn.password is ${svn.password} </echo>
         <svn username="${svn.username}" password="${svn.password}">
             <copy message="Tagging with ${label}"
                 srcurl="http://gforge.nci.nih.gov/svnroot/caarray2/trunk"
