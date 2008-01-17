@@ -137,6 +137,7 @@
 					usedebug="false">
 				  <property name="notest" value="true"/>
 				  <property name="nocheck" value="true"/>
+				  <property name="buildNumber" value="CRUISE"/>				  
 				  <property name="build.tag_built" value="trunk-remoteDeployfromCC"/>
 				  <property name="envpropertyfile" value="C:/dev/scm-private/trunk/caarray2/properties/DEV.properties"/>
 				</ant>
