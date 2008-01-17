@@ -37,6 +37,7 @@
         <li><a href="http://caarray.nci.nih.gov/">What is caArray?</a></li>
         <li><a href="https://gforge.nci.nih.gov/frs/shownotes.php?release_id=1984" target="_blank">Release Notes</a></li>
         <li><a href="http://caarray.nci.nih.gov/">Technical Documentation</a></li>
+        <li><a href="http://ncicb.nci.nih.gov/training/caarray/">Training</a></li>
         <li><a href="javascript:openHelpWindow('')">Help</a></li>
     </ul>
     <ul class="quicklinks">
