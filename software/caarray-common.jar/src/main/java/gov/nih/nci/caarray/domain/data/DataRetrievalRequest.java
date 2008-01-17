@@ -97,6 +97,7 @@ public class DataRetrievalRequest implements Serializable {
 
     private static final long serialVersionUID = 408918013610243473L;
 
+    private Long id;
     private List<AbstractDesignElement> designElements = new ArrayList<AbstractDesignElement>();
     private List<Hybridization> hybridizations = new ArrayList<Hybridization>();
     private List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
@@ -106,6 +107,28 @@ public class DataRetrievalRequest implements Serializable {
      */
     public DataRetrievalRequest() {
         super();
+    }
+
+    /**
+     * Returns the id.
+     *
+     * @return the id
+     * @deprecated only exists to fulfill caDSR loading requirement
+     */
+    @Deprecated
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the id.
+     *
+     * @param id the id to set
+     * @deprecated only exists to fulfill caDSR loading requirement
+     */
+    @Deprecated
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**
