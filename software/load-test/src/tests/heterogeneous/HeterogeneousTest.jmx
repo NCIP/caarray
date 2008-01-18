@@ -1110,7 +1110,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.arraydata.DataDownloadClient</stringProp>
+          <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.arraydata.DataSetDownloadClient</stringProp>
         </JavaSampler>
         <hashTree/>
       </hashTree>

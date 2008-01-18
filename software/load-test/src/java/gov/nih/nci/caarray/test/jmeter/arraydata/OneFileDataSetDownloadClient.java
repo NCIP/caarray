@@ -206,9 +206,8 @@ public class OneFileDataSetDownloadClient extends CaArrayJmeterSampler implement
                         results.sampleEnd();
                         results.setSuccessful(true);
                         results.setResponseCodeOK();
-                        results.setResponseMessage("Retrieved DataSet ID=" + dataSet.getId() + ", "
-                                + dataSet.getQuantitationTypes().size()
-                                + " quantitation types and " + numValuesRetrieved + " values.");
+                        results.setResponseMessage("Retrieved " + dataSet.getHybridizationDataList().size() + " hybridization data elements, "
+                                + dataSet.getQuantitationTypes().size() + " quantitation types and " + numValuesRetrieved + " values.");
                     } else {
                         results.setSuccessful(false);
                         results.setResponseCode("Error: Retrieved null data set.");
@@ -223,14 +222,17 @@ public class OneFileDataSetDownloadClient extends CaArrayJmeterSampler implement
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
-            results.setResponseCode("Server connection exception: " + e);
+            StringBuilder trace = buildStackTrace(e);
+            results.setResponseCode("Server connection exception: " + e + "\nTrace: " + trace);
         } catch (RuntimeException e) {
             results.setSuccessful(false);
-            results.setResponseCode("Runtime exception: " + e);
+            StringBuilder trace = buildStackTrace(e);
+            results.setResponseCode("Runtime exception: " + e + "\nTrace: " + trace);
         } catch (Throwable t) {
             // Catches things like out-of-memory errors and logs them in the test output.
             results.setSuccessful(false);
-            results.setResponseCode("Throwable: " + t);
+            StringBuilder trace = buildStackTrace(t);
+            results.setResponseCode("Throwable: " + t + "\nTrace: " + trace);
         }
         return results;
     }
