@@ -75,7 +75,6 @@
                 <include name="asm.jar" />
                 <include name="caGrid-1.1-data-common.jar" />
                 <include name="caGrid-1.1-data-stubs.jar" />
-                <include name="castor-1.0.2.jar" />
                 <include name="cglib-2.1.3.jar" />
                 <include name="commons-discovery-0.2.jar" />
                 <include name="csmapi.jar" />
@@ -106,6 +105,7 @@
                 <include name="caGrid-1.1-ServiceSecurityProvider-client.jar" />
                 <include name="caGrid-1.1-ServiceSecurityProvider-common.jar" />
                 <include name="caGrid-1.1-ServiceSecurityProvider-stubs.jar" />
+                <include name="castor-1.0.4.jar" />
             </fileset>
         </copy>
         <copy file="${caarray.common.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
