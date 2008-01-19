@@ -164,7 +164,7 @@
   -->
 
         <!-- ******************************************************************* -->
-        <!-- ** RUN API TESTS                                                 ** -->
+        <!-- ** RUN API FUNCTIONAL TESTS                                      ** -->
         <!-- ******************************************************************* -->
         <!--
         <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/SearchByExampleTest.jmx" resultlog="${tests.out.dir}/apitest/SearchByExampleTest.jtl">
@@ -218,6 +218,61 @@
             <property name="grid.service.port" value="${grid.service.port}" />
         </jmeter>
   -->
+
+
+        <!-- ******************************************************************* -->
+        <!-- ** RUN WEB FUNCTIONAL TESTS                                      ** -->
+        <!-- ******************************************************************* -->
+        <!--
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/AnonymousBrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/AnonymousBrowseTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/SearchTest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/import/UploadTest_Basic.jmx" resultlog="${tests.out.dir}/import/UploadTest_Basic.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/import/ImportTest_Basic.jmx" resultlog="${tests.out.dir}/import/ImportTest_Basic.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/download/FileDownloadUITest_Basic.jmx" resultlog="${tests.out.dir}/download/FileDownloadUITest_Basic.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        -->
 
         <!-- ******************************************************************* -->
         <!-- ** RUN LOAD TESTS                                                ** -->
@@ -297,6 +352,8 @@
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
+            <property name="concurrent.users" value="5" />
+            <property name="number.of.iterations" value="1" />
         </jmeter>
         -->
 
