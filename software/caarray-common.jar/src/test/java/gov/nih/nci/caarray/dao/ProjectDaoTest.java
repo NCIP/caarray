@@ -788,7 +788,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_1.getId()));
             assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_2.getId()));
             assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_DATA_FILE.getId()));
-            assertFalse(SecurityUtils.canRead(p, UsernameHolder.getCsmUser()));            
+            assertFalse(SecurityUtils.canRead(p, UsernameHolder.getCsmUser()));
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
@@ -808,13 +808,13 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertNotNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_DATA_FILE.getId()));
 
             List<UserGroupRoleProtectionGroup> list = SecurityUtils.getUserGroupRoleProtectionGroups(p);
-            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                     SecurityUtils.READ_ROLE))));
-            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                     SecurityUtils.WRITE_ROLE))));
-            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                     SecurityUtils.PERMISSIONS_ROLE))));
-            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                     SecurityUtils.BROWSE_ROLE))));
 
             assertTrue(SecurityUtils.canRead(p, UsernameHolder.getCsmUser()));
@@ -854,13 +854,13 @@ public class ProjectDaoTest extends AbstractDaoTest {
             Hibernate.initialize(p.getExperiment().getSamples());
             assertEquals(1, p.getExperiment().getSamples().size());
             list = SecurityUtils.getUserGroupRoleProtectionGroups(p);
-            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                     SecurityUtils.READ_ROLE))));
-            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                     SecurityUtils.WRITE_ROLE))));
-            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                     SecurityUtils.PERMISSIONS_ROLE))));
-            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+            assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                     SecurityUtils.BROWSE_ROLE))));
             assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                     SecurityUtils.READ_ROLE))));
@@ -890,12 +890,12 @@ public class ProjectDaoTest extends AbstractDaoTest {
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
             Hibernate.initialize(p.getExperiment().getSamples());
             assertEquals(0, p.getExperiment().getSamples().size());
-            
+
             assertEquals(1, p.getFiles().size());
             assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_1.getId()));
             assertNotNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_2.getId()));
             assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_DATA_FILE.getId()));
-            
+
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
@@ -1057,13 +1057,13 @@ public class ProjectDaoTest extends AbstractDaoTest {
         Project p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         List<UserGroupRoleProtectionGroup> list = SecurityUtils.getUserGroupRoleProtectionGroups(p);
         assertEquals(5, list.size()); // expect the user-only ones only
-        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                 SecurityUtils.READ_ROLE))));
-        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                 SecurityUtils.WRITE_ROLE))));
-        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                 SecurityUtils.PERMISSIONS_ROLE))));
-        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                 SecurityUtils.BROWSE_ROLE))));
         assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                 SecurityUtils.BROWSE_ROLE))));
@@ -1074,13 +1074,13 @@ public class ProjectDaoTest extends AbstractDaoTest {
         tx = HibernateUtil.beginTransaction();
         list = SecurityUtils.getUserGroupRoleProtectionGroups(p);
         assertEquals(4, list.size()); // expect the user-only ones and the anonymous access one
-        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                 SecurityUtils.READ_ROLE))));
-        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                 SecurityUtils.WRITE_ROLE))));
-        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                 SecurityUtils.PERMISSIONS_ROLE))));
-        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
+        assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                 SecurityUtils.BROWSE_ROLE))));
         tx.commit();
     }
@@ -1289,7 +1289,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             fail("DAO exception during save of accession collection: " + e.getMessage());
         }
     }
-    
+
     private static class HasRolePredicate implements Predicate {
         private final String role;
 
@@ -1317,16 +1317,6 @@ public class ProjectDaoTest extends AbstractDaoTest {
         public boolean evaluate(Object o) {
             UserGroupRoleProtectionGroup ugrpg = (UserGroupRoleProtectionGroup) o;
             return ugrpg.getGroup() != null;
-        }
-    }
-
-    private static class IsUserPredicate implements Predicate {
-        /**
-         * {@inheritDoc}
-         */
-        public boolean evaluate(Object o) {
-            UserGroupRoleProtectionGroup ugrpg = (UserGroupRoleProtectionGroup) o;
-            return ugrpg.getUser() != null;
         }
     }
 }

@@ -152,24 +152,21 @@ public class Experiment extends AbstractCaArrayEntity {
         + "csm_role r, csm_privilege p, csm_group g, csm_user_group ug where "
         + "pe.object_id= 'gov.nih.nci.caarray.domain.project.Project' and pe.attribute='id' and "
         + "u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id=r.role_id "
-        + "and (ugrpg.user_id = u.user_id or ugrpg.group_id = ug.group_id and ug.user_id = u.user_id) and "
+        + "and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and "
         + "ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id "
         + "and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = "
         + "p.privilege_id and p.privilege_name='READ')";
-    private static final String PROJECT_OWNER_CLAUSE = "(select pe.attribute_value from csm_protection_group pg, "
-        + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
-        + "csm_role r, csm_privilege p  where pe.object_id= 'gov.nih.nci.caarray.domain.project.Project' and "
+    private static final String PROJECT_OWNER_CLAUSE = "(select pe.attribute_value from csm_user_pe upe, "
+        + "csm_protection_element pe, csm_user u "
+        + "where pe.object_id= 'gov.nih.nci.caarray.domain.project.Project' and "
         + "pe.attribute='id' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and "
-        + "ugrpg.role_id = r.role_id and ugrpg.user_id=u.user_id and ugrpg.protection_group_id=pg.protection_group_id "
-        + "and pg.protection_group_id = pgpe.protection_group_id and "
-        + "pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = "
-        + "p.privilege_id and p.privilege_name='READ')";
+        + "upe.protection_element_id = pe.protection_element_id and upe.user_id = u.user_id)";
     private static final String READABLE_SAMPLE_CLAUSE = "(select pe.attribute_value from csm_protection_group pg, "
         + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
         + "csm_role r, csm_privilege p, csm_group g, csm_user_group ug where "
         + "pe.object_id= 'gov.nih.nci.caarray.domain.sample.Sample' and pe.attribute='id' and "
         + "u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id=r.role_id "
-        + "and (ugrpg.user_id = u.user_id or ugrpg.group_id = ug.group_id and ug.user_id = u.user_id) and "
+        + "and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and "
         + "ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id "
         + "and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = "
         + "p.privilege_id and p.privilege_name='READ')";
@@ -201,7 +198,7 @@ public class Experiment extends AbstractCaArrayEntity {
         + "ele2 on leh2.labeledextract_id = ele2.labeledextract_id left join sampleextract se2 on ele2.extract_id = "
         + "se2.extract_id left join biomaterial s2 on se2.sample_id = s2.id where s.id is not null and s.id in "
         + READABLE_SAMPLE_CLAUSE + " or s2.id is not null and s2.id in " + READABLE_SAMPLE_CLAUSE + " or (f.status = "
-        + "'SUPPLEMENTAL' or f.status = 'IMPORTED') and s.id is null and s2.id is null and p.id in " 
+        + "'SUPPLEMENTAL' or f.status = 'IMPORTED') and s.id is null and s2.id is null and p.id in "
         + READABLE_PROJECT_CLAUSE + " or p.id in " + PROJECT_OWNER_CLAUSE + ")";
     private static final long serialVersionUID = 1234567890L;
     private static final int PAYMENT_NUMBER_FIELD_LENGTH = 100;
@@ -235,7 +232,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
     private String publicIdentifier;
     private Project project;
-    
+
     /**
      * Gets the dateOfExperiment.
      *

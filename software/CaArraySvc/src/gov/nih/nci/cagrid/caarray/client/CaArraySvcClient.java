@@ -5,16 +5,17 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.cagrid.caarray.common.CaArraySvcI;
 import gov.nih.nci.cagrid.caarray.stubs.CaArraySvcPortType;
 import gov.nih.nci.cagrid.caarray.stubs.service.CaArraySvcServiceAddressingLocator;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.cqlquery.Object;
-import gov.nih.nci.cagrid.cqlresultset.CQLObjectResult;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
 import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
+import gov.nih.nci.cagrid.data.faults.MalformedQueryExceptionType;
+import gov.nih.nci.cagrid.data.faults.QueryProcessingExceptionType;
 import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
 import gov.nih.nci.cagrid.introduce.security.client.ServiceSecurityClient;
 
@@ -27,7 +28,6 @@ import org.apache.axis.EngineConfiguration;
 import org.apache.axis.client.AxisClient;
 import org.apache.axis.client.Stub;
 import org.apache.axis.configuration.FileProvider;
-import org.apache.axis.message.MessageElement;
 import org.apache.axis.message.addressing.EndpointReferenceType;
 import org.apache.axis.types.URI.MalformedURIException;
 import org.globus.gsi.GlobusCredential;
@@ -107,62 +107,27 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
 			if(args[0].equals("-url")){
 			  CaArraySvcClient client = new CaArraySvcClient(args[1]);
 
-              CQLQuery cqlQuery = new CQLQuery();
-
-              Object target = new Object();
-              cqlQuery.setTarget(target);
-
-              target.setName("gov.nih.nci.caarray.domain.vocabulary.Category");
-
-              CQLQueryResults results = client.query(cqlQuery);
-
-              System.out.println("TCPTCP: " + results);
-              System.out.println("TCPTCP: " + results.getCountResult());
-              CQLObjectResult[] resultsArray = results.getObjectResult();
-              for (CQLObjectResult r : resultsArray) {
-                  System.out.println("Iterate: " + r);
-                  MessageElement[] get_any = r.get_any();
-                  for (MessageElement me : get_any) {
-                      System.out.println("\tMessageElement: " + me.toString());
-                  }
-
-              }
-
-              CQLQueryResultsIterator iter = new CQLQueryResultsIterator(results, CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
-
-              while (iter.hasNext()) {
-                  try {
-                      java.lang.Object o = iter.next();
-                      System.out.println("As Category: " + ((Category) o).getParents());
-                      System.out.println("TCPTCP2: " + o);
-                  } catch (Exception e) {
-                      e.printStackTrace();
-                  }
-              }
-
               ArrayDesign arrayDesign = new ArrayDesign();
               arrayDesign.setId(1L);
               ArrayDesignDetails designDetails = client.getDesignDetails(arrayDesign );
               System.out.println("DesignDetails: " + designDetails);
 
-              if (1 == 1) {
-                  System.exit(1);
-              }
+              QuantitationType qt = (QuantitationType) get(client, "gov.nih.nci.caarray.domain.data.QuantitationType",
+                      "name", "CELX");
+              Hybridization hyb = (Hybridization) get(client, "gov.nih.nci.caarray.domain.hybridization.Hybridization",
+                      "name", "H_TK6MDR1 replicate 1");
 
               DataRetrievalRequest drr = new DataRetrievalRequest();
-              Hybridization hyb = new Hybridization();
-              hyb.setId(2L);
               drr.getHybridizations().add(hyb);
-              QuantitationType qt = new QuantitationType();
-              qt.setId(18L);
               drr.addQuantitationType(qt);
               DataSet dataSet = client.getDataSet(drr);
               System.out.println(dataSet);
 
+              /*
               CaArrayFile file = new CaArrayFile();
               file.setId(2L);
               byte[] bytes = client.readFile(file);
-              System.out.println("Bytes: " + bytes);
+              System.out.println("Bytes: " + bytes); */
 
               // place client calls here if you want to use this main as a
 			  // test....
@@ -178,6 +143,27 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
 			e.printStackTrace();
 			System.exit(1);
 		}
+	}
+
+	public static java.lang.Object get(CaArraySvcClient client, String type, String attr, String value)
+	throws QueryProcessingExceptionType, MalformedQueryExceptionType, RemoteException {
+        CQLQuery cqlQuery = new CQLQuery();
+
+        Object target = new Object();
+        cqlQuery.setTarget(target);
+
+        target.setName(type);
+        Attribute attribute = new Attribute();
+        attribute.setName(attr);
+        attribute.setPredicate(Predicate.EQUAL_TO);
+        attribute.setValue(value);
+        target.setAttribute(attribute);
+
+        CQLQueryResults results = client.query(cqlQuery);
+        CQLQueryResultsIterator iter = new CQLQueryResultsIterator(results, CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
+
+        return iter.next();
+
 	}
 
   public gov.nih.nci.caarray.domain.data.DataSet getDataSet(gov.nih.nci.caarray.domain.data.DataRetrievalRequest dataRetrievalRequest) throws RemoteException {

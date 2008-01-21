@@ -162,7 +162,7 @@ public final class SecurityUtils {
 
     private static final AuthorizationManager AUTH_MGR;
     private static final String APPLICATION_NAME = "caarray";
-    
+
     private static Application caarrayApp;
     private static User anonymousUser;
 
@@ -194,7 +194,7 @@ public final class SecurityUtils {
             anonymousUser = AUTH_MGR.getUser(ANONYMOUS_USERNAME);
         } catch (CSObjectNotFoundException e) {
             throw new IllegalStateException("Could not retrieve caarray application or anonymous user", e);
-        }        
+        }
     }
 
     /**
@@ -219,8 +219,8 @@ public final class SecurityUtils {
     public static User getAnonymousUser() {
         return anonymousUser;
     }
-    
-    
+
+
 
     static void handleBiomaterialChanges(Collection<Project> projects) {
         if (projects == null) {
@@ -458,12 +458,28 @@ public final class SecurityUtils {
         // mechanism and this runs into a hibernate bug:
         // http://opensource.atlassian.com/projects/hibernate/browse/HHH-2593
         // Thus, we do an extra association here. Yuck!
+        Group g = getSingletonGroup(user);
         String[] ownerRoles =
                 {getRoleByName(BROWSE_ROLE).getId().toString(), getRoleByName(READ_ROLE).getId().toString(),
                         getRoleByName(WRITE_ROLE).getId().toString(),
                         getRoleByName(PERMISSIONS_ROLE).getId().toString() };
-        AUTH_MGR.assignUserRoleToProtectionGroup(user.getUserId().toString(), ownerRoles, pg.getProtectionGroupId()
-                .toString());
+        AUTH_MGR.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(), g.getGroupId().toString(),
+                ownerRoles);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Group getSingletonGroup(User user) throws CSTransactionException {
+        Group g = new Group();
+        g.setGroupName(user.getLoginName() + " (" + user.getUserId() + ")");
+        GroupSearchCriteria gsc = new GroupSearchCriteria(g);
+        List<Group> groupList = AUTH_MGR.getObjects(gsc);
+        if (groupList == null || groupList.isEmpty()) {
+            g.setApplication(getApplication());
+            AUTH_MGR.createGroup(g);
+            AUTH_MGR.assignUserToGroup(user.getLoginName(), g.getGroupName());
+            return g;
+        }
+        return groupList.get(0);
     }
 
     private static void handleNewProject(Project p, ProtectionGroup pg) throws CSTransactionException {
