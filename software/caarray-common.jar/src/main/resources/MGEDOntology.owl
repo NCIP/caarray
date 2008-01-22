@@ -1187,9 +1187,6 @@
     <class_role rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >abstract</class_role>
     <rdfs:subClassOf rdf:resource="#BioMaterialPackage"/>
-    <rdfs:subClassOf>
-      <owl:Class rdf:ID="BiologicalFactorCategory"/>
-    </rdfs:subClassOf>
     <class_source rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >ontology</class_source>
   </owl:Class>
@@ -2800,7 +2797,7 @@ either prior to or during the experiment.</rdfs:comment>
     >General descriptor of a BioMaterialCharacteristic category.  Such as strain or line where the name of the strain or line is encoded in the FactorValue.  
 </rdfs:comment>
     <rdfs:subClassOf>
-      <owl:Class rdf:about="#BiologicalFactorCategory"/>
+      <owl:Class rdf:ID="BiologicalFactorCategory"/>
     </rdfs:subClassOf>
   </owl:Class>
   <owl:Class rdf:about="#DevelopmentalStageDatabase">
@@ -3544,9 +3541,6 @@ either prior to or during the experiment.</rdfs:comment>
           <owl:Class rdf:ID="CompoundDatabase"/>
         </owl:someValuesFrom>
       </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Class rdf:about="#BiologicalFactorCategory"/>
     </rdfs:subClassOf>
   </owl:Class>
   <owl:Class rdf:about="#CompoundDatabase">

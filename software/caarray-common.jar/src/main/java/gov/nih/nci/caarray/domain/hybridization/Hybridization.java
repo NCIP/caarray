@@ -205,7 +205,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @return the derivedDatas
      */
     @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.LAZY)
-    @Cascade(CascadeType.DELETE)
+    @Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE})
     public Set<DerivedArrayData> getDerivedDataCollection() {
         return this.derivedDataCollection;
     }
