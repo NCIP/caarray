@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.country;
 
 import gov.nih.nci.caarray.domain.country.Country;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -93,6 +94,10 @@ import java.util.List;
 public class CountryServiceStub implements CountryService {
 
     public List<Country> getCountries() {
-      return null;
+        List<Country> countries = new ArrayList<Country>();
+        for (int i=0; i<1; i++) {
+            countries.add(new Country());
+        }
+        return countries;
     }
 }

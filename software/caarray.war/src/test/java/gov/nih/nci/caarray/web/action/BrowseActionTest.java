@@ -132,6 +132,8 @@ public class BrowseActionTest {
 
     @Test
     public void testList() throws Exception {
+        this.browseAction.setCategory(BrowseCategory.ORGANISMS);
+        this.browseAction.setId(1L);
         String result = this.browseAction.list();
         PaginatedListImpl<Project, ProjectSortCriterion> asdf = browseAction.getResults();
         assertEquals(NUM_PROJECTS, asdf.getList().size());
@@ -157,8 +159,10 @@ public class BrowseActionTest {
         @Override
         public List<Project> browseList(PageSortParams<Project> params, BrowseCategory cat, Number fieldId) {
             List<Project> projects = new ArrayList<Project>();
-            for (int i=0; i<NUM_PROJECTS; i++) {
-                projects.add(new Project());
+            if (cat == BrowseCategory.ORGANISMS && fieldId.equals(1L)) {
+                for (int i=0; i<NUM_PROJECTS; i++) {
+                    projects.add(new Project());
+                }
             }
             return projects;
         }

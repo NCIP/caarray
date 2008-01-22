@@ -6,7 +6,7 @@
         <display:setProperty name="pagination.sortdirection.param" value="results.sortDirection" />
         <display:setProperty name="pagination.pagenumber.param" value="results.pageNumber" />
         <display:column sortProperty="PUBLIC_ID" title="Experiment ID" sortable="true">
-            <c:set var="canReadRow" value="${caarrayfn:canRead(row, caarrayfn:currentUser())}"/>            
+            <c:set var="canReadRow" value="${caarrayfn:canRead(row, caarrayfn:currentUser())}"/>
             <c:choose>
                 <c:when test="${canReadRow}">
                     <c:url var="viewUrl" value="/project/details.action">
@@ -28,9 +28,16 @@
         <display:column titleKey="search.result.diseaseState">
             <c:choose>
                 <c:when test="${canReadRow}">
+                    <jsp:useBean id="diseaseStates" class="java.util.HashMap"/>
                     <c:forEach var="condition" items="${row.experiment.sources}" varStatus="status">
-                        ${condition.diseaseState.value}<c:if test="${!status.last}">,</c:if>
+                        <c:if test="${!empty condition.diseaseState.value}">
+                            <c:set target="${diseaseStates}" property="${condition.diseaseState.value}"/>
+                        </c:if>
                     </c:forEach>
+                    <c:forEach var="diseaseState" items="${diseaseStates}" varStatus="status">
+                        <c:if test="${!status.first}">, </c:if>${diseaseState.key}
+                    </c:forEach>
+                    <c:remove var="diseaseStates"/>
                 </c:when>
                 <c:otherwise>
                     <fmt:message key="browse.notAvailable"/>

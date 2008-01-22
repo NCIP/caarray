@@ -4,7 +4,7 @@
 <c:if test="${!empty project.id}">
     <c:url value="/project/${project.experiment.publicIdentifier}" var="permalinkUrl"/>
     <c:set var="projectPermalink">(<a href="${permalinkUrl}">Permalink</a>)</c:set>
-</c:if>    
+</c:if>
 
 <script type="text/javascript">
 setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)} <c:out value="${projectPermalink}" escapeXml="false"/>');
@@ -20,7 +20,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)} <c:out val
             attributes required to submit an experiment for review.
             Required fields are marked with <span class="required">*asterisks*</span>.
         </p>
-        <s:form action="ajax/project/tab/Overview/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper'); return false;">
+        <s:form action="ajax/project/tab/Overview/save" namespace="/protected" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper'); return false;">
             <s:textfield required="true" key="project.experiment.title" size="80" tabindex="1"/>
             <s:textarea key="project.experiment.description" cols="80" rows="5" tabindex="2"/>
             <s:textfield theme="readonly" label="Status" value="%{getText(project.status.resourceKey)}"/>

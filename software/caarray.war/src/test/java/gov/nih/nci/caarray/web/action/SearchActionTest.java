@@ -108,7 +108,8 @@ import com.opensymphony.xwork2.Action;
 public class SearchActionTest {
     private final SearchAction searchAction = new SearchAction();
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
-    private static final int NUM_PROJECTS = 2;
+    private static final int NUM_PROJECTS = 4;
+    private static final int NUM_PROJECTS_BY_ORGANISM = 2;
 
     @Before
     public void setUp() throws Exception {
@@ -121,15 +122,29 @@ public class SearchActionTest {
         String result = this.searchAction.basicSearch();
         assertEquals(NUM_PROJECTS, searchAction.getTabs().get(SearchAction.EXPERIMENTS_TAB));
         assertEquals(Action.SUCCESS, result);
+
+        searchAction.setCategory(SearchCategory.ORGANISM);
+        result = this.searchAction.basicSearch();
+        assertEquals(NUM_PROJECTS_BY_ORGANISM, searchAction.getTabs().get(SearchAction.EXPERIMENTS_TAB));
+        assertEquals(Action.SUCCESS, result);
     }
 
     @Test
     public void testExperiments() throws Exception {
+        searchAction.setKeyword("keyword");
         String result = this.searchAction.experiments();
         PaginatedListImpl<Project, ProjectSortCriterion> results = searchAction.getResults();
         assertEquals(SearchAction.EXPERIMENTS_TAB, searchAction.getCurrentTab());
         assertEquals(NUM_PROJECTS, results.getFullListSize());
         assertEquals(NUM_PROJECTS, results.getList().size());
+        assertEquals("tab", result);
+
+        searchAction.setCategory(SearchCategory.ORGANISM);
+        result = this.searchAction.experiments();
+        results = searchAction.getResults();
+        assertEquals(SearchAction.EXPERIMENTS_TAB, searchAction.getCurrentTab());
+        assertEquals(NUM_PROJECTS_BY_ORGANISM, results.getFullListSize());
+        assertEquals(NUM_PROJECTS_BY_ORGANISM, results.getList().size());
         assertEquals("tab", result);
     }
 
@@ -137,7 +152,8 @@ public class SearchActionTest {
         @Override
         public List<Project> searchByCategory(PageSortParams<Project> params, String keyword, SearchCategory... categories) {
             List<Project> projects= new ArrayList<Project>();
-            for (int i = 0; i < NUM_PROJECTS; i++) {
+            int count = (categories[0] == SearchCategory.ORGANISM) ? NUM_PROJECTS_BY_ORGANISM : NUM_PROJECTS;
+            for (int i = 0; i < count; i++) {
                 projects.add(new Project());
             }
             return projects;
@@ -145,7 +161,11 @@ public class SearchActionTest {
 
         @Override
         public int searchCount(String keyword, SearchCategory... categories) {
-            return NUM_PROJECTS;
+            if (categories[0] == SearchCategory.ORGANISM) {
+                return NUM_PROJECTS_BY_ORGANISM;
+            } else {
+                return NUM_PROJECTS;
+            }
         }
     }
 
