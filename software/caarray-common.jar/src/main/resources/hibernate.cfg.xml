@@ -17,7 +17,7 @@
         <property name="hibernate.connection.url">jdbc:mysql://@SERVERNAME@/@DBNAME@</property>
         <property name="hibernate.connection.username">@DBUSER@</property>
         <property name="hibernate.connection.password">@DBPASSWD@</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLInnoDBDialect</property>
         @HIBERNATE_CONFIG_END@ -->
 
         <!-- mapping files -->
