@@ -171,10 +171,16 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
     }
 
     private void checkRequest(DataRetrievalRequest request) {
-        if (request.getHybridizations().isEmpty()) {
+        if (request == null) {
+            throw new IllegalArgumentException("DataRetrievalRequest was null");
+        } else if (request.getHybridizations().isEmpty()) {
             throw new IllegalArgumentException("DataRetrievalRequest didn't specify Hybridizations");
         } else if (request.getQuantitationTypes().isEmpty()) {
             throw new IllegalArgumentException("DataRetrievalRequest didn't specify QuantitationTypes");
+        } else if (request.getHybridizations().contains(null)) {
+            throw new IllegalArgumentException("DataRetrievalRequest Hybridizations included a null value");
+        } else if (request.getQuantitationTypes().contains(null)) {
+            throw new IllegalArgumentException("DataRetrievalRequest QuantitationTypes included a null value");
         }
     }
 

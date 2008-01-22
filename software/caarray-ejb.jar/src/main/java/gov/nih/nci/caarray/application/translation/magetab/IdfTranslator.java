@@ -208,7 +208,7 @@ final class IdfTranslator extends AbstractTranslator {
             person.setPhone(idfPerson.getPhone());
             Address address = new Address();
             // TODO Parse the address before putting it in the Address object.
-            address.setStreetAddress1(idfPerson.getAddress());
+            address.setStreet1(idfPerson.getAddress());
             person.setAddress(address);
             ExperimentContact contact = new ExperimentContact();
             contact.setContact(person);

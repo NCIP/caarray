@@ -127,13 +127,14 @@ public class DataSetConfiguringInterceptor {
         // Need to perform our own cutting here - the default isn't what users will expect.
         for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
             CaArrayUtils.makeLeaf(hybridizationData.getHybridization());
+            CaArrayUtils.makeLeaf(hybridizationData.getLabeledExtract());
             hybridizationData.setDataSet(null);
             for (AbstractDataColumn adc : hybridizationData.getColumns()) {
                 adc.setHybridizationData(null);
                 Hibernate.initialize(adc.getQuantitationType());
             }
         }
-        for (AbstractDesignElement ade : dataSet.getDesignElements()) {
+        for (AbstractDesignElement ade : dataSet.getDesignElementList().getDesignElements()) {
             CaArrayUtils.makeLeaf(ade);
         }
         Hibernate.initialize(dataSet.getQuantitationTypes());
