@@ -470,11 +470,12 @@ public final class SecurityUtils {
     @SuppressWarnings("unchecked")
     private static Group getSingletonGroup(User user) throws CSTransactionException {
         Group g = new Group();
-        g.setGroupName(user.getLoginName() + " (" + user.getUserId() + ")");
+        g.setGroupName("__selfgroup__" + user.getLoginName() + " (" + user.getUserId() + ")");
         GroupSearchCriteria gsc = new GroupSearchCriteria(g);
         List<Group> groupList = AUTH_MGR.getObjects(gsc);
         if (groupList == null || groupList.isEmpty()) {
             g.setApplication(getApplication());
+            g.setGroupDesc("Singleton group for CSM filter performance.  Do not edit.");
             AUTH_MGR.createGroup(g);
             AUTH_MGR.assignUserToGroup(user.getLoginName(), g.getGroupName());
             return g;
