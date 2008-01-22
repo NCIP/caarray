@@ -46,6 +46,7 @@
         <mapping class="gov.nih.nci.caarray.domain.data.ArrayDataType"/>
         <mapping class="gov.nih.nci.caarray.domain.data.BooleanColumn"/>
         <mapping class="gov.nih.nci.caarray.domain.data.DataSet"/>
+        <mapping class="gov.nih.nci.caarray.domain.data.DesignElementList"/>
         <mapping class="gov.nih.nci.caarray.domain.data.DerivedArrayData"/>
         <mapping class="gov.nih.nci.caarray.domain.data.DoubleColumn"/>
         <mapping class="gov.nih.nci.caarray.domain.data.FloatColumn"/>

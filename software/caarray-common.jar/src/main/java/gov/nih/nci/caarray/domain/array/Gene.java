@@ -87,30 +87,22 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import javax.persistence.Entity;
 
 /**
- * Represents a single gene.
+ * A hereditary unit consisting of a sequence of DNA that occupies a specific location on a chromosome and 
+ * determines a particular characteristic in an organism.  The functional and physical unit of heredity passed 
+ * from parent to offspring.
  */
 @Entity
 public class Gene extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1L;
 
-    private String ensemblId;
-    private String unigeneId;
     private String fullName;
     private String symbol;
-
-    /**
-     * @return the ensemblId
-     */
-    public String getEnsemblId() {
-        return ensemblId;
-    }
-    /**
-     * @param ensemblId the ensemblId to set
-     */
-    public void setEnsemblId(String ensemblId) {
-        this.ensemblId = ensemblId;
-    }
+    private String genbankAccession;
+    private String genbankAccessionVersion;
+    private String ensemblgeneID;
+    private String unigeneclusterID;
+    private String entrezgeneID;
 
     /**
      * @return the symbol
@@ -139,19 +131,75 @@ public class Gene extends AbstractCaArrayEntity {
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
-    
+
     /**
-     * @return the unigeneId
+     * @return the ensemblgeneID
      */
-    public String getUnigeneId() {
-        return unigeneId;
+    public String getEnsemblgeneID() {
+        return ensemblgeneID;
     }
-    
+
     /**
-     * @param unigeneId the unigeneId to set
+     * @param ensemblgeneID the ensemblgeneID to set
      */
-    public void setUnigeneId(String unigeneId) {
-        this.unigeneId = unigeneId;
+    public void setEnsemblgeneID(String ensemblgeneID) {
+        this.ensemblgeneID = ensemblgeneID;
+    }
+
+    /**
+     * @return the entrezgeneID
+     */
+    public String getEntrezgeneID() {
+        return entrezgeneID;
+    }
+
+    /**
+     * @param entrezgeneID the entrezgeneID to set
+     */
+    public void setEntrezgeneID(String entrezgeneID) {
+        this.entrezgeneID = entrezgeneID;
+    }
+
+    /**
+     * @return the genbankAccession
+     */
+    public String getGenbankAccession() {
+        return genbankAccession;
+    }
+
+    /**
+     * @param genbankAccession the genbankAccession to set
+     */
+    public void setGenbankAccession(String genbankAccession) {
+        this.genbankAccession = genbankAccession;
+    }
+
+    /**
+     * @return the genbankAccessionVersion
+     */
+    public String getGenbankAccessionVersion() {
+        return genbankAccessionVersion;
+    }
+
+    /**
+     * @param genbankAccessionVersion the genbankAccessionVersion to set
+     */
+    public void setGenbankAccessionVersion(String genbankAccessionVersion) {
+        this.genbankAccessionVersion = genbankAccessionVersion;
+    }
+
+    /**
+     * @return the unigeneclusterID
+     */
+    public String getUnigeneclusterID() {
+        return unigeneclusterID;
+    }
+
+    /**
+     * @param unigeneclusterID the unigeneclusterID to set
+     */
+    public void setUnigeneclusterID(String unigeneclusterID) {
+        this.unigeneclusterID = unigeneclusterID;
     }
 
 }

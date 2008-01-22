@@ -173,7 +173,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         queryStr.append("order by name asc");
         Query query = getCurrentSession().createQuery(queryStr.toString());
         query.setEntity("provider", provider);
-        query.setString("assayType", assayType.name());
+        query.setString("assayType", assayType.getValue());
         if (importedOnly) {
             query.setString("status", FileStatus.IMPORTED.name());
         }

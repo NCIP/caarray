@@ -84,6 +84,9 @@ package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.ResourceBasedEnum;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * An enumeration of different assay types that an Experiment can perform.
  */
@@ -92,56 +95,87 @@ public enum AssayType implements ResourceBasedEnum {
      * Array design used to interrogate gene expression: transcription of genetically encoded information into an
      * intermediary message (messenger RNA) and subsequent translation into a functional protein.
      */
-    GENE_EXPRESSION("assayType.geneExpression"),
+    GENE_EXPRESSION("geneExpression"),
     /**
      * Array design used to interrogate single nucleotide polymorphisms (SNPs): variations of a single nucleotide at a
      * specific location of the genome due to base substitution, present at an appreciable frequency between individuals
      * of a single interbreeding population.
      */
-    SNP("assayType.snp"),
+    SNP("snp"),
     /**
      * Array design used to interrogate exons; the sequences of a gene that are present in the final, mature, spliced
      * messenger RNA molecule from that gene.
      */
-    EXON("assayType.exon"),
+    EXON("exon"),
     /**
      * Array design used to interrogate aCGH.
      */
-    ACGH("assayType.acgh"),
+    ACGH("aCGH"),
 
     /**
      * Assay type used to interrogate miRNA.
      */
-    MICRORNA("assayType.microRna"),
+    MICRORNA("microRNA"),
 
     /**
      * Assay type used to interrogate methylation.
      */
-    METHYLATION("assayType.methylation");
+    METHYLATION("methylation");
 
+    
+    private static final String RESOURCE_KEY_PREFIX = "assayType.";
 
-    private final String resourceKey;
+    private static Map<String, AssayType> valueToTypeMap = new HashMap<String, AssayType>();
+    
+    private final String value;
 
-    AssayType(String resourceKey) {
-        this.resourceKey = resourceKey;
+    AssayType(String value) {
+        this.value = value;
     }
 
     /**
      * @return the resource key that should be used to retrieve a label for this AssayType in the UI
      */
     public String getResourceKey() {
-        return resourceKey;
+        return RESOURCE_KEY_PREFIX + getValue();
     }
 
     /**
-     * Checks a String value to ensure it's a valid AssayType, throwing IllegalArgumentException
-     * if not.
-     *
-     * @param typeValue check if this String is a valid AssayType
+     * @return the value
      */
-    public static void checkType(String typeValue) {
-        if (typeValue != null) {
-            AssayType.valueOf(typeValue);
+    public String getValue() {
+        return value;
+    }
+
+    private static Map<String, AssayType> getValueToTypeMap() {
+        if (valueToTypeMap.isEmpty()) {
+            for (AssayType type : values()) {
+                valueToTypeMap.put(type.getValue(), type);
+            }
+        }
+        return valueToTypeMap;
+    }
+    
+    /**
+     * Returns the <code>AssayType</code> corresponding to the given value. Returns null
+     * for null value.
+     * 
+     * @param value the value to match
+     * @return the matching type.
+     */
+    public static AssayType getByValue(String value) {
+        checkType(value);
+        return getValueToTypeMap().get(value);
+    }
+
+    /**
+     * Checks to see that the value given is a legal <code>AssayType</code> value.
+     * 
+     * @param value the value to check;
+     */
+    public static void checkType(String value) {
+        if (value != null && !getValueToTypeMap().containsKey(value)) {
+            throw new IllegalArgumentException("No matching type for " + value);
         }
     }
 }

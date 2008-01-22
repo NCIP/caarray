@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.domain.data;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 import java.util.ArrayList;
@@ -94,6 +93,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Cascade;
@@ -112,7 +112,7 @@ public final class DataSet extends AbstractCaArrayObject {
 
     private List<HybridizationData> hybridizationDataList = new ArrayList<HybridizationData>();
     private List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
-    private List<AbstractDesignElement> designElements = new ArrayList<AbstractDesignElement>();
+    private DesignElementList designElementList;
 
     /**
      * @return the hybridizationDatas
@@ -196,27 +196,21 @@ public final class DataSet extends AbstractCaArrayObject {
     }
 
     /**
-     * @return the designElements
+     * @return the designElementList
      */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @IndexColumn(name = "DESIGNELEMENT_INDEX")
-    @JoinTable(
-            name = "DATASET_DESIGNELEMENT",
-            joinColumns = { @JoinColumn(name = "DATASET_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "DESIGNELEMENT_ID") }
-    )
-    @ForeignKey(name = "DSDEDATASET_FK", inverseName = "DSDEDESIGNELEMENT_FK")
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public List<AbstractDesignElement> getDesignElements() {
-        return designElements;
+    @ForeignKey(name = "DATASET_DESIGNELEMENTLIST_FK")
+    public DesignElementList getDesignElementList() {
+        return designElementList;
     }
 
     /**
-     * @param designElements the designElements to set
+     * @param designElementList the designElementList to set
      */
     @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
-    private void setDesignElements(List<AbstractDesignElement> designElements) {
-        this.designElements = designElements;
+    private void setDesignElementList(DesignElementList designElementList) {
+        this.designElementList = designElementList;
     }
 
 }

@@ -82,9 +82,8 @@
  */
 package gov.nih.nci.caarray.domain.data;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,130 +91,82 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * Value holder for all the data values associated with a specific hybridization and design element.
+ * Contains an ordered list of the microarray design elements (features or probes) for which data values are provided.
  */
 @Entity
-public final class HybridizationData extends AbstractCaArrayObject {
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
+public final class DesignElementList extends AbstractCaArrayEntity {
 
-    private static final long serialVersionUID = 8804648118447372387L;
+    private static final long serialVersionUID = 4430513886275629776L;
 
-    private DataSet dataSet;
-    private Hybridization hybridization;
-    private LabeledExtract labeledExtract;
-    private List<AbstractDataColumn> columns = new ArrayList<AbstractDataColumn>();
+    private List<AbstractDesignElement> designElements = new ArrayList<AbstractDesignElement>();
+    private String designElementType;
 
     /**
-     * @return the columns
+     * @return the designElements
      */
-    @OneToMany(fetch = FetchType.LAZY)
-    @IndexColumn(name = "COLUMN_INDEX")
-    @Cascade({CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public List<AbstractDataColumn> getColumns() {
-        return columns;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @IndexColumn(name = "DESIGNELEMENT_INDEX")
+    @JoinTable(
+            name = "DESIGNELEMENTLIST_DESIGNELEMENT",
+            joinColumns = { @JoinColumn(name = "DESIGNELEMENTLIST_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "DESIGNELEMENT_ID") }
+    )
+    @ForeignKey(name = "DELDEDESIGNELEMENTLIST_FK", inverseName = "DELDEDESIGNELEMENT_FK")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    public List<AbstractDesignElement> getDesignElements() {
+        return designElements;
     }
 
     /**
-     * @param columns the columns to set
+     * @param designElements the designElements to set
      */
     @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
-    private void setColumns(List<AbstractDataColumn> columns) {
-        this.columns = columns;
+    private void setDesignElements(List<AbstractDesignElement> designElements) {
+        this.designElements = designElements;
     }
 
     /**
-     * @return the hybridization
+     * @return the designElementType
      */
-    @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "HYBRIDIZATIONDATA_HYBRIDIZATION_FK")
-    public Hybridization getHybridization() {
-        return hybridization;
+    public String getDesignElementType() {
+        return designElementType;
     }
 
     /**
-     * @param hybridization the hybridization to set
+     * @param designElementType the designElementType to set
      */
-    public void setHybridization(Hybridization hybridization) {
-        this.hybridization = hybridization;
+    public void setDesignElementType(String designElementType) {
+        DesignElementType.checkType(designElementType);
+        this.designElementType = designElementType;
     }
 
     /**
-     * @return the labeledExtract
+     * @return the designElementType enum
      */
-    @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "HYBRIDIZATIONDATA_LABELEDEXTRACT_FK")
-    public LabeledExtract getLabeledExtract() {
-        return labeledExtract;
+    @Transient
+    public DesignElementType getDesignElementTypeEnum() {
+        return DesignElementType.getByValue(getDesignElementType());
     }
 
     /**
-     * @param labeledExtract the labeledExtract to set
+     * @param designElementTypeEnum the designElementTypeEnum to set
      */
-    public void setLabeledExtract(LabeledExtract labeledExtract) {
-        this.labeledExtract = labeledExtract;
-    }
-
-    /**
-     * @return the dataSet
-     */
-    @ManyToOne
-    @JoinColumn(updatable = false, nullable = false)
-    @ForeignKey(name = "HYBRIDIZATIONDATA_DATASET_FK")
-    public DataSet getDataSet() {
-        return dataSet;
-    }
-
-    /**
-     * @param dataSet the dataSet to set
-     */
-    public void setDataSet(DataSet dataSet) {
-        this.dataSet = dataSet;
-    }
-
-    void addColumn(QuantitationType type) {
-        AbstractDataColumn column = AbstractDataColumn.create(type);
-        column.setHybridizationData(this);
-        columns.add(column);
-    }
-
-    /**
-     * Returns the column matching the provided type, if one exists.
-     *
-     * @param type get column for this type
-     * @return the matching column or null.
-     */
-    public AbstractDataColumn getColumn(QuantitationType type) {
-        for (AbstractDataColumn column : columns) {
-            if (column.getQuantitationType().equals(type)) {
-                return column;
-            }
+    public void setDesignElementTypeEnum(DesignElementType designElementTypeEnum) {
+        if (designElementTypeEnum == null) {
+            setDesignElementType(null);
+        } else {
+            setDesignElementType(designElementTypeEnum.getValue());
         }
-        return null;
-    }
-
-    /**
-     * Returns the column matching the provided type, if one exists.
-     *
-     * @param typeDescriptor get column for this type
-     * @return the matching column or null.
-     */
-    public AbstractDataColumn getColumn(QuantitationTypeDescriptor typeDescriptor) {
-        for (AbstractDataColumn column : columns) {
-            if (column.getQuantitationType().getName().equals(typeDescriptor.getName())) {
-                return column;
-            }
-        }
-        return null;
     }
 
 }

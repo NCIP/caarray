@@ -458,22 +458,19 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Sets the assay type for this experiment.
-     *
-     * @param assayType the assay type to set
+     * @param assayType the assayType to set
      */
     public void setAssayType(String assayType) {
         AssayType.checkType(assayType);
         this.assayType = assayType;
     }
 
-
     /**
      * @return the assayType enum
      */
     @Transient
     public AssayType getAssayTypeEnum() {
-        return getAssayType() == null ? null : AssayType.valueOf(getAssayType());
+        return AssayType.getByValue(getAssayType());
     }
 
     /**
@@ -483,7 +480,7 @@ public class Experiment extends AbstractCaArrayEntity {
         if (assayTypeEnum == null) {
             setAssayType(null);
         } else {
-            setAssayType(assayTypeEnum.name());
+            setAssayType(assayTypeEnum.getValue());
         }
     }
 

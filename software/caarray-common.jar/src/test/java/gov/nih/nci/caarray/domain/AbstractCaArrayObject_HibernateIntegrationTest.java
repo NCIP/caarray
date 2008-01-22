@@ -169,7 +169,7 @@ public abstract class AbstractCaArrayObject_HibernateIntegrationTest {
         return uniqueIntValue++;
     }
 
-    protected <E extends Enum<E>> Enum<E> getNextValue(Enum<E>[] values, Enum<E> currentValue) {
+    protected <E extends Enum<E>> E getNextValue(E[] values, Enum<E> currentValue) {
         if (currentValue == null || currentValue.ordinal() == values.length - 1) {
             return values[0];
         } else {

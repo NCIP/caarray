@@ -12,7 +12,7 @@ public class ArrayDesignTest {
     public void testSetType() {
         ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setAssayType(AssayType.EXON.name());
-        assertEquals(AssayType.EXON.name(), arrayDesign.getAssayType());
+        assertEquals(AssayType.EXON.getValue(), arrayDesign.getAssayType());
         assertEquals(AssayType.EXON, arrayDesign.getAssayTypeEnum());
         arrayDesign.setAssayType(null);
         assertNull(arrayDesign.getAssayTypeEnum());
@@ -24,7 +24,7 @@ public class ArrayDesignTest {
     public void testSetArrayType() {
         ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setAssayTypeEnum(AssayType.EXON);
-        assertEquals(AssayType.EXON.name(), arrayDesign.getAssayType());
+        assertEquals(AssayType.EXON.getValue(), arrayDesign.getAssayType());
         assertEquals(AssayType.EXON, arrayDesign.getAssayTypeEnum());
         arrayDesign.setAssayTypeEnum(null);
         assertNull(arrayDesign.getAssayTypeEnum());

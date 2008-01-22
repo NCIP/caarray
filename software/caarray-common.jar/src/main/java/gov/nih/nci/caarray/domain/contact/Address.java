@@ -97,8 +97,8 @@ public class Address extends AbstractCaArrayEntity {
     
     private static final long serialVersionUID = 1234567890L;
 
-    private String streetAddress1;
-    private String streetAddress2;
+    private String street1;
+    private String street2;
     private String city;
     private String state;
     private String zipCode;
@@ -140,40 +140,40 @@ public class Address extends AbstractCaArrayEntity {
         this.state = stateVal;
     }
     /**
-     * Gets the streetAddress1.
+     * Gets the street1.
      *
-     * @return the streetAddress1
+     * @return the street1
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getStreetAddress1() {
-        return streetAddress1;
+    public String getStreet1() {
+        return street1;
     }
 
     /**
-     * Sets the streetAddress1.
+     * Sets the street1.
      *
-     * @param streetAddress1Val the streetAddress1
+     * @param street1 the street1
      */
-    public void setStreetAddress1(final String streetAddress1Val) {
-        this.streetAddress1 = streetAddress1Val;
+    public void setStreet1(final String street1) {
+        this.street1 = street1;
     }
     /**
-     * Gets the streetAddress2.
+     * Gets the street2.
      *
-     * @return the streetAddress2
+     * @return the street2
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getStreetAddress2() {
-        return streetAddress2;
+    public String getStreet2() {
+        return street2;
     }
 
     /**
-     * Sets the streetAddress2.
+     * Sets the street2.
      *
-     * @param streetAddress2Val the streetAddress2
+     * @param street2 the street2
      */
-    public void setStreetAddress2(final String streetAddress2Val) {
-        this.streetAddress2 = streetAddress2Val;
+    public void setStreet2(final String street2) {
+        this.street2 = street2;
     }
     /**
      * Gets the zipCode.

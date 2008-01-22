@@ -132,8 +132,9 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         arrayDesign.setTechnologyType(new Term());
         arrayDesign.getTechnologyType().setValue("testval4");
         arrayDesign.getTechnologyType().setCategory(cat);
-        arrayDesign.getTechnologyType().setSource(ts);        
-        arrayDesign.setAssayType(getNextValue(AssayType.values(), arrayDesign.getAssayTypeEnum()).name());
+        arrayDesign.getTechnologyType().setSource(ts);       
+        AssayType nextAssayType = getNextValue(AssayType.values(), arrayDesign.getAssayTypeEnum());
+        arrayDesign.setAssayType(nextAssayType.getValue());
         arrayDesign.setVersion(getUniqueStringValue());
         ArrayDesignDetails designDetails = new ArrayDesignDetails();
         arrayDesign.setDesignDetails(designDetails);
@@ -145,10 +146,13 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         designDetails.getProbes().add(physicalProbe);
         ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
         Gene gene = new Gene();
-        gene.setEnsemblId(getUniqueStringValue());
+        gene.setEnsemblgeneID(getUniqueStringValue());
         gene.setFullName(getUniqueStringValue());
         gene.setSymbol(getUniqueStringValue());
-        gene.setUnigeneId(getUniqueStringValue());
+        gene.setEntrezgeneID(getUniqueStringValue());
+        gene.setGenbankAccession(getUniqueStringValue());
+        gene.setGenbankAccessionVersion(getUniqueStringValue());
+        gene.setUnigeneclusterID(getUniqueStringValue());
         annotation.setGene(gene);
         physicalProbe.setAnnotation(annotation);
     }
@@ -178,10 +182,13 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
                 (ExpressionProbeAnnotation) originalDetails.getProbes().iterator().next().getAnnotation();
             ExpressionProbeAnnotation retrievedAnnotation =
                 (ExpressionProbeAnnotation) retrievedDetails.getProbes().iterator().next().getAnnotation();
-            assertEquals(originalAnnotation.getGene().getEnsemblId(), retrievedAnnotation.getGene().getEnsemblId());
             assertEquals(originalAnnotation.getGene().getFullName(), retrievedAnnotation.getGene().getFullName());
             assertEquals(originalAnnotation.getGene().getSymbol(), retrievedAnnotation.getGene().getSymbol());
-            assertEquals(originalAnnotation.getGene().getUnigeneId(), retrievedAnnotation.getGene().getUnigeneId());
+            assertEquals(originalAnnotation.getGene().getEnsemblgeneID(), retrievedAnnotation.getGene().getEnsemblgeneID());
+            assertEquals(originalAnnotation.getGene().getEntrezgeneID(), retrievedAnnotation.getGene().getEntrezgeneID());
+            assertEquals(originalAnnotation.getGene().getGenbankAccession(), retrievedAnnotation.getGene().getGenbankAccession());
+            assertEquals(originalAnnotation.getGene().getGenbankAccessionVersion(), retrievedAnnotation.getGene().getGenbankAccessionVersion());
+            assertEquals(originalAnnotation.getGene().getUnigeneclusterID(), retrievedAnnotation.getGene().getUnigeneclusterID());
         }
     }
 

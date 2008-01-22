@@ -375,7 +375,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @Transient
     public AssayType getAssayTypeEnum() {
-        return getAssayType() == null ? null : AssayType.valueOf(getAssayType());
+        return AssayType.getByValue(getAssayType());
     }
 
     /**
@@ -385,7 +385,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
         if (assayTypeEnum == null) {
             setAssayType(null);
         } else {
-            setAssayType(assayTypeEnum.name());
+            setAssayType(assayTypeEnum.getValue());
         }
     }
 

@@ -139,7 +139,6 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     private ProtocolApplication protocolApplication;
     private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
-    private Term label;
 
     /**
      * Gets the name.
@@ -369,23 +368,6 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      */
     public void setAmountOfMaterialUnit(Term amountOfMaterialUnit) {
         this.amountOfMaterialUnit = amountOfMaterialUnit;
-    }
-
-    /**
-     * @return the label
-     */
-    @ManyToOne
-    @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "HYBRIDIZATION_LABEL_FK")
-    public Term getLabel() {
-        return this.label;
-    }
-
-    /**
-     * @param label the label to set
-     */
-    public void setLabel(Term label) {
-        this.label = label;
     }
 
     /**
