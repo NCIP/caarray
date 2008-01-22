@@ -53,7 +53,7 @@
                             </s:if>
                             <s:select theme="${lockedTheme}" required="true" key="arrayDesign.assayType" tabindex="3"
                                       list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
-                                      headerKey="" headerValue="--Please select an Assay Type--"/>
+                                      listKey="getValue()" headerKey="" headerValue="--Please select an Assay Type--"/>
                             <s:select theme="${lockedTheme}" required="true" key="arrayDesign.provider" tabindex="4"
                                       list="providers" listKey="id" listValue="name"
                                       headerKey="" headerValue="--Please select a Provider--" value="arrayDesign.provider.id"/>

@@ -157,7 +157,7 @@ public class ProjectOverviewActionTest {
     @Test
     public void testRetrieveArrayDesigns() throws Exception {
         this.action.setManufacturerId(1L);
-        this.action.setAssayType(AssayType.GENE_EXPRESSION);
+        this.action.setAssayTypeValue(AssayType.GENE_EXPRESSION.getValue());
         assertEquals("xmlArrayDesigns", this.action.retrieveArrayDesigns());
         assertEquals(1, this.action.getArrayDesigns().size());
     }

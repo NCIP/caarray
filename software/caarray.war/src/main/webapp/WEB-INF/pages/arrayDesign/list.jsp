@@ -22,7 +22,7 @@
                         <caarray:displayTagProperties/>
                         <display:column property="name" titleKey="arrayDesign.name" sortable="true" url="/protected/arrayDesign/view.action" paramId="arrayDesign.id" paramProperty="id"/>
                         <display:column property="provider.name" titleKey="arrayDesign.provider" sortable="true"/>
-                        <display:column property="assayType" titleKey="arrayDesign.assayType" sortable="true"/>
+                        <display:column property="assayTypeEnum" titleKey="arrayDesign.assayType" sortable="true"/>
                         <display:column property="version" titleKey="arrayDesign.version" sortable="true"/>
                         <display:column property="technologyType.value" titleKey="arrayDesign.technologyType" sortable="true"/>
                         <display:column property="organism.scientificName" titleKey="arrayDesign.organism" sortable="true"/>

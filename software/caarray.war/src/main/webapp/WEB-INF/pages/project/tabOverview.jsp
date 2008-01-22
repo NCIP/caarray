@@ -27,7 +27,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)} <c:out val
             <s:textfield theme="readonly" name="project.experiment.publicIdentifier" label="Experiment Identifier"/>
             <s:select required="true" key="project.experiment.assayType" tabindex="5"
                       list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
-                      headerKey="" headerValue="--Select an Assay Type--"/>
+                      listKey="getValue()" headerKey="" headerValue="--Select an Assay Type--"/>
             <s:select key="project.experiment.manufacturer" tabindex="6" required="true"
                       list="manufacturers" listKey="id" listValue="name"
                       headerKey="" headerValue="--Select a Provider--" value="project.experiment.manufacturer.id">
@@ -66,11 +66,11 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)} <c:out val
         <c:if test="${editMode}">
             <ajax:select baseUrl="${getArrayDesignsUrl}"
                 source="projectForm_project_experiment_manufacturer" target="projectForm_project_experiment_arrayDesigns"
-                parameters="manufacturerId={projectForm_project_experiment_manufacturer},assayType={projectForm_project_experiment_assayType}"
+                parameters="manufacturerId={projectForm_project_experiment_manufacturer},assayTypeValue={projectForm_project_experiment_assayType}"
                 preFunction="startArrayDesignLookup" postFunction="finishArrayDesignLookup"/>
             <ajax:select baseUrl="${getArrayDesignsUrl}"
                 source="projectForm_project_experiment_assayType" target="projectForm_project_experiment_arrayDesigns"
-                parameters="manufacturerId={projectForm_project_experiment_manufacturer},assayType={projectForm_project_experiment_assayType}"
+                parameters="manufacturerId={projectForm_project_experiment_manufacturer},assayTypeValue={projectForm_project_experiment_assayType}"
                 preFunction="startArrayDesignLookup" postFunction="finishArrayDesignLookup"/>
         </c:if>
 

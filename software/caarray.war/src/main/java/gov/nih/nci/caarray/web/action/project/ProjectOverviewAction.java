@@ -119,7 +119,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
 
     private Long manufacturerId;
-    private AssayType assayType;
+    private String assayTypeValue;
 
     private List<Organism> organisms = new ArrayList<Organism>();
     private List<Organization> manufacturers = new ArrayList<Organization>();
@@ -171,9 +171,9 @@ public class ProjectOverviewAction extends ProjectTabAction {
      */
     @SkipValidation
     public String retrieveArrayDesigns() {
-        if (this.manufacturerId != null && this.assayType != null) {
+        if (this.manufacturerId != null && this.assayTypeValue != null) {
             Organization provider = getGenericDataService().retrieveEntity(Organization.class, this.manufacturerId);
-            this.arrayDesigns = getArrayDesignService().getImportedArrayDesigns(provider, this.assayType);
+            this.arrayDesigns = getArrayDesignService().getImportedArrayDesigns(provider, AssayType.getByValue(assayTypeValue));
         }
         return "xmlArrayDesigns";
     }
@@ -221,17 +221,17 @@ public class ProjectOverviewAction extends ProjectTabAction {
     }
 
     /**
-     * @return the assayType
+     * @return the assayTypeValue
      */
-    public AssayType getAssayType() {
-        return assayType;
+    public String getAssayTypeValue() {
+        return assayTypeValue;
     }
 
     /**
-     * @param assayType the assayType to set
+     * @param assayTypeValue the assayType to set
      */
-    public void setAssayType(AssayType assayType) {
-        this.assayType = assayType;
+    public void setAssayTypeValue(String assayTypeValue) {
+        this.assayTypeValue = assayTypeValue;
     }
 
     /**
