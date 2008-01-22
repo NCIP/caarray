@@ -411,26 +411,6 @@
     </javac>
   </target>
 
-  <target name="instrument:caarray-common.jar" depends="compile:caarray-common.jar">
-    <taskdef name="instrument" classname="org.hibernate.tool.instrument.cglib.InstrumentTask">
-      <classpath>
-        <pathelement location="${hibernate.jar}" />
-        <pathelement location="${ejb3-persistence.jar}" />
-        <pathelement location="${hibernate-annotations.jar}" />
-        <pathelement location="${cglib.jar}" />
-        <pathelement location="${commons-logging.jar}" />
-        <pathelement location="${asm.jar}" />
-        <pathelement location="${asm-attrs.jar}" />
-      </classpath>
-    </taskdef>
-
-    <instrument verbose="true">
-        <fileset dir="${caarray-common.classes.dir}/gov/nih/nci/caarray/domain">
-            <include name="file/CaArrayFile.class"/>
-        </fileset>
-    </instrument>
-  </target>
-
   <target name="compile:caarray-ejb.jar" depends="compile:caarray-common.jar">
     <mkdir dir="${caarray-ejb.classes.dir}" />
     <javac srcdir="${caarray-ejb.src.dir}" destdir="${caarray-ejb.classes.dir}" debug="true">
@@ -532,7 +512,7 @@
         </jar>
     </target>
 
-  <target name="build:caarray-common.jar" depends="instrument:caarray-common.jar,configure-datasource-for-deploy">
+  <target name="build:caarray-common.jar" depends="configure-datasource-for-deploy">
     <mkdir dir="${caarray-common.target.dir}" />
     <jar destfile="${caarray-common.jar}">
       <fileset dir="${caarray-common.classes.dir}" />
@@ -757,13 +737,13 @@
 
   <!-- caarray-common.jar -->
 
-  <target name="test:instrument:caarray-common.jar" depends="instrument:caarray-common.jar">
+  <target name="test:instrument:caarray-common.jar">
     <cobertura-instrument todir="${caarray-common.instrumented.classes.dir}" datafile="${cobertura.file}">
       <fileset dir="${caarray-common.classes.dir}" />
     </cobertura-instrument>
   </target>
 
-  <target name="test:compile:caarray-common.test.classes" depends="instrument:caarray-common.jar,test:compile:test-data-classes">
+  <target name="test:compile:caarray-common.test.classes" depends="test:compile:test-data-classes">
     <mkdir dir="${caarray-common.test.classes.dir}" />
     <javac srcdir="${caarray-common.test.src.dir}" destdir="${caarray-common.test.classes.dir}" debug="true">
       <classpath>
