@@ -103,6 +103,7 @@ import javax.interceptor.Interceptors;
 
 import org.apache.log4j.Logger;
 import org.hibernate.LockMode;
+import org.jboss.annotation.ejb.TransactionTimeout;
 
 /**
  * EJB implementation of the entry point to the FileManagement subsystem. Delegates functionality
@@ -114,6 +115,7 @@ import org.hibernate.LockMode;
 public class FileManagementServiceBean implements FileManagementService {
 
     private static final Logger LOG = Logger.getLogger(FileManagementServiceBean.class);
+    private static final int SAVE_ARRAY_DESIGN_TIMEOUT = 1800;
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     private FileManagementJobSubmitter submitter = new JmsJobSubmitter();
@@ -178,6 +180,7 @@ public class FileManagementServiceBean implements FileManagementService {
     /**
      * {@inheritDoc}
      */
+    @TransactionTimeout(SAVE_ARRAY_DESIGN_TIMEOUT)
     public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile)
     throws InvalidDataFileException, IllegalAccessException {
         boolean newArrayDesign = arrayDesign.getId() == null;
