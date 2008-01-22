@@ -266,10 +266,13 @@
     <xs:complexType name="Gene">
         <xs:complexContent>
             <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
-                <xs:attribute name="ensemblId" type="xs:string" />
-                <xs:attribute name="unigeneId" type="xs:string" />
                 <xs:attribute name="fullName" type="xs:string" />
                 <xs:attribute name="symbol" type="xs:string" />
+                <xs:attribute name="genbankAccession" type="xs:string" />
+                <xs:attribute name="genbankAccessionVersion" type="xs:string" />
+                <xs:attribute name="ensemblgeneID" type="xs:string" />
+                <xs:attribute name="unigeneclusterID" type="xs:string" />
+                <xs:attribute name="entrezgeneID" type="xs:string" />
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

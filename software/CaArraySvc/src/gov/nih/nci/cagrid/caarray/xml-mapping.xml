@@ -160,6 +160,9 @@
     <field name="hybridization" type="gov.nih.nci.caarray.domain.hybridization.Hybridization">
       <bind-xml name="Hybridization" type="gov.nih.nci.caarray.domain.hybridization.Hybridization" location="hybridization" node="element" />
     </field>
+    <field name="labeledExtract" type="gov.nih.nci.caarray.domain.sample.LabeledExtract">
+      <bind-xml name="LabeledExtract" type="gov.nih.nci.caarray.domain.sample.LabeledExtract" location="labeledExtract" node="element" />
+    </field>
     <field name="dataSet" type="gov.nih.nci.caarray.domain.data.DataSet">
       <bind-xml name="DataSet" type="gov.nih.nci.caarray.domain.data.DataSet" location="dataSet" node="element" />
     </field>
@@ -171,6 +174,15 @@
     </field>
     <field name="quantitationTypes" type="gov.nih.nci.caarray.domain.data.QuantitationType" collection="collection">
       <bind-xml name="QuantitationType" type="gov.nih.nci.caarray.domain.data.QuantitationType" location="quantitationTypes" node="element" />
+    </field>
+    <field name="designElementList" type="gov.nih.nci.caarray.domain.data.DesignElementList">
+      <bind-xml name="DesignElementList" type="gov.nih.nci.caarray.domain.data.DesignElementList" location="designElementList" node="element" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.caarray.domain.data.DesignElementList" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+    <map-to xml="DesignElementList" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data" />
+    <field name="designElementType" type="string">
+      <bind-xml name="designElementType" node="attribute" />
     </field>
     <field name="designElements" type="gov.nih.nci.caarray.domain.array.AbstractDesignElement" collection="collection">
       <bind-xml name="AbstractDesignElement" type="gov.nih.nci.caarray.domain.array.AbstractDesignElement" location="designElements" node="element" />
@@ -298,11 +310,11 @@
     <field name="state" type="string">
       <bind-xml name="state" node="attribute" />
     </field>
-    <field name="streetAddress1" type="string">
-      <bind-xml name="streetAddress1" node="attribute" />
+    <field name="street1" type="string">
+      <bind-xml name="street1" node="attribute" />
     </field>
-    <field name="streetAddress2" type="string">
-      <bind-xml name="streetAddress2" node="attribute" />
+    <field name="street2" type="string">
+      <bind-xml name="street2" node="attribute" />
     </field>
     <field name="zipCode" type="string">
       <bind-xml name="zipCode" node="attribute" />
@@ -426,9 +438,6 @@
     </field>
     <field name="derivedDataCollection" type="gov.nih.nci.caarray.domain.data.DerivedArrayData" collection="collection">
       <bind-xml name="DerivedArrayData" type="gov.nih.nci.caarray.domain.data.DerivedArrayData" location="derivedDataCollection" node="element" />
-    </field>
-    <field name="label" type="gov.nih.nci.caarray.domain.vocabulary.Term">
-      <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="label" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.project.Factor" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
@@ -820,17 +829,26 @@
   </class>
   <class name="gov.nih.nci.caarray.domain.array.Gene" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
     <map-to xml="Gene" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array" />
-    <field name="ensemblId" type="string">
-      <bind-xml name="ensemblId" node="attribute" />
-    </field>
     <field name="symbol" type="string">
       <bind-xml name="symbol" node="attribute" />
     </field>
     <field name="fullName" type="string">
       <bind-xml name="fullName" node="attribute" />
     </field>
-    <field name="unigeneId" type="string">
-      <bind-xml name="unigeneId" node="attribute" />
+    <field name="genbankAccession" type="string">
+      <bind-xml name="genbankAccession" node="attribute" />
+    </field>
+    <field name="genbankAccessionVersion" type="string">
+      <bind-xml name="genbankAccessionVersion" node="attribute" />
+    </field>
+    <field name="ensemblgeneID" type="string">
+      <bind-xml name="ensemblgeneID" node="attribute" />
+    </field>
+    <field name="unigeneclusterID" type="string">
+      <bind-xml name="unigeneclusterID" node="attribute" />
+    </field>
+    <field name="entrezgeneID" type="string">
+      <bind-xml name="entrezgeneID" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.ExonProbeAnnotation" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation">
@@ -966,6 +984,9 @@
     </field>
     <field name="ncbiTaxonomyId" type="long">
       <bind-xml name="ncbiTaxonomyId" node="attribute" />
+    </field>
+    <field name="termSource" type="gov.nih.nci.caarray.domain.vocabulary.TermSource">
+      <bind-xml name="TermSource" type="gov.nih.nci.caarray.domain.vocabulary.TermSource" location="termSource" node="element" />
     </field>
     <field name="additionalOrganismNameCollection" type="edu.georgetown.pir.AdditionalOrganismName" collection="collection">
       <bind-xml name="AdditionalOrganismName" type="edu.georgetown.pir.AdditionalOrganismName" location="additionalOrganismNameCollection" node="element" />

@@ -28,6 +28,7 @@
   </ns2:Namespace>
   <ns2:Namespace location="./gov.nih.nci.caarray.domain.data.xsd" namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data" packageName="gov.nih.nci.caarray.domain.data" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="ArrayDataType" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ArrayDataType" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="DesignElementList" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="DesignElementList" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Image" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Image" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="HybridizationData" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="HybridizationData" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="ShortColumn" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ShortColumn" xsi:type="ns2:SchemaElementType"/>

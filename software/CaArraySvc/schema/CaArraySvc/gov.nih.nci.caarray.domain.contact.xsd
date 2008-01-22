@@ -55,8 +55,8 @@
                 <xs:sequence />
                 <xs:attribute name="city" type="xs:string" />
                 <xs:attribute name="state" type="xs:string" />
-                <xs:attribute name="streetAddress1" type="xs:string" />
-                <xs:attribute name="streetAddress2" type="xs:string" />
+                <xs:attribute name="street1" type="xs:string" />
+                <xs:attribute name="street2" type="xs:string" />
                 <xs:attribute name="zipCode" type="xs:string" />
             </xs:extension>
         </xs:complexContent>

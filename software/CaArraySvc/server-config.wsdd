@@ -56,6 +56,8 @@
 
 <ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.ArrayDataType" qname="ns2:ArrayDataType" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
 
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.DesignElementList" qname="ns2:DesignElementList" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
 <ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.Image" qname="ns2:Image" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
 
 <ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.HybridizationData" qname="ns2:HybridizationData" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
