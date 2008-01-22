@@ -173,7 +173,8 @@ public class ProjectOverviewAction extends ProjectTabAction {
     public String retrieveArrayDesigns() {
         if (this.manufacturerId != null && this.assayTypeValue != null) {
             Organization provider = getGenericDataService().retrieveEntity(Organization.class, this.manufacturerId);
-            this.arrayDesigns = getArrayDesignService().getImportedArrayDesigns(provider, AssayType.getByValue(assayTypeValue));
+            this.arrayDesigns = getArrayDesignService().getImportedArrayDesigns(provider,
+                    AssayType.getByValue(assayTypeValue));
         }
         return "xmlArrayDesigns";
     }
