@@ -33,7 +33,7 @@
 <fmt:message key="project.tabs.downloadData" var="downloadDataTitle" />
 
 <ajax:tabPanel panelStyleId="tablevel2" panelStyleClass="tablevel2" currentStyleClass="selected" contentStyleId="tabboxlevel2wrapper" contentStyleClass="tabboxlevel2wrapper"
-        postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.showTabLoadingText">
+        postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.preFunction">
     <c:if test="${pageContext.request.remoteUser != null}">
         <caarray:tab caption="${unimportedDataTitle}" baseUrl="${unimportedDataUrl}" defaultTab="${param.initialTab2 == null || param.initialTab2 == 'unimportedData'}" />
     </c:if>
