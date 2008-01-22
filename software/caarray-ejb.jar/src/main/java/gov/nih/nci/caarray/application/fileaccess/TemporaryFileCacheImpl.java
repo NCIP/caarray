@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.fileaccess;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
@@ -107,17 +106,17 @@ import org.apache.log4j.Logger;
 public final class TemporaryFileCacheImpl implements TemporaryFileCache {
     private static final Logger LOG = Logger.getLogger(TemporaryFileCacheImpl.class);
     private static final String WORKING_DIRECTORY_PROPERTY_KEY = "caarray.working.directory";
-    private static final String TEMP_DIR_PROPERTY_KEY = "java.io.tmpdir";    
+    private static final String TEMP_DIR_PROPERTY_KEY = "java.io.tmpdir";
 
     private final Map<CaArrayFile, File> openFiles = new HashMap<CaArrayFile, File>();
     private File sessionWorkingDirectory;
-    
+
     TemporaryFileCacheImpl() {
         // nothing to do
     }
 
     /**
-     * Returns a file <code>java.io.File</code> which will hold the uncompressed data for the 
+     * Returns a file <code>java.io.File</code> which will hold the uncompressed data for the
      * <code>CaArrayFile</code> object provided. The client should eventually call closeFile() for this
      * <code>CaArrayFile</code> (or closeFiles()) to allow the temporary file to be cleanded up.
      *
@@ -140,14 +139,12 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
     private File openFile(CaArrayFile caArrayFile) {
         File file = new File(getSessionWorkingDirectory(), caArrayFile.getName());
         try {
-            HibernateUtil.getCurrentSession().refresh(caArrayFile);
             InputStream inputStream = caArrayFile.readContents();
             OutputStream outputStream = FileUtils.openOutputStream(file);
             IOUtils.copy(inputStream, outputStream);
             IOUtils.closeQuietly(inputStream);
             IOUtils.closeQuietly(outputStream);
-            HibernateUtil.getCurrentSession().evict(caArrayFile);
-            caArrayFile.clearContents();
+            caArrayFile.clearAndEvictContents();
         } catch (IOException e) {
             throw new FileAccessException("Couldn't access file contents " + caArrayFile.getName(), e);
         }
@@ -191,17 +188,17 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
      * This method should always be called at the conclusion of a session of working with file data.
      */
     public void closeFiles() {
-        Set<CaArrayFile> filesToClose = new HashSet<CaArrayFile>(this.openFiles.keySet());        
+        Set<CaArrayFile> filesToClose = new HashSet<CaArrayFile>(this.openFiles.keySet());
         for (CaArrayFile caarrayFile : filesToClose) {
             closeFile(caarrayFile);
         }
         delete(getSessionWorkingDirectory());
         this.sessionWorkingDirectory = null;
     }
-    
+
     /**
      * Closes the file corresponding to the given logical file opened in the current session. Note that at the end
-     * of the session of working with file data, you should still call closeFiles() to perform final cleanup 
+     * of the session of working with file data, you should still call closeFiles() to perform final cleanup
      * even if all files had been previously closed via calls to this method
      * @param caarrayFile the logical file to close the filesystem file for
      */
@@ -214,12 +211,12 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
             return;
         }
         File file = getOpenFile(caarrayFile);
-        if (file != null) {            
+        if (file != null) {
             delete(file);
         }
         this.openFiles.remove(caarrayFile);
     }
-    
+
     private void delete(File file) {
         LOG.debug("Deleting file: " + file.getAbsolutePath());
         if (!file.delete()) {
@@ -227,7 +224,7 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
             file.deleteOnExit();
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */

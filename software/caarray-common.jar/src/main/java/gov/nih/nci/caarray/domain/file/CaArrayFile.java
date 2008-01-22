@@ -84,9 +84,11 @@
 package gov.nih.nci.caarray.domain.file;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
@@ -94,18 +96,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -115,7 +115,6 @@ import javax.persistence.Transient;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.ForeignKey;
 
 /**
@@ -130,9 +129,9 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private String status = FileStatus.UPLOADED.name();
     private Project project;
     private FileValidationResult validationResult;
-    private Blob contents;
     private int uncompressedSize;
     private int compressedSize;
+    private MultiPartBlob multiPartBlob;
 
     // transient properties
     private InputStream inputStreamToClose;
@@ -342,7 +341,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @throws IOException if there is a problem writing the contents.
      */
     public void writeContents(InputStream inputStream) throws IOException {
-        if (this.contents == null) {
+        if (this.multiPartBlob == null) {
             File tempFile = File.createTempFile("compressed", "tmp");
             FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
             GZIPOutputStream gzipOutputStream = new GZIPOutputStream(fileOutputStream);
@@ -350,7 +349,8 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
             IOUtils.closeQuietly(gzipOutputStream);
             IOUtils.closeQuietly(fileOutputStream);
             FileInputStream compressedFile = new FileInputStream(tempFile);
-            setContents(Hibernate.createBlob(compressedFile));
+            setMultiPartBlob(new MultiPartBlob());
+            getMultiPartBlob().writeData(compressedFile);
             setUncompressedSize(uncompressedDataSize);
             setCompressedSize((int) tempFile.length());
             this.inputStreamToClose = compressedFile;
@@ -368,27 +368,25 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     public InputStream readContents() throws IOException {
         try {
-            return new GZIPInputStream(getContents().getBinaryStream());
+            return new GZIPInputStream(getMultiPartBlob().readData());
         } catch (SQLException e) {
             throw new IllegalStateException("Couldn't access file conteents", e);
         }
     }
 
     /**
-     * @return the contents
+     * @return the multiPartBlob
      */
-    @Basic(fetch = FetchType.LAZY)
-    @Column(columnDefinition = "LONGBLOB", updatable = false)
-    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
-    private Blob getContents() {
-        return this.contents;
+    @Embedded
+    private MultiPartBlob getMultiPartBlob() {
+        return this.multiPartBlob;
     }
 
     /**
-     * @param contents the contents to set
+     * @param multiPartBlob the multiPartBlob to set
      */
-    private void setContents(Blob contents) {
-        this.contents = contents;
+    private void setMultiPartBlob(MultiPartBlob multiPartBlob) {
+        this.multiPartBlob = multiPartBlob;
     }
 
     /**
@@ -406,8 +404,11 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     /**
      * Clear the file contents from memory.
      */
-    public void clearContents() {
-        setContents(null);
+    public void clearAndEvictContents() {
+        HibernateUtil.getCurrentSession().evict(this);
+        if (getMultiPartBlob() != null) {
+            getMultiPartBlob().clearAndEvictData();
+        }
     }
 
     /**
@@ -427,7 +428,4 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     public File getFileToDelete() {
         return this.fileToDelete;
     }
-
-
-
 }

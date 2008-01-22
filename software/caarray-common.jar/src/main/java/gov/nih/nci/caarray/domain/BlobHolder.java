@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-war
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-war Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-war Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-war Software; (ii) distribute and
- * have distributed to and by third parties the caarray-war Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,127 +80,62 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.action.project;
+package gov.nih.nci.caarray.domain;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.application.project.ProjectManagementService;
-import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-import gov.nih.nci.security.authorization.domainobjects.User;
+import java.sql.Blob;
 
-import org.apache.struts2.ServletActionContext;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-
-import com.opensymphony.xwork2.Action;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 /**
  * @author Scott Miller
+ *
  */
-public class ProjectActionTest {
+@Entity
+public class BlobHolder {
 
-    private static final String WORKSPACE = "workspace";
-    ProjectAction action = new ProjectAction();
-    private static final ProjectManagementServiceStub projectManagementServiceStub = new ProjectManagementServiceStub();
+    private static final long serialVersionUID = 1L;
 
-    @BeforeClass
-    @SuppressWarnings("PMD")
-    public static void beforeClass() {
-        ServiceLocatorStub stub = ServiceLocatorStub.registerEmptyLocator();
-        stub.addLookup(ProjectManagementService.JNDI_NAME, projectManagementServiceStub);
+    private Long id;
+    private Blob contents;
+
+    /**
+     * Returns the id.
+     *
+     * @return the id
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public Long getId() {
+        return id;
     }
 
-    @Before
-    public void before() {
-        this.action = new ProjectAction() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected User getCsmUser() {
-                return null;
-            }
-        };
-        projectManagementServiceStub.reset();
-        ServletActionContext.setRequest(new MockHttpServletRequest());
+    /**
+     * Sets the id.
+     *
+     * @param id the id to set
+     * @deprecated should only be used by castor and hibernate
+     */
+    @Deprecated
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    @SuppressWarnings("deprecation")
-    private Project getTestProject(Long id) {
-        Project p = new Project() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public boolean hasReadPermission(User user) {
-                return (this.getId() == 1l);
-            }
-
-            @Override
-            public boolean hasWritePermission(User user) {
-                return (this.getId() == 1l);
-            }
-
-        };
-        p.setId(id);
-        return p;
+    /**
+     * @return the contents
+     */
+    @Column(columnDefinition = "LONGBLOB", updatable = false, name = "contents")
+    public Blob getContents() {
+        return this.contents;
     }
 
-    @Test
-    public void testPrepare() throws Exception {
-        this.action.prepare();
-        assertEquals(0, projectManagementServiceStub.getProjectByIdCount());
-        this.action.setProject(this.getTestProject(null));
-        this.action.prepare();
-        assertEquals(0, projectManagementServiceStub.getProjectByIdCount());
-        this.action.setProject(this.getTestProject(1l));
-        this.action.prepare();
-        assertEquals(1, projectManagementServiceStub.getProjectByIdCount());
-        assertNotNull(this.action.getExperiment());
-    }
-
-    @Test
-    public void testCreate() throws Exception {
-        assertFalse(this.action.isEditMode());
-        assertEquals(Action.INPUT, this.action.create());
-        assertTrue(this.action.isEditMode());
-    }
-
-    @Test
-    public void testEdit() {
-        this.action.setProject(this.getTestProject(null));
-        assertEquals(WORKSPACE, this.action.edit());
-        this.action.setProject(this.getTestProject((2l)));
-        assertEquals("login-details-id", this.action.edit());
-        this.action.setProject(this.getTestProject((1l)));
-        assertEquals(Action.INPUT, this.action.edit());
-        assertTrue(this.action.isEditMode());
-    }
-
-    @Test
-    public void testDetails() {
-        this.action.setProject(this.getTestProject(null));
-        assertEquals(WORKSPACE, this.action.details());
-        this.action.setProject(this.getTestProject((2l)));
-        assertEquals("login-details-id", this.action.details());
-        this.action.setProject(this.getTestProject((1l)));
-        assertEquals(Action.INPUT, this.action.details());
-        assertFalse(this.action.isEditMode());
-    }
-
-    @Test
-    public void testChangeStatus() {
-        this.action.setWorkflowStatus(ProposalStatus.DRAFT);
-        this.action.setProject(this.getTestProject(1l));
-        assertEquals(WORKSPACE, this.action.changeWorkflowStatus());
-        assertEquals(1, projectManagementServiceStub.getChangeWorkflowStatusCount());
-        this.action.setProject(this.getTestProject(999l));
-        assertEquals(Action.INPUT, this.action.changeWorkflowStatus());
-        assertEquals(2, projectManagementServiceStub.getChangeWorkflowStatusCount());
+    /**
+     * @param contents the contents to set
+     */
+    public void setContents(Blob contents) {
+        this.contents = contents;
     }
 }

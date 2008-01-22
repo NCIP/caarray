@@ -25,6 +25,7 @@
         <mapping class="edu.georgetown.pir.Organism" />
         <mapping class="edu.wustl.catissuecore.domain.MolecularSpecimen" />
         <mapping class="edu.wustl.catissuecore.domain.Specimen" />
+        <mapping class="gov.nih.nci.caarray.domain.BlobHolder" />
         <mapping class="gov.nih.nci.caarray.domain.array.AbstractDesignElement"/>
         <mapping class="gov.nih.nci.caarray.domain.array.AbstractProbe"/>
         <mapping class="gov.nih.nci.caarray.domain.array.Array"/>
@@ -95,7 +96,7 @@
         <mapping class="gov.nih.nci.cabio.domain.Microarray"/>
         <mapping class="gov.nih.nci.cabio.domain.SNPArrayReporter"/>
         <mapping class="gov.nih.nci.cabio.domain.TranscriptArrayReporter"/>
-        
+
         <!-- configure the security post-load listener -->
         <event type="post-load">
             <listener class="org.hibernate.event.def.DefaultPostLoadEventListener"/>

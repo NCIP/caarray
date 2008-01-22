@@ -141,6 +141,7 @@ import javax.interceptor.Interceptors;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jboss.annotation.ejb.TransactionTimeout;
 
 /**
  * Implementation entry point for the ProjectManagement subsystem.
@@ -151,6 +152,7 @@ import org.apache.log4j.Logger;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ProjectManagementServiceBean implements ProjectManagementService {
     private static final Logger LOG = Logger.getLogger(ProjectManagementServiceBean.class);
+    private static final int UPLOAD_TIMEOUT = 1800;
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     @Resource
@@ -169,7 +171,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         LogUtil.logSubsystemExit(LOG);
         return project;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -184,6 +186,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    @TransactionTimeout(UPLOAD_TIMEOUT)
     public int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> conflictingFiles)
         throws ProposalWorkflowException, IOException {
         // create set of existing files
@@ -278,8 +281,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         getProjectDao().save(caArrayFile);
         getProjectDao().save(project);
         HibernateUtil.getCurrentSession().flush();
-        HibernateUtil.getCurrentSession().evict(caArrayFile);
-        caArrayFile.clearContents();
+        caArrayFile.clearAndEvictContents();
     }
 
     /**

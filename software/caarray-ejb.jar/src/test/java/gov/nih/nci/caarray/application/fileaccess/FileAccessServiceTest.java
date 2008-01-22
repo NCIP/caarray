@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
@@ -93,10 +94,13 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.hibernate.Transaction;
 import org.junit.After;
 import org.junit.Before;
@@ -148,15 +152,30 @@ public class FileAccessServiceTest {
      * @throws FileAccessException
      */
     @Test
-    public void testGetFile() throws FileAccessException {
-        File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF;
+    public void testGetFile() throws Exception {
+        MultiPartBlob.setBlobSize(100);
+        File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
         CaArrayFile caArrayFile = this.fileAccessService.add(file);
         HibernateUtil.getCurrentSession().save(caArrayFile);
+        HibernateUtil.getCurrentSession().flush();
         File retrievedFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
         assertEquals(file.getName(), retrievedFile.getName());
         assertEquals(file.length(), retrievedFile.length());
         assertTrue(file.exists());
         assertTrue(retrievedFile.exists());
+
+        InputStream originalIs = new FileInputStream(file);
+        byte[] originalBytes = IOUtils.toByteArray(originalIs);
+        IOUtils.closeQuietly(originalIs);
+
+        InputStream retrievedIs = new FileInputStream(retrievedFile);
+        byte[] retrievedBytes = IOUtils.toByteArray(retrievedIs);
+        IOUtils.closeQuietly(retrievedIs);
+        assertEquals(originalBytes.length, retrievedBytes.length);
+        for (int i = 0; i < originalBytes.length; i++) {
+            assertEquals(new Byte(originalBytes[i]), new Byte(retrievedBytes[i]));
+        }
+
         TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(caArrayFile);
         assertFalse(retrievedFile.exists());
     }
