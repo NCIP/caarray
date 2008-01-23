@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.services;
 
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.util.EntityPruner;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -145,7 +146,10 @@ public class EntityConfiguringInterceptor {
         // Together, these calls keep the hibernate session small, and ensure that we won't get
         // LazyInitializationExceptions
         for (Object entity : collection) {
-            HibernateUtil.getCurrentSession().refresh(entity);
+            if (entity instanceof PersistentObject) {
+                // some test code has non-persistentObject entities, which can't work here
+                HibernateUtil.getCurrentSession().refresh(entity);
+            }
             prepareEntity(entity, pruner);
             HibernateUtil.getCurrentSession().clear();
         }
