@@ -83,8 +83,6 @@
 package gov.nih.nci.caarray.domain.array;
 
 import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
@@ -93,8 +91,6 @@ import org.hibernate.annotations.Cascade;
  * Reports on the presence or intensity of a given target probe.
  */
 @Entity
-@org.hibernate.annotations.Entity(mutable = false)
-@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AbstractProbe extends AbstractDesignElement {
 
     private AbstractProbeAnnotation annotation;

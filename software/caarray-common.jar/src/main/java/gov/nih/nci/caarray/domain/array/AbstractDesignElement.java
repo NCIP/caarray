@@ -84,14 +84,20 @@ package gov.nih.nci.caarray.domain.array;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 
 /**
  * Base class for all array design elements.
  */
 @Entity
-@MappedSuperclass
+@Table(name = "DESIGN_ELEMENT")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.STRING)
 public abstract class AbstractDesignElement extends AbstractCaArrayObject {
 
     /**

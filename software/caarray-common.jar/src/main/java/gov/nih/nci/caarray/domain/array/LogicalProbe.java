@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain.array;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -98,6 +99,7 @@ import org.hibernate.annotations.ForeignKey;
  * A logical probe corresponding to a sequence that is composed of multiple physical probes.
  */
 @Entity
+@DiscriminatorValue("LP")
 public class LogicalProbe extends AbstractProbe {
 
     private static final long serialVersionUID = 4406463229622624441L;
@@ -146,7 +148,7 @@ public class LogicalProbe extends AbstractProbe {
      * @return the design details
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(updatable = false, nullable = false)
+    @JoinColumn(updatable = false, name = "LOGICALPROBE_DETAILS_ID")
     @ForeignKey(name = "LOGICALPROBE_DETAILS_FK")
     public ArrayDesignDetails getArrayDesignDetails() {
         return arrayDesignDetails;

@@ -123,11 +123,11 @@ public final class DataSet extends AbstractCaArrayObject {
     public List<HybridizationData> getHybridizationDataList() {
         return hybridizationDataList;
     }
-    
+
     /**
      * Creates a new <code>HybridizationData</code> for this <code>DataSet</code>.
      * @param hybridization <code>Hybridization</code> associated with the data
-     * 
+     *
      * @return the new HybridizationData.
      */
     public HybridizationData addHybridizationData(Hybridization hybridization) {
@@ -137,7 +137,7 @@ public final class DataSet extends AbstractCaArrayObject {
         hybridizationData.setDataSet(this);
         return hybridizationData;
     }
-    
+
     /**
      * @param hybridizationDatas the hybridizationDatas to set
      */
@@ -173,7 +173,7 @@ public final class DataSet extends AbstractCaArrayObject {
     /**
      * Adds a new type to this <code>DataSet</code>, creating the appropriate columns for all
      * <code>HybridizationDatas</code>.
-     * 
+     *
      * @param type the type to add.
      */
     public void addQuantitationType(QuantitationType type) {
@@ -186,7 +186,7 @@ public final class DataSet extends AbstractCaArrayObject {
     /**
      * Adds a list of new types to this <code>DataSet</code>, creating the appropriate columns for all
      * <code>HybridizationDatas</code>.
-     * 
+     *
      * @param types the types to add.
      */
     public void addQuantitationTypes(List<QuantitationType> types) {
@@ -208,8 +208,7 @@ public final class DataSet extends AbstractCaArrayObject {
     /**
      * @param designElementList the designElementList to set
      */
-    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
-    private void setDesignElementList(DesignElementList designElementList) {
+    public void setDesignElementList(DesignElementList designElementList) {
         this.designElementList = designElementList;
     }
 

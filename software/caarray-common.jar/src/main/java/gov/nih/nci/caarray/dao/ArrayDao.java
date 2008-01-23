@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
@@ -215,4 +216,14 @@ public interface ArrayDao extends CaArrayDao {
      * @return true if the array design is locked
      */
     boolean isArrayDesignLocked(Long id);
+
+    /**
+     * Returns the design element list matching the LSID given.
+     *
+     * @param lsidAuthority the LSID authority
+     * @param lsidNamespace the LSID namespace
+     * @param lsidObjectId the LSID object ID
+     * @return the matching design list or null.
+     */
+    DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId);
 }

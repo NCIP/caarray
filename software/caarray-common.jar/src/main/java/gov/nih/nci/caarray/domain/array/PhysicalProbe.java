@@ -88,6 +88,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -102,6 +103,7 @@ import org.hibernate.annotations.ForeignKey;
  * Represents a phsyical probe on a microarray.
  */
 @Entity
+@DiscriminatorValue("PP")
 public class PhysicalProbe extends AbstractProbe {
 
     private static final long serialVersionUID = -7343503650075935784L;
@@ -135,7 +137,7 @@ public class PhysicalProbe extends AbstractProbe {
      * @return the probeGroup
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(updatable = false, nullable = false)
+    @JoinColumn(updatable = false)
     @ForeignKey(name = "PROBE_GROUP_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public ProbeGroup getProbeGroup() {
@@ -168,7 +170,7 @@ public class PhysicalProbe extends AbstractProbe {
      * @return the design details
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(updatable = false, nullable = false)
+    @JoinColumn(updatable = false, name = "PHYSICALPROBE_DETAILS_ID")
     @ForeignKey(name = "PHYSICALPROBE_DETAILS_FK")
     public ArrayDesignDetails getArrayDesignDetails() {
         return arrayDesignDetails;

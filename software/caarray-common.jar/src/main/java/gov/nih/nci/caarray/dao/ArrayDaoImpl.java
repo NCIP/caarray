@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
@@ -272,16 +273,15 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     /**
      * {@inheritDoc}
      */
+    public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+        return (DesignElementList) getEntityByLsid(DesignElementList.class, lsidAuthority, lsidNamespace, lsidObjectId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        Query q =            HibernateUtil.getCurrentSession().createQuery(
-                    "from "
-                    + ArrayDesign.class.getName()
-                    + " where lsidAuthority = :lsidAuthority and lsidNamespace = :lsidNamespace "
-                    + "and lsidObjectId = :lsidObjectId");
-        q.setString("lsidAuthority", lsidAuthority);
-        q.setString("lsidNamespace", lsidNamespace);
-        q.setString("lsidObjectId", lsidObjectId);
-        return (ArrayDesign) q.uniqueResult();
+        return (ArrayDesign) getEntityByLsid(ArrayDesign.class, lsidAuthority, lsidNamespace, lsidObjectId);
     }
 
     /**

@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.util.EntityPruner;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -95,6 +96,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Example;
@@ -268,4 +270,18 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     public void clearSession() {
         HibernateUtil.getCurrentSession().clear();
     }    
+
+    AbstractCaArrayEntity getEntityByLsid(Class entityClass, String lsidAuthority, String lsidNamespace, 
+            String lsidObjectId) {
+        Query q = HibernateUtil.getCurrentSession().createQuery(
+                    "from "
+                    + entityClass.getName()
+                    + " where lsidAuthority = :lsidAuthority and lsidNamespace = :lsidNamespace "
+                    + "and lsidObjectId = :lsidObjectId");
+        q.setString("lsidAuthority", lsidAuthority);
+        q.setString("lsidNamespace", lsidNamespace);
+        q.setString("lsidObjectId", lsidObjectId);
+        return (AbstractCaArrayEntity) q.uniqueResult();
+    }
+
 }

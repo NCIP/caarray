@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.domain.array;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -94,7 +95,7 @@ import org.hibernate.annotations.ForeignKey;
  * Represents a physical location on a microarray.
  */
 @Entity
-@org.hibernate.annotations.Entity(mutable = false)
+@DiscriminatorValue("F")
 public class Feature extends AbstractDesignElement {
 
     private static final long serialVersionUID = -6319120292398781186L;
@@ -186,7 +187,7 @@ public class Feature extends AbstractDesignElement {
      * @return the design details
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(updatable = false, nullable = false)
+    @JoinColumn(updatable = false, name = "FEATURE_DETAILS_ID")
     @ForeignKey(name = "FEATURE_DETAILS_FK")
     public ArrayDesignDetails getArrayDesignDetails() {
         return arrayDesignDetails;
