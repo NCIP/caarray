@@ -123,7 +123,7 @@ public class CacheControlFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;        
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         if (StringUtils.substringAfterLast(httpRequest.getRequestURI(), ".").equals(DYNAMIC_URL_EXTENSION)) {
-            if (!request.isSecure()) {
+            if (!request.isSecure()) { // workaround for IE files bug http://support.microsoft.com/kb/812935
                 httpResponse.setHeader("Cache-control", "no-cache");                
                 httpResponse.setHeader("Pragma", "no-cache");
             }

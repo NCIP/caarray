@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.util.CaArrayUtils;
+import gov.nih.nci.caarray.util.EntityPruner;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.ArrayList;
@@ -199,7 +199,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
 
         Session mySession = HibernateUtil.getCurrentSession();
         try {
-            CaArrayUtils.blankStringPropsToNull(entityToMatch);
+            EntityPruner.blankStringPropsToNull(entityToMatch);
             // Query database for list of entities matching the given entity's attributes.
             Criteria criteria = mySession.createCriteria(entityToMatch.getClass())
                                          .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);

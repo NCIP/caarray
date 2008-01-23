@@ -86,7 +86,7 @@ import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
-import gov.nih.nci.caarray.util.CaArrayUtils;
+import gov.nih.nci.caarray.util.EntityPruner;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import javax.interceptor.AroundInvoke;
@@ -125,9 +125,10 @@ public class DataSetConfiguringInterceptor {
 
     private void prepareDataSet(DataSet dataSet) {
         // Need to perform our own cutting here - the default isn't what users will expect.
+        EntityPruner pruner = new EntityPruner();
         for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
-            CaArrayUtils.makeLeaf(hybridizationData.getHybridization());
-            CaArrayUtils.makeLeaf(hybridizationData.getLabeledExtract());
+            pruner.makeLeaf(hybridizationData.getHybridization());
+            pruner.makeLeaf(hybridizationData.getLabeledExtract());
             hybridizationData.setDataSet(null);
             for (AbstractDataColumn adc : hybridizationData.getColumns()) {
                 adc.setHybridizationData(null);
@@ -135,7 +136,7 @@ public class DataSetConfiguringInterceptor {
             }
         }
         for (AbstractDesignElement ade : dataSet.getDesignElementList().getDesignElements()) {
-            CaArrayUtils.makeLeaf(ade);
+            pruner.makeLeaf(ade);
         }
         Hibernate.initialize(dataSet.getQuantitationTypes());
     }

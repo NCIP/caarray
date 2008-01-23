@@ -1,13 +1,8 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-
 <c:set var="projectTitle"><c:out value="${project.experiment.title}" default="New Experiment"/></c:set>
-<c:if test="${!empty project.id}">
-    <c:url value="/project/${project.experiment.publicIdentifier}" var="permalinkUrl"/>
-    <c:set var="projectPermalink">(<a href="${permalinkUrl}">Permalink</a>)</c:set>
-</c:if>
 
 <script type="text/javascript">
-setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)} <c:out value="${projectPermalink}" escapeXml="false"/>');
+setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
 </script>
 
 <c:if test="${!editMode}">
@@ -25,6 +20,12 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)} <c:out val
             <s:textarea key="project.experiment.description" cols="80" rows="5" tabindex="2"/>
             <s:textfield theme="readonly" label="Status" value="%{getText(project.status.resourceKey)}"/>
             <s:textfield theme="readonly" name="project.experiment.publicIdentifier" label="Experiment Identifier"/>
+            <c:if test="${!empty project.id}">
+                <caarray:outputUrl var="permalinkUrl">
+                    <jsp:attribute name="url"><c:url value="/project/${project.experiment.publicIdentifier}"/></jsp:attribute>
+                </caarray:outputUrl>
+                <s:textfield theme="readonly" label="Experiment URL" value="%{#attr.permalinkUrl}"/>
+            </c:if>    
             <s:select required="true" key="project.experiment.assayType" tabindex="5"
                       list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
                       listKey="getValue()" headerKey="" headerValue="--Select an Assay Type--"/>

@@ -17,7 +17,7 @@
             <display:setProperty name="pagination.sortdirection.param" value="pagedItems.sortDirection" />
             <display:setProperty name="pagination.pagenumber.param" value="pagedItems.pageNumber" />
             <display:column titleKey="experiment.publications.title" sortable="true" sortProperty="TITLE">
-                <caarray:projectListTabActionLink linkContent="${row.title}" entityName="Publication" action="view" itemId="${row.id}"/>
+                <caarray:projectListTabActionLink linkContent="${!empty row.title ? row.title : 'View'}" entityName="Publication" action="view" itemId="${row.id}"/>
             </display:column>
             <display:column property="authors" sortProperty="AUTHORS" titleKey="experiment.publications.authors" sortable="true" />
             <display:column titleKey="experiment.publications.uri" sortProperty="URI" sortable="true">

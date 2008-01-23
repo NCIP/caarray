@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.services;
 
-import gov.nih.nci.caarray.util.CaArrayUtils;
+import gov.nih.nci.caarray.util.EntityPruner;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.Collection;
@@ -94,7 +94,7 @@ import javax.interceptor.InvocationContext;
  * Ensures that retrieved entitites are ready for transport, including correct
  * 'cutting' of object graphs.
  *
- * @see CaArrayUtils#makeChildrenLeaves(Object)
+ * @see EntityPruner#makeChildrenLeaves(Object)
  */
 public class EntityConfiguringInterceptor {
 
@@ -134,13 +134,18 @@ public class EntityConfiguringInterceptor {
     }
 
     private void prepareEntities(Collection<?> collection) {
+        EntityPruner pruner = new EntityPruner();
         for (Object entity : collection) {
-            prepareEntity(entity);
+            prepareEntity(entity, pruner);
+            HibernateUtil.getCurrentSession().clear();
         }
     }
 
     private void prepareEntity(Object entity) {
-        CaArrayUtils.makeChildrenLeaves(entity);
+        prepareEntity(entity, new EntityPruner());
     }
 
+    private void prepareEntity(Object entity, EntityPruner pruner) {
+        pruner.makeChildrenLeaves(entity);
+    }
 }

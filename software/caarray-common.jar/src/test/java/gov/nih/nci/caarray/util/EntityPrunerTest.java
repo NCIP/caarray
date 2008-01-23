@@ -103,15 +103,27 @@ import java.util.TreeSet;
 import org.junit.Test;
 
 /**
- * Test cases for utility classes.
+ * Test cases for the entity pruner
  */
-public class UtilsTest {
+public class EntityPrunerTest {
+    @Test
+    public void testNullSetter() {
+        User u = new User();
+        u.setFirstName("");
+        u.setLastName(" \t");
+        u.setOrganization(" test ");
+        EntityPruner.blankStringPropsToNull(u);
+        assertNull(u.getFirstName());
+        assertNull(u.getLastName());
+        assertNotNull(u.getOrganization());
+    }
 
     @Test
     public void testMakeLeaf() {
+        EntityPruner pruner = new EntityPruner();
         HibernateUtil.beginTransaction();
         B b = new B();
-        CaArrayUtils.makeLeaf(b);
+        pruner.makeLeaf(b);
 
         assertEquals(b.getId(), 1L);
         assertNull(b.getA());
@@ -128,9 +140,10 @@ public class UtilsTest {
 
     @Test
     public void testMakeChildrenLeaves() {
+        EntityPruner pruner = new EntityPruner();
         HibernateUtil.beginTransaction();
         B b = new B();
-        CaArrayUtils.makeChildrenLeaves(b);
+        pruner.makeChildrenLeaves(b);
         assertTrue(b.fooAccessed || b.iAccessed);
 
         assertNull(b.getUser());
@@ -153,8 +166,9 @@ public class UtilsTest {
 
     @Test
     public void testMap() {
+        EntityPruner pruner = new EntityPruner();
         C c = new C();
-        CaArrayUtils.makeChildrenLeaves(c);
+        pruner.makeChildrenLeaves(c);
         assertNotNull(c.getMapA());
         A a = c.getMapA().get(c.getMapA().keySet().iterator().next());
         assertNull(a.getA());
