@@ -123,7 +123,9 @@ public class CacheControlFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;        
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         if (StringUtils.substringAfterLast(httpRequest.getRequestURI(), ".").equals(DYNAMIC_URL_EXTENSION)) {
-            httpResponse.setHeader("Cache-control", "no-cache");
+            if (!request.isSecure()) {
+                httpResponse.setHeader("Cache-control", "no-cache");                
+            }
             httpResponse.setHeader("Pragma", "no-cache");
             httpResponse.setIntHeader("Expires", 0);            
         }
