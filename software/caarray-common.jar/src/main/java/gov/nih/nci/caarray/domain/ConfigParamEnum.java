@@ -141,5 +141,10 @@ public enum ConfigParamEnum {
     /**
      * Development mode flag.  Should only be true for local development purposes.
      */
-    DEVELOPMENT_MODE;
+    DEVELOPMENT_MODE,
+
+    /**
+     * caArray version number, for schema migration purposes.
+     */
+    SCHEMA_VERSION;
 }
