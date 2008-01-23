@@ -83,15 +83,18 @@
 package gov.nih.nci.caarray.services.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -102,6 +105,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class DataRetrievalServiceTest {
 
     private DataRetrievalService service;
@@ -112,6 +116,8 @@ public class DataRetrievalServiceTest {
     private final QuantitationType quantitationType1 = new QuantitationType();
     private final QuantitationType quantitationType2 = new QuantitationType();
     private final QuantitationType quantitationType3 = new QuantitationType();
+    private final PhysicalProbe probe1 = new PhysicalProbe();
+    private final PhysicalProbe probe2 = new PhysicalProbe();
 
     @Before
     public void setUp() throws Exception {
@@ -143,6 +149,9 @@ public class DataRetrievalServiceTest {
         dataSet.addQuantitationType(quantitationType1);
         dataSet.addQuantitationType(quantitationType2);
         dataSet.addQuantitationType(quantitationType3);
+        dataSet.setDesignElementList(new DesignElementList());
+        dataSet.getDesignElementList().getDesignElements().add(probe1);
+        dataSet.getDesignElementList().getDesignElements().add(probe2);
         arrayData.setDataSet(dataSet);
         hybridization.setArrayData(arrayData);
     }
@@ -183,6 +192,8 @@ public class DataRetrievalServiceTest {
         assertEquals(2, dataSet.getHybridizationDataList().get(1).getColumns().size());
         assertEquals(quantitationType2, dataSet.getHybridizationDataList().get(1).getColumns().get(0).getQuantitationType());
         assertEquals(quantitationType1, dataSet.getHybridizationDataList().get(1).getColumns().get(1).getQuantitationType());
+        assertNotNull(dataSet.getDesignElementList());
+        assertEquals(2, dataSet.getDesignElementList().getDesignElements().size());
     }
 
 

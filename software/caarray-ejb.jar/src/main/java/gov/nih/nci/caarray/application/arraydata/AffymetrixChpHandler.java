@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -125,7 +126,8 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
 
     private static final Logger LOG = Logger.getLogger(AffymetrixChpHandler.class);
     private static final String LSID_AUTHORITY = "Affymetrix.com";
-    private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
+    private static final String LSID_NAMESPACE_DESIGN = "PhysicalArrayDesign";
+    private static final String LSID_NAMESPACE_ELEMENT_LIST = "DesignElementList";
 
     private static final Map<String, AffymetrixExpressionChpQuantitationType> EXPRESSION_TYPE_MAP =
         new HashMap<String, AffymetrixExpressionChpQuantitationType>();
@@ -158,9 +160,12 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void loadData(DataSet dataSet, List<QuantitationType> types, File file) {
+    void loadData(DataSet dataSet, List<QuantitationType> types, File file, ArrayDesignService arrayDesignService) {
         Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
         typeSet.addAll(types);
+        if (dataSet.getDesignElementList() == null) {
+            loadDesignElementList(dataSet, file, arrayDesignService);
+        }
         FusionCHPLegacyData chpData = getChpData(file);
         prepareColumns(dataSet, types, chpData.getHeader().getNumProbeSets());
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
@@ -175,6 +180,15 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         default:
             throw new IllegalArgumentException("Unsupported Affymetrix CHP type");
         }
+    }
+
+
+    private void loadDesignElementList(DataSet dataSet, File file,
+            ArrayDesignService arrayDesignService) {
+        ArrayDesign design = getArrayDesign(arrayDesignService, file);
+        DesignElementList probeList = arrayDesignService.getDesignElementList(LSID_AUTHORITY, 
+                LSID_NAMESPACE_ELEMENT_LIST, design.getLsidObjectId());
+        dataSet.setDesignElementList(probeList);
     }
 
     private void loadExpressionData(HybridizationData hybridizationData, Set<QuantitationType> typeSet,
@@ -333,7 +347,7 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     private void validateDesignExists(FusionCHPLegacyData chpData, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         String lsidObjectId = chpData.getHeader().getChipType();
-        if (arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, lsidObjectId) == null) {
+        if (arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE_DESIGN, lsidObjectId) == null) {
             result.addMessage(Type.ERROR, "The system doesn't contain the required Affymetrix array design: "
                     + lsidObjectId);
         }
@@ -365,9 +379,12 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
 
     @Override
     ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
-        FusionCHPLegacyData chpData = getChpData(file);
+        return getArrayDesign(arrayDesignService, getChpData(file));
+    }
+
+    private ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, FusionCHPLegacyData chpData) {
         String lsidObjectId = chpData.getHeader().getChipType();
-        return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, lsidObjectId);
+        return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE_DESIGN, lsidObjectId);
     }
 
 }

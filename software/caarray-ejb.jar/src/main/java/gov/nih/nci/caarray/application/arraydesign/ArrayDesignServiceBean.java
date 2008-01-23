@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
@@ -377,6 +378,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     private VocabularyService getVocabularyService() {
         return (VocabularyService) ServiceLocatorFactory.getLocator().lookup(VocabularyService.JNDI_NAME);
     }
+    
     private boolean validateLockedDesign(ArrayDesign arrayDesign) {
         ArrayDesign loadedArrayDesign = getArrayDesign(arrayDesign.getId());
         if (!loadedArrayDesign.getProvider().equals(arrayDesign.getProvider())
@@ -386,5 +388,12 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         }
         HibernateUtil.getCurrentSession().evict(loadedArrayDesign);
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+        return getArrayDao().getDesignElementList(lsidAuthority, lsidNamespace, lsidObjectId);
     }
 }

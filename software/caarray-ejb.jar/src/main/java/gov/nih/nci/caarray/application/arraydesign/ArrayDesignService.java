@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.arraydesign;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -206,4 +207,14 @@ public interface ArrayDesignService {
      * @throws InvalidDataFileException if array is duplicate
      */
     void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException, InvalidDataFileException;
+
+    /**
+     * Retrieves an existing <code>DesignElementList</code> for an array design by LSID.
+     * 
+     * @param lsidAuthority the LSID authority
+     * @param lsidNamespace the LSID namespace
+     * @param lsidObjectId the LSID object ID
+     * @return the matching design element list or null.
+     */
+    DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId);
 }

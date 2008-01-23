@@ -152,6 +152,7 @@ import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.IntegerColumn;
@@ -471,6 +472,7 @@ public class ArrayDataServiceTest {
         this.arrayDataService.importData(gprFile, true);
         DerivedArrayData gprData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(gprFile);
         DataSet dataSet = this.arrayDataService.getData(gprData);
+        assertNotNull(dataSet.getDesignElementList());
         assertEquals(1, dataSet.getHybridizationDataList().size());
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(51, hybridizationData.getColumns().size());
@@ -486,6 +488,7 @@ public class ArrayDataServiceTest {
         this.arrayDataService.importData(illuminaFile, true);
         DerivedArrayData illuminaData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(illuminaFile);
         DataSet dataSet = this.arrayDataService.getData(illuminaData);
+        assertNotNull(dataSet.getDesignElementList());
         assertEquals(19, dataSet.getHybridizationDataList().size());
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(4, hybridizationData.getColumns().size());
@@ -509,6 +512,7 @@ public class ArrayDataServiceTest {
         DerivedArrayData chpData = getChpData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CHP);
         this.arrayDataService.importData(chpData.getDataFile(), false);
         DataSet dataSet = this.arrayDataService.getData(chpData);
+        assertNotNull(dataSet.getDesignElementList());
         checkExpressionData(AffymetrixArrayDataFiles.TEST3_CHP, dataSet);
     }
 
@@ -529,6 +533,7 @@ public class ArrayDataServiceTest {
         DerivedArrayData chpData = getChpData(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CHP);
         this.arrayDataService.importData(chpData.getDataFile(), false);
         DataSet dataSet = this.arrayDataService.getData(chpData);
+        assertNotNull(dataSet.getDesignElementList());
         checkSnpData(AffymetrixArrayDataFiles.TEN_K_1_CHP, dataSet);
     }
 
@@ -549,6 +554,7 @@ public class ArrayDataServiceTest {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
         this.arrayDataService.importData(celData.getDataFile(), false);
         DataSet dataSet = this.arrayDataService.getData(celData);
+        assertNotNull(dataSet.getDesignElementList());
         checkCelData(AffymetrixArrayDataFiles.TEST3_CEL, dataSet);
     }
 
@@ -689,8 +695,13 @@ public class ArrayDataServiceTest {
                     } else if (HG_FOCUS_LSID_OBJECT_ID.equals(lsidObjectId)) {
                         return createArrayDesign(lsidObjectId, 448, 448);
                     } else {
-                        return null;
+                        return new ArrayDesign();
                     }
+                }
+
+                @Override
+                public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+                    return new DesignElementList();
                 }
 
                 @SuppressWarnings("deprecation")

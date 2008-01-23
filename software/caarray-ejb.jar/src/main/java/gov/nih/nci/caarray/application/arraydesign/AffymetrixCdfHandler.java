@@ -90,6 +90,8 @@ import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.array.ProbeGroup;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
+import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
@@ -112,6 +114,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
 
     private static final String LSID_AUTHORITY = "Affymetrix.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
+    private static final String LSID_NAMESPACE_PROBE_LIST = "DesignElementList";
     private static final Logger LOG = Logger.getLogger(AffymetrixCdfHandler.class);
     private static final int PROBE_SET_BATCH_SIZE = 25;
 
@@ -193,7 +196,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
             handleProbeSets(designDetails);
             handleQCProbeSets(designDetails);
             createMissingFeatures(designDetails);
-
+            
         } finally {
             closeCdf();
         }
@@ -204,11 +207,16 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     private void handleProbeSets(ArrayDesignDetails designDetails) {
+        DesignElementList designElementList = new DesignElementList();
+        designElementList.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE_PROBE_LIST 
+                + ":" + fusionCDFData.getChipType());
+        designElementList.setDesignElementTypeEnum(DesignElementType.LOGICAL_PROBE);
+        getArrayDao().save(designElementList);
         int numProbeSets = fusionCDFData.getHeader().getNumProbeSets();
         FusionCDFProbeSetInformation probeSetInformation = new FusionCDFProbeSetInformation();
         for (int index = 0; index < numProbeSets; index++) {
             fusionCDFData.getProbeSetInformation(index, probeSetInformation);
-            handleProbeSet(probeSetInformation, fusionCDFData.getProbeSetName(index), designDetails);
+            handleProbeSet(probeSetInformation, fusionCDFData.getProbeSetName(index), designDetails, designElementList);
             if (index % PROBE_SET_BATCH_SIZE == 0) {
                 flushAndClearSession();
                 this.probeGroup = getDaoFactory().getSearchDao().retrieve(ProbeGroup.class, probeGroup.getId());
@@ -217,7 +225,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     private void handleProbeSet(FusionCDFProbeSetInformation probeSetInformation, String probeSetName,
-            ArrayDesignDetails designDetails) {
+            ArrayDesignDetails designDetails, DesignElementList designElementList) {
         LogicalProbe logicalProbe = new LogicalProbe(designDetails);
         logicalProbe.setName(probeSetName);
         getArrayDao().save(logicalProbe);
@@ -226,6 +234,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
             PhysicalProbe probe = new PhysicalProbe(designDetails, probeGroup);
             probe.setName(probeSetName + ".ProbePair" + listIndex);
             getArrayDao().save(probe);
+            designElementList.getDesignElements().add(probe);
         }
         int numGroups = probeSetInformation.getNumGroups();
         FusionCDFProbeGroupInformation probeGroupInformation = new FusionCDFProbeGroupInformation();

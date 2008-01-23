@@ -90,6 +90,8 @@ import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
+import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -195,16 +197,25 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void loadData(DataSet dataSet, List<QuantitationType> types, File celFile) {
+    void loadData(DataSet dataSet, List<QuantitationType> types, File celFile, ArrayDesignService arrayDesignService) {
         try {
             LOG.debug("Started loadData for file: " + celFile.getName());
             readCelData(celFile.getAbsolutePath());
+            if (dataSet.getDesignElementList() == null) {
+                loadDesignElementList(dataSet);
+            }
             prepareColumns(dataSet, types, celData.getCells());
             loadDataIntoColumns(dataSet.getHybridizationDataList().get(0), types);
         } finally {
             closeCelData();
         }
         LOG.debug("Completed loadData for file: " + celFile.getName());
+    }
+
+    private void loadDesignElementList(DataSet dataSet) {
+        DesignElementList probeList = new DesignElementList();
+        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
+        dataSet.setDesignElementList(probeList);
     }
 
     /**

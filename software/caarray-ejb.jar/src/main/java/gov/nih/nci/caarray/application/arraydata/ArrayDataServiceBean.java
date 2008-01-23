@@ -136,7 +136,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     }
 
     private void loadDataSet(AbstractArrayData arrayData) {
-        DataSetLoader loader = new DataSetLoader(arrayData, getDaoFactory());
+        DataSetLoader loader = new DataSetLoader(arrayData, getDaoFactory(), getArrayDesignService());
         loader.load();
     }
 
@@ -152,7 +152,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     }
 
     private void loadDataSet(AbstractArrayData arrayData, List<QuantitationType> types) {
-        DataSetLoader loader = new DataSetLoader(arrayData, getDaoFactory());
+        DataSetLoader loader = new DataSetLoader(arrayData, getDaoFactory(), getArrayDesignService());
         loader.load(types);
     }
 

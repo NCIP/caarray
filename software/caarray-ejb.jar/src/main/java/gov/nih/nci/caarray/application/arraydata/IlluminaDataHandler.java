@@ -87,9 +87,12 @@ import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaExpressionQuan
 import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaGenotypingQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
+import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
@@ -120,6 +123,7 @@ import org.apache.log4j.Logger;
  */
 class IlluminaDataHandler extends AbstractDataFileHandler {
 
+    private static final String TARGET_ID = "TargetID";
     private static final String ARRAY_CONTENT_HEADER = "Array Content";
     private static final String LSID_AUTHORITY = "illumina.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
@@ -171,9 +175,10 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         return Arrays.asList(IlluminaGenotypingQuantitationType.values()).containsAll(types);
     }
 
+    @SuppressWarnings("PMD.PositionLiteralsFirstInComparisons") // false report from PMD
     private List<QuantitationTypeDescriptor> getTypeDescriptors(DelimitedFileReader reader) {
         List<String> headers = getHeaders(reader);
-        if ("TargetID".equals(headers.get(0))) {
+        if (TARGET_ID.equals(headers.get(0))) {
             return getExpressionTypeDescriptors(headers);
         } else {
             return getGenotypingTypeDescriptors(headers);
@@ -287,15 +292,18 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void loadData(DataSet dataSet, List<QuantitationType> types, File file) {
+    void loadData(DataSet dataSet, List<QuantitationType> types, File file, ArrayDesignService arrayDesignService) {
         DelimitedFileReader reader = getReader(file);
         List<String> headers = getHeaders(reader);
-        loadData(headers, reader, dataSet, types);
+        loadData(headers, reader, dataSet, types, arrayDesignService);
     }
 
     private void loadData(List<String> headers, DelimitedFileReader reader, DataSet dataSet,
-            List<QuantitationType> types) {
+            List<QuantitationType> types, ArrayDesignService arrayDesignService) {
         prepareColumns(dataSet, types, getNumberOfDataRows(reader));
+        if (dataSet.getDesignElementList() == null) {
+            loadDesignElementList(dataSet, reader, headers, arrayDesignService);
+        }
         Map<String, Integer> groupIdToHybridizationDataIndexMap = getGroupIdToHybridizationDataIndexMap(headers);
         Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
         typeSet.addAll(types);
@@ -308,6 +316,22 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
                         rowIndex);
             }
             rowIndex++;
+        }
+    }
+
+    private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, List<String> headers, 
+            ArrayDesignService arrayDesignService) {
+        positionAtData(reader);
+        int indexOfTargetId = headers.indexOf(TARGET_ID);
+        DesignElementList probeList = new DesignElementList();
+        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
+        dataSet.setDesignElementList(probeList);
+        ArrayDesignDetails designDetails = getArrayDesign(arrayDesignService, reader).getDesignDetails();
+        ProbeLookup probeLookup = new ProbeLookup(designDetails.getLogicalProbes());
+        while (reader.hasNextLine()) {
+            List<String> values = reader.nextLine();
+            String probeName = values.get(indexOfTargetId);
+            probeList.getDesignElements().add(probeLookup.getProbe(probeName));
         }
     }
 
@@ -368,7 +392,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         DelimitedFileReader reader = getReader(file);
         validateHeaders(reader, result);
@@ -394,7 +418,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     private String getArrayContentValue(DelimitedFileReader reader) {
         Map<String, String[]> fileHeaders = getFileHeaders(reader);
         String[] arrayContentValues = fileHeaders.get(ARRAY_CONTENT_HEADER);
-        if (arrayContentValues == null || arrayContentValues.length == 0 
+        if (arrayContentValues == null || arrayContentValues.length == 0
                 || StringUtils.isEmpty(arrayContentValues[0])) {
             return null;
         } else {
@@ -444,11 +468,15 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         }
     }
 
+    private ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, DelimitedFileReader reader) {
+        String illuminaFile = getArrayContentValue(reader);
+        String designName = FilenameUtils.getBaseName(illuminaFile);
+        return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, designName);
+    }
+
     @Override
     ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
-        String galFile = getArrayContentValue(getReader(file));
-        String galName = FilenameUtils.getBaseName(galFile);
-        return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, galName);
+        return getArrayDesign(arrayDesignService, getReader(file));
     }
 
 

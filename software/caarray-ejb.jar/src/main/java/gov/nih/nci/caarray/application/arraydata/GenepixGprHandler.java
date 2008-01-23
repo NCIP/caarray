@@ -87,8 +87,11 @@ import gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
+import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
@@ -296,12 +299,31 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void loadData(DataSet dataSet, List<QuantitationType> types, File file) {
+    void loadData(DataSet dataSet, List<QuantitationType> types, File file, ArrayDesignService arrayDesignService) {
         DelimitedFileReader reader = getReader(file);
         prepareColumns(dataSet, types, getNumberOfDataRows(reader));
+        if (dataSet.getDesignElementList() == null) {
+            loadDesignElementList(dataSet, reader, arrayDesignService);
+        }
         Set<QuantitationTypeDescriptor> descriptorSet = getDescriptorSet(types);
         for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
             loadData(hybridizationData, descriptorSet, reader);
+        }
+    }
+
+    private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, 
+            ArrayDesignService arrayDesignService) {
+        DesignElementList probeList = new DesignElementList();
+        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
+        dataSet.setDesignElementList(probeList);
+        ArrayDesignDetails designDetails = getArrayDesign(arrayDesignService, reader).getDesignDetails();
+        ProbeLookup probeLookup = new ProbeLookup(designDetails.getProbes());
+        List<String> headers = getColumnHeaders(reader);
+        int idIndex = headers.indexOf(ID_HEADER);
+        while (reader.hasNextLine()) {
+            List<String> values = reader.nextLine();
+            String probeName = values.get(idIndex);
+            probeList.getDesignElements().add(probeLookup.getProbe(probeName));
         }
     }
 
@@ -344,7 +366,7 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         DelimitedFileReader reader = getReader(file);
         validateHeader(reader, result);
@@ -559,7 +581,11 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
 
     @Override
     ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
-        String galFile = getGalFile(getReader(file));
+        return getArrayDesign(arrayDesignService, getReader(file));
+    }
+
+    private ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, DelimitedFileReader reader) {
+        String galFile = getGalFile(reader);
         String galName = FilenameUtils.getBaseName(galFile);
         return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, galName);
     }

@@ -124,7 +124,7 @@ class UnsupportedDataFormatHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void loadData(DataSet dataSet, List<QuantitationType> types, File file) {
+    void loadData(DataSet dataSet, List<QuantitationType> types, File file, ArrayDesignService arrayDesignService) {
         // no-op, data parsing not supported for the current type
     }
 
@@ -151,7 +151,7 @@ class UnsupportedDataFormatHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validateArrayDesignInExperiment(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+    void validateArrayDesignInExperiment(CaArrayFile caArrayFile, File file, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         // no-op, data parsing not supported for the current type
     }

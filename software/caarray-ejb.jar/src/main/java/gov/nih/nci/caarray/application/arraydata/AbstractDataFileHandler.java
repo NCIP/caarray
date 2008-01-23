@@ -132,23 +132,24 @@ abstract class AbstractDataFileHandler {
         return result;
     }
 
-    void validateArrayDesignInExperiment(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+    void validateArrayDesignInExperiment(CaArrayFile caArrayFile, File file, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         ArrayDesign design = getArrayDesign(arrayDesignService, file);
         if (design == null) {
             result.addMessage(Type.ERROR, "The array design referenced by this data file could not be found.");
         } else if (!caArrayFile.getProject().getExperiment().getArrayDesigns().contains(design)) {
-            result.addMessage(Type.ERROR, "The array design referenced by this data file (" + design.getName() 
+            result.addMessage(Type.ERROR, "The array design referenced by this data file (" + design.getName()
                     + ") is not associated with this experiment");
         }
     }
-    
+
     abstract ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file);
 
     abstract void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
             ArrayDesignService arrayDesignService);
 
-    abstract void loadData(DataSet dataSet, List<QuantitationType> types, File file);
+    abstract void loadData(DataSet dataSet, List<QuantitationType> types, File file, 
+            ArrayDesignService arrayDesignService);
 
     void prepareColumns(DataSet dataSet, List<QuantitationType> types, int numberOfRows) {
         for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {

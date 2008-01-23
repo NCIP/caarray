@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
@@ -109,10 +110,13 @@ final class DataSetLoader {
     private final CaArrayDaoFactory daoFactory;
     private final AbstractArrayData arrayData;
     private AbstractDataFileHandler dataFileHandler;
+    private final ArrayDesignService arrayDesignService;
 
-    DataSetLoader(AbstractArrayData arrayData, CaArrayDaoFactory daoFactory) {
+    DataSetLoader(AbstractArrayData arrayData, CaArrayDaoFactory daoFactory,
+            ArrayDesignService arrayDesignService) {
         this.arrayData = arrayData;
         this.daoFactory = daoFactory;
+        this.arrayDesignService = arrayDesignService;
     }
 
     void load() {
@@ -125,7 +129,7 @@ final class DataSetLoader {
         if (isLoadRequired(getDataSet(), types)) {
             LOG.debug("Parsing required for file " + getArrayData().getDataFile().getName());
             File file = getFile();
-            handler.loadData(getDataSet(), types, file);
+            handler.loadData(getDataSet(), types, file, arrayDesignService);
             getDaoFactory().getArrayDao().save(getDataSet());
         } else {
             LOG.debug("File " + getArrayData().getDataFile().getName() + " has already been parsed");

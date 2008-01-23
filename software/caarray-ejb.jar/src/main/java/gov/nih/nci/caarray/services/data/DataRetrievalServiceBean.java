@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -103,6 +104,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
+import org.apache.commons.collections.ListUtils;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
 /**
@@ -142,8 +144,31 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
     private DataSet createMergedDataSet(List<DataSet> dataSets, DataRetrievalRequest request) {
         DataSet dataSet = new DataSet();
         dataSet.getQuantitationTypes().addAll(request.getQuantitationTypes());
+        addDesignElementList(dataSet, dataSets);
         addHybridizationDatas(dataSet, dataSets, request);
         return dataSet;
+    }
+
+    private void addDesignElementList(DataSet dataSet, List<DataSet> dataSets) {
+        if (dataSets.isEmpty()) {
+            dataSet.setDesignElementList(new DesignElementList());
+        } else if (allDesignElementListsAreConsistent(dataSets)) {
+            dataSet.setDesignElementList(dataSets.get(0).getDesignElementList());
+        } else {
+            throw new IllegalArgumentException("The DataSet requested data from inconsistent design elemeents");
+        }
+    }
+
+
+    private boolean allDesignElementListsAreConsistent(List<DataSet> dataSets) {
+        DesignElementList firstList = dataSets.get(0).getDesignElementList();
+        for (int i = 1; i < dataSets.size(); i++) {
+            DesignElementList nextList = dataSets.get(i).getDesignElementList();
+            if (!ListUtils.isEqualList(firstList.getDesignElements(), nextList.getDesignElements())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void addHybridizationDatas(DataSet dataSet, List<DataSet> dataSets, DataRetrievalRequest request) {

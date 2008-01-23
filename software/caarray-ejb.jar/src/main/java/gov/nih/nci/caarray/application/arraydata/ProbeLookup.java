@@ -80,94 +80,34 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydesign;
+package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.project.AssayType;
-import gov.nih.nci.caarray.validation.FileValidationResult;
-import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.domain.array.AbstractProbe;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ArrayDesignServiceStub implements ArrayDesignService {
+/**
+ * Provides lookup of array design <code>AbstractProbe</code> by location information.
+ */
+final class ProbeLookup {
 
-    public ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
-        return null;
+    private final Map<String, AbstractProbe> probeMap;
+
+    ProbeLookup(Collection<? extends AbstractProbe> probes) {
+        probeMap = new HashMap<String, AbstractProbe>(probes.size());
+        for (AbstractProbe probe : probes) {
+            addProbe(probe);
+        }
     }
 
-    public FileValidationResult validateDesign(CaArrayFile designFile) {
-        return null;
+    private void addProbe(AbstractProbe probe) {
+        probeMap.put(probe.getName(), probe);
     }
 
-    public ArrayDesign getArrayDesign(Long id) {
-        return null;
+    AbstractProbe getProbe(String probeName) {
+        return probeMap.get(probeName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<Organization> getArrayDesignProviders() {
-        return new ArrayList<Organization>();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<ArrayDesign> getImportedArrayDesignsForProvider(Organization provider) {
-        return new ArrayList<ArrayDesign>();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<ArrayDesign> getImportedArrayDesigns(Organization provider, AssayType assayType) {
-        return new ArrayList<ArrayDesign>();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<ArrayDesign> getArrayDesigns() {
-        return new ArrayList<ArrayDesign>();
-    }
-
-    public void importDesignDetails(ArrayDesign arrayDesign) {
-        // no-op
-    }
-
-    public void importDesign(ArrayDesign arrayDesign) {
-        // no-op
-    }
-
-    public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamesapce, String lsidObjectId) {
-        return null;
-    }
-
-    public FileValidationResult validateDesign(ArrayDesign design) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Organization> getAllProviders() {
-        return new ArrayList<Organization>();
-    }
-
-    public boolean isArrayDesignLocked(Long id) {
-        return false;
-    }
-
-    public void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessError, InvalidDataFileException {
-        // no op
-    }
-
-    public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        return null;
-    }
 }
