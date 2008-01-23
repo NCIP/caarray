@@ -135,7 +135,17 @@ public class EntityConfiguringInterceptor {
 
     private void prepareEntities(Collection<?> collection) {
         EntityPruner pruner = new EntityPruner();
+        // A note on this loop: We refresh each element first because the session is cleared
+        // each iteration, which would potentially mean that the entities un-initialized
+        // collection properties would be unavailable.
+        //
+        // We call clear because the hibernate session could be potentially HUGE after getting
+        // certain collections on objects (like ArrayDesignDetails.designElements, probes, etc.)
+        //
+        // Together, these calls keep the hibernate session small, and ensure that we won't get
+        // LazyInitializationExceptions
         for (Object entity : collection) {
+            HibernateUtil.getCurrentSession().refresh(entity);
             prepareEntity(entity, pruner);
             HibernateUtil.getCurrentSession().clear();
         }
