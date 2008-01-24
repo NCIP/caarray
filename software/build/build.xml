@@ -1126,7 +1126,7 @@
     <antcall target="database:create-schema" />
     <antcall target="database:populate" />
     <antcall target="database:env-specific-sql" />
-    <run-sql-script sql.file="${caarraydb.sql.dir}/postmigrate.sql" />
+    <run-sql-script onerror="continue" sql.file="${caarraydb.sql.dir}/postmigrate.sql"/>
   </target>
 
   <target name="database:recreate-database" depends="database:init-sql" description="Drops and recreates caarraydb database">

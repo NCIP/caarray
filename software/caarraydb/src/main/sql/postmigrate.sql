@@ -13,4 +13,8 @@ select * from csm_user_group_backup;
 
 drop table csm_user_backup;
 drop table csm_user_group_backup;
+
+commit;
+insert into CSM_USER_GROUP (user_id, group_id)
+values(1, 1);
 commit;
