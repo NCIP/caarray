@@ -105,6 +105,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.NotNull;
 
 /**
  *
@@ -131,6 +132,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      * @return the dataFile
      */
     @ManyToOne
+    @NotNull
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     @ForeignKey(name = "ARRAYDATA_FILE_FK")
     public CaArrayFile getDataFile() {

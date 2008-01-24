@@ -185,6 +185,14 @@ public class MageTabParserTest {
         ValidationResult result = parser.validate(inputFileSet);
         assertNotNull(result);
         assertFalse(result.isValid());
+        inputFileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_DATA_MATRIX_INPUT_SET;
+        result = parser.validate(inputFileSet);
+        assertNotNull(result);
+        assertFalse(result.isValid());
+        inputFileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
+        result = parser.validate(inputFileSet);
+        assertNotNull(result);
+        assertTrue(result.isValid());        
     }
 
     @Test

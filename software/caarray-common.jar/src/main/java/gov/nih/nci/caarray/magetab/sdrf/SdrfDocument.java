@@ -447,6 +447,10 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleDerivedArrayDataMatrixFile(String value) {
         DerivedArrayDataMatrixFile admf = new DerivedArrayDataMatrixFile();
         admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
+        if (admf.getDataMatrix() == null) {
+            addErrorMessage("Referenced Derived Array Data Matrix File " 
+                    + value + " was not found in the document set");
+        }
         admf.setName(value);
         admf.addToSdrfList(this);
         admf.link(currentNode);
@@ -456,6 +460,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleArrayDataMatrixFile(String value) {
         ArrayDataMatrixFile admf = new ArrayDataMatrixFile();
         admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
+        if (admf.getDataMatrix() == null) {
+            addErrorMessage("Referenced Array Data Matrix File " + value + " was not found in the document set");
+        }
         admf.setName(value);
         admf.addToSdrfList(this);
         admf.link(currentNode);
