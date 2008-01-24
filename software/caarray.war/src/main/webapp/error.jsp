@@ -18,7 +18,7 @@
             <div id="main">
                 <s:actionerror/>
                 <h1><fmt:message key="errorPage.heading"/></h1>
-                <s:if test="%{@gov.nih.nci.caarray.web.helper.ConfigurationHelper@isDev()}">
+                <s:if test="%{@gov.nih.nci.caarray.util.ConfigurationHelper@isDev()}">
                 <% if (exception != null) { %>
                     <pre><% exception.printStackTrace(new java.io.PrintWriter(out)); %></pre>
                 <% } else if (request.getAttribute("javax.servlet.error.exception") != null) { %>

@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.web.filter;
 
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
-import gov.nih.nci.caarray.web.helper.ConfigurationHelper;
+import gov.nih.nci.caarray.util.ConfigurationHelper;
 
 import java.util.Enumeration;
 import java.util.HashMap;

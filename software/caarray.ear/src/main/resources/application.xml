@@ -46,10 +46,16 @@
         <java>commons-beanutils-1.7.0.jar</java>
     </module>
     <module>
+        <java>commons-configuration-1.4.jar</java>
+    </module>
+    <module>
         <java>commons-discovery-0.2.jar</java>
     </module>
     <module>
         <java>commons-io-1.3.2.jar</java>
+    </module>
+    <module>
+        <java>commons-lang-2.3.jar</java>
     </module>
     <module>
         <java>commons-logging-1.1.jar</java>

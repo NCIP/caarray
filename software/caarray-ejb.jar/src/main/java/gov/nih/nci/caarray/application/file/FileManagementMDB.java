@@ -84,7 +84,9 @@ package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
+import gov.nih.nci.caarray.util.ConfigurationHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.io.Serializable;
@@ -107,6 +109,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -122,7 +125,7 @@ import org.apache.log4j.Logger;
 public class FileManagementMDB implements MessageListener {
 
     private static final Logger LOG = Logger.getLogger(FileManagementMDB.class);
-    static final int TIMEOUT_SECONDS = 3600;
+    private static final int DEFAULT_TIMEOUT_SECONDS = 3600;
 
     /**
      * JNDI name for file management handling <code>Queue</code>.
@@ -161,7 +164,7 @@ public class FileManagementMDB implements MessageListener {
 
     private void beginTransaction() {
         try {
-            this.transaction.setTransactionTimeout(TIMEOUT_SECONDS);
+            this.transaction.setTransactionTimeout(getBackgroundThreadTransactionTimeout());
             this.transaction.begin();
         } catch (NotSupportedException e) {
             LOG.error("Unexpected throwable -- transaction is supported", e);
@@ -170,6 +173,22 @@ public class FileManagementMDB implements MessageListener {
             LOG.error("Couldn't start transaction", e);
             throw new EJBException(e);
         }
+    }
+
+    /**
+     * Get the background thread timeout.
+     * @return the timeout val
+     */
+    protected int getBackgroundThreadTransactionTimeout() {
+        String backgroundThreadTransactionTimeout =
+            ConfigurationHelper.getConfiguration().getString(
+                    ConfigParamEnum.BACKGROUND_THREAD_TRANSACTION_TIMEOUT.name());
+        int timeout = DEFAULT_TIMEOUT_SECONDS;
+        if (StringUtils.isNumeric(backgroundThreadTransactionTimeout)) {
+            timeout = Integer.parseInt(backgroundThreadTransactionTimeout);
+        }
+        LOG.debug("Background thread transaction timeout setting: " + timeout);
+        return timeout;
     }
 
     private void commitTransaction()  {

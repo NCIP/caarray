@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.helper;
+package gov.nih.nci.caarray.util;
 
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;

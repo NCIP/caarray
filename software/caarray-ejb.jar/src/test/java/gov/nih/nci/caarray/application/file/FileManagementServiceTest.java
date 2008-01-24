@@ -125,6 +125,13 @@ public class FileManagementServiceTest {
                 }
             }
 
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            protected int getBackgroundThreadTransactionTimeout() {
+                return 3600;
+            }
         };
         fileManagementMDB.setDaoFactory(this.daoFactoryStub);
         fileManagementMDB.setTransaction(new UserTransactionStub());

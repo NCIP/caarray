@@ -139,6 +139,11 @@ public enum ConfigParamEnum {
     STRUTS_MULTIPART_SAVEDIR,
 
     /**
+     * the background import file thread transaction timeout in seconds.
+     */
+    BACKGROUND_THREAD_TRANSACTION_TIMEOUT,
+
+    /**
      * Development mode flag.  Should only be true for local development purposes.
      */
     DEVELOPMENT_MODE,
