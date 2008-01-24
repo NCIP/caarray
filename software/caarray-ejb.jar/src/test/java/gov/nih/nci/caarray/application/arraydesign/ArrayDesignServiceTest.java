@@ -103,6 +103,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
@@ -203,6 +204,7 @@ public class ArrayDesignServiceTest {
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
         assertEquals("Test3", design.getLsidObjectId());
         assertEquals(15876, design.getNumberOfFeatures());
+        assertEquals(345, caArrayDaoFactoryStub.designElementList.getDesignElements().size());
     }
 
     @Test
@@ -349,15 +351,19 @@ public class ArrayDesignServiceTest {
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
         private final Map<String, ArrayDesign> lsidDesignMap = new HashMap<String, ArrayDesign>();
         private final Map<Long, PersistentObject> objectMap = new HashMap<Long, PersistentObject>();
+        private DesignElementList designElementList;
 
         @Override
         public ArrayDao getArrayDao() {
             return new ArrayDaoStub() {
+
                 @Override
                 public void save(PersistentObject caArrayEntity) {
                     if (caArrayEntity instanceof ArrayDesign) {
                         ArrayDesign arrayDesign = (ArrayDesign) caArrayEntity;
                         LocalDaoFactoryStub.this.lsidDesignMap.put(arrayDesign.getLsid(), arrayDesign);
+                    } else if (caArrayEntity instanceof DesignElementList) {
+                        designElementList = (DesignElementList) caArrayEntity;
                     }
                 }
 
