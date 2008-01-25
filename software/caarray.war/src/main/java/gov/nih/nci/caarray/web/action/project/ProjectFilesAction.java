@@ -103,6 +103,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.zip.ZipException;
 
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.set.TransformedSet;
@@ -125,6 +126,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
                                                 expression = "selectedFiles.size() > 0"))
 public class ProjectFilesAction extends AbstractBaseProjectAction implements Preparable {
+    private static final String UPLOAD = "upload";
     private static final long serialVersionUID = 1L;
     private static final String ACTION_UNIMPORTED = "listUnimported";
     private static final String ACTION_IMPORTED = "listImported";
@@ -518,11 +520,14 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         try {
             count = getProjectManagementService().uploadFiles(getProject(), getUpload(), getUploadFileName(),
                     conflictingFiles);
+        } catch (ZipException e) {
+            ActionHelper.saveMessage(getText("errorUploadingZip"));
+            return UPLOAD;
         } catch (Exception e) {
             String msg = "Unable to upload file: " + e.getMessage();
             LOG.error(msg, e);
-            addActionError(getText("errorUploading"));
-            return INPUT;
+            ActionHelper.saveMessage(getText("errorUploading"));
+            return UPLOAD;
         }
 
         for (String conflict : conflictingFiles) {
@@ -531,7 +536,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         }
 
         ActionHelper.saveMessage(count + " files uploaded.");
-        return "upload";
+        return UPLOAD;
     }
 
     /**
