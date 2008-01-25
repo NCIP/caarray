@@ -245,7 +245,8 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
     }
 
     private boolean containsAllTypes(AbstractArrayData arrayData, List<QuantitationType> quantitationTypes) {
-        return arrayData.getDataSet().getQuantitationTypes().containsAll(quantitationTypes);
+        return arrayData.getDataSet() != null
+            && arrayData.getDataSet().getQuantitationTypes().containsAll(quantitationTypes);
     }
 
     private List<Hybridization> getHybridizations(DataRetrievalRequest request) {

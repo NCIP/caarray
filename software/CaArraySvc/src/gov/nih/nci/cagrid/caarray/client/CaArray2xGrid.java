@@ -126,6 +126,7 @@ public class CaArray2xGrid extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
+        suite.addTest(new CaArray2xGrid("testFindAllFiles"));
         suite.addTest(new CaArray2xGrid("testFindAllFactors"));
         suite.addTest(new CaArray2xGrid("testFindAllOrganizations"));
         suite.addTest(new CaArray2xGrid("testFindAllAddresses"));
@@ -138,6 +139,10 @@ public class CaArray2xGrid extends TestCase {
 
     public void testFindAllOrganizations() throws Exception {
         findAllHelper("gov.nih.nci.caarray.domain.contact.Organization");
+    }
+
+    public void testFindAllFiles() throws Exception {
+        findAllHelper("gov.nih.nci.caarray.domain.file.CaArrayFile");
     }
 
     public void testFindAllAddresses() throws Exception {

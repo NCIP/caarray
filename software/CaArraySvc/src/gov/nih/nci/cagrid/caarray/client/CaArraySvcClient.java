@@ -5,6 +5,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.cagrid.caarray.common.CaArraySvcI;
 import gov.nih.nci.cagrid.caarray.stubs.CaArraySvcPortType;
@@ -123,11 +124,10 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
               DataSet dataSet = client.getDataSet(drr);
               System.out.println(dataSet);
 
-              /*
               CaArrayFile file = new CaArrayFile();
               file.setId(2L);
               byte[] bytes = client.readFile(file);
-              System.out.println("Bytes: " + bytes); */
+              System.out.println("Bytes: " + bytes);
 
               // place client calls here if you want to use this main as a
 			  // test....
