@@ -404,4 +404,4 @@ insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL
 insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_PLAIN_CONTENT', 'Dear {0}\n\nThank you for submitting experiment {1} to caArray. You may access this experiment at {2}.');
 insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_HTML_CONTENT', '<p>Dear {0}</p><p>Thank you for submitting experiment {1} to caArray. You may access this experiment at <a href="{2}">{2}</a>.');
 
-insert into config_parameter (param, raw_value) values ('BACKGROUND_THREAD_TRANSACTION_TIMEOUT', '3600');
+insert into config_parameter (param, raw_value) values ('BACKGROUND_THREAD_TRANSACTION_TIMEOUT', '14400');
