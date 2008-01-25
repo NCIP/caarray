@@ -335,7 +335,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this).append(this.name).toString();
     }
 
     /**

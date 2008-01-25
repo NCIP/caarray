@@ -95,7 +95,6 @@ import gov.nih.nci.caarray.magetab.ProtocolApplication;
 import gov.nih.nci.caarray.magetab.TermSource;
 import gov.nih.nci.caarray.magetab.TermSourceable;
 import gov.nih.nci.caarray.magetab.Unitable;
-import gov.nih.nci.caarray.magetab.data.NativeDataFile;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 
@@ -318,16 +317,16 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleArrayDesignRef(column, value);
             break;
         case DERIVED_ARRAY_DATA_FILE:
-            handleDerivedArrayDataFile(value);
+            handleDerivedArrayDataFile(column, value);
             break;
         case ARRAY_DATA_FILE:
-            handleArrayDataFile(value);
+            handleArrayDataFile(column, value);
             break;
         case ARRAY_DATA_MATRIX_FILE:
-            handleArrayDataMatrixFile(value);
+            handleArrayDataMatrixFile(column, value);
             break;
         case DERIVED_ARRAY_DATA_MATRIX_FILE:
-            handleDerivedArrayDataMatrixFile(value);
+            handleDerivedArrayDataMatrixFile(column, value);
             break;
         case IMAGE_FILE:
             handleImageFile(column, value);
@@ -381,7 +380,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleImageFile(SdrfColumn column, String value) {
         Image image = new Image();
         image.setName(value);
-        image.link(currentNode);
+        image.link(currentHybridization);
         currentNode = image;
     }
 
@@ -415,62 +414,48 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         factorValue.addToSdrfList(this);
         factorValue.setValue(value);
         currentUnitable = factorValue;
-        // set it on a Hybridization
-        allHybridizations.get(allHybridizations.size() - 1).getFactorValues().add(factorValue);
+        currentHybridization.getFactorValues().add(factorValue);        
     }
 
-    private void handleDerivedArrayDataFile(String value) {
-        DerivedArrayDataFile adf = new DerivedArrayDataFile();
+    private void handleDerivedArrayDataFile(SdrfColumn column, String value) {
+        handleNode(column, value);
+        DerivedArrayDataFile adf = (DerivedArrayDataFile) currentNode;
         adf.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
         if (adf.getNativeDataFile() == null) {
             addErrorMessage("Referenced Derived Array Data File " + value + " was not found in the document set");
         }
-        adf.setName(value);
-        adf.addToSdrfList(this);
-        adf.link(currentNode);
-        currentNode = adf;
     }
 
-    private void handleArrayDataFile(String value) {
-        ArrayDataFile adf = new ArrayDataFile();
-        NativeDataFile nativeDataFile = getDocumentSet().getNativeDataFile(value);
-        if (nativeDataFile == null) {
+    private void handleArrayDataFile(SdrfColumn column, String value) {
+        handleNode(column, value);
+        ArrayDataFile adf = (ArrayDataFile) currentNode;
+        adf.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
+        if (adf.getNativeDataFile() == null) {
             addErrorMessage("Referenced Array Data File " + value + " was not found in the document set");
         }
-        adf.setNativeDataFile(nativeDataFile);
-        adf.setName(value);
-        adf.addToSdrfList(this);
-        adf.link(currentNode);
-        currentNode = adf;
     }
 
-    private void handleDerivedArrayDataMatrixFile(String value) {
-        DerivedArrayDataMatrixFile admf = new DerivedArrayDataMatrixFile();
+    private void handleDerivedArrayDataMatrixFile(SdrfColumn column, String value) {
+        handleNode(column, value);
+        DerivedArrayDataMatrixFile admf = (DerivedArrayDataMatrixFile) currentNode;
         admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
         if (admf.getDataMatrix() == null) {
             addErrorMessage("Referenced Derived Array Data Matrix File " 
                     + value + " was not found in the document set");
         }
-        admf.setName(value);
-        admf.addToSdrfList(this);
-        admf.link(currentNode);
-        currentNode = admf;
     }
 
-    private void handleArrayDataMatrixFile(String value) {
-        ArrayDataMatrixFile admf = new ArrayDataMatrixFile();
+    private void handleArrayDataMatrixFile(SdrfColumn column, String value) {
+        handleNode(column, value);
+        ArrayDataMatrixFile admf = (ArrayDataMatrixFile) currentNode;
         admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
         if (admf.getDataMatrix() == null) {
             addErrorMessage("Referenced Array Data Matrix File " + value + " was not found in the document set");
         }
-        admf.setName(value);
-        admf.addToSdrfList(this);
-        admf.link(currentNode);
-        currentNode = admf;
     }
 
     private void handleLabel(SdrfColumn column, String value) {
-        LabeledExtract labeledExtract = (LabeledExtract) currentNode;
+        LabeledExtract labeledExtract = (LabeledExtract) currentBioMaterial;
         labeledExtract.setLabel(addOntologyTerm(MageTabOntologyCategory.LABEL_COMPOUND, value));
         currentTermSourceable = labeledExtract.getLabel();
     }
@@ -499,7 +484,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private void handleMaterialType(SdrfColumn column, String value) {
         OntologyTerm materialType = addOntologyTerm(MageTabOntologyCategory.MATERIAL_TYPE, value);
-        ((AbstractBioMaterial) currentNode).setMaterialType(materialType);
+        currentBioMaterial.setMaterialType(materialType);
         currentTermSourceable = materialType;
     }
 
@@ -514,7 +499,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private void handleCharacteristic(String value, SdrfColumn currentColumn, SdrfColumn nextColumn) {
         Characteristic characteristic = new Characteristic();
-        ((AbstractBioMaterial) currentNode).getCharacteristics().add(characteristic);
+        if (!currentBioMaterial.isRepeated()) {
+            currentBioMaterial.getCharacteristics().add(characteristic);
+        }
         characteristic.setCategory(currentColumn.getHeading().getQualifier());
         if (nextColumn != null && nextColumn.getType() == SdrfColumnType.UNIT) {
             characteristic.setValue(value);
@@ -531,7 +518,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleProtocolRef(String value, SdrfColumn nextColumn) {
         ProtocolApplication protocolApp = new ProtocolApplication();
         protocolApp.setProtocol(getProtocol(value));
-        currentNode.getProtocolApplications().add(protocolApp);
+        if (!currentNode.isRepeated()) {
+            currentNode.getProtocolApplications().add(protocolApp);            
+        }
         currentProtocolApp = protocolApp;
         if (protocolApp.getProtocol() == null) {
             protocolApp.setProtocol(new Protocol());
@@ -550,7 +539,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         param.setName(column.getHeading().getQualifier());
         parameterValue.setParameter(param);
         currentUnitable = parameterValue;
-        currentProtocolApp.getParameterValues().add(parameterValue);
+        if (!currentNode.isRepeated()) {
+            currentProtocolApp.getParameterValues().add(parameterValue);
+        }
     }
 
     private void handleNode(SdrfColumn column, String value) {
@@ -559,7 +550,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             if (!leftmostNodes.contains(node)) {
                 leftmostNodes.add(node);
             }
-        } else {
+        } else if (!node.isRepeated() || !currentNode.isRepeated()) {
             node.link(currentNode);
         }
         currentNode = node;
@@ -571,6 +562,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         if (node == null) {
             node = createNode(column, value);
             nodeCache.put(nodeKey, node);
+        } else {
+            node.setRepeated(true);
         }
         return node;
     }
@@ -598,6 +591,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private void handleProviders(String value) {
+        if (currentBioMaterial.isRepeated()) {
+            return;
+        }
         String[] providerNames = value.split(";");
         if (providerNames == null) {
             return;
@@ -606,7 +602,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         for (int i = 0; i < numProviders; i++) {
             Provider provider = new Provider();
             provider.setName(providerNames[i]);
-            ((Source) currentNode).getProviders().add(provider);
+            ((Source) currentBioMaterial).getProviders().add(provider);
         }
     }
 

@@ -105,6 +105,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     private final Set<AbstractSampleDataRelationshipNode> successors =
         new HashSet<AbstractSampleDataRelationshipNode>();
     private String name;
+    private boolean repeated;
 
     /**
      * @return the name
@@ -404,5 +405,20 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     }
 
     abstract void addToSdrfList(SdrfDocument document);
+
+    /**
+     * @return whether this node is repeated (due to branches / merges within the graph. This property
+     * should be false the first time this node is encountered, and set to true on subsequent times.
+     */
+    public boolean isRepeated() {
+        return repeated;
+    }
+
+    /**
+     * @param repeated the repeated to set
+     */
+    public void setRepeated(boolean repeated) {
+        this.repeated = repeated;
+    }
 
 }

@@ -141,12 +141,12 @@ enum SdrfColumnType {
     /**
      * Array Data Matrix File.
      */
-    ARRAY_DATA_MATRIX_FILE,
+    ARRAY_DATA_MATRIX_FILE(ArrayDataMatrixFile.class),
 
     /**
      * Derived Array Data Matrix File.
      */
-    DERIVED_ARRAY_DATA_MATRIX_FILE,
+    DERIVED_ARRAY_DATA_MATRIX_FILE(DerivedArrayDataMatrixFile.class),
 
     /**
      * Image File.

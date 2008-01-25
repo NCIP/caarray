@@ -94,7 +94,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
@@ -158,13 +157,4 @@ public class DerivedArrayData extends AbstractArrayData {
     private void setDerivedFromArrayDataCollection(final Set<AbstractArrayData> derivedFromArrayDataCollection) {
         this.derivedFromArrayDataCollection = derivedFromArrayDataCollection;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
 }
