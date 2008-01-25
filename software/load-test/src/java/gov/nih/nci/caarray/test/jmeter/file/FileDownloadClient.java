@@ -175,11 +175,11 @@ public class FileDownloadClient extends CaArrayJmeterSampler implements JavaSamp
                     }
                 } else {
                     results.setSuccessful(false);
-                    results.setResponseCode("Error: Retrieved null hybridization.");
+                    results.setResponseCode("Error: Retrieved null hybridization for experiment with title " + experimentTitle);
                 }
             } else {
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Could not find experiment.");
+                results.setResponseCode("Error: Could not find experiment." + experimentTitle);
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);

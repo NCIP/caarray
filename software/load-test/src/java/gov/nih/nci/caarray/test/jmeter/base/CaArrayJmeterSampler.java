@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.test.jmeter.base;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  * Properties used by the load and stress tests.
  *
@@ -120,10 +123,8 @@ public class CaArrayJmeterSampler {
     }
 
     protected StringBuilder buildStackTrace(Throwable t) {
-        StringBuilder trace = new StringBuilder();
-        for (StackTraceElement ste : t.getStackTrace()) {
-            trace.append(ste + "\n");
-        }
-        return trace;
+        StringWriter sw = new StringWriter();
+        t.printStackTrace(new PrintWriter(sw, true));
+        return new StringBuilder(sw.toString());
     }
 }

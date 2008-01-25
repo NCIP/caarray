@@ -172,7 +172,8 @@ public class ArrayDesignDownloadClient extends CaArrayJmeterSampler implements J
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
             StringBuilder trace = buildStackTrace(e);
-            results.setResponseCode("Server connection exception: " + e + "\nTrace: " + trace);
+            results.setResponseCode("Could not connect to server at host " + hostName + "; port " + jndiPort
+                    + "; exception: " + e + "\nTrace: " + trace);
         } catch (RuntimeException e) {
             results.setSuccessful(false);
             StringBuilder trace = buildStackTrace(e);

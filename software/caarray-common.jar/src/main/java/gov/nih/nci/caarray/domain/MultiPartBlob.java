@@ -88,6 +88,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +111,9 @@ import org.hibernate.annotations.IndexColumn;
  * @author Scott Miller
  */
 @Embeddable
-public class MultiPartBlob {
+public class MultiPartBlob implements Serializable {
+    private static final long serialVersionUID = -2527332971292994350L;
+
     private static final int DEFAULT_BLOB_SIZE = 50 * 1024 * 1024;
 
     /**
