@@ -82,49 +82,40 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.services.CaArrayServer;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
-import gov.nih.nci.caarray.test.base.TestProperties;
-import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.ZipFile;
 
 import org.junit.Test;
 
 /**
- * Test case #7959.
+ * Uploads and deletes 1,2,4,8,16,32,64,128 cell files
  * 
- * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
-public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
+public class Import64CelZipTest extends AbstractSeleniumTest {
 
-    private static final int NUMBER_OF_FILES = 10;
-    private static final int TWO_MINUTES = 12;
-    private static final String ARRAY_DESIGN_NAME = "Test3";
+    private static final int FIFTY_MINUTES_IN_MILLISECOND = 3000000;
+    private static final boolean NO_FILE_NAME_ASSERT = false;
+    private List<File> zipFiles = new ArrayList<File>();
+    public static final String DIRECTORY = 
+            "L:\\NCICB\\caArray\\QA\\testdata_central_caArray2\\Affymetrix\\HG-U133_Plus_2\\CEL\\Public_Rembrandt_from_caArray1.6\\exponential_CEL_ZIPs\\";
 
     @Test
     public void testImportAndRetrieval() throws Exception {
-        String title = "files" + System.currentTimeMillis();
-        long startTime = System.currentTimeMillis();
-        long endTime = 0;
-        System.out.println("Started at " + DateFormat.getTimeInstance().format(new Date()));
+        String title = "64 import " + System.currentTimeMillis();
+        buildTestData();
 
         // - Login
         loginAsPrincipalInvestigator();
 
-        // - Add the array design
-        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
-
         // Create project
-        createExperiment(title,ARRAY_DESIGN_NAME);
+        createExperiment(title);
 
         // - go to the data tab
         selenium.click("link=Data");
@@ -133,109 +124,59 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         selenium.click("link=Upload New File(s)");
 
         // Upload the following files:
-        // - MAGE-TAB IDF
-        // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
-        // - MAGE-TAB Derived Data Matrix
-        // - CEL files referenced in SDRF
 
-        upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
-        upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
-        upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
-        FileFilter celFilter = new FileFilter() {
-            public boolean accept(File pathname) {
-                return pathname.getName().toLowerCase().endsWith(".cel");
-            }
-        };
-        for (File celFile : MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY.listFiles(celFilter)) {
-            upload(celFile);
+        for (File celFile : zipFiles) {
+            long startTime = System.currentTimeMillis();
+            long endTime = 0;
+            ZipFile zipfile = new ZipFile(celFile.getAbsolutePath());
+            int numberOfFiles = zipfile.size() - 1;
+            System.out.println("Upload of " +celFile.getName()+ " started at " + DateFormat.getTimeInstance().format(new Date()));
+            
+            // - Upload the zip file
+            upload(celFile, FIFTY_MINUTES_IN_MILLISECOND, NO_FILE_NAME_ASSERT);
+            checkFileStatus("Uploaded", THIRD_COLUMN, numberOfFiles);
+            waitForAction();
+            assertTrue(selenium.isTextPresent("files uploaded"));
+            endTime = System.currentTimeMillis();
+            DecimalFormat df= new DecimalFormat("0.##"); 
+            String totalTime = df.format((endTime - startTime)/60000f);
+            
+            // - print out the upload time
+            System.out.println("Uploaded " + numberOfFiles + " files ("+celFile.getName()+") in " + totalTime + " minutes");
+            startTime = System.currentTimeMillis();
+            
+            // - remove the cel files
+            delete(celFile);
+            endTime = System.currentTimeMillis();
+            totalTime = df.format((endTime - startTime)/60000f);
+            
+            // - print out the delete time
+            System.out.println("Deleted " + celFile.getName()+ " in " + totalTime + " minutes");
         }
-        // - Check if they are uploaded
-        checkFileStatus("Uploaded", THIRD_COLUMN);
-        waitForAction();
-        assertTrue(selenium.isTextPresent("files uploaded"));
-
-        // - Import files
-        selenium.click("selectAllCheckbox");
-        selenium.click("link=Import");
-        waitForAction();
-
-        // - hit the refresh button until files are imported
-        waitForImport("Nothing found to display");
-
-        // - click on the Imported data tab
-        selenium.click("link=Imported Data");
-        waitForText("10 items found, displaying all items");
-
-        // - validate the status
-        checkFileStatus("Imported", SECOND_COLUMN);
-
-        // - Make public so it can be searched thru API
-        makeExperimentPublic(title);
-        endTime = System.currentTimeMillis();
-        String totalTime = df.format((endTime - startTime)/60000f);
-        System.out.println("total time = " + totalTime);
-
-        // - Get the data thru the API
-        verifyDataViaApi(title);
-    }
-
-    private void makeExperimentPublic(String title) {
-        submitExperiment();
-
-        clickAndWait("link=My Experiment Workspace");
-        waitForTab();
-
-        assertTrue(selenium.isTextPresent(title));
-        // - Make the experiment public
-        int row = getExperimentRow(title, FIRST_COLUMN);
-        // - Click on the image to enter the edit mode again
-        selenium.click("//tr[" + row + "]/td[7]/a/img");
-        waitForText("Overall Experiment Characteristics");
-
-        // make experiment public
-        setExperimentPublic();
-    }
-
-    private void importArrayDesign(File arrayDesign) throws Exception {
-        selenium.click("link=Manage Array Designs");
-        selenium.waitForPageToLoad("30000");
-        if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
-            addArrayDesign(ARRAY_DESIGN_NAME, arrayDesign);
-            // get the array design row so we do not find the wrong Imported text
-            int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
-            // wait for array design to be imported
-            waitForArrayDesignImport(TWO_MINUTES, column);
-        }
-    }
-
-    private boolean doesArrayDesignExists(String arrayDesignName) {
-        return selenium.isTextPresent(arrayDesignName);
     }
 
     /**
-     * @throws Exception
-     * 
+     * @param celFile
      */
-
-    private void verifyDataViaApi(String experimentTitle) throws ServerConnectionException {
-        CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
-        server.connect();
-        CaArraySearchService searchService = server.getSearchService();
-        Experiment searchExperiment = new Experiment();
-        searchExperiment.setTitle(experimentTitle);
-        List<Experiment> matches = searchService.search(searchExperiment);
-        Experiment experiment = matches.get(0);
-        assertEquals(6, experiment.getSources().size());
-        assertEquals(6, experiment.getSamples().size());
-        assertEquals(6, experiment.getExtracts().size());
-        assertEquals(6, experiment.getLabeledExtracts().size());
-        assertEquals(6, experiment.getHybridizations().size());
-        System.out.println("java api was successful");
+    private void delete(File celFile) {
+        selenium.click("selectAllCheckbox");
+        selenium.click("link=Delete");
+        waitForAction();
     }
 
-    private void checkFileStatus(String status, int column) {
-        for (int i = 1; i < NUMBER_OF_FILES; i++) {
+    private void buildTestData() {
+        zipFiles.add(new File(DIRECTORY + "001CEL.zip"));
+        zipFiles.add(new File(DIRECTORY + "002CEL.zip"));
+        zipFiles.add(new File(DIRECTORY + "004CEL.zip"));
+        zipFiles.add(new File(DIRECTORY + "008CEL.zip"));
+        zipFiles.add(new File(DIRECTORY + "016CEL.zip"));
+        zipFiles.add(new File(DIRECTORY + "032CEL.zip"));
+        zipFiles.add(new File(DIRECTORY + "064CEL.zip"));
+        zipFiles.add(new File(DIRECTORY + "128CEL.zip"));
+    }
+ 
+    private void checkFileStatus(String status, int column, int numberOfFiles) {
+        for (int i = 1; i < numberOfFiles; i++) {
             assertEquals(status, selenium.getTable("row." + i + "." + column));
         }
     }

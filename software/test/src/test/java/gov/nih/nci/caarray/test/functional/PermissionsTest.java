@@ -88,90 +88,67 @@ import org.junit.Test;
 
 /**
  * 
- * Use Case UC#7231.
- * Test Case #10320, #10321, #10324, #10325
- * Requirements: Browse by Experiments, Organism, Array Providers, and Unique Array Designs
- *
+ * Use Case UC#7231. Test Case #10320, #10321, #10324, #10325 Requirements: Browse by Experiments, Organism, Array
+ * Providers, and Unique Array Designs
+ * 
  */
-public class BrowseExperimentTest extends AbstractSeleniumTest {
-    private String experimentId;
+public class PermissionsTest extends AbstractSeleniumTest {
+    private final String ADD_USER_BUTTON = "//img[@alt='Add']";
+    private final String FILTER_BUTON = "//li[2]/a/span/span";
 
     @Test
-    public void testNew() throws Exception {
-        String title = "browsable " + System.currentTimeMillis();
+    public void testCollaborators() throws Exception {
+        String groupName = "fellows " + System.currentTimeMillis();
         // - Login
         loginAsPrincipalInvestigator();
 
-        // - Create an Experiment
-        createExperiment(title);
-
-        // - Submit Experiment Proposal
-        makeExperimentPublic(title);
+        // - Create a Collaboration Group
+        createCollaborationGroup(groupName);
 
         // - logout
         selenium.click("link=Logout");
         waitForText("Browse caArray");
 
-        // - Click on Experiments link on the login page
-        selenium.click("link=Experiments");
-        waitForText("found");
-        // - Assert the Experiment is visible without logging in
-        findTitleAcrossMultiPages(experimentId);
+    }
 
-        // - Browse by Organisms
-        selenium.click("link=Login");
-        waitForText("Welcome to the caArray Data Portal");
-        selenium.click("link=Organisms");
-        waitForText("found");
-        // - Assert the Experiment is visible without logging in
-        findTitleAcrossMultiPages(experimentId);
-
-        // - Browse by Unique Array Providers
-        selenium.click("link=Login");
-        waitForText("Welcome to the caArray Data Portal");
-        selenium.click("link=Array Providers");
-        waitForText("found");
-        // - Assert the Experiment is visible without logging in
-        findTitleAcrossMultiPages(experimentId);
-
-        // - Browse by Unique Array Designs
-        //  - no array design set on the experiment
-        
+    /**
+     * @param string
+     */
+    private void createCollaborationGroup(String groupName) {
+        selenium.click("link=Manage Collaboration Groups");
+        waitForText("Group Members");
+        selenium.click("link=Add a New Collaboration Group");
+        waitForText("Choose a name for the group.");
+        selenium.type("newGroupForm_groupName", groupName);
+        selenium.click("link=Save");
+        selenium.waitForPageToLoad("30000");
+        // -  find the added group and click the edit icon
+        int row = getExperimentRow(groupName, ZERO_COLUMN);
+        // edit icon to add members
+        selenium.click("//tr[" + row + "]/td[3]/a/img");
+        waitForText("Remove");
+        selenium.click("link=Add a New Group Member");
+        waitForText("Search for users by choosing filter criteria");
+        // filter - shows all users
+        clickAndWait(FILTER_BUTON);
+        // add all the users
+        addUsers();
 
     }
 
-    private void makeExperimentPublic(String title) throws Exception {
-        submitExperiment();
-
-        clickAndWait("link=My Experiment Workspace");
-        waitForTab();
-
-        findTitleAcrossMultiPages(title);
-        // - Need the table row to click on the edit icon
-        int row = getExperimentRow(title);
-        // - Get the Experiment Id for use later when doing an anonymous search
-        experimentId = selenium.getTable("row." + row + ".0");
-        // - Click on the image to enter the edit mode again
-        selenium.click("//tr[" + row + "]/td[7]/a/img");
-        waitForText("Overall Experiment Characteristics");
-
-        // make experiment public
-        setExperimentPublic();
-    }
-
-    private int getExperimentRow(String text) {
-        for (int loop = 1;; loop++) {
-            if (loop % PAGE_SIZE != 0) {
-                if (text.equalsIgnoreCase(selenium.getTable("row." + loop + ".1"))) {
-                    return loop;
-                }
-            } else {
-                // Moving to next page
-                selenium.click("link=Next");
-                waitForAction();
-                loop = 1;
+    private void addUsers() {
+        for (int i = 0;; i++) {
+            clickAndWait(ADD_USER_BUTTON);
+            selenium.waitForPageToLoad("30000");
+            if ("Nothing found to display.".equalsIgnoreCase(selenium.getTable("row.1.0"))) {
+                return;
+            }
+            // safety catch
+            if (i > 50) {
+                fail("attempted to add more than 50 users");
             }
         }
     }
+
 
 }

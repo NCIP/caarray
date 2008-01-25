@@ -96,6 +96,9 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -114,7 +117,10 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     @Test
     public void testImportAndRetrieval() throws Exception {
+        long startTime = System.currentTimeMillis();
+        long endTime = 0;
         String title = "Standard mage" + System.currentTimeMillis();
+        System.out.println("Started at " + DateFormat.getTimeInstance().format(new Date()));
 
         loginAsPrincipalInvestigator();
         importArrayDesign("HT_HG-U133A", AffymetrixArrayDesignFiles.HT_HG_U133A_CDF);
@@ -164,8 +170,10 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
         // make experiment public
         makeExperimentPublic(title);
-
-        // - Get the data thru the API
+        endTime = System.currentTimeMillis();
+        String totalTime = df.format((endTime - startTime)/60000f);
+        System.out.println("total time = " + totalTime);
+       // - Get the data thru the API
         verifyDataViaJavaApi(title);
     }
 

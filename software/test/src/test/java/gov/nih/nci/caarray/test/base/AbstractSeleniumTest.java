@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.test.base;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 import com.thoughtworks.selenium.SeleneseTestCase;
 
@@ -94,6 +95,7 @@ import com.thoughtworks.selenium.SeleneseTestCase;
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
+    protected DecimalFormat df= new DecimalFormat("0.##"); 
     private static final int PAGE_TIMEOUT_SECONDS = 180;
     private static final String LOGIN_BUTTON = "//div[2]/form/table/tbody/tr[4]/td/del/ul/li/a/span/span";
     protected static final String TAB_KEY = "\\009";
@@ -354,6 +356,9 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             }
             if (selenium.isTextPresent("Failed Validation")) {
                 fail("Validation Failed during Import");
+            }
+            if (selenium.isTextPresent("Import Failed")) {
+                fail("Import Failed");
             }
             selenium.click(REFRESH_BUTTON);
             if (selenium.isTextPresent(textToWaitFor)) {
