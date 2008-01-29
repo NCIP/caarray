@@ -113,7 +113,8 @@ public class EntityConfiguringInterceptor {
      * @throws Exception if invoking the method throws an exception.
      */
     @AroundInvoke
-    @SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "unchecked" }) // method invocation wrapper requires throws Exception
+    @SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "unchecked" }) // method invocation wrapper requires
+                                                                              // throws Exception
     public Object prepareReturnValue(InvocationContext invContext) throws Exception {
         // make the call to the underlying method.  This method (prepareReturnValue) wraps the intended method.
         Object returnValue = invContext.proceed();
