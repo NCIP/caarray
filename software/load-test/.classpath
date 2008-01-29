@@ -21,5 +21,6 @@
 	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-caDSR-service.jar"/>
 	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-caDSR-stubs.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/CaArraySvc"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-data-utils.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
