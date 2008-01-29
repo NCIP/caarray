@@ -86,10 +86,14 @@ import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.util.EntityPruner;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
+
+import org.apache.log4j.Logger;
 
 /**
  * Ensures that retrieved entitites are ready for transport, including correct
@@ -99,6 +103,8 @@ import javax.interceptor.InvocationContext;
  */
 public class EntityConfiguringInterceptor {
 
+    private static final Logger LOG = Logger.getLogger(EntityConfiguringInterceptor.class);
+
     /**
      * Ensures that any object returned and its direct associated entities are loaded.
      *
@@ -107,7 +113,7 @@ public class EntityConfiguringInterceptor {
      * @throws Exception if invoking the method throws an exception.
      */
     @AroundInvoke
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException") // method invocation wrapper requires throws Exception
+    @SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "unchecked" }) // method invocation wrapper requires throws Exception
     public Object prepareReturnValue(InvocationContext invContext) throws Exception {
         // make the call to the underlying method.  This method (prepareReturnValue) wraps the intended method.
         Object returnValue = invContext.proceed();
@@ -123,7 +129,7 @@ public class EntityConfiguringInterceptor {
 //        HibernateUtil.getCurrentSession().flush();
 
         if (returnValue instanceof Collection) {
-            prepareEntities((Collection<?>) returnValue);
+            prepareEntities((Collection<Object>) returnValue);
         } else {
             prepareEntity(returnValue);
         }
@@ -134,7 +140,11 @@ public class EntityConfiguringInterceptor {
         return returnValue;
     }
 
-    private void prepareEntities(Collection<?> collection) {
+    @SuppressWarnings("PMD.ExcessiveMethodLength")  // Lots of explanatory comments
+    private void prepareEntities(Collection<Object> collection) {
+        // Create a temporary collection for the cut objects.  We will replace the passed-in
+        // collection elements with the cut elements in here.
+        Collection<Object> tmpCollection = new ArrayList<Object>(collection.size());
         EntityPruner pruner = new EntityPruner();
         // A note on this loop: We refresh each element first because the session is cleared
         // each iteration, which would potentially mean that the entities un-initialized
@@ -145,14 +155,27 @@ public class EntityConfiguringInterceptor {
         //
         // Together, these calls keep the hibernate session small, and ensure that we won't get
         // LazyInitializationExceptions
-        for (Object entity : collection) {
-            if (entity instanceof PersistentObject) {
+        Iterator<Object> it = collection.iterator();
+        while (it.hasNext()) {
+            Object toCut = it.next();
+            if (toCut instanceof PersistentObject) {
                 // some test code has non-persistentObject entities, which can't work here
-                HibernateUtil.getCurrentSession().refresh(entity);
+                toCut = HibernateUtil.getCurrentSession().get(toCut.getClass(),
+                                                              ((PersistentObject) toCut).getId());
             }
-            prepareEntity(entity, pruner);
+            prepareEntity(toCut, pruner);
             HibernateUtil.getCurrentSession().clear();
+            tmpCollection.add(toCut);
+            try {
+                it.remove();
+            } catch (UnsupportedOperationException uoe) {
+                // Not fatal, or even so bad, but log anyways.
+                LOG.debug("Could not remove from iterator: " + uoe, uoe);
+            }
         }
+        // Replace collection's elements with the cut elements.  Cutting in place will not work!
+        collection.clear();
+        collection.addAll(tmpCollection);
     }
 
     private void prepareEntity(Object entity) {
