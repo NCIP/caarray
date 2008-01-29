@@ -82,19 +82,15 @@
  */
 package gov.nih.nci.caarray.test.jmeter.grid.file;
 
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.services.CaArrayServer;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
 import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
-
-import java.util.List;
-import java.util.Set;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
+import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
 
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
@@ -107,13 +103,12 @@ import org.apache.jmeter.samplers.SampleResult;
  */
 
 public class FileDownload extends CaArrayJmeterSampler implements JavaSamplerClient {
-    private static final String EXPERIMENT_NAME_PARAM = "experimentName";
-    private static final String DEFAULT_EXPERIMENT_NAME = "Affymetrix Mouse with Data 01";
+    private static final String FILE_NAME_PARAM = "fileName";
+    private static final String DEFAULT_FILE_NAME = "H_TK6 MDR1 replicate 1.cel";
 
     private static final String TEST_SERVICE_URL = "test.serviceUrl";
 
     private String hostName;
-    private int jndiPort;
     private int gridServicePort;
 
     /**
@@ -123,7 +118,6 @@ public class FileDownload extends CaArrayJmeterSampler implements JavaSamplerCli
      */
     public void setupTest(JavaSamplerContext context) {
         hostName = context.getParameter(getHostNameParam(), getDefaultHostName());
-        jndiPort = Integer.parseInt(context.getParameter(getJndiPortParam(), getDefaultJndiPort()));
         gridServicePort = Integer.parseInt(context.getParameter(getGridServicePortParam(), getDefaultGridServicePort()));
         System.setProperty(TEST_SERVICE_URL, "http://" + hostName + ":" + gridServicePort + "/wsrf/services/cagrid/CaArraySvc");
     }
@@ -135,9 +129,8 @@ public class FileDownload extends CaArrayJmeterSampler implements JavaSamplerCli
      */
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument(EXPERIMENT_NAME_PARAM, DEFAULT_EXPERIMENT_NAME);
+        params.addArgument(FILE_NAME_PARAM, DEFAULT_FILE_NAME);
         params.addArgument(getHostNameParam(), getDefaultHostName());
-        params.addArgument(getJndiPortParam(), getDefaultJndiPort());
         params.addArgument(getGridServicePortParam(), getDefaultGridServicePort());
         return params;
     }
@@ -150,47 +143,28 @@ public class FileDownload extends CaArrayJmeterSampler implements JavaSamplerCli
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
-        String experimentTitle = context.getParameter(EXPERIMENT_NAME_PARAM, DEFAULT_EXPERIMENT_NAME);
+        String fileName = context.getParameter(FILE_NAME_PARAM, DEFAULT_FILE_NAME);
 
         try {
-            CaArrayServer server = new CaArrayServer(hostName, jndiPort);
-            server.connect();
-            CaArraySearchService searchService = server.getSearchService();
+            CaArraySvcClient client = new CaArraySvcClient(System.getProperty(TEST_SERVICE_URL));
 
-            Experiment experiment = lookupExperiment(searchService, experimentTitle);
-            if (experiment != null) {
-                Hybridization hybridization = getFirstHybridization(searchService, experiment);
-                if (hybridization != null) {
-                    CaArrayFile dataFile = getDataFile(searchService, hybridization);
-                    if (dataFile != null) {
-                        CaArraySvcClient client = new CaArraySvcClient(System.getProperty(TEST_SERVICE_URL));
-                        results.sampleStart();
-                        byte[] byteArray = client.readFile(dataFile);
-                        if (byteArray != null) {
-                            results.setSuccessful(true);
-                            results.setResponseCodeOK();
-                            results.setResponseMessage("Retrieved " + byteArray.length + " bytes.");
-                        } else {
-                            results.setSuccessful(false);
-                           results.setResponseCode("Error: Retrieved null byte array.");
-                        }
-                        results.sampleEnd();
-                    } else {
-                        results.setSuccessful(false);
-                        results.setResponseCode("Error: Retrieved null data file.");
-                    }
+            CaArrayFile caArrayFile = lookupFile(client, fileName);
+            if (caArrayFile != null) {
+                results.sampleStart();
+                byte[] byteArray = client.readFile(caArrayFile);
+                if (byteArray != null) {
+                    results.setSuccessful(true);
+                    results.setResponseCodeOK();
+                    results.setResponseMessage("Retrieved " + byteArray.length + " bytes.");
                 } else {
                     results.setSuccessful(false);
-                    results.setResponseCode("Error: Retrieved null hybridization.");
+                    results.setResponseCode("Error: Retrieved null byte array.");
                 }
+                results.sampleEnd();
             } else {
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Could not find experiment.");
+                results.setResponseCode("Error: Retrieved null data file.");
             }
-        } catch (ServerConnectionException e) {
-            results.setSuccessful(false);
-            StringBuilder trace = buildStackTrace(e);
-            results.setResponseCode("Server connection exception: " + e + "\nTrace: " + trace);
         } catch (RuntimeException e) {
             results.setSuccessful(false);
             StringBuilder trace = buildStackTrace(e);
@@ -204,43 +178,19 @@ public class FileDownload extends CaArrayJmeterSampler implements JavaSamplerCli
         return results;
     }
 
-    private Experiment lookupExperiment(CaArraySearchService service, String experimentName) {
-        Experiment exampleExperiment = new Experiment();
-        exampleExperiment.setTitle(experimentName);
-
-        List<Experiment> experimentList = service.search(exampleExperiment);
-        if (experimentList.size() == 0) {
-            return null;
-        }
-        return experimentList.get(0);
-    }
-
-    private Hybridization getFirstHybridization(CaArraySearchService service, Experiment experiment) {
-        Set<Hybridization> allHybridizations = experiment.getHybridizations();
-        for (Hybridization hybridization : allHybridizations) {
-            Hybridization populatedHybridization = service.search(hybridization).get(0);
-            // Yes, we're returning only the first hybridization.
-            return populatedHybridization;
-        }
-        return null;
-    }
-
-    private CaArrayFile getDataFile(CaArraySearchService service, Hybridization hybridization) {
-        // Try to find raw data
-        RawArrayData rawArrayData = hybridization.getArrayData();
-        if (rawArrayData != null) {
-            // Return the file associated with the first raw data.
-            RawArrayData populatedArrayData = service.search(rawArrayData).get(0);
-            return populatedArrayData.getDataFile();
-        }
-        // If raw data doesn't exist, try to find derived data
-        Set<DerivedArrayData> derivedArrayDataSet = hybridization.getDerivedDataCollection();
-        for (DerivedArrayData derivedArrayData : derivedArrayDataSet) {
-            // Return the file associated with the first derived data.
-            DerivedArrayData populatedArrayData = service.search(derivedArrayData).get(0);
-            return populatedArrayData.getDataFile();
-        }
-        return null;
+    private CaArrayFile lookupFile(CaArraySvcClient client, String fileName) throws Exception {
+        CQLQuery cqlQuery = new CQLQuery();
+        Object target = new Object();
+        target.setName("gov.nih.nci.caarray.domain.file.CaArrayFile");
+        Attribute fileNameAttribute = new Attribute();
+        fileNameAttribute.setName("name");
+        fileNameAttribute.setValue(fileName);
+        fileNameAttribute.setPredicate(Predicate.EQUAL_TO);
+        target.setAttribute(fileNameAttribute);
+        cqlQuery.setTarget(target);
+        CQLQueryResults cqlResults = client.query(cqlQuery);
+        CQLQueryResultsIterator iter = new CQLQueryResultsIterator(cqlResults, CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
+        return (CaArrayFile) iter.next();
     }
 
     /**
