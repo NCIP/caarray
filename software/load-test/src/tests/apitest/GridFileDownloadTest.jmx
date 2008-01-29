@@ -29,18 +29,18 @@
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Experiments CSV Data Set Config" enabled="true">
           <stringProp name="delimiter">\t</stringProp>
           <stringProp name="fileEncoding"></stringProp>
-          <stringProp name="filename">API_experiments_100M.csv</stringProp>
+          <stringProp name="filename">downloadFiles.csv</stringProp>
           <boolProp name="recycle">false</boolProp>
           <boolProp name="stopThread">true</boolProp>
-          <stringProp name="variableNames">experimentName</stringProp>
+          <stringProp name="variableNames">fileName</stringProp>
         </CSVDataSet>
         <hashTree/>
         <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Download Request" enabled="true">
           <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
-              <elementProp name="experimentName" elementType="Argument">
-                <stringProp name="Argument.name">experimentName</stringProp>
-                <stringProp name="Argument.value">${experimentName}</stringProp>
+              <elementProp name="fileName" elementType="Argument">
+                <stringProp name="Argument.name">fileName</stringProp>
+                <stringProp name="Argument.value">${fileName}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="host.name" elementType="Argument">
