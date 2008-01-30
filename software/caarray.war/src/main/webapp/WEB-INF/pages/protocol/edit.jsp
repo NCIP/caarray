@@ -39,7 +39,7 @@
             </c:if>
             <tbody id="selectSource" <s:if test="createNewSource == true">style="display: none"</s:if>>
                 <s:select list="sources" key="protocol.source" headerKey="" headerValue="-- Select A Source --"
-                    listKey="id" listValue="name" value="protocol.source.id" tabindex="9" required="true" />
+                    listKey="id" listValue="nameAndVersion" value="protocol.source.id" tabindex="9" required="true" />
             </tbody>
             <tbody id="newSource" <s:if test="createNewSource == false">style="display: none"</s:if>>
                 <tr>

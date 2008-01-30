@@ -28,8 +28,8 @@
                 <display:column titleKey="protocol.type" property="type.value" sortable="true" />
                 <display:column title="Source" sortProperty="source.name" sortable="true">
                     <c:choose>
-                        <c:when test="${not empty row.source.url}"><a href="${row.source.url}" target="_blank">${row.source.name}</a></c:when>
-                        <c:otherwise>${row.source.name}</c:otherwise>
+                        <c:when test="${not empty row.source.url}"><a href="${row.source.url}" target="_blank">${row.source.nameAndVersion}</a></c:when>
+                        <c:otherwise>${row.source.nameAndVersion}</c:otherwise>
                     </c:choose>
                 </display:column>
                 <display:column titleKey="protocol.description" property="description" sortable="true" />

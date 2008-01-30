@@ -26,9 +26,9 @@ to become a caArray user.
                         new Ajax.Request('<c:url value="/protected/project/workspace.action"/>', { onSuccess: completeLogin });
                             </c:when>
                             <c:otherwise>
-                        completeLogin();                            
+                        completeLogin();
                             </c:otherwise>
-                        </c:choose>                            
+                        </c:choose>
                       }
 
                       function completeLogin() {
@@ -53,13 +53,8 @@ to become a caArray user.
                         <tr>
                             <td colspan="2" class="space">&nbsp;</td>
                         </tr>
-                        <s:textfield name="j_username" label="Username" maxlength="100" size="15"/>
-                        <s:password name="j_password" label="Password" maxlength="100" size="15">
-                            <s:param name="after">
-                                <br />
-                                <a href="<c:url value="/notYetImplemented.jsp" />">Forgot your password?</a>
-                            </s:param>
-                        </s:password>
+                        <s:textfield name="j_username" label="Username" maxlength="100" size="15" />
+                        <s:password name="j_password" label="Password" maxlength="100" size="15" />
                         <input type="submit" class="enableEnterSubmit"/>
                     </s:form>
                     <caarray:actions>

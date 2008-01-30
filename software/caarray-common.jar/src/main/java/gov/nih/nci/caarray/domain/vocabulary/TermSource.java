@@ -1,5 +1,10 @@
 package gov.nih.nci.caarray.domain.vocabulary;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.validation.UniqueConstraint;
+import gov.nih.nci.caarray.validation.UniqueConstraintField;
+import gov.nih.nci.caarray.validation.UniqueConstraints;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
@@ -8,11 +13,6 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.validation.UniqueConstraint;
-import gov.nih.nci.caarray.validation.UniqueConstraintField;
-import gov.nih.nci.caarray.validation.UniqueConstraints;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -104,7 +104,7 @@ import gov.nih.nci.caarray.validation.UniqueConstraints;
         @UniqueConstraint(fields = { @UniqueConstraintField(name = "name"),
                 @UniqueConstraintField(name = "version", nullsEqual = true) }),
         @UniqueConstraint(fields = { @UniqueConstraintField(name = "url"),
-                @UniqueConstraintField(name = "version", nullsEqual = true) }) }, 
+                @UniqueConstraintField(name = "version", nullsEqual = true) }) },
                 message = "{termSource.uniqueConstraint}")
 public class TermSource extends AbstractCaArrayEntity {
 
@@ -171,7 +171,7 @@ public class TermSource extends AbstractCaArrayEntity {
     public void setVersion(final String versionVal) {
         this.version = versionVal;
     }
-    
+
     /**
      * @return the name and the version, if any, of this term source
      */
@@ -179,7 +179,7 @@ public class TermSource extends AbstractCaArrayEntity {
     public String getNameAndVersion() {
         StringBuilder str = new StringBuilder(this.name);
         if (this.version != null) {
-            str.append(" ").append(this.version); 
+            str.append(" ").append(this.version);
         }
         return str.toString();
     }
@@ -207,7 +207,7 @@ public class TermSource extends AbstractCaArrayEntity {
     public int hashCode() {
         return new HashCodeBuilder().append(this.getName()).append(this.getVersion()).toHashCode();
     }
-    
+
     /**
      * {@inheritDoc}
      */
