@@ -843,6 +843,7 @@
         <pathelement location="${ognl-2.6.11.jar}" />
         <pathelement location="${csmapi.jar}"/>
         <pathelement location="${commons-configuration.jar}"/>
+        <pathelement location="${commons-lang.jar}" />
         <pathelement location="${displaytag.jar}"/>
         <pathelement location="${hibernate.jar}"/>
         <pathelement location="${urlrewrite.jar}"/>
