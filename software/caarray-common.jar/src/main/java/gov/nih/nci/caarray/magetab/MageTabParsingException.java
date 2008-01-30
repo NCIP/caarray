@@ -91,11 +91,20 @@ public class MageTabParsingException extends Exception {
 
     private static final long serialVersionUID = 3909907717560839118L;
 
-    MageTabParsingException(IOException cause) {
+    /**
+     * New parsing exception with given cause.
+     * @param cause the underlying cause
+     */
+    public MageTabParsingException(IOException cause) {
         super(cause);
     }
 
-    MageTabParsingException(String message, IOException cause) {
+    /**
+     * New parsing exception with given message and cause.
+     * @param message the message
+     * @param cause the underlying cause
+     */
+    public MageTabParsingException(String message, IOException cause) {
         super(message, cause);
     }
     

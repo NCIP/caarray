@@ -91,18 +91,18 @@ import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.magetab.Parameter;
 import gov.nih.nci.caarray.magetab.Protocol;
 import gov.nih.nci.caarray.magetab.TermSource;
+import gov.nih.nci.caarray.magetab.TermSourceable;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -119,7 +119,6 @@ public final class IdfDocument extends AbstractMageTabDocument {
     private static final Logger LOG = Logger.getLogger(IdfDocument.class);
 
     private final Investigation investigation = new Investigation();
-    private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     private final List<TermSource> docTermSources = new ArrayList<TermSource>();
     private final List<SdrfDocument> sdrfDocuments = new ArrayList<SdrfDocument>();
     private int currentLineNumber;
@@ -150,13 +149,24 @@ public final class IdfDocument extends AbstractMageTabDocument {
     @Override
     protected void parse() throws MageTabParsingException {
         DelimitedFileReader tabDelimitedReader = createTabDelimitedReader();
+        // do two passes. first, process the term sources only, then process the other lines.
+        // this is so we can accurately detect invalid term source references
+        parse(tabDelimitedReader, true);
+        try {
+            tabDelimitedReader.reset();
+        } catch (IOException e) {
+            throw new MageTabParsingException("Couldn't create the tab-delimited file reader", e);
+        }
+        parse(tabDelimitedReader, false);
+        validateMatchingColumns();
+    }
+    
+    private void parse(DelimitedFileReader tabDelimitedReader, boolean processingTermSources) {
         while (tabDelimitedReader.hasNextLine()) {
             List<String> lineValues = tabDelimitedReader.nextLine();
             currentLineNumber = tabDelimitedReader.getCurrentLineNumber();
-            handleLine(lineValues);
-        }
-        updateTermSourceRefs();
-        validateMatchingColumns();
+            handleLine(lineValues, processingTermSources);
+        }        
     }
 
     private void validateMatchingColumns() {
@@ -183,22 +193,21 @@ public final class IdfDocument extends AbstractMageTabDocument {
         }
     }
 
-    private void handleLine(List<String> lineContents) {
+    private void handleLine(List<String> lineContents, boolean processingTermSources) {
         if (!isEmpty(lineContents)) {
-            try {
-                EntryHeading heading = createHeading(lineContents.get(0));
-                IdfRow idfRow = new IdfRow(heading, IdfRowType.get(heading.getTypeName()));
-                validateColumnValues(idfRow, lineContents);
-                for (int columnIndex = 1; columnIndex < lineContents.size(); columnIndex++) {
-                    currentColumnNumber = columnIndex + 1;
-                    int valueIndex = columnIndex - 1;
-                    String value = StringUtils.trim(lineContents.get(columnIndex));
-                    if (!StringUtils.isEmpty(value)) {
-                        handleValue(idfRow, value, valueIndex);
-                    }
+            EntryHeading heading = createHeading(lineContents.get(0));
+            IdfRow idfRow = new IdfRow(heading, IdfRowType.get(heading.getTypeName()));
+            if (ArrayUtils.contains(IdfRowType.TERM_SOURCE_TYPES, idfRow.getType()) != processingTermSources) {
+                return;
+            }
+            validateColumnValues(idfRow, lineContents);
+            for (int columnIndex = 1; columnIndex < lineContents.size(); columnIndex++) {
+                currentColumnNumber = columnIndex + 1;
+                int valueIndex = columnIndex - 1;
+                String value = StringUtils.trim(lineContents.get(columnIndex));
+                if (!StringUtils.isEmpty(value)) {
+                    handleValue(idfRow, value, valueIndex);
                 }
-            } catch (IllegalArgumentException e) {
-                addErrorMessage("IDF type not found: " + e.getMessage());
             }
         }
     }
@@ -465,11 +474,9 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleProtocolTermSourceRef(String value, int valueIndex) {
         if (valueIndex < investigation.getProtocols().size()) {
-            if (!StringUtils.isBlank(value)) {
-                Protocol protocol = investigation.getProtocols().get(valueIndex);
-                if (protocol.getType() != null) {
-                    protocol.getType().setTermSource(getOrCreateTermSource(value));
-                }
+            Protocol protocol = investigation.getProtocols().get(valueIndex);
+            if (protocol.getType() != null) {
+                handleTermSourceRef(protocol.getType(), value);
             }
         } else {
             addWarningMessage("Term Source specified for blank Protocol column");
@@ -485,23 +492,11 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleExperimentDate(String dateString) {
-        try {
-            format.setLenient(false);
-            investigation.setDateOfExperiment(format.parse(dateString));
-        } catch (ParseException pe) {
-            LOG.error("Error parsing experiment date", pe);
-            addWarningMessage("Experiment Date - Invalid Date or Date Format(YYYY-MM-DD) : " + dateString);
-        }
+        investigation.setDateOfExperiment(parseDateValue(dateString, "Experiment Date"));
     }
 
     private void handlePublicReleaseDate(String dateString) {
-        try {
-            format.setLenient(false);
-            investigation.setPublicReleaseDate(format.parse(dateString));
-        } catch (ParseException pe) {
-            LOG.error("Error parsing PubRelease Date", pe);
-            addWarningMessage("Public Release Date - Invalid Date or Date Format(YYYY-MM-DD) : " + dateString);
-        }
+        investigation.setPublicReleaseDate(parseDateValue(dateString, "Public Release Date"));
     }
 
     private void handleExperimentalDesign(String value) {
@@ -510,7 +505,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleExperimentalDesignTermSourceRef(String value, int valueIndex) {
         if (valueIndex < investigation.getDesigns().size()) {
-            investigation.getDesigns().get(valueIndex).setTermSource(getOrCreateTermSource(value));            
+            handleTermSourceRef(investigation.getDesigns().get(valueIndex), value);
         } else {
             addWarningMessage("Term Source specified for blank Experimental Design column");
         }
@@ -527,8 +522,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleExperimentalFactorTermSourceRef(String value, int valueIndex) {
         if (valueIndex < investigation.getFactors().size()) {
-            ExperimentalFactor factor = investigation.getFactors().get(valueIndex);
-            factor.getType().setTermSource(getOrCreateTermSource(value));
+            handleTermSourceRef(investigation.getFactors().get(valueIndex).getType(), value);
         } else {
             addWarningMessage("Term Source specified for blank Experimental Factor column");
         }
@@ -583,7 +577,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         if (valueIndex < investigation.getPersons().size()) {
             Iterator<OntologyTerm> roles = investigation.getPersons().get(valueIndex).getRoles().iterator();
             while (roles.hasNext()) {
-                roles.next().setTermSource(getOrCreateTermSource(value));
+                handleTermSourceRef(roles.next(), value);
             }
         } else {
             addWarningMessage("Term Source specified for blank Person Role column");
@@ -613,11 +607,9 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handlePublicationStatusTermSourceRef(String value, int valueIndex) {
         if (valueIndex < investigation.getPublications().size()) {
-            if (!StringUtils.isBlank(value)) {
-                Publication publication = investigation.getPublications().get(valueIndex);
-                if (publication.getStatus() != null) {
-                    publication.getStatus().setTermSource(getOrCreateTermSource(value));
-                }
+            Publication publication = investigation.getPublications().get(valueIndex);
+            if (publication.getStatus() != null) {
+                handleTermSourceRef(publication.getStatus(), value);
             }
         } else {
             addWarningMessage("Term Source specified for blank Publication column");
@@ -631,11 +623,9 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleQualityControlTermSourceRef(String value, int valueIndex) {
         if (valueIndex < investigation.getQualityControlTypes().size()) {
-            if (!StringUtils.isBlank(value)) {
-                investigation.getQualityControlTypes().get(valueIndex).setTermSource(getOrCreateTermSource(value));
-            }
+            handleTermSourceRef(investigation.getQualityControlTypes().get(valueIndex), value);
         } else {
-            addWarningMessage("Term Source specified for blank Quality Control Typecolumn");
+            addWarningMessage("Term Source specified for blank Quality Control Type column");
         }
     }
 
@@ -645,9 +635,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleReplicateTypeTermSourceRef(String value, int valueIndex) {
         if (valueIndex < investigation.getReplicateTypes().size()) {
-            if (!StringUtils.isBlank(value)) {
-                investigation.getReplicateTypes().get(valueIndex).setTermSource(getOrCreateTermSource(value));
-            }
+            handleTermSourceRef(investigation.getReplicateTypes().get(valueIndex), value);
         } else {
             addWarningMessage("Term Source specified for blank Replicate Type column");
         }
@@ -660,19 +648,29 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleNormalizationTypeTermSourceRef(String value, int valueIndex) {
         if (valueIndex < investigation.getNormalizationTypes().size()) {
-            if (!StringUtils.isBlank(value)) {
-                investigation.getNormalizationTypes().get(valueIndex).setTermSource(getOrCreateTermSource(value));
-            }
+            handleTermSourceRef(investigation.getNormalizationTypes().get(valueIndex), value);
         } else {
             addWarningMessage("Term Source specified for blank Normalization Type column");
         }
     }
+    
+    private void handleTermSourceRef(TermSourceable termSourceable, String value) {
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        TermSource termSource = getTermSource(value);
+        if (termSource == null) {
+            addWarningMessage(currentLineNumber, currentColumnNumber,
+                    "Term Source " + value + " is not defined in the IDF document");
+        }
+        termSourceable.setTermSource(termSource);
+    }
+
 
     private void handleTermSourceName(String value, int valueIndex) {
         if (docTermSources.size() <= valueIndex) {
-            TermSource trmSource = new TermSource(value);
+            TermSource trmSource = getOrCreateTermSource(value);
             docTermSources.add(trmSource);
-            getOrCreateTermSource(value);
         } else {
             docTermSources.get(valueIndex).setName(value);
         }
@@ -688,22 +686,6 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
         if (docTermSources.size() > valueIndex) {
             docTermSources.get(valueIndex).setVersion(value);
-        }
-    }
-
-    private void updateTermSourceRefs() {
-        Iterator<TermSource> docSetSources = getDocumentSet().getTermSources().iterator();
-        while (docSetSources.hasNext()) {
-            TermSource docSetTrmSrc = docSetSources.next();
-            Iterator<TermSource> idfSources = docTermSources.iterator();
-            while (idfSources.hasNext()) {
-                TermSource idfSource = idfSources.next();
-                if (idfSource.getName().equals(docSetTrmSrc.getName())) {
-                    docSetTrmSrc.setFile(idfSource.getFile());
-                    docSetTrmSrc.setVersion(idfSource.getVersion());
-                    break;
-                }
-            }
         }
     }
 

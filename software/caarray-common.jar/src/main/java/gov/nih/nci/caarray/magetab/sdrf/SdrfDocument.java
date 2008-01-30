@@ -335,16 +335,16 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleFactorValue(column, value);
             break;
         case PERFORMER:
-            // handlePerformer(value);
+            handlePerformer(value);
             break;
         case DATE:
-            // handleDate(value);
+            handleProtocolDate(value);
             break;
         case DESCRIPTION:
             handleDescription(value);
             break;
         case COMMENT:
-            // handleComment(column, value);
+            // DEVELOPER NOTE: we ignore comments
             break;
         default:
             break;
@@ -529,6 +529,22 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
         if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
             currentTermSourceable = protocolApp.getProtocol();
+        }
+    }
+
+    private void handlePerformer(String value) {
+        if (currentProtocolApp != null) {
+            currentProtocolApp.setPerformer(value);
+        } else {
+            addWarningMessage("Performer column with value " + value + " does not follow a Protocol REF column");
+        }
+    }
+
+    private void handleProtocolDate(String value) {
+        if (currentProtocolApp != null) {
+            currentProtocolApp.setDate(parseDateValue(value, "Protocol Date"));
+        } else {
+            addWarningMessage("Date column with value " + value + " does not follow a Protocol REF column");
         }
     }
 

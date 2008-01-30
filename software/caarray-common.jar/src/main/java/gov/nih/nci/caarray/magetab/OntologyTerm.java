@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.magetab;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * A term from a controlled vocabulary.
  */
@@ -137,4 +139,11 @@ public final class OntologyTerm implements Serializable, TermSourceable {
         this.category = category;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }

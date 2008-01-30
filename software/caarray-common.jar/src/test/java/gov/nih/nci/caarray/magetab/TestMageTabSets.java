@@ -106,8 +106,6 @@ public final class TestMageTabSets {
         super();
     }
 
-    private static final FilenameFilter CEL_FILTER = createExtensionFilter("cel");
-
     /**
      * Example set of documents included with MAGE-TAB specification.
      */
@@ -166,6 +164,11 @@ public final class TestMageTabSets {
     public static final MageTabInputFileSet EBI_TEMPLATE_INPUT_SET = getEbiTemplateInputSet();
 
     /**
+     * MAGE-TAB input set derived from 1x export data
+     */
+    public static final MageTabInputFileSet CAARRAY1X_INPUT_SET = getCaarray1xInputSet();
+
+    /**
      * Document set parsed from TCGA Broad data.
      */
     public static final MageTabDocumentSet TCGA_BROAD_SET = getSet(TCGA_BROAD_INPUT_SET);
@@ -201,7 +204,12 @@ public final class TestMageTabSets {
 
 
     private static void addCelFiles(MageTabInputFileSet fileSet, File dataFileDirectory) {
-        File[] celFiles = dataFileDirectory.listFiles(CEL_FILTER);
+        addDataFiles(fileSet, dataFileDirectory, "cel");
+    }
+
+    private static void addDataFiles(MageTabInputFileSet fileSet, File dataFileDirectory, String extension) {
+        FilenameFilter filter = createExtensionFilter(extension);
+        File[] celFiles = dataFileDirectory.listFiles(filter);
         for (File file : celFiles) {
             fileSet.addNativeData(file);
         }
@@ -258,7 +266,15 @@ public final class TestMageTabSets {
         fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_ERROR_EXAMPLE_SDRF);
         return fileSet;
     }
-
+    
+    private static MageTabInputFileSet getCaarray1xInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.CAARRAY1X_IDF);
+        fileSet.addSdrf(MageTabDataFiles.CAARRAY1X_SDRF);
+        addDataFiles(fileSet, MageTabDataFiles.CAARRAY1X_DIRECTORY, "gpr");
+        return fileSet;
+    }
+    
     private static FilenameFilter createExtensionFilter(final String extension) {
         return new FilenameFilter() {
             public boolean accept(File dir, String name) {

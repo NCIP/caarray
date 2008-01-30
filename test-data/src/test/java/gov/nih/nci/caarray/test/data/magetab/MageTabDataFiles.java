@@ -187,4 +187,16 @@ public class MageTabDataFiles {
 
     public static final File PERFORMANCE_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/performance").getFile());
+    
+    public static final File CAARRAY1X_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/caarray1x/experiment-id-1015897540503881.idf").getFile());
+
+    public static final File CAARRAY1X_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/caarray1x/experiment-id-1015897540503881.sdrf").getFile());
+
+    public static final File CAARRAY1X_ZIP =
+        new File(MageTabDataFiles.class.getResource("/magetab/caarray1x/experiment-id-1015897540503881.magetab.zip").getFile());
+
+    public static final File CAARRAY1X_DIRECTORY =
+        new File(MageTabDataFiles.class.getResource("/magetab/caarray1x").getFile());    
 }

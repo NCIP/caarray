@@ -242,7 +242,10 @@ class MageTabImporter {
     }
 
     private void saveInvestigations(Project targetProject, CaArrayTranslationResult translationResult) {
-        // TODO Handle case where multiple IDFs exist: either disallow or allow Project 1 --> 1..* Investigation
+        // DEVELOPER NOTE: currently, importing multiple IDFs in a single import is not supported, and will
+        // be flagged as a validation error. hence we can assume that only a single investigation is present in the
+        // translation result. In the future we may support multiple experiments per projects, and therefore
+        // multi-IDF import. Hence, continue to allow for this in the object model.
         if (!translationResult.getInvestigations().isEmpty()) {
             mergeTranslatedData(targetProject.getExperiment(), translationResult.getInvestigations().iterator().next());
             getProjectDao().save(targetProject);

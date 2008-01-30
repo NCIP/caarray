@@ -88,7 +88,6 @@ import org.apache.commons.lang.StringUtils;
  * Enumeration of legal row headings in an IDF document.
  */
 enum IdfRowType {
-
     /**
      * Investigation Title.
      */
@@ -360,11 +359,22 @@ enum IdfRowType {
     /**
      * Comment.
      */
-    COMMENT;
+    COMMENT,
+    
+    /**
+     * Catchall placeholder for row headings that did not match any of the above.
+     */
+    INVALID_TYPE;
+    
+    public static final IdfRowType[] TERM_SOURCE_TYPES = {TERM_SOURCE_FILE, TERM_SOURCE_NAME, TERM_SOURCE_VERSION };
 
     static IdfRowType get(String name) {
         String enumName = StringUtils.replaceChars(name, ' ', '_').toUpperCase();
-        return valueOf(enumName);
+        try {
+            return valueOf(enumName);            
+        } catch (IllegalArgumentException e) {
+            return INVALID_TYPE;
+        }
     }
 
 }
