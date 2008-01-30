@@ -193,14 +193,12 @@
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
--->
         <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/ArrayDesignDownloadTest.jmx" resultlog="${tests.out.dir}/apitest/ArrayDesignDownloadTest.jtl">
             <jvmarg value="-Xms512m" />
             <jvmarg value="-Xmx1024m" />
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
-<!--
         <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/GridCQLSearchTest.jmx" resultlog="${tests.out.dir}/apitest/GridCQLSearchTest.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="grid.service.port" value="${grid.service.port}" />
