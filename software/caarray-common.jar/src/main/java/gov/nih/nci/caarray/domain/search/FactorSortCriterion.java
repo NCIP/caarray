@@ -92,7 +92,12 @@ public enum FactorSortCriterion implements SortCriterion<Factor> {
     /**
      * name.
      */
-    NAME ("name");
+    NAME ("name"),
+    
+    /**
+     * type.
+     */
+    TYPE("type.value");
 
     private final String orderField;
 
