@@ -421,7 +421,8 @@ var TabUtils = {
         var elts = document.getElementsByClassName('loadingText');
         var loadingElt = elts.length > 0 ? elts[0] : null;
         if (loadingElt) {
-            console.log("showing existing loading text");
+			//DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
+            //console.log("showing existing loading text");
             $(loadingElt).show();
             if (!keepMainContent) {
                 $('theForm').hide();
@@ -433,7 +434,8 @@ var TabUtils = {
             }
             if (tabwrapperdiv) {
                 // write out the loading text
-                console.log("creating new loading text");
+				//DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
+                //console.log("creating new loading text");
                 tabwrapperdiv.innerHTML = '<div><img alt="Indicator" align="absmiddle" src="' + contextPath + '/images/indicator.gif"/>&nbsp;Loading...</div>';
             }
         }
