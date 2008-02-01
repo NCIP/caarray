@@ -2,7 +2,7 @@
 <c:url value="/protected/ajax/collaborators/editTable.action" var="sortUrl">
 	<c:param name="targetGroup" value="${targetGroup.id}"/>
 </c:url>
-<ajax:displayTag id="dataTable" ajaxFlag="true" tableClass="searchresults">
+<ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
 	<display:table class="searchresults" cellspacing="0" defaultsort="1" list="${targetGroup.group.users}"
 		requestURI="${sortUrl}" sort="list" id="row" pagesize="20">
 		<caarray:displayTagProperties/>

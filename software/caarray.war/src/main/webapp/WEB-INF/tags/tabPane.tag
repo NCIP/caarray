@@ -21,7 +21,7 @@
 </c:if>
 
 <c:set var="loadingDivId" value="loadingText"/>
-<div id="${loadingDivId}" style="display: none;">
+<div id="${loadingDivId}" class="loadingText" style="display: none;">
     <div><img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> <fmt:message key="${loadingPaneMessageKey}" /></div>
 </div>
 <c:if test="${!empty paneTitleKey}">

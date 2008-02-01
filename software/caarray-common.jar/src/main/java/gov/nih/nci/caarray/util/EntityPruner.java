@@ -90,14 +90,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -111,7 +107,6 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public final class EntityPruner {
     private static final Logger LOG = Logger.getLogger(CaArrayUtils.class);
-    private static final SortedSet<Object> EMPTY_SORTED_SET = new TreeSet<Object>();
     private final Map<Class<?>, ReflectionHelper> classCache = new HashMap<Class<?>, ReflectionHelper>();
 
     /**
@@ -158,16 +153,8 @@ public final class EntityPruner {
         for (PropertyAccessor accessor : helper.getAccessors()) {
             Class<?> type = accessor.getType();
             Object param = null;
-            if (SortedSet.class.isAssignableFrom(type)) {
-                param = EMPTY_SORTED_SET;
-            } else if (Set.class.isAssignableFrom(type)) {
-                param = Collections.EMPTY_SET;
-            } else if (List.class.isAssignableFrom(type)) {
-                param = Collections.EMPTY_LIST;
-            } else if (Map.class.isAssignableFrom(type)) {
-                param = Collections.EMPTY_MAP;
-            } else if (Collection.class.isAssignableFrom(type)) {
-                param = Collections.EMPTY_LIST;
+            if (Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type)) {
+                param = CaArrayUtils.emptyCollectionOrMapFor(type);
             } else if (!type.isPrimitive() && !Serializable.class.isAssignableFrom(type)) {
                 // Don't allow non-serializable to go over the wire
                 LOG.debug("Cutting non-serializable object of type: " + type);

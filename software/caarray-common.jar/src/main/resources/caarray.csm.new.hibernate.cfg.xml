@@ -10,6 +10,7 @@
         <property name="current_session_context_class">jta</property>
         <property name="hibernate.transaction.factory_class">org.hibernate.transaction.CMTTransactionFactory</property>
         <property name="hibernate.transaction.manager_lookup_class">org.hibernate.transaction.JBossTransactionManagerLookup</property>
+        <property name="hibernate.dialect">gov.nih.nci.caarray.util.CaarrayInnoDBDialect</property>
         @DATASOURCE_CONFIG_END@ -->
 
         <!-- @HIBERNATE_CONFIG_START@
@@ -17,7 +18,7 @@
         <property name="hibernate.connection.url">jdbc:mysql://@SERVERNAME@/@DBNAME@</property>
         <property name="hibernate.connection.username">@DBUSER@</property>
         <property name="hibernate.connection.password">@DBPASSWD@</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.dialect">gov.nih.nci.caarray.util.CaarrayInnoDBDialect</property>
         @HIBERNATE_CONFIG_END@ -->
 
         <!-- mapping files -->

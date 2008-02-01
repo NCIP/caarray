@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
@@ -284,13 +285,12 @@ public class SecurityPolicyPostLoadEventListener implements PostLoadEventListene
             Setter setter) {
         if (propertyType instanceof CollectionType) {
             CollectionType ct = (CollectionType) propertyType;
-            if (Collection.class.isAssignableFrom(ct.getReturnedClass())) {
-                ((Collection<?>) getter.get(entity)).clear();
-            } else if (Map.class.isAssignableFrom(ct.getReturnedClass())) {
-                ((Map<?, ?>) getter.get(entity)).clear();
-            } else {
-                setter.set(entity, null, (SessionFactoryImplementor) HibernateUtil.getSessionFactory());
-            }
+            Object val = null;
+            if (Collection.class.isAssignableFrom(ct.getReturnedClass())
+                    || Map.class.isAssignableFrom(ct.getReturnedClass())) {
+                val = CaArrayUtils.emptyCollectionOrMapFor(ct.getReturnedClass());
+            } 
+            setter.set(entity, val, (SessionFactoryImplementor) HibernateUtil.getSessionFactory());
         } else if (!getter.getReturnType().isPrimitive()) {
             setter.set(entity, null, (SessionFactoryImplementor) HibernateUtil.getSessionFactory());
         } else {

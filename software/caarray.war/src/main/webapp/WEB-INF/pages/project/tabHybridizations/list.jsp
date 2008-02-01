@@ -11,7 +11,7 @@
 
     <div class="tableboxpad">
     <c:set var="canWriteProject" value="${caarrayfn:canWrite(project, caarrayfn:currentUser())}"/>
-    <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
+    <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
         <display:table class="searchresults" cellspacing="0" list="${pagedItems}"
             requestURI="${sortUrl}" id="row" excludedParams="project.id">
             <caarray:displayTagProperties/>

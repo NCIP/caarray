@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
+<ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <display:table class="searchresults" cellspacing="0" list="${projects}" requestURI="${sortUrl}"
         id="row" excludedParams="project.id" style="clear: none;">
         <caarray:displayTagProperties/>
@@ -35,7 +35,7 @@
                     <c:param name="initialTab" value="annotations" />
                     <c:param name="initialTab2" value="samples" />
                 </c:url>
-                <a href="${viewSamplesUrl}">${row.experiment.sampleCount}</a>
+                <a href="${viewSamplesUrl}">${row.experiment.sourceCount}</a>
             </c:if>
         </display:column>
         <display:column sortProperty="STATUS" title="Status" sortable="true">
