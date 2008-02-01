@@ -17,7 +17,7 @@
             <c:param name="category" value="${category}" />
         </c:url>
 
-        <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
+        <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
             <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${terms}"
                 requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="category">
                 <caarray:displayTagProperties/>

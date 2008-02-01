@@ -417,10 +417,15 @@ var TabUtils = {
         TabUtils.showSubmittingText();
     },
 
-    showLoadingText : function() {
-        if ($('loadingText')) {
-            $('loadingText').show();
-            $('theForm').hide();
+    showLoadingText : function(keepMainContent) {
+        var elts = document.getElementsByClassName('loadingText');
+        var loadingElt = elts.length > 0 ? elts[0] : null;
+        if (loadingElt) {
+            console.log("showing existing loading text");
+            $(loadingElt).show();
+            if (!keepMainContent) {
+                $('theForm').hide();
+            }
         } else {
             tabwrapperdiv = $('tabboxlevel2wrapper');
             if (!tabwrapperdiv) {
@@ -428,12 +433,21 @@ var TabUtils = {
             }
             if (tabwrapperdiv) {
                 // write out the loading text
+                console.log("creating new loading text");
                 tabwrapperdiv.innerHTML = '<div><img alt="Indicator" align="absmiddle" src="' + contextPath + '/images/indicator.gif"/>&nbsp;Loading...</div>';
             }
         }
-        if ($('tabHeader')) {
+        if ($('tabHeader') && !keepMainContent) {
             $('tabHeader').hide();
         }
+    },
+    
+    showLoadingTextKeepMainContent: function() {
+        TabUtils.showLoadingText(true);
+    },
+
+    hideLoadingText : function() {
+        document.getElementsByClassName('loadingText').each(function(elt) { $(elt).hide(); });
     },
 
     submitTabForm : function(formId, tabDivId) {

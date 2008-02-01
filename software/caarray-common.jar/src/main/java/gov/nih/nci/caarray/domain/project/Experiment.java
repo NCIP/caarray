@@ -622,6 +622,7 @@ public class Experiment extends AbstractCaArrayEntity {
             inverseJoinColumns = {@JoinColumn(name = "SOURCE_ID") })
     @ForeignKey(name = "EXPERIMENTSOURCE_INVEST_FK", inverseName = "EXPERIMENTSOURCE_SOURCE_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @LazyCollection(LazyCollectionOption.EXTRA)
     public Set<Source> getSources() {
         return this.sources;
     }
@@ -659,6 +660,14 @@ public class Experiment extends AbstractCaArrayEntity {
     @Transient
     public int getSampleCount() {
         return this.samples.size();
+    }
+
+    /**
+     * @return the number of samples in this experiment
+     */
+    @Transient
+    public int getSourceCount() {
+        return this.sources.size();
     }
 
     /**
