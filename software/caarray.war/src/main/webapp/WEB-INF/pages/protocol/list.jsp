@@ -13,7 +13,7 @@
     <div class="tableboxpad">
         <c:url value="/protected/ajax/protocol/list.action" var="sortUrl" />
 
-        <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
+        <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
             <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${protocols}"
                 requestURI="${sortUrl}" sort="list" id="row" pagesize="20">
                 <caarray:displayTagProperties/>

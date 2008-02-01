@@ -83,12 +83,19 @@
 package gov.nih.nci.caarray.util;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Utility classes for our project.
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public final class CaArrayUtils {
+    private static final SortedSet<Object> EMPTY_SORTED_SET = new TreeSet<Object>();
 
     private CaArrayUtils() {
         // prevent instantiation;
@@ -103,5 +110,26 @@ public final class CaArrayUtils {
      */
     public static <T> T uniqueResult(Collection<T> results) {
         return results.isEmpty() ? null : results.iterator().next();
+    }
+    
+    /**
+     * Returns an empty collection or map of the appropriate type for a given collection class. By default,
+     * returns an empty list, but will return an empty set, empty sorted set, or empty map if the passed
+     * in type is a subclass of Set, SortedSet, or Map respectively.
+     * @param collectionType the class of whose type to return an empty collection or map
+     * @return the empty collection or map
+     */
+    public static Object emptyCollectionOrMapFor(Class<?> collectionType) {
+        Object val = Collections.EMPTY_LIST;
+        if (SortedSet.class.isAssignableFrom(collectionType)) {
+            val = EMPTY_SORTED_SET;
+        } else if (Set.class.isAssignableFrom(collectionType)) {
+            val = Collections.EMPTY_SET;
+        } else if (List.class.isAssignableFrom(collectionType)) {
+            val = Collections.EMPTY_LIST;
+        } else if (Map.class.isAssignableFrom(collectionType)) {
+            val = Collections.EMPTY_MAP;
+        } 
+        return val;
     }
 }

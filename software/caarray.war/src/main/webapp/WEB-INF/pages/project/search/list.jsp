@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
+<ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <display:table class="searchresults" cellspacing="0" list="${results}" requestURI="${sortUrl}" id="row" style="clear: none;">
         <caarray:displayTagProperties/>
         <display:setProperty name="pagination.sort.param" value="results.sortCriterion" />
@@ -44,20 +44,15 @@
                 </c:otherwise>
             </c:choose>
         </display:column>
-        <display:column titleKey="search.result.numSamples">
-            <c:choose>
-                <c:when test="${canReadRow}">
-                    <c:url value="/project/details.action" var="viewSamplesUrl">
-                        <c:param name="project.id" value="${row.id}" />
-                        <c:param name="initialTab" value="annotations" />
-                        <c:param name="initialTab2" value="samples" />
-                    </c:url>
-                    <a href="${viewSamplesUrl}">${row.experiment.sampleCount}</a>
-                </c:when>
-                <c:otherwise>
-                    <fmt:message key="browse.notAvailable"/>
-                </c:otherwise>
-            </c:choose>
+        <display:column title="Samples">
+            <c:if test="${canReadRow}">
+                <c:url value="/project/details.action" var="viewSamplesUrl">
+                    <c:param name="project.id" value="${row.id}" />
+                    <c:param name="initialTab" value="annotations" />
+                    <c:param name="initialTab2" value="samples" />
+                </c:url>
+                <a href="${viewSamplesUrl}">${row.experiment.sourceCount}</a>
+            </c:if>
         </display:column>
         <display:column sortProperty="LAST_UPDATED" titleKey="search.result.updated" sortable="true">
             <fmt:formatDate value="${row.lastUpdated}" pattern="M/d/yyyy"/>

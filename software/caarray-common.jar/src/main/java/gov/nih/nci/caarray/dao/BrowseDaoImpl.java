@@ -202,6 +202,9 @@ public class BrowseDaoImpl implements BrowseDao {
             sb.append("SELECT DISTINCT p");
         }
         sb.append(" FROM ").append(Project.class.getName()).append(" p");
+        if (!count) {
+            sb.append(" left join fetch p.experiment e left join fetch e.organism");
+        }
         if (cat.getJoin() != null) {
             sb.append(" JOIN ").append(cat.getJoin());
         }
