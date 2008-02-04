@@ -488,16 +488,6 @@
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar">
         <mkdir dir="${caarray-client.target.dir}" />
         <jar destfile="${caarray-client.jar}">
-            <zipfileset src="${cglib.jar}" />
-            <zipfileset src="${caGrid-1.1-data-stubs.jar}" />
-            <zipfileset src="${axis.jar}" />
-            <zipfileset src="${hibernate.jar}" />
-            <zipfileset src="${hibernate-annotations.jar}" />
-            <zipfileset src="${ejb3-persistence.jar}" />
-            <zipfileset src="${jboss-ejb3-client.jar}" />
-            <zipfileset src="${jbossall-client.jar}" />
-            <zipfileset src="${jboss-aspect-jdk50-client.jar}" />
-            <zipfileset src="${jboss-aop-jdk50-client.jar}" />
             <fileset dir="${caarray-client.classes.dir}" />
             <fileset dir="${caarray-common.classes.dir}">
               <include name="**/domain/**" />
@@ -514,6 +504,47 @@
             </fileset>
         </jar>
     </target>
+
+	<target name="build:caarray-client.zip" depends="build:caarray-client.jar">
+  		<zip destfile="${caarray-client.target.dir}/caarray-client.zip">
+  			<fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
+  			<zipfileset dir="${caarray-client.resources.dir}" includes="auth.conf" prefix="etc" />
+  			<zipfileset dir="${lib.dir}" prefix="lib">
+  				<include name="axis.jar" />
+  				<include name="caGrid-1.1-data-stubs.jar" />
+  				<include name="commons-collections-3.2.jar" />
+  				<include name="commons-lang-2.3.jar" />
+  				<include name="csmapi.jar" />
+  				<include name="hibernate3.jar" />
+  				<include name="log4j-1.2.13.jar" />
+  				<include name="jboss-ejb3-client.jar" />
+  				<include name="jbossall-client.jar" />
+  				<include name="jboss-aspect-jdk50-client.jar" />
+  				<include name="jboss-aop-jdk50-client.jar" />
+  			</zipfileset>
+  		</zip>
+  	</target>
+
+	<target name="build:caarray-client.tar.gz" depends="build:caarray-client.jar">
+  		<tar destfile="${caarray-client.target.dir}/caarray-client.tar">
+  			<fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
+  			<tarfileset dir="${caarray-client.resources.dir}" includes="auth.conf" prefix="etc" />
+  			<tarfileset dir="${lib.dir}" prefix="lib">
+  				<include name="axis.jar" />
+  				<include name="caGrid-1.1-data-stubs.jar" />
+  				<include name="commons-collections-3.2.jar" />
+  				<include name="commons-lang-2.3.jar" />
+  				<include name="csmapi.jar" />
+  				<include name="hibernate3.jar" />
+  				<include name="log4j-1.2.13.jar" />
+  				<include name="jboss-ejb3-client.jar" />
+  				<include name="jbossall-client.jar" />
+  				<include name="jboss-aspect-jdk50-client.jar" />
+  				<include name="jboss-aop-jdk50-client.jar" />
+  			</tarfileset>
+  		</tar>
+  		<gzip src="${caarray-client.target.dir}/caarray-client.tar" destfile="${caarray-client.target.dir}/caarray-client.tar.gz" />
+  	</target>
 
   <target name="build:caarray-common.jar" depends="configure-datasource-for-deploy">
     <mkdir dir="${caarray-common.target.dir}" />
