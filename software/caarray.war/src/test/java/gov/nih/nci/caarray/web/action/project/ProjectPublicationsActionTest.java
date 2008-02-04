@@ -116,6 +116,9 @@ public class ProjectPublicationsActionTest {
 
     @Test
     public void testPrepare() throws Exception {
+        action.setPublicationTypes(null);
+        action.setPublicationStatuses(null);
+
         // no current publication id
         action.prepare();
         assertNull(action.getCurrentPublication().getId());

@@ -94,12 +94,17 @@ import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.action.ActionHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
@@ -161,13 +166,46 @@ public class ProjectSamplesActionTest {
     }
 
     @Test
+    public void testSearchForAssociationValues() {
+        assertEquals("associationValues", action.searchForAssociationValues());
+    }
+
+    @Test
     public void testSave() {
+        // save new
         assertEquals("initial-save", action.save());
         assertTrue(ActionHelper.getMessages().contains("experiment.items.created"));
 
+        // update associations
+        Source toAdd = new Source();
+        List<Source> addList = new ArrayList<Source>();
+        addList.add(toAdd);
+        action.setItemsToAssociate(addList);
+        Source toRemove = new Source();
+        toRemove.getSamples().add(DUMMY_SAMPLE);
+        List<Source> removeList = new ArrayList<Source>();
+        removeList.add(toRemove);
+        action.setItemsToRemove(removeList);
+
+        // protocols
+        ProtocolApplication pa = new ProtocolApplication();
+        Protocol p = new Protocol();
+        p.setName("protocol1");
+        pa.setProtocol(p);
+        DUMMY_SAMPLE.getProtocolApplications().add(pa);
+
+        Protocol p2 = new Protocol();
+        p2.setName("protocol2");
+        action.setProtocol(p2);
+
+        // update existing sample
         action.setCurrentSample(DUMMY_SAMPLE);
         assertEquals("initial-save", action.save());
         assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
+        assertTrue(toAdd.getSamples().contains(DUMMY_SAMPLE));
+        assertFalse(toRemove.getSamples().contains(DUMMY_SAMPLE));
+        assertEquals(p2, DUMMY_SAMPLE.getProtocolApplications().iterator().next().getProtocol());
+
     }
 
     @Test

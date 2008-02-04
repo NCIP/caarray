@@ -101,6 +101,9 @@ import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -167,6 +170,26 @@ public class ProjectLabeledExtractsActionTest {
         action.setCurrentLabeledExtract(DUMMY_LABELED_EXTRACT);
         assertEquals("list", action.delete());
         assertTrue(ActionHelper.getMessages().contains("experiment.annotations.cantdelete"));
+    }
+
+    @Test
+    public void testSave() {
+        Extract toAdd = new Extract();
+        List<Extract> addList = new ArrayList<Extract>();
+        addList.add(toAdd);
+        action.setItemsToAssociate(addList);
+
+        Extract toRemove = new Extract();
+        toRemove.getLabeledExtracts().add(DUMMY_LABELED_EXTRACT);
+        List<Extract> removeList = new ArrayList<Extract>();
+        removeList.add(toRemove);
+        action.setItemsToRemove(removeList);
+
+        action.setCurrentLabeledExtract(DUMMY_LABELED_EXTRACT);
+        assertEquals("initial-save", action.save());
+        assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
+        assertTrue(toAdd.getLabeledExtracts().contains(DUMMY_LABELED_EXTRACT));
+        assertFalse(toRemove.getLabeledExtracts().contains(DUMMY_LABELED_EXTRACT));
     }
 
     private static class LocalGenericDataService extends GenericDataServiceStub {

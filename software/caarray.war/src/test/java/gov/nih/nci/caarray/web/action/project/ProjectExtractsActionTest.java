@@ -101,6 +101,9 @@ import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -167,6 +170,26 @@ public class ProjectExtractsActionTest {
         action.setCurrentExtract(DUMMY_EXTRACT);
         assertEquals("list", action.delete());
         assertTrue(ActionHelper.getMessages().contains("experiment.annotations.cantdelete"));
+    }
+
+    @Test
+    public void testSave() {
+        Sample toAdd = new Sample();
+        List<Sample> addList = new ArrayList<Sample>();
+        addList.add(toAdd);
+        action.setItemsToAssociate(addList);
+
+        Sample toRemove = new Sample();
+        toRemove.getExtracts().add(DUMMY_EXTRACT);
+        List<Sample> removeList = new ArrayList<Sample>();
+        removeList.add(toRemove);
+        action.setItemsToRemove(removeList);
+
+        action.setCurrentExtract(DUMMY_EXTRACT);
+        assertEquals("initial-save", action.save());
+        assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
+        assertTrue(toAdd.getExtracts().contains(DUMMY_EXTRACT));
+        assertFalse(toRemove.getExtracts().contains(DUMMY_EXTRACT));
     }
 
     private static class LocalGenericDataService extends GenericDataServiceStub {

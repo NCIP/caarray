@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.web.action.project;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
@@ -97,6 +98,10 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.action.ActionHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
@@ -163,6 +168,26 @@ public class ProjectHybridizationsActionTest {
         action.setCurrentHybridization(DUMMY_HYBRIDIZATION);
         assertEquals("list", action.delete());
         assertFalse(DUMMY_LABELED_EXTRACT.getHybridizations().contains(DUMMY_HYBRIDIZATION));
+    }
+
+    @Test
+    public void testSave() {
+        LabeledExtract toAdd = new LabeledExtract();
+        List<LabeledExtract> addList = new ArrayList<LabeledExtract>();
+        addList.add(toAdd);
+        action.setItemsToAssociate(addList);
+
+        LabeledExtract toRemove = new LabeledExtract();
+        toRemove.getHybridizations().add(DUMMY_HYBRIDIZATION);
+        List<LabeledExtract> removeList = new ArrayList<LabeledExtract>();
+        removeList.add(toRemove);
+        action.setItemsToRemove(removeList);
+
+        action.setCurrentHybridization(DUMMY_HYBRIDIZATION);
+        assertEquals("initial-save", action.save());
+        assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
+        assertTrue(toAdd.getHybridizations().contains(DUMMY_HYBRIDIZATION));
+        assertFalse(toRemove.getHybridizations().contains(DUMMY_HYBRIDIZATION));
     }
 
     private static class LocalGenericDataService extends GenericDataServiceStub {
