@@ -515,7 +515,9 @@
   				<include name="commons-collections-3.2.jar" />
   				<include name="commons-lang-2.3.jar" />
   				<include name="csmapi.jar" />
+  				<include name="ejb3-persistence.jar" />
   				<include name="hibernate3.jar" />
+  				<include name="hibernate-annotations.jar" />
   				<include name="log4j-1.2.13.jar" />
   				<include name="jboss-ejb3-client.jar" />
   				<include name="jbossall-client.jar" />
@@ -535,7 +537,9 @@
   				<include name="commons-collections-3.2.jar" />
   				<include name="commons-lang-2.3.jar" />
   				<include name="csmapi.jar" />
+  				<include name="ejb3-persistence.jar" />
   				<include name="hibernate3.jar" />
+  				<include name="hibernate-annotations.jar" />
   				<include name="log4j-1.2.13.jar" />
   				<include name="jboss-ejb3-client.jar" />
   				<include name="jbossall-client.jar" />
