@@ -83,8 +83,9 @@
     <xs:complexType name="ShortColumn">
         <xs:complexContent>
             <xs:extension base="AbstractDataColumn">
-                <xs:sequence />
-                <xs:attribute name="values" type="xs:short" />
+                <xs:sequence>
+                    <xs:element name="values" minOccurs="0" maxOccurs="unbounded" type="xs:short" />
+                </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -92,8 +93,9 @@
     <xs:complexType name="LongColumn">
         <xs:complexContent>
             <xs:extension base="AbstractDataColumn">
-                <xs:sequence />
-                <xs:attribute name="values" type="xs:long" />
+                <xs:sequence>
+                    <xs:element name="values" minOccurs="0" maxOccurs="unbounded" type="xs:long" />
+                </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -163,8 +165,9 @@
     <xs:complexType name="BooleanColumn">
         <xs:complexContent>
             <xs:extension base="AbstractDataColumn">
-                <xs:sequence />
-                <xs:attribute name="values" type="xs:boolean" />
+                <xs:sequence>
+                    <xs:element name="values" minOccurs="0" maxOccurs="unbounded" type="xs:boolean" />
+                </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -172,8 +175,9 @@
     <xs:complexType name="FloatColumn">
         <xs:complexContent>
             <xs:extension base="AbstractDataColumn">
-                <xs:sequence />
-                <xs:attribute name="values" type="xs:float" />
+                <xs:sequence>
+                    <xs:element name="values" minOccurs="0" maxOccurs="unbounded" type="xs:float" />
+                </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -233,8 +237,9 @@
     <xs:complexType name="StringColumn">
         <xs:complexContent>
             <xs:extension base="AbstractDataColumn">
-                <xs:sequence />
-                <xs:attribute name="values" type="xs:string" />
+                <xs:sequence>
+                    <xs:element name="values" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
+                </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -252,8 +257,9 @@
     <xs:complexType name="DoubleColumn">
         <xs:complexContent>
             <xs:extension base="AbstractDataColumn">
-                <xs:sequence />
-                <xs:attribute name="values" type="xs:double" />
+                <xs:sequence>
+                    <xs:element name="values" minOccurs="0" maxOccurs="unbounded" type="xs:double" />
+                </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -261,8 +267,9 @@
     <xs:complexType name="IntegerColumn">
         <xs:complexContent>
             <xs:extension base="AbstractDataColumn">
-                <xs:sequence />
-                <xs:attribute name="values" type="xs:int" />
+                <xs:sequence>
+                    <xs:element name="values" minOccurs="0" maxOccurs="unbounded" type="xs:int" />
+                </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
