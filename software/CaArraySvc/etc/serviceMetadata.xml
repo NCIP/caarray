@@ -24,23 +24,23 @@
       </ns2:Operation>
       <ns2:Operation description="" name="getDesignDetails">
        <ns2:inputParameterCollection>
-        <ns2:InputParameter qName="ns7:ArrayDesign" dimensionality="1" index="0" isArray="false" isRequired="false" name="arrayDesign" xmlns:ns7="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array"/>
+        <ns2:InputParameter qName="ns7:ArrayDesign" dimensionality="1" index="0" isArray="false" isRequired="false" name="arrayDesign" xmlns:ns7="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array"/>
        </ns2:inputParameterCollection>
-       <ns2:Output qName="ns8:ArrayDesignDetails" dimensionality="1" isArray="false" xmlns:ns8="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array"/>
+       <ns2:Output qName="ns8:ArrayDesignDetails" dimensionality="1" isArray="false" xmlns:ns8="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array"/>
        <ns2:faultCollection/>
       </ns2:Operation>
       <ns2:Operation description="" name="readFile">
        <ns2:inputParameterCollection>
-        <ns2:InputParameter qName="ns9:CaArrayFile" dimensionality="1" index="0" isArray="false" isRequired="false" name="caArrayFile" xmlns:ns9="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.file"/>
+        <ns2:InputParameter qName="ns9:CaArrayFile" dimensionality="1" index="0" isArray="false" isRequired="false" name="caArrayFile" xmlns:ns9="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file"/>
        </ns2:inputParameterCollection>
        <ns2:Output qName="xsd:byte" dimensionality="1" isArray="true" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
        <ns2:faultCollection/>
       </ns2:Operation>
       <ns2:Operation description="" name="getDataSet">
        <ns2:inputParameterCollection>
-        <ns2:InputParameter qName="ns10:DataRetrievalRequest" dimensionality="1" index="0" isArray="false" isRequired="false" name="dataRetrievalRequest" xmlns:ns10="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data"/>
+        <ns2:InputParameter qName="ns10:DataRetrievalRequest" dimensionality="1" index="0" isArray="false" isRequired="false" name="dataRetrievalRequest" xmlns:ns10="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data"/>
        </ns2:inputParameterCollection>
-       <ns2:Output qName="ns11:DataSet" dimensionality="1" isArray="false" xmlns:ns11="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data"/>
+       <ns2:Output qName="ns11:DataSet" dimensionality="1" isArray="false" xmlns:ns11="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data"/>
        <ns2:faultCollection/>
       </ns2:Operation>
      </ns2:operationCollection>
