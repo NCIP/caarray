@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.HashSet;
@@ -95,6 +96,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -105,6 +107,7 @@ import org.hibernate.validator.NotNull;
 
    */
 @Entity
+@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
 public class Factor extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 

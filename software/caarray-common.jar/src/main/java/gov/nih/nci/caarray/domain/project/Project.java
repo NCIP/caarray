@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -127,6 +128,7 @@ import org.apache.commons.lang.CharSetUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
@@ -140,6 +142,7 @@ import org.hibernate.validator.Valid;
  * A microarray project.
  */
 @Entity
+@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.TooManyFields", "PMD.ExcessiveClassLength" })
 public class Project extends AbstractCaArrayEntity implements Comparable<Project>, Protectable {
     private static final long serialVersionUID = 1234567890L;
@@ -410,7 +413,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return public access profile
      */
-    @ManyToOne(cascade = {CascadeType.ALL })
+    @ManyToOne(cascade = {CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     @ForeignKey(name = "PROJECT_PUBLICACCESS_FK")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
@@ -426,7 +429,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return host institution access profile
      */
-    @ManyToOne(cascade = {CascadeType.ALL })
+    @ManyToOne(cascade = {CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     @ForeignKey(name = "PROJECT_HOSTACCESS_FK")
     public AccessProfile getHostProfile() {

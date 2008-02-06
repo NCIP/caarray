@@ -82,14 +82,14 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
  * Base class for caArray reporter annotations.

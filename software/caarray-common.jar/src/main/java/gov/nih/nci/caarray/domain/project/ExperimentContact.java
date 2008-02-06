@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.contact.AbstractContact;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
@@ -104,6 +105,7 @@ import javax.persistence.Transient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
@@ -111,6 +113,7 @@ import org.hibernate.annotations.ForeignKey;
 
    */
 @Entity
+@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
 public class ExperimentContact extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -182,6 +185,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      * @return the roles
      */
     @ManyToMany(fetch = FetchType.LAZY)
+    @BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
     @JoinTable(
             name = "EXPERIMENTCONTACTROLE",
             joinColumns = { @JoinColumn(name = "EXPERIMENTCONTACT_ID") },

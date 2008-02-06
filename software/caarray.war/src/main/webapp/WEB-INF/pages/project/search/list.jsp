@@ -53,7 +53,7 @@
                     <c:param name="initialTab" value="annotations" />
                     <c:param name="initialTab2" value="samples" />
                 </c:url>
-                <a href="${viewSamplesUrl}">${row.experiment.sourceCount}</a>
+                <a href="${viewSamplesUrl}">${row.experiment.sampleCount}</a>
             </c:if>
         </display:column>
         <display:column sortProperty="LAST_UPDATED" titleKey="search.result.updated" sortable="true">

@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.contact;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.PersistentObject;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -93,6 +94,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -104,6 +106,7 @@ import org.hibernate.validator.Length;
  */
 @Entity
 @Table(name = "CONTACT")
+@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(
         name = "DISCRIMINATOR",

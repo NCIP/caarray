@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.protocol;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
@@ -97,6 +98,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -106,6 +108,7 @@ import org.hibernate.annotations.ForeignKey;
 
    */
 @Entity
+@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
 public class ProtocolApplication extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 

@@ -104,6 +104,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.MapKeyManyToMany;
@@ -112,6 +113,7 @@ import org.hibernate.annotations.MapKeyManyToMany;
  * Container class that models the read and write permissions to samples.
  */
 @Entity
+@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity" })
 public class AccessProfile implements PersistentObject, Serializable {
 
@@ -129,7 +131,7 @@ public class AccessProfile implements PersistentObject, Serializable {
      * Hibernate-only constructor.
      */
     @SuppressWarnings("unused")
-    private AccessProfile() { 
+    public AccessProfile() { 
         // no body        
     }
     
@@ -234,7 +236,7 @@ public class AccessProfile implements PersistentObject, Serializable {
     /**
      * @return the projectForPublicProfile
      */
-    @OneToOne(mappedBy = "publicProfile")
+    @OneToOne(mappedBy = "publicProfile", fetch = FetchType.LAZY)
     @SuppressWarnings("unused")
     private Project getProjectForPublicProfile() {
         return projectForPublicProfile;
@@ -254,7 +256,7 @@ public class AccessProfile implements PersistentObject, Serializable {
     /**
      * @return the projectForHostProfile
      */
-    @OneToOne(mappedBy = "hostProfile")
+    @OneToOne(mappedBy = "hostProfile", fetch = FetchType.LAZY)
     @SuppressWarnings("unused")
     private Project getProjectForHostProfile() {
         return projectForHostProfile;

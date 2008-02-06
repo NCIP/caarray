@@ -101,10 +101,13 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.BatchSize;
+
 /**
  * CollaboratorGroups bridge CSM groups with owners.
  */
 @Entity
+@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "CSM_GROUP", "CSM_USER" }) })
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class CollaboratorGroup implements PersistentObject, Protectable {

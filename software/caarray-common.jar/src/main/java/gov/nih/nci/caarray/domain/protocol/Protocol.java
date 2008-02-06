@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.protocol;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.Protectable;
@@ -100,6 +101,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -112,6 +114,7 @@ import org.hibernate.validator.NotNull;
  * @author Scott Miller
  */
 @Entity
+@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "source" }))
 public class Protocol extends AbstractCaArrayEntity implements Protectable {
     private static final long serialVersionUID = 1234567890L;

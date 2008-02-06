@@ -100,6 +100,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
@@ -108,6 +109,7 @@ import org.hibernate.validator.NotNull;
  * Organism that the sample or data comes from.
  */
 @Entity
+@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
 @UniqueConstraint(fields = { @UniqueConstraintField(name = "scientificName"), 
         @UniqueConstraintField(name = "termSource") }, message = "{organism.uniqueConstraint}")
 public class Organism implements PersistentObject {

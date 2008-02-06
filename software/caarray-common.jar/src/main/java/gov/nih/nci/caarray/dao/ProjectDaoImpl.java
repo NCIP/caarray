@@ -88,8 +88,6 @@ import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
-import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
-import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.search.SortCriterion;
@@ -101,10 +99,13 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -121,9 +122,10 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     private static final Logger LOG = Logger.getLogger(ProjectDaoImpl.class);
     private static final String UNCHECKED = "unchecked";
     private static final String EXP_ID_PARAM = "expId";
+    private static final String SOURCES = "sources";
+    private static final String[] BIOMATERIALS = {"sources", "samples", "extracts", "labeledExtracts" };
     private static final String TERM_FOR_EXPERIMENT_HSQL = "select distinct s.{0} from " + Experiment.class.getName()
-        + " e," +  Source.class.getName() + " s where e.id = :" + EXP_ID_PARAM + " and s in elements(e.sources) "
-        + "and s.{0} is not null";
+        + " e left join e.{1} s where e.id = :" + EXP_ID_PARAM + " and s.{0} is not null";
 
     /**
      * Saves a project by first updating the lastUpdated field, and then saves the entity to persistent storage,
@@ -186,10 +188,13 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
                         + " and :user in elements(g.users))";
         String selectClause = count ? "SELECT COUNT(DISTINCT p)" : "SELECT DISTINCT p";
         StringBuilder queryStr =
-                new StringBuilder(selectClause).append(" from ").append(Project.class.getName()).append(" p ")
-                        .append(" where p.statusInternal ").append(showPublic ? " = " : " != ").append(
-                                " :status and (p.id in ").append(ownerSubqueryStr).append(" or p.id in ").append(
-                                collabSubqueryStr).append(")");
+                new StringBuilder(selectClause).append(" from ").append(Project.class.getName()).append(" p ");
+        if (!count) {
+            queryStr.append(" left join fetch p.experiment e");
+        }
+        queryStr.append(" where p.statusInternal ").append(showPublic ? " = " : " != ")
+                .append(" :status and (p.id in ").append(ownerSubqueryStr).append(" or p.id in ").append(
+                        collabSubqueryStr).append(")");
         if (!count && sortCrit != null) {
             queryStr.append(" ORDER BY p.").append(sortCrit.getOrderField());
             if (pageSortParams.isDesc()) {
@@ -237,6 +242,9 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             sb.append("SELECT DISTINCT p");
         }
         sb.append(" FROM ").append(Project.class.getName()).append(" p");
+        if (!count) {
+            sb.append(" left join fetch p.experiment e left join fetch e.organism");
+        }
         sb.append(getJoinClause(categories));
         sb.append(getWhereClause(categories));
         if (!count && sortCrit != null) {
@@ -285,7 +293,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     @SuppressWarnings(UNCHECKED)
     public List<Term> getCellTypesForExperiment(Experiment experiment) {
-        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "cellType");
+        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "cellType", SOURCES);
         return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
     }
 
@@ -294,7 +302,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     @SuppressWarnings(UNCHECKED)
     public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
-        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "diseaseState");
+        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "diseaseState", SOURCES);
         return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
     }
 
@@ -303,7 +311,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     @SuppressWarnings(UNCHECKED)
     public List<Term> getTissueSitesForExperiment(Experiment experiment) {
-        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "tissueSite");
+        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "tissueSite", SOURCES);
         return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
     }
 
@@ -312,10 +320,15 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     @SuppressWarnings(UNCHECKED)
     public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
-        String hsql = "select distinct b.materialType from " + Experiment.class.getName() + " e,"
-            + AbstractBioMaterial.class.getName() +  " b where e.id = :expId and "
-            + "(b in elements(e.sources) or b in elements(e.samples) or b in elements(e.extracts) "
-            + "or b in elements(e.labeledExtracts)) and b.materialType is not null";
-        return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
+        // DEVELOPER NOTE: it is faster to use separate queries to retrieve the material types from each
+        // biomaterial type. doing it in one query requires either multiple subselects or a cartesian product 
+        // join, both of which are very slow
+        Set<Term> types = new HashSet<Term>();
+        for (String biomaterial : BIOMATERIALS) {
+            String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "materialType", biomaterial);
+            types.addAll(HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId())
+                    .list());                
+        }
+        return new ArrayList<Term>(types);
     }
 }

@@ -1,6 +1,7 @@
 package gov.nih.nci.caarray.domain.vocabulary;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.validation.UniqueConstraint;
 import gov.nih.nci.caarray.validation.UniqueConstraintField;
 import gov.nih.nci.caarray.validation.UniqueConstraints;
@@ -11,6 +12,7 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
@@ -100,6 +102,7 @@ import org.hibernate.validator.NotNull;
   /**
    */
 @Entity
+@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
 @UniqueConstraints(constraints = {
         @UniqueConstraint(fields = { @UniqueConstraintField(name = "name"),
                 @UniqueConstraintField(name = "version", nullsEqual = true) }),

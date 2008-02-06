@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain.project;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -125,6 +126,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
@@ -138,6 +140,7 @@ import org.hibernate.validator.NotNull;
  *
  */
 @Entity
+@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
 @UniqueConstraint(fields = @UniqueConstraintField(name = "publicIdentifier"))
 @SuppressWarnings({"PMD.TooManyFields", "PMD.ExcessiveClassLength",
                    "PMD.ExcessivePublicCount", "PMD.AvoidDuplicateLiterals" })
@@ -148,8 +151,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private static final String TERM_FK_NAME = "TERM_ID";
     private static final String EXPERIMENT_REF = "experiment";
 
-    private static final String READABLE_PROJECT_CLAUSE = "(select " + CaarrayInnoDBDialect.FILTER_ALIAS 
-        + ".attribute_value from (select pe.attribute_value from csm_protection_group pg, "
+    private static final String READABLE_PROJECT_CLAUSE = "(select pe.attribute_value from csm_protection_group pg, "
         + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
         + "csm_role r, csm_privilege p, csm_group g, csm_user_group ug where "
         + "pe.object_id= 'gov.nih.nci.caarray.domain.project.Project' and pe.attribute='id' and "
@@ -157,7 +159,8 @@ public class Experiment extends AbstractCaArrayEntity {
         + "and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and "
         + "ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id "
         + "and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = "
-        + "p.privilege_id and p.privilege_name='READ') " + CaarrayInnoDBDialect.FILTER_ALIAS + ")";
+        + "p.privilege_id and p.privilege_name='READ')";
+
     private static final String PROJECT_OWNER_CLAUSE = "(select " + CaarrayInnoDBDialect.FILTER_ALIAS 
         + ".attribute_value from (select pe.attribute_value from csm_user_pe upe, "
         + "csm_protection_element pe, csm_user u "
@@ -165,8 +168,8 @@ public class Experiment extends AbstractCaArrayEntity {
         + "pe.attribute='id' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and "
         + "upe.protection_element_id = pe.protection_element_id and upe.user_id = u.user_id) " 
         + CaarrayInnoDBDialect.FILTER_ALIAS + ")";
-    private static final String READABLE_SAMPLE_CLAUSE = "(select " + CaarrayInnoDBDialect.FILTER_ALIAS 
-        + ".attribute_value from (select pe.attribute_value from csm_protection_group pg, "
+    
+    private static final String READABLE_SAMPLE_CLAUSE = "(select pe.attribute_value from csm_protection_group pg, "
         + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
         + "csm_role r, csm_privilege p, csm_group g, csm_user_group ug where "
         + "pe.object_id= 'gov.nih.nci.caarray.domain.sample.Sample' and pe.attribute='id' and "
@@ -174,24 +177,45 @@ public class Experiment extends AbstractCaArrayEntity {
         + "and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and "
         + "ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id "
         + "and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = "
-        + "p.privilege_id and p.privilege_name='READ') " + CaarrayInnoDBDialect.FILTER_ALIAS + ")";
+        + "p.privilege_id and p.privilege_name='READ')";
+    
+    private static final String READABLE_SAMPLE_ALIAS_CLAUSE = "(select " + CaarrayInnoDBDialect.FILTER_ALIAS 
+        + ".attribute_value from " + READABLE_SAMPLE_CLAUSE + " " + CaarrayInnoDBDialect.FILTER_ALIAS + ")";
+    
     /** @Where filter for samples */
     public static final String SAMPLES_FILTER = "id in (select s.ID from biomaterial s where s.discriminator = 'SA' "
         + "and s.ID in " + READABLE_SAMPLE_CLAUSE + ")";
+    /** @Where filter for samples - with mysql wrapping table for subselect*/
+    public static final String SAMPLES_ALIAS_FILTER = "id in (select s.ID from biomaterial s "
+        + "where s.discriminator = 'SA' and s.ID in " + READABLE_SAMPLE_ALIAS_CLAUSE + ")";
     /** @Where filter for extracts */
-    public static final String EXTRACTS_FILTER = "id in (select e.ID from biomaterial e inner join sampleextract se on "
-        + "e.id = se.extract_id inner join biomaterial s on se.sample_id = s.id where e.discriminator = 'EX' and s.ID "
-        + "in " + READABLE_SAMPLE_CLAUSE + ")";
+    public static final String EXTRACTS_FILTER = "id in (select e.ID from biomaterial e inner join sampleextract se "
+        + " on e.id = se.extract_id inner join biomaterial s on se.sample_id = s.id where e.discriminator = 'EX' and "
+        + "s.ID in " + READABLE_SAMPLE_CLAUSE + ")";
+    /** @Where filter for extracts - with mysql wrapping table for subselect */
+    public static final String EXTRACTS_ALIAS_FILTER = "id in (select e.ID from biomaterial e "
+        + "inner join sampleextract se on e.id = se.extract_id inner join biomaterial s on se.sample_id = s.id where "
+        + "e.discriminator = 'EX' and s.ID in " + READABLE_SAMPLE_ALIAS_CLAUSE + ")";
     /** @Where filter for labeled extracts */
     public static final String LABELED_EXTRACTS_FILTER = "id in (select le.ID from biomaterial le inner join "
         + "extractlabeledextract ele on le.id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = "
         + "se.extract_id inner join biomaterial s on se.sample_id = s.id where le.discriminator = 'LA' and s.ID in "
         + READABLE_SAMPLE_CLAUSE + ")";
+    /** @Where filter for labeled extracts - with mysql wrapping table for subselect */
+    public static final String LABELED_EXTRACTS_ALIAS_FILTER = "id in (select le.ID from biomaterial le inner join "
+        + "extractlabeledextract ele on le.id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = "
+        + "se.extract_id inner join biomaterial s on se.sample_id = s.id where le.discriminator = 'LA' and s.ID in "
+        + READABLE_SAMPLE_ALIAS_CLAUSE + ")";
     /** @Where filter for hybs */
     public static final String HYBRIDIZATIONS_FILTER = "ID in (select h.ID from hybridization h inner join "
         + "labeledextracthybridization leh on h.id = leh.hybridization_id inner join extractlabeledextract ele on "
         + "leh.labeledextract_id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = se.extract_id "
         + "inner join biomaterial s on se.sample_id = s.id where s.ID in " + READABLE_SAMPLE_CLAUSE + ")";
+    /** @Where filter for hybs - with mysql wrapping table for subselect */
+    public static final String HYBRIDIZATIONS_ALIAS_FILTER = "ID in (select h.ID from hybridization h inner join "
+        + "labeledextracthybridization leh on h.id = leh.hybridization_id inner join extractlabeledextract ele on "
+        + "leh.labeledextract_id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = se.extract_id "
+        + "inner join biomaterial s on se.sample_id = s.id where s.ID in " + READABLE_SAMPLE_ALIAS_CLAUSE + ")";
     /** @Where filter for files */
     public static final String FILES_FILTER = "ID in (select f.id from caarrayfile f left join arraydata ad on f.id = "
         + "ad.data_file left join project p on f.project = p.id left join hybridization h on ad.hybridization = h.id "
@@ -622,7 +646,6 @@ public class Experiment extends AbstractCaArrayEntity {
             inverseJoinColumns = {@JoinColumn(name = "SOURCE_ID") })
     @ForeignKey(name = "EXPERIMENTSOURCE_INVEST_FK", inverseName = "EXPERIMENTSOURCE_SOURCE_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @LazyCollection(LazyCollectionOption.EXTRA)
     public Set<Source> getSources() {
         return this.sources;
     }
@@ -649,7 +672,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @LazyCollection(LazyCollectionOption.EXTRA)
     @ForeignKey(name = "EXPERIMENTSAMPLE_INVEST_FK", inverseName = "EXPERIMENTSAMPLE_SAMPLE_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @Filter(name = "Project1", condition = SAMPLES_FILTER)
+    @Filter(name = "Project1", condition = SAMPLES_ALIAS_FILTER)
     public Set<Sample> getSamples() {
         return this.samples;
     }
@@ -660,14 +683,6 @@ public class Experiment extends AbstractCaArrayEntity {
     @Transient
     public int getSampleCount() {
         return this.samples.size();
-    }
-
-    /**
-     * @return the number of samples in this experiment
-     */
-    @Transient
-    public int getSourceCount() {
-        return this.sources.size();
     }
 
     /**
@@ -691,7 +706,7 @@ public class Experiment extends AbstractCaArrayEntity {
             inverseJoinColumns = {@JoinColumn(name = "EXTRACT_ID") })
     @ForeignKey(name = "EXPERIMENTEXTRACT_INVEST_FK", inverseName = "EXPERIMENTEXTRACT_EXTRACT_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @Filter(name = "Project1", condition = EXTRACTS_FILTER)
+    @Filter(name = "Project1", condition = EXTRACTS_ALIAS_FILTER)
     public Set<Extract> getExtracts() {
         return this.extracts;
     }
@@ -717,7 +732,7 @@ public class Experiment extends AbstractCaArrayEntity {
             inverseJoinColumns = {@JoinColumn(name = "LABELED_EXTRACT_ID") })
     @ForeignKey(name = "EXPERIMENTLE_INVEST_FK", inverseName = "EXPERIMENTLE_LE_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @Filter(name = "Project1", condition = LABELED_EXTRACTS_FILTER)
+    @Filter(name = "Project1", condition = LABELED_EXTRACTS_ALIAS_FILTER)
     public Set<LabeledExtract> getLabeledExtracts() {
         return this.labeledExtracts;
     }
@@ -766,6 +781,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @OneToMany
     @IndexColumn(name = "indx")
     @JoinColumn(name = "experiment")
+    @BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public List<ExperimentContact> getExperimentContacts() {
@@ -925,7 +941,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @JoinColumn(name = EXPERIMENT_REF)
     @ForeignKey(name = "HYBRIDIZATION_EXPR_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @Filter(name = "Project1", condition = HYBRIDIZATIONS_FILTER)
+    @Filter(name = "Project1", condition = HYBRIDIZATIONS_ALIAS_FILTER)
     public Set<Hybridization> getHybridizations() {
         return this.hybridizations;
     }

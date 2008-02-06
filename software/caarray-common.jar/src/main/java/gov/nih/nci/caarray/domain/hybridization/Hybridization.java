@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.hybridization;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
@@ -111,6 +112,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Filter;
@@ -122,6 +124,7 @@ import org.hibernate.validator.NotNull;
  * The act of hybridizing extracted genetic material to the probes on a microarray.
  */
 @Entity
+@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class Hybridization extends AbstractCaArrayEntity implements ProtectableDescendent {
 
@@ -247,7 +250,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      *
      * @return the arrayData
      */
-    @OneToOne(mappedBy = MAPPED_BY)
+    @OneToOne(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     public RawArrayData getArrayData() {
         return this.arrayData;

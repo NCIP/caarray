@@ -88,12 +88,15 @@ import java.io.Serializable;
  * Interface common to all peristent classes in caArray.
  */
 public interface PersistentObject extends Serializable {
+    /**
+     * Default hibernate batch size.
+     */
+    int DEFAULT_BATCH_SIZE = 20;
 
     /**
      * Returns the object's id.
      * 
      * @return the id.
      */
-    Long getId();
-    
+    Long getId();    
 }
