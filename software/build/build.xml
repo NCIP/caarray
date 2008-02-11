@@ -1233,6 +1233,17 @@
       </sequential>
     </for>
   </target>
+	
+  <!-- local.globoss.home = /dev/app_servers/jboss-4.0.4.GA/server/default -->
+  <target name="create-grid-zip" if="local.globoss.home">
+    <property name="caarraysvc.temp.dir" value="${caaray-svc.dir}/build/cagrid_CaArraySvc"/>
+    <mkdir dir="${caarraysvc.temp.dir}"/>
+    <mkdir dir="${caarraysvc.temp.dir}/server/default/deploy/wsrf.war"/>
+
+    <ant dir="${caaray-svc.dir}" target="createDeploymentZip" inheritall="false">
+      <property name="jboss.dir" value="${caarraysvc.temp.dir}"/>
+    </ant>
+  </target>
 
   <target name="redeploy" description="Developer undeploy, clean, redeploy" depends="undeploy, clean, database:reinitialize, deploy"/>
 
