@@ -62,7 +62,7 @@
 	<classpathentry kind="var" path="GLOBUS_LOCATION/lib/xml-apis.jar"/>
 	<classpathentry kind="var" path="GLOBUS_LOCATION/lib/xmlsec.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-advertisement.jar"/>
-	<classpathentry kind="lib" path="lib/caGrid-1.1-core.jar" sourcepath="C:/5am/cagrid-1-1/caGrid/projects/core/src/java"/>
+	<classpathentry kind="lib" path="lib/caGrid-1.1-core.jar" sourcepath="/lib-2.0.0/src/caGrid-1.1-core-src.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-Introduce-1.1-serviceTools.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-metadata-security.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-ServiceSecurityProvider-client.jar"/>
