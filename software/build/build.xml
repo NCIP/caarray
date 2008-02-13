@@ -1059,117 +1059,132 @@
   <!-- ******************************************************************* -->
   <!-- ** SQL TARGETS                                                   ** -->
   <!-- ******************************************************************* -->
-
+  
   <target name="database:init-sql">
-    <mkdir dir="${caarraydb.sql.dir}" />
-    <dependset>
-      <srcfileset dir="${caarray-common.src.dir}">
-        <include name="gov/nih/nci/caarray/domain/**/*.java" />
-      </srcfileset>
-      <srcfileset dir="${caarray-common.resources.dir}">
-        <include name="*.hbm.xml" />
-        <include name="hibernate.cfg.xml" />
-        <include name="hibernate.properties" />
-      </srcfileset>
-      <targetfileset dir="${site.dir}/sql" />
-    </dependset>
-    <copy todir="${caarraydb.sql.dir}">
-      <filterset refid="caarray.filterset" />
-      <fileset dir="${caarraydb.sql.src.dir}" includes="**/*.sql" />
-    </copy>
-    <available property="drop-schema-sql.exists" file="${caarraydb.sql.dir}/sql/drop_schema.sql" />
-    <available property="create-schema-sql.exists" file="${caarraydb.sql.dir}/sql/create_schema.sql" />
+  	<mkdir dir="${caarraydb.sql.dir}" />
+  	<dependset>
+  		<srcfileset dir="${caarray-common.src.dir}">
+  			<include name="gov/nih/nci/caarray/domain/**/*.java" />
+  		</srcfileset>
+  		<srcfileset dir="${caarray-common.resources.dir}">
+  			<include name="*.hbm.xml" />
+  			<include name="hibernate.cfg.xml" />
+  			<include name="hibernate.properties" />
+  		</srcfileset>
+  		<targetfileset dir="${site.dir}/sql" />
+  	</dependset>
+  	<copy todir="${caarraydb.sql.dir}">
+  		<filterset refid="caarray.filterset" />
+  		<fileset dir="${caarraydb.sql.src.dir}" includes="**/*.sql" />
+  	</copy>
+  	<available property="drop-schema-sql.exists" file="${caarraydb.sql.dir}/sql/drop_schema.sql" />
+  	<available property="create-schema-sql.exists" file="${caarraydb.sql.dir}/sql/create_schema.sql" />
   </target>
-
-  <target name="database:generate-drop-schema-sql" depends="compile:caarray-common.jar, configure-datasource-for-test, database:init-sql" unless="drop-schema-sql.exists">
-    <hibernatetool destdir="${caarraydb.sql.dir}">
-      <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
-      <hbm2ddl drop="true" create="false" export="false" outputfilename="drop_schema.sql" />
-      <classpath>
-        <pathelement location="${caarray-common.classes.dir}" />
-        <pathelement location="${caarray-common.resources.dir}" />
-        <pathelement location="${hibernate.jar}" />
-      </classpath>
-    </hibernatetool>
+  
+  <target name="database:generate-drop-schema-sql" unless="drop-schema-sql.exists">
+  
+  	<antcall target="compile:caarray-common.jar" />
+  	<antcall target="configure-datasource-for-test" />
+  	<antcall target="database:init-sql" />
+  
+  	<hibernatetool destdir="${caarraydb.sql.dir}">
+  		<annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
+  		<hbm2ddl drop="true" create="false" export="false" outputfilename="drop_schema.sql" />
+  		<classpath>
+  			<pathelement location="${caarray-common.classes.dir}" />
+  			<pathelement location="${caarray-common.resources.dir}" />
+  			<pathelement location="${hibernate.jar}" />
+  		</classpath>
+  	</hibernatetool>
   </target>
-
-  <target name="database:generate-create-schema-sql" unless="create-schema-sql.exists" depends="configure-datasource-for-test,
-    compile:caarray-common.jar,
-    database:init-sql">
-    <hibernatetool destdir="${caarraydb.sql.dir}">
-      <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
-      <hbm2ddl drop="false" create="true" export="false" outputfilename="create_schema.sql" />
-      <classpath>
-        <pathelement location="${caarray-common.classes.dir}" />
-        <pathelement location="${caarray-common.resources.dir}" />
-        <pathelement location="${hibernate.jar}" />
-      </classpath>
-    </hibernatetool>
+  
+  <target name="database:generate-create-schema-sql" unless="create-schema-sql.exists">
+  
+  	<antcall target="configure-datasource-for-test" />
+  	<antcall target="compile:caarray-common.jar" />
+  	<antcall target="database:init-sql" />
+  
+  	<hibernatetool destdir="${caarraydb.sql.dir}">
+  		<annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
+  		<hbm2ddl drop="false" create="true" export="false" outputfilename="create_schema.sql" />
+  		<classpath>
+  			<pathelement location="${caarray-common.classes.dir}" />
+  			<pathelement location="${caarray-common.resources.dir}" />
+  			<pathelement location="${hibernate.jar}" />
+  		</classpath>
+  	</hibernatetool>
   </target>
-
+  
   <target name="database:generate-schema-sql" depends="database:generate-drop-schema-sql, database:generate-create-schema-sql" />
-
-  <target name="database:generate-mged-sql" depends="compile:caarray-common.jar, database:init-sql">
-    <java classname="gov.nih.nci.caarray.util.owlparser.ParseMgedOntology">
-      <arg value="${caarraydb.sql.dir}"/>
-      <classpath>
-        <pathelement location="${caarray-common.classes.dir}" />
-        <pathelement location="${caarray-common.resources.dir}" />
-        <fileset dir="${lib.dir}">
-          <include name="**/*.jar"/>
-          <exclude name="checkstyle*.jar"/>
-        </fileset>
-      </classpath>
-    </java>
+  
+  <target name="database:generate-mged-sql" unless="create-schema-sql.exists">
+  	<antcall target="compile:caarray-common.jar" />
+  	<antcall target="database:init-sql" />
+  	<java classname="gov.nih.nci.caarray.util.owlparser.ParseMgedOntology">
+  		<arg value="${caarraydb.sql.dir}" />
+  		<classpath>
+  			<pathelement location="${caarray-common.classes.dir}" />
+  			<pathelement location="${caarray-common.resources.dir}" />
+  			<fileset dir="${lib.dir}">
+  				<include name="**/*.jar" />
+  				<exclude name="checkstyle*.jar" />
+  			</fileset>
+  		</classpath>
+  	</java>
   </target>
-
+  
   <target name="database:drop-schema" depends="database:generate-drop-schema-sql" description="Drop DB schema">
-    <run-sql-script onerror="continue" sql.file="${caarraydb.sql.dir}/drop_schema.sql" />
-    <run-sql-script sql.file="${caarraydb.sql.dir}/drop-caarray-schema.sql" />
-    <run-sql-script sql.file="${caarraydb.sql.dir}/drop-csm-schema.sql" />
+  	<run-sql-script onerror="continue" sql.file="${caarraydb.sql.dir}/drop_schema.sql" />
+  	<run-sql-script sql.file="${caarraydb.sql.dir}/drop-caarray-schema.sql" />
+  	<run-sql-script sql.file="${caarraydb.sql.dir}/drop-csm-schema.sql" />
   </target>
-
+  
   <target name="database:create-schema" depends="database:generate-create-schema-sql" description="Create DB schema">
-    <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_schema.sql" />
-    <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/init-caarray-schema.sql" />
-    <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/init-csm-schema.sql" />
+  	<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_schema.sql" />
+  	<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/init-caarray-schema.sql" />
+  	<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/init-csm-schema.sql" />
   </target>
-
+  
   <target name="database:initialize-schema" depends="database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
-
-  <target name="database:populate" description="populates db with initial data" depends="database:generate-mged-sql">
-    <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm.sql" />
-    <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm2.sql" />
-    <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-mged.sql" />
-    <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />
+  
+  <target name="database:populate" description="populates db with initial data">
+  	<antcall target="database:generate-mged-sql" />
+  	<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm.sql" />
+  	<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm2.sql" />
+  	<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-mged.sql" />
+  	<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />
   </target>
-
+  
   <target name="database:env-specific-sql" description="populates db with initial data">
-    <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/${config.sql.file}" />
+  	<run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/${config.sql.file}" />
   </target>
-
-
+  
+  <!--
   <target name="database:reinitialize" unless="nodbintegration"
-      description="Completely reset caarraydb by dropping database, recreating, and creating schema, and pouplating with initial data">
-    <antcall target="database:recreate-database" />
-    <antcall target="database:create-schema" />
-    <antcall target="database:populate" />
-    <antcall target="database:env-specific-sql" />
+    	description="Completely reset caarraydb by dropping database, recreating, and creating schema, and pouplating with initial data">
+  	<antcall target="database:recreate-database" />
+  	<antcall target="database:create-schema" />
+  	<antcall target="database:populate" />
+  	<antcall target="database:env-specific-sql" />
   </target>
-<!--
-  <target name="database:reinitialize" depends="database:init-sql" unless="nodbintegration"
-      description="Completely reset caarraydb by dropping database, recreating, and creating schema, and populating with initial data">
-    <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/assign-permissions.sql" />
-    <run-sql-script onerror="continue" sql.file="${caarraydb.sql.dir}/premigrate.sql" />
-    <antcall target="database:drop-schema"/>
-    <antcall target="database:create-schema" />
-    <antcall target="database:populate" />
-    <antcall target="database:env-specific-sql" />
-    <run-sql-script onerror="continue" sql.file="${caarraydb.sql.dir}/postmigrate.sql"/>
+  -->
+  <target name="database:reinitialize" depends="database:init-sql" unless="nodbintegration" description="Completely reset caarraydb by dropping database, recreating, and creating schema, and populating with initial data">
+  	<antcall target="database:execute-sql" />
   </target>
--->
-  <target name="database:recreate-database" depends="database:init-sql" description="Drops and recreates caarraydb database">
-    <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
+  
+  <target name="database:execute-sql" description="Run SQL scripts, skipping Hibernate code generation">
+  	<antcall target="database:recreate-database" />
+  	<run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/assign-permissions.sql" />
+  	<run-sql-script onerror="continue" sql.file="${caarraydb.sql.dir}/premigrate.sql" />
+  	<antcall target="database:drop-schema" />
+  	<antcall target="database:create-schema" />
+  	<antcall target="database:populate" />
+  	<antcall target="database:env-specific-sql" />
+  	<run-sql-script onerror="continue" sql.file="${caarraydb.sql.dir}/postmigrate.sql" />
+  </target>
+  
+  <target name="database:recreate-database" description="Drops and recreates caarraydb database">
+  	<run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
   </target>
 
   <!-- ******************************************************************* -->
@@ -1253,6 +1268,17 @@
         </copy>
       </sequential>
     </for>
+  </target>
+	
+  <!-- local.globoss.home = /dev/app_servers/jboss-4.0.4.GA/server/default -->
+  <target name="create-grid-zip" if="local.globoss.home">
+    <property name="caarraysvc.temp.dir" value="${caaray-svc.dir}/build/cagrid_CaArraySvc"/>
+    <mkdir dir="${caarraysvc.temp.dir}"/>
+    <mkdir dir="${caarraysvc.temp.dir}/server/default/deploy/wsrf.war"/>
+
+    <ant dir="${caaray-svc.dir}" target="createDeploymentZip" inheritall="false">
+      <property name="jboss.dir" value="${caarraysvc.temp.dir}"/>
+    </ant>
   </target>
 
   <target name="redeploy" description="Developer undeploy, clean, redeploy" depends="undeploy, clean, database:reinitialize, deploy"/>
