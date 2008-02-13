@@ -28,7 +28,7 @@
 	<classpathentry kind="lib" path="/lib/caGrid-1.1-data-stubs.jar"/>
 	<classpathentry kind="lib" path="/lib/caGrid-1.1-sdkQuery32-core.jar"/>
 	<classpathentry kind="lib" path="/lib/caGrid-1.1-data-common.jar"/>
-	<classpathentry kind="lib" path="/lib/axis.jar"/>
+	<classpathentry kind="lib" path="/lib/axis.jar" sourcepath="/lib/src/axis-src.jar"/>
 	<classpathentry kind="lib" path="/lib/jboss-cache.jar"/>
 	<classpathentry kind="lib" path="/lib/jboss-system.jar"/>
 	<classpathentry kind="lib" path="/lib/jgroups.jar"/>
