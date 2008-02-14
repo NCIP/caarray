@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data"
-    xmlns:gov.nih.nci.caarray.domain="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain"
-    xmlns:gov.nih.nci.caarray.domain.array="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array"
-    xmlns:gov.nih.nci.caarray.domain.file="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.file"
-    xmlns:gov.nih.nci.caarray.domain.hybridization="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.hybridization"
-    xmlns:gov.nih.nci.caarray.domain.protocol="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.protocol"
-    xmlns:gov.nih.nci.caarray.domain.sample="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.sample"
-    targetNamespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data"
+    xmlns:gov.nih.nci.caarray.domain="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain"
+    xmlns:gov.nih.nci.caarray.domain.array="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array"
+    xmlns:gov.nih.nci.caarray.domain.file="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file"
+    xmlns:gov.nih.nci.caarray.domain.hybridization="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization"
+    xmlns:gov.nih.nci.caarray.domain.protocol="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.protocol"
+    xmlns:gov.nih.nci.caarray.domain.sample="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample"
+    targetNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" elementFormDefault="qualified">
 
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.hybridization"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization"
         schemaLocation="gov.nih.nci.caarray.domain.hybridization.xsd" />
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array"
         schemaLocation="gov.nih.nci.caarray.domain.array.xsd" />
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.protocol"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.protocol"
         schemaLocation="gov.nih.nci.caarray.domain.protocol.xsd" />
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.file"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file"
         schemaLocation="gov.nih.nci.caarray.domain.file.xsd" />
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain"
         schemaLocation="gov.nih.nci.caarray.domain.xsd" />
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.sample"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample"
         schemaLocation="gov.nih.nci.caarray.domain.sample.xsd" />
 
     <xs:element name="ArrayDataType" type="ArrayDataType" />

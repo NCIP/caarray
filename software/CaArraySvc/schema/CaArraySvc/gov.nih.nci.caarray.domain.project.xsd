@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.project"
-    xmlns:edu.georgetown.pir="gme://caCORE.caCORE/3.2/edu.georgetown.pir"
-    xmlns:gov.nih.nci.caarray.domain="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain"
-    xmlns:gov.nih.nci.caarray.domain.array="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array"
-    xmlns:gov.nih.nci.caarray.domain.contact="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.contact"
-    xmlns:gov.nih.nci.caarray.domain.file="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.file"
-    xmlns:gov.nih.nci.caarray.domain.hybridization="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.hybridization"
-    xmlns:gov.nih.nci.caarray.domain.publication="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.publication"
-    xmlns:gov.nih.nci.caarray.domain.sample="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.sample"
-    xmlns:gov.nih.nci.caarray.domain.vocabulary="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.vocabulary"
-    targetNamespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.project" elementFormDefault="qualified">
+    xmlns="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project"
+    xmlns:edu.georgetown.pir="gme://caArray.caBIG/2.0/edu.georgetown.pir"
+    xmlns:gov.nih.nci.caarray.domain="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain"
+    xmlns:gov.nih.nci.caarray.domain.array="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array"
+    xmlns:gov.nih.nci.caarray.domain.contact="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact"
+    xmlns:gov.nih.nci.caarray.domain.file="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file"
+    xmlns:gov.nih.nci.caarray.domain.hybridization="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization"
+    xmlns:gov.nih.nci.caarray.domain.publication="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.publication"
+    xmlns:gov.nih.nci.caarray.domain.sample="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample"
+    xmlns:gov.nih.nci.caarray.domain.vocabulary="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary"
+    targetNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" elementFormDefault="qualified">
 
-    <xs:import namespace="gme://caCORE.caCORE/3.2/edu.georgetown.pir"
+    <xs:import namespace="gme://caArray.caBIG/2.0/edu.georgetown.pir"
         schemaLocation="edu.georgetown.pir.xsd" />
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.file"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file"
         schemaLocation="gov.nih.nci.caarray.domain.file.xsd" />
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.sample"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample"
         schemaLocation="gov.nih.nci.caarray.domain.sample.xsd" />
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain"
         schemaLocation="gov.nih.nci.caarray.domain.xsd" />
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.hybridization"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization"
         schemaLocation="gov.nih.nci.caarray.domain.hybridization.xsd" />
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.publication"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.publication"
         schemaLocation="gov.nih.nci.caarray.domain.publication.xsd" />
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.vocabulary"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary"
         schemaLocation="gov.nih.nci.caarray.domain.vocabulary.xsd" />
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array"
         schemaLocation="gov.nih.nci.caarray.domain.array.xsd" />
-    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.contact"
+    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact"
         schemaLocation="gov.nih.nci.caarray.domain.contact.xsd" />
 
     <xs:element name="Factor" type="Factor" />
