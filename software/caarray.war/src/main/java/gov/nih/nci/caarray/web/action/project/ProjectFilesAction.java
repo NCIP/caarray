@@ -535,7 +535,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                     new String[] {conflict }));
         }
 
-        ActionHelper.saveMessage(count + " files uploaded.");
+        ActionHelper.saveMessage(count + " file(s) uploaded.");
         return UPLOAD_INPUT;
     }
 

@@ -385,7 +385,6 @@ public class RegistrationRequest implements PersistentObject {
     @Column(length = ZIP_FIELD_LENGTH)
     @NotNull
     @Length(min = 1, max = ZIP_FIELD_LENGTH)
-    @Pattern(regex = "^\\d{5}-\\d{4}|\\d{5}|[A-Z]\\d[A-Z] \\d[A-Z]\\d$")
     public String getZip() {
         return zip;
     }

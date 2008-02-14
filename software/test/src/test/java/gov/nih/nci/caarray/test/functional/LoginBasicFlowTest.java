@@ -122,8 +122,8 @@ public class LoginBasicFlowTest extends AbstractSeleniumTest {
         selenium.click("link=Upload New File(s)");
         selenium.click("link=Upload");
         waitForAction();
-        
-        assertTrue(selenium.isTextPresent("0 files uploaded"));
+
+        assertTrue(selenium.isTextPresent("0 file(s) uploaded"));
     }
     /*
      * login, create a project, import a file with validation errors, validate the error page
@@ -138,24 +138,24 @@ public class LoginBasicFlowTest extends AbstractSeleniumTest {
         // - go to the data tab
         selenium.click("link=Data");
         waitForTab();
-        
+
         // - Upload file
         selenium.click("link=Upload New File(s)");
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
-        
+
         // - Import file
         selenium.click("selectAllCheckbox");
-        selenium.click("link=Import"); 
+        selenium.click("link=Import");
 
         // wait for file to upload
         refreshImport("Failed Validation");
-        
+
         // - Click failed validation link
         selenium.click("link=Failed Validation");
         waitForText("Validation Messages");
-        
+
         assertTrue(selenium.isTextPresent("Publication Title value is missing"));
-       
+
     }
 
     private boolean refreshImport(String waitForText) throws InterruptedException{
@@ -169,8 +169,8 @@ public class LoginBasicFlowTest extends AbstractSeleniumTest {
             Thread.sleep(3000);
             if (selenium.isTextPresent(waitForText)) {
                  return true;
-            } 
+            }
         }
-     
+
     }
 }

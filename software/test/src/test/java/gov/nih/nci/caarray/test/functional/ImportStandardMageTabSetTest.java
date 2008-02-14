@@ -154,7 +154,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         // - Check if they are uploaded
         checkFileStatus("Uploaded", THIRD_COLUMN);
         waitForAction();
-        assertTrue(selenium.isTextPresent("files uploaded"));
+        assertTrue(selenium.isTextPresent("file(s) uploaded"));
 
         // - Import files
         selenium.click("selectAllCheckbox");

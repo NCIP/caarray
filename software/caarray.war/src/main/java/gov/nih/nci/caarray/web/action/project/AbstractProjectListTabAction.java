@@ -106,7 +106,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 @Validation
 public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
-    
+
     /** page size for item lists. */
     public static final int PAGE_SIZE = 15;
 
@@ -197,8 +197,8 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     @SkipValidation
     public String delete() {
         getCollection().remove(getItem());
-        super.save();
         ActionHelper.saveMessage(getText("experiment.items.deleted", new String[] {getItemName()}));
+        super.save();
         updatePagedList();
         return "list";
     }
@@ -214,6 +214,9 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
         try {
             doCopyItem();
             ActionHelper.saveMessage(getText("experiment.items.copied", new String[] {getItemName()}));
+            List<String> args = new ArrayList<String>();
+            args.add(getProject().getExperiment().getTitle());
+            ActionHelper.saveMessage(getText("project.saved", args));
         } catch (ProposalWorkflowException e) {
             List<String> args = new ArrayList<String>();
             args.add(getProject().getExperiment().getTitle());

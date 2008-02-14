@@ -96,14 +96,14 @@ import org.junit.Test;
 
 /**
  * Uploads and deletes 1,2,4,8,16,32,64,128 cell files
- * 
+ *
  */
 public class Import64CelZipTest extends AbstractSeleniumTest {
 
     private static final int FIFTY_MINUTES_IN_MILLISECOND = 3000000;
     private static final boolean NO_FILE_NAME_ASSERT = false;
     private List<File> zipFiles = new ArrayList<File>();
-    public static final String DIRECTORY = 
+    public static final String DIRECTORY =
             "L:\\NCICB\\caArray\\QA\\testdata_central_caArray2\\Affymetrix\\HG-U133_Plus_2\\CEL\\Public_Rembrandt_from_caArray1.6\\exponential_CEL_ZIPs\\";
 
     @Test
@@ -131,25 +131,25 @@ public class Import64CelZipTest extends AbstractSeleniumTest {
             ZipFile zipfile = new ZipFile(celFile.getAbsolutePath());
             int numberOfFiles = zipfile.size() - 1;
             System.out.println("Upload of " +celFile.getName()+ " started at " + DateFormat.getTimeInstance().format(new Date()));
-            
+
             // - Upload the zip file
             upload(celFile, FIFTY_MINUTES_IN_MILLISECOND, NO_FILE_NAME_ASSERT);
             checkFileStatus("Uploaded", THIRD_COLUMN, numberOfFiles);
             waitForAction();
-            assertTrue(selenium.isTextPresent("files uploaded"));
+            assertTrue(selenium.isTextPresent("file(s) uploaded"));
             endTime = System.currentTimeMillis();
-            DecimalFormat df= new DecimalFormat("0.##"); 
+            DecimalFormat df= new DecimalFormat("0.##");
             String totalTime = df.format((endTime - startTime)/60000f);
-            
+
             // - print out the upload time
             System.out.println("Uploaded " + numberOfFiles + " files ("+celFile.getName()+") in " + totalTime + " minutes");
             startTime = System.currentTimeMillis();
-            
+
             // - remove the cel files
             delete(celFile);
             endTime = System.currentTimeMillis();
             totalTime = df.format((endTime - startTime)/60000f);
-            
+
             // - print out the delete time
             System.out.println("Deleted " + celFile.getName()+ " in " + totalTime + " minutes");
         }
@@ -174,7 +174,7 @@ public class Import64CelZipTest extends AbstractSeleniumTest {
         zipFiles.add(new File(DIRECTORY + "064CEL.zip"));
         zipFiles.add(new File(DIRECTORY + "128CEL.zip"));
     }
- 
+
     private void checkFileStatus(String status, int column, int numberOfFiles) {
         for (int i = 1; i < numberOfFiles; i++) {
             assertEquals(status, selenium.getTable("row." + i + "." + column));

@@ -101,7 +101,7 @@ import org.junit.Test;
 
 /**
  * Test case #7959.
- * 
+ *
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
 public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
@@ -153,7 +153,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         // - Check if they are uploaded
         checkFileStatus("Uploaded", THIRD_COLUMN);
         waitForAction();
-        assertTrue(selenium.isTextPresent("files uploaded"));
+        assertTrue(selenium.isTextPresent("file(s) uploaded"));
 
         // - Import files
         selenium.click("selectAllCheckbox");
@@ -215,7 +215,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
     /**
      * @throws Exception
-     * 
+     *
      */
 
     private void verifyDataViaApi(String experimentTitle) throws ServerConnectionException {
