@@ -90,6 +90,7 @@ import java.util.Set;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
@@ -123,7 +124,7 @@ public class RawArrayData extends AbstractArrayData {
     /**
      * @return the hybridization
      */
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "RAWDATA_HYBRIDIZATION_FK")
     public Hybridization getHybridization() {

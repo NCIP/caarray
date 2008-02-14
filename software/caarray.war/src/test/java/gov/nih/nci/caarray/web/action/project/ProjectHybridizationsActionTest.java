@@ -184,7 +184,7 @@ public class ProjectHybridizationsActionTest {
         action.setItemsToRemove(removeList);
 
         action.setCurrentHybridization(DUMMY_HYBRIDIZATION);
-        assertEquals("initial-save", action.save());
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
         assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
         assertTrue(toAdd.getHybridizations().contains(DUMMY_HYBRIDIZATION));
         assertFalse(toRemove.getHybridizations().contains(DUMMY_HYBRIDIZATION));

@@ -112,7 +112,7 @@ public class SampleDaoTest  extends AbstractDaoTest {
     private static Term DUMMY_MATERIAL_TYPE = new Term();
     private static TermBasedCharacteristic DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
 
-    private static final SampleDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getSampleDao();
+    private static final SearchDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getSearchDao();
 
     /**
      * Define the dummy objects that will be used by the tests.
@@ -162,7 +162,7 @@ public class SampleDaoTest  extends AbstractDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_SAMPLE_1);
-            Sample retrievedSample = DAO_OBJECT.getSample(DUMMY_SAMPLE_1.getId());
+            Sample retrievedSample = DAO_OBJECT.retrieve(Sample.class, DUMMY_SAMPLE_1.getId());
             tx.commit();
             if (DUMMY_SAMPLE_1.equals(retrievedSample)) {
                 if (compareSamples(retrievedSample, DUMMY_SAMPLE_1)) {

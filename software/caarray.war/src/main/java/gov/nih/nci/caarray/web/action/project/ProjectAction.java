@@ -7,7 +7,6 @@ import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.helper.EmailHelper;
-import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,14 +58,6 @@ public class ProjectAction extends AbstractBaseProjectAction {
         }
         setEditMode(true);
         return INPUT;
-    }
-
-    /**
-     * get the csm user.  This method is extracted so it can be overwritten in test cases.
-     * @return the csm user.
-     */
-    protected User getCsmUser() {
-        return UsernameHolder.getCsmUser();
     }
 
     /**

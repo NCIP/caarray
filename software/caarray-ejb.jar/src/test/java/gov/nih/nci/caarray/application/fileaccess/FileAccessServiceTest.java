@@ -173,7 +173,7 @@ public class FileAccessServiceTest {
         IOUtils.closeQuietly(retrievedIs);
         assertEquals(originalBytes.length, retrievedBytes.length);
         for (int i = 0; i < originalBytes.length; i++) {
-            assertEquals(new Byte(originalBytes[i]), new Byte(retrievedBytes[i]));
+            assertEquals(new Byte(originalBytes[i]), new Byte(retrievedBytes[i])); // NOPMD
         }
 
         TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(caArrayFile);

@@ -214,9 +214,10 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         // in progress projects get automatically set to browsable, if they weren't before
         if (status == ProposalStatus.IN_PROGRESS) {
             setPublicIdLocked(true);
-            if (getPublicProfile().getSecurityLevel() == SecurityLevel.NO_VISIBILITY) {
-                getPublicProfile().setSecurityLevel(SecurityLevel.VISIBLE);
-            }               
+            // this is correct for both submitting a draft project and retracting a project
+            // from public availability. in the former, we need to make sure the project is visible
+            // if it wasnt before; in the latter we need to remove the public read access
+            getPublicProfile().setSecurityLevel(SecurityLevel.VISIBLE);
         }
 
         // public projects are effectively read rights to all and write rights to no one

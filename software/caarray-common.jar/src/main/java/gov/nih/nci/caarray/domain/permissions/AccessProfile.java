@@ -276,7 +276,7 @@ public class AccessProfile implements PersistentObject, Serializable {
     /**
      * @return the projectForGroupProfile
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
     @SuppressWarnings("unused")
     private Project getProjectForGroupProfile() {

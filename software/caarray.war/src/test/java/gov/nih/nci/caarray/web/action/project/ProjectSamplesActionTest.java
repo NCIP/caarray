@@ -173,7 +173,7 @@ public class ProjectSamplesActionTest {
     @Test
     public void testSave() {
         // save new
-        assertEquals("initial-save", action.save());
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
         assertTrue(ActionHelper.getMessages().contains("experiment.items.created"));
 
         // update associations
@@ -200,7 +200,7 @@ public class ProjectSamplesActionTest {
 
         // update existing sample
         action.setCurrentSample(DUMMY_SAMPLE);
-        assertEquals("initial-save", action.save());
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
         assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
         assertTrue(toAdd.getSamples().contains(DUMMY_SAMPLE));
         assertFalse(toRemove.getSamples().contains(DUMMY_SAMPLE));

@@ -401,8 +401,12 @@ public final class SecurityUtils {
         }
     }
 
+    /**
+     * @return the CSM group instance for the anonymous group
+     * @throws CSObjectNotFoundException
+     */
     @SuppressWarnings("unchecked")
-    private static Group getAnonymousGroup() {
+    public static Group getAnonymousGroup() {
         Group group = new Group();
         group.setGroupName(ANONYMOUS_GROUP);
         GroupSearchCriteria gsc = new GroupSearchCriteria(group);

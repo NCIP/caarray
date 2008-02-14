@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -178,7 +179,7 @@ public class FactorValue extends AbstractCaArrayEntity {
     /**
      * @return the hybridization
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "FACTORVALUE_HYBRIDIZATATION_FK")
     public Hybridization getHybridization() {

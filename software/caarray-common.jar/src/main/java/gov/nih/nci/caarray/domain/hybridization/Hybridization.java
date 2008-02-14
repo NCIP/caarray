@@ -228,7 +228,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      *
      * @return the array
      */
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)  // Could eventually add DELETE cascade, but Arrays are shared
     @ForeignKey(name = "HYBRIDIZATION_ARRAY_FK")
     public Array getArray() {
@@ -293,7 +293,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      *
      * @return the protocolApplication
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     @ForeignKey(name = "HYBRIDIZATION_PROTOCOLAPP_FK")
     public ProtocolApplication getProtocolApplication() {
@@ -359,7 +359,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     /**
      * @return the amountOfMaterialUnit
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "HYBRIDIZATIONAMOUNT_UNIT_FK")
     public Term getAmountOfMaterialUnit() {

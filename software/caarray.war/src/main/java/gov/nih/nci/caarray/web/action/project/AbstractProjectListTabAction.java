@@ -131,6 +131,10 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     @Override
     @SkipValidation
     public String load() {
+        String checkResult = checkProject();
+        if (checkResult != null) {
+            return checkResult;
+        }
         updatePagedList();
         return "list";
     }
@@ -148,6 +152,10 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
      */
     @SkipValidation
     public String edit() {
+        String checkResult = checkProject();
+        if (checkResult != null) {
+            return checkResult;
+        }
         setEditMode(true);
         return INPUT;
     }
@@ -158,6 +166,10 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
      */
     @SkipValidation
     public String view() {
+        String checkResult = checkProject();
+        if (checkResult != null) {
+            return checkResult;
+        }
         setEditMode(false);
         return INPUT;
     }
@@ -170,6 +182,10 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     @Override
     @SuppressWarnings("unchecked")
     public String save() {
+        String checkResult = checkProject();
+        if (checkResult != null) {
+            return checkResult;
+        }
         if (this.getItem().getId() == null) {
             getCollection().add(getItem());
             ActionHelper.saveMessage(getText("experiment.items.created", new String[] {getItemName()}));
@@ -196,6 +212,10 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
      */
     @SkipValidation
     public String delete() {
+        String checkResult = checkProject();
+        if (checkResult != null) {
+            return checkResult;
+        }
         getCollection().remove(getItem());
         ActionHelper.saveMessage(getText("experiment.items.deleted", new String[] {getItemName()}));
         super.save();
@@ -211,6 +231,10 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
      */
     @SkipValidation
     public String copy() {
+        String checkResult = checkProject();
+        if (checkResult != null) {
+            return checkResult;
+        }
         try {
             doCopyItem();
             ActionHelper.saveMessage(getText("experiment.items.copied", new String[] {getItemName()}));

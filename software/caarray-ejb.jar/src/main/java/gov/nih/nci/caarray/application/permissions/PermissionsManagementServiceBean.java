@@ -228,7 +228,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
             String userId = am.getUser(username).getUserId().toString();
             users.add(userId);
         }
-        addUsersToGroup(groupId, users);
+        addUsersToGroup(groupId, users, SecurityUtils.ANONYMOUS_GROUP.equals(groupName));
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -239,11 +239,11 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, users);
         String groupId = targetGroup.getGroup().getGroupId().toString();
-        addUsersToGroup(groupId, users);
+        addUsersToGroup(groupId, users, false);
         LogUtil.logSubsystemExit(LOG);
     }
 
-    private void addUsersToGroup(String groupId, List<String> users)
+    private void addUsersToGroup(String groupId, List<String> users, boolean allowAnonymousUser)
         throws CSTransactionException, CSObjectNotFoundException {
         // This is a hack.  We should simply call am.assignUserToGroup, but that method appears to be buggy.
         AuthorizationManager am = SecurityUtils.getAuthorizationManager();
@@ -253,9 +253,10 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         for (User u : curUsers) {
             newUsers.add(u.getUserId().toString());
         }
-        // ensure that the fake anonymous user is not among them
-        newUsers.remove(SecurityUtils.getAnonymousUser().getUserId().toString());
-
+        if (!allowAnonymousUser) {
+            newUsers.remove(SecurityUtils.getAnonymousUser().getUserId().toString());           
+        }
+ 
         String[] userIds = newUsers.toArray(new String[] {});
         am.assignUsersToGroup(groupId, userIds);
     }

@@ -186,7 +186,7 @@ public class ProjectExtractsActionTest {
         action.setItemsToRemove(removeList);
 
         action.setCurrentExtract(DUMMY_EXTRACT);
-        assertEquals("initial-save", action.save());
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
         assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
         assertTrue(toAdd.getExtracts().contains(DUMMY_EXTRACT));
         assertFalse(toRemove.getExtracts().contains(DUMMY_EXTRACT));
