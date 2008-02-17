@@ -77,8 +77,8 @@
 
   <property name="caaray-svc.dir" value="${basedir}/CaArraySvc"/>
 
-  <!-- Third-party -->
   <property name="affxfusion.jar" value="${lib.dir}/AffxFusion.jar" />
+  <property name="ajaxtags-1.3.jar" value="${lib.dir}/ajaxtags-1.3-beta-rc7.jar" />
   <property name="ant-contrib.jar" value="${lib.dir}/ant-contrib-1.0b3.jar" />
   <property name="antlr.jar" value="${lib.dir}/antlr-2.7.6.jar" />
   <property name="asm.jar" value="${lib.dir}/asm.jar" />
@@ -526,43 +526,6 @@
         </zipfileset>
         <zipfileset dir="${caarray-client.target.dir}" includes="docs/**" />
       </zip>
-    </target>
-
-    <target name="javadoc:caarray-client" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar">
-        <mkdir dir="${caarray-client.target.dir}/docs/api" />
-        <javadoc destdir="${caarray-client.target.dir}/docs/api" >
-                <packageset dir="${caarray-client.src.dir}" />
-                <packageset dir="${caarray-common.src.dir}" >
-                    <include name="**/domain/**" />
-                    <include name="**/georgetown/**"/>
-                </packageset>
-                <fileset dir="${caarray-ejb.src.dir}">
-                   <include name="**/services/**/*Service.java" />
-                </fileset>
-            <classpath>
-                <pathelement location="${caGrid-1.1-data-stubs.jar}"/>
-                <pathelement location="${caGrid-1.1-data-common.jar}"/>
-                <pathelement location="${caGrid-1.1-sdkQuery32-core.jar}"/>
-                <pathelement location="${clm.jar}"/>
-                <pathelement location="${commons-collections.jar}"/>
-                <pathelement location="${commons-configuration.jar}"/>
-                <pathelement location="${commons-io.jar}"/>
-                <pathelement location="${commons-lang.jar}"/>
-                <pathelement location="${csmapi.jar}"/>
-                <pathelement location="${dom4j.jar}"/>
-                <pathelement location="${ejb3-persistence.jar}"/>
-                <pathelement location="${hibernate.jar}"/>
-                <pathelement location="${hibernate-annotations.jar}"/>
-                <pathelement location="${javacsv.jar}"/>
-                <pathelement location="${javaee.jar}"/>
-                <pathelement location="${jboss-annotations-ejb3.jar}"/>
-                <pathelement location="${log4j.jar}"/>
-                <pathelement location="${netcdf.jar}"/>
-                <pathelement path="${caarray-client.classes.dir}"/>
-                <pathelement path="${caarray-common.classes.dir}"/>
-                <pathelement path="${caarray-ejb.classes.dir}"/>
-            </classpath>
-        </javadoc>
     </target>
 
   <target name="build:caarray-client.tar.gz" depends="build:caarray-client.jar,javadoc:caarray-client">
@@ -1522,5 +1485,66 @@
     <antcall target="remote-grid:deploy"/>
     <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="post-build-checks" />
   </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** DOCUMENATION TARGETS                                          ** -->
+    <!-- ******************************************************************* -->
+
+    <target name="javadoc" depends="javadoc:all" description="Generates javadoc for all source code" />
+    
+    <path id="javadoc.classpath">
+	    <pathelement location="${affxfusion.jar}"/>
+	    <pathelement location="${ajaxtags-1.3.jar}"/>
+	    <pathelement location="${caGrid-1.1-data-stubs.jar}"/>
+	    <pathelement location="${caGrid-1.1-data-common.jar}"/>
+	    <pathelement location="${caGrid-1.1-sdkQuery32-core.jar}"/>
+	    <pathelement location="${clm.jar}"/>
+	    <pathelement location="${commons-beanutils.jar}"/>
+	    <pathelement location="${commons-collections.jar}"/>
+	    <pathelement location="${commons-configuration.jar}"/>
+	    <pathelement location="${commons-io.jar}"/>
+	    <pathelement location="${commons-lang.jar}"/>
+	    <pathelement location="${csmapi.jar}"/>
+	    <pathelement location="${displaytag.jar}"/>
+	    <pathelement location="${dom4j.jar}"/>
+	    <pathelement location="${ejb3-persistence.jar}"/>
+	    <pathelement location="${hibernate.jar}"/>
+	    <pathelement location="${hibernate-annotations.jar}"/>
+	    <pathelement location="${javacsv.jar}"/>
+	    <pathelement location="${javaee.jar}"/>
+	    <pathelement location="${jboss-annotations-ejb3.jar}"/>
+	    <pathelement location="${log4j.jar}"/>
+	    <pathelement location="${netcdf.jar}"/>
+	    <pathelement location="${ognl-2.6.11.jar}"/>
+	    <pathelement location="${struts2-core-2.0.9.jar}"/>
+	    <pathelement location="${xwork-2.0.4.jar}"/>
+	    <pathelement path="${caarray-client.classes.dir}"/>
+	    <pathelement path="${caarray-common.classes.dir}"/>
+	    <pathelement path="${caarray-ejb.classes.dir}"/>
+	</path>
+    
+    <target name="javadoc:all" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar">
+        <mkdir dir="${site.dir}/docs/api" />
+        <javadoc destdir="${site.dir}/docs/api" classpathref="javadoc.classpath">
+                <packageset dir="${caarray-client.src.dir}" />
+			    <packageset dir="${caarray-common.src.dir}" />
+			    <packageset dir="${caarray-ejb.src.dir}" />
+			    <packageset dir="${caarray-war.src.dir}" />
+        </javadoc>
+    </target>
+    
+    <target name="javadoc:caarray-client" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar">
+        <mkdir dir="${caarray-client.target.dir}/docs/api" />
+        <javadoc destdir="${caarray-client.target.dir}/docs/api" classpathref="javadoc.classpath">
+                <packageset dir="${caarray-client.src.dir}" />
+                <packageset dir="${caarray-common.src.dir}" >
+                    <include name="**/domain/**" />
+                    <include name="**/georgetown/**"/>
+                </packageset>
+                <fileset dir="${caarray-ejb.src.dir}">
+                   <include name="**/services/**/*Service.java" />
+                </fileset>
+        </javadoc>
+    </target>
 
 </project>
