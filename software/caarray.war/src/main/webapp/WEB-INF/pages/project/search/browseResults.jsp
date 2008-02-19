@@ -18,6 +18,9 @@
                 <caarray:tab caption="${tab.name} (${tab.count})" baseUrl="${tabUrl}" defaultTab="${myStatus.first}" />
             </c:forEach>
         </ajax:tabPanel>
+        <script type="text/javascript">
+            TabUtils.addScrollTabs('tabs', 0);
+        </script>
     </div>
 </body>
 </html>

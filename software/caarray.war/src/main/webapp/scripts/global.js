@@ -5,7 +5,7 @@ if (! ("console" in window) || !("firebug" in console)) {
     window.console = {};
     for (var i = 0; i <names.length; ++i) window.console[names[i]] = function() {};
 }
- 
+
 /* This function is used to change the style class of an element */
 function swapClass(obj, newStyle) {
     obj.className = newStyle;
@@ -429,7 +429,7 @@ var TabUtils = {
         var elts = document.getElementsByClassName('loadingText');
         var loadingElt = elts.length > 0 ? elts[0] : null;
         if (loadingElt) {
-			//DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
+      //DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
             //console.log("showing existing loading text");
             $(loadingElt).show();
             if (!keepMainContent) {
@@ -442,7 +442,7 @@ var TabUtils = {
             }
             if (tabwrapperdiv) {
                 // write out the loading text
-				//DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
+        //DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
                 //console.log("creating new loading text");
                 tabwrapperdiv.innerHTML = '<div><img alt="Indicator" align="absmiddle" src="' + contextPath + '/images/indicator.gif"/>&nbsp;Loading...</div>';
             }
@@ -451,7 +451,7 @@ var TabUtils = {
             $('tabHeader').hide();
         }
     },
-    
+
     showLoadingTextKeepMainContent: function() {
         TabUtils.showLoadingText(true);
     },
@@ -503,6 +503,53 @@ var TabUtils = {
             }
         }
         return tabMenuItems[0].getElementsByTagName('a')[0];
+    },
+    addScrollTabs: function(tabPanelId, selectedTab) {
+        var tabs = $(tabPanelId).getElementsByTagName('li')
+        var tabList = tabs[0].parentNode;
+        tabList.numTabs = tabs.length;
+        tabList.index = selectedTab;
+        tabList.offsets = new Array(tabList.numTabs);
+        totalOffset = 0;
+        for (i=0; i<tabList.numTabs; i++) {
+          tabList.offsets[i] = totalOffset;
+          totalOffset += tabs[i].offsetWidth;
+        }
+        if (tabList.parentNode.offsetWidth-totalOffset > 0) {
+          return;
+        } else {
+          tabList.style.width = totalOffset+"px";
+        }
+        new Effect.Move(tabList,{ x: -tabList.offsets[selectedTab], mode: 'absolute'});
+
+        innerPrev = document.createElement('div');
+        innerPrev.innerHTML = '&lt;';
+        innerPrev.className = 'scrollButton';
+        prevButton = document.createElement('div');
+        prevButton.className = 'leftScrollBox';
+        prevButton.appendChild(innerPrev);
+        prevButton.onclick = function() {
+          if (tabList.index > 0) {
+            new Effect.Move(tabList,{ x: -tabList.offsets[--tabList.index], mode: 'absolute', duration: .3});
+          }
+        };
+        tabList.parentNode.appendChild(prevButton);
+
+        innerNext = document.createElement('div');
+        innerNext.innerHTML = '&gt;';
+        innerNext.className = 'scrollButton';
+        nextButton = document.createElement('div');
+        nextButton.className = 'rightScrollBox';
+        nextButton.appendChild(innerNext);
+        nextButton.onclick = function() {
+          var curOffset = tabList.offsets[tabList.index];
+          var maxOffset = tabList.offsetWidth - tabList.parentNode.offsetWidth;
+          if (curOffset < maxOffset && tabList.index < tabList.numTabs-1) {
+            var newOffset = Math.min(maxOffset, tabList.offsets[++tabList.index]);
+            new Effect.Move(tabList,{ x: -newOffset, mode: 'absolute', duration: .3});
+          }
+        };
+        tabList.parentNode.appendChild(nextButton);
     }
 }
 
