@@ -1,0 +1,3 @@
+<migrationScripts>
+  <migrationScript fromVersion="2.0" toVersion="2.0.1">migrate-2.0.sql</migrationScript>
+</migrationScripts>

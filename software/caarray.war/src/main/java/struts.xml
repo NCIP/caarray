@@ -91,6 +91,10 @@
             <exception-mapping result="securityError" exception="java.lang.NoSuchMethodException"/>
         </global-exception-mappings>
 
+        <action name="migrateDb" class="gov.nih.nci.caarray.web.listener.DbMigrationListener" method="runMigrations">
+            <result name="success" type="redirect-action">home</result>
+        </action>
+
         <action name="home" class="gov.nih.nci.caarray.web.action.HomeAction">
             <result name="input">/WEB-INF/pages/home.jsp</result>
         </action>

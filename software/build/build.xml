@@ -630,6 +630,7 @@
     </copy>
     <copy todir="${caarray-war.classes.dir}">
       <fileset dir="${caarray-war.src.dir}" includes="*.xml,*.properties, template/**/*" />
+      <fileset dir="${caarraydb.sql.src.dir}/migration" includes="*.sql" />
     </copy>
     <war destfile="${caarray.war}" webxml="${caarray-war.target.dir}/xml/web.xml">
       <fileset dir="${caarray-war.webapp.dir}">
