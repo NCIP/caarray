@@ -174,10 +174,19 @@ public class ArrayDesignServiceTest {
         design.setDesignFile(getGenepixCaArrayFile(GenepixArrayDesignFiles.DEMO_GAL));
         this.arrayDesignService.importDesign(design);
         this.arrayDesignService.importDesignDetails(design);
-        assertEquals("Demo", design.getName());
-        assertEquals(8064, design.getNumberOfFeatures());
-        assertEquals(8064, design.getDesignDetails().getFeatures().size());
-        assertEquals(8064, design.getDesignDetails().getProbes().size());
+        checkGenepixDesign(design, "Demo", 8064, 4, 4);
+        design.setDesignFile(getGenepixCaArrayFile(GenepixArrayDesignFiles.MEEBO));
+        this.arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesignDetails(design);
+        checkGenepixDesign(design, "MEEBO", 38880, 4, 12);
+    }
+
+    private void checkGenepixDesign(ArrayDesign design, String expectedName, int expectedNumberOfFeatures,
+            int largestExpectedBlockColumn, int largestExpectedBlockRow) {
+        assertEquals(expectedName, design.getName());
+        assertEquals(expectedNumberOfFeatures, design.getNumberOfFeatures());
+        assertEquals(expectedNumberOfFeatures, design.getDesignDetails().getFeatures().size());
+        assertEquals(expectedNumberOfFeatures, design.getDesignDetails().getProbes().size());
         Iterator<PhysicalProbe> probeIt = design.getDesignDetails().getProbes().iterator();
         while (probeIt.hasNext()) {
             PhysicalProbe probe = probeIt.next();
@@ -186,8 +195,8 @@ public class ArrayDesignServiceTest {
             Feature feature = probe.getFeatures().iterator().next();
             assertTrue(feature.getBlockColumn() > 0);
             assertTrue(feature.getBlockRow() > 0);
-            assertTrue(feature.getBlockColumn() < 5);
-            assertTrue(feature.getBlockRow() < 5);
+            assertTrue(feature.getBlockColumn() <= largestExpectedBlockColumn);
+            assertTrue(feature.getBlockRow() <= largestExpectedBlockRow);
             assertTrue(feature.getColumn() > 0);
             assertTrue(feature.getRow() > 0);
         }
@@ -273,12 +282,13 @@ public class ArrayDesignServiceTest {
     public void testValidateDesign_Genepix() {
         CaArrayFile designFile = getGenepixCaArrayFile(GenepixArrayDesignFiles.DEMO_GAL);
         FileValidationResult result = this.arrayDesignService.validateDesign(designFile);
-        System.out.println(result);
-        assertTrue(result.isValid());
+        assertTrue(result.toString(), result.isValid());
         designFile = getGenepixCaArrayFile(GenepixArrayDesignFiles.TWO_K_GAL);
         result = this.arrayDesignService.validateDesign(designFile);
-        System.out.println(result);
-        assertTrue(result.isValid());
+        assertTrue(result.toString(), result.isValid());
+        designFile = getGenepixCaArrayFile(GenepixArrayDesignFiles.MEEBO);
+        result = this.arrayDesignService.validateDesign(designFile);
+        assertTrue(result.toString(), result.isValid());
     }
 
     @Test
