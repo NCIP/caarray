@@ -124,6 +124,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
@@ -237,6 +238,37 @@ public class ArrayDataServiceTest {
         testImportSnpChp();
         testImportGenepix();
         testCreateAnnotation();
+    }
+
+    @Test
+    public void testImportRawAndDerivedSameName() throws InvalidDataFileException {
+        // tests that imports of raw and derived data files with same base name go
+        // to the same hybridization chain
+        CaArrayFile focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID); 
+        CaArrayFile focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL, HG_FOCUS_LSID_OBJECT_ID); 
+        CaArrayFile focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID); 
+        CaArrayFile focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP, HG_FOCUS_LSID_OBJECT_ID); 
+        focusCalvinCel.setProject(focusCel.getProject());
+        focusChp.setProject(focusCel.getProject());
+        focusCalvinChp.setProject(focusCel.getProject());
+        this.arrayDataService.importData(focusCel, true);
+        this.arrayDataService.importData(focusCalvinCel, true);
+        this.arrayDataService.importData(focusChp, true);
+        this.arrayDataService.importData(focusCalvinChp, true);
+        checkAnnotation(focusCel, 2);
+        Experiment exp = focusCel.getProject().getExperiment();
+        assertEquals(2, exp.getHybridizations().size());
+        for (Hybridization h : exp.getHybridizations()) {
+            assertNotNull(h.getArrayData());
+            assertEquals(1, h.getDerivedDataCollection().size());
+            if (h.getArrayData().getDataFile().equals(focusCel)) {
+                assertEquals(focusChp, h.getDerivedDataCollection().iterator().next().getDataFile());
+            } else if (h.getArrayData().getDataFile().equals(focusCalvinCel)) {
+                assertEquals(focusCalvinChp, h.getDerivedDataCollection().iterator().next().getDataFile());
+            } else {
+                fail("Expected hybridization to be linked to either focus or calvin focus CEL");
+            }
+        }
     }
 
     private void testCreateAnnotation() throws InvalidDataFileException {

@@ -127,12 +127,9 @@ class RawArrayDataImporter extends AbstractDataSetImporter {
         if (hybridizationNames.size() != 1) {
             throw new IllegalStateException("RawArrayData files must specify data for exactly one hybridization");
         }
-        Hybridization hybridization = createHybridization(hybridizationNames.get(0));
+        Hybridization hybridization = lookupOrCreateHybridization(hybridizationNames.get(0), createAnnnotation);
         hybridization.setArrayData(rawArrayData);
         rawArrayData.setHybridization(hybridization);
-        if (createAnnnotation) {
-            createAnnotation(dataFile, hybridization);
-        }
         getArrayDao().save(rawArrayData);
     }
 

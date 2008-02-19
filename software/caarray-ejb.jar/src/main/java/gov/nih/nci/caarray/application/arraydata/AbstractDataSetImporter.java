@@ -231,16 +231,32 @@ abstract class AbstractDataSetImporter {
         return getArrayDao().getArrayDataType(descriptor);
     }
 
-    Hybridization createHybridization(String hybridizationName) {
+    private Hybridization lookupHybridization(String hybridizationName) {        
+        Experiment experiment = getCaArrayFile().getProject().getExperiment();
+        return experiment.getHybridizationByName(hybridizationName);
+    }
+
+    private Hybridization createHybridization(String hybridizationName) {        
         Experiment experiment = getCaArrayFile().getProject().getExperiment();
         Hybridization hybridization = new Hybridization();
         hybridization.setName(hybridizationName);
         experiment.getHybridizations().add(hybridization);
         return hybridization;
     }
+    
+    Hybridization lookupOrCreateHybridization(String hybridizationName, boolean createAnnotation) {
+        Hybridization hybridization = lookupHybridization(hybridizationName);
+        if (hybridization == null) {
+            hybridization = createHybridization(hybridizationName);
+            if (createAnnotation) {
+                createAnnotation(hybridization);
+            }
+        }
+        return hybridization;
+    }
 
-    void createAnnotation(File dataFile, Hybridization hybridization) {
-        List<String> sampleNames = getDataFileHandler().getSampleNames(dataFile, hybridization.getName());
+    void createAnnotation(Hybridization hybridization) {        
+        List<String> sampleNames = getDataFileHandler().getSampleNames(getFile(), hybridization.getName());
         for (String sampleName : sampleNames) {
             createAnnotation(hybridization, sampleName);
         }

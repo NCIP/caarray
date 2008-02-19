@@ -125,6 +125,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -974,5 +976,24 @@ public class Experiment extends AbstractCaArrayEntity {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * Return the hybridization with given name in this experiment. if there is more than one hybridization
+     * with this name, return a random one from among them. if there are none, return null.
+     * @param hybridizationName name of hybridization to find in this experiment
+     * @return the hybridization with given name (if multiple matches, then some random one from among the matches),
+     * or null if there are none.
+     */
+    public Hybridization getHybridizationByName(final String hybridizationName) {
+       return (Hybridization) CollectionUtils.find(getHybridizations(), new Predicate() {
+            /**
+             * {@inheritDoc}
+             */
+            public boolean evaluate(Object o) {
+                Hybridization hyb = (Hybridization) o;
+                return hybridizationName.equalsIgnoreCase(hyb.getName());
+            }
+        });
     }
 }
