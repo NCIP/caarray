@@ -278,7 +278,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      * @return the protocolApplications
      */
     @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.LAZY)
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     public Set<ProtocolApplication> getProtocolApplications() {
         return this.protocolApplications;
     }

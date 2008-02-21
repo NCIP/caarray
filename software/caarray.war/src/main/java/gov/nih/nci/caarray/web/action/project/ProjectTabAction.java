@@ -1,7 +1,9 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.validator.annotations.Validation;
@@ -67,11 +70,39 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
             setEditMode(true);
             return initialSave ? RELOAD_PROJECT_RESULT : SUCCESS;
         } catch (ProposalWorkflowException e) {
-            List<String> args = new ArrayList<String>();
-            args.add(getProject().getExperiment().getTitle());
-            ActionHelper.saveMessage(getText("project.saveProblem", args));
+            handleWorkflowError();
+            return INPUT;
+        } catch (InconsistentProjectStateException e) {
+            handleInconsistentStateError(e);
             return INPUT;
         }
+    }
+
+    /**
+     * Helper method for creating and saving appropriate error message when a 
+     * write operation on a project causes a inconsistent state exception.
+     * @param e the exception containing information about the inconsistency
+     */
+    protected void handleInconsistentStateError(InconsistentProjectStateException e) {
+        List<String> args = new ArrayList<String>();
+        args.add(getProject().getExperiment().getTitle());
+        if (e.getReason() == Reason.INCONSISTENT_ARRAY_DESIGNS) {
+            args.add(StringUtils.join(e.getArguments(), ", "));
+            addFieldError("project.experiment.arrayDesigns", getText("project.inconsistentState."
+                    + e.getReason().name().toLowerCase(), args));
+        } else {
+            addActionError(getText("project.inconsistentState." + e.getReason().name().toLowerCase()));
+        }
+    }
+
+    /**
+     * Helper method for creating and saving appropriate error message when a 
+     * write operation on a project causes a workflow exception.
+     */
+    protected void handleWorkflowError() {
+        List<String> args = new ArrayList<String>();
+        args.add(getProject().getExperiment().getTitle());
+        ActionHelper.saveMessage(getText("project.saveProblem", args));
     }
 
     /**

@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.search.HybridizationSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -295,6 +296,10 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
         }
         // clean up upstream associations to the subgraph of objects
         getProject().getFiles().removeAll(getCurrentHybridization().getAllDataFiles());
+        // clean up factor value associations
+        for (FactorValue fv : getCurrentHybridization().getFactorValues()) {
+            fv.getFactor().getFactorValues().remove(fv);
+        }
         return true;
     }
 }

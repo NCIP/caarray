@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.web.action.ActionHelper;
@@ -139,8 +140,12 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
         return "list";
     }
 
+    /**
+     * Helper method that should be called to refresh the list of items according
+     * to current paging parameters.
+     */
     @SuppressWarnings("unchecked")
-    private void updatePagedList() {
+    protected void updatePagedList() {
         GenericDataService gds = getGenericDataService();
         this.pagedItems.setList(gds.pageCollection(getCollection(), this.pagedItems.getPageSortParams()));
         this.pagedItems.setFullListSize(gds.collectionSize(getCollection()));
@@ -242,9 +247,9 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
             args.add(getProject().getExperiment().getTitle());
             ActionHelper.saveMessage(getText("project.saved", args));
         } catch (ProposalWorkflowException e) {
-            List<String> args = new ArrayList<String>();
-            args.add(getProject().getExperiment().getTitle());
-            ActionHelper.saveMessage(getText("project.saveProblem", args));
+            handleWorkflowError();
+        } catch (InconsistentProjectStateException e) {
+            handleInconsistentStateError(e);
         }
         updatePagedList();
         return "list";
@@ -268,8 +273,9 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     /**
      * Subclasses should make the actual call to the appropriate service method to copy the item.
      * @throws ProposalWorkflowException when the experiment cannot be saved due to workflow restrictions
+     * @throws InconsistentProjectStateException when the experiment cannot be saved due to inconsistent state
      */
-    protected abstract void doCopyItem() throws ProposalWorkflowException;
+    protected abstract void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException;
 
     /**
      * {@inheritDoc}

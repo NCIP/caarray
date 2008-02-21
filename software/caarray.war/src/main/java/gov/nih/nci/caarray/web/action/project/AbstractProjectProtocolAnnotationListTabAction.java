@@ -300,5 +300,5 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      */
     public void setCurrentProtocolApplication(ProtocolApplication p) {
         // does nothing, only here so it can be referenced in the jsp as a bean property
-    }
+    }    
 }

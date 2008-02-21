@@ -86,9 +86,11 @@ import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -150,6 +152,7 @@ import org.jboss.annotation.ejb.TransactionTimeout;
 @Stateless
 @Interceptors(ExceptionLoggingInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+@SuppressWarnings("PMD.ExcessiveClassLength")
 public class ProjectManagementServiceBean implements ProjectManagementService {
     private static final Logger LOG = Logger.getLogger(ProjectManagementServiceBean.class);
     private static final int UPLOAD_TIMEOUT = 1800;
@@ -188,7 +191,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @TransactionTimeout(UPLOAD_TIMEOUT)
     public int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> conflictingFiles)
-        throws ProposalWorkflowException, IOException {
+        throws ProposalWorkflowException, IOException, InconsistentProjectStateException {
         // create set of existing files
         Set<String> existingFileNameSet = new HashSet<String>();
         for (CaArrayFile file : project.getFiles()) {
@@ -206,7 +209,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     private int processUploadedFile(Project project, File file, String fileName, Set<String> existingFileNameSet,
-            List<String> conflictingFiles) throws ProposalWorkflowException, IOException {
+            List<String> conflictingFiles) throws ProposalWorkflowException, IOException,
+            InconsistentProjectStateException {
         Pattern p = Pattern.compile(".zip$");
         Matcher m = p.matcher(fileName.toLowerCase()); // NOPMD
         int count = 0;
@@ -241,7 +245,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public CaArrayFile addFile(Project project, File file) throws ProposalWorkflowException {
+    public CaArrayFile addFile(Project project, File file) throws ProposalWorkflowException,
+            InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project, file);
         checkIfProjectSaveAllowed(project);
         CaArrayFile caArrayFile = doAddFile(project, file, file.getName());
@@ -253,7 +258,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public CaArrayFile addFile(Project project, File file, String filename) throws ProposalWorkflowException {
+    public CaArrayFile addFile(Project project, File file, String filename) throws ProposalWorkflowException,
+            InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project, file);
         checkIfProjectSaveAllowed(project);
         CaArrayFile caArrayFile = doAddFile(project, file, filename);
@@ -262,7 +268,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     private CaArrayFile doAddStream(Project project, InputStream stream, String filename)
-            throws ProposalWorkflowException  {
+            throws ProposalWorkflowException, InconsistentProjectStateException  {
         checkIfProjectSaveAllowed(project);
         CaArrayFile caArrayFile = getFileAccessService().add(stream, filename);
         addCaArrayFileToProject(project, caArrayFile);
@@ -310,7 +316,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void saveProject(Project project, PersistentObject... orphansToDelete)
-        throws ProposalWorkflowException {
+        throws ProposalWorkflowException, InconsistentProjectStateException {
 
         LogUtil.logSubsystemEntry(LOG, project);
         checkIfProjectSaveAllowed(project);
@@ -336,16 +342,57 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     /**
+     * Checks whether the project has files that are currently importing. if not, does nothing, 
+     * otherwise throws an exception because you cannot edit a project while it has
+     * files being imported
+     * 
+     * @param project project to check 
+     * @throws InconsistentProjectStateException if the project state is not consistent
+     */
+    private void checkImportInProgress(Project project) throws InconsistentProjectStateException {
+        if (project.hasImportingData()) {
+            throw new InconsistentProjectStateException(Reason.IMPORTING_FILES);
+        }
+    }
+    
+    /**
+     * Checks whether the user-specified array designs in the given project are consistent with ones
+     * inferred from actual hybridization data. if they are, does nothing, otherwise throws an exception.
+     * 
+     * @param project project to check 
+     * @throws InconsistentProjectStateException if the project state is not consistent
+     */    
+    private void checkArrayDesignsConsistent(Project project) throws InconsistentProjectStateException {
+        Set<ArrayDesign> usedDesigns = project.getExperiment().getArrayDesignsFromHybs();
+        Set<ArrayDesign> declaredDesigns = project.getExperiment().getArrayDesigns();
+        Set<String> missingDesignNames = new HashSet<String>();
+        for (ArrayDesign ad : usedDesigns) {
+            if (!declaredDesigns.contains(ad)) {
+                missingDesignNames.add(ad.getName());
+            }
+        }
+        if (!missingDesignNames.isEmpty()) {
+            throw new InconsistentProjectStateException(Reason.INCONSISTENT_ARRAY_DESIGNS, 
+                    missingDesignNames.toArray());
+        }
+    }
+
+    /**
      * Checks whether the project can be saved. if it can, does nothing, otherwise throws an exception
      *
      * @param project project to check for being able to save
      * @throws ProposalWorkflowException if the project can't be saved due to workflow state
+     * @throws InconsistentProjectStateException if the project can't be saved because its state
+     * is inconsistent
      */
-    private void checkIfProjectSaveAllowed(Project project) throws ProposalWorkflowException {
+    private void checkIfProjectSaveAllowed(Project project) throws ProposalWorkflowException,
+            InconsistentProjectStateException {
         if (!project.isSaveAllowed()) {
             LogUtil.logSubsystemExit(LOG);
             throw new ProposalWorkflowException("Cannot save project in current state");
         }
+        checkArrayDesignsConsistent(project);
+        checkImportInProgress(project);
     }
 
     /**
@@ -447,7 +494,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Sample copySample(Project project, long sampleId) throws ProposalWorkflowException {
+    public Sample copySample(Project project, long sampleId) throws ProposalWorkflowException,
+            InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project, sampleId);
         checkIfProjectSaveAllowed(project);
         Sample sample = getDaoFactory().getSearchDao().retrieve(Sample.class, sampleId);
@@ -468,7 +516,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Extract copyExtract(Project project, long extractId) throws ProposalWorkflowException {
+    public Extract copyExtract(Project project, long extractId) throws ProposalWorkflowException,
+            InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project, extractId);
         checkIfProjectSaveAllowed(project);
         Extract extract = getDaoFactory().getSearchDao().retrieve(Extract.class, extractId);
@@ -489,7 +538,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public LabeledExtract copyLabeledExtract(Project project, long extractId) throws ProposalWorkflowException {
+    public LabeledExtract copyLabeledExtract(Project project, long extractId) throws ProposalWorkflowException,
+            InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project, extractId);
         checkIfProjectSaveAllowed(project);
         LabeledExtract le = getDaoFactory().getSearchDao().retrieve(LabeledExtract.class, extractId);
@@ -527,7 +577,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Factor copyFactor(Project project, long factorId) throws ProposalWorkflowException {
+    public Factor copyFactor(Project project, long factorId) throws ProposalWorkflowException,
+            InconsistentProjectStateException {
         checkIfProjectSaveAllowed(project);
         Factor factor = getDaoFactory().getSearchDao().retrieve(Factor.class, factorId);
         Factor copy = new Factor();
@@ -543,7 +594,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Source copySource(Project project, long sourceId) throws ProposalWorkflowException {
+    public Source copySource(Project project, long sourceId) throws ProposalWorkflowException,
+            InconsistentProjectStateException {
         checkIfProjectSaveAllowed(project);
         Source source = getDaoFactory().getSearchDao().retrieve(Source.class, sourceId);
         Source copy = new Source();

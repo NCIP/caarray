@@ -326,6 +326,17 @@ final class SdrfTranslator extends AbstractTranslator {
                 hybridization.getFactorValues().add(factorValue);
                 factorValue.setHybridization(hybridization);
             }
+            // DEVELOPER NOTE: the data modeling of Hybridization is wrong, and as a result 
+            // we can only capture one ProtocolApplication per hyb. A GForge issue is tracking
+            // addressing this.
+            if (!sdrfHybridization.getProtocolApplications().isEmpty()) {
+                gov.nih.nci.caarray.magetab.ProtocolApplication sdrfProtocolApp = sdrfHybridization
+                        .getProtocolApplications().get(0);
+                ProtocolApplication protocolApplication =
+                    getProtocolApplicationFromMageTabProtocolApplication(sdrfProtocolApp);
+                hybridization.setProtocolApplication(protocolApplication);
+            }
+            
             this.allHybridizations.add(hybridization);
             this.nodeTranslations.put(sdrfHybridization, hybridization);
         }

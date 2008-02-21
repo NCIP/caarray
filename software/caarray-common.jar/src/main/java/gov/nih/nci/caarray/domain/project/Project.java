@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
@@ -124,6 +125,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.CharSetUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -236,7 +239,19 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     public boolean isSaveAllowed() {
         return !isPublic();
     }
-
+    
+    /**
+     * @return whether this project currently has any files that are being actively imported.
+     */
+    public boolean hasImportingData() {
+        return CollectionUtils.exists(getFiles(), new Predicate() {
+            public boolean evaluate(Object o) {
+                CaArrayFile file = (CaArrayFile) o;
+                return file.getFileStatus().equals(FileStatus.IMPORTING);
+            }
+        });
+    }
+    
     /**
      * @return whether the project can be submitted in its current state
      */

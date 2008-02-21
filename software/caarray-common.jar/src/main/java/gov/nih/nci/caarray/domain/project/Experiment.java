@@ -971,6 +971,21 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
+     * @return the set of ArrayDesigns actually refernced from some hybridization belonging to the experiment.
+     * Note that this is distinct and potentially different that what is returned by <code>getArrayDesigns()</code>.
+     * The latter is the set of array designs explicitly specified by the user. It is an invariant, however,
+     * that the set returned by this method is a subset of that returned by <code>getArrayDesigns()</code>.
+     */
+    @Transient
+    public Set<ArrayDesign> getArrayDesignsFromHybs() {
+        Set<ArrayDesign> designs = new HashSet<ArrayDesign>();
+        for (Hybridization h : getHybridizations()) {
+            designs.add(h.getArray().getDesign());
+        }
+        return designs;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

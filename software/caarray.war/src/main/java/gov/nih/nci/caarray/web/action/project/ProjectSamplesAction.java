@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
@@ -181,7 +182,7 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
      * {@inheritDoc}
      */
     @Override
-    protected void doCopyItem() throws ProposalWorkflowException {
+    protected void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException {
         getProjectManagementService().copySample(getProject(), this.currentSample.getId());
     }
 

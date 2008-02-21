@@ -154,6 +154,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
         if (doDelete) {
             return super.delete();
         }
+        updatePagedList();
         return "list";
     }
 

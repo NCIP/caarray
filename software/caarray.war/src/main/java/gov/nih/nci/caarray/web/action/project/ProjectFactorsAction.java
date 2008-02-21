@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
@@ -181,7 +182,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      * @throws ProposalWorkflowException
      */
     @Override
-    protected void doCopyItem() throws ProposalWorkflowException {
+    protected void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException {
         getProjectManagementService().copyFactor(getProject(), this.currentFactor.getId());
     }
 
