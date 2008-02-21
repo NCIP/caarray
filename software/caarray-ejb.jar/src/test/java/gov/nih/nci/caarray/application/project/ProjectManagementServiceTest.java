@@ -362,7 +362,7 @@ public class ProjectManagementServiceTest {
             fail("Unexpected workflow exception: " + e);
         }
 
-        file1.setFileStatus(FileStatus.IMPORTED);
+        file1.setFileStatus(FileStatus.IMPORTING);
         try {
             this.projectManagementService.saveProject(project);
             fail("Expected to throw inconsistent state exception");
@@ -380,7 +380,7 @@ public class ProjectManagementServiceTest {
             fail("Unexpected workflow exception: " + e);
         }
         
-        file1.setFileStatus(FileStatus.IMPORTING);
+        file1.setFileStatus(FileStatus.IMPORTED);
         try {
             this.projectManagementService.saveProject(project);
             // should be ok
