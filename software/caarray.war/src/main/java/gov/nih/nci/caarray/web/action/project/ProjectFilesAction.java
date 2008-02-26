@@ -337,9 +337,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 skippedFiles++;
             }
         }
-        ActionHelper.saveMessage(deletedFiles + " files deleted.");
+        ActionHelper.saveMessage(deletedFiles + " file(s) deleted.");
         if (skippedFiles > 0) {
-            ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for deletion.");
+            ActionHelper.saveMessage(skippedFiles + " file(s) were not in a status that allows for deletion.");
         }
     }
 
@@ -365,7 +365,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 }
                 getFileAccessService().save(caArrayFile);
             }
-            ActionHelper.saveMessage(getSelectedFiles().size() + " files updated.");
+            ActionHelper.saveMessage(getSelectedFiles().size() + " file(s) updated.");
         }
         return prepListUnimportedPage();
     }
@@ -487,7 +487,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         if (!fileSet.getFiles().isEmpty()) {
             getFileManagementService().addSupplementalFiles(getProject(), fileSet);
         }
-        ActionHelper.saveMessage(fileSet.getFiles().size() + " supplemental files added to project.");
+        ActionHelper.saveMessage(fileSet.getFiles().size() + " supplemental file(s) added to project.");
         refreshProject();
         return prepListUnimportedPage();
     }
