@@ -165,28 +165,29 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
         // - click on the Imported data tab
         selenium.click("link=Imported Data");
+        Thread.sleep(3000);
         waitForText("10 items found, displaying all items");
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);
 
         // - Make public so it can be searched thru API
+        submitExperiment();
         makeExperimentPublic(title);
         endTime = System.currentTimeMillis();
         String totalTime = df.format((endTime - startTime)/60000f);
         System.out.println("total time = " + totalTime);
 
         // - Get the data thru the API
-        verifyDataViaApi(title);
+        //verifyDataViaApi(title);
     }
 
     private void makeExperimentPublic(String title) {
-        submitExperiment();
 
         clickAndWait("link=My Experiment Workspace");
         waitForTab();
 
-        assertTrue(selenium.isTextPresent(title));
+        findTitleAcrossMultiPages(title);
         // - Make the experiment public
         int row = getExperimentRow(title, FIRST_COLUMN);
         // - Click on the image to enter the edit mode again
@@ -209,15 +210,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         }
     }
 
-    private boolean doesArrayDesignExists(String arrayDesignName) {
-        return selenium.isTextPresent(arrayDesignName);
-    }
-
-    /**
-     * @throws Exception
-     *
-     */
-
+ 
     private void verifyDataViaApi(String experimentTitle) throws ServerConnectionException {
         CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
         server.connect();

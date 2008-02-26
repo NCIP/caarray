@@ -95,7 +95,7 @@ import com.thoughtworks.selenium.SeleneseTestCase;
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
-    protected DecimalFormat df= new DecimalFormat("0.##"); 
+    protected DecimalFormat df = new DecimalFormat("0.##");
     private static final int PAGE_TIMEOUT_SECONDS = 180;
     private static final String LOGIN_BUTTON = "//div[2]/form/table/tbody/tr[4]/td/del/ul/li/a/span/span";
     protected static final String TAB_KEY = "\\009";
@@ -137,9 +137,26 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         waitForPageToLoad();
     }
 
+    /*
+     * Login using any of the preloaded users. The password is hardcoded for these users caarrayadmin caarrayuser
+     * researchscientist labadministrator labscientist biostatistician systemadministrator collaborator
+     */
+    protected void loginAs(String userid) {
+        selenium.open("/caarray/");
+        selenium.type("j_username", userid);
+        selenium.type("j_password", "caArray2!");
+        clickAndWait(LOGIN_BUTTON);
+    }
+
+    protected void loginAs(String userid, String password) {
+        selenium.open("/caarray/");
+        selenium.type("j_username", userid);
+        selenium.type("j_password", password);
+        clickAndWait(LOGIN_BUTTON);
+    }
+
     protected void loginAsPrincipalInvestigator() {
         selenium.open("/caarray/");
-
         selenium.type("j_username", "caarrayadmin");
         selenium.type("j_password", "caArray2!");
         clickAndWait(LOGIN_BUTTON);
@@ -242,26 +259,22 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
      * @throws InterruptedException
      */
     protected void createExperiment(String title, String arrayDesignName) throws InterruptedException {
-        Thread.sleep(1000);
         selenium.click("link=Create/Propose Experiment");
-        waitForElementWithId("projectForm_project_experiment_title");
+        waitForText("The Overall Experiment Characteristics"); // needed when creating multiple experiments
         // - Type in the Experiment name
         selenium.type("projectForm_project_experiment_title", title);
         // - Description
         selenium.type("projectForm_project_experiment_description", "desc");
         // - Assay Type
         selenium.select("projectForm_project_experiment_assayType", "label=Gene Expression");
-       // waitForElementWithId("progressMsg"); -- does not work
-        Thread.sleep(1000);
         // - Provider
         selenium.select("projectForm_project_experiment_manufacturer", "label=Affymetrix");
-        //waitForElementWithId("progressMsg");
-        Thread.sleep(1000);
+       // waitForElementWithId("progressMsg");// - did not work
+         Thread.sleep(2000); //waiting for the list of array designs to fill
         // - Array Design - correct array design must be associated with the experiment
         if (arrayDesignName != null) {
             selenium.addSelection("projectForm_project_experiment_arrayDesigns", "label=" + arrayDesignName);
         }
-
         // - Organism
         selenium.select("projectForm_project_experiment_organism", "label=Homo sapiens (ncbitax)");
         // - Save the Experiment
@@ -273,7 +286,6 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected void addArrayDesign(String arrayDesignName, File arrayDesign) {
         selenium.click("link=Import a New Array Design");
         waitForText("Array Design Details");
-        // selenium.type("arrayDesignForm_arrayDesign_name", arrayDesignName);
         selenium.select("arrayDesignForm_arrayDesign_assayType", "label=Gene Expression");
         selenium.select("arrayDesignForm_arrayDesign_provider", "label=Affymetrix");
         selenium.type("arrayDesignForm_arrayDesign_version", "100");
@@ -284,7 +296,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         waitForText("found");
     }
 
-    protected void findTitleAcrossMultiPages(String text) throws Exception {
+    protected void findTitleAcrossMultiPages(String text){
         for (int page = 1;; page++) {
             // - Safety catch
             if (page == 50) {
@@ -297,27 +309,40 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             } else {
                 // Moving to next page
                 selenium.click("link=Next");
-                Thread.sleep(4000); // TBD - figure out what to "wait" on. All pages are similar. No "waiting" icon
+                try {
+                    Thread.sleep(4000); // TBD - figure out what to "wait" on. All pages are similar. No "waiting" icon
+                } catch (InterruptedException e) {
+                    fail("Thread sleep threw an exception in findTitleAcrossMultiPages");
+                    e.printStackTrace();
+                } 
             }
         }
     }
 
     protected void setExperimentPublic() {
-        selenium.click("link=Make Experiment Public");
+       String makeExperimentPublicButton ="//span/span";
+        selenium.click(makeExperimentPublicButton);
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
+        // making an experiement public will return the user back to their experiment workspace
+        waitForText("My Experiment Workspace");
     }
 
     protected void submitExperiment() {
-        selenium.click("link=Submit Experiment Proposal");
+        String submitExperimentProposalButton ="//span/span";
+        //selenium.click("link=Submit Experiment Proposal");
+        selenium.click(submitExperimentProposalButton);
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
-        waitForText("Permissions");
-    }
+        // making an experiement public will return the user back to the experiment's main page
+        waitForText("My Experiment Workspace");
+     }
 
     protected boolean waitForArrayDesignImport(int seconds, int row) throws Exception {
         for (int loop = 1; loop < seconds; loop++) {
             selenium.click("link=Manage Array Designs");
+            Thread.sleep(2000);
+            waitForText("Edit");
             // done
             String rowText = selenium.getTable("row." + row + ".7");
             if (rowText.equalsIgnoreCase(IMPORTED)) {
@@ -332,17 +357,46 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     protected int getExperimentRow(String text, String column) {
+        int page = 1;
         for (int loop = 1;; loop++) {
-            if (loop % PAGE_SIZE != 0) {
-                if (text.equalsIgnoreCase(selenium.getTable("row." + loop + "." + column))) {
-                    return loop;
-                }
-            } else {
+            if (text.equalsIgnoreCase(selenium.getTable("row." + loop + "." + column))) {
+                return loop;
+            }
+
+            if (loop % PAGE_SIZE == 0) {
+                System.out.println("page number " + (++page));
                 // Moving to next page
-                // (this will fail once there are no more pages
+                // this will fail once there are no more pages and the text parameter is not found
+                try {
+                    selenium.click("link=Next");
+                } catch (Exception e1) {
+                    fail("Did not find " + text);
+                }
+                waitForDiv("loadingText");
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                loop = 0;
+            }
+        }
+
+    }
+
+    protected int getExperimentRow(String text, String column, String textToWaitFor) throws InterruptedException {
+        for (int loop = 1;; loop++) {
+            if (text.equalsIgnoreCase(selenium.getTable("row." + loop + "." + column))) {
+                return loop;
+            }
+            if (loop % PAGE_SIZE == 0) {
+                // Moving to next page
+                // this will fail once there are no more pages and the text parameter is not found
                 selenium.click("link=Next");
-                waitForAction();
-                loop = 1;
+                waitForText(textToWaitFor);
+                Thread.sleep(1000);
+                loop = 0;
             }
         }
     }
@@ -368,6 +422,9 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                 Thread.sleep(10000);
             }
         }
+    }
+    protected boolean doesArrayDesignExists(String arrayDesignName) {
+        return selenium.isTextPresent(arrayDesignName);
     }
 
 }
