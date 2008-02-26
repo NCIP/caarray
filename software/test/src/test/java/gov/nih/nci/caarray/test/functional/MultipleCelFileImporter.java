@@ -118,10 +118,6 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
         }
     }
 
-    private boolean doesArrayDesignExists(String arrayDesignName) {
-        return selenium.isTextPresent(arrayDesignName);
-    }
-
     public void importTenFiles() throws Exception {
         String title = "test" + System.currentTimeMillis();
         // Create experiment
