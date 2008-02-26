@@ -86,6 +86,9 @@ import java.io.File;
 
 public class GenepixArrayDataFiles {
 
+    public static final File JOE_DERISI_FIX =
+        new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/JoeDeRisi-fix.gal").getFile());
+
     public static final File GPR_3_0_6 =
         new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/3_0_6_x.gpr").getFile());
 
