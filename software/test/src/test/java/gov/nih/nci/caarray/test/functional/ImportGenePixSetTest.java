@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 
 import java.io.File;
@@ -99,17 +100,19 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
     private static final int NUMBER_OF_FILES = 3;
     private static final int TWO_MINUTES = 12;
     private static final String ARRAY_DESIGN_NAME = "JoeDeRisi-fix";
+    private static final String ORGANISM = "Bos taurus (ncbitax)";
+    private static final String PROVIDER = "GenePix";
 
     @Test
     public void testImportAndRetrieval() throws Exception {
-        String title = "gpr files" + System.currentTimeMillis();
+        String title = TestProperties.getGenepixCowName();
 
         // - Login
         loginAsPrincipalInvestigator();
         // - Add the array design
-        importArrayDesign(GenepixArrayDataFiles.JOE_DERISI_FIX);
+        importArrayDesign(GenepixArrayDataFiles.JOE_DERISI_FIX, PROVIDER, ORGANISM);
         // Create project
-        createExperiment(title, ARRAY_DESIGN_NAME);
+        createExperiment(title, ARRAY_DESIGN_NAME, PROVIDER, ORGANISM);
 
         // - go to the data tab
         selenium.click("link=Data");
@@ -138,37 +141,18 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         // - click on the Imported data tab
         selenium.click("link=Imported Data");
         // TBD - sometimes the Import button is pressed but the app stays on the Upload page - test will time out when that occurs
+        Thread.sleep(1000);  // added to fix the above problem
         waitForText("displaying all items");
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);
-
-        // Submit the experiment
-        makeExperimentPublic(title);
-
-    }
-    private void makeExperimentPublic(String title) throws Exception {
-        submitExperiment();
-
-        clickAndWait("link=My Experiment Workspace");
-        waitForTab();
-
-        findTitleAcrossMultiPages(title);
-        // - Make the experiment public
-        int row = getExperimentRow(title, FIRST_COLUMN);
-        // - Click on the image to enter the edit mode again
-        selenium.click("//tr[" + row + "]/td[7]/a/img");
-        waitForText("Overall Experiment Characteristics");
-
-        // make experiment public
-        setExperimentPublic();
     }
 
-    private void importArrayDesign(File arrayDesign) throws Exception {
+    private void importArrayDesign(File arrayDesign, String provider, String organism) throws Exception {
         selenium.click("link=Manage Array Designs");
         selenium.waitForPageToLoad("30000");
         if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
-            addArrayDesign(ARRAY_DESIGN_NAME, arrayDesign);
+            addArrayDesign(arrayDesign, provider, organism);
             // get the array design row so we do not find the wrong Imported text
             int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
             // wait for array design to be imported

@@ -83,102 +83,71 @@
 package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
+import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.zip.ZipFile;
 
 import org.junit.Test;
 
 /**
- * Uploads and deletes 1,2,4,8,16,32,64,128 cell files
- *
+ * Imports the largest Affy CEL files (HG-U133
  */
-public class Import64CelZipTest extends AbstractSeleniumTest {
+public class MultipleCelFileImporterTest extends AbstractSeleniumTest {
 
-    private static final int FIFTY_MINUTES_IN_MILLISECOND = 3000000;
-    private static final boolean NO_FILE_NAME_ASSERT = false;
-    private List<File> zipFiles = new ArrayList<File>();
-    public static final String DIRECTORY =
-            "L:\\NCICB\\caArray\\QA\\testdata_central_caArray2\\Affymetrix\\HG-U133_Plus_2\\CEL\\Public_Rembrandt_from_caArray1.6\\exponential_CEL_ZIPs\\";
+    private static final int NUM_SETS_OF_TEN = 1;
+    private static final String ARRAY_DESIGN_NAME = "HG-U133_Plus_2";
+
 
     @Test
-    public void testImportAndRetrieval() throws Exception {
-        String title = "64 import " + System.currentTimeMillis();
-        buildTestData();
-
-        // - Login
+    public void testUploadFiles() throws Exception {
         loginAsPrincipalInvestigator();
+        importArrayDesign(ARRAY_DESIGN_NAME, AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
+        for (int i = 0; i < NUM_SETS_OF_TEN; i++) {
+            importTenFiles();
+        }
+    }
 
-        // Create project
-        createExperiment(title);
+    private void importArrayDesign(String arrayDesignName, File arrayDesign) throws Exception {
+        selenium.click("link=Manage Array Designs");
+        selenium.waitForPageToLoad("30000");
+        if (doesArrayDesignExists(arrayDesignName)) {
+            assertTrue(arrayDesignName + " is present", 1==1);
+        }else{
+            addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+        }
+    }
 
-        // - go to the data tab
+    public void importTenFiles() throws Exception {
+        String title = TestProperties.getAffymetricHumanName();
+        // Create experiment
+        createExperiment(title, ARRAY_DESIGN_NAME);
+        // go to the data tab
         selenium.click("link=Data");
         waitForTab();
 
         selenium.click("link=Upload New File(s)");
 
-        // Upload the following files:
+        upload(MageTabDataFiles.PERFORMANCE_10_IDF);
+        upload(MageTabDataFiles.PERFORMANCE_10_SDRF);
+        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file1.CEL"));
+        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file2.CEL"));
+        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file3.CEL"));
+        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file4.CEL"));
+        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file5.CEL"));
+        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file6.CEL"));
+        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file7.CEL"));
+        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file8.CEL"));
+        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file9.CEL"));
+        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file10.CEL"));
 
-        for (File celFile : zipFiles) {
-            long startTime = System.currentTimeMillis();
-            long endTime = 0;
-            ZipFile zipfile = new ZipFile(celFile.getAbsolutePath());
-            int numberOfFiles = zipfile.size() - 1;
-            System.out.println("Upload of " +celFile.getName()+ " started at " + DateFormat.getTimeInstance().format(new Date()));
-
-            // - Upload the zip file
-            upload(celFile, FIFTY_MINUTES_IN_MILLISECOND, NO_FILE_NAME_ASSERT);
-            checkFileStatus("Uploaded", THIRD_COLUMN, numberOfFiles);
-            waitForAction();
-            assertTrue(selenium.isTextPresent("file(s) uploaded"));
-            endTime = System.currentTimeMillis();
-            DecimalFormat df= new DecimalFormat("0.##");
-            String totalTime = df.format((endTime - startTime)/60000f);
-
-            // - print out the upload time
-            System.out.println("Uploaded " + numberOfFiles + " files ("+celFile.getName()+") in " + totalTime + " minutes");
-            startTime = System.currentTimeMillis();
-
-            // - remove the cel files
-            delete(celFile);
-            endTime = System.currentTimeMillis();
-            totalTime = df.format((endTime - startTime)/60000f);
-
-            // - print out the delete time
-            System.out.println("Deleted " + celFile.getName()+ " in " + totalTime + " minutes");
-        }
-    }
-
-    /**
-     * @param celFile
-     */
-    private void delete(File celFile) {
+        // Import the files.
         selenium.click("selectAllCheckbox");
-        selenium.click("link=Delete");
+        // import button
+        selenium.click("link=Import");
         waitForAction();
-    }
-
-    private void buildTestData() {
-        zipFiles.add(new File(DIRECTORY + "001CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "002CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "004CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "008CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "016CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "032CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "064CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "128CEL.zip"));
-    }
-
-    private void checkFileStatus(String status, int column, int numberOfFiles) {
-        for (int i = 1; i < numberOfFiles; i++) {
-            assertEquals(status, selenium.getTable("row." + i + "." + column));
-        }
+        clickAndWait("link=My Experiment Workspace");
     }
 
 }

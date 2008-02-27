@@ -108,6 +108,9 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected static final int SECOND_COLUMN = 2;
     protected static final int THIRD_COLUMN = 3;
     protected static final String IMPORTED = "Imported";
+    protected static final String AFFYMETRIX_PROVIDER = "Affymetrix";
+    protected static final String HOMO_SAPIENS_ORGANISM = "Homo sapiens (ncbitax)";
+
 
     @Override
     public void setUp() throws Exception {
@@ -173,7 +176,6 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected void upload(File file, long timeoutSeconds, boolean runAssert) throws IOException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         selenium.type("upload", filePath);
-        // selenium.click("link=Upload");
         selenium.click(UPLOAD_BUTTON);
         waitForAction(timeoutSeconds);
         if (runAssert) {
@@ -235,7 +237,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected void waitForText(String id, int waitTime) {
         for (int second = 0;; second++) {
             if (second >= Integer.valueOf(waitTime))
-                fail("timeout");
+                fail("timeout waiting for text " + id + ". Exceeded wait time: " + waitTime);
             try {
                 if (selenium.isTextPresent(id))
                     break;
@@ -249,16 +251,21 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         }
     }
 
+    protected void createExperiment(String title, String arrayDesignName) throws InterruptedException {
+        createExperiment(title, arrayDesignName, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+    }
+
     protected void createExperiment(String title) throws InterruptedException {
         String arrayDesignName = null;
-        createExperiment(title, arrayDesignName);
+        createExperiment(title, arrayDesignName, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
     }
 
     /**
      * @param title
      * @throws InterruptedException
      */
-    protected void createExperiment(String title, String arrayDesignName) throws InterruptedException {
+    protected void createExperiment(String title, String arrayDesignName, String provider, String organism)
+            throws InterruptedException {
         selenium.click("link=Create/Propose Experiment");
         waitForText("The Overall Experiment Characteristics"); // needed when creating multiple experiments
         // - Type in the Experiment name
@@ -268,35 +275,57 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         // - Assay Type
         selenium.select("projectForm_project_experiment_assayType", "label=Gene Expression");
         // - Provider
-        selenium.select("projectForm_project_experiment_manufacturer", "label=Affymetrix");
-       // waitForElementWithId("progressMsg");// - did not work
-         Thread.sleep(2000); //waiting for the list of array designs to fill
+        if (provider == null) {
+            provider = AFFYMETRIX_PROVIDER;  // default to Affy
+        }
+        selenium.select("projectForm_project_experiment_manufacturer", "label=" + provider);
+        // waitForElementWithId("progressMsg");// - did not work
+        Thread.sleep(2000); // waiting for the list of array designs to fill
         // - Array Design - correct array design must be associated with the experiment
         if (arrayDesignName != null) {
             selenium.addSelection("projectForm_project_experiment_arrayDesigns", "label=" + arrayDesignName);
         }
         // - Organism
-        selenium.select("projectForm_project_experiment_organism", "label=Homo sapiens (ncbitax)");
+        if (organism == null) {
+            organism = HOMO_SAPIENS_ORGANISM;
+        }
+        selenium.select("projectForm_project_experiment_organism", "label=" + organism);
+
         // - Save the Experiment
         selenium.click("link=Save");
         waitForAction();
 
     }
-
-    protected void addArrayDesign(String arrayDesignName, File arrayDesign) {
+    protected void addArrayDesign(File arrayDesign) {
+        String arrayDesignProvider = AFFYMETRIX_PROVIDER;
+        String arrayDesignOrganism = HOMO_SAPIENS_ORGANISM;
+        addArrayDesign(arrayDesign, arrayDesignProvider, arrayDesignOrganism);
+    }
+    protected void addArrayDesign(File arrayDesign, String arrayDesignProvider, String arrayDesignOrganism) {
         selenium.click("link=Import a New Array Design");
         waitForText("Array Design Details");
         selenium.select("arrayDesignForm_arrayDesign_assayType", "label=Gene Expression");
-        selenium.select("arrayDesignForm_arrayDesign_provider", "label=Affymetrix");
+        if (arrayDesignProvider == null) {
+            arrayDesignProvider = AFFYMETRIX_PROVIDER;  // default to Affy
+        }
+        selenium.select("arrayDesignForm_arrayDesign_provider", "label=" + arrayDesignProvider);
+
         selenium.type("arrayDesignForm_arrayDesign_version", "100");
         selenium.select("arrayDesignForm_arrayDesign_technologyType", "label=in_situ_oligo_features (MO)");
-        selenium.select("arrayDesignForm_arrayDesign_organism", "label=Homo sapiens (ncbitax)");
+        if (arrayDesignOrganism == null) {
+            // default to Homo sapiens
+            arrayDesignOrganism = HOMO_SAPIENS_ORGANISM;
+        }
+        selenium.select("arrayDesignForm_arrayDesign_organism", "label=" + arrayDesignOrganism);
+
         selenium.type("arrayDesignForm_upload", arrayDesign.toString());
         selenium.click("link=Save");
         waitForText("found");
     }
 
-    protected void findTitleAcrossMultiPages(String text){
+
+
+    protected void findTitleAcrossMultiPages(String text) {
         for (int page = 1;; page++) {
             // - Safety catch
             if (page == 50) {
@@ -314,13 +343,13 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                 } catch (InterruptedException e) {
                     fail("Thread sleep threw an exception in findTitleAcrossMultiPages");
                     e.printStackTrace();
-                } 
+                }
             }
         }
     }
 
     protected void setExperimentPublic() {
-       String makeExperimentPublicButton ="//span/span";
+        String makeExperimentPublicButton = "//span/span";
         selenium.click(makeExperimentPublicButton);
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
@@ -329,14 +358,14 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     protected void submitExperiment() {
-        String submitExperimentProposalButton ="//span/span";
-        //selenium.click("link=Submit Experiment Proposal");
+        String submitExperimentProposalButton = "//span/span";
+        // selenium.click("link=Submit Experiment Proposal");
         selenium.click(submitExperimentProposalButton);
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
         // making an experiement public will return the user back to the experiment's main page
         waitForText("My Experiment Workspace");
-     }
+    }
 
     protected boolean waitForArrayDesignImport(int seconds, int row) throws Exception {
         for (int loop = 1; loop < seconds; loop++) {
@@ -423,6 +452,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             }
         }
     }
+
     protected boolean doesArrayDesignExists(String arrayDesignName) {
         return selenium.isTextPresent(arrayDesignName);
     }

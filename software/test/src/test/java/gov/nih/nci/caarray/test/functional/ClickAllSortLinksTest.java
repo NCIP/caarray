@@ -425,7 +425,7 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
         selenium.click("link=Manage Array Designs");
         selenium.waitForPageToLoad("30000");
         if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
-            addArrayDesign(ARRAY_DESIGN_NAME, arrayDesign);
+            addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
             // get the array design row so we do not find the wrong Imported text
             int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
             // wait for array design to be imported

@@ -82,15 +82,7 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
-import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.sample.LabeledExtract;
-import gov.nih.nci.caarray.services.CaArrayServer;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
-import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
@@ -98,9 +90,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 
@@ -173,8 +162,6 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         endTime = System.currentTimeMillis();
         String totalTime = df.format((endTime - startTime)/60000f);
         System.out.println("total time = " + totalTime);
-       // - Get the data thru the API
-      //  verifyDataViaJavaApi(title);
     }
 
     private void makeExperimentPublic(String title) {
@@ -199,7 +186,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         if (doesArrayDesignExists(arrayDesignName)) {
             assertTrue(arrayDesignName + " is present", 1 == 1);
         } else {
-            addArrayDesign(arrayDesignName, arrayDesign);
+            addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
             // get the array design row so we do not find the wrong Imported text
             int row = getExperimentRow(arrayDesignName, ZERO_COLUMN);
             // wait for array design to be imported
@@ -215,43 +202,5 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         }
     }
 
-    private void verifyDataViaJavaApi(String title) throws ServerConnectionException {
-        CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
-        server.connect();
-        CaArraySearchService searchService = server.getSearchService();
-        Experiment searchExperiment = new Experiment();
-        searchExperiment.setTitle(title);
-        List<Experiment> matches = searchService.search(searchExperiment);
-        assertEquals(1, matches.size());
-        Experiment experiment = matches.get(0);
-
-        Set<RawArrayData> celDatas = getAllRawArrayData(experiment);
-        assertEquals(26, celDatas.size());
-
-        /** Commented out since this api no longer exists
-        RawArrayData celData = celDatas.iterator().next();
-        DataSet dataSet = server.getDataRetrievalService().getDataSet(celData);
-        assertNotNull(dataSet);
-        FloatColumn signalColumn = (FloatColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(2);
-        assertNotNull(signalColumn.getValues());
-        assertEquals(553536, signalColumn.getValues().length); */
-    }
-
-    private Set<RawArrayData> getAllRawArrayData(Experiment experiment) {
-        Set<RawArrayData> datas = new HashSet<RawArrayData>();
-        Set<Hybridization> hybridizations = getAllHybridizations(experiment);
-        for (Hybridization hybridization : hybridizations) {
-            datas.add(hybridization.getArrayData());
-        }
-        return datas;
-    }
-
-    private Set<Hybridization> getAllHybridizations(Experiment experiment) {
-        Set<Hybridization> hybridizations = new HashSet<Hybridization>();
-        for (LabeledExtract labeledExtract : experiment.getLabeledExtracts()) {
-            hybridizations.addAll(labeledExtract.getHybridizations());
-        }
-        return hybridizations;
-    }
 
 }
