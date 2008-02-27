@@ -353,8 +353,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private void handleDescription(String value) {
         if (currentBioMaterial == null) {
-            addErrorMessage(currentLineNumber, currentColumnNumber,
-                    "Description must be preceded by a Source, Sample, Extract, or LabeledExtract");
+            addError("Description must be preceded by a Source, Sample, Extract, or LabeledExtract");
         } else {
             currentBioMaterial.setDescription(value);
         }
@@ -414,7 +413,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         factorValue.addToSdrfList(this);
         factorValue.setValue(value);
         currentUnitable = factorValue;
-        currentHybridization.getFactorValues().add(factorValue);        
+        currentHybridization.getFactorValues().add(factorValue);
     }
 
     private void handleDerivedArrayDataFile(SdrfColumn column, String value) {
@@ -422,7 +421,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         DerivedArrayDataFile adf = (DerivedArrayDataFile) currentNode;
         adf.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
         if (adf.getNativeDataFile() == null) {
-            addErrorMessage("Referenced Derived Array Data File " + value + " was not found in the document set");
+            addError("Referenced Derived Array Data File " + value + " was not found in the document set");
         }
     }
 
@@ -431,7 +430,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         ArrayDataFile adf = (ArrayDataFile) currentNode;
         adf.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
         if (adf.getNativeDataFile() == null) {
-            addErrorMessage("Referenced Array Data File " + value + " was not found in the document set");
+            addError("Referenced Array Data File " + value + " was not found in the document set");
         }
     }
 
@@ -440,7 +439,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         DerivedArrayDataMatrixFile admf = (DerivedArrayDataMatrixFile) currentNode;
         admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
         if (admf.getDataMatrix() == null) {
-            addErrorMessage("Referenced Derived Array Data Matrix File " 
+            addError("Referenced Derived Array Data Matrix File "
                     + value + " was not found in the document set");
         }
     }
@@ -450,7 +449,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         ArrayDataMatrixFile admf = (ArrayDataMatrixFile) currentNode;
         admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
         if (admf.getDataMatrix() == null) {
-            addErrorMessage("Referenced Array Data Matrix File " + value + " was not found in the document set");
+            addError("Referenced Array Data Matrix File " + value + " was not found in the document set");
         }
     }
 
@@ -475,7 +474,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         if (currentUnitable != null) {
             currentUnitable.setUnit(unit);
         } else {
-            addErrorMessage("Illegal Unit column: Unit must follow a Characteristic, ParameterValue or FactorValue");
+            addError("Illegal Unit column: Unit must follow a Characteristic, ParameterValue or FactorValue");
         }
         if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
             currentTermSourceable = unit;
@@ -491,8 +490,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleTermSourceRef(String value) {
         TermSource termSource = getTermSource(value);
         if (termSource == null) {
-            addWarningMessage(currentLineNumber, currentColumnNumber,
-                    "Term Source " + value + " is not defined in the IDF document");
+            addWarning("Term Source " + value + " is not defined in the IDF document");
         }
         currentTermSourceable.setTermSource(termSource);
     }
@@ -519,13 +517,13 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         ProtocolApplication protocolApp = new ProtocolApplication();
         protocolApp.setProtocol(getProtocol(value));
         if (!currentNode.isRepeated()) {
-            currentNode.getProtocolApplications().add(protocolApp);            
+            currentNode.getProtocolApplications().add(protocolApp);
         }
         currentProtocolApp = protocolApp;
         if (protocolApp.getProtocol() == null) {
             protocolApp.setProtocol(new Protocol());
             protocolApp.getProtocol().setName(value);
-            addWarningMessage("Protocol " + value + " is not defined in the IDF document");
+            addWarning("Protocol " + value + " is not defined in the IDF document");
         }
         if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
             currentTermSourceable = protocolApp.getProtocol();
@@ -536,7 +534,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         if (currentProtocolApp != null) {
             currentProtocolApp.setPerformer(value);
         } else {
-            addWarningMessage("Performer column with value " + value + " does not follow a Protocol REF column");
+            addWarning("Performer column with value " + value + " does not follow a Protocol REF column");
         }
     }
 
@@ -544,7 +542,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         if (currentProtocolApp != null) {
             currentProtocolApp.setDate(parseDateValue(value, "Protocol Date"));
         } else {
-            addWarningMessage("Date column with value " + value + " does not follow a Protocol REF column");
+            addWarning("Date column with value " + value + " does not follow a Protocol REF column");
         }
     }
 
@@ -778,4 +776,18 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         return allComments;
     }
 
+    /**
+     * Adds an error message with the current line and column number.
+     * @param message error message
+     */
+    private void addError(String message) {
+        addErrorMessage(currentLineNumber, currentColumnNumber, message);
+    }
+    /**
+     * Adds a warning message with the current line and column number.
+     * @param message warning message
+     */
+    private void addWarning(String message) {
+        addWarningMessage(currentLineNumber, currentColumnNumber, message);
+    }
 }

@@ -216,12 +216,22 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             LOG.warn("importDesign called, but no design file provided. No updates made.");
             return;
         }
+        // Temporarily change the lsid so that file validation does not find this array design as a duplicate.
+        String lsid = arrayDesign.getLsid();
+        String tmpLsid = lsid + "tmp";
+        arrayDesign.setLsidForEntity(tmpLsid);
+        getArrayDao().save(arrayDesign);
+        getArrayDao().flushSession();
         if (validateDesignFile(arrayDesign.getDesignFile()).isValid()) {
             AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile());
             handler.load(arrayDesign);
             if (validateDuplicate(arrayDesign).isValid()) {
                 getArrayDao().save(arrayDesign);
             }
+        }
+        if (tmpLsid.equals(arrayDesign.getLsid())) {
+            arrayDesign.setLsidForEntity(lsid);
+            getArrayDao().save(arrayDesign);
         }
         LogUtil.logSubsystemExit(LOG);
     }
@@ -378,7 +388,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     private VocabularyService getVocabularyService() {
         return (VocabularyService) ServiceLocatorFactory.getLocator().lookup(VocabularyService.JNDI_NAME);
     }
-    
+
     private boolean validateLockedDesign(ArrayDesign arrayDesign) {
         ArrayDesign loadedArrayDesign = getArrayDesign(arrayDesign.getId());
         if (!loadedArrayDesign.getProvider().equals(arrayDesign.getProvider())

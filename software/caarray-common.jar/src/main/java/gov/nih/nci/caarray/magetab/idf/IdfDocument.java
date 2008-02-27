@@ -94,7 +94,6 @@ import gov.nih.nci.caarray.magetab.TermSource;
 import gov.nih.nci.caarray.magetab.TermSourceable;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
-import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
 import java.io.IOException;
@@ -160,13 +159,13 @@ public final class IdfDocument extends AbstractMageTabDocument {
         parse(tabDelimitedReader, false);
         validateMatchingColumns();
     }
-    
+
     private void parse(DelimitedFileReader tabDelimitedReader, boolean processingTermSources) {
         while (tabDelimitedReader.hasNextLine()) {
             List<String> lineValues = tabDelimitedReader.nextLine();
             currentLineNumber = tabDelimitedReader.getCurrentLineNumber();
             handleLine(lineValues, processingTermSources);
-        }        
+        }
     }
 
     private void validateMatchingColumns() {
@@ -220,7 +219,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         case PUBLIC_RELEASE_DATE:
         case EXPERIMENT_DESCRIPTION:
             if (lineContents.size() > 2) {
-                addWarningMessage(lineContents.get(0) + " can only have one element but found "
+                addLineWarning(lineContents.get(0) + " can only have one element but found "
                         + (lineContents.size() - 1));
             }
             // falling through on purpose here
@@ -232,13 +231,13 @@ public final class IdfDocument extends AbstractMageTabDocument {
         case PROTOCOL_NAME:
         case EXPERIMENTAL_DESIGN:
             if (lineContents.size() == 1) {
-                addWarningMessage(lineContents.get(0) + " value is missing ");
+                addLineWarning(lineContents.get(0) + " value is missing ");
             }
             break;
         case SDRF_FILE:
         case SDRF_FILES:
             if (lineContents.size() == 1) {
-                addErrorMessage(lineContents.get(0) + " value is missing ");
+                addLineError(lineContents.get(0) + " value is missing ");
             }
         default:
             break;
@@ -404,31 +403,19 @@ public final class IdfDocument extends AbstractMageTabDocument {
             // no-op
             break;
         default:
-            ValidationMessage message = addErrorMessage("IDF type not found: " + idfRow.getType());
-            message.setLine(getCurrentLineNumber());
-            message.setColumn(getCurrentColumnNumber());
+            addError("IDF type not found: " + idfRow.getType());
         }
     }
 
     private void handleSdrfFile(String value) {
         SdrfDocument sdrfDocument = getDocumentSet().getSdrfDocument(value);
         if (sdrfDocument == null) {
-            ValidationMessage message = addErrorMessage("Referenced SDRF file " + value
+            addError("Referenced SDRF file " + value
                     + " was not included in the MAGE-TAB document set");
-            message.setLine(getCurrentLineNumber());
-            message.setColumn(getCurrentColumnNumber());
         } else {
             getSdrfDocuments().add(sdrfDocument);
             sdrfDocument.setIdfDocument(this);
         }
-    }
-
-    private int getCurrentLineNumber() {
-        return currentLineNumber;
-    }
-
-    private int getCurrentColumnNumber() {
-        return currentColumnNumber;
     }
 
     private void handleProtocolName(String protocolId, int valueIndex) {
@@ -479,7 +466,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 handleTermSourceRef(protocol.getType(), value);
             }
         } else {
-            addWarningMessage("Term Source specified for blank Protocol column");
+            addWarning("Term Source specified for blank Protocol column");
         }
     }
 
@@ -507,7 +494,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         if (valueIndex < investigation.getDesigns().size()) {
             handleTermSourceRef(investigation.getDesigns().get(valueIndex), value);
         } else {
-            addWarningMessage("Term Source specified for blank Experimental Design column");
+            addWarning("Term Source specified for blank Experimental Design column");
         }
     }
 
@@ -524,7 +511,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         if (valueIndex < investigation.getFactors().size()) {
             handleTermSourceRef(investigation.getFactors().get(valueIndex).getType(), value);
         } else {
-            addWarningMessage("Term Source specified for blank Experimental Factor column");
+            addWarning("Term Source specified for blank Experimental Factor column");
         }
     }
 
@@ -580,7 +567,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 handleTermSourceRef(roles.next(), value);
             }
         } else {
-            addWarningMessage("Term Source specified for blank Person Role column");
+            addWarning("Term Source specified for blank Person Role column");
         }
     }
 
@@ -612,7 +599,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 handleTermSourceRef(publication.getStatus(), value);
             }
         } else {
-            addWarningMessage("Term Source specified for blank Publication column");
+            addWarning("Term Source specified for blank Publication column");
         }
     }
 
@@ -625,7 +612,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         if (valueIndex < investigation.getQualityControlTypes().size()) {
             handleTermSourceRef(investigation.getQualityControlTypes().get(valueIndex), value);
         } else {
-            addWarningMessage("Term Source specified for blank Quality Control Type column");
+            addWarning("Term Source specified for blank Quality Control Type column");
         }
     }
 
@@ -637,7 +624,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         if (valueIndex < investigation.getReplicateTypes().size()) {
             handleTermSourceRef(investigation.getReplicateTypes().get(valueIndex), value);
         } else {
-            addWarningMessage("Term Source specified for blank Replicate Type column");
+            addWarning("Term Source specified for blank Replicate Type column");
         }
     }
 
@@ -650,18 +637,17 @@ public final class IdfDocument extends AbstractMageTabDocument {
         if (valueIndex < investigation.getNormalizationTypes().size()) {
             handleTermSourceRef(investigation.getNormalizationTypes().get(valueIndex), value);
         } else {
-            addWarningMessage("Term Source specified for blank Normalization Type column");
+            addWarning("Term Source specified for blank Normalization Type column");
         }
     }
-    
+
     private void handleTermSourceRef(TermSourceable termSourceable, String value) {
         if (StringUtils.isBlank(value)) {
             return;
         }
         TermSource termSource = getTermSource(value);
         if (termSource == null) {
-            addWarningMessage(currentLineNumber, currentColumnNumber,
-                    "Term Source " + value + " is not defined in the IDF document");
+            addWarning("Term Source " + value + " is not defined in the IDF document");
         }
         termSourceable.setTermSource(termSource);
     }
@@ -710,5 +696,34 @@ public final class IdfDocument extends AbstractMageTabDocument {
         }
         addWarningMessage("Experimental Factor " + factorName + " not defined in the IDF file");
         return null;
+    }
+
+    /**
+     * Adds an error message with the current line and column number.
+     * @param message error message
+     */
+    private void addError(String message) {
+        addErrorMessage(currentLineNumber, currentColumnNumber, message);
+    }
+    /**
+     * Adds an error message with the current line number.
+     * @param message error message
+     */
+    private void addLineError(String message) {
+        addErrorMessage(currentLineNumber, 0, message);
+    }
+    /**
+     * Adds a warning message with the current line and column number.
+     * @param message warning message
+     */
+    private void addWarning(String message) {
+        addWarningMessage(currentLineNumber, currentColumnNumber, message);
+    }
+    /**
+     * Adds a warning message with the current line number.
+     * @param message warning message
+     */
+    private void addLineWarning(String message) {
+        addWarningMessage(currentLineNumber, 0, message);
     }
 }
