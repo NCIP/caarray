@@ -91,14 +91,19 @@ public final class TestProperties {
     public static final String SERVER_PORT_KEY = "server.port";
     public static final String SERVER_JNDI_PORT_KEY = "server.jndi.port";
 
-
     public static final String SERVER_HOSTNAME_DEFAULT = "localhost";
-    public static final String SERVER_PORT_DEFAULT = "8080";
-    public static final String SERVER_JNDI_PORT_DEFAULT = "1099";
-
+    public static final String SERVER_PORT_DEFAULT = "8181";
+    public static final String SERVER_JNDI_PORT_DEFAULT = "11299";
 
     public static final String SELENIUM_SERVER_PORT_KEY = "selenium.server.port";
     public static final String SELENIUM_SERVER_PORT_DEFAULT = "8081";
+
+    // Experiment names used in JMeter tests
+    public static final String AFFYMETRIX_SPECIFICATION_WITH_DATA_01 = "Affymetrix Specification with Data 01";
+    public static final String AFFYMETRIX_HUMAN_WITH_DATA_01 = "Affymetrix Human with Data 01";
+    public static final String GENEPIX_COW_WITH_DATA_01 = "Genepix Cow with Data 01 ";
+    public static final String ILLUMINA_RAT_WITH_DATA_01 = "Illumina Rat with Data 01";
+    public static final String AFFYMETRIX_EXPERIMENT_WITH_CHP_DATA_01 = "Affymetrix Experiment with CHP Data 01";
 
     public static String getServerHostname() {
         return System.getProperty(SERVER_HOSTNAME_KEY, SERVER_HOSTNAME_DEFAULT);
@@ -113,7 +118,27 @@ public final class TestProperties {
     }
 
     public static int getSeleniumServerPort() {
-	        return Integer.parseInt(System.getProperty(SELENIUM_SERVER_PORT_KEY, SELENIUM_SERVER_PORT_DEFAULT));
+        return Integer.parseInt(System.getProperty(SELENIUM_SERVER_PORT_KEY, SELENIUM_SERVER_PORT_DEFAULT));
     }
 
+    // Experiment names used in the JMeter tests
+    public static String getAffymetricSpecificationName() {
+        return AFFYMETRIX_SPECIFICATION_WITH_DATA_01;
+    }
+
+    public static String getAffymetricHumanName() {
+        return AFFYMETRIX_HUMAN_WITH_DATA_01;
+    }
+
+    public static String getGenepixCowName() {
+        return GENEPIX_COW_WITH_DATA_01;
+    }
+
+    public static String getIlluminaRatName() {
+        return ILLUMINA_RAT_WITH_DATA_01;
+    }
+
+    public static String getAffymetricChpName() {
+        return AFFYMETRIX_EXPERIMENT_WITH_CHP_DATA_01;
+    }
 }
