@@ -997,7 +997,6 @@
         <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true">
             <classpath>
                 <fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
-                <fileset dir="${caarray-client.resources.dir}" includes="auth.conf" />
                 <pathelement location="${junit.jar}" />
                 <path refid="caarray-client.dependencies.path" />
             </classpath>
