@@ -1022,7 +1022,9 @@
     </target>
 
     <target name="test:api:run-tests" depends="test:api:compile-tests,build:caarray-client.jar">
+        <!--
         <run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};${junit.jar}" classpathref="caarray-client.dependencies.path" source.include="**/Api*.java" source.exclude="**/AbstractApi*.java" />
+        -->
     </target>
 
 
