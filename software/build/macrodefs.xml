@@ -4,7 +4,10 @@
         <attribute name="test.src.dir" />
         <attribute name="xml.output.dir" />
         <attribute name="classpath" default="" />
+        <attribute name="classpathref" default="" />
         <attribute name="instrumented.classes" default="" />
+        <attribute name="source.include" default="**/*Test.java" />
+        <attribute name="source.exclude" default="**/Abstract*Test.java" />
 
         <sequential>
             <mkdir dir="@{xml.output.dir}" />
@@ -20,12 +23,13 @@
                     <pathelement path="@{instrumented.classes}" />
                     <pathelement path="@{classpath}" />
                   <path refid="cobertura.classpath" />
+		  <path refid="@{classpathref}" />
                 </classpath>
                 <formatter type="xml" />
                 <batchtest todir="@{xml.output.dir}">
                     <fileset dir="@{test.src.dir}">
-                        <include name="**/*Test.java" />
-                        <exclude name="**/Abstract*Test.java" />
+			    <include name="@{source.include}" />
+			    <exclude name="@{source.exclude}" />
                     </fileset>
                 </batchtest>
             </junit>
