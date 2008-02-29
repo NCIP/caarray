@@ -82,9 +82,12 @@
  */
 package gov.nih.nci.caarray.test.api;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  * Base class for all API tests that test the Remote Java API and Grid API.
- * Provides utilities to log all output needed for Silver Compatibility.
+ * Provides utilities to log all output needed for caBIG Silver Compatibility review.
  *
  * @author Rashmi Srinivasa
  */
@@ -96,5 +99,11 @@ public class AbstractApiTest {
 
     protected static void logForSilverCompatibility (String header, String outputText) {
         System.out.println(header + ": " + outputText);
+    }
+
+    protected StringBuilder buildStackTrace(Throwable t) {
+        StringWriter sw = new StringWriter();
+        t.printStackTrace(new PrintWriter(sw, true));
+        return new StringBuilder(sw.toString());
     }
 }

@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The test
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This test Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the test Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the test Software; (ii) distribute and
+ * have distributed to and by third parties the test Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,86 +80,85 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.test.base;
+package gov.nih.nci.caarray.test.api.java.arraydesign;
+
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.services.CaArrayServer;
+import gov.nih.nci.caarray.services.ServerConnectionException;
+import gov.nih.nci.caarray.services.arraydesign.ArrayDesignDetailsService;
+import gov.nih.nci.caarray.services.search.CaArraySearchService;
+import gov.nih.nci.caarray.test.api.AbstractApiTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
+
+import java.util.List;
+
+import org.junit.Test;
 
 /**
- * Environment properties passed in to tests.
+ * A client downloading the details of an array design through CaArray's Remote Java API.
+ *
+ * @author Rashmi Srinivasa
  */
-public final class TestProperties {
+public class ApiArrayDesignDownload extends AbstractApiTest {
+    private static final String DEFAULT_ARRAY_DESIGN_NAME = TestProperties.getAffymetrixSpecificationDesignName();
 
-    public static final String SERVER_HOSTNAME_KEY = "server.hostname";
-    public static final String SERVER_PORT_KEY = "server.port";
-    public static final String SERVER_JNDI_PORT_KEY = "server.jndi.port";
+    @Test
+    public void testDownloadArrayDesignDetails() {
+        try {
+            CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties
+                    .getServerJndiPort());
+            server.connect();
+            CaArraySearchService searchService = server.getSearchService();
+            logForSilverCompatibility(TEST_NAME, "Downloading Array Design details");
+            ArrayDesign arrayDesign = lookupArrayDesign(searchService, DEFAULT_ARRAY_DESIGN_NAME);
+            if (arrayDesign != null) {
+                ArrayDesignDetailsService arrayDesignDetailsService = server.getArrayDesignDetailsService();
+                ArrayDesignDetails details = arrayDesignDetailsService.getDesignDetails(arrayDesign);
+                logForSilverCompatibility(API_CALL, "ArrayDesignDetailsService.getDesignDetails()");
+                if (details != null) {
+                    logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + DEFAULT_ARRAY_DESIGN_NAME + " with " + details.getFeatures().size() + " features, "
+                            + details.getProbeGroups().size() + " probe groups, " + details.getProbes().size()
+                            + " probes and " + details.getLogicalProbes().size() + " logical probes.");
+                    assertTrue(true);
+                } else {
+                    logForSilverCompatibility(TEST_OUTPUT, "Error: Array Design Details was null.");
+                    assertTrue("Error: Array Design Details was null.", false);
+                }
+            } else {
+                logForSilverCompatibility(TEST_OUTPUT, "Error: Array Design was null.");
+                assertTrue("Error: Array Design was null.", false);
+            }
 
-    public static final String SERVER_HOSTNAME_DEFAULT = "localhost";
-    public static final String SERVER_PORT_DEFAULT = "8181";
-    public static final String SERVER_JNDI_PORT_DEFAULT = "11299";
-
-    public static final String SELENIUM_SERVER_PORT_KEY = "selenium.server.port";
-    public static final String SELENIUM_SERVER_PORT_DEFAULT = "8081";
-
-    // Experiment names and array designs used in API tests
-    public static final String AFFYMETRIX_SPECIFICATION_DESIGN = "Test3";
-    public static final String AFFYMETRIX_HUMAN_DESIGN = "HG-U133_Plus_2";
-    public static final String GENEPIX_DESIGN = "JoeDeRisi-fix";
-    public static final String ILLUMINA_DESIGN = "Human_WG-6";
-
-    public static final String AFFYMETRIX_SPECIFICATION_WITH_DATA_01 = "Affymetrix Specification with Data 01";
-    public static final String AFFYMETRIX_HUMAN_WITH_DATA_01 = "Affymetrix Human with Data 01";
-    public static final String GENEPIX_COW_WITH_DATA_01 = "Genepix Cow with Data 01 ";
-    public static final String ILLUMINA_RAT_WITH_DATA_01 = "Illumina Rat with Data 01";
-    public static final String AFFYMETRIX_EXPERIMENT_WITH_CHP_DATA_01 = "Affymetrix Experiment with CHP Data 01";
-
-    public static String getServerHostname() {
-        return System.getProperty(SERVER_HOSTNAME_KEY, SERVER_HOSTNAME_DEFAULT);
+        } catch (ServerConnectionException e) {
+            StringBuilder trace = buildStackTrace(e);
+            logForSilverCompatibility(TEST_OUTPUT, "Server connection exception: " + e + "\nTrace: " + trace);
+            assertTrue("Server connection exception: " + e, false);
+        } catch (RuntimeException e) {
+            StringBuilder trace = buildStackTrace(e);
+            logForSilverCompatibility(TEST_OUTPUT, "Runtime exception: " + e + "\nTrace: " + trace);
+            assertTrue("Runtime exception: " + e, false);
+        } catch (Throwable t) {
+            // Catches things like out-of-memory errors and logs them.
+            StringBuilder trace = buildStackTrace(t);
+            logForSilverCompatibility(TEST_OUTPUT, "Throwable: " + t + "\nTrace: " + trace);
+            assertTrue("Throwable: " + t, false);
+        }
     }
 
-    public static int getServerPort() {
-        return Integer.parseInt(System.getProperty(SERVER_PORT_KEY, SERVER_PORT_DEFAULT));
+    private ArrayDesign lookupArrayDesign(CaArraySearchService service, String arrayDesignName) {
+        ArrayDesign exampleArrayDesign = new ArrayDesign();
+        exampleArrayDesign.setName(arrayDesignName);
+
+        List<ArrayDesign> arrayDesignList = service.search(exampleArrayDesign);
+        logForSilverCompatibility(API_CALL, "CaArraySearchService.search(ArrayDesign)");
+        int numArrayDesignsFound = arrayDesignList.size();
+        if (numArrayDesignsFound == 0) {
+            return null;
+        }
+        ArrayDesign arrayDesign = arrayDesignList.get(0);
+        return arrayDesign;
     }
 
-    public static int getServerJndiPort() {
-        return Integer.parseInt(System.getProperty(SERVER_JNDI_PORT_KEY, SERVER_JNDI_PORT_DEFAULT));
-    }
-
-    public static int getSeleniumServerPort() {
-        return Integer.parseInt(System.getProperty(SELENIUM_SERVER_PORT_KEY, SELENIUM_SERVER_PORT_DEFAULT));
-    }
-
-    // Experiment names and array designs used in API tests
-    public static String getAffymetrixSpecificationDesignName() {
-        return AFFYMETRIX_SPECIFICATION_DESIGN;
-    }
-
-    public static String getAffymetrixHumanDesignName() {
-        return AFFYMETRIX_HUMAN_DESIGN;
-    }
-
-    public static String getGenepixDesignName() {
-        return GENEPIX_DESIGN;
-    }
-
-    public static String getIlluminaDesignName() {
-        return ILLUMINA_DESIGN;
-    }
-
-    public static String getAffymetricSpecificationName() {
-        return AFFYMETRIX_SPECIFICATION_WITH_DATA_01;
-    }
-
-    public static String getAffymetricHumanName() {
-        return AFFYMETRIX_HUMAN_WITH_DATA_01;
-    }
-
-    public static String getGenepixCowName() {
-        return GENEPIX_COW_WITH_DATA_01;
-    }
-
-    public static String getIlluminaRatName() {
-        return ILLUMINA_RAT_WITH_DATA_01;
-    }
-
-    public static String getAffymetricChpName() {
-        return AFFYMETRIX_EXPERIMENT_WITH_CHP_DATA_01;
-    }
 }

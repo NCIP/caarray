@@ -80,57 +80,72 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.test.api.java.search;
+package gov.nih.nci.caarray.test.api.java.file;
 
 import static org.junit.Assert.assertTrue;
-import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
+import gov.nih.nci.caarray.services.file.FileRetrievalService;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.api.AbstractApiTest;
 import gov.nih.nci.caarray.test.base.TestProperties;
 
-import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
 /**
- * A client searching for experiments using search-by-example through CaArray's Remote Java API.
+ * A client downloading file contents through CaArray's Remote Java API.
  *
  * @author Rashmi Srinivasa
  */
-public class ApiSearchExperimentByExample extends AbstractApiTest {
-    private static final String DEFAULT_MANUFACTURER_NAME = "Affymetrix";
-    private static final String DEFAULT_ORGANISM_NAME = "human";
+public class ApiFileDownload extends AbstractApiTest {
+    private static final String DEFAULT_EXPERIMENT_NAME = TestProperties.getAffymetricSpecificationName();
 
     @Test
-    public void testSearchExperiment() {
-        Experiment exampleExperiment = createExampleExperiment();
-        String errorMessage = "Error: Response did not match request.";
+    public void testDownloadFileContents() {
         try {
             CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties
                     .getServerJndiPort());
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
-            logForSilverCompatibility(TEST_NAME, "Searching by Example for Experiments...");
-            List<Experiment> experimentList = searchService.search(exampleExperiment);
-            logForSilverCompatibility(API_CALL, "CaArraySearchService.search(Experiment)");
-            boolean resultIsOkay = isResultOkay(experimentList);
-            if (resultIsOkay) {
-                logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + experimentList.size()
-                        + " experiments with array provider " + DEFAULT_MANUFACTURER_NAME + " and organism "
-                        + DEFAULT_ORGANISM_NAME + ".");
+            logForSilverCompatibility(TEST_NAME, "Downloading File Contents...");
+            Experiment experiment = lookupExperiment(searchService, DEFAULT_EXPERIMENT_NAME);
+            if (experiment != null) {
+                Hybridization hybridization = getFirstHybridization(searchService, experiment);
+                if (hybridization != null) {
+                    CaArrayFile dataFile = getDataFile(searchService, hybridization);
+                    if (dataFile != null) {
+                        logForSilverCompatibility(TEST_OUTPUT, "Downloading file " + dataFile.getName());
+                        FileRetrievalService fileRetrievalService = server.getFileRetrievalService();
+                        byte[] byteArray = fileRetrievalService.readFile(dataFile);
+                        logForSilverCompatibility(API_CALL, "FileRetrievalService.readFile(CaArrayFile)");
+                        if (byteArray != null) {
+                            logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + byteArray.length + " bytes.");
+                            assertTrue(true);
+                        } else {
+                            logForSilverCompatibility(TEST_OUTPUT, "Error: Retrieved null byte array.");
+                            assertTrue("Error: Retrieved null byte array.", false);
+                        }
+                    } else {
+                        logForSilverCompatibility(TEST_OUTPUT, "Error: Retrieved null data file.");
+                        assertTrue("Error: Retrieved null data file.", false);
+                    }
+                } else {
+                    logForSilverCompatibility(TEST_OUTPUT,
+                            "Error: Retrieved null hybridization for experiment with title " + DEFAULT_EXPERIMENT_NAME);
+                    assertTrue("Error: Retrieved null hybridization.", false);
+                }
             } else {
-                logForSilverCompatibility(TEST_OUTPUT, errorMessage + " Retrieved " + experimentList.size()
-                        + " experiments.");
+                logForSilverCompatibility(TEST_OUTPUT, "Error: Could not find experiment " + DEFAULT_EXPERIMENT_NAME);
+                assertTrue("Error: Could not find experiment.", false);
             }
-            for (Experiment experiment : experimentList) {
-                logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getTitle(): " + experiment.getTitle());
-            }
-            assertTrue(errorMessage, resultIsOkay);
         } catch (ServerConnectionException e) {
             StringBuilder trace = buildStackTrace(e);
             logForSilverCompatibility(TEST_OUTPUT, "Server connection exception: " + e + "\nTrace: " + trace);
@@ -147,48 +162,52 @@ public class ApiSearchExperimentByExample extends AbstractApiTest {
         }
     }
 
-    private Experiment createExampleExperiment() {
+    private Experiment lookupExperiment(CaArraySearchService service, String experimentName) {
         Experiment exampleExperiment = new Experiment();
+        exampleExperiment.setTitle(experimentName);
 
-        Organization organization = new Organization();
-        organization.setName(DEFAULT_MANUFACTURER_NAME);
-        organization.setProvider(true);
-        exampleExperiment.setManufacturer(organization);
-
-        Organism organismCriterion = new Organism();
-        organismCriterion.setCommonName(DEFAULT_ORGANISM_NAME);
-        exampleExperiment.setOrganism(organismCriterion);
-
-        return exampleExperiment;
+        List<Experiment> experimentList = service.search(exampleExperiment);
+        logForSilverCompatibility(API_CALL, "CaArraySearchService.search(Experiment)");
+        if (experimentList.size() == 0) {
+            return null;
+        }
+        return experimentList.get(0);
     }
 
-    private boolean isResultOkay(List<Experiment> experimentList) {
-        if (experimentList.isEmpty()) {
-            return true;
+    private Hybridization getFirstHybridization(CaArraySearchService service, Experiment experiment) {
+        Set<Hybridization> allHybridizations = experiment.getHybridizations();
+        logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getHybridizations().size(): "
+                + experiment.getHybridizations().size());
+        for (Hybridization hybridization : allHybridizations) {
+            Hybridization populatedHybridization = service.search(hybridization).get(0);
+            logForSilverCompatibility(API_CALL, "CaArraySearchService.search(Hybridization)");
+            // Yes, we're returning only the first hybridization.
+            return populatedHybridization;
         }
+        return null;
+    }
 
-        Iterator<Experiment> i = experimentList.iterator();
-        while (i.hasNext()) {
-            Experiment retrievedExperiment = i.next();
-            // Check if retrieved experiment matches requested search criteria.
-            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getManufacturer().getName(): "
-                    + retrievedExperiment.getManufacturer().getName());
-            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getOrganism().getCommonName(): "
-                    + retrievedExperiment.getOrganism().getCommonName());
-            if ((!DEFAULT_MANUFACTURER_NAME.equals(retrievedExperiment.getManufacturer().getName()))
-                    || (!DEFAULT_ORGANISM_NAME.equals(retrievedExperiment.getOrganism().getCommonName()))) {
-                return false;
-            }
-            // Check if retrieved experiment has mandatory fields.
-            if ((retrievedExperiment.getTitle() == null) || (retrievedExperiment.getServiceType() == null)
-                    || (retrievedExperiment.getAssayType() == null)) {
-                return false;
-            }
-            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getServiceType().getResourceKey(): "
-                    + retrievedExperiment.getServiceType().getResourceKey());
-            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getAssayType(): "
-                    + retrievedExperiment.getAssayType());
+    private CaArrayFile getDataFile(CaArraySearchService service, Hybridization hybridization) {
+        // Try to find raw data
+        RawArrayData rawArrayData = hybridization.getArrayData();
+        logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Hybridization.getArrayData().");
+        if (rawArrayData != null) {
+            // Return the file associated with the first raw data.
+            RawArrayData populatedArrayData = service.search(rawArrayData).get(0);
+            logForSilverCompatibility(API_CALL, "CaArraySearchService.search(RawArrayData)");
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "RawArrayData.getDataFile().");
+            return populatedArrayData.getDataFile();
         }
-        return true;
+        // If raw data doesn't exist, try to find derived data
+        Set<DerivedArrayData> derivedArrayDataSet = hybridization.getDerivedDataCollection();
+        logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Hybridization.getDerivedDataCollection().");
+        for (DerivedArrayData derivedArrayData : derivedArrayDataSet) {
+            // Return the file associated with the first derived data.
+            DerivedArrayData populatedArrayData = service.search(derivedArrayData).get(0);
+            logForSilverCompatibility(API_CALL, "CaArraySearchService.search(DerivedArrayData)");
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "DerivedArrayData.getDataFile().");
+            return populatedArrayData.getDataFile();
+        }
+        return null;
     }
 }
