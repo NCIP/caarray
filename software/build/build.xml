@@ -479,6 +479,11 @@
     </target>
 
     <target name="compile:caarray-svc" depends="compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar">
+        <copy file="${caaray-svc.dir}/deploy.properties.orig" tofile="${caaray-svc.dir}/deploy.properties">
+            <filterset>
+                <filter token="grid.index.url" value="${grid.index.url}" />
+            </filterset>
+        </copy>
         <ant dir="${caaray-svc.dir}" target="compile" inheritall="false">
             <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
             <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
