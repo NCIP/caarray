@@ -96,7 +96,6 @@ import org.junit.Test;
  * 
  */
 public class BrowseExperimentTest extends AbstractSeleniumTest {
-    private String experimentId;
     private static final int TWO_MINUTES = 12;
     private static final String ARRAY_DESIGN_NAME = "Test3";
 
@@ -110,11 +109,11 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
 
         // - Create an Experiment
-        createExperiment(title, ARRAY_DESIGN_NAME, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+        String experimentId = createExperiment(title, ARRAY_DESIGN_NAME, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
 
         // - Submit Experiment Proposal
         submitExperiment();
-        makeExperimentPublic(title);
+        makeExperimentPublic(experimentId);
 
         // - logout
         selenium.click("link=Logout");
@@ -175,23 +174,7 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         }
     }
 
-    private void makeExperimentPublic(String title) throws Exception {
 
-        clickAndWait("link=My Experiment Workspace");
-        waitForTab();
-
-        findTitleAcrossMultiPages(title);
-        // - Need the table row to click on the edit icon
-        int row = getExperimentRow(title);
-        // - Get the Experiment Id for use later when doing an anonymous search
-        experimentId = selenium.getTable("row." + row + ".0");
-        // - Click on the image to enter the edit mode again
-        selenium.click("//tr[" + row + "]/td[7]/a/img");
-        waitForText("Overall Experiment Characteristics");
-
-        // make experiment public
-        setExperimentPublic();
-    }
 
     private int getExperimentRow(String text) {
         for (int loop = 1;; loop++) {

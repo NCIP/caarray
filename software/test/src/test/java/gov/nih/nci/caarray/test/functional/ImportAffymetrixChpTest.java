@@ -119,7 +119,7 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
 
         // Create project
-        createExperiment(title, ARRAY_DESIGN_NAME, AFFYMETRIX_PROVIDER, ORGANISM);
+        String experimentId = createExperiment(title, ARRAY_DESIGN_NAME, AFFYMETRIX_PROVIDER, ORGANISM);
 
         // - go to the data tab
         selenium.click("link=Data");
@@ -144,15 +144,23 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         // - click on the Imported data tab
         selenium.click("link=Imported Data");
         Thread.sleep(3000);
+        selenium.click("link=Imported Data");
+        Thread.sleep(1000);  // added to fix the above problem
+
         waitForText("One item found");
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);
-
+        
+        // make experiment public
+        submitExperiment();
+        makeExperimentPublic(experimentId);
+ 
         endTime = System.currentTimeMillis();
         String totalTime = df.format((endTime - startTime) / 60000f);
         System.out.println("total time = " + totalTime);
     }
+    
 
     private void importArrayDesign(File arrayDesign) throws Exception {
         selenium.click("link=Manage Array Designs");

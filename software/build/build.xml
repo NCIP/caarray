@@ -965,6 +965,7 @@
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${caGrid-1.1-data-stubs.jar}" />
                 <pathelement location="${cglib.jar}" />
+                <pathelement location="${commons-lang.jar}" />
             </classpath>
             <exclude name="**/api/**" />
         </javac>
@@ -990,7 +991,7 @@
 
     <target name="test:selenium:run-tests" depends="test:selenium:compile-tests,test:unpack-test-data,build:caarray-client.jar,database:reinitialize">
         <antcall target="test:selenium:start-server" />
-        <run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/selenium" classpath="${cglib.jar}:${test.classes.dir};${caarray-client.jar};${test.data.classes.dir};${test.data.files.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
+        <run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/selenium" classpath="${cglib.jar}:${test.classes.dir};${caarray-client.jar};${test.data.classes.dir};${commons-lang.jar};${test.data.files.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
         <antcall target="test:selenium:stop-server" />
     </target>
 

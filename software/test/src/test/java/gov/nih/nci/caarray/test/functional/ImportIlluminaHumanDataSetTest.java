@@ -119,6 +119,7 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
 
         // Create project
         createExperiment(title, ARRAY_DESIGN_NAME);
+        String experimentId = selenium.getText("//tr[4]/td[2]");
 
         // - go to the data tab
         selenium.click("link=Data");
@@ -134,7 +135,7 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         waitForText("Required fields are marked");
         selenium.select("projectForm_selectedFiles_0__fileType", "label=Illumina Data CSV");
         selenium.click("link=Save");
-        waitForText("1 files updated");
+        waitForText("1 files updated", FIFTEEN_MINUTES);
         // - Check if they are uploaded
         checkFileStatus("Uploaded", THIRD_COLUMN);
         waitForAction();
@@ -155,12 +156,15 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);
+        
+        // make experiment public
+        submitExperiment();
+        makeExperimentPublic(experimentId);
 
         endTime = System.currentTimeMillis();
         String totalTime = df.format((endTime - startTime) / 60000f);
         System.out.println("total time = " + totalTime);
     }
-
 
     private void importArrayDesign(File arrayDesign) throws Exception {
         selenium.click("link=Manage Array Designs");

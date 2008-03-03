@@ -100,6 +100,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     private static final String LOGIN_BUTTON = "//div[2]/form/table/tbody/tr[4]/td/del/ul/li/a/span/span";
     protected static final String TAB_KEY = "\\009";
     protected static int RECORD_TIMEOUT_SECONDS = 240;
+    protected static int FIFTEEN_MINUTES = 900;
     protected static final int PAGE_SIZE = 20;
     protected static final String REFRESH_BUTTON = "//a[6]/span/span";
     private static final String UPLOAD_BUTTON = "//ul/a[3]/span/span";
@@ -251,21 +252,23 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         }
     }
 
-    protected void createExperiment(String title, String arrayDesignName) throws InterruptedException {
-        createExperiment(title, arrayDesignName, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+    protected String createExperiment(String title, String arrayDesignName) throws InterruptedException {
+        return createExperiment(title, arrayDesignName, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
     }
 
-    protected void createExperiment(String title) throws InterruptedException {
+    protected String createExperiment(String title) throws InterruptedException {
         String arrayDesignName = null;
-        createExperiment(title, arrayDesignName, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+        return createExperiment(title, arrayDesignName, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
     }
 
     /**
      * @param title
      * @throws InterruptedException
+     * @return String Experiment ID of the experiment e.g. admin-002
      */
-    protected void createExperiment(String title, String arrayDesignName, String provider, String organism)
+    protected String createExperiment(String title, String arrayDesignName, String provider, String organism)
             throws InterruptedException {
+        String experimentId;
         selenium.click("link=Create/Propose Experiment");
         waitForText("The Overall Experiment Characteristics"); // needed when creating multiple experiments
         // - Type in the Experiment name
@@ -294,6 +297,9 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         // - Save the Experiment
         selenium.click("link=Save");
         waitForAction();
+        // get the experiment id 
+        experimentId = selenium.getText("//tr[4]/td[2]");
+        return experimentId;
 
     }
     protected void addArrayDesign(File arrayDesign) {
@@ -366,7 +372,13 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         // making an experiement public will return the user back to the experiment's main page
         waitForText("My Experiment Workspace");
     }
-
+/**
+ * 
+ * @param seconds
+ * @param row
+ * @return
+ * @throws Exception
+ */
     protected boolean waitForArrayDesignImport(int seconds, int row) throws Exception {
         for (int loop = 1; loop < seconds; loop++) {
             selenium.click("link=Manage Array Designs");
@@ -385,6 +397,16 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     }
 
+    /**
+     * 
+     * @param text - value to seach for
+     * @param column - Table column which contains the search text
+     * @return int the row number
+     * 
+     * Returns the row where the data resides in a particular column
+     * For example - find title "Exp 1" in column 1 (column 1 holds the experiment names)
+     */
+     
     protected int getExperimentRow(String text, String column) {
         int page = 1;
         for (int loop = 1;; loop++) {
@@ -411,7 +433,6 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                 loop = 0;
             }
         }
-
     }
 
     protected int getExperimentRow(String text, String column, String textToWaitFor) throws InterruptedException {
@@ -455,6 +476,21 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     protected boolean doesArrayDesignExists(String arrayDesignName) {
         return selenium.isTextPresent(arrayDesignName);
+    }
+
+    protected void makeExperimentPublic(String experimentId) {
+    
+        clickAndWait("link=My Experiment Workspace");
+        waitForTab();
+    
+        // - Make the experiment public
+        int row = getExperimentRow(experimentId, ZERO_COLUMN);
+        // - Click on the image to enter the edit mode again
+        selenium.click("//tr[" + row + "]/td[7]/a/img");
+        waitForText("Overall Experiment Characteristics");
+    
+        // make experiment public
+        setExperimentPublic();
     }
 
 }

@@ -113,7 +113,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         loginAsPrincipalInvestigator();
         importArrayDesign("HT_HG-U133A", AffymetrixArrayDesignFiles.HT_HG_U133A_CDF);
         // - Create Experiment
-        createExperiment(title, "HT_HG-U133A");
+        String experimentId = createExperiment(title, "HT_HG-U133A");
 
         // - go to the data tab
         this.selenium.click("link=Data");
@@ -158,27 +158,12 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
         // make experiment public
         submitExperiment();
-        makeExperimentPublic(title);
+        makeExperimentPublic(experimentId);
         endTime = System.currentTimeMillis();
         String totalTime = df.format((endTime - startTime)/60000f);
         System.out.println("total time = " + totalTime);
     }
 
-    private void makeExperimentPublic(String title) {
-
-        clickAndWait("link=My Experiment Workspace");
-        waitForTab();
-
-        findTitleAcrossMultiPages(title);
-        // - Make the experiment public
-        int row = getExperimentRow(title, FIRST_COLUMN);
-        // - Click on the image to enter the edit mode again
-        selenium.click("//tr[" + row + "]/td[7]/a/img");
-        waitForText("Overall Experiment Characteristics");
-
-        // make experiment public
-        setExperimentPublic();
-    }
 
     private void importArrayDesign(String arrayDesignName, File arrayDesign) throws Exception {
         selenium.click("link=Manage Array Designs");

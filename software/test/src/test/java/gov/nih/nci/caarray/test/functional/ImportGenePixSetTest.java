@@ -112,7 +112,7 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         // - Add the array design
         importArrayDesign(GenepixArrayDataFiles.JOE_DERISI_FIX, PROVIDER, ORGANISM);
         // Create project
-        createExperiment(title, ARRAY_DESIGN_NAME, PROVIDER, ORGANISM);
+        String experimentId = createExperiment(title, ARRAY_DESIGN_NAME, PROVIDER, ORGANISM);
 
         // - go to the data tab
         selenium.click("link=Data");
@@ -141,13 +141,21 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         // - click on the Imported data tab
         selenium.click("link=Imported Data");
         // TBD - sometimes the Import button is pressed but the app stays on the Upload page - test will time out when that occurs
-        Thread.sleep(1000);  // added to fix the above problem
+        // ** this tab consistently fails.  Selenium will press the tab but not switch the page from
+        //      the Upload page.
+        Thread.sleep(1000);  
+        selenium.click("link=Imported Data");
+        Thread.sleep(1000);  
         waitForText("displaying all items");
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);
+        
+        // make experiment public
+        submitExperiment();
+        makeExperimentPublic(experimentId);
     }
-
+    
     private void importArrayDesign(File arrayDesign, String provider, String organism) throws Exception {
         selenium.click("link=Manage Array Designs");
         selenium.waitForPageToLoad("30000");
