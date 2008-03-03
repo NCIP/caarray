@@ -258,7 +258,11 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         if (!isComment(values)) {
             for (int i = 0; i < values.size(); i++) {
                 currentColumnNumber = i + 1;
-                handleValue(columns.get(i), StringUtils.trim(values.get(i)));
+                try {
+                    handleValue(columns.get(i), StringUtils.trim(values.get(i)));
+                } catch (Exception e) {
+                    addError(e.toString());
+                }
             }
             currentNode = null;
             currentArrayDesign = null;
@@ -416,7 +420,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             currentUnitable = factorValue;
             currentHybridization.getFactorValues().add(factorValue);
         } else {
-            addErrorMessage(currentLineNumber, currentColumnNumber, "Referenced Factor Name "
+            addError("Referenced Factor Name "
                     + column.getHeading().getQualifier() + " was not found in the IDF");
         }
     }
@@ -621,7 +625,12 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         for (int i = 0; i < numProviders; i++) {
             Provider provider = new Provider();
             provider.setName(providerNames[i]);
-            ((Source) currentBioMaterial).getProviders().add(provider);
+            if (currentBioMaterial instanceof Source) {
+                ((Source) currentBioMaterial).getProviders().add(provider);
+            } else {
+                addError("Provider must be preceded by a Source");
+                return;
+            }
         }
     }
 
