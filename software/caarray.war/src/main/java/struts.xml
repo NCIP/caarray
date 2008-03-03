@@ -8,13 +8,13 @@
     <package name="default" extends="struts-default">
         <interceptors>
             <interceptor name="caarrayParams"
-                class="gov.nih.nci.caarray.web.interceptor.DisplayTagParametersInterceptor" />
+                class="com.fiveamsolutions.nci.commons.web.struts2.interceptor.DisplayTagParametersInterceptor" />
 
             <interceptor name="nullCollectionElements"
-                class="gov.nih.nci.caarray.web.interceptor.NullCollectionElementInterceptor" />
+                class="com.fiveamsolutions.nci.commons.web.struts2.interceptor.NullCollectionElementInterceptor" />
 
             <interceptor name="parameterTrim"
-                class="gov.nih.nci.caarray.web.interceptor.ParameterTrimInterceptor" />
+                class="com.fiveamsolutions.nci.commons.web.struts2.interceptor.ParameterTrimInterceptor" />
 
             <interceptor-stack name="caarrayParamsPrepareParamsStack">
                 <interceptor-ref name="exception" />
@@ -98,7 +98,7 @@
         <action name="home" class="gov.nih.nci.caarray.web.action.HomeAction">
             <result name="input">/WEB-INF/pages/home.jsp</result>
         </action>
-        <action name="logout" class="gov.nih.nci.caarray.web.action.LogoutAction">
+        <action name="logout" class="com.fiveamsolutions.nci.commons.web.struts2.action.LogoutAction" method="logout">
             <result name="success" type="redirect-action">
                 <param name="namespace">/</param>
                 <param name="actionName">home</param>

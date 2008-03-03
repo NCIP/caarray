@@ -20,7 +20,7 @@
                     <display:table class="searchresults" cellspacing="0" defaultsort="2" list="${arrayDesigns}"
                                    requestURI="${sortUrl}" sort="list" id="row" pagesize="20">
                         <caarray:displayTagProperties/>
-                        <display:column property="name" titleKey="arrayDesign.name" sortable="true" url="/protected/arrayDesign/view.action" paramId="arrayDesign.id" paramProperty="id"/>
+                        <display:column property="name" titleKey="arrayDesign.name" sortable="true" url="/protected/arrayDesign/view.action" paramId="arrayDesign.id" paramProperty="id" maxLength="30"/>
                         <display:column property="provider.name" titleKey="arrayDesign.provider" sortable="true"/>
                         <display:column titleKey="arrayDesign.assayType" sortable="true">
                             <fmt:message key="${row.assayTypeEnum.resourceKey}" />

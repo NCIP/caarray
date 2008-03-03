@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.domain;
 import java.io.Serializable;
 
 /**
- * Interface common to all peristent classes in caArray.
+ * Interface common to all persistent classes in caArray.
  */
 public interface PersistentObject extends Serializable {
     /**

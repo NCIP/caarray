@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action.vocabulary;
 
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getVocabularyService;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -89,7 +90,7 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -102,6 +103,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
@@ -137,7 +139,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      */
     public void prepare() {
         if (getCurrentTerm() != null && getCurrentTerm().getId() != null) {
-            Term retrieved = ActionHelper.getVocabularyService().getTerm(getCurrentTerm().getId());
+            Term retrieved = getVocabularyService().getTerm(getCurrentTerm().getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(getCurrentTerm(),
                         SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
@@ -188,7 +190,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
             session.removeAttribute("returnInitialTab2Url");
             return edit();
         }
-        this.setTerms(ActionHelper.getTermsFromCategory(this.getCategory()));
+        this.setTerms(CaArrayActionHelper.getTermsFromCategory(this.getCategory()));
         return SUCCESS;
     }
 
@@ -199,7 +201,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String searchForTerms() {
-        this.setTerms(ActionHelper.getVocabularyService().getTerms(ActionHelper.getCategory(this.getCategory()),
+        this.setTerms(getVocabularyService().getTerms(CaArrayActionHelper.getCategory(this.getCategory()),
                 getCurrentTerm().getValue()));
         return "termAutoCompleterValues";
     }
@@ -212,7 +214,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     @SkipValidation
     public String edit() {
         setEditMode(true);
-        setSources(ActionHelper.getVocabularyService().getAllSources());
+        setSources(getVocabularyService().getAllSources());
         return INPUT;
     }
 
@@ -224,7 +226,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     @SkipValidation
     public String details() {
         setEditMode(false);
-        setSources(ActionHelper.getVocabularyService().getAllSources());
+        setSources(getVocabularyService().getAllSources());
         return INPUT;
     }
 
@@ -240,7 +242,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
         }
     )
     public String save() {
-        ActionHelper.getVocabularyService().saveTerm(getCurrentTerm());
+        getVocabularyService().saveTerm(getCurrentTerm());
         if (getCurrentTerm().getId() == null) {
             ActionHelper.saveMessage(getText("vocabulary.term.created", new String[] {getCurrentTerm().getValue()}));
         } else {
@@ -268,7 +270,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     public void validate() {
         super.validate();
         if (hasErrors()) {
-            setSources(ActionHelper.getVocabularyService().getAllSources());
+            setSources(getVocabularyService().getAllSources());
         }
     }
 
@@ -287,7 +289,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     }
     
     private Category retrieveCategory() {
-        return ActionHelper.getCategory(getCategory());        
+        return CaArrayActionHelper.getCategory(getCategory());        
     }
 
     /**

@@ -146,6 +146,8 @@
     <property name="jboss-jmx.jar" value="${lib.dir}/jboss-jmx.jar" />
     <property name="jgroups.jar" value="${lib.dir}/jgroups.jar" />
     <property name="concurrent.jar" value="${lib.dir}/concurrent.jar" />
+    <property name="nci-commons-core.jar" value="${lib.dir}/nci-commons-core-1.0.jar" />
+    <property name="nci-commons-struts2.jar" value="${lib.dir}/nci-commons-struts2-1.0.jar" />
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -630,6 +632,7 @@
                 <include name="ognl-2.6.11.jar" />
                 <include name="ajaxtags-1.3-beta-rc7.jar" />
                 <include name="jericho-html-2.4.jar" />
+                <include name="nci-commons-struts2-1.0.jar" />
             </lib>
             <zipfileset dir="${caarray-war.target.dir}/help/caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help" prefix="help" />
         </war>
@@ -695,6 +698,7 @@
                 <include name="caGrid-1.1-data-stubs.jar" />
                 <include name="caGrid-1.1-data-common.jar" />
                 <include name="caGrid-1.1-sdkQuery32-core.jar" />
+                <include name="nci-commons-core-1.0.jar" />
             </fileset>
         </ear>
     </target>
@@ -882,12 +886,17 @@
                 <pathelement location="${hibernate.jar}" />
                 <pathelement location="${urlrewrite.jar}" />
                 <pathelement location="${cglib.jar}" />
+                <pathelement location="${nci-commons-core.jar}" />
+                <pathelement location="${nci-commons-struts2.jar}" />
             </classpath>
         </javac>
     </target>
 
     <target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,test:unpack-test-data">
-        <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-beanutils.jar};${commons-logging.jar};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar};${cglib.jar};${commons-io.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${mysql-connector.jar};${c3p0.jar};${cglib.jar};${clm.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};" />
+        <run-junit-tests test.src.dir="${caarray-war.test.src.dir}"
+                         xml.output.dir="${caarray-war.target.dir}/junit"
+                         instrumented.classes="${caarray-war.instrumented.classes.dir}"
+                         classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-beanutils.jar};${commons-logging.jar};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar};${cglib.jar};${commons-io.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${mysql-connector.jar};${c3p0.jar};${cglib.jar};${clm.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${nci-commons-struts2.jar}" />
     </target>
 
     <target name="test:junit-report">

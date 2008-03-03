@@ -7,7 +7,9 @@
 <caarray:tabPane subtab="true">
     <caarray:projectListTabItemForm entityName="Sample" item="${currentSample}" itemName="${currentSample.name}"
         isSubtab="true">
-        <s:textfield required="true" name="currentSample.name" key="experiment.samples.name" size="80" tabindex="1" />
+        <c:if test="${editMode}">
+            <s:textfield required="true" name="currentSample.name" key="experiment.samples.name" size="80" tabindex="1" />
+        </c:if>
         <s:textarea name="currentSample.description" key="experiment.samples.description" rows="3" cols="75"
             tabindex="2" />
         <s:textfield key="currentSample.externalSampleId" size="80" tabindex="3" />

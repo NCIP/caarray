@@ -88,7 +88,7 @@ import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.io.ByteArrayInputStream;
@@ -131,7 +131,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
     }
 
     private void initForm() {
-        setProtocolTypes(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PROTOCOL_TYPE));
+        setProtocolTypes(CaArrayActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PROTOCOL_TYPE));
     }
 
     /**
@@ -179,7 +179,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      */
     @SkipValidation
     public String retrieveXmlProtocolList() {
-        setProtocols(ActionHelper.getVocabularyService().getProtocolByProtocolType(getProtocolType()));
+        setProtocols(CaArrayActionHelper.getVocabularyService().getProtocolByProtocolType(getProtocolType()));
         return "xmlProtocolList";
     }
 

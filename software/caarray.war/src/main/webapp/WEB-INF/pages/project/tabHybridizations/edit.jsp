@@ -2,7 +2,9 @@
 <caarray:tabPane subtab="true">
     <caarray:projectListTabItemForm entityName="Hybridization" item="${currentHybridization}" itemName="${currentHybridization.name}"
         isSubtab="true">
-        <s:textfield name="currentHybridization.name" key="experiment.hybridizations.name" required="true" size="80" tabindex="1" />
+        <c:if test="${editMode}">
+            <s:textfield name="currentHybridization.name" key="experiment.hybridizations.name" required="true" size="80" tabindex="1" />
+        </c:if>
         <s:textarea name="currentHybridization.description" key="currentHybridization.description" rows="3" cols="80"
             tabindex="2" />
         <caarray:annotationAssociationPicker baseId="labeledExtractPicker" entityName="Hybridization" associatedEntityName="Labeled Extract" itemId="${currentHybridization.id}" tabIndex="3" />

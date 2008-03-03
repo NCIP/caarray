@@ -4,7 +4,7 @@
 "http://www.jboss.org/j2ee/dtd/security_config.dtd">
 
 <policy>
-        <application-policy name="caarray">
+    <application-policy name="caarray">
         <authentication>
             <!--
                  Notes on the policy here:
@@ -14,12 +14,12 @@
                  - The CaArrayLoginModule uses CSM and integrates with the JBoss password stacking
                    mechanism.
              -->
-             <login-module code="gov.nih.nci.caarray.web.authentication.CaArrayLDAPLoginModule" flag="optional"> 
+            <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule" flag="optional">
                 <module-option name="ldapHost">@ldap.host@</module-option> 
                 <module-option name="ldapSearchableBase">@ldap.searchbase@</module-option> 
                 <module-option name="ldapUserIdLabel">@ldap.searchprefix@</module-option>
-             </login-module>
-            <login-module code="gov.nih.nci.caarray.web.authentication.CaArrayDBLoginModule" flag="optional" >
+            </login-module>
+            <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule" flag="optional" >
                 <module-option name="driver">@database.driver@</module-option>
                 <module-option name="url">@database.url@</module-option>
                 <module-option name="user">@database.user@</module-option>

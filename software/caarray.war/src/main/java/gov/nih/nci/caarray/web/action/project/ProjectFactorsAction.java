@@ -82,8 +82,9 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getTermsFromCategory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
@@ -95,7 +96,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
@@ -151,7 +151,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      */
     @Override
     public String view() {
-        setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
+        setCategories(getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
         return super.view();
     }
 
@@ -161,7 +161,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     @Override
     @SkipValidation
     public String edit() {
-        setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
+        setCategories(getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
         return super.edit();
     }
 
@@ -172,7 +172,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     public void validate() {
         super.validate();
         if (hasErrors()) {
-            setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
+            setCategories(getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
         }
     }
 

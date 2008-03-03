@@ -82,10 +82,10 @@
  */
 package gov.nih.nci.caarray.web.action;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getArrayDesignService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getFileAccessService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getFileManagementService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getArrayDesignService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileAccessService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getVocabularyService;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -106,6 +106,7 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
@@ -225,7 +226,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     public void prepare() {
         this.organisms = getVocabularyService().getOrganisms();
         this.providers = getArrayDesignService().getAllProviders();
-        this.featureTypes = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.TECHNOLOGY_TYPE);
+        this.featureTypes = CaArrayActionHelper.getTermsFromCategory(ExperimentOntologyCategory.TECHNOLOGY_TYPE);
         if (arrayDesign != null && arrayDesign.getId() != null) {
             ArrayDesign retrieved = getArrayDesignService().getArrayDesign(arrayDesign.getId());
             if (retrieved == null) {

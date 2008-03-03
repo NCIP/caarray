@@ -14,7 +14,7 @@
                 <caarray:actions divclass="actionsthin">
                     <caarray:action actionClass="cancel" text="Cancel" onclick="PermissionUtils.cancelEditProfile(); return false; " />
                     <caarray:action actionClass="save" text="Save" onclick="PermissionUtils.saveProfile(); return false;" />
-                </caarray:actions>                    
+                </caarray:actions>
             </td>
         </tr>
     </table>

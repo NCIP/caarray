@@ -6,6 +6,7 @@
 <%@ attribute name="relatedEntityName" required="true"%>
 <%@ attribute name="nameProperty" required="true"%>
 <%@ attribute name="isSubtab" required="false"%>
+<%@ attribute name="maxWidth" required="false" type="java.lang.Integer"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -17,6 +18,6 @@
 </c:if>
 
 <c:forEach items="${relatedItems}" var="item" varStatus="itemStatus">
-    <caarray:projectListTabActionLink linkContent="${item[nameProperty]}" entityName="${relatedEntityName}" action="view" itemId="${item.id}" isSubtab="${isSubtab}"/>
+    <caarray:projectListTabActionLink linkContent="${item[nameProperty]}" entityName="${relatedEntityName}" action="view" itemId="${item.id}" isSubtab="${isSubtab}" maxWidth="${maxWidth}"/>
     <c:if test="${!itemStatus.last}">, </c:if>
 </c:forEach>

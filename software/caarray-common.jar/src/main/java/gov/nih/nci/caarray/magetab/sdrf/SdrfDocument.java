@@ -110,7 +110,7 @@ import org.apache.commons.lang.StringUtils;
  * Represents a Sample and Data Relationship Format (SDRF) file - a tab-delimited file describing the relationships
  * between samples, arrays, data, and other objects used or produced in the investigation, and providing all MIAME
  * information that is not provided elsewhere. This is often the least trivial part of the experiment description due to
- * the complex relationshipswhich are possible between samples and their respective hybridizations; however, for simple
+ * the complex relationships which are possible between samples and their respective hybridizations; however, for simple
  * experimental designs, constructing the SDRF file is straightforward, and even complex loop designs can be expressed
  * in this format.
  */
@@ -220,7 +220,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         boolean hybridization = false;
         boolean dataFile = false;
         // file should have
-        // 1. BioMaterial (Souce, Sample, Extract, Labeled Extract)
+        // 1. BioMaterial (Source, Sample, Extract, Labeled Extract)
         // 2. Hybridization
         // 3. data file
         for (SdrfColumn aColumn : columns) {
@@ -410,10 +410,15 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleFactorValue(SdrfColumn column, String value) {
         FactorValue factorValue = new FactorValue();
         factorValue.setFactor(idfDocument.getFactor(column.getHeading().getQualifier()));
-        factorValue.addToSdrfList(this);
-        factorValue.setValue(value);
-        currentUnitable = factorValue;
-        currentHybridization.getFactorValues().add(factorValue);
+        if (factorValue.getFactor() != null) {
+            factorValue.addToSdrfList(this);
+            factorValue.setValue(value);
+            currentUnitable = factorValue;
+            currentHybridization.getFactorValues().add(factorValue);
+        } else {
+            addErrorMessage(currentLineNumber, currentColumnNumber, "Referenced Factor Name "
+                    + column.getHeading().getQualifier() + " was not found in the IDF");
+        }
     }
 
     private void handleDerivedArrayDataFile(SdrfColumn column, String value) {

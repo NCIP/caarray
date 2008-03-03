@@ -95,4 +95,16 @@
     </example>
   </function>  
   
+  <function>
+    <description>
+      Abbreviates a String using ellipses
+    </description>
+    <name>abbreviate</name>
+    <function-class>org.apache.commons.lang.StringUtils</function-class>
+    <function-signature>java.lang.String abbreviate(java.lang.String, int)</function-signature>
+    <example>
+      var foo = '${caarrayfn:abbreviate(string, maxWidth)}';
+    </example>
+  </function>  
+  
 </taglib>

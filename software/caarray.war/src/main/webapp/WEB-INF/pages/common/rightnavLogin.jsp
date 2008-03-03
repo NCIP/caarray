@@ -28,6 +28,9 @@ $('login').submit();
     <form id="login" method="post" action="<c:url value='/j_security_check'/>" onsubmit="startLogin(); return false;">
         <table class="login">
             <c:if test="${param.error != null}">
+            <script type="text/javascript">
+                $('login_progress').hide();
+            </script>
             <tr>
                 <td colspan="2" class="centered">
                     <br />

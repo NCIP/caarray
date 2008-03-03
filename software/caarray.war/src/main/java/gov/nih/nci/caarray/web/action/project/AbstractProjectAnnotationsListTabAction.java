@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 

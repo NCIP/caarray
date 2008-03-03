@@ -22,10 +22,10 @@
                         <c:param name="protocol.id" value="${row.id}" />
                     </c:url>
                     <ajax:anchors target="tabboxwrapper">
-                        <a href="${viewProtocolUrl}">${row.name}</a>
+                        <a href="${viewProtocolUrl}"><caarray:abbreviate value="${row.name}" maxWidth="30"/></a>
                     </ajax:anchors>
                 </display:column>>
-                <display:column titleKey="protocol.type" property="type.value" sortable="true" />
+                <display:column titleKey="protocol.type" property="type.value" sortable="true" maxLength="30"/>
                 <display:column title="Source" sortProperty="source.name" sortable="true">
                     <c:choose>
                         <c:when test="${not empty row.source.url}"><a href="${row.source.url}" target="_blank">${row.source.nameAndVersion}</a></c:when>

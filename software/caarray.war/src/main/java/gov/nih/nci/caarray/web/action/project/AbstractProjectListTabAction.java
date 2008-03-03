@@ -82,20 +82,18 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
@@ -243,9 +241,7 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
         try {
             doCopyItem();
             ActionHelper.saveMessage(getText("experiment.items.copied", new String[] {getItemName()}));
-            List<String> args = new ArrayList<String>();
-            args.add(getProject().getExperiment().getTitle());
-            ActionHelper.saveMessage(getText("project.saved", args));
+            ActionHelper.saveMessage(getText("project.saved"));
         } catch (ProposalWorkflowException e) {
             handleWorkflowError();
         } catch (InconsistentProjectStateException e) {

@@ -101,7 +101,6 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,6 +109,8 @@ import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 
 /**
  * @author Winston Cheng

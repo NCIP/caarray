@@ -155,7 +155,7 @@ public class HomeAction {
      * @return input
      */
     public String execute() {
-        BrowseService bs = ActionHelper.getBrowseService();
+        BrowseService bs = CaArrayActionHelper.getBrowseService();
         browseItems = new ArrayList<BrowseItems>();
         for (BrowseCategory cat : BrowseCategory.values()) {
             browseItems.add(new BrowseItems(cat, bs.countByBrowseCategory(cat)));

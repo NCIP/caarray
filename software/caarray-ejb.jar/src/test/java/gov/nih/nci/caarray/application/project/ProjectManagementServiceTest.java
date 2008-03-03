@@ -177,7 +177,9 @@ public class ProjectManagementServiceTest {
 
     @After
     public void tearDown() {
-        transaction.rollback();
+        if (transaction != null) {
+            transaction.rollback();
+        }
     }
 
     @Test

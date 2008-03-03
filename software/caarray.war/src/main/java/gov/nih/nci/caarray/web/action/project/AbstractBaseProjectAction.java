@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -115,6 +115,12 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
      * reload the project in top level frame.
      */
     public static final String RELOAD_PROJECT_RESULT = "reload-project";
+    
+    /**
+     * Width (in characters) to which the experiment title should be truncated to prevent messages from overflowing
+     * the UI.   
+     */
+    public static final int TRUNCATED_TITLE_WIDTH = 80;
 
     private Project project = new Project();
 

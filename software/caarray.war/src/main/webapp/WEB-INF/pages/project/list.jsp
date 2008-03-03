@@ -20,7 +20,7 @@
                 </c:otherwise>
             </c:choose>
         </display:column>
-        <display:column property="experiment.title" sortProperty="TITLE" title="Experiment Title" escapeXml="true" sortable="true"/>
+        <display:column property="experiment.title" sortProperty="TITLE" title="Experiment Title" escapeXml="true" sortable="true" maxLength="30"/>
         <display:column sortProperty="ASSAY_TYPE" title="Assay Type" sortable="true" >
             <s:if test="${row.experiment.assayTypeEnum != null}">
                 <fmt:message key="${row.experiment.assayTypeEnum.resourceKey}" />

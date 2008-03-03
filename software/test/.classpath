@@ -3,14 +3,14 @@
 	<classpathentry kind="lib" path="/lib/hibernate-client.jar"/>
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry sourcepath="/lib/src/selenium-server-src.jar" kind="lib" path="/lib/selenium-server.jar"/>
-	<classpathentry sourcepath="/lib/src/selenium-java-client-driver-src.jar" kind="lib" path="/lib/selenium-java-client-driver.jar">
+	<classpathentry kind="lib" path="/lib/selenium-server.jar" sourcepath="/lib/src/selenium-server-src.jar"/>
+	<classpathentry kind="lib" path="/lib/selenium-java-client-driver.jar" sourcepath="/lib/src/selenium-java-client-driver-src.jar">
 		<attributes>
-			<attribute value="file:/C:/dev/tools/selenium-remote-control-0.9.1-SNAPSHOT/java/doc/" name="javadoc_location"/>
+			<attribute name="javadoc_location" value="file:/C:/dev/tools/selenium-remote-control-0.9.1-SNAPSHOT/java/doc/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="/lib/src/selenium-java-client-driver-tests-src.jar" kind="lib" path="/lib/selenium-java-client-driver-tests.jar"/>
-	<classpathentry sourcepath="/lib/src/junit-4.3.1-src.jar" kind="lib" path="/lib/junit-4.3.1.jar"/>
+	<classpathentry kind="lib" path="/lib/selenium-java-client-driver-tests.jar" sourcepath="/lib/src/selenium-java-client-driver-tests-src.jar"/>
+	<classpathentry kind="lib" path="/lib/junit-4.3.1.jar" sourcepath="/lib/src/junit-4.3.1-src.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/test-data"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-client-jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar"/>
@@ -18,9 +18,9 @@
 	<classpathentry kind="lib" path="/lib/jboss-ejb3-client.jar"/>
 	<classpathentry kind="lib" path="/lib/jboss-aop-jdk50-client.jar"/>
 	<classpathentry kind="lib" path="/lib/jboss-aspect-jdk50-client.jar"/>
-	<classpathentry kind="lib" path="C:/ncicb_svn/caarray2/software/lib/caGrid-1.1-data-stubs.jar"/>
-	<classpathentry kind="lib" path="C:/ncicb_svn/caarray2/software/lib/jboss-cache.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-ejb-jar"/>
 	<classpathentry kind="lib" path="/lib/commons-lang-2.3.jar"/>
+	<classpathentry kind="lib" path="/lib/caGrid-1.1-data-stubs.jar"/>
+	<classpathentry kind="lib" path="/lib/jboss-cache.jar"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>

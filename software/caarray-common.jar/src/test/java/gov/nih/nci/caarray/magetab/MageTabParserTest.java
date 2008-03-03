@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.magetab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
@@ -112,7 +111,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Test;
@@ -304,7 +302,9 @@ public class MageTabParserTest {
         result = parser.validate(fileSet);
         System.out.println("testValidate result: " + result);
         assertFalse(result.isValid());
-        assertEquals(15, result.getMessages().size());
+        assertEquals(92, result.getMessages().size());
+        // check for the fix to gforge defect 12541
+        assertTrue(result.getMessages().toString().contains("ERROR: Referenced Factor Name EF1 was not found in the IDF"));
     }
 
     @Test

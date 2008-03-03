@@ -1,6 +1,6 @@
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
@@ -10,7 +10,7 @@ import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +19,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
@@ -54,8 +55,8 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
         boolean initialSave = getProject().getId() == null;
         if (initialSave && getProject().getExperiment().getPrimaryInvestigator() == null) {
             // make sure PI is set so that the experiment has a public ID - assume PI is user
-            Term piRole = ActionHelper.getMOTerm(ExperimentContact.PI_ROLE);
-            Term mainPocRole = ActionHelper.getMOTerm(ExperimentContact.MAIN_POC_ROLE);
+            Term piRole = CaArrayActionHelper.getMOTerm(ExperimentContact.PI_ROLE);
+            Term mainPocRole = CaArrayActionHelper.getMOTerm(ExperimentContact.MAIN_POC_ROLE);
             ExperimentContact pi =
                     new ExperimentContact(getExperiment(), new Person(UsernameHolder.getCsmUser()), Arrays.asList(
                             piRole, mainPocRole));
@@ -64,9 +65,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
         try {
             getProjectManagementService().saveProject(getProject(),
                     this.orphans.toArray(new PersistentObject[this.orphans.size()]));
-            List<String> args = new ArrayList<String>();
-            args.add(getProject().getExperiment().getTitle());
-            ActionHelper.saveMessage(getText("project.saved", args));
+            ActionHelper.saveMessage(getText("project.saved"));
             setEditMode(true);
             return initialSave ? RELOAD_PROJECT_RESULT : SUCCESS;
         } catch (ProposalWorkflowException e) {
@@ -85,7 +84,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
      */
     protected void handleInconsistentStateError(InconsistentProjectStateException e) {
         List<String> args = new ArrayList<String>();
-        args.add(getProject().getExperiment().getTitle());
+        args.add(StringUtils.abbreviate(getProject().getExperiment().getTitle(), TRUNCATED_TITLE_WIDTH));
         if (e.getReason() == Reason.INCONSISTENT_ARRAY_DESIGNS) {
             args.add(StringUtils.join(e.getArguments(), ", "));
             addFieldError("project.experiment.arrayDesigns", getText("project.inconsistentState."
@@ -101,7 +100,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
      */
     protected void handleWorkflowError() {
         List<String> args = new ArrayList<String>();
-        args.add(getProject().getExperiment().getTitle());
+        args.add(StringUtils.abbreviate(getProject().getExperiment().getTitle(), TRUNCATED_TITLE_WIDTH));
         ActionHelper.saveMessage(getText("project.saveProblem", args));
     }
 

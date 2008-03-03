@@ -19,7 +19,7 @@
                 </c:otherwise>
             </c:choose>
         </display:column>
-        <display:column property="experiment.title" sortProperty="TITLE" titleKey="search.result.experimentTitle" sortable="true"/>
+        <display:column property="experiment.title" sortProperty="TITLE" titleKey="search.result.experimentTitle" sortable="true" maxLength="30"/>
         <display:column sortProperty="ASSAY_TYPE" titleKey="search.result.assayType" sortable="true">
             <fmt:message key="${row.experiment.assayTypeEnum.resourceKey}" />
         </display:column>

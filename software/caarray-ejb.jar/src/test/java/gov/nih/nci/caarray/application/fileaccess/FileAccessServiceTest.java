@@ -127,7 +127,9 @@ public class FileAccessServiceTest {
     @After
     public void tearDown() {
         TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
-        this.transaction.rollback();
+        if (this.transaction != null) {
+            this.transaction.rollback();
+        }
     }
 
     @Test

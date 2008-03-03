@@ -88,7 +88,7 @@ import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +99,7 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.hibernate.criterion.Order;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
@@ -135,7 +136,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
      */
     public void prepare() {
         if (getProtocol() != null && getProtocol().getId() != null) {
-            Protocol retrieved = ActionHelper.getGenericDataService().retrieveEntity(Protocol.class,
+            Protocol retrieved = CaArrayActionHelper.getGenericDataService().retrieveEntity(Protocol.class,
                     this.getProtocol().getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.protocol,
@@ -173,7 +174,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
     @SkipValidation
     public String edit() {
         setEditMode(true);
-        setSources(ActionHelper.getVocabularyService().getAllSources());
+        setSources(CaArrayActionHelper.getVocabularyService().getAllSources());
         return INPUT;
     }
 
@@ -184,7 +185,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
     @SkipValidation
     public String details() {
         setEditMode(false);
-        setSources(ActionHelper.getVocabularyService().getAllSources());
+        setSources(CaArrayActionHelper.getVocabularyService().getAllSources());
         return INPUT;
     }
 
@@ -201,7 +202,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
         }
     )
     public String save() throws InstantiationException, IllegalAccessException {
-        ActionHelper.getGenericDataService().save(getProtocol());
+        CaArrayActionHelper.getGenericDataService().save(getProtocol());
         List<String> args = new ArrayList<String>();
         args.add(getProtocol().getName());
         ActionHelper.saveMessage(getText("protocol.saved", args));
@@ -218,7 +219,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
     public void validate() {
         super.validate();
         if (!ActionHelper.isSkipValidationSetOnCurrentAction() && getProtocol() != null) {
-            Protocol p = ActionHelper.getVocabularyService().getProtocol(getProtocol().getName(),
+            Protocol p = CaArrayActionHelper.getVocabularyService().getProtocol(getProtocol().getName(),
                     getProtocol().getSource());
             if (p != null && !p.getId().equals(getProtocol().getId())) {
                 addFieldError("protocol.name", getText("protocol.duplicate.name"));
@@ -226,7 +227,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
         }
 
         if (hasErrors()) {
-            setSources(ActionHelper.getVocabularyService().getAllSources());
+            setSources(CaArrayActionHelper.getVocabularyService().getAllSources());
         }
     }
 
@@ -264,7 +265,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
         if (getProtocol() != null) {
             HibernateUtil.getCurrentSession().evict(getProtocol());
         }
-        setProtocols(ActionHelper.getGenericDataService().retrieveAll(Protocol.class, Order.asc("name")));
+        setProtocols(CaArrayActionHelper.getGenericDataService().retrieveAll(Protocol.class, Order.asc("name")));
         return SUCCESS;
     }
 

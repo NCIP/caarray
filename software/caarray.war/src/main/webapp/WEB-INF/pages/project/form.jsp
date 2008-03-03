@@ -18,6 +18,9 @@
 
   submitWorkflowForm = function() {
     var confirmMsg = "Are you sure you want to change the project's status?";
+    <c:if test="${!project.submissionAllowed && !project.makingPublicAllowed && project.public}">
+        confirmMsg += " This action will place the experiment in the \"<fmt:message key='proposalStatus.inProgress'/>\" state, allowing you to edit it again.";
+    </c:if>
     if (TabUtils.hasFormChanges()) {
         confirmMsg = "There are unsaved changed in your form that will be lost. Are you sure you want to proceed to change the project's status?";
     }
@@ -61,7 +64,7 @@
             </c:if>
         </c:if>
         </jsp:attribute>
-  </caarray:helpPrint>
+    </caarray:helpPrint>
 
 
     <c:url value="/ajax/project/tab/Overview/load.action" var="overviewUrl">
@@ -104,7 +107,7 @@
     <div class="padme">
         <h2>
             <span class="dark">Experiment:</span>
-            <span id="experimentTitleHeader">
+            <span id="experimentTitleHeader" style="word-wrap:break-word">
                 <c:out value="${project.experiment.title}" default="New Experiment"/>
             </span>
         </h2>

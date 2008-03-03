@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getPermissionsManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getPermissionsManagementService;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.AuthorizationManager;
@@ -99,6 +99,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
@@ -217,7 +218,7 @@ public class CollaboratorsAction extends ActionSupport {
     }
 
     /**
-     * Removes the seleted users from the current collaborator group.
+     * Removes the selected users from the current collaborator group.
      * @return success
      * @throws CSTransactionException on CSM error
      * @throws CSObjectNotFoundException on CSM error
