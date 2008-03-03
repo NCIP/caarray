@@ -142,10 +142,12 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         waitForImport("Nothing found to display");
 
         // - click on the Imported data tab
+        // ** this tab consistently fails.  Selenium will press the tab but not switch the page from
+        //      the Upload page.
         selenium.click("link=Imported Data");
         Thread.sleep(3000);
         selenium.click("link=Imported Data");
-        Thread.sleep(1000);  // added to fix the above problem
+        Thread.sleep(1000);  
 
         waitForText("One item found");
 
