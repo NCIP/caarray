@@ -106,27 +106,27 @@ import org.junit.Test;
  */
 public class ApiCqlSearchPerson extends AbstractApiTest {
     private static final String DEFAULT_LAST_NAME = "Freuhauf";
+    private static final String[] LAST_NAMES = {
+        "Laufs",
+        "Freuhauf",
+        "Wenz",
+        "Li",
+        "Zeller",
+        "Fleckenstein"
+    };
 
     @Test
     public void testCqlSearchPerson() {
-        CQLQuery cqlQuery = createCqlQuery();
-        String errorMessage = "Error: Response did not match request.";
         try {
             CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties
                     .getServerJndiPort());
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
             logForSilverCompatibility(TEST_NAME, "CQL-Searching for Persons...");
-            List personList = searchService.search(cqlQuery);
-            logForSilverCompatibility(API_CALL, "CaArraySearchService.search(CQLQuery)");
-            boolean resultIsOkay = isResultOkay(personList);
-            if (resultIsOkay) {
-                logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + personList.size() + " persons with last name "
-                        + DEFAULT_LAST_NAME + ".");
-            } else {
-                logForSilverCompatibility(TEST_OUTPUT, errorMessage + " Retrieved " + personList.size() + " persons.");
+            for (String lastName : LAST_NAMES) {
+                boolean resultIsOkay = searchPersons(searchService, lastName);
+                assertTrue("Error: Response did not match request.", resultIsOkay);
             }
-            assertTrue(errorMessage, resultIsOkay);
         } catch (ServerConnectionException e) {
             StringBuilder trace = buildStackTrace(e);
             logForSilverCompatibility(TEST_OUTPUT, "Server connection exception: " + e + "\nTrace: " + trace);
@@ -143,14 +143,29 @@ public class ApiCqlSearchPerson extends AbstractApiTest {
         }
     }
 
-    private CQLQuery createCqlQuery() {
+    private boolean searchPersons(CaArraySearchService searchService, String lastName) {
+        CQLQuery cqlQuery = createCqlQuery(lastName);
+        List personList = searchService.search(cqlQuery);
+        logForSilverCompatibility(API_CALL, "CaArraySearchService.search(CQLQuery)");
+        boolean resultIsOkay = isResultOkay(personList, lastName);
+        if (resultIsOkay) {
+            logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + personList.size()
+                    + " persons with last name " + DEFAULT_LAST_NAME + ".");
+        } else {
+            logForSilverCompatibility(TEST_OUTPUT, "Error: Response did not match request. Retrieved " + personList.size()
+                    + " persons.");
+        }
+        return resultIsOkay;
+    }
+
+    private CQLQuery createCqlQuery(String lastName) {
         CQLQuery cqlQuery = new CQLQuery();
         Object target = new Object();
         target.setName("gov.nih.nci.caarray.domain.contact.Person");
 
         Attribute affiliationAttribute = new Attribute();
         affiliationAttribute.setName("lastName");
-        affiliationAttribute.setValue(DEFAULT_LAST_NAME);
+        affiliationAttribute.setValue(lastName);
         affiliationAttribute.setPredicate(Predicate.EQUAL_TO);
 
         target.setAttribute(affiliationAttribute);
@@ -159,9 +174,9 @@ public class ApiCqlSearchPerson extends AbstractApiTest {
         return cqlQuery;
     }
 
-    private boolean isResultOkay(List personList) {
+    private boolean isResultOkay(List personList, String lastName) {
         if (personList.isEmpty()) {
-            return true;
+            return false;
         }
 
         Iterator i = personList.iterator();
@@ -170,7 +185,7 @@ public class ApiCqlSearchPerson extends AbstractApiTest {
             logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Person.getFirstName(): " + retrievedPerson.getFirstName());
             logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Person.getLastName(): " + retrievedPerson.getLastName());
             // Check if retrieved person matches requested search criteria.
-            if (!DEFAULT_LAST_NAME.equalsIgnoreCase(retrievedPerson.getLastName())) {
+            if (!lastName.equalsIgnoreCase(retrievedPerson.getLastName())) {
                 return false;
             }
         }

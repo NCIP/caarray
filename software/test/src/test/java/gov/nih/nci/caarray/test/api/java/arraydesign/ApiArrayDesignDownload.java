@@ -102,7 +102,11 @@ import org.junit.Test;
  * @author Rashmi Srinivasa
  */
 public class ApiArrayDesignDownload extends AbstractApiTest {
-    private static final String DEFAULT_ARRAY_DESIGN_NAME = TestProperties.getAffymetrixSpecificationDesignName();
+    private static final String[] ARRAY_DESIGN_NAMES = {
+        TestProperties.getAffymetrixSpecificationDesignName(),
+        TestProperties.getIlluminaDesignName(),
+        TestProperties.getGenepixDesignName()
+    };
 
     @Test
     public void testDownloadArrayDesignDetails() {
@@ -111,26 +115,11 @@ public class ApiArrayDesignDownload extends AbstractApiTest {
                     .getServerJndiPort());
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
-            logForSilverCompatibility(TEST_NAME, "Downloading Array Design details");
-            ArrayDesign arrayDesign = lookupArrayDesign(searchService, DEFAULT_ARRAY_DESIGN_NAME);
-            if (arrayDesign != null) {
-                ArrayDesignDetailsService arrayDesignDetailsService = server.getArrayDesignDetailsService();
-                ArrayDesignDetails details = arrayDesignDetailsService.getDesignDetails(arrayDesign);
-                logForSilverCompatibility(API_CALL, "ArrayDesignDetailsService.getDesignDetails()");
-                if (details != null) {
-                    logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + DEFAULT_ARRAY_DESIGN_NAME + " with " + details.getFeatures().size() + " features, "
-                            + details.getProbeGroups().size() + " probe groups, " + details.getProbes().size()
-                            + " probes and " + details.getLogicalProbes().size() + " logical probes.");
-                    assertTrue(true);
-                } else {
-                    logForSilverCompatibility(TEST_OUTPUT, "Error: Array Design Details was null.");
-                    assertTrue("Error: Array Design Details was null.", false);
-                }
-            } else {
-                logForSilverCompatibility(TEST_OUTPUT, "Error: Array Design was null.");
-                assertTrue("Error: Array Design was null.", false);
+            logForSilverCompatibility(TEST_NAME, "Downloading Array Design details...");
+            for (String arrayDesignName : ARRAY_DESIGN_NAMES) {
+                logForSilverCompatibility(TEST_OUTPUT, "from Experiment: " + arrayDesignName);
+                downloadDetailsFromArrayDesign(server, searchService, arrayDesignName);
             }
-
         } catch (ServerConnectionException e) {
             StringBuilder trace = buildStackTrace(e);
             logForSilverCompatibility(TEST_OUTPUT, "Server connection exception: " + e + "\nTrace: " + trace);
@@ -144,6 +133,27 @@ public class ApiArrayDesignDownload extends AbstractApiTest {
             StringBuilder trace = buildStackTrace(t);
             logForSilverCompatibility(TEST_OUTPUT, "Throwable: " + t + "\nTrace: " + trace);
             assertTrue("Throwable: " + t, false);
+        }
+    }
+
+    private void downloadDetailsFromArrayDesign(CaArrayServer server, CaArraySearchService searchService, String arrayDesignName) {
+        ArrayDesign arrayDesign = lookupArrayDesign(searchService, arrayDesignName);
+        if (arrayDesign != null) {
+            ArrayDesignDetailsService arrayDesignDetailsService = server.getArrayDesignDetailsService();
+            ArrayDesignDetails details = arrayDesignDetailsService.getDesignDetails(arrayDesign);
+            logForSilverCompatibility(API_CALL, "ArrayDesignDetailsService.getDesignDetails()");
+            if (details != null) {
+                logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + arrayDesignName + " with " + details.getFeatures().size() + " features, "
+                        + details.getProbeGroups().size() + " probe groups, " + details.getProbes().size()
+                        + " probes and " + details.getLogicalProbes().size() + " logical probes.");
+                assertTrue(true);
+            } else {
+                logForSilverCompatibility(TEST_OUTPUT, "Error: Array Design Details was null.");
+                assertTrue("Error: Array Design Details was null.", false);
+            }
+        } else {
+            logForSilverCompatibility(TEST_OUTPUT, "Error: Array Design was null.");
+            assertTrue("Error: Array Design was null.", false);
         }
     }
 

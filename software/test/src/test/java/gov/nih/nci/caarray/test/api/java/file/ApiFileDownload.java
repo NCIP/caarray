@@ -106,7 +106,12 @@ import org.junit.Test;
  * @author Rashmi Srinivasa
  */
 public class ApiFileDownload extends AbstractApiTest {
-    private static final String DEFAULT_EXPERIMENT_NAME = TestProperties.getAffymetricSpecificationName();
+    private static final String[] EXPERIMENT_NAMES = {
+        TestProperties.getAffymetricSpecificationName(),
+        TestProperties.getAffymetricChpName(),
+        TestProperties.getIlluminaRatName(),
+        TestProperties.getGenepixCowName()
+    };
 
     @Test
     public void testDownloadFileContents() {
@@ -116,35 +121,9 @@ public class ApiFileDownload extends AbstractApiTest {
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
             logForSilverCompatibility(TEST_NAME, "Downloading File Contents...");
-            Experiment experiment = lookupExperiment(searchService, DEFAULT_EXPERIMENT_NAME);
-            if (experiment != null) {
-                Hybridization hybridization = getFirstHybridization(searchService, experiment);
-                if (hybridization != null) {
-                    CaArrayFile dataFile = getDataFile(searchService, hybridization);
-                    if (dataFile != null) {
-                        logForSilverCompatibility(TEST_OUTPUT, "Downloading file " + dataFile.getName());
-                        FileRetrievalService fileRetrievalService = server.getFileRetrievalService();
-                        byte[] byteArray = fileRetrievalService.readFile(dataFile);
-                        logForSilverCompatibility(API_CALL, "FileRetrievalService.readFile(CaArrayFile)");
-                        if (byteArray != null) {
-                            logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + byteArray.length + " bytes.");
-                            assertTrue(true);
-                        } else {
-                            logForSilverCompatibility(TEST_OUTPUT, "Error: Retrieved null byte array.");
-                            assertTrue("Error: Retrieved null byte array.", false);
-                        }
-                    } else {
-                        logForSilverCompatibility(TEST_OUTPUT, "Error: Retrieved null data file.");
-                        assertTrue("Error: Retrieved null data file.", false);
-                    }
-                } else {
-                    logForSilverCompatibility(TEST_OUTPUT,
-                            "Error: Retrieved null hybridization for experiment with title " + DEFAULT_EXPERIMENT_NAME);
-                    assertTrue("Error: Retrieved null hybridization.", false);
-                }
-            } else {
-                logForSilverCompatibility(TEST_OUTPUT, "Error: Could not find experiment " + DEFAULT_EXPERIMENT_NAME);
-                assertTrue("Error: Could not find experiment.", false);
+            for (String experimentName : EXPERIMENT_NAMES) {
+                logForSilverCompatibility(TEST_OUTPUT, "from Experiment: " + experimentName);
+                downloadFileFromExperiment(server, searchService, experimentName);
             }
         } catch (ServerConnectionException e) {
             StringBuilder trace = buildStackTrace(e);
@@ -159,6 +138,39 @@ public class ApiFileDownload extends AbstractApiTest {
             StringBuilder trace = buildStackTrace(t);
             logForSilverCompatibility(TEST_OUTPUT, "Throwable: " + t + "\nTrace: " + trace);
             assertTrue("Throwable: " + t, false);
+        }
+    }
+
+    private void downloadFileFromExperiment(CaArrayServer server, CaArraySearchService searchService, String experimentName) {
+        Experiment experiment = lookupExperiment(searchService, experimentName);
+        if (experiment != null) {
+            Hybridization hybridization = getFirstHybridization(searchService, experiment);
+            if (hybridization != null) {
+                CaArrayFile dataFile = getDataFile(searchService, hybridization);
+                if (dataFile != null) {
+                    logForSilverCompatibility(TEST_OUTPUT, "Downloading file " + dataFile.getName());
+                    FileRetrievalService fileRetrievalService = server.getFileRetrievalService();
+                    byte[] byteArray = fileRetrievalService.readFile(dataFile);
+                    logForSilverCompatibility(API_CALL, "FileRetrievalService.readFile(CaArrayFile)");
+                    if (byteArray != null) {
+                        logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + byteArray.length + " bytes.");
+                        assertTrue(byteArray.length > 0);
+                    } else {
+                        logForSilverCompatibility(TEST_OUTPUT, "Error: Retrieved null byte array.");
+                        assertTrue("Error: Retrieved null byte array.", false);
+                    }
+                } else {
+                    logForSilverCompatibility(TEST_OUTPUT, "Error: Retrieved null data file.");
+                    assertTrue("Error: Retrieved null data file.", false);
+                }
+            } else {
+                logForSilverCompatibility(TEST_OUTPUT,
+                        "Error: Retrieved null hybridization for experiment with title " + experimentName);
+                assertTrue("Error: Retrieved null hybridization.", false);
+            }
+        } else {
+            logForSilverCompatibility(TEST_OUTPUT, "Error: Could not find experiment " + experimentName);
+            assertTrue("Error: Could not find experiment.", false);
         }
     }
 

@@ -118,8 +118,18 @@ import org.junit.Test;
  * @author Rashmi Srinivasa
  */
 public class ApiDataSetDownload extends AbstractApiTest {
-    private static final String DEFAULT_EXPERIMENT_NAME = TestProperties.getAffymetricSpecificationName();
-    private static final String DEFAULT_QUANTITATION_TYPE = "CELintensity";
+    private static final String[] EXPERIMENT_NAMES = {
+        TestProperties.getAffymetricSpecificationName()
+        //TestProperties.getAffymetricChpName(),
+        //TestProperties.getIlluminaRatName(),
+        //TestProperties.getGenepixCowName()
+    };
+    private static final String[] QUANTITATION_TYPES_CSV_STRINGS = {
+        TestProperties.AFFYMETRIX_CEL_QUANTITATION_TYPES,
+        TestProperties.AFFYMETRIX_CHP_QUANTITATION_TYPES,
+        TestProperties.ILLUMINA_QUANTITATION_TYPES,
+        TestProperties.GENEPIX_QUANTITATION_TYPES
+    };
 
     @Test
     public void testDownloadDataSet() {
@@ -130,66 +140,11 @@ public class ApiDataSetDownload extends AbstractApiTest {
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
             logForSilverCompatibility(TEST_NAME, "Downloading a DataSet...");
-            lookupExperiments(searchService, request);
-            lookupQuantitationTypes(searchService, request);
-            DataRetrievalService dataService = server.getDataRetrievalService();
-            DataSet dataSet = dataService.getDataSet(request);
-            logForSilverCompatibility(API_CALL, "DataRetrievalService.getDataSet(DataRetrievalRequest)");
-            int numValuesRetrieved = 0;
-
-            // Check if the retrieved hybridizations and quantitation types are as requested.
-            if (dataSet != null) {
-                // Get each HybridizationData in the DataSet.
-                logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "DataSet.getHybridizationDataList().size(): "
-                        + dataSet.getHybridizationDataList().size());
-                for (HybridizationData oneHybData : dataSet.getHybridizationDataList()) {
-                    HybridizationData populatedHybData = searchService.search(oneHybData).get(0);
-                    // Get each column in the HybridizationData.
-                    logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "HybridizationData.getColumns().size(): "
-                            + populatedHybData.getColumns().size());
-                    for (AbstractDataColumn column : populatedHybData.getColumns()) {
-                        AbstractDataColumn populatedColumn = searchService.search(column).get(0);
-                        // Find the type of the column.
-                        logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH,
-                                "AbstractDataColumn.getQuantitationType().getName(): "
-                                + populatedColumn.getQuantitationType().getName());
-                        QuantitationType qType = populatedColumn.getQuantitationType();
-                        Class typeClass = qType.getTypeClass();
-                        // Retrieve the appropriate data depending on the type of the column.
-                        logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "AbstractDataColumn.getValues().");
-                        if (typeClass == String.class) {
-                            String[] values = ((StringColumn) populatedColumn).getValues();
-                            numValuesRetrieved += values.length;
-                        } else if (typeClass == Float.class) {
-                            float[] values = ((FloatColumn) populatedColumn).getValues();
-                            numValuesRetrieved += values.length;
-                        } else if (typeClass == Short.class) {
-                            short[] values = ((ShortColumn) populatedColumn).getValues();
-                            numValuesRetrieved += values.length;
-                        } else if (typeClass == Boolean.class) {
-                            boolean[] values = ((BooleanColumn) populatedColumn).getValues();
-                            numValuesRetrieved += values.length;
-                        } else if (typeClass == Double.class) {
-                            double[] values = ((DoubleColumn) populatedColumn).getValues();
-                            numValuesRetrieved += values.length;
-                        } else if (typeClass == Integer.class) {
-                            int[] values = ((IntegerColumn) populatedColumn).getValues();
-                            numValuesRetrieved += values.length;
-                        } else if (typeClass == Long.class) {
-                            long[] values = ((LongColumn) populatedColumn).getValues();
-                            numValuesRetrieved += values.length;
-                        } else {
-                            // Should never get here.
-                        }
-                    }
-                }
-                logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + dataSet.getHybridizationDataList().size()
-                        + " hybridization data elements, " + dataSet.getQuantitationTypes().size()
-                        + " quantitation types and " + numValuesRetrieved + " values.");
-                assertTrue(true);
-            } else {
-                logForSilverCompatibility(TEST_OUTPUT, "Retrieved null DataSet.");
-                assertTrue("Error: Retrieved null DataSet.", false);
+            int i = 0;
+            for (String experimentName : EXPERIMENT_NAMES) {
+                logForSilverCompatibility(TEST_OUTPUT, "from Experiment: " + experimentName);
+                String quantitationTypesCsv = QUANTITATION_TYPES_CSV_STRINGS[i++];
+                getDataSetFromExperiment(request, server, searchService, experimentName, quantitationTypesCsv);
             }
         } catch (ServerConnectionException e) {
             StringBuilder trace = buildStackTrace(e);
@@ -207,8 +162,73 @@ public class ApiDataSetDownload extends AbstractApiTest {
         }
     }
 
-    private void lookupExperiments(CaArraySearchService service, DataRetrievalRequest request) {
-        String[] experimentTitles = DEFAULT_EXPERIMENT_NAME.split(",");
+    private void getDataSetFromExperiment(DataRetrievalRequest request, CaArrayServer server, CaArraySearchService searchService, String experimentName, String quantitationTypesCsv) {
+        lookupExperiments(searchService, request, experimentName);
+        lookupQuantitationTypes(searchService, request, quantitationTypesCsv);
+        DataRetrievalService dataService = server.getDataRetrievalService();
+        DataSet dataSet = dataService.getDataSet(request);
+        logForSilverCompatibility(API_CALL, "DataRetrievalService.getDataSet(DataRetrievalRequest)");
+        int numValuesRetrieved = 0;
+
+        // Check if the retrieved hybridizations and quantitation types are as requested.
+        if (dataSet != null) {
+            // Get each HybridizationData in the DataSet.
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "DataSet.getHybridizationDataList().size(): "
+                    + dataSet.getHybridizationDataList().size());
+            for (HybridizationData oneHybData : dataSet.getHybridizationDataList()) {
+                HybridizationData populatedHybData = searchService.search(oneHybData).get(0);
+                // Get each column in the HybridizationData.
+                logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "HybridizationData.getColumns().size(): "
+                        + populatedHybData.getColumns().size());
+                for (AbstractDataColumn column : populatedHybData.getColumns()) {
+                    AbstractDataColumn populatedColumn = searchService.search(column).get(0);
+                    // Find the type of the column.
+                    logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH,
+                            "AbstractDataColumn.getQuantitationType().getName(): "
+                            + populatedColumn.getQuantitationType().getName());
+                    QuantitationType qType = populatedColumn.getQuantitationType();
+                    Class typeClass = qType.getTypeClass();
+                    // Retrieve the appropriate data depending on the type of the column.
+                    logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "AbstractDataColumn.getValues().");
+                    if (typeClass == String.class) {
+                        String[] values = ((StringColumn) populatedColumn).getValues();
+                        numValuesRetrieved += values.length;
+                    } else if (typeClass == Float.class) {
+                        float[] values = ((FloatColumn) populatedColumn).getValues();
+                        numValuesRetrieved += values.length;
+                    } else if (typeClass == Short.class) {
+                        short[] values = ((ShortColumn) populatedColumn).getValues();
+                        numValuesRetrieved += values.length;
+                    } else if (typeClass == Boolean.class) {
+                        boolean[] values = ((BooleanColumn) populatedColumn).getValues();
+                        numValuesRetrieved += values.length;
+                    } else if (typeClass == Double.class) {
+                        double[] values = ((DoubleColumn) populatedColumn).getValues();
+                        numValuesRetrieved += values.length;
+                    } else if (typeClass == Integer.class) {
+                        int[] values = ((IntegerColumn) populatedColumn).getValues();
+                        numValuesRetrieved += values.length;
+                    } else if (typeClass == Long.class) {
+                        long[] values = ((LongColumn) populatedColumn).getValues();
+                        numValuesRetrieved += values.length;
+                    } else {
+                        // Should never get here.
+                    }
+                }
+            }
+            logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + dataSet.getHybridizationDataList().size()
+                    + " hybridization data elements, " + dataSet.getQuantitationTypes().size()
+                    + " quantitation types and " + numValuesRetrieved + " values.");
+            assertTrue((dataSet.getHybridizationDataList().size() > 0) && (dataSet.getQuantitationTypes().size() > 0)
+                    && (numValuesRetrieved > 0));
+        } else {
+            logForSilverCompatibility(TEST_OUTPUT, "Retrieved null DataSet.");
+            assertTrue("Error: Retrieved null DataSet.", false);
+        }
+    }
+
+    private void lookupExperiments(CaArraySearchService service, DataRetrievalRequest request, String experimentName) {
+        String[] experimentTitles = experimentName.split(",");
         if (experimentTitles == null) {
             return;
         }
@@ -225,8 +245,8 @@ public class ApiDataSetDownload extends AbstractApiTest {
         }
     }
 
-    private void lookupQuantitationTypes(CaArraySearchService service, DataRetrievalRequest request) {
-        String[] quantitationTypeNames = DEFAULT_QUANTITATION_TYPE.split(",");
+    private void lookupQuantitationTypes(CaArraySearchService service, DataRetrievalRequest request, String quantitationTypesCsv) {
+        String[] quantitationTypeNames = quantitationTypesCsv.split(",");
         if (quantitationTypeNames == null) {
             return;
         }

@@ -116,7 +116,12 @@ import org.junit.Test;
  * @author Rashmi Srinivasa
  */
 public class ApiOneFileDataSetDownload extends AbstractApiTest {
-    private static final String DEFAULT_EXPERIMENT_NAME = TestProperties.getAffymetricSpecificationName();
+    private static final String[] EXPERIMENT_NAMES = {
+        TestProperties.getAffymetricSpecificationName(),
+        TestProperties.getAffymetricChpName(),
+        //TestProperties.getIlluminaRatName(),
+        TestProperties.getGenepixCowName()
+    };
 
     @Test
     public void testDownloadOneFileDataSet() {
@@ -126,69 +131,9 @@ public class ApiOneFileDataSetDownload extends AbstractApiTest {
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
             logForSilverCompatibility(TEST_NAME, "Downloading a full DataSet corresponding to one data file...");
-            Experiment experiment = lookupExperiment(searchService, DEFAULT_EXPERIMENT_NAME);
-            if (experiment != null) {
-                Hybridization hybridization = getFirstHybridization(searchService, experiment);
-                if (hybridization != null) {
-                    DataSet dataSet = getDataSet(searchService, hybridization);
-                    if (dataSet != null) {
-                        int numValuesRetrieved = 0;
-                        DesignElementList designElementList = dataSet.getDesignElementList();
-                        DesignElementList populatedDesignElementList = searchService.search(designElementList).get(0);
-                        // Get each HybridizationData in the DataSet.
-                        for (HybridizationData oneHybData : dataSet.getHybridizationDataList()) {
-                            HybridizationData populatedHybData = searchService.search(oneHybData).get(0);
-                            // Get each column in the HybridizationData.
-                            for (AbstractDataColumn column : populatedHybData.getColumns()) {
-                                AbstractDataColumn populatedColumn = searchService.search(column).get(0);
-                                // Find the type of the column.
-                                QuantitationType qType = populatedColumn.getQuantitationType();
-                                Class typeClass = qType.getTypeClass();
-                                // Retrieve the appropriate data depending on the type of the column.
-                                if (typeClass == String.class) {
-                                    String[] values = ((StringColumn) populatedColumn).getValues();
-                                    numValuesRetrieved += values.length;
-                                } else if (typeClass == Float.class) {
-                                    float[] values = ((FloatColumn) populatedColumn).getValues();
-                                    numValuesRetrieved += values.length;
-                                } else if (typeClass == Short.class) {
-                                    short[] values = ((ShortColumn) populatedColumn).getValues();
-                                    numValuesRetrieved += values.length;
-                                } else if (typeClass == Boolean.class) {
-                                    boolean[] values = ((BooleanColumn) populatedColumn).getValues();
-                                    numValuesRetrieved += values.length;
-                                } else if (typeClass == Double.class) {
-                                    double[] values = ((DoubleColumn) populatedColumn).getValues();
-                                    numValuesRetrieved += values.length;
-                                } else if (typeClass == Integer.class) {
-                                    int[] values = ((IntegerColumn) populatedColumn).getValues();
-                                    numValuesRetrieved += values.length;
-                                } else if (typeClass == Long.class) {
-                                    long[] values = ((LongColumn) populatedColumn).getValues();
-                                    numValuesRetrieved += values.length;
-                                } else {
-                                    // Should never get here.
-                                }
-                            }
-                        }
-                        logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + dataSet.getHybridizationDataList().size()
-                                + " hybridization data elements, "
-                                + populatedDesignElementList.getDesignElements().size() + " design elements of type "
-                                + populatedDesignElementList.getDesignElementType() + ","
-                                + dataSet.getQuantitationTypes().size() + " quantitation types and "
-                                + numValuesRetrieved + " values.");
-                        assertTrue(true);
-                    } else {
-                        logForSilverCompatibility(TEST_OUTPUT, "Error: Retrieved null data set.");
-                        assertTrue("Error: Retrieved null data set.", false);
-                    }
-                } else {
-                    logForSilverCompatibility(TEST_OUTPUT, "Error: Retrieved null hybridization.");
-                    assertTrue("Error: Retrieved null hybridization.", false);
-                }
-            } else {
-                logForSilverCompatibility(TEST_OUTPUT, "Error: Could not find experiment.");
-                assertTrue("Error: Could not find experiment.", false);
+            for (String experimentName : EXPERIMENT_NAMES) {
+                logForSilverCompatibility(TEST_OUTPUT, "from Experiment: " + experimentName);
+                getDataSetFromExperiment(searchService, experimentName);
             }
         } catch (ServerConnectionException e) {
             StringBuilder trace = buildStackTrace(e);
@@ -203,6 +148,73 @@ public class ApiOneFileDataSetDownload extends AbstractApiTest {
             StringBuilder trace = buildStackTrace(t);
             logForSilverCompatibility(TEST_OUTPUT, "Throwable: " + t + "\nTrace: " + trace);
             assertTrue("Throwable: " + t, false);
+        }
+    }
+
+    private void getDataSetFromExperiment(CaArraySearchService searchService, String experimentName) {
+        Experiment experiment = lookupExperiment(searchService, experimentName);
+        if (experiment != null) {
+            Hybridization hybridization = getFirstHybridization(searchService, experiment);
+            if (hybridization != null) {
+                DataSet dataSet = getDataSet(searchService, hybridization);
+                if (dataSet != null) {
+                    int numValuesRetrieved = 0;
+                    DesignElementList designElementList = dataSet.getDesignElementList();
+                    DesignElementList populatedDesignElementList = searchService.search(designElementList).get(0);
+                    // Get each HybridizationData in the DataSet.
+                    for (HybridizationData oneHybData : dataSet.getHybridizationDataList()) {
+                        HybridizationData populatedHybData = searchService.search(oneHybData).get(0);
+                        // Get each column in the HybridizationData.
+                        for (AbstractDataColumn column : populatedHybData.getColumns()) {
+                            AbstractDataColumn populatedColumn = searchService.search(column).get(0);
+                            // Find the type of the column.
+                            QuantitationType qType = populatedColumn.getQuantitationType();
+                            Class typeClass = qType.getTypeClass();
+                            // Retrieve the appropriate data depending on the type of the column.
+                            if (typeClass == String.class) {
+                                String[] values = ((StringColumn) populatedColumn).getValues();
+                                numValuesRetrieved += values.length;
+                            } else if (typeClass == Float.class) {
+                                float[] values = ((FloatColumn) populatedColumn).getValues();
+                                numValuesRetrieved += values.length;
+                            } else if (typeClass == Short.class) {
+                                short[] values = ((ShortColumn) populatedColumn).getValues();
+                                numValuesRetrieved += values.length;
+                            } else if (typeClass == Boolean.class) {
+                                boolean[] values = ((BooleanColumn) populatedColumn).getValues();
+                                numValuesRetrieved += values.length;
+                            } else if (typeClass == Double.class) {
+                                double[] values = ((DoubleColumn) populatedColumn).getValues();
+                                numValuesRetrieved += values.length;
+                            } else if (typeClass == Integer.class) {
+                                int[] values = ((IntegerColumn) populatedColumn).getValues();
+                                numValuesRetrieved += values.length;
+                            } else if (typeClass == Long.class) {
+                                long[] values = ((LongColumn) populatedColumn).getValues();
+                                numValuesRetrieved += values.length;
+                            } else {
+                                // Should never get here.
+                            }
+                        }
+                    }
+                    logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + dataSet.getHybridizationDataList().size()
+                            + " hybridization data elements, "
+                            + populatedDesignElementList.getDesignElements().size() + " design elements of type "
+                            + populatedDesignElementList.getDesignElementType() + ","
+                            + dataSet.getQuantitationTypes().size() + " quantitation types and "
+                            + numValuesRetrieved + " values.");
+                    assertTrue((dataSet.getQuantitationTypes().size() > 0) && (numValuesRetrieved > 0));
+                } else {
+                    logForSilverCompatibility(TEST_OUTPUT, "Error: Retrieved null data set.");
+                    assertTrue("Error: Retrieved null data set.", false);
+                }
+            } else {
+                logForSilverCompatibility(TEST_OUTPUT, "Error: Retrieved null hybridization.");
+                assertTrue("Error: Retrieved null hybridization.", false);
+            }
+        } else {
+            logForSilverCompatibility(TEST_OUTPUT, "Error: Could not find experiment.");
+            assertTrue("Error: Could not find experiment.", false);
         }
     }
 

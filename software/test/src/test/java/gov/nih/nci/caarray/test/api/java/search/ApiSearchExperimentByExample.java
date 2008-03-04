@@ -103,34 +103,29 @@ import org.junit.Test;
  * @author Rashmi Srinivasa
  */
 public class ApiSearchExperimentByExample extends AbstractApiTest {
-    private static final String DEFAULT_MANUFACTURER_NAME = "Affymetrix";
-    private static final String DEFAULT_ORGANISM_NAME = "human";
+    private static final String[] MANUFACTURER_NAMES = {
+        "Affymetrix",
+        //"Illumina"
+    };
+    private static final String[] ORGANISM_NAMES = {
+        "human",
+        //"rat"
+    };
 
     @Test
     public void testSearchExperiment() {
-        Experiment exampleExperiment = createExampleExperiment();
-        String errorMessage = "Error: Response did not match request.";
         try {
             CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties
                     .getServerJndiPort());
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
             logForSilverCompatibility(TEST_NAME, "Searching by Example for Experiments...");
-            List<Experiment> experimentList = searchService.search(exampleExperiment);
-            logForSilverCompatibility(API_CALL, "CaArraySearchService.search(Experiment)");
-            boolean resultIsOkay = isResultOkay(experimentList);
-            if (resultIsOkay) {
-                logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + experimentList.size()
-                        + " experiments with array provider " + DEFAULT_MANUFACTURER_NAME + " and organism "
-                        + DEFAULT_ORGANISM_NAME + ".");
-            } else {
-                logForSilverCompatibility(TEST_OUTPUT, errorMessage + " Retrieved " + experimentList.size()
-                        + " experiments.");
+            int i = 0;
+            for (String manufacturerName : MANUFACTURER_NAMES) {
+                String organismName = ORGANISM_NAMES[i++];
+                boolean resultIsOkay = searchExperiments(searchService, manufacturerName, organismName);
+                assertTrue("Error: Response did not match request.", resultIsOkay);
             }
-            for (Experiment experiment : experimentList) {
-                logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getTitle(): " + experiment.getTitle());
-            }
-            assertTrue(errorMessage, resultIsOkay);
         } catch (ServerConnectionException e) {
             StringBuilder trace = buildStackTrace(e);
             logForSilverCompatibility(TEST_OUTPUT, "Server connection exception: " + e + "\nTrace: " + trace);
@@ -147,24 +142,43 @@ public class ApiSearchExperimentByExample extends AbstractApiTest {
         }
     }
 
-    private Experiment createExampleExperiment() {
+    private boolean searchExperiments(CaArraySearchService searchService, String manufacturerName, String organismName) {
+        Experiment exampleExperiment = createExampleExperiment(manufacturerName, organismName);
+        List<Experiment> experimentList = searchService.search(exampleExperiment);
+        logForSilverCompatibility(API_CALL, "CaArraySearchService.search(Experiment)");
+        boolean resultIsOkay = isResultOkay(experimentList, manufacturerName, organismName);
+        if (resultIsOkay) {
+            logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + experimentList.size()
+                    + " experiments with array provider " + manufacturerName + " and organism "
+                    + organismName + ".");
+        } else {
+            logForSilverCompatibility(TEST_OUTPUT, "Error: Response did not match request. Retrieved " + experimentList.size()
+                    + " experiments.");
+        }
+        for (Experiment experiment : experimentList) {
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getTitle(): " + experiment.getTitle());
+        }
+        return resultIsOkay;
+    }
+
+    private Experiment createExampleExperiment(String manufacturerName, String organismName) {
         Experiment exampleExperiment = new Experiment();
 
         Organization organization = new Organization();
-        organization.setName(DEFAULT_MANUFACTURER_NAME);
+        organization.setName(manufacturerName);
         organization.setProvider(true);
         exampleExperiment.setManufacturer(organization);
 
         Organism organismCriterion = new Organism();
-        organismCriterion.setCommonName(DEFAULT_ORGANISM_NAME);
+        organismCriterion.setCommonName(organismName);
         exampleExperiment.setOrganism(organismCriterion);
 
         return exampleExperiment;
     }
 
-    private boolean isResultOkay(List<Experiment> experimentList) {
+    private boolean isResultOkay(List<Experiment> experimentList, String manufacturerName, String organismName) {
         if (experimentList.isEmpty()) {
-            return true;
+            return false;
         }
 
         Iterator<Experiment> i = experimentList.iterator();
@@ -175,8 +189,8 @@ public class ApiSearchExperimentByExample extends AbstractApiTest {
                     + retrievedExperiment.getManufacturer().getName());
             logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getOrganism().getCommonName(): "
                     + retrievedExperiment.getOrganism().getCommonName());
-            if ((!DEFAULT_MANUFACTURER_NAME.equals(retrievedExperiment.getManufacturer().getName()))
-                    || (!DEFAULT_ORGANISM_NAME.equals(retrievedExperiment.getOrganism().getCommonName()))) {
+            if ((!manufacturerName.equals(retrievedExperiment.getManufacturer().getName()))
+                    || (!organismName.equals(retrievedExperiment.getOrganism().getCommonName()))) {
                 return false;
             }
             // Check if retrieved experiment has mandatory fields.

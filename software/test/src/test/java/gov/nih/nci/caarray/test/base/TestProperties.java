@@ -110,6 +110,11 @@ public final class TestProperties {
     public static final String ILLUMINA_RAT_WITH_DATA_01 = "Illumina Rat with Data 01";
     public static final String AFFYMETRIX_EXPERIMENT_WITH_CHP_DATA_01 = "Affymetrix Experiment with CHP Data 01";
 
+    public static final String AFFYMETRIX_CEL_QUANTITATION_TYPES = "CELX,CELY,CELintensity,CELintensityStdev,CELMask,CELOutlier,CELPixels";
+    public static final String AFFYMETRIX_CHP_QUANTITATION_TYPES = "CHPSignal";
+    public static final String GENEPIX_QUANTITATION_TYPES = "F635 Mean,F635 Median";
+    public static final String ILLUMINA_QUANTITATION_TYPES = "AVG_Signal,BEAD_STDEV,Avg_NBEADS,Detection";
+
     public static String getServerHostname() {
         return System.getProperty(SERVER_HOSTNAME_KEY, SERVER_HOSTNAME_DEFAULT);
     }
