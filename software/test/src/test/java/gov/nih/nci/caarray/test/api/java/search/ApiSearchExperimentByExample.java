@@ -105,11 +105,11 @@ import org.junit.Test;
 public class ApiSearchExperimentByExample extends AbstractApiTest {
     private static final String[] MANUFACTURER_NAMES = {
         "Affymetrix",
-        //"Illumina"
+        "Illumina"
     };
     private static final String[] ORGANISM_NAMES = {
         "human",
-        //"rat"
+        "black rat"
     };
 
     @Test
