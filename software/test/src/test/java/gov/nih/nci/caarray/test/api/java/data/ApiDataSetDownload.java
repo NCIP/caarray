@@ -119,10 +119,10 @@ import org.junit.Test;
  */
 public class ApiDataSetDownload extends AbstractApiTest {
     private static final String[] EXPERIMENT_NAMES = {
-        TestProperties.getAffymetricSpecificationName()
-        //TestProperties.getAffymetricChpName(),
-        //TestProperties.getIlluminaRatName(),
-        //TestProperties.getGenepixCowName()
+        TestProperties.getAffymetricSpecificationName(),
+        TestProperties.getAffymetricChpName(),
+        TestProperties.getIlluminaRatName(),
+        TestProperties.getGenepixCowName()
     };
     private static final String[] QUANTITATION_TYPES_CSV_STRINGS = {
         TestProperties.AFFYMETRIX_CEL_QUANTITATION_TYPES,
@@ -133,7 +133,6 @@ public class ApiDataSetDownload extends AbstractApiTest {
 
     @Test
     public void testDownloadDataSet() {
-        DataRetrievalRequest request = new DataRetrievalRequest();
         try {
             CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties
                     .getServerJndiPort());
@@ -144,7 +143,7 @@ public class ApiDataSetDownload extends AbstractApiTest {
             for (String experimentName : EXPERIMENT_NAMES) {
                 logForSilverCompatibility(TEST_OUTPUT, "from Experiment: " + experimentName);
                 String quantitationTypesCsv = QUANTITATION_TYPES_CSV_STRINGS[i++];
-                getDataSetFromExperiment(request, server, searchService, experimentName, quantitationTypesCsv);
+                getDataSetFromExperiment(server, searchService, experimentName, quantitationTypesCsv);
             }
         } catch (ServerConnectionException e) {
             StringBuilder trace = buildStackTrace(e);
@@ -162,7 +161,8 @@ public class ApiDataSetDownload extends AbstractApiTest {
         }
     }
 
-    private void getDataSetFromExperiment(DataRetrievalRequest request, CaArrayServer server, CaArraySearchService searchService, String experimentName, String quantitationTypesCsv) {
+    private void getDataSetFromExperiment(CaArrayServer server, CaArraySearchService searchService, String experimentName, String quantitationTypesCsv) {
+        DataRetrievalRequest request = new DataRetrievalRequest();
         lookupExperiments(searchService, request, experimentName);
         lookupQuantitationTypes(searchService, request, quantitationTypesCsv);
         DataRetrievalService dataService = server.getDataRetrievalService();
