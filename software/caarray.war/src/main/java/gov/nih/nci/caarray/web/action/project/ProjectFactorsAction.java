@@ -136,7 +136,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
         super.prepare();
 
         if (this.currentFactor.getId() != null) {
-            Factor retrieved = getGenericDataService().retrieveEntity(Factor.class, this.currentFactor.getId());
+            Factor retrieved = getGenericDataService().getPersistentObject(Factor.class, this.currentFactor.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentFactor, SecurityUtils.READ_PRIVILEGE,
                         UsernameHolder.getUser());

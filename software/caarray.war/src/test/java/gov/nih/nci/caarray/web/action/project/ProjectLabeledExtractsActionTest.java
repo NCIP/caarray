@@ -93,7 +93,6 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -108,6 +107,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 
 /**
@@ -195,7 +195,7 @@ public class ProjectLabeledExtractsActionTest {
 
     private static class LocalGenericDataService extends GenericDataServiceStub {
         @Override
-        public <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId) {
+        public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(LabeledExtract.class) && entityId.equals(1L)) {
                 return (T)DUMMY_LABELED_EXTRACT;
             }

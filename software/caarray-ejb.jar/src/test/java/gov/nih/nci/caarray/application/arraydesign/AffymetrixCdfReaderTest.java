@@ -82,12 +82,13 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+
+import java.io.File;
 
 import org.junit.Test;
 

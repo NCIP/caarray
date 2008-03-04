@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -103,6 +102,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Provides project access and management functionality to the application. Interface to the ProjectManagement

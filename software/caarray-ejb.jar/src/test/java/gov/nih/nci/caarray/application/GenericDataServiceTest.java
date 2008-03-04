@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
 
@@ -99,6 +98,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Class to test the generic service.
@@ -122,10 +123,10 @@ public class GenericDataServiceTest {
 
     @Test
     public void testRetrieveProject() {
-        Object obj = this.service.retrieveEntity(Project.class, 999l);
+        Object obj = this.service.getPersistentObject(Project.class, 999l);
         assertEquals(null, obj);
 
-        obj = this.service.retrieveEntity(Project.class, 1l);
+        obj = this.service.getPersistentObject(Project.class, 1l);
         assertEquals(SecurityLevel.VISIBLE, ((Project) obj).getPublicProfile().getSecurityLevel());
     }
 

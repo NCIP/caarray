@@ -92,7 +92,6 @@ import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
@@ -107,6 +106,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 
@@ -205,7 +205,7 @@ public class ProjectPermissionsActionTest {
 
     private static class LocalGenericDataService extends GenericDataServiceStub {
         @Override
-        public <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId) {
+        public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(CollaboratorGroup.class) && entityId.equals(1L)) {
                 return (T)DUMMY_GROUP;
             }

@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.domain.permissions;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
 
@@ -109,11 +109,13 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.MapKeyManyToMany;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+
 /**
  * Container class that models the read and write permissions to samples.
  */
 @Entity
-@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity" })
 public class AccessProfile implements PersistentObject, Serializable {
 

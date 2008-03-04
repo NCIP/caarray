@@ -84,7 +84,7 @@
 package gov.nih.nci.caarray.domain.publication;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import javax.persistence.Column;
@@ -101,7 +101,7 @@ import org.hibernate.validator.Length;
  *
  */
 @Entity
-@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings("PMD.TooManyFields") // All fields are required
 public class Publication extends AbstractCaArrayEntity {
 

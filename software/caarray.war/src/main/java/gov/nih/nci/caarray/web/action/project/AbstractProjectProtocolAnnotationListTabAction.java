@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
@@ -102,6 +101,7 @@ import java.util.Set;
 import org.ajaxtags.xml.AjaxXmlBuilder;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 

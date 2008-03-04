@@ -82,13 +82,13 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
-
 import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Base interface for all caArray domain DAOs.

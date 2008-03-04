@@ -79,7 +79,7 @@
         <java>log4j-1.2.13.jar</java>
     </module>
     <module>
-        <java>nci-commons-core-1.0.jar</java>
+        <java>nci-commons-core-1.0.1.jar</java>
     </module>
     <module>
         <java>mail.jar</java>

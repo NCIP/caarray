@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.services;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.lang.reflect.Method;
@@ -95,6 +94,8 @@ import java.util.Set;
 import javax.interceptor.InvocationContext;
 
 import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  *

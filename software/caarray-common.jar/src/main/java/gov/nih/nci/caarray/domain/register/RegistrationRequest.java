@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.domain.register;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.country.Country;
 import gov.nih.nci.caarray.domain.state.State;
 
@@ -100,6 +99,8 @@ import org.hibernate.validator.Email;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 import org.hibernate.validator.Pattern;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * @author John Hedden

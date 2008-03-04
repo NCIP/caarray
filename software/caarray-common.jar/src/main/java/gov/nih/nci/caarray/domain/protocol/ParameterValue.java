@@ -1,7 +1,7 @@
 package gov.nih.nci.caarray.domain.protocol;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -99,7 +99,7 @@ import org.hibernate.annotations.ForeignKey;
 
    */
 @Entity
-@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 public class ParameterValue extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.

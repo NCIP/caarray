@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.AssayType;
@@ -104,6 +103,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.opensymphony.xwork2.Action;
 
 /**
@@ -232,7 +232,7 @@ public class ProjectOverviewActionTest {
     private static class LocalGenericDataServiceStub extends GenericDataServiceStub {
         @Override
         @SuppressWarnings("unchecked")
-        public <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId) {
+        public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (Organization.class.equals(entityClass) && Long.valueOf(1L).equals(entityId)) {
                 Organization o = new Organization();
                 o.setId(1L);

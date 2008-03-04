@@ -82,9 +82,6 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -99,6 +96,9 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AssayType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
 

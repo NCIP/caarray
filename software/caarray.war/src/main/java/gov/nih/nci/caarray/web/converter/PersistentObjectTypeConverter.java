@@ -83,23 +83,17 @@
 package gov.nih.nci.caarray.web.converter;
 
 import gov.nih.nci.caarray.application.GenericDataService;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.util.StrutsTypeConverter;
-
-import com.opensymphony.xwork2.util.XWorkBasicConverter;
+import com.fiveamsolutions.nci.commons.web.struts2.converter.AbstractPersistentObjectTypeConverter;
 
 /**
  * Converter to move between persistent objects and their id's.
  * @author Scott Miller
  */
-public class PersistentObjectTypeConverter extends StrutsTypeConverter {
-
+public class PersistentObjectTypeConverter extends AbstractPersistentObjectTypeConverter {
+    
     private static ServiceLocator locator = ServiceLocatorFactory.getLocator();
 
     /**
@@ -120,30 +114,8 @@ public class PersistentObjectTypeConverter extends StrutsTypeConverter {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public Object convertFromString(Map context, String[] values, Class toClass) {
-        XWorkBasicConverter converter = new XWorkBasicConverter();
-        // the check for numeric is needed here to support checkboxes.
-        if (StringUtils.isNotBlank(values[0]) && StringUtils.isNumeric(values[0])) {
-            Long id = (Long) converter.convertValue(context, values[0], Long.class);
-            GenericDataService service = (GenericDataService) getServiceLocator().lookup(GenericDataService.JNDI_NAME);
-            return service.retrieveEntity(toClass, id);
-        }
-        return null;
+    protected GenericDataService getGenericDataService() {
+        return (GenericDataService) getServiceLocator().lookup(GenericDataService.JNDI_NAME);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public String convertToString(Map context, Object o) {
-        if (o instanceof PersistentObject) {
-            PersistentObject po = (PersistentObject) o;
-            if (po.getId() != null) {
-                return po.getId().toString();
-            }
-        }
-        return null;
-    }
 }

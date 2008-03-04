@@ -86,13 +86,13 @@ import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataS
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 

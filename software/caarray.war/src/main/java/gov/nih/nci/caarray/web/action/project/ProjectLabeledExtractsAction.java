@@ -134,7 +134,7 @@ public class ProjectLabeledExtractsAction extends AbstractProjectProtocolAnnotat
         super.prepare();
 
         if (this.currentLabeledExtract.getId() != null) {
-            LabeledExtract retrieved = getGenericDataService().retrieveEntity(LabeledExtract.class,
+            LabeledExtract retrieved = getGenericDataService().getPersistentObject(LabeledExtract.class,
                                                                                this.currentLabeledExtract.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentLabeledExtract,

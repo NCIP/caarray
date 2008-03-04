@@ -144,7 +144,6 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -195,6 +194,8 @@ import affymetrix.fusion.chp.FusionCHPDataReg;
 import affymetrix.fusion.chp.FusionCHPLegacyData;
 import affymetrix.fusion.chp.FusionExpressionProbeSetResults;
 import affymetrix.fusion.chp.FusionGenotypeProbeSetResults;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Tests the ArrayDataService subsystem

@@ -48,7 +48,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
 
         this.collaboratorGroups = getPermissionsManagementService().getCollaboratorGroups();
         if (this.collaboratorGroup.getId() != null) {
-            CollaboratorGroup retrieved = getGenericDataService().retrieveEntity(CollaboratorGroup.class,
+            CollaboratorGroup retrieved = getGenericDataService().getPersistentObject(CollaboratorGroup.class,
                                                                            this.collaboratorGroup.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.collaboratorGroup,
@@ -58,7 +58,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
             }
         }
         if (this.accessProfile.getId() != null) {
-            AccessProfile retrieved = getGenericDataService().retrieveEntity(AccessProfile.class,
+            AccessProfile retrieved = getGenericDataService().getPersistentObject(AccessProfile.class,
                     this.accessProfile.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.accessProfile,
@@ -141,7 +141,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
         this.accessProfile.getSampleSecurityLevels().clear();
         if (this.accessProfile.getSecurityLevel().isSampleLevelPermissionsAllowed()) {
             for (Map.Entry<Long, SampleSecurityLevel> sampleEntry : this.sampleSecurityLevels.entrySet()) {
-                Sample sample = getGenericDataService().retrieveEntity(Sample.class, sampleEntry.getKey());
+                Sample sample = getGenericDataService().getPersistentObject(Sample.class, sampleEntry.getKey());
                 if (this.accessProfile.getSecurityLevel().getSampleSecurityLevels().contains(sampleEntry.getValue())) {
                     this.accessProfile.getSampleSecurityLevels().put(sample, sampleEntry.getValue());
                 }

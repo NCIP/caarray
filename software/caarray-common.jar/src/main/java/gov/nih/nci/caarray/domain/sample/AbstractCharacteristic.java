@@ -84,7 +84,7 @@
 package gov.nih.nci.caarray.domain.sample;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 
 import javax.persistence.DiscriminatorColumn;
@@ -107,7 +107,7 @@ import org.hibernate.validator.NotNull;
  */
 @Entity
 @Table(name = "CHARACTERISTIC")
-@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(
         name = "DISCRIMINATOR",

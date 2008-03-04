@@ -137,7 +137,7 @@ public class ProjectSourcesAction extends AbstractProjectListTabAction {
         super.prepare();
 
         if (this.currentSource.getId() != null) {
-            Source retrieved = getGenericDataService().retrieveEntity(Source.class, this.currentSource.getId());
+            Source retrieved = getGenericDataService().getPersistentObject(Source.class, this.currentSource.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentSource,
                         SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());

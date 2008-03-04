@@ -136,7 +136,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
      */
     public void prepare() {
         if (getProtocol() != null && getProtocol().getId() != null) {
-            Protocol retrieved = CaArrayActionHelper.getGenericDataService().retrieveEntity(Protocol.class,
+            Protocol retrieved = CaArrayActionHelper.getGenericDataService().getPersistentObject(Protocol.class,
                     this.getProtocol().getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.protocol,

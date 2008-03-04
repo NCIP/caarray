@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.domain.permissions;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.security.authorization.domainobjects.Group;
@@ -103,11 +103,13 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.BatchSize;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+
 /**
  * CollaboratorGroups bridge CSM groups with owners.
  */
 @Entity
-@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "CSM_GROUP", "CSM_USER" }) })
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class CollaboratorGroup implements PersistentObject, Protectable {

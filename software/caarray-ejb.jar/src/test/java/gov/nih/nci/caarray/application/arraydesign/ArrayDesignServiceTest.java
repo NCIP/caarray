@@ -98,7 +98,6 @@ import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.ContactDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
@@ -125,6 +124,8 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Test class for ArrayDesignService subsystem.

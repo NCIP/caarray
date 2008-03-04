@@ -86,8 +86,8 @@ import gov.nih.nci.caarray.domain.contact.AbstractContact;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.lang.reflect.InvocationTargetException;

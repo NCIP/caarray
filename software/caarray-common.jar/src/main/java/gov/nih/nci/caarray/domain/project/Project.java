@@ -84,7 +84,7 @@
 package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -145,7 +145,7 @@ import org.hibernate.validator.Valid;
  * A microarray project.
  */
 @Entity
-@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.TooManyFields", "PMD.ExcessiveClassLength" })
 public class Project extends AbstractCaArrayEntity implements Comparable<Project>, Protectable {
     private static final long serialVersionUID = 1234567890L;

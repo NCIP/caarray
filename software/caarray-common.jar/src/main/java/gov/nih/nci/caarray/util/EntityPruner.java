@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.util;
 
 import gov.nih.nci.caarray.domain.MaxSerializableSize;
-import gov.nih.nci.caarray.domain.PersistentObject;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -97,6 +96,8 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Class with utility methods for pruning entities to prepare them for trasmittal over the wire. Caches reflection data,

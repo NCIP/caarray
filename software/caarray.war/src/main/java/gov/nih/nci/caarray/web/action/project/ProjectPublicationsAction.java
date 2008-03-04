@@ -133,7 +133,7 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
         super.prepare();
 
         if (this.currentPublication.getId() != null) {
-            Publication retrieved = getGenericDataService().retrieveEntity(Publication.class,
+            Publication retrieved = getGenericDataService().getPersistentObject(Publication.class,
                     this.currentPublication.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentPublication,

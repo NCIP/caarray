@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
@@ -94,6 +93,8 @@ import java.util.List;
 
 import org.hibernate.LockMode;
 import org.hibernate.criterion.Order;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  *

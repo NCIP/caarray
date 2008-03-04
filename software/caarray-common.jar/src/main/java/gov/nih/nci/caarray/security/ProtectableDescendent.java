@@ -82,9 +82,9 @@
  */
 package gov.nih.nci.caarray.security;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
-
 import java.util.Collection;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Marker interface for entities that, while they themselves are not directly Protectable,

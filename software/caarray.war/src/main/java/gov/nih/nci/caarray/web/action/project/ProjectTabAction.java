@@ -4,7 +4,6 @@ import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManag
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -19,6 +18,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 

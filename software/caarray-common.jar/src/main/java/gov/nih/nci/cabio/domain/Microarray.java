@@ -95,7 +95,7 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Cascade;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  *

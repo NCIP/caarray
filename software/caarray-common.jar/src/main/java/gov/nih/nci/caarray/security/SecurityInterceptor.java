@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.security;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -101,6 +100,8 @@ import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.collection.PersistentCollection;
 import org.hibernate.type.Type;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Hibernate interceptor that keeps track of object changes and queues up lists of interesting objects that will require

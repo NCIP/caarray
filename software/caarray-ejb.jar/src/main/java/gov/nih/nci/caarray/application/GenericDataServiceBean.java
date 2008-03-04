@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
@@ -102,6 +101,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Order;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+
 /**
  * Implementation of the GenericDataService.
  * @author Scott Miller
@@ -118,7 +119,7 @@ public class GenericDataServiceBean implements GenericDataService {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId) {
+    public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
         LogUtil.logSubsystemEntry(LOG, entityClass, entityId);
         T result = this.daoFactory.getSearchDao().retrieve(entityClass, entityId);
         LogUtil.logSubsystemExit(LOG);

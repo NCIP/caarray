@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.security;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
@@ -122,6 +121,8 @@ import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Utility class containing methods for synchronizing our security data model with CSM, as well as a facade for querying

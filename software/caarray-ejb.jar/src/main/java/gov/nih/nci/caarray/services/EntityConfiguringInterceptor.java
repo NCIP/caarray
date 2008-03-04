@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.services;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.util.EntityPruner;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -94,6 +93,8 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
 import org.apache.log4j.Logger;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Ensures that retrieved entitites are ready for transport, including correct

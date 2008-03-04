@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SortCriterion;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -101,6 +100,8 @@ import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.criterion.Order;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * DAO to search for entities using various types of criteria. Supports searching by example, CQL, HQL (Hibernate Query

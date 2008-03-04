@@ -172,7 +172,8 @@ public class ProjectOverviewAction extends ProjectTabAction {
     @SkipValidation
     public String retrieveArrayDesigns() {
         if (this.manufacturerId != null && this.assayTypeValue != null) {
-            Organization provider = getGenericDataService().retrieveEntity(Organization.class, this.manufacturerId);
+            Organization provider = getGenericDataService().getPersistentObject(Organization.class,
+                    this.manufacturerId);
             this.arrayDesigns = getArrayDesignService().getImportedArrayDesigns(provider,
                     AssayType.getByValue(assayTypeValue));
         }

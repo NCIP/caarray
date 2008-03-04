@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.cabio.domain;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
-
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
@@ -97,6 +95,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.ForeignKey;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  *

@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
@@ -92,6 +91,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 

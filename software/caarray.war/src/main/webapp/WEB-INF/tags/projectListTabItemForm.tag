@@ -3,7 +3,7 @@
         body-content="scriptless"%>
 
 <%@ attribute name="entityName" required="true"%>
-<%@ attribute name="item" required="true" type="gov.nih.nci.caarray.domain.PersistentObject"%>
+<%@ attribute name="item" required="true" type="com.fiveamsolutions.nci.commons.data.persistent.PersistentObject"%>
 <%@ attribute name="itemName" required="true"%>
 <%@ attribute name="instructions" required="false"%>
 <%@ attribute name="isSubtab" required="false"%>

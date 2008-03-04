@@ -23,5 +23,6 @@
 	<classpathentry kind="lib" path="/lib/commons-collections-3.2.jar"/>
 	<classpathentry kind="lib" path="/lib/commons-configuration-1.4.jar"/>
 	<classpathentry kind="lib" path="/lib/caGrid-1.1-data-stubs.jar"/>
+	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.1.jar"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>

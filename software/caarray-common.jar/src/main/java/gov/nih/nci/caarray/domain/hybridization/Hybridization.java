@@ -84,7 +84,7 @@
 package gov.nih.nci.caarray.domain.hybridization;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
@@ -124,7 +124,7 @@ import org.hibernate.validator.NotNull;
  * The act of hybridizing extracted genetic material to the probes on a microarray.
  */
 @Entity
-@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class Hybridization extends AbstractCaArrayEntity implements ProtectableDescendent {
 

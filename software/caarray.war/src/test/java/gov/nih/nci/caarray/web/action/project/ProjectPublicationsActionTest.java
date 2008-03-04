@@ -89,7 +89,6 @@ import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
@@ -97,6 +96,8 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import org.apache.commons.lang.NotImplementedException;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * @author Winston Cheng
@@ -149,7 +150,7 @@ public class ProjectPublicationsActionTest {
 
     private static class LocalGenericDataService extends GenericDataServiceStub {
         @Override
-        public <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId) {
+        public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(Publication.class) && entityId.equals(1L)) {
                 return (T)DUMMY_PUBLICATION;
             }

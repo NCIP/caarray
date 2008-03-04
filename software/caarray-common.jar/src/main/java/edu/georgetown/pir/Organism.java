@@ -83,7 +83,6 @@
 package edu.georgetown.pir;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.validation.UniqueConstraint;
 import gov.nih.nci.caarray.validation.UniqueConstraintField;
@@ -105,11 +104,13 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+
 /**
  * Organism that the sample or data comes from.
  */
 @Entity
-@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @UniqueConstraint(fields = { @UniqueConstraintField(name = "scientificName"), 
         @UniqueConstraintField(name = "termSource") }, message = "{organism.uniqueConstraint}")
 public class Organism implements PersistentObject {

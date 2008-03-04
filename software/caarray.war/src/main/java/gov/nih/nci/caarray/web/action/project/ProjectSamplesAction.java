@@ -143,7 +143,7 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
     public void prepare() throws VocabularyServiceException {
         super.prepare();
         if (this.currentSample.getId() != null) {
-            Sample retrieved = getGenericDataService().retrieveEntity(Sample.class, this.currentSample.getId());
+            Sample retrieved = getGenericDataService().getPersistentObject(Sample.class, this.currentSample.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentSample,
                         SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());

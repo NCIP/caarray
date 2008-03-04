@@ -146,8 +146,8 @@
     <property name="jboss-jmx.jar" value="${lib.dir}/jboss-jmx.jar" />
     <property name="jgroups.jar" value="${lib.dir}/jgroups.jar" />
     <property name="concurrent.jar" value="${lib.dir}/concurrent.jar" />
-    <property name="nci-commons-core.jar" value="${lib.dir}/nci-commons-core-1.0.jar" />
-    <property name="nci-commons-struts2.jar" value="${lib.dir}/nci-commons-struts2-1.0.jar" />
+    <property name="nci-commons-core.jar" value="${lib.dir}/nci-commons-core-1.0.1.jar" />
+    <property name="nci-commons-struts2.jar" value="${lib.dir}/nci-commons-struts2-1.0.1.jar" />
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -191,6 +191,7 @@
             <include name="jbossall-client.jar" />
             <include name="jboss-aspect-jdk50-client.jar" />
             <include name="jboss-aop-jdk50-client.jar" />
+            <include name="nci-commons-core-1.0.1.jar" />
         </fileset>
     </path>
 
@@ -434,6 +435,7 @@
                 <pathelement location="${commons-configuration.jar}" />
                 <pathelement location="${log4j.jar}" />
                 <pathelement location="${dom4j.jar}" />
+                <pathelement location="${nci-commons-core.jar}"/>
             </classpath>
         </javac>
     </target>
@@ -460,6 +462,7 @@
                 <pathelement location="${csmapi.jar}" />
                 <pathelement location="${log4j.jar}" />
                 <pathelement location="${cglib.jar}" />
+                <pathelement location="${nci-commons-core.jar}" />
             </classpath>
         </javac>
     </target>
@@ -637,7 +640,7 @@
                 <include name="ognl-2.6.11.jar" />
                 <include name="ajaxtags-1.3-beta-rc7.jar" />
                 <include name="jericho-html-2.4.jar" />
-                <include name="nci-commons-struts2-1.0.jar" />
+                <include name="nci-commons-struts2-1.0.1.jar" />
             </lib>
             <zipfileset dir="${caarray-war.target.dir}/help/caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help" prefix="help" />
         </war>
@@ -703,7 +706,7 @@
                 <include name="caGrid-1.1-data-stubs.jar" />
                 <include name="caGrid-1.1-data-common.jar" />
                 <include name="caGrid-1.1-sdkQuery32-core.jar" />
-                <include name="nci-commons-core-1.0.jar" />
+                <include name="nci-commons-core-1.0.1.jar" />
             </fileset>
         </ear>
     </target>
@@ -772,12 +775,13 @@
                 <pathelement location="${caarray-client.test.files.dir}" />
                 <pathelement location="${caarray-client.resources.dir}" />
                 <pathelement location="${javaee.jar}" />
+                <pathelement location="${nci-commons-core.jar}" />
             </classpath>
         </javac>
     </target>
 
     <target name="test:junit-caarray-client.jar" depends="test:compile:caarray-client.test.classes,test:instrument:caarray-client.jar">
-        <run-junit-tests test.src.dir="${caarray-client.test.src.dir}" xml.output.dir="${caarray-client.target.dir}/junit" instrumented.classes="${caarray-client.instrumented.classes.dir}" classpath="${caarray-client.test.classes.dir};${test.data.files.dir};${test.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-client.test.files.dir};${caarray-client.classes.dir};${caarray-client.resources.dir};${junit.jar}" />
+        <run-junit-tests test.src.dir="${caarray-client.test.src.dir}" xml.output.dir="${caarray-client.target.dir}/junit" instrumented.classes="${caarray-client.instrumented.classes.dir}" classpath="${caarray-client.test.classes.dir};${test.data.files.dir};${test.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-client.test.files.dir};${caarray-client.classes.dir};${caarray-client.resources.dir};${junit.jar};${nci-commons-core.jar}" />
     </target>
 
     <!-- caarray-common.jar -->
@@ -810,12 +814,13 @@
                 <pathelement location="${log4j.jar}" />
                 <pathelement location="${cglib.jar}" />
                 <pathelement location="${dom4j.jar}" />
+                <pathelement location="${nci-commons-core.jar}" />
             </classpath>
         </javac>
     </target>
 
     <target name="test:junit-caarray-common.jar" depends="test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:unpack-test-data">
-        <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${ejb3-persistence.jar};${caGrid-1.1-data-common.jar};${caGrid-1.1-data-stubs.jar};${caGrid-1.1-sdkQuery32-core.jar};${log4j.jar};${clm.jar};${axis.jar};${javaee.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar}" />
+        <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${ejb3-persistence.jar};${caGrid-1.1-data-common.jar};${caGrid-1.1-data-stubs.jar};${caGrid-1.1-sdkQuery32-core.jar};${log4j.jar};${clm.jar};${axis.jar};${javaee.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${nci-commons-core.jar}" />
     </target>
 
     <!-- caarray-ejb.jar -->
@@ -848,12 +853,13 @@
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${csmapi.jar}" />
                 <pathelement location="${cglib.jar}" />
+                <pathelement location="${nci-commons-core.jar}" />
             </classpath>
         </javac>
     </target>
 
     <target name="test:junit-caarray-ejb.jar" depends="test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:unpack-test-data">
-        <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-configuration.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${clm.jar}:${cglib.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar}" />
+        <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-configuration.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${clm.jar}:${cglib.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${nci-commons-core.jar}" />
     </target>
 
     <!-- caarray.war -->
@@ -901,7 +907,7 @@
         <run-junit-tests test.src.dir="${caarray-war.test.src.dir}"
                          xml.output.dir="${caarray-war.target.dir}/junit"
                          instrumented.classes="${caarray-war.instrumented.classes.dir}"
-                         classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-beanutils.jar};${commons-logging.jar};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar};${cglib.jar};${commons-io.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${mysql-connector.jar};${c3p0.jar};${cglib.jar};${clm.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${nci-commons-struts2.jar}" />
+                         classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-beanutils.jar};${commons-logging.jar};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar};${cglib.jar};${commons-io.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${mysql-connector.jar};${c3p0.jar};${cglib.jar};${clm.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${nci-commons-struts2.jar};${nci-commons-core.jar}" />
     </target>
 
     <target name="test:junit-report">
@@ -980,6 +986,7 @@
                 <pathelement location="${caGrid-1.1-data-stubs.jar}" />
                 <pathelement location="${cglib.jar}" />
                 <pathelement location="${commons-lang.jar}" />
+                <pathelement location="${nci-commons-core.jar}" />
             </classpath>
             <exclude name="**/api/**" />
         </javac>

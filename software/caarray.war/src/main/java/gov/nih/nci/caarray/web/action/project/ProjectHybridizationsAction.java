@@ -145,7 +145,7 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
         super.prepare();
 
         if (this.currentHybridization.getId() != null) {
-            Hybridization retrieved = getGenericDataService().retrieveEntity(Hybridization.class,
+            Hybridization retrieved = getGenericDataService().getPersistentObject(Hybridization.class,
                                                                               this.currentHybridization.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentHybridization,

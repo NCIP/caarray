@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.domain.project;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -142,7 +142,7 @@ import org.hibernate.validator.NotNull;
  *
  */
 @Entity
-@BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @UniqueConstraint(fields = @UniqueConstraintField(name = "publicIdentifier"))
 @SuppressWarnings({"PMD.TooManyFields", "PMD.ExcessiveClassLength",
                    "PMD.ExcessivePublicCount", "PMD.AvoidDuplicateLiterals" })
@@ -783,7 +783,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @OneToMany
     @IndexColumn(name = "indx")
     @JoinColumn(name = "experiment")
-    @BatchSize(size = PersistentObject.DEFAULT_BATCH_SIZE)
+    @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public List<ExperimentContact> getExperimentContacts() {
