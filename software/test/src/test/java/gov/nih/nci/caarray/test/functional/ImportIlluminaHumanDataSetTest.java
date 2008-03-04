@@ -95,7 +95,7 @@ import org.junit.Test;
 
 /**
  * Test case #7959.
- * 
+ *
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
 public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
@@ -103,6 +103,8 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
     private static final int NUMBER_OF_FILES = 1;
     private static final int TWO_MINUTES = 12;
     private static final String ARRAY_DESIGN_NAME = "Human_WG-6";
+    private static final String ORGANISM = "Rattus rattus (ncbitax)";
+    private static final String PROVIDER = "Illumina";
 
     @Test
     public void testImportAndRetrieval() throws Exception {
@@ -114,11 +116,11 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         // - Login
         loginAsPrincipalInvestigator();
 
-        // - Add the array design 
-        importArrayDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
+        // - Add the array design
+        importArrayDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV, PROVIDER, ORGANISM);
 
         // Create project
-        createExperiment(title, ARRAY_DESIGN_NAME);
+        createExperiment(title, ARRAY_DESIGN_NAME, PROVIDER, ORGANISM);
         String experimentId = selenium.getText("//tr[4]/td[2]");
 
         // - go to the data tab
@@ -157,7 +159,7 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);
-        
+
         // make experiment public
         submitExperiment();
         makeExperimentPublic(experimentId);
@@ -167,11 +169,11 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         System.out.println("total time = " + totalTime);
     }
 
-    private void importArrayDesign(File arrayDesign) throws Exception {
+    private void importArrayDesign(File arrayDesign, String provider, String organism) throws Exception {
         selenium.click("link=Manage Array Designs");
         selenium.waitForPageToLoad("30000");
         if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
-            addArrayDesign(arrayDesign);
+            addArrayDesign(arrayDesign, provider, organism);
             // get the array design row so we do not find the wrong Imported text
             int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
             // wait for array design to be imported
