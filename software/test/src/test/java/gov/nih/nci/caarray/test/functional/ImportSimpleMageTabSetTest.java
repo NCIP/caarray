@@ -119,7 +119,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
 
         // Create project
-        createExperiment(title,ARRAY_DESIGN_NAME);
+        String experimentId = createExperiment(title,ARRAY_DESIGN_NAME);
 
         // - go to the data tab
         selenium.click("link=Data");
@@ -170,6 +170,9 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         String totalTime = df.format((endTime - startTime)/60000f);
         System.out.println("total time = " + totalTime);
 
+        // make experiment public
+        submitExperiment();
+        makeExperimentPublic(experimentId);
     }
 
     private void importArrayDesign(File arrayDesign) throws Exception {
@@ -177,7 +180,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         selenium.waitForPageToLoad("30000");
         if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
             addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
-            
+
             // get the array design row so we do not find the wrong Imported text
             int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
             // wait for array design to be imported
@@ -185,7 +188,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         }
     }
 
- 
+
 
     private void checkFileStatus(String status, int column) {
         for (int i = 1; i < NUMBER_OF_FILES; i++) {
