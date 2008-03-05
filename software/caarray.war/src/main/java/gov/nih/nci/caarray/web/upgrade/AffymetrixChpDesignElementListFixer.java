@@ -172,8 +172,11 @@ public class AffymetrixChpDesignElementListFixer implements Migrator {
         File chpFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(chpData.getDataFile());
         FusionCHPLegacyData affyChpData =
             FusionCHPLegacyData.fromBase(FusionCHPDataReg.read(chpFile.getAbsolutePath()));
-        return designService.getArrayDesign("Affymetrix.com", "PhysicalArrayDesign",
-                affyChpData.getHeader().getChipType());
+        String objectId = affyChpData.getHeader().getChipType();
+        affyChpData.clear();
+        affyChpData = null;
+        System.gc();
+        return designService.getArrayDesign("Affymetrix.com", "PhysicalArrayDesign", objectId);
     }
 
     private List<DerivedArrayData> getAllChpDatas() throws MigrationStepFailedException {
