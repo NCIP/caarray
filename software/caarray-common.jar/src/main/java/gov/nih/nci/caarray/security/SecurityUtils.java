@@ -167,6 +167,13 @@ public final class SecurityUtils {
     private static Application caarrayApp;
     private static User anonymousUser;
 
+    private static final ThreadLocal<Boolean> PRIVILEGED_MODE = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return Boolean.FALSE;
+        }
+    };
+
     static {
         AuthorizationManager am = null;
         try {
@@ -652,5 +659,19 @@ public final class SecurityUtils {
             result = result.getSuperclass();
         }
         return result;
+    }
+
+    /**
+     * @return the privilegedMode
+     */
+    public static boolean isPrivilegedMode() {
+        return PRIVILEGED_MODE.get();
+    }
+
+    /**
+     * @param privilegedMode the privilegedMode to set
+     */
+    public static void setPrivilegedMode(boolean privilegedMode) {
+        PRIVILEGED_MODE.set(privilegedMode);
     }
 }

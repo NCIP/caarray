@@ -106,8 +106,8 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    public List<AbstractCaArrayObject> query(final AbstractCaArrayObject entityToMatch) {
-        return new ArrayList<AbstractCaArrayObject>();
+    public <T extends AbstractCaArrayObject> List<T> query(T entityToMatch) {
+        return new ArrayList<T>();
     }
 
     /**
@@ -123,14 +123,14 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
     public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -152,7 +152,7 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
         this.callsToFiltercollection++;
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -160,7 +160,7 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
             PageSortParams<T> pageSortParams) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */

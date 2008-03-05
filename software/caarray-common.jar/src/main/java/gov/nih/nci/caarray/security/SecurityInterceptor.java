@@ -158,7 +158,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
     }
 
     private void onCollectionChange(Object collection) {
-        if (collection instanceof PersistentCollection) {
+        if (isEnabled() && collection instanceof PersistentCollection) {
             PersistentCollection pc = (PersistentCollection) collection;
 
             if (pc.getOwner() instanceof AccessProfile) {
@@ -187,15 +187,15 @@ public class SecurityInterceptor extends EmptyInterceptor {
     @Override
     public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 
-        if (entity instanceof Protectable) {
+        if (isEnabled() && entity instanceof Protectable) {
             saveEntityForProcessing(NEWOBJS, new ArrayList<Protectable>(), (Protectable) entity);
         }
 
-        if (entity instanceof AccessProfile) {
+        if (isEnabled() && entity instanceof AccessProfile) {
             saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), (AccessProfile) entity);
         }
 
-        if (entity instanceof CaArrayFile) {
+        if (isEnabled() && entity instanceof CaArrayFile) {
             saveEntityForProcessing(FILES, new ArrayList<CaArrayFile>(), (CaArrayFile) entity);
         }
 
@@ -209,11 +209,11 @@ public class SecurityInterceptor extends EmptyInterceptor {
      */
     @Override
     public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
-        if (entity instanceof Protectable) {
+        if (isEnabled() && entity instanceof Protectable) {
             verifyWritePrivilege((Protectable) entity, UsernameHolder.getCsmUser());
             saveEntityForProcessing(DELETEDOBJS, new ArrayList<Protectable>(), (Protectable) entity);
         }
-        if (entity instanceof ProtectableDescendent) {
+        if (isEnabled() && entity instanceof ProtectableDescendent) {
             verifyWritePrivilege((ProtectableDescendent) entity, UsernameHolder.getCsmUser());
         }
     }
@@ -227,13 +227,13 @@ public class SecurityInterceptor extends EmptyInterceptor {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
             String[] propertyNames, Type[] types) {
-        if (entity instanceof Protectable) {
+        if (isEnabled() && entity instanceof Protectable) {
             verifyWritePrivilege((Protectable) entity, UsernameHolder.getCsmUser());
         }
-        if (entity instanceof ProtectableDescendent) {
+        if (isEnabled() && entity instanceof ProtectableDescendent) {
             verifyWritePrivilege((ProtectableDescendent) entity, UsernameHolder.getCsmUser());
         }
-        if (entity instanceof AccessProfile) {
+        if (isEnabled() && entity instanceof AccessProfile) {
             saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), (AccessProfile) entity);
         }
 
@@ -316,4 +316,10 @@ public class SecurityInterceptor extends EmptyInterceptor {
             PROFILES.set(null);
         }
     }
+
+    private boolean isEnabled() {
+        return !SecurityUtils.isPrivilegedMode();
+    }
+
+
 }
