@@ -91,7 +91,7 @@
             <exception-mapping result="securityError" exception="java.lang.NoSuchMethodException"/>
         </global-exception-mappings>
 
-        <action name="migrateDb" class="gov.nih.nci.caarray.web.listener.DbMigrationListener" method="runMigrations">
+        <action name="migrateDb" class="gov.nih.nci.caarray.web.upgrade.UpgradeAction" method="doUpgrade">
             <result name="success" type="redirect-action">home</result>
         </action>
 

@@ -134,9 +134,6 @@
         <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
     </listener>
     <listener>
-        <listener-class>gov.nih.nci.caarray.web.listener.DbMigrationListener</listener-class>
-    </listener>
-    <listener>
         <listener-class>gov.nih.nci.caarray.web.listener.StartupListener</listener-class>
     </listener>
 

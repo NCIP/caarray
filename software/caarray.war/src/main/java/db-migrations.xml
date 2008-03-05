@@ -1,3 +1,9 @@
-<migrationScripts>
-  <migrationScript fromVersion="2.0" toVersion="2.0.1">migrate-2.0.sql</migrationScript>
-</migrationScripts>
+<migrations>
+    <migration fromVersion="2.0" toVersion="2.0.1">
+        <sql-script>migrate-2.0.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.0.1" toVersion="2.0.1.alpha2">
+        <sql-script>migrate-2.0.sql</sql-script>
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.AffymetrixChpDesignElementListFixer</migrator-class>
+    </migration>
+</migrations>

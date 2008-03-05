@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-war
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-war Software License (the License) is between NCI and You. You (or
+ * This caArray Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-war Software to (i) use, install, access, operate,
+ * its rights in the caArray Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-war Software; (ii) distribute and
- * have distributed to and by third parties the caarray-war Software and any
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,57 +80,65 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.filter;
+package gov.nih.nci.caarray.web.upgrade;
 
-import gov.nih.nci.caarray.web.upgrade.UpgradeManager;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
- * This filter checks to see if the database version is up to date.
- * If not, all requests are forwarded to migrateDb.jsp.
- *
- * @author Winston Cheng
- *
+ * Responsible for upgrading a current version of the application schema to a target version.
  */
-public class DbMigrationFilter implements Filter {
-    private static final String MIGRATE_ACTION = "migrateDb.action";
-    private static final String REDIRECT_PAGE = "/migrateDb.jsp";
+final class Migration {
 
-    /**
-     * {@inheritDoc}
-     */
-    public void destroy() {
-        // Do nothing
+    private static final Logger LOG = Logger.getLogger(Migration.class);
+
+    private final List<AbstractMigrationStep> steps = new ArrayList<AbstractMigrationStep>();
+    private final String fromVersion;
+    private final String toVersion;
+
+    Migration(Element element) {
+        fromVersion = element.getAttribute("fromVersion");
+        toVersion = element.getAttribute("toVersion");
+        loadSteps(element);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-        if (!UpgradeManager.getInstance().isUpgradeRequired() || httpRequest.getRequestURI().endsWith(MIGRATE_ACTION)) {
-            chain.doFilter(request, response);
-        } else {
-            httpResponse.sendRedirect(httpRequest.getContextPath() + REDIRECT_PAGE);
+    private void loadSteps(Element element) {
+        NodeList stepNodes = element.getElementsByTagName("*");
+        for (int i = 0; i < stepNodes.getLength(); i++) {
+            steps.add(createMigrationStep((Element) stepNodes.item(i)));
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void init(FilterConfig arg0) throws ServletException {
-        // Do nothing
+    private AbstractMigrationStep createMigrationStep(Element element) {
+        String elementName = element.getNodeName();
+        if ("sql-script".equals(elementName)) {
+            return new SqlScriptMigrationStep(element);
+        } else if ("migrator-class".equals(elementName)) {
+            return new ClassBasedMigrationStep(element);
+        } else {
+            throw new IllegalArgumentException("Invalid migration step element name: " + elementName);
+        }
     }
+
+    void execute() throws MigrationStepFailedException {
+        LOG.info("Executing data migration from version " + fromVersion + " to version " + toVersion);
+        for (AbstractMigrationStep step : steps) {
+            LOG.info("Executing " + step.toString());
+            step.execute();
+        }
+    }
+
+    String getFromVersion() {
+        return fromVersion;
+    }
+
+    String getToVersion() {
+        return toVersion;
+    }
+
+
 }

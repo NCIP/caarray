@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-war
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-war Software License (the License) is between NCI and You. You (or
+ * This caArray Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-war Software to (i) use, install, access, operate,
+ * its rights in the caArray Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-war Software; (ii) distribute and
- * have distributed to and by third parties the caarray-war Software and any
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,10 +80,8 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.listener;
+package gov.nih.nci.caarray.web.upgrade;
 
-import gov.nih.nci.caarray.domain.ConfigParamEnum;
-import gov.nih.nci.caarray.util.ConfigurationHelper;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.io.BufferedReader;
@@ -93,184 +91,83 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.commons.configuration.DataConfiguration;
 import org.apache.log4j.Logger;
 import org.hibernate.engine.SessionFactoryImplementor;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import com.opensymphony.xwork2.Action;
 
 /**
- * @author Winston Cheng
- *
+ * Executes a SQL script as part of an application upgrade.
  */
-public class DbMigrationListener implements ServletContextListener {
-    private static final Logger LOG = Logger.getLogger(DbMigrationListener.class);
-    private static final String MIGRATION_FILE = "/db-migrations.xml";
-    private static String version;
-    private static Map<String, Migration> migrations = new HashMap<String, Migration>();
-    /**
-     * This holds information parsed from the MIGRATION_FILE.
-     */
-    private class Migration {
-        private String fromVersion;
-        private String toVersion;
-        private String script;
-        /**
-         * @return the fromVersion
-         */
-        public String getFromVersion() {
-            return fromVersion;
-        }
-        /**
-         * @param fromVersion the fromVersion to set
-         */
-        public void setFromVersion(String fromVersion) {
-            this.fromVersion = fromVersion;
-        }
-        /**
-         * @return the toVersion
-         */
-        public String getToVersion() {
-            return toVersion;
-        }
-        /**
-         * @param toVersion the toVersion to set
-         */
-        public void setToVersion(String toVersion) {
-            this.toVersion = toVersion;
-        }
-        /**
-         * @return the script
-         */
-        public String getScript() {
-            return script;
-        }
-        /**
-         * @param script the script to set
-         */
-        public void setScript(String script) {
-            this.script = script;
-        }
+final class SqlScriptMigrationStep extends AbstractMigrationStep {
+
+    private static final Logger LOG = Logger.getLogger(SqlScriptMigrationStep.class);
+
+    private final String script;
+
+    SqlScriptMigrationStep(Element element) {
+        this.script = getContent(element);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void contextDestroyed(ServletContextEvent arg0) {
-        // do nothing
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void contextInitialized(ServletContextEvent arg0) {
-        DataConfiguration config = ConfigurationHelper.getConfiguration();
-        version = config.getString(ConfigParamEnum.SCHEMA_VERSION.name());
-        loadMigrationSteps();
-    }
-
-    private void loadMigrationSteps() {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document dom = db.parse(this.getClass().getResource(MIGRATION_FILE).getPath());
-            NodeList nl = dom.getElementsByTagName("migrationScript");
-            for (int i = 0; i < nl.getLength(); i++) {
-                Element e = (Element) nl.item(i);
-                Migration m = new Migration();
-                m.setFromVersion(e.getAttribute("fromVersion"));
-                m.setToVersion(e.getAttribute("toVersion"));
-                m.setScript(e.getFirstChild().getNodeValue());
-                migrations.put(m.getFromVersion(), m);
-            }
-        } catch (Exception e) {
-            LOG.info("error loading migration file", e);
-        }
-    }
-
-    /**
-     * Returns true if the database schema version is up to date.
-     * @return the current
-     */
-    public static boolean isCurrent() {
-        return migrations.get(version) == null;
-    }
-
-    /**
-     * Run migration scripts.
-     * @return success if all scripts ran successfully
-     */
-    public String runMigrations() {
-        Connection c = null;
-        try {
-            c = ((SessionFactoryImplementor) HibernateUtil.getSessionFactory()).getConnectionProvider().getConnection();
-            c.setAutoCommit(false);
-
-            Migration m = null;
-            while (!isCurrent()) {
-                m = migrations.get(version);
-                runScript(m.getScript(), c);
-                version = m.getToVersion();
-            }
-            if (m != null) {
-                Statement s = c.createStatement();
-                s.executeUpdate("update config_parameter set raw_value='" + m.getToVersion()
-                        + "' where param='SCHEMA_VERSION'");
-            }
-
-            c.commit();
-        } catch (SQLException e) {
-            LOG.error("error running migration scripts", e);
-            return Action.ERROR;
-        } catch (IOException ioe) {
-            LOG.error("Error reading migration script file", ioe);
-            return Action.ERROR;
-        } finally {
-            try {
-                c.close();
-            } catch (SQLException sqle) {
-                LOG.error("error closing connection", sqle);
-            }
-        }
-        return Action.SUCCESS;
-    }
-
-    private void runScript(String script, Connection c) throws IOException, SQLException {
+    @Override
+    void execute() throws MigrationStepFailedException {
         InputStream instream = this.getClass().getResourceAsStream("/" + script);
         BufferedReader in = new BufferedReader(new InputStreamReader(instream));
+        Connection connection = null;
         try {
+            connection =
+                ((SessionFactoryImplementor) HibernateUtil.getSessionFactory()).getConnectionProvider().getConnection();
             String line = null;
             StringBuffer sqlStatement = new StringBuffer();
-            Statement s = c.createStatement();
+            Statement s = connection.createStatement();
             while ((line = in.readLine()) != null) {
                 line = line.trim();
                 if (line.startsWith("--")) { continue; }
                 if (line.endsWith(";")) {
                     sqlStatement.append(line.substring(0, line.length() - 1));
+                    LOG.info("Executing SQL statement: " + sqlStatement.toString());
                     s.executeUpdate(sqlStatement.toString());
                     sqlStatement = new StringBuffer();
                 } else {
                     sqlStatement.append(line).append(' ');
                 }
             }
+        } catch (SQLException e) {
+            throw new MigrationStepFailedException(e);
+        } catch (IOException e) {
+            throw new MigrationStepFailedException(e);
         } finally {
-            if (in != null) {
-                in.close();
-            }
+            close(connection);
+            close(instream);
+        }
+    }
+
+    private void close(InputStream instream) {
+        try {
             if (instream != null) {
                 instream.close();
             }
+        } catch (IOException e) {
+            LOG.error("Couldn't close InputStream", e);
         }
     }
+
+    private void close(Connection connection) {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            LOG.error("Couldn't close connection", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "SQL migration script " + script;
+    }
+
 }

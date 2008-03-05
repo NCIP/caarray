@@ -80,57 +80,35 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.filter;
+package gov.nih.nci.caarray.web.upgrade;
 
-import gov.nih.nci.caarray.web.upgrade.UpgradeManager;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 /**
- * This filter checks to see if the database version is up to date.
- * If not, all requests are forwarded to migrateDb.jsp.
- *
- * @author Winston Cheng
- *
+ * Runs the necessary list of upgrade scripts and utilities necessary to upgrade caArray
+ * from its previously registered version to the current version.
  */
-public class DbMigrationFilter implements Filter {
-    private static final String MIGRATE_ACTION = "migrateDb.action";
-    private static final String REDIRECT_PAGE = "/migrateDb.jsp";
+public class ApplicationUpgradeListener implements ServletContextListener {
 
     /**
      * {@inheritDoc}
      */
-    public void destroy() {
-        // Do nothing
+    public void contextDestroyed(ServletContextEvent arg0) {
+        // do nothing
     }
 
     /**
      * {@inheritDoc}
      */
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-        if (!UpgradeManager.getInstance().isUpgradeRequired() || httpRequest.getRequestURI().endsWith(MIGRATE_ACTION)) {
-            chain.doFilter(request, response);
-        } else {
-            httpResponse.sendRedirect(httpRequest.getContextPath() + REDIRECT_PAGE);
+    public void contextInitialized(ServletContextEvent arg0) {
+        if (UpgradeManager.getInstance().isUpgradeRequired()) {
+            HibernateUtil.openAndBindSession();
+            UpgradeManager.getInstance().performUpgrades();
+            HibernateUtil.unbindAndCleanupSession();
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void init(FilterConfig arg0) throws ServletException {
-        // Do nothing
-    }
 }
