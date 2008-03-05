@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-ejb.jar
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-ejb.jar Software License (the License) is between NCI and You. You (or
+ * This caArray Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-ejb.jar Software to (i) use, install, access, operate,
+ * its rights in the caArray Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-ejb.jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-ejb.jar Software and any
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,102 +82,75 @@
  */
 package gov.nih.nci.caarray.services.search;
 
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.DAOException;
-import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
-import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
-import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.interceptor.Interceptors;
+import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
-import org.apache.log4j.Logger;
-import org.jboss.annotation.ejb.TransactionTimeout;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * Session bean that searches for caArray entities based on various types of criteria.
- *
- * @author Rashmi Srinivasa
- */
-@Stateless
-@Remote(CaArraySearchService.class)
-@Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
-@TransactionTimeout(CaArraySearchServiceBean.TIMEOUT_SECONDS)
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-public class CaArraySearchServiceBean implements CaArraySearchService {
+public class CaArraySearchServiceTest {
 
-    private static final Logger LOG = Logger.getLogger(CaArraySearchServiceBean.class);
-    static final int TIMEOUT_SECONDS = 1800;
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    private CaArraySearchService searchService;
+    private final LocalDaoFactoryStub caArrayDaoFactoryStub = new LocalDaoFactoryStub();
 
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends AbstractCaArrayObject> List<T> search(final T entityExample) {
-        List<T> retrievedList = new ArrayList<T>();
-        if (entityExample == null) {
-            LOG.error("Search was called with null example entity.");
-            return retrievedList;
-        }
-
-        try {
-            retrievedList = getSearchDao().query(entityExample);
-        } catch (DAOException e) {
-            LOG.error("DAO exception while querying by example: ", e);
-        } catch (Exception e) {
-            LOG.error("Exception while querying by example: ", e);
-        }
-
-        return retrievedList;
+    @Before
+    public void setUp() throws Exception {
+        CaArraySearchServiceBean searchServiceBean = new CaArraySearchServiceBean();
+        searchServiceBean.setDaoFactory(caArrayDaoFactoryStub);
+        searchService = searchServiceBean;
     }
 
-    /**
-     * Searches for entities based on the given CQL query.
-     *
-     * @param cqlQuery the HQL (Hibernate Query Language) string to use as search criteria.
-     *
-     * @return the matching entities.
-     */
-    public List<?> search(final CQLQuery cqlQuery) {
-        List<?> retrievedList = new ArrayList<Object>();
-        if (cqlQuery == null) {
-            LOG.error("Search was called with null CQL query.");
-            return retrievedList;
-        }
-
-        try {
-            retrievedList = getSearchDao().query(cqlQuery);
-        } catch (DAOException e) {
-            LOG.error("DAO exception while querying by CQL: ", e);
-        } catch (Exception e) {
-            LOG.error("Exception while querying by CQL: ", e);
-        }
-
-        return retrievedList;
+    @Test
+    public void testSearch() {
+        Project exampleProject = null;
+        List<Project> projects = searchService.search(exampleProject);
+        assertTrue(projects.isEmpty());
+        exampleProject = new Project();
+        projects = searchService.search(exampleProject);
+        assertEquals(1, projects.size());
+        assertEquals(exampleProject, projects.get(0));
     }
 
-    /**
-    * Returns a DAO for searching domain objects.
-    *
-    * @return SearchDao
-    */
-   private SearchDao getSearchDao() {
-       return getDaoFactory().getSearchDao();
-   }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
+    @Test
+    public void testSearchCQLQuery() {
+        CQLQuery query = null;
+        List results = searchService.search(query);
+        assertTrue(results.isEmpty());
+        query = new CQLQuery();
+        results = searchService.search(query);
+        assertFalse(results.isEmpty());
     }
 
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
+    private static class LocalDaoFactoryStub extends DaoFactoryStub {
+
+        @Override
+        public SearchDao getSearchDao() {
+            return new SearchDaoStub() {
+
+                @Override
+                public <T extends AbstractCaArrayObject> List<T> query(T entityToMatch) {
+                    ArrayList<T> list = new ArrayList<T>();
+                    list.add(entityToMatch);
+                    return list;
+                }
+
+                @Override
+                public List<AbstractCaArrayObject> query(CQLQuery cqlQuery) {
+                    ArrayList<AbstractCaArrayObject> list = new ArrayList<AbstractCaArrayObject>();
+                    list.add(new Project());
+                    return list;
+                }
+
+            };
+        }
     }
 }

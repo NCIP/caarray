@@ -98,10 +98,13 @@ import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.ContactDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.Feature;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
@@ -203,8 +206,10 @@ public class ArrayDesignServiceTest {
     }
 
     @Test
-    public void testImportDesignDetails_ArrayDesign() {
+    @SuppressWarnings("deprecation")
+    public void testImportDesignDetails_AffymetrixTest3() throws AffymetrixCdfReadException {
         ArrayDesign design = new ArrayDesign();
+        design.setId(0L);
         design.setDesignFile(getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         this.arrayDesignService.importDesign(design);
         this.arrayDesignService.importDesignDetails(design);
@@ -212,6 +217,9 @@ public class ArrayDesignServiceTest {
         assertEquals("Affymetrix.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
         assertEquals("Test3", design.getLsidObjectId());
+        DesignElementList designElementList =
+            AffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
+        checkChpDesignElementList(designElementList, AffymetrixArrayDesignFiles.TEST3_CDF);
         assertEquals(15876, design.getNumberOfFeatures());
     }
 
@@ -357,8 +365,17 @@ public class ArrayDesignServiceTest {
         assertEquals("Foo", this.arrayDesignService.getAllProviders().get(0).getName());
     }
 
+    private void checkChpDesignElementList(DesignElementList designElementList, File cdfFile) throws AffymetrixCdfReadException {
+        AffymetrixCdfReader cdfReader = AffymetrixCdfReader.create(cdfFile);
+        assertEquals(cdfReader.getCdfData().getHeader().getNumProbeSets(), designElementList.getDesignElements().size());
+        for (int i = 0; i < designElementList.getDesignElements().size(); i++) {
+            LogicalProbe probe = (LogicalProbe) designElementList.getDesignElements().get(i);
+            assertEquals(cdfReader.getCdfData().getProbeSetName(i), probe.getName());
+        }
+    }
+
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
-        private final Map<String, ArrayDesign> lsidDesignMap = new HashMap<String, ArrayDesign>();
+        private final Map<String, AbstractCaArrayEntity> lsidEntityMap = new HashMap<String, AbstractCaArrayEntity>();
         private final Map<Long, PersistentObject> objectMap = new HashMap<Long, PersistentObject>();
 
         @Override
@@ -366,17 +383,34 @@ public class ArrayDesignServiceTest {
             return new ArrayDaoStub() {
 
                 @Override
-                public void save(PersistentObject caArrayEntity) {
-                    if (caArrayEntity instanceof ArrayDesign) {
-                        ArrayDesign arrayDesign = (ArrayDesign) caArrayEntity;
-                        LocalDaoFactoryStub.this.lsidDesignMap.put(arrayDesign.getLsid(), arrayDesign);
+                public void save(PersistentObject object) {
+                    if (object instanceof AbstractCaArrayEntity) {
+                        AbstractCaArrayEntity caArrayEntity = (AbstractCaArrayEntity) object;
+                        LocalDaoFactoryStub.this.lsidEntityMap.put(caArrayEntity.getLsid(), caArrayEntity);
+                        LocalDaoFactoryStub.this.objectMap.put(caArrayEntity.getId(), caArrayEntity);
+                    }
+                    // manually create reverse association automatically created by database fk relationship
+                    if (object instanceof LogicalProbe) {
+                        LogicalProbe probe = (LogicalProbe) object;
+                        probe.getArrayDesignDetails().getLogicalProbes().add(probe);
                     }
                 }
 
                 @Override
                 public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-                    // TODO Auto-generated method stub
-                    return LocalDaoFactoryStub.this.lsidDesignMap.get("URN:LSID:" + lsidAuthority + ":" + lsidNamespace + ":" + lsidObjectId);
+                    return (ArrayDesign)
+                        LocalDaoFactoryStub.this.lsidEntityMap.get("URN:LSID:" + lsidAuthority + ":" + lsidNamespace + ":" + lsidObjectId);
+                }
+
+                @Override
+                public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+                    return (DesignElementList)
+                    LocalDaoFactoryStub.this.lsidEntityMap.get("URN:LSID:" + lsidAuthority + ":" + lsidNamespace + ":" + lsidObjectId);
+                }
+
+                @Override
+                public ArrayDesign getArrayDesign(long id) {
+                    return (ArrayDesign) LocalDaoFactoryStub.this.objectMap.get(id);
                 }
 
                 @Override
@@ -390,11 +424,12 @@ public class ArrayDesignServiceTest {
                 public boolean isArrayDesignLocked(Long id) {
                     return id.equals(2L);
                 }
+
             };
         }
 
         public void clear() {
-            lsidDesignMap.clear();
+            lsidEntityMap.clear();
             objectMap.clear();
         }
 
@@ -436,5 +471,6 @@ public class ArrayDesignServiceTest {
                 }
             };
         }
+
     }
 }

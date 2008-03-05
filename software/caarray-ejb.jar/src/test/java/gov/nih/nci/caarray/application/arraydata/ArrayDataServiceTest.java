@@ -369,7 +369,6 @@ public class ArrayDataServiceTest {
                 hybridizationData.getColumns().size());
         assertEquals(AffymetrixExpressionChpQuantitationType.values().length,
                 dataSet.getQuantitationTypes().size());
-        checkChpDesignElementList(dataSet.getDesignElementList(), cdfFile);
         for (AbstractDesignElement element : dataSet.getDesignElementList().getDesignElements()) {
             assertNotNull(element);
         }
@@ -413,17 +412,7 @@ public class ArrayDataServiceTest {
                 hybridizationData.getColumns().size());
         assertEquals(AffymetrixSnpChpQuantitationType.values().length,
                 dataSet.getQuantitationTypes().size());
-        checkChpDesignElementList(dataSet.getDesignElementList(), cdfFile);
         checkChpSnpColumnTypes(dataSet);
-    }
-
-    private void checkChpDesignElementList(DesignElementList designElementList, File cdfFile) throws AffymetrixCdfReadException {
-        AffymetrixCdfReader cdfReader = AffymetrixCdfReader.create(cdfFile);
-        assertEquals(cdfReader.getCdfData().getHeader().getNumProbeSets(), designElementList.getDesignElements().size());
-        for (int i = 0; i < designElementList.getDesignElements().size(); i++) {
-            LogicalProbe probe = (LogicalProbe) designElementList.getDesignElements().get(i);
-            assertEquals(cdfReader.getCdfData().getProbeSetName(i), probe.getName());
-        }
     }
 
     private void checkChpSnpColumnTypes(DataSet dataSet) {
@@ -848,6 +837,13 @@ public class ArrayDataServiceTest {
                     if (caArrayEntity instanceof AbstractArrayData) {
                         addData((AbstractArrayData) caArrayEntity);
                     }
+                }
+
+                @Override
+                public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+                    DesignElementList list = new DesignElementList();
+                    list.setLsidForEntity(lsidAuthority + ":" + lsidNamespace + ":" + lsidObjectId);
+                    return list;
                 }
 
             };

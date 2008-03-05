@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-ejb.jar
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-ejb.jar Software License (the License) is between NCI and You. You (or
+ * This caArray Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-ejb.jar Software to (i) use, install, access, operate,
+ * its rights in the caArray Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-ejb.jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-ejb.jar Software and any
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,104 +80,102 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.search;
+package gov.nih.nci.caarray.application.arraydesign;
 
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.DAOException;
-import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
-import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
-import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
+import gov.nih.nci.caarray.domain.data.DesignElementType;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.interceptor.Interceptors;
-
-import org.apache.log4j.Logger;
-import org.jboss.annotation.ejb.TransactionTimeout;
+import affymetrix.fusion.cdf.FusionCDFData;
 
 /**
- * Session bean that searches for caArray entities based on various types of criteria.
- *
- * @author Rashmi Srinivasa
+ * Utility class used to generate and retrieve the singleton <code>DesignElementList</code> to be used for all parsed
+ * CHP files.
  */
-@Stateless
-@Remote(CaArraySearchService.class)
-@Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
-@TransactionTimeout(CaArraySearchServiceBean.TIMEOUT_SECONDS)
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-public class CaArraySearchServiceBean implements CaArraySearchService {
+public final class AffymetrixChpDesignElementListUtility {
 
-    private static final Logger LOG = Logger.getLogger(CaArraySearchServiceBean.class);
-    static final int TIMEOUT_SECONDS = 1800;
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    private static final String LSID_AUTHORITY = "Affymetrix.com";
+    private static final String LSID_NAMESPACE_ELEMENT_LIST = "DesignElementList";
+    private static final String LSID_OBJECT_ID_ELEMENT_LIST_PREFIX = "LogicalProbes";
 
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends AbstractCaArrayObject> List<T> search(final T entityExample) {
-        List<T> retrievedList = new ArrayList<T>();
-        if (entityExample == null) {
-            LOG.error("Search was called with null example entity.");
-            return retrievedList;
-        }
-
-        try {
-            retrievedList = getSearchDao().query(entityExample);
-        } catch (DAOException e) {
-            LOG.error("DAO exception while querying by example: ", e);
-        } catch (Exception e) {
-            LOG.error("Exception while querying by example: ", e);
-        }
-
-        return retrievedList;
+    private AffymetrixChpDesignElementListUtility() {
+        super();
     }
 
     /**
-     * Searches for entities based on the given CQL query.
+     * Creates the singleton <code>DesignElementList</code> for CHP files associated with the given
+     * Affymetrix design. The <code>DesignElementList</code> is created only and not persisted. Clients
+     * are expected to persist the list.
      *
-     * @param cqlQuery the HQL (Hibernate Query Language) string to use as search criteria.
-     *
-     * @return the matching entities.
+     * @param design the design to create the <code>DesignElementList</code> for
+     * @return the created list.
+     * @throws AffymetrixCdfReadException if the CDF file associated with the design couldn't be read.
      */
-    public List<?> search(final CQLQuery cqlQuery) {
-        List<?> retrievedList = new ArrayList<Object>();
-        if (cqlQuery == null) {
-            LOG.error("Search was called with null CQL query.");
-            return retrievedList;
-        }
-
+    public static DesignElementList createDesignElementList(ArrayDesign design) throws AffymetrixCdfReadException {
+        checkDesign(design);
+        AffymetrixCdfReader reader = null;
         try {
-            retrievedList = getSearchDao().query(cqlQuery);
-        } catch (DAOException e) {
-            LOG.error("DAO exception while querying by CQL: ", e);
-        } catch (Exception e) {
-            LOG.error("Exception while querying by CQL: ", e);
+            File cdfFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(design.getDesignFile());
+            DesignElementList designElementList = new DesignElementList();
+            designElementList.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE_ELEMENT_LIST
+                    + ":" + getDesignElementListObjectId(design));
+            designElementList.setDesignElementTypeEnum(DesignElementType.LOGICAL_PROBE);
+            Map<String, LogicalProbe> probeSetMap = getProbeSetMap(design);
+            reader = AffymetrixCdfReader.create(cdfFile);
+            FusionCDFData fusionCDFData = reader.getCdfData();
+            int numProbeSets = fusionCDFData.getHeader().getNumProbeSets();
+            for (int index = 0; index < numProbeSets; index++) {
+                designElementList.getDesignElements().add(probeSetMap.get(fusionCDFData.getProbeSetName(index)));
+            }
+            return designElementList;
+        } finally {
+            close(reader);
         }
-
-        return retrievedList;
     }
 
     /**
-    * Returns a DAO for searching domain objects.
-    *
-    * @return SearchDao
-    */
-   private SearchDao getSearchDao() {
-       return getDaoFactory().getSearchDao();
-   }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
+     * Returns the existing <code>DesignElementList</code> for CHP files associated with the given
+     * Affymetrix design, or null if none exists.
+     *
+     * @param design the design to retrieve the <code>DesignElementList</code> for
+     * @param arrayDesignService service instance used to retrieve the list
+     * @return the corresponding list or null.
+     */
+    public static DesignElementList getDesignElementList(ArrayDesign design, ArrayDesignService arrayDesignService) {
+        return arrayDesignService.getDesignElementList(LSID_AUTHORITY, LSID_NAMESPACE_ELEMENT_LIST,
+                getDesignElementListObjectId(design));
     }
 
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
+    private static void checkDesign(ArrayDesign design) {
+        if (!LSID_AUTHORITY.equals(design.getLsidAuthority())) {
+            throw new IllegalArgumentException("ArrayDesign must be an Affymetrix design");
+        }
     }
+
+    private static String getDesignElementListObjectId(ArrayDesign design) {
+        return LSID_OBJECT_ID_ELEMENT_LIST_PREFIX + "." + design.getLsidObjectId();
+    }
+
+    private static void close(AffymetrixCdfReader reader) {
+        if (reader != null) {
+            reader.close();
+        }
+    }
+
+    private static Map<String, LogicalProbe> getProbeSetMap(ArrayDesign design) {
+        Set<LogicalProbe> logicalProbes = design.getDesignDetails().getLogicalProbes();
+        Map<String, LogicalProbe> probeSetMap = new HashMap<String, LogicalProbe>(logicalProbes.size());
+        for (LogicalProbe probe : logicalProbes) {
+            probeSetMap.put(probe.getName(), probe);
+        }
+        return probeSetMap;
+    }
+
 }

@@ -85,17 +85,13 @@ package gov.nih.nci.caarray.application.arraydata;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
-import gov.nih.nci.caarray.application.arraydesign.AffymetrixCdfReadException;
-import gov.nih.nci.caarray.application.arraydesign.AffymetrixCdfReader;
+import gov.nih.nci.caarray.application.arraydesign.AffymetrixChpDesignElementListUtility;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -115,7 +111,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import affymetrix.fusion.cdf.FusionCDFData;
 import affymetrix.fusion.chp.FusionCHPDataReg;
 import affymetrix.fusion.chp.FusionCHPGenericData;
 import affymetrix.fusion.chp.FusionCHPHeader;
@@ -133,8 +128,6 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     private static final Logger LOG = Logger.getLogger(AffymetrixChpHandler.class);
     private static final String LSID_AUTHORITY = "Affymetrix.com";
     private static final String LSID_NAMESPACE_DESIGN = "PhysicalArrayDesign";
-    private static final String LSID_NAMESPACE_ELEMENT_LIST = "DesignElementList";
-    private static final String LSID_OBJECT_ID_ELEMENT_LIST_PREFIX = "LogicalProbes";
 
     private static final Map<String, AffymetrixExpressionChpQuantitationType> EXPRESSION_TYPE_MAP =
         new HashMap<String, AffymetrixExpressionChpQuantitationType>();
@@ -171,7 +164,7 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
         typeSet.addAll(types);
         if (dataSet.getDesignElementList() == null) {
-            loadDesignElementList(dataSet, file, arrayDesignService);
+            getDesignElementList(dataSet, file, arrayDesignService);
         }
         FusionCHPLegacyData chpData = getChpData(file);
         prepareColumns(dataSet, types, chpData.getHeader().getNumProbeSets());
@@ -189,64 +182,12 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         }
     }
 
-
-    private void loadDesignElementList(DataSet dataSet, File file,
+    private void getDesignElementList(DataSet dataSet, File file,
             ArrayDesignService arrayDesignService) {
         ArrayDesign design = getArrayDesign(arrayDesignService, file);
-        DesignElementList probeList = getProbeList(design, arrayDesignService);
+        DesignElementList probeList =
+            AffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
         dataSet.setDesignElementList(probeList);
-    }
-
-    private DesignElementList getProbeList(ArrayDesign design, ArrayDesignService arrayDesignService) {
-        DesignElementList probeList = lookupProbeList(design, arrayDesignService);
-        if (probeList == null) {
-            probeList = createProbeList(design);
-        }
-        return probeList;
-    }
-
-    private DesignElementList createProbeList(ArrayDesign design) {
-        DesignElementList designElementList = new DesignElementList();
-        designElementList.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE_ELEMENT_LIST 
-                + ":" + getDesignElementListObjectId(design));
-        designElementList.setDesignElementTypeEnum(DesignElementType.LOGICAL_PROBE);
-        Map<String, LogicalProbe> probeSetMap = getProbeSetMap(design);
-        AffymetrixCdfReader reader = getCdfReader(design);
-        FusionCDFData fusionCDFData = reader.getCdfData();
-        int numProbeSets = fusionCDFData.getHeader().getNumProbeSets();
-        for (int index = 0; index < numProbeSets; index++) {
-            designElementList.getDesignElements().add(probeSetMap.get(fusionCDFData.getProbeSetName(index)));
-        }
-        reader.close();
-        return designElementList;
-    }
-
-    private Map<String, LogicalProbe> getProbeSetMap(ArrayDesign design) {
-        Set<LogicalProbe> logicalProbes = design.getDesignDetails().getLogicalProbes();
-        Map<String, LogicalProbe> probeSetMap = new HashMap<String, LogicalProbe>(logicalProbes.size());
-        for (LogicalProbe probe : logicalProbes) {
-            probeSetMap.put(probe.getName(), probe);
-        }
-        return probeSetMap;
-    }
-
-    private AffymetrixCdfReader getCdfReader(ArrayDesign design) {
-        File cdfFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(design.getDesignFile());
-        try {
-            return AffymetrixCdfReader.create(cdfFile);
-        } catch (AffymetrixCdfReadException e) {
-            LOG.error("Unexpected failure to read CDF that previously passed validation", e);
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private DesignElementList lookupProbeList(ArrayDesign design, ArrayDesignService arrayDesignService) {
-        return arrayDesignService.getDesignElementList(LSID_AUTHORITY, LSID_NAMESPACE_ELEMENT_LIST, 
-                getDesignElementListObjectId(design));
-    }
-
-    private String getDesignElementListObjectId(ArrayDesign design) {
-        return LSID_OBJECT_ID_ELEMENT_LIST_PREFIX + "." + design.getLsidObjectId();
     }
 
     private void loadExpressionData(HybridizationData hybridizationData, Set<QuantitationType> typeSet,
