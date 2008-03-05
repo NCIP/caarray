@@ -2,7 +2,7 @@
 
 insert into term_source (name, url) values ('ncbitax', 'http://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/');
 insert into term_source (name, url, version) values ('NCI_Thesaurus', 'http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do', '07.12a');
-insert into term_source (name, version) values ('caArray', '2.0');
+insert into term_source (name, version) values ('caArray', '2.0.1.alpha2');
 insert into term_source (name, url, version) values ('caDSR', 'http://ncicb.nci.nih.gov/NCICB/infrastructure/cacore_overview/cadsr', '3.2');
 
 insert into category (source, name) select id, 'PublicationStatus' from term_source where name='caArray';
