@@ -835,6 +835,7 @@
         <mkdir dir="${caarray-ejb.test.classes.dir}" />
         <javac srcdir="${caarray-ejb.test.src.dir}" destdir="${caarray-ejb.test.classes.dir}" debug="true">
             <classpath>
+                <pathelement location="${caGrid-1.1-data-stubs.jar}" />
                 <pathelement location="${caarray-ejb.classes.dir}" />
                 <pathelement location="${caarray-client.classes.dir}" />
                 <pathelement location="${caarray-common.classes.dir}" />
@@ -859,7 +860,7 @@
     </target>
 
     <target name="test:junit-caarray-ejb.jar" depends="test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:unpack-test-data">
-        <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-configuration.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${clm.jar}:${cglib.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${nci-commons-core.jar}" />
+        <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${axis.jar};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-configuration.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${clm.jar}:${cglib.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${nci-commons-core.jar};${caGrid-1.1-data-stubs.jar}" />
     </target>
 
     <!-- caarray.war -->
