@@ -143,6 +143,15 @@ public class MageTabDataFiles {
     public static final File EBI_TEMPLATE_SDRF =
         new File(MageTabDataFiles.class.getResource("/magetab/ebi_template/MAGE-TAB_GSK.sdrf").getFile());
 
+    public static final File GSK_TEST_DIRECTORY =
+        new File(MageTabDataFiles.class.getResource("/magetab/GSK_test").getFile());
+
+    public static final File GSK_TEST_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/GSK_test/GSK_Sample_iterate03-RNA.idf").getFile());
+
+    public static final File GSK_TEST_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/GSK_test/GSK_sample_iterate03-RNA_Jan20.sdrf").getFile());
+
     public static final File TCGA_BROAD_DATA_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/tcga/broad").getFile());
 
@@ -187,7 +196,7 @@ public class MageTabDataFiles {
 
     public static final File PERFORMANCE_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/performance").getFile());
-    
+
     public static final File CAARRAY1X_IDF =
         new File(MageTabDataFiles.class.getResource("/magetab/caarray1x/experiment-id-1015897540503881.idf").getFile());
 
@@ -198,5 +207,5 @@ public class MageTabDataFiles {
         new File(MageTabDataFiles.class.getResource("/magetab/caarray1x/experiment-id-1015897540503881.magetab.zip").getFile());
 
     public static final File CAARRAY1X_DIRECTORY =
-        new File(MageTabDataFiles.class.getResource("/magetab/caarray1x").getFile());    
+        new File(MageTabDataFiles.class.getResource("/magetab/caarray1x").getFile());
 }
