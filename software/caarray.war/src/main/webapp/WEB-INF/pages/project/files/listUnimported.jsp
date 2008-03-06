@@ -1,6 +1,9 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <c:url value="/protected/ajax/project/files/listUnimportedForm.action" var="listUnimportedFormUrl" />
+<c:url value="/protected/ajax/project/files/uploadInBackground.action" var="uploadInBackgroundUrl">
+    <c:param name="project.id" value="${project.id}"/>
+</c:url>
 
 <script type="text/javascript">
     moreUploads = function() {
@@ -17,6 +20,12 @@
     doFilter = function() {
       Caarray.submitAjaxForm('selectFilesForm', 'unimportedForm', {url: '${listUnimportedFormUrl}'});
     }
+    
+    openUploadWindow = function() {
+       window.open('${uploadInBackgroundUrl}', '_blank', "width=685,height=350,left=0,top=0,toolbar,scrollbars,resizable,status=yes");     
+       $('uploadFileDiv').hide();
+       $('uploadInProgressDiv').show();
+    }
 </script>
 
 <caarray:tabPane subtab="true" submittingPaneMessageKey="experiment.files.processing">
@@ -30,7 +39,7 @@
             </div>
         </c:if>
     </div>
-
+    
     <div id="uploadFileDiv" style="display: none;">
         <div class="boxpad2extend">
             <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
@@ -39,16 +48,19 @@
                     <s:file id="upload" name="upload" label="File" />
                 </s:form>
 
-                <fmt:message key="data.file.upload.inProgress" var="altSumittingMessage" />
                 <caarray:actions>
                     <caarray:linkButton actionClass="cancel" text="Cancel" onclick="Effect.Fade('uploadFileDiv', { duration: 0.1 } );"/>
                     <caarray:linkButton actionClass="add" text="Add More Files" onclick="moreUploads();"/>
-                    <caarray:linkButton actionClass="save" text="Upload" onclick="TabUtils.showAltSubmittingText('${altSumittingMessage}'); document.getElementById('uploadForm').submit();"/>
+                    <caarray:linkButton actionClass="save" text="Upload" onclick="openUploadWindow()"/>
                 </caarray:actions>
             </c:if>
         </div>
     </div>
 
+    <div id="uploadInProgressDiv" style="display: none;">
+        <fmt:message key="data.file.upload.inProgress"/>
+    </div>    
+    
   <div class="tableboxpad" id="unimportedForm">
       <%@ include file="/WEB-INF/pages/project/files/listUnimportedForm.jsp" %>
     </div>

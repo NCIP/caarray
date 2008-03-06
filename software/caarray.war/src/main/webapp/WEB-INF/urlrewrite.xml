@@ -8,6 +8,12 @@
         <to type="redirect">%{context-path}/project/details.action?project.experiment.publicIdentifier=$1</to>
     </rule>
 
+    <rule>
+        <from>^/project/files/upload.action/(\d+)$</from>
+        <to type="forward">/project/files/upload.action</to>
+        <set type="request" name="__multipart_upload_id">$1</set>
+    </rule>
+
     <outbound-rule>
         <from>/project/details.action?project.experiment.publicIdentifier=(.{1,5}-\d{5})</from>
         <to>%{context-path}/project/$1</to>

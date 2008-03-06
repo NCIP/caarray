@@ -181,6 +181,23 @@ public final class FileValidationResult implements Serializable, Comparable<File
     }
 
     /**
+     * Returns the messages of given type, ordered by location.
+     * @param type the type of messages to return
+     * @return the messages.
+     */
+    @Transient
+    public List<ValidationMessage> getMessages(ValidationMessage.Type type) {
+        List<ValidationMessage> messageList = new ArrayList<ValidationMessage>();
+        for (ValidationMessage message : this.messageSet)  {
+            if (message.getType() == type) {
+                messageList.add(message);
+            }
+        }
+        Collections.sort(messageList);
+        return Collections.unmodifiableList(messageList);
+    }
+
+    /**
      * Adds a new validation message to the result.
      *
      * @param type the type/level of the message

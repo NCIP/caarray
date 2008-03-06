@@ -402,6 +402,37 @@ public class MageTabParserTest {
         checkArrayDesigns(documentSet);
         assertTrue(documentSet.getValidationResult().isValid());
     }
+    
+    @Test
+    public void testDefect12537() throws MageTabParsingException, InvalidDataException {
+        MageTabInputFileSet fileSet = TestMageTabSets.DEFECT_12537_ERROR_INPUT_SET;
+        ValidationResult validationResult = parser.validate(fileSet);
+        assertFalse(validationResult.isValid());
+        List<ValidationMessage> errors = validationResult.getMessages(ValidationMessage.Type.ERROR);
+        assertEquals(3, errors.size());
+        for (int i = 0; i < 3; i++) {
+            assertEquals(i + 2, errors.get(i).getLine());
+            assertEquals(38, errors.get(i).getColumn());
+            assertTrue(errors.get(i).getMessage().contains("Duplicate Normalization Name"));
+        }
+
+        fileSet = TestMageTabSets.DEFECT_12537_INPUT_SET;
+        MageTabDocumentSet documentSet = parser.parse(fileSet);
+        assertNotNull(documentSet);
+        assertTrue(documentSet.getValidationResult().isValid());
+        assertEquals(2, documentSet.getDataMatrixes().size());
+        assertEquals(3, documentSet.getNativeDataFiles().size());
+        assertEquals(1, documentSet.getIdfDocuments().size());
+        assertEquals(1, documentSet.getSdrfDocuments().size());
+        
+        SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
+        assertEquals(2, sdrfDocument.getAllDerivedArrayDataMatrixFiles().size());
+        assertEquals(3, sdrfDocument.getAllHybridizations().size());
+        for (Hybridization hyb : sdrfDocument.getAllHybridizations()) {
+            assertEquals(2, hyb.getSuccessorDerivedArrayDataMatrixFiles().size());
+            assertEquals(1, hyb.getSuccessorArrayDataFiles().size());            
+        }
+    }
 
     @Test
     public void testParseCarray1xDocuments() throws MageTabParsingException, InvalidDataException {

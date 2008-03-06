@@ -169,6 +169,16 @@ public final class TestMageTabSets {
     public static final MageTabInputFileSet CAARRAY1X_INPUT_SET = getCaarray1xInputSet();
 
     /**
+     * MAGE-TAB input set from TCGA Broad data.
+     */
+    public static final MageTabInputFileSet DEFECT_12537_INPUT_SET = getDefect12537InputSet();
+
+    /**
+     * MAGE-TAB input set from TCGA Broad data.
+     */
+    public static final MageTabInputFileSet DEFECT_12537_ERROR_INPUT_SET = getDefect12537ErrorInputSet();
+
+    /**
      * Document set parsed from TCGA Broad data.
      */
     public static final MageTabDocumentSet TCGA_BROAD_SET = getSet(TCGA_BROAD_INPUT_SET);
@@ -294,6 +304,26 @@ public final class TestMageTabSets {
     }
 
 
+    private static MageTabInputFileSet getDefect12537InputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.DEFECT_12537_IDF);
+        fileSet.addSdrf(MageTabDataFiles.DEFECT_12537_SDRF);
+        fileSet.addDataMatrix(MageTabDataFiles.DEFECT_12537_ABSOLUTE_DATA_MATRIX);
+        fileSet.addDataMatrix(MageTabDataFiles.DEFECT_12537_RMA_DATA_MATRIX);
+        addCelFiles(fileSet, MageTabDataFiles.DEFECT_12537_DATA_DIRECTORY);
+        return fileSet;
+    }
+
+    private static MageTabInputFileSet getDefect12537ErrorInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.DEFECT_12537_ERROR__IDF);
+        fileSet.addSdrf(MageTabDataFiles.DEFECT_12537_ERROR_SDRF);
+        fileSet.addDataMatrix(MageTabDataFiles.DEFECT_12537_ERROR_ABSOLUTE_DATA_MATRIX);
+        fileSet.addDataMatrix(MageTabDataFiles.DEFECT_12537_ERROR_RMA_DATA_MATRIX);
+        addCelFiles(fileSet, MageTabDataFiles.DEFECT_12537_ERROR_DATA_DIRECTORY);
+        return fileSet;
+    }
+    
     private static FilenameFilter createExtensionFilter(final String extension) {
         return new FilenameFilter() {
             public boolean accept(File dir, String name) {

@@ -124,6 +124,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final List<SdrfColumn> columns = new ArrayList<SdrfColumn>();
     private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache =
         new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
+    private final Map<NodeKey, AbstractSampleDataRelationshipNode> lineNodeCache =
+        new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();    
     private AbstractSampleDataRelationshipNode currentNode;
     private Unitable currentUnitable;
     private TermSourceable currentTermSourceable;
@@ -132,6 +134,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         new ArrayList<AbstractSampleDataRelationshipNode>();
     private ProtocolApplication currentProtocolApp;
     private Hybridization currentHybridization;
+    private Scan currentScan;
+    private Normalization currentNormalization;
     private ArrayDesign currentArrayDesign;
     private int currentLineNumber;
     private int currentColumnNumber;
@@ -267,6 +271,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             currentNode = null;
             currentArrayDesign = null;
             currentHybridization = null;
+            currentScan = null;
+            currentNormalization = null;
+            lineNodeCache.clear();
         }
     }
 
@@ -284,8 +291,10 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleBioMaterial(column, value);
             break;
         case SCAN_NAME:
+            handleScan(column, value);
+            break;
         case NORMALIZATION_NAME:
-            handleNode(column, value);
+            handleNormalization(column, value);
             break;
         case HYBRIDIZATION_NAME:
             handleHybridization(column, value);
@@ -321,16 +330,16 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleArrayDesignRef(column, value);
             break;
         case DERIVED_ARRAY_DATA_FILE:
-            handleDerivedArrayDataFile(column, value);
+            handleArrayDataFile(column, value, true);
             break;
         case ARRAY_DATA_FILE:
-            handleArrayDataFile(column, value);
+            handleArrayDataFile(column, value, false);
             break;
         case ARRAY_DATA_MATRIX_FILE:
-            handleArrayDataMatrixFile(column, value);
+            handleArrayDataMatrixFile(column, value, false);
             break;
         case DERIVED_ARRAY_DATA_MATRIX_FILE:
-            handleDerivedArrayDataMatrixFile(column, value);
+            handleArrayDataMatrixFile(column, value, true);
             break;
         case IMAGE_FILE:
             handleImageFile(column, value);
@@ -386,6 +395,16 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         image.link(currentHybridization);
         currentNode = image;
     }
+    
+    private void handleScan(SdrfColumn column, String value) {
+        handleNode(column, value, currentHybridization);
+        currentScan = (Scan) currentNode;
+    }
+
+    private void handleNormalization(SdrfColumn column, String value) {
+        handleNode(column, value, currentHybridization);
+        currentNormalization = (Normalization) currentNode;
+    }
 
     private void handleArrayDesignFile(SdrfColumn column, String value) {
         ArrayDesign arrayDesign = arrayDesignHelper(column, value);
@@ -425,40 +444,28 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
     }
 
-    private void handleDerivedArrayDataFile(SdrfColumn column, String value) {
-        handleNode(column, value);
-        DerivedArrayDataFile adf = (DerivedArrayDataFile) currentNode;
+    private AbstractSampleDataRelationshipNode getNodeToLinkToForArrayData(boolean derived) {
+        AbstractSampleDataRelationshipNode explicitNode = derived ? currentNormalization : currentScan;
+        return explicitNode != null ? explicitNode : currentHybridization;
+    }
+
+    private void handleArrayDataFile(SdrfColumn column, String value, boolean derived) {
+        handleNode(column, value, getNodeToLinkToForArrayData(derived));
+        AbstractNativeFileReference adf = (AbstractNativeFileReference) currentNode;
         adf.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
         if (adf.getNativeDataFile() == null) {
-            addError("Referenced Derived Array Data File " + value + " was not found in the document set");
+            addErrorMessage("Referenced " + (derived ? "Derived " : "") + " Array Data File " + value
+                    + " was not found in the document set");
         }
     }
 
-    private void handleArrayDataFile(SdrfColumn column, String value) {
-        handleNode(column, value);
-        ArrayDataFile adf = (ArrayDataFile) currentNode;
-        adf.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
-        if (adf.getNativeDataFile() == null) {
-            addError("Referenced Array Data File " + value + " was not found in the document set");
-        }
-    }
-
-    private void handleDerivedArrayDataMatrixFile(SdrfColumn column, String value) {
-        handleNode(column, value);
-        DerivedArrayDataMatrixFile admf = (DerivedArrayDataMatrixFile) currentNode;
+    private void handleArrayDataMatrixFile(SdrfColumn column, String value, boolean derived) {
+        handleNode(column, value, getNodeToLinkToForArrayData(derived));
+        AbstractDataMatrixReference admf = (AbstractDataMatrixReference) currentNode;
         admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
         if (admf.getDataMatrix() == null) {
-            addError("Referenced Derived Array Data Matrix File "
-                    + value + " was not found in the document set");
-        }
-    }
-
-    private void handleArrayDataMatrixFile(SdrfColumn column, String value) {
-        handleNode(column, value);
-        ArrayDataMatrixFile admf = (ArrayDataMatrixFile) currentNode;
-        admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
-        if (admf.getDataMatrix() == null) {
-            addError("Referenced Array Data Matrix File " + value + " was not found in the document set");
+            addErrorMessage("Referenced " + (derived ? "Derived " : "") + "Array Data Matrix File " + value
+                    + " was not found in the document set");
         }
     }
 
@@ -567,16 +574,20 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
     }
 
-    private void handleNode(SdrfColumn column, String value) {
+    private void handleNode(SdrfColumn column, String value, AbstractSampleDataRelationshipNode nodeToLinkTo) {
         AbstractSampleDataRelationshipNode node = getOrCreateNode(column, value);
-        if (currentNode == null) {
+        if (nodeToLinkTo == null) {
             if (!leftmostNodes.contains(node)) {
                 leftmostNodes.add(node);
             }
         } else {
-            node.link(currentNode);
+            node.link(nodeToLinkTo);
         }
         currentNode = node;
+    }
+
+    private void handleNode(SdrfColumn column, String value) {
+        handleNode(column, value, currentNode);
     }
 
     private AbstractSampleDataRelationshipNode getOrCreateNode(SdrfColumn column, String value) {
@@ -585,7 +596,14 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         if (node == null) {
             node = createNode(column, value);
             nodeCache.put(nodeKey, node);
+            lineNodeCache.put(nodeKey, node);
         } else {
+            if (!lineNodeCache.containsKey(nodeKey)) {
+                lineNodeCache.put(nodeKey, node); 
+            } else if (node.getNodeType().isName()) {
+                addErrorMessage(currentLineNumber, currentColumnNumber, "Duplicate "
+                        + column.getHeading().getTypeName() + " " + value);
+            }
             node.setRepeated(true);
         }
         return node;

@@ -100,6 +100,7 @@
     <property name="commons-lang.jar" value="${lib.dir}/commons-lang-2.3.jar" />
     <property name="commons-configuration.jar" value="${lib.dir}/commons-configuration-1.4.jar" />
     <property name="commons-logging.jar" value="${lib.dir}/commons-logging-1.1.jar" />
+    <property name="commons-fileupload.jar" value="${lib.dir}/commons-fileupload-1.2.jar" />
     <property name="dom4j.jar" value="${lib.dir}/dom4j-1.6.1.jar" />
     <property name="ehcache.jar" value="${lib.dir}/ehcache-1.2.3.jar" />
     <property name="hibernate.jar" value="${lib.dir}/hibernate3.jar" />
@@ -148,6 +149,8 @@
     <property name="concurrent.jar" value="${lib.dir}/concurrent.jar" />
     <property name="nci-commons-core.jar" value="${lib.dir}/nci-commons-core-1.0.1.jar" />
     <property name="nci-commons-struts2.jar" value="${lib.dir}/nci-commons-struts2-1.0.1.jar" />
+    <property name="ezmorph.jar" value="${lib.dir}/ezmorph-1.0.4.jar" />
+    <property name="json-lib.jar" value="${lib.dir}/json-lib-2.0-jdk15.jar" />
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -624,67 +627,69 @@
                 <filter token="ldap.searchbase" value="${ldap.searchbase}" />
                 <filter token="ldap.searchprefix" value="${ldap.searchprefix}" />
                 <filter token="ldap.install" value="${ldap.install}" />
-
-            </filterset>
-        </copy>
-        <copy todir="${caarray-war.classes.dir}">
-            <fileset dir="${caarray-war.src.dir}" includes="*.xml,*.properties, template/**/*" />
-            <fileset dir="${caarraydb.sql.src.dir}/migration" includes="*.sql" />
-        </copy>
-        <war destfile="${caarray.war}" webxml="${caarray-war.target.dir}/xml/web.xml">
-            <fileset dir="${caarray-war.webapp.dir}">
-                <exclude name="WEB-INF/**" />
-            </fileset>
-            <webinf dir="${caarray-war.webapp.dir}/WEB-INF">
-                <exclude name="web.xml" />
-            </webinf>
-            <classes dir="${caarray-war.classes.dir}" />
-            <manifest>
-                <section name="gov/nih/nci/caarray/">
-                    <attribute name="Specification-Title" value="caArray"/>
-                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
-                    <attribute name="Specification-Vendor" value="5am Solutions"/>
-                    <attribute name="Implementation-Title" value="caArray"/>
-                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
-                    <attribute name="Implementation-Vendor" value="5am Solutions"/>
-                </section>
-            </manifest>
-            <lib dir="${lib.dir}">
-                <include name="spring.jar" />
-                <include name="spring-mock.jar" />
-                <include name="acegi-security-1.0.5.jar" />
-                <include name="acegi-security-jboss-1.0.5.jar" />
-                <include name="commons-beanutils-1.7.0.jar" />
-                <include name="commons-codec-1.3.jar" />
-                <include name="commons-collections-3.2.jar" />
-                <include name="commons-digester-1.6.jar" />
-                <include name="commons-discovery-0.2.jar" />
-                <include name="commons-el-1.0.jar" />
-                <include name="commons-fileupload-1.2.jar" />
-                <include name="commons-io-1.3.2.jar" />
-                <include name="commons-logging-1.1.jar" />
-                <include name="displaytag-1.1.1.jar" />
-                <include name="freemarker-2.3.8.jar" />
-                <include name="jstl.jar" />
-                <include name="standard.jar" />
-                <include name="log4j-1.2.13.jar" />
-                <include name="junit-4.3.1.jar" />
-                <include name="oscache-2.4.1.jar" />
-                <include name="sitemesh-2.3.jar" />
-                <include name="struts2-codebehind-plugin-2.0.9.jar" />
-                <include name="struts2-core-2.0.9.jar" />
-                <include name="struts2-sitemesh-plugin-2.0.9.jar" />
-                <include name="struts2-spring-plugin-2.0.9.jar" />
-                <include name="urlrewrite-2.6.0.jar" />
-                <include name="xwork-2.0.4.jar" />
-                <include name="ognl-2.6.11.jar" />
-                <include name="ajaxtags-1.3-beta-rc7.jar" />
-                <include name="jericho-html-2.4.jar" />
-                <include name="nci-commons-struts2-1.0.1.jar" />
-            </lib>
-            <zipfileset dir="${caarray-war.target.dir}/help/caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help" prefix="help" />
-        </war>
-    </target>
+      </filterset>
+    </copy>
+    <copy todir="${caarray-war.classes.dir}">
+      <fileset dir="${caarray-war.src.dir}" includes="*.xml,*.properties, template/**/*" />
+      <fileset dir="${caarraydb.sql.src.dir}/migration" includes="*.sql" />
+    </copy>
+    <war destfile="${caarray.war}" webxml="${caarray-war.target.dir}/xml/web.xml">
+      <fileset dir="${caarray-war.webapp.dir}">
+        <exclude name="WEB-INF/**" />
+      </fileset>
+      <webinf dir="${caarray-war.webapp.dir}/WEB-INF">
+        <exclude name="web.xml" />
+      </webinf>
+      <classes dir="${caarray-war.classes.dir}" />
+      <manifest>
+           <section name="gov/nih/nci/caarray/">
+               <attribute name="Specification-Title" value="caArray"/>
+               <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
+               <attribute name="Specification-Vendor" value="5am Solutions"/>
+               <attribute name="Implementation-Title" value="caArray"/>
+               <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
+               <attribute name="Implementation-Vendor" value="5am Solutions"/>
+           </section>
+      </manifest>
+      <lib dir="${lib.dir}">
+        <include name="spring.jar" />
+        <include name="spring-mock.jar" />
+        <include name="acegi-security-1.0.5.jar" />
+        <include name="acegi-security-jboss-1.0.5.jar" />
+        <include name="commons-beanutils-1.7.0.jar" />
+        <include name="commons-codec-1.3.jar" />
+        <include name="commons-collections-3.2.jar" />
+        <include name="commons-digester-1.6.jar" />
+        <include name="commons-discovery-0.2.jar" />
+        <include name="commons-el-1.0.jar" />
+        <include name="commons-fileupload-1.2.jar" />
+        <include name="commons-io-1.3.2.jar" />
+        <include name="commons-logging-1.1.jar" />
+        <include name="displaytag-1.1.1.jar" />
+        <include name="freemarker-2.3.8.jar" />
+        <include name="jstl.jar" />
+        <include name="standard.jar" />
+        <include name="log4j-1.2.13.jar" />
+        <include name="junit-4.3.1.jar" />
+        <include name="oscache-2.4.1.jar" />
+        <include name="sitemesh-2.3.jar" />
+        <include name="struts2-codebehind-plugin-2.0.9.jar" />
+        <include name="struts2-core-2.0.9.jar" />
+        <include name="struts2-sitemesh-plugin-2.0.9.jar" />
+        <include name="struts2-spring-plugin-2.0.9.jar" />
+        <include name="urlrewrite-2.6.0.jar" />
+        <include name="xwork-2.0.4.jar" />
+        <include name="ognl-2.6.11.jar" />
+        <include name="ajaxtags-1.3-beta-rc7.jar" />
+        <include name="jericho-html-2.4.jar" />
+        <include name="json-lib-2.0-jdk15.jar" />
+        <include name="ezmorph-1.0.4.jar" />
+        <include name="nci-commons-struts2-1.0.1.jar" />
+      </lib>
+      <zipfileset dir="${caarray-war.target.dir}/help/caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help"
+        prefix="help"/>
+    </war>
+  </target>
 
     <target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar">
         <mkdir dir="${caarray-ear.target.dir}" />
@@ -917,7 +922,11 @@
 
     <target name="test:instrument:caarray.war" depends="compile:caarray.war">
         <cobertura-instrument todir="${caarray-war.instrumented.classes.dir}" datafile="${cobertura.file}">
-            <fileset dir="${caarray-war.classes.dir}" />
+	    <!-- do not have good way of testing the upload handler via junit for the time being -->
+            <fileset dir="${caarray-war.classes.dir}">
+	      <include name="**/*.class" />
+	      <exclude name="**/fileupload/*.class" />
+	    </fileset>
         </cobertura-instrument>
     </target>
 
@@ -950,6 +959,9 @@
                 <pathelement location="${cglib.jar}" />
                 <pathelement location="${nci-commons-core.jar}" />
                 <pathelement location="${nci-commons-struts2.jar}" />
+                <pathelement location="${commons-fileupload.jar}" />
+                <pathelement location="${ezmorph.jar}" />
+                <pathelement location="${json-lib.jar}" />
             </classpath>
         </javac>
     </target>
@@ -958,7 +970,7 @@
         <run-junit-tests test.src.dir="${caarray-war.test.src.dir}"
                          xml.output.dir="${caarray-war.target.dir}/junit"
                          instrumented.classes="${caarray-war.instrumented.classes.dir}"
-                         classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-beanutils.jar};${commons-logging.jar};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar};${cglib.jar};${commons-io.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${mysql-connector.jar};${c3p0.jar};${cglib.jar};${clm.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${nci-commons-struts2.jar};${nci-commons-core.jar}" />
+                         classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-beanutils.jar};${commons-logging.jar};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar};${cglib.jar};${commons-io.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${mysql-connector.jar};${c3p0.jar};${cglib.jar};${clm.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${nci-commons-struts2.jar};${nci-commons-core.jar};${commons-fileupload.jar};${ezmorph.jar};${json-lib.jar}" />
     </target>
 
     <target name="test:junit-report">

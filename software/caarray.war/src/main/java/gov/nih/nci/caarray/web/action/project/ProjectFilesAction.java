@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
+import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -107,6 +108,7 @@ import java.util.zip.ZipException;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.set.TransformedSet;
 import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
@@ -273,7 +275,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      *
      * @return the string matching the result to follow
      */
-    @SuppressWarnings("unchecked")
     @SkipValidation
     public String downloadFiles() {
         for (CaArrayFile f : getProject().getFiles()) {
@@ -536,6 +537,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         }
 
         ActionHelper.saveMessage(count + " file(s) uploaded.");
+        MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
         return UPLOAD_INPUT;
     }
 
@@ -550,6 +552,16 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         File zipFile = getProjectManagementService().prepareForDownload(getSelectedFiles());
         this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
         return "download";
+    }
+
+    /**
+     * Action for displaying the upload in background form.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
+    public String uploadInBackground() {
+        return "uploadInBackground";
     }
 
     /**

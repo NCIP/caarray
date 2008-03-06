@@ -208,4 +208,34 @@ public class MageTabDataFiles {
 
     public static final File CAARRAY1X_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/caarray1x").getFile());
+    
+    public static final File DEFECT_12537_ERROR_DATA_DIRECTORY =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537-error").getFile());
+
+    public static final File DEFECT_12537_ERROR__IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537-error/broad.mit.edu_GBM.HT_HG-U133A.1.idf.txt").getFile());
+
+    public static final File DEFECT_12537_ERROR_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537-error/broad.mit.edu_GBM.HT_HG-U133A.1.sdrf.txt").getFile());
+
+    public static final File DEFECT_12537_ERROR_RMA_DATA_MATRIX =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537-error/broad.mit.edu_GBM.HT_HG-U133A.1.rma.data.txt").getFile());
+
+    public static final File DEFECT_12537_ERROR_ABSOLUTE_DATA_MATRIX =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537-error/broad.mit.edu_GBM.HT_HG-U133A.1.absolute.data.txt").getFile());
+
+    public static final File DEFECT_12537_DATA_DIRECTORY =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537").getFile());
+
+    public static final File DEFECT_12537_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537/broad.mit.edu_GBM.HT_HG-U133A.1.idf.txt").getFile());
+
+    public static final File DEFECT_12537_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537/broad.mit.edu_GBM.HT_HG-U133A.1.sdrf.txt").getFile());
+
+    public static final File DEFECT_12537_RMA_DATA_MATRIX =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537/broad.mit.edu_GBM.HT_HG-U133A.1.rma.data.txt").getFile());
+
+    public static final File DEFECT_12537_ABSOLUTE_DATA_MATRIX =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537/broad.mit.edu_GBM.HT_HG-U133A.1.absolute.data.txt").getFile());
 }
