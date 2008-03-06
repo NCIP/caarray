@@ -108,6 +108,7 @@ public final class UpgradeManager {
 
     private static final Logger LOG = Logger.getLogger(UpgradeManager.class);
     private static final String MIGRATION_FILE = "/db-migrations.xml";
+    private static final int TIMEOUT_SECONDS = 1800;
 
     private static UpgradeManager instance = new UpgradeManager();
 
@@ -177,6 +178,7 @@ public final class UpgradeManager {
         bindSessionWithSecurity(false);
         transaction = (UserTransaction) ServiceLocatorFactory.getLocator().lookup("java:comp/UserTransaction");
         try {
+            transaction.setTransactionTimeout(TIMEOUT_SECONDS);
             transaction.begin();
         } catch (Exception e) {
             LOG.error("Upgrade failed, couldn't start transaction", e);

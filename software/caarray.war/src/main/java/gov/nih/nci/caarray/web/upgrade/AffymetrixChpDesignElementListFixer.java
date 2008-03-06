@@ -191,8 +191,9 @@ public class AffymetrixChpDesignElementListFixer implements Migrator {
     }
 
     private boolean isChpData(DerivedArrayData data) {
-        return AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CHP.getName().equals(data.getType().getName())
-            || AffymetrixArrayDataTypes.AFFYMETRIX_SNP_CHP.getName().equals(data.getType().getName());
+        return data.getType() != null
+            && (AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CHP.getName().equals(data.getType().getName())
+            || AffymetrixArrayDataTypes.AFFYMETRIX_SNP_CHP.getName().equals(data.getType().getName()));
     }
 
     private List<DerivedArrayData> getAllDerivedDatas() throws MigrationStepFailedException {
