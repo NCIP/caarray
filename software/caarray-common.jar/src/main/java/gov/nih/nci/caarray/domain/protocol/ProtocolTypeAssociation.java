@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,208 +80,58 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package gov.nih.nci.caarray.domain.protocol;
 
-package gov.nih.nci.caarray.domain.file;
-
-import java.util.HashSet;
-import java.util.Set;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.sample.Sample;
 
 /**
+ * @author Winston Cheng
  *
  */
-public enum FileType implements Comparable<FileType>  {
-
+public enum ProtocolTypeAssociation {
     /**
-     * Affymetrix native array design file.
+     * Extract protocol type.
      */
-    AFFYMETRIX_CDF,
-
+    EXTRACT("extract", "MO", Sample.class),
     /**
-     * Affymetrix native CEL data format.
+     * Labeling protocol type.
      */
-    AFFYMETRIX_CEL,
-
+    LABELING("labeling", "MO", Extract.class),
     /**
-     * Affymetrix native CHP data format.
+     * Hybridization protocol type.
      */
-    AFFYMETRIX_CHP,
+    HYBRIDIZATION("hybridization", "MO", LabeledExtract.class);
 
-    /**
-     * Affymetrix native DAT image format.
-     */
-    AFFYMETRIX_DAT,
+    private final String value;
+    private final String source;
+    private final Class<?> nodeClass;
 
-    /**
-     * Affymetrix EXP format.
-     */
-    AFFYMETRIX_EXP,
-
-    /**
-     * Affymetrix TXT format.
-     */
-    AFFYMETRIX_RPT,
-
-    /**
-     * Affymetrix TXT format.
-     */
-    AFFYMETRIX_TXT,
-
-    /**
-     * Agilent TSV format.
-     */
-    AGILENT_TSV,
-
-    /**
-     * Agilent raw TXT format.
-     */
-    AGILENT_RAW_TXT,
-
-    /**
-     * Agilent derived TXT format.
-     */
-    AGILENT_DERIVED_TXT,
-
-    /**
-     * Genepix array design GAL file.
-     */
-    GENEPIX_GAL,
-
-    /**
-     * Genepix array data GPR file.
-     */
-    GENEPIX_GPR,
-
-    /**
-     * Illumina raw array data file.
-     */
-    ILLUMINA_IDAT,
-
-    /**
-     * Illumina array data CSV file.
-     */
-    ILLUMINA_DATA_CSV,
-
-    /**
-     * Illumina array design CSV file.
-     */
-    ILLUMINA_DESIGN_CSV,
-
-    /**
-     * Illumina array data TXT file.
-     */
-    ILLUMINA_DATA_TXT,
-
-    /**
-     * Imagene TXT format.
-     */
-    IMAGENE_TXT,
-
-    /**
-     * Imagene TIF format.
-     */
-    IMAGENE_TIF,
-
-    /**
-     * Nimblegen TXT format.
-     */
-    NIMBLEGEN_TXT,
-
-    /**
-     * Nimblegen GFF format.
-     */
-    NIMBLEGEN_GFF,
-
-    /**
-     * The MAGE_TAB Array Design Format file type.
-     */
-    MAGE_TAB_ADF,
-
-    /**
-     * The MAGE_TAB data file type.
-     */
-    MAGE_TAB_DATA_MATRIX,
-
-    /**
-     * The MAGE_TAB Investigation Description Format file type.
-     */
-    MAGE_TAB_IDF,
-
-    /**
-     * The MAGE_TAB Sample and Data Relationship Format file type.
-     */
-    MAGE_TAB_SDRF;
-
-    private static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = new HashSet<FileType>();
-    private static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
-    private static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
-    private static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
-
-
-    static {
-        ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
-        ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
-        ARRAY_DESIGN_FILE_TYPES.add(GENEPIX_GAL);
-        RAW_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_IDAT);
-        RAW_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
-        RAW_ARRAY_DATA_FILE_TYPES.add(AGILENT_RAW_TXT);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_EXP);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_TXT);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_RPT);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_CSV);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_TXT);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(IMAGENE_TXT);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(AGILENT_DERIVED_TXT);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(NIMBLEGEN_GFF);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(NIMBLEGEN_TXT);
-        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
-        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
-        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_CSV);
-        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
+    ProtocolTypeAssociation(String value, String source, Class<?> nodeClass) {
+        this.value = value;
+        this.source = source;
+        this.nodeClass = nodeClass;
     }
 
     /**
-     * @return true if this file type is an array design.
+     * @return protocol type value
      */
-    public boolean isArrayDesign() {
-        return ARRAY_DESIGN_FILE_TYPES.contains(this);
+    public String getValue() {
+        return value;
     }
 
     /**
-     * @return true if the system supports parsing this data format.
+     * @return source name
      */
-    public boolean isParseableData() {
-        return PARSEABLE_ARRAY_DATA_FILE_TYPES.contains(this);
+    public String getSource() {
+        return source;
     }
 
     /**
-     * @return true if the file type is used for derived array data.
+     * @return node class
      */
-    public boolean isDerivedArrayData() {
-        return DERIVED_ARRAY_DATA_FILE_TYPES.contains(this);
+    public Class<?> getNodeClass() {
+        return nodeClass;
     }
-
-    /**
-     * @return true if the file type is used for derived array data.
-     */
-    public boolean isRawArrayData() {
-        return RAW_ARRAY_DATA_FILE_TYPES.contains(this);
-    }
-
-    /**
-     * @return true if this file type is array data.
-     */
-    public boolean isArrayData() {
-        return isRawArrayData() || isDerivedArrayData();
-    }
-
-    /**
-     * @return the enum name -- necessary for bean property access.
-     */
-    public String getName() {
-        return name();
-    }
-
-
 }

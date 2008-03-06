@@ -523,6 +523,16 @@
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar">
         <mkdir dir="${caarray-client.target.dir}" />
         <jar destfile="${caarray-client.jar}">
+            <manifest>
+                <section name="gov/nih/nci/caarray/">
+                    <attribute name="Specification-Title" value="caArray"/>
+                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
+                    <attribute name="Specification-Vendor" value="5am Solutions"/>
+                    <attribute name="Implementation-Title" value="caArray"/>
+                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
+                    <attribute name="Implementation-Vendor" value="5am Solutions"/>
+                </section>
+            </manifest>
             <fileset dir="${caarray-client.classes.dir}" />
             <fileset dir="${caarray-common.classes.dir}">
                 <include name="**/domain/**" />
@@ -562,6 +572,16 @@
     <target name="build:caarray-common.jar" depends="configure-datasource-for-deploy">
         <mkdir dir="${caarray-common.target.dir}" />
         <jar destfile="${caarray-common.jar}">
+            <manifest>
+                <section name="gov/nih/nci/caarray/">
+                    <attribute name="Specification-Title" value="caArray"/>
+                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
+                    <attribute name="Specification-Vendor" value="5am Solutions"/>
+                    <attribute name="Implementation-Title" value="caArray"/>
+                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
+                    <attribute name="Implementation-Vendor" value="5am Solutions"/>
+                </section>
+            </manifest>
             <fileset dir="${caarray-common.classes.dir}" />
         </jar>
     </target>
@@ -569,6 +589,16 @@
     <target name="build:caarray-ejb.jar" depends="compile:caarray-ejb.jar">
         <mkdir dir="${caarray-ejb.target.dir}" />
         <jar destfile="${caarray-ejb.jar}">
+            <manifest>
+                <section name="gov/nih/nci/caarray/">
+                    <attribute name="Specification-Title" value="caArray"/>
+                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
+                    <attribute name="Specification-Vendor" value="5am Solutions"/>
+                    <attribute name="Implementation-Title" value="caArray"/>
+                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
+                    <attribute name="Implementation-Vendor" value="5am Solutions"/>
+                </section>
+            </manifest>
             <fileset dir="${caarray-ejb.classes.dir}" />
         </jar>
     </target>
@@ -609,6 +639,16 @@
                 <exclude name="web.xml" />
             </webinf>
             <classes dir="${caarray-war.classes.dir}" />
+            <manifest>
+                <section name="gov/nih/nci/caarray/">
+                    <attribute name="Specification-Title" value="caArray"/>
+                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
+                    <attribute name="Specification-Vendor" value="5am Solutions"/>
+                    <attribute name="Implementation-Title" value="caArray"/>
+                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
+                    <attribute name="Implementation-Vendor" value="5am Solutions"/>
+                </section>
+            </manifest>
             <lib dir="${lib.dir}">
                 <include name="spring.jar" />
                 <include name="spring-mock.jar" />
@@ -659,6 +699,16 @@
         </copy>
         <ear destfile="${caarray.ear}" appxml="${caarray-ear.resources.dir}/application.xml">
             <metainf dir="${caarray-ear.target.dir}/xml" includes="*.xml" excludes="jboss-service.xml" />
+            <manifest>
+                <section name="gov/nih/nci/caarray/">
+                    <attribute name="Specification-Title" value="caArray"/>
+                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
+                    <attribute name="Specification-Vendor" value="5am Solutions"/>
+                    <attribute name="Implementation-Title" value="caArray"/>
+                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
+                    <attribute name="Implementation-Vendor" value="5am Solutions"/>
+                </section>
+            </manifest>
             <fileset dir="${caarray-ear.target.dir}/xml" includes="jboss-service.xml">
             </fileset>
             <fileset dir="${caarray-war.target.dir}">

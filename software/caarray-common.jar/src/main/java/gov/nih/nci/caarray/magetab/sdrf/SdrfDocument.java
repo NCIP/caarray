@@ -573,7 +573,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             if (!leftmostNodes.contains(node)) {
                 leftmostNodes.add(node);
             }
-        } else if (!node.isRepeated() || !currentNode.isRepeated()) {
+        } else {
             node.link(currentNode);
         }
         currentNode = node;

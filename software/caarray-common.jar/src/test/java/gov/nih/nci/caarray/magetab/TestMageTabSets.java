@@ -119,9 +119,9 @@ public final class TestMageTabSets {
     /**
      * Example set of documents included with MAGE-TAB specification, minus the data matrix
      */
-    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_NO_DATA_MATRIX_INPUT_SET = 
+    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_NO_DATA_MATRIX_INPUT_SET =
         getSpecificationWithoutDataMatrixInputSet();
-    
+
     /**
      * Example set of documents with ERRORS based on the MAGE-TAB specification.
      */
@@ -173,6 +173,11 @@ public final class TestMageTabSets {
      */
     public static final MageTabDocumentSet TCGA_BROAD_SET = getSet(TCGA_BROAD_INPUT_SET);
 
+    /**
+     * Example set of MAGE-TAB data.
+     */
+    public static final MageTabDocumentSet GSK_TEST_SET = getSet(getGskTestSet());
+
     private static MageTabDocumentSet getSet(MageTabInputFileSet inputSet) {
         try {
             return MageTabParser.INSTANCE.parse(inputSet);
@@ -205,6 +210,10 @@ public final class TestMageTabSets {
 
     private static void addCelFiles(MageTabInputFileSet fileSet, File dataFileDirectory) {
         addDataFiles(fileSet, dataFileDirectory, "cel");
+    }
+
+    private static void addExpFiles(MageTabInputFileSet fileSet, File dataFileDirectory) {
+        addDataFiles(fileSet, dataFileDirectory, "exp");
     }
 
     private static void addDataFiles(MageTabInputFileSet fileSet, File dataFileDirectory, String extension) {
@@ -266,7 +275,7 @@ public final class TestMageTabSets {
         fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_ERROR_EXAMPLE_SDRF);
         return fileSet;
     }
-    
+
     private static MageTabInputFileSet getCaarray1xInputSet() {
         MageTabInputFileSet fileSet = new MageTabInputFileSet();
         fileSet.addIdf(MageTabDataFiles.CAARRAY1X_IDF);
@@ -274,7 +283,17 @@ public final class TestMageTabSets {
         addDataFiles(fileSet, MageTabDataFiles.CAARRAY1X_DIRECTORY, "gpr");
         return fileSet;
     }
-    
+
+    private static MageTabInputFileSet getGskTestSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.GSK_TEST_IDF);
+        fileSet.addSdrf(MageTabDataFiles.GSK_TEST_SDRF);
+        addCelFiles(fileSet, MageTabDataFiles.GSK_TEST_DIRECTORY);
+        addExpFiles(fileSet, MageTabDataFiles.GSK_TEST_DIRECTORY);
+        return fileSet;
+    }
+
+
     private static FilenameFilter createExtensionFilter(final String extension) {
         return new FilenameFilter() {
             public boolean accept(File dir, String name) {
@@ -312,6 +331,8 @@ public final class TestMageTabSets {
             caArrayFile.setFileType(FileType.MAGE_TAB_DATA_MATRIX);
         } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".cel")) {
             caArrayFile.setFileType(FileType.AFFYMETRIX_CEL);
+        } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".exp")) {
+            caArrayFile.setFileType(FileType.AFFYMETRIX_EXP);
         } else {
             throw new IllegalArgumentException("Unrecognized document file " + mageTabDocument.getFile());
         }

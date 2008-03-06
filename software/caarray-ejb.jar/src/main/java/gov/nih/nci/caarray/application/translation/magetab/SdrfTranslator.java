@@ -105,6 +105,7 @@ import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.ParameterValue;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+import gov.nih.nci.caarray.domain.protocol.ProtocolTypeAssociation;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Extract;
@@ -129,6 +130,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.log4j.Logger;
@@ -326,7 +328,7 @@ final class SdrfTranslator extends AbstractTranslator {
                 hybridization.getFactorValues().add(factorValue);
                 factorValue.setHybridization(hybridization);
             }
-            // DEVELOPER NOTE: the data modeling of Hybridization is wrong, and as a result 
+            // DEVELOPER NOTE: the data modeling of Hybridization is wrong, and as a result
             // we can only capture one ProtocolApplication per hyb. A GForge issue is tracking
             // addressing this.
             if (!sdrfHybridization.getProtocolApplications().isEmpty()) {
@@ -336,7 +338,7 @@ final class SdrfTranslator extends AbstractTranslator {
                     getProtocolApplicationFromMageTabProtocolApplication(sdrfProtocolApp);
                 hybridization.setProtocolApplication(protocolApplication);
             }
-            
+
             this.allHybridizations.add(hybridization);
             this.nodeTranslations.put(sdrfHybridization, hybridization);
         }
@@ -655,7 +657,8 @@ final class SdrfTranslator extends AbstractTranslator {
         if (isBioMaterial(leftNodeType)) {
             // Use the left node's name as part of any generated biomaterial names.
             String baseGeneratedNodeName = ((AbstractBioMaterial) leftCaArrayNode).getName();
-            linkBioMaterial(leftCaArrayNode, rightCaArrayNode, leftNodeType, rightNodeType, baseGeneratedNodeName);
+            Set<ProtocolApplication> pas = ((AbstractBioMaterial) leftCaArrayNode).getProtocolApplications();
+            linkBioMaterial(leftCaArrayNode, rightCaArrayNode, leftNodeType, rightNodeType, baseGeneratedNodeName, pas);
         } else if (SdrfNodeType.HYBRIDIZATION.equals(leftNodeType)) {
             linkHybridizationToArrays((gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode,
                     (Hybridization) leftCaArrayNode);
@@ -724,23 +727,26 @@ final class SdrfTranslator extends AbstractTranslator {
      */
     @SuppressWarnings("PMD")
     private void linkBioMaterial(AbstractCaArrayObject leftCaArrayNode, AbstractCaArrayObject rightCaArrayNode,
-            SdrfNodeType leftNodeType, SdrfNodeType rightNodeType, String baseGeneratedNodeName) {
+            SdrfNodeType leftNodeType, SdrfNodeType rightNodeType, String baseGeneratedNodeName,
+            Set<ProtocolApplication> protocolApplications) {
         // TODO Handle case where Extract goes to Extract, as shown in ChIP-chip example in MAGE-TAB spec.
         if (leftNodeType.equals(SdrfNodeType.SOURCE)) {
             if (rightNodeType.equals(SdrfNodeType.SAMPLE)) {
                 linkSourceAndSample((Source) leftCaArrayNode, (Sample) rightCaArrayNode);
             } else {
                 Sample generatedSample = generateSampleAndLink(baseGeneratedNodeName, (Source) leftCaArrayNode);
+                reassociateProtocolApplications(generatedSample, protocolApplications);
                 linkBioMaterial(generatedSample, rightCaArrayNode, SdrfNodeType.SAMPLE, rightNodeType,
-                        baseGeneratedNodeName);
+                        baseGeneratedNodeName, protocolApplications);
             }
         } else if (leftNodeType.equals(SdrfNodeType.SAMPLE)) {
             if (rightNodeType.equals(SdrfNodeType.EXTRACT)) {
                 linkSampleAndExtract((Sample) leftCaArrayNode, (Extract) rightCaArrayNode);
             } else {
                 Extract generatedExtract = generateExtractAndLink(baseGeneratedNodeName, (Sample) leftCaArrayNode);
+                reassociateProtocolApplications(generatedExtract, protocolApplications);
                 linkBioMaterial(generatedExtract, rightCaArrayNode, SdrfNodeType.EXTRACT, rightNodeType,
-                        baseGeneratedNodeName);
+                        baseGeneratedNodeName, protocolApplications);
             }
         } else if (leftNodeType.equals(SdrfNodeType.EXTRACT)) {
             if (rightNodeType.equals(SdrfNodeType.LABELED_EXTRACT)) {
@@ -748,12 +754,29 @@ final class SdrfTranslator extends AbstractTranslator {
             } else {
                 LabeledExtract generatedLabeledExtract = generateLabeledExtractAndLink(baseGeneratedNodeName,
                         (Extract) leftCaArrayNode);
+                reassociateProtocolApplications(generatedLabeledExtract, protocolApplications);
                 linkBioMaterial(generatedLabeledExtract, rightCaArrayNode, SdrfNodeType.LABELED_EXTRACT, rightNodeType,
-                        baseGeneratedNodeName);
+                        baseGeneratedNodeName, protocolApplications);
             }
         } else if ((leftNodeType.equals(SdrfNodeType.LABELED_EXTRACT))
                 && (rightNodeType.equals(SdrfNodeType.HYBRIDIZATION))) {
             linkLabeledExtractAndHybridization((LabeledExtract) leftCaArrayNode, (Hybridization) rightCaArrayNode);
+        }
+    }
+
+    private void reassociateProtocolApplications(AbstractBioMaterial bioMaterial,
+            Set<ProtocolApplication> protocolApplications) {
+        for (ProtocolApplication pa : protocolApplications) {
+            Term protocolType = pa.getProtocol().getType();
+            for (ProtocolTypeAssociation typeAssoc : ProtocolTypeAssociation.values()) {
+                if (protocolType.getValue().equals(typeAssoc.getValue())
+                        && protocolType.getSource().getName().equals(typeAssoc.getSource())
+                        && bioMaterial.getClass().equals(typeAssoc.getNodeClass())) {
+                    pa.setBioMaterial(bioMaterial);
+                    bioMaterial.getProtocolApplications().add(pa);
+                    protocolApplications.remove(pa);
+                }
+            }
         }
     }
 

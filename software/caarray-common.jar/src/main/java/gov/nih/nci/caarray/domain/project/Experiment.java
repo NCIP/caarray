@@ -163,14 +163,14 @@ public class Experiment extends AbstractCaArrayEntity {
         + "and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = "
         + "p.privilege_id and p.privilege_name='READ')";
 
-    private static final String PROJECT_OWNER_CLAUSE = "(select " + CaarrayInnoDBDialect.FILTER_ALIAS 
+    private static final String PROJECT_OWNER_CLAUSE = "(select " + CaarrayInnoDBDialect.FILTER_ALIAS
         + ".attribute_value from (select pe.attribute_value from csm_user_pe upe, "
         + "csm_protection_element pe, csm_user u "
         + "where pe.object_id= 'gov.nih.nci.caarray.domain.project.Project' and "
         + "pe.attribute='id' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and "
-        + "upe.protection_element_id = pe.protection_element_id and upe.user_id = u.user_id) " 
+        + "upe.protection_element_id = pe.protection_element_id and upe.user_id = u.user_id) "
         + CaarrayInnoDBDialect.FILTER_ALIAS + ")";
-    
+
     private static final String READABLE_SAMPLE_CLAUSE = "(select pe.attribute_value from csm_protection_group pg, "
         + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
         + "csm_role r, csm_privilege p, csm_group g, csm_user_group ug where "
@@ -180,10 +180,10 @@ public class Experiment extends AbstractCaArrayEntity {
         + "ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id "
         + "and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = "
         + "p.privilege_id and p.privilege_name='READ')";
-    
-    private static final String READABLE_SAMPLE_ALIAS_CLAUSE = "(select " + CaarrayInnoDBDialect.FILTER_ALIAS 
+
+    private static final String READABLE_SAMPLE_ALIAS_CLAUSE = "(select " + CaarrayInnoDBDialect.FILTER_ALIAS
         + ".attribute_value from " + READABLE_SAMPLE_CLAUSE + " " + CaarrayInnoDBDialect.FILTER_ALIAS + ")";
-    
+
     /** @Where filter for samples */
     public static final String SAMPLES_FILTER = "id in (select s.ID from biomaterial s where s.discriminator = 'SA' "
         + "and s.ID in " + READABLE_SAMPLE_CLAUSE + ")";
@@ -980,7 +980,9 @@ public class Experiment extends AbstractCaArrayEntity {
     public Set<ArrayDesign> getArrayDesignsFromHybs() {
         Set<ArrayDesign> designs = new HashSet<ArrayDesign>();
         for (Hybridization h : getHybridizations()) {
-            designs.add(h.getArray().getDesign());
+            if (h.getArray() != null) {
+                designs.add(h.getArray().getDesign());
+            }
         }
         return designs;
     }
