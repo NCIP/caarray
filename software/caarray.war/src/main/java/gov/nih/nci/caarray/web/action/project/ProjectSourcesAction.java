@@ -198,6 +198,7 @@ public class ProjectSourcesAction extends AbstractProjectListTabAction {
             ActionHelper.saveMessage(getText("experiment.annotations.cantdelete",
                     new String[] {getText("experiment.source"),
                                   getText("experiment.sample") }));
+            updatePagedList();
             return "list";
         }
         return super.delete();
