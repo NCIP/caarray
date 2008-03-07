@@ -128,6 +128,7 @@ public class ProtocolTest extends AbstractSeleniumTest {
         selenium.keyPress("id=extractPickerAssociatedValueName", TAB_KEY);
         selenium.keyPress("id=materialTypeSearchInput", TAB_KEY);
         selenium.select("projectForm_protocolType", "label=acclimatization");
+        waitForDiv("progressMsg", 3000);
         selenium.select("projectForm_protocol", "label=" + protocolName);
         doSave(name);
     }
@@ -138,6 +139,7 @@ public class ProtocolTest extends AbstractSeleniumTest {
         selenium.keyPress("id=samplePickerAssociatedValueName", TAB_KEY);
         selenium.keyPress("id=materialTypeSearchInput", TAB_KEY);
         selenium.select("projectForm_protocolType", "label=acclimatization");
+        waitForDiv("progressMsg", 3000);
         selenium.select("projectForm_protocol", "label=" + protocolName);
         doSave(name);
     }
@@ -149,7 +151,8 @@ public class ProtocolTest extends AbstractSeleniumTest {
         selenium.keyPress("id=sourcePickerAssociatedValueName", TAB_KEY);
         selenium.keyPress("id=materialTypeSearchInput", TAB_KEY);
         selenium.select("projectForm_protocolType", "label=acclimatization");
-        String[] values = selenium.getSelectOptions("projectForm_protocol");
+        //String[] values = selenium.getSelectOptions("projectForm_protocol");
+        waitForDiv("progressMsg", 3000);
         selenium.select("projectForm_protocol", "label=" + protocolName);
         doSave(name);
     }

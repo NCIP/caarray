@@ -82,10 +82,10 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
-import java.io.File;
-
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+
+import java.io.File;
 
 import org.junit.Test;
 
@@ -126,7 +126,7 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         findTitleAcrossMultiPages(experimentId);
 
         // - Browse by Organisms
-        selenium.click("link=Login");
+        selenium.click("link=Browse");
         waitForText("Welcome to the caArray Data Portal");
         selenium.click("link=Organisms");
         waitForText("found");
@@ -137,7 +137,7 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         findTitleAcrossMultiPages(experimentId);
 
         // - Browse by Array Providers
-        selenium.click("link=Login");
+        selenium.click("link=Browse");
         waitForText("Welcome to the caArray Data Portal");
         selenium.click("link=Array Providers");
         waitForText("found");
@@ -149,7 +149,7 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         findTitleAcrossMultiPages(experimentId);
 
         // - Browse by Unique Array Designs
-        selenium.click("link=Login");
+        selenium.click("link=Browse");
         waitForText("Welcome to the caArray Data Portal");
         selenium.click("link=Unique Array Designs");
         waitForText("found");
@@ -171,23 +171,6 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
             int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
             // wait for array design to be imported
             waitForArrayDesignImport(TWO_MINUTES, column);
-        }
-    }
-
-
-
-    private int getExperimentRow(String text) {
-        for (int loop = 1;; loop++) {
-            if (loop % PAGE_SIZE != 0) {
-                if (text.equalsIgnoreCase(selenium.getTable("row." + loop + ".1"))) {
-                    return loop;
-                }
-            } else {
-                // Moving to next page
-                selenium.click("link=Next");
-                waitForAction();
-                loop = 1;
-            }
         }
     }
 
