@@ -112,7 +112,6 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected static final String AFFYMETRIX_PROVIDER = "Affymetrix";
     protected static final String HOMO_SAPIENS_ORGANISM = "Homo sapiens (ncbitax)";
 
-
     @Override
     public void setUp() throws Exception {
         System.setProperty("selenium.port", "" + TestProperties.getSeleniumServerPort());
@@ -180,7 +179,10 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.click(UPLOAD_BUTTON);
         waitForAction(timeoutSeconds);
         if (runAssert) {
-            assertTrue(selenium.isTextPresent(file.getName()));
+            if (file == null) {
+                fail("upload file name is null");
+            }
+            assertTrue(file.getName() + " was not uploaded.", selenium.isTextPresent(file.getName()));
         }
     }
 
@@ -279,15 +281,14 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.select("projectForm_project_experiment_assayType", "label=Gene Expression");
         // - Provider
         if (provider == null) {
-            provider = AFFYMETRIX_PROVIDER;  // default to Affy
+            provider = AFFYMETRIX_PROVIDER; // default to Affy
         }
         selenium.select("projectForm_project_experiment_manufacturer", "label=" + provider);
-        // waitForElementWithId("progressMsg");// - did not work
-        Thread.sleep(2000); // waiting for the list of array designs to fill
-        // - Array Design - correct array design must be associated with the experiment
-        if (arrayDesignName != null) {
-            selenium.addSelection("projectForm_project_experiment_arrayDesigns", "label=" + arrayDesignName);
-        }
+        // ** Neither of the following would wait properly for the list of Array Designs to fill **
+        // Thread.sleep(1000);
+        // waitForElementWithId("progressMsg");
+        selectArrayDesign(arrayDesignName);
+
         // - Organism
         if (organism == null) {
             organism = HOMO_SAPIENS_ORGANISM;
@@ -297,22 +298,62 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         // - Save the Experiment
         selenium.click("link=Save");
         waitForAction();
-        // get the experiment id 
+        // get the experiment id
         experimentId = selenium.getText("//tr[4]/td[2]");
         return experimentId;
-
     }
+
+    /**
+     * Waits for the list of Array Designs to fill before making the selection. Test fails if the array design is not in
+     * the list
+     * 
+     * @param arrayDesignName
+     */
+    private void selectArrayDesign(String arrayDesignName) {
+        String[] values;
+        boolean found = false;
+        
+        if (arrayDesignName == null) {
+            return;
+        }
+        for (int second = 1;; second++) {
+            values = selenium.getSelectOptions("projectForm_project_experiment_arrayDesigns");
+            // - find the array design in the list of values
+            for (int i = 0; i < values.length; i++) {
+                if (values[i].equalsIgnoreCase(arrayDesignName)) {
+                    selenium.addSelection("projectForm_project_experiment_arrayDesigns", "label=" + arrayDesignName);
+                    found = true;
+                }
+            }
+
+            if (found) {
+                return;
+            } else {
+                // - sleep for one second if not found yet
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    fail("Something failed in Thread.sleep in AbstractSelenium:selectArrayDesign()");
+                }
+            }
+            if (second > 30) {
+                fail("Unable to find the array design " + arrayDesignName + " after " + second + " seconds");
+            }
+        }
+    }
+
     protected void addArrayDesign(File arrayDesign) {
         String arrayDesignProvider = AFFYMETRIX_PROVIDER;
         String arrayDesignOrganism = HOMO_SAPIENS_ORGANISM;
         addArrayDesign(arrayDesign, arrayDesignProvider, arrayDesignOrganism);
     }
+
     protected void addArrayDesign(File arrayDesign, String arrayDesignProvider, String arrayDesignOrganism) {
         selenium.click("link=Import a New Array Design");
         waitForText("Array Design Details");
         selenium.select("arrayDesignForm_arrayDesign_assayType", "label=Gene Expression");
         if (arrayDesignProvider == null) {
-            arrayDesignProvider = AFFYMETRIX_PROVIDER;  // default to Affy
+            arrayDesignProvider = AFFYMETRIX_PROVIDER; // default to Affy
         }
         selenium.select("arrayDesignForm_arrayDesign_provider", "label=" + arrayDesignProvider);
 
@@ -328,8 +369,6 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.click("link=Save");
         waitForText("found");
     }
-
-
 
     protected void findTitleAcrossMultiPages(String text) {
         for (int page = 1;; page++) {
@@ -372,13 +411,14 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         // making an experiement public will return the user back to the experiment's main page
         waitForText("My Experiment Workspace");
     }
-/**
- * 
- * @param seconds
- * @param row
- * @return
- * @throws Exception
- */
+
+    /**
+     * 
+     * @param seconds
+     * @param row
+     * @return
+     * @throws Exception
+     */
     protected boolean waitForArrayDesignImport(int seconds, int row) throws Exception {
         for (int loop = 1; loop < seconds; loop++) {
             selenium.click("link=Manage Array Designs");
@@ -403,10 +443,10 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
      * @param column - Table column which contains the search text
      * @return int the row number
      * 
-     * Returns the row where the data resides in a particular column
-     * For example - find title "Exp 1" in column 1 (column 1 holds the experiment names)
+     * Returns the row where the data resides in a particular column For example - find title "Exp 1" in column 1
+     * (column 1 holds the experiment names)
      */
-     
+
     protected int getExperimentRow(String text, String column) {
         int page = 1;
         for (int loop = 1;; loop++) {
@@ -479,16 +519,16 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     protected void makeExperimentPublic(String experimentId) {
-    
+
         clickAndWait("link=My Experiment Workspace");
         waitForTab();
-    
+
         // - Make the experiment public
         int row = getExperimentRow(experimentId, ZERO_COLUMN);
         // - Click on the image to enter the edit mode again
         selenium.click("//tr[" + row + "]/td[7]/a/img");
         waitForText("Overall Experiment Characteristics");
-    
+
         // make experiment public
         setExperimentPublic();
     }
