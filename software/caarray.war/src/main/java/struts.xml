@@ -91,11 +91,7 @@
             <exception-mapping result="securityError" exception="java.lang.NoSuchMethodException"/>
         </global-exception-mappings>
 
-        <action name="migrateDb" class="gov.nih.nci.caarray.web.upgrade.UpgradeAction" method="doUpgrade">
-            <result name="success" type="redirect-action">home</result>
-        </action>
-        
-        <action name="ajax/uploadProgress" class="gov.nih.nci.caarray.web.fileupload.UploadProgress">        
+        <action name="ajax/uploadProgress" class="gov.nih.nci.caarray.web.fileupload.UploadProgress">
         </action>
 
         <action name="home" class="gov.nih.nci.caarray.web.action.HomeAction">
