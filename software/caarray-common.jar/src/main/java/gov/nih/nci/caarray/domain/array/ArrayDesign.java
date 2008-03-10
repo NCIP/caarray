@@ -112,11 +112,13 @@ import org.hibernate.validator.NotNull;
  */
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "NAME", "PROVIDER" }) })
+@SuppressWarnings("PMD.TooManyFields")
 public class ArrayDesign extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
 
     private String name;
+    private String description;
     private String assayType;
     private ProtocolApplication printing;
     private Term polymerType;
@@ -438,5 +440,20 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     public void setDesignDetails(ArrayDesignDetails designDetails) {
         this.designDetails = designDetails;
+    }
+
+    /**
+     * @return the description
+     */
+    @Length(max = LARGE_TEXT_FIELD_LENGTH)
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

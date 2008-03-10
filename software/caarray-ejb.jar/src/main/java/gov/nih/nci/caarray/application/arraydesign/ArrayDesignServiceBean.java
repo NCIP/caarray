@@ -118,6 +118,7 @@ import org.jboss.annotation.ejb.TransactionTimeout;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 @TransactionTimeout(ArrayDesignServiceBean.TIMEOUT_SECONDS)
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public class ArrayDesignServiceBean implements ArrayDesignService {
 
     private static final Logger LOG = Logger.getLogger(ArrayDesignServiceBean.class);
@@ -150,19 +151,23 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
 
     private FileValidationResult validateDesignFile(CaArrayFile designFile) {
         FileValidationResult result;
+        AbstractArrayDesignHandler handler = null;
         if (designFile.getType() == null) {
             result = new FileValidationResult(getFile(designFile));
-            result.addMessage(Type.ERROR, "Array design file type was unrecognized");
+            result.addMessage(Type.ERROR, "Array design file type was unrecognized, please select a file format");
         } else if (!designFile.getFileType().isArrayDesign()) {
             result = new FileValidationResult(getFile(designFile));
             result.addMessage(Type.ERROR, "File type " + designFile.getFileType().getName()
                     + " is not an array design type.");
         } else {
-            result = getHandler(designFile).validate();
+            handler = getHandler(designFile);
+            result = handler.validate();
         }
         designFile.setValidationResult(result);
         if (result.isValid()) {
-            designFile.setFileStatus(FileStatus.VALIDATED);
+            designFile.setFileStatus(handler.getValidatedStatus());
+        } else if (handler != null) {
+            designFile.setFileStatus(handler.getValidationErrorStatus());
         } else {
             designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
         }
@@ -270,6 +275,12 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             return new IlluminaCsvDesignHandler(designFile, getVocabularyService(), daoFactory);
         } else if (FileType.GENEPIX_GAL.equals(type)) {
             return new GenepixGalDesignHandler(designFile, getVocabularyService(), daoFactory);
+        } else if (FileType.AGILENT_CSV.equals(type) || FileType.AGILENT_XML.equals(type)) {
+            return new AgilentUnsupportedDesignHandler(designFile, getVocabularyService(), daoFactory);
+        } else if (FileType.IMAGENE_TPL.equals(type)) {
+            return new ImageneTplHandler(designFile, getVocabularyService(), daoFactory);
+        } else if (FileType.UCSF_SPOT_SPT.equals(type)) {
+            return new UcsfSpotSptHandler(designFile, getVocabularyService(), daoFactory);
         } else {
             throw new IllegalArgumentException("Unsupported array design file type: " + type);
         }

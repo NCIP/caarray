@@ -106,6 +106,7 @@ import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
@@ -319,6 +320,10 @@ public class ArrayDesignServiceTest {
         CaArrayFile invalidDesignFile = getCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, FileType.AFFYMETRIX_CEL);
         FileValidationResult result = this.arrayDesignService.validateDesign(invalidDesignFile);
         assertFalse(result.isValid());
+        invalidDesignFile = getCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, FileType.AGILENT_CSV);
+        result = this.arrayDesignService.validateDesign(invalidDesignFile);
+        assertTrue(result.isValid());
+        assertEquals(FileStatus.IMPORTED_NOT_PARSED, invalidDesignFile.getFileStatus());
         invalidDesignFile = getCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, null);
         result = this.arrayDesignService.validateDesign(invalidDesignFile);
         assertFalse(result.isValid());

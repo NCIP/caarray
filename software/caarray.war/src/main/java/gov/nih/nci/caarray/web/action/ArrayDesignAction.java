@@ -90,6 +90,8 @@ import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -128,6 +130,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     private File upload;
     private String uploadFileName;
     private String uploadContentType;
+    private String uploadFormatType;
     private List<ArrayDesign> arrayDesigns;
     private List<Organization> providers;
     private Set<Term> featureTypes;
@@ -182,6 +185,18 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      */
     public void setUploadContentType(String uploadContentType) {
         this.uploadContentType = uploadContentType;
+    }
+    /**
+     * @return the uploadFormatType
+     */
+    public String getUploadFormatType() {
+        return uploadFormatType;
+    }
+    /**
+     * @param uploadFormatType the uploadFormatType to set
+     */
+    public void setUploadFormatType(String uploadFormatType) {
+        this.uploadFormatType = uploadFormatType;
     }
     /**
      * @return the arrayDesigns
@@ -295,8 +310,13 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
                 getArrayDesignService().saveArrayDesign(arrayDesign);
             } else {
                 CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
+                if (uploadFormatType != null && FileType.valueOf(uploadFormatType) != null) {
+                    designFile.setFileType(FileType.valueOf(uploadFormatType));
+                }
                 getFileManagementService().saveArrayDesign(arrayDesign, designFile);
-                getFileManagementService().importArrayDesignDetails(arrayDesign);
+                if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
+                    getFileManagementService().importArrayDesignDetails(arrayDesign);
+                }
             }
         } catch (InvalidDataFileException e) {
             FileValidationResult result = e.getFileValidationResult();
