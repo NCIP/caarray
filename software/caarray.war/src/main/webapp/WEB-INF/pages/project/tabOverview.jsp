@@ -67,10 +67,14 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
 
         <c:url var="getArrayDesignsUrl" value="/ajax/project/tab/Overview/retrieveArrayDesigns.action" />
         <c:if test="${editMode}">
+            <c:set var="execOnLoad" value="false"/>
+            <s:if test="fieldErrors['project.experiment.arrayDesigns'] != null">
+                <c:set var="execOnLoad" value="true"/>
+            </s:if>
             <ajax:select baseUrl="${getArrayDesignsUrl}"
                 source="projectForm_project_experiment_manufacturer" target="projectForm_project_experiment_arrayDesigns"
                 parameters="manufacturerId={projectForm_project_experiment_manufacturer},assayTypeValue={projectForm_project_experiment_assayType}"
-                preFunction="startArrayDesignLookup" postFunction="finishArrayDesignLookup"/>
+                preFunction="startArrayDesignLookup" postFunction="finishArrayDesignLookup" executeOnLoad="${execOnLoad}"/>
             <ajax:select baseUrl="${getArrayDesignsUrl}"
                 source="projectForm_project_experiment_assayType" target="projectForm_project_experiment_arrayDesigns"
                 parameters="manufacturerId={projectForm_project_experiment_manufacturer},assayTypeValue={projectForm_project_experiment_assayType}"

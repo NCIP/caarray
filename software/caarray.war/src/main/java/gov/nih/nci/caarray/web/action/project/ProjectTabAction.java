@@ -89,6 +89,10 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
             args.add(StringUtils.join(e.getArguments(), ", "));
             addFieldError("project.experiment.arrayDesigns", getText("project.inconsistentState."
                     + e.getReason().name().toLowerCase(), args));
+        } else if (e.getReason() == Reason.ARRAY_DESIGNS_DONT_MATCH_MANUF_OR_TYPE) {
+            addFieldError("project.experiment.arrayDesigns", getText("project.inconsistentState."
+                    + e.getReason().name().toLowerCase()));
+
         } else {
             addActionError(getText("project.inconsistentState." + e.getReason().name().toLowerCase()));
         }

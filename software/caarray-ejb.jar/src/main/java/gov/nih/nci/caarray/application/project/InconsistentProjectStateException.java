@@ -108,6 +108,12 @@ public class InconsistentProjectStateException extends Exception {
         INCONSISTENT_ARRAY_DESIGNS,
         
         /**
+         * Indicates that the selected array designs do no match the experiment's selected manufacturer
+         * and/or assay type.  The argument array is not used with this Reason.
+         */
+        ARRAY_DESIGNS_DONT_MATCH_MANUF_OR_TYPE,
+        
+        /**
          * Indicates that the project has files that are currently importing.
          */
         IMPORTING_FILES;

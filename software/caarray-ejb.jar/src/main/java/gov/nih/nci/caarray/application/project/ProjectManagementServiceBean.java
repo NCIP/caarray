@@ -364,8 +364,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * @throws InconsistentProjectStateException if the project state is not consistent
      */    
     private void checkArrayDesignsConsistent(Project project) throws InconsistentProjectStateException {
-        Set<ArrayDesign> usedDesigns = project.getExperiment().getArrayDesignsFromHybs();
         Set<ArrayDesign> declaredDesigns = project.getExperiment().getArrayDesigns();
+        Set<ArrayDesign> usedDesigns = project.getExperiment().getArrayDesignsFromHybs();
         Set<String> missingDesignNames = new HashSet<String>();
         for (ArrayDesign ad : usedDesigns) {
             if (!declaredDesigns.contains(ad)) {
@@ -375,6 +375,17 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         if (!missingDesignNames.isEmpty()) {
             throw new InconsistentProjectStateException(Reason.INCONSISTENT_ARRAY_DESIGNS, 
                     missingDesignNames.toArray());
+        }
+    }
+
+    private void checkArrayDesignManufacturer(Project project) throws InconsistentProjectStateException {
+        Set<ArrayDesign> designs = project.getExperiment().getArrayDesigns();
+        for (ArrayDesign ad : designs) {
+            if (project.getExperiment().getAssayTypeEnum() != ad.getAssayTypeEnum()
+                    || project.getExperiment().getManufacturer() != ad.getProvider()) {
+                throw new InconsistentProjectStateException(Reason.ARRAY_DESIGNS_DONT_MATCH_MANUF_OR_TYPE,
+                        new Object[] {});
+            }
         }
     }
 
@@ -392,6 +403,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             LogUtil.logSubsystemExit(LOG);
             throw new ProposalWorkflowException("Cannot save project in current state");
         }
+        checkArrayDesignManufacturer(project);
         checkArrayDesignsConsistent(project);
         checkImportInProgress(project);
     }
