@@ -105,7 +105,7 @@ public class ProtocolTest extends AbstractSeleniumTest {
         addSample();
         addExtract();
         addLabeledExtract();
-        // addHybridizations();
+        addHybridizations();
         
         // validate the sample count is correct on the My Experiment Workspace page
         selenium.click("link=My Experiment Workspace");
