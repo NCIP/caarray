@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.arraydesign;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
@@ -103,6 +104,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
+import gov.nih.nci.caarray.domain.array.SNPProbeAnnotation;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -273,6 +275,41 @@ public class ArrayDesignServiceTest {
     }
 
     @Test
+    public void testImportDesign_IlluminaHumanHap300() {
+        CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV);
+        ArrayDesign arrayDesign = new ArrayDesign();
+        arrayDesign.setDesignFile(designFile);
+        arrayDesignService.importDesign(arrayDesign);
+        assertEquals("HumanHap300v2_A", arrayDesign.getName());
+        assertEquals("illumina.com", arrayDesign.getLsidAuthority());
+        assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
+        assertEquals("HumanHap300v2_A", arrayDesign.getLsidObjectId());
+        assertEquals(318237, arrayDesign.getNumberOfFeatures());
+    }
+
+    @Test
+    public void testImportDesignDetails_IlluminaHumanHap300() {
+        CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV);
+        ArrayDesign arrayDesign = new ArrayDesign();
+        arrayDesign.setDesignFile(designFile);
+        arrayDesignService.importDesign(arrayDesign);
+        arrayDesignService.importDesignDetails(arrayDesign);
+        assertEquals(318237, arrayDesign.getDesignDetails().getLogicalProbes().size());
+        for (LogicalProbe probe : arrayDesign.getDesignDetails().getLogicalProbes()) {
+            assertNotNull(probe);
+            assertNotNull(probe.getAnnotation());
+            SNPProbeAnnotation annotation = (SNPProbeAnnotation) probe.getAnnotation();
+            assertNotNull(annotation.getDbSNPId());
+            assertNotNull(annotation.getDbSNPVersion());
+            assertNotNull(annotation.getAlleleA());
+            assertNotNull(annotation.getAlleleB());
+            assertNotNull(annotation.getPhysicalPosition());
+            assertEquals(probe.getName(), annotation.getDbSNPId());
+            assertEquals(arrayDesign.getDesignDetails(), probe.getArrayDesignDetails());
+        }
+    }
+
+    @Test
     public void testValidateDesign_AffymetrixTest3() {
         CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
         FileValidationResult result = this.arrayDesignService.validateDesign(designFile);
@@ -313,6 +350,13 @@ public class ArrayDesignServiceTest {
         designFile = getIlluminaCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
         result = this.arrayDesignService.validateDesign(designFile);
         assertFalse(result.isValid());
+    }
+
+    @Test
+    public void testValidateDesign_IlluminaHumanHap300() {
+        CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV);
+        FileValidationResult result = this.arrayDesignService.validateDesign(designFile);
+        assertTrue(result.isValid());
     }
 
     @Test

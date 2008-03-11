@@ -82,33 +82,38 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
-import gov.nih.nci.caarray.domain.array.Gene;
-import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
-
-import java.io.IOException;
-import java.util.List;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
  * Reads Illumina genotyping and gene expression array description files.
  */
-class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
+final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
+
+    private static final Logger LOG = Logger.getLogger(IlluminaCsvDesignHandler.class);
 
     private static final String LSID_AUTHORITY = "illumina.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
-    private static final Logger LOG = Logger.getLogger(IlluminaCsvDesignHandler.class);
+    private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
+
+    private AbstractIlluminaDesignHandler handler;
 
     IlluminaCsvDesignHandler(CaArrayFile designFile, VocabularyService vocabularyService,
             CaArrayDaoFactory daoFactory) {
@@ -117,100 +122,110 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
 
     @Override
     void createDesignDetails(ArrayDesign arrayDesign) {
-        ArrayDesignDetails details = new ArrayDesignDetails();
-        arrayDesign.setDesignDetails(details);
+        DelimitedFileReader reader = getReader();
         try {
-            DelimitedFileReader reader = DelimitedFileReaderFactory.INSTANCE.getCsvReader(getFile());
-            reader.nextLine();
+            positionAtAnnotation(reader);
+            ArrayDesignDetails details = new ArrayDesignDetails();
+            arrayDesign.setDesignDetails(details);
+            getArrayDao().save(arrayDesign);
+            getArrayDao().flushSession();
+            int count = 0;
             while (reader.hasNextLine()) {
-                addLogicalProbe(details, reader.nextLine());
+                List<String> values = reader.nextLine();
+                if (getHandler().isLineFollowingAnnotation(values)) {
+                    break;
+                }
+                getArrayDao().save(getHandler().createLogicalProbe(details, values));
+                if (++count % LOGICAL_PROBE_BATCH_SIZE == 0) {
+                    flushAndClearSession();
+                }
             }
-        } catch (IOException e) {
-            throw new IllegalStateException("Couldn't read file " + getDesignFile().getName(), e);
-        }
-        getArrayDao().save(arrayDesign);
-    }
-
-    private void addLogicalProbe(ArrayDesignDetails details, List<String> values) {
-        String target = getValue(values, IlluminaDesignCsvHeader.TARGET);
-        LogicalProbe logicalProbe = new LogicalProbe(details);
-        logicalProbe.setName(target);
-        ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
-        annotation.setGene(new Gene());
-        annotation.getGene().setSymbol(getValue(values, IlluminaDesignCsvHeader.SYMBOL));
-        annotation.getGene().setFullName(getValue(values, IlluminaDesignCsvHeader.DEFINITION));
-        details.getLogicalProbes().add(logicalProbe);
-    }
-
-    private String getValue(List<String> values, IlluminaDesignCsvHeader header) {
-        return values.get(header.ordinal());
-    }
-
-    @Override
-    void load(ArrayDesign arrayDesign) {
-        arrayDesign.setName(FilenameUtils.getBaseName(getDesignFile().getName()));
-        arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + arrayDesign.getName());
-        arrayDesign.setNumberOfFeatures(getNumberOfFeatures());
-    }
-
-    private int getNumberOfFeatures() {
-        try {
-            DelimitedFileReader reader = DelimitedFileReaderFactory.INSTANCE.getCsvReader(getFile());
-            while (reader.hasNextLine()) {
-                reader.nextLine();
-            }
-            return reader.getCurrentLineNumber() - 1;
-        } catch (IOException e) {
-            throw new IllegalStateException("Couldn't read file " + getDesignFile().getName(), e);
+            flushAndClearSession();
+        } finally {
+            reader.close();
         }
     }
 
     @Override
     void validate(FileValidationResult result) {
-        try {
-            DelimitedFileReader reader = DelimitedFileReaderFactory.INSTANCE.getCsvReader(getFile());
-            if (!reader.hasNextLine()) {
-                result.addMessage(ValidationMessage.Type.ERROR, "Illumina CSV file was empty");
-            }
-            List<String> headers = reader.nextLine();
-            validateHeader(headers, result);
-            if (result.isValid()) {
-                validateContent(reader, result);
-            }
-        } catch (IOException e) {
-            result.addMessage(ValidationMessage.Type.ERROR, "Unable to read file");
+        if (getHandler() == null) {
+            result.addMessage(Type.ERROR, "The file " + getFile().getName()
+                    + " is not a recognizable Illumina array annotation format.");
+        } else {
+            doValidation(result);
         }
     }
 
-    private void validateContent(DelimitedFileReader reader, FileValidationResult result) {
-        int expectedNumberOfFields = IlluminaDesignCsvHeader.values().length;
+    private void doValidation(FileValidationResult result) {
+        DelimitedFileReader reader = null;
+        try {
+            reader = DelimitedFileReaderFactory.INSTANCE.getCsvReader(getFile());
+            if (!reader.hasNextLine()) {
+                result.addMessage(ValidationMessage.Type.ERROR, "Illumina CSV file was empty");
+            }
+            List<String> headers = getHeaders(reader);
+            validateHeader(headers, result);
+            if (result.isValid()) {
+                validateContent(reader, result, headers);
+            }
+        } catch (IOException e) {
+            result.addMessage(ValidationMessage.Type.ERROR, "Unable to read file");
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
+        }
+    }
+
+    private void validateContent(DelimitedFileReader reader, FileValidationResult result, List<String> headers) {
+        int expectedNumberOfFields = headers.size();
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
+            if (getHandler().isLineFollowingAnnotation(values)) {
+                break;
+            }
             if (values.size() != expectedNumberOfFields) {
                 ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
                         "Invalid number of fields. Expected "
                         + expectedNumberOfFields + " but contained " + values.size());
                 error.setLine(reader.getCurrentLineNumber());
             }
-            validateValues(values, result, reader.getCurrentLineNumber());
+            getHandler().validateValues(values, result, reader.getCurrentLineNumber());
         }
     }
 
-    private void validateValues(List<String> values, FileValidationResult result, int lineNumber) {
-        validateIntegerField(values, IlluminaDesignCsvHeader.PROBEID, result, lineNumber);
+    static void validateFieldLength(List<String> values, Enum header, FileValidationResult result,
+            int lineNumber, int expectedLength) {
+        if (getValue(values, header).length() != expectedLength) {
+            ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
+                    "Expected size of field for " + header.name() + "to be " + expectedLength
+                    + " but was " + getValue(values, header).length());
+            error.setLine(lineNumber);
+            error.setColumn(header.ordinal() + 1);
+        }
     }
 
-    private void validateIntegerField(List<String> values, IlluminaDesignCsvHeader header, FileValidationResult result,
+    static void validateIntegerField(List<String> values, Enum header, FileValidationResult result,
             int lineNumber) {
         if (!isInteger(values.get(header.ordinal()))) {
             ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
                     "Expected integer value for " + header.name() + ", but was " +  values.get(header.ordinal()));
             error.setLine(lineNumber);
-            error.setColumn(IlluminaDesignCsvHeader.PROBEID.ordinal() + 1);
+            error.setColumn(header.ordinal() + 1);
         }
     }
 
-    private boolean isInteger(String value) {
+    static void validateLongField(List<String> values, Enum header, FileValidationResult result,
+            int lineNumber) {
+        if (!isLong(values.get(header.ordinal()))) {
+            ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
+                    "Expected long integral value for " + header.name() + ", but was " +  values.get(header.ordinal()));
+            error.setLine(lineNumber);
+            error.setColumn(header.ordinal() + 1);
+        }
+    }
+
+    static boolean isInteger(String value) {
         try {
             Integer.parseInt(value);
             return true;
@@ -219,8 +234,17 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
+    static boolean isLong(String value) {
+        try {
+            Long.parseLong(value);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     private void validateHeader(List<String> headers, FileValidationResult result) {
-        IlluminaDesignCsvHeader[] expectedHeaders = IlluminaDesignCsvHeader.values();
+        Enum[] expectedHeaders = getHandler().getExpectedHeaders(headers);
         if (headers.size() != expectedHeaders.length) {
             result.addMessage(ValidationMessage.Type.ERROR,
                     "Illumina CSV file didn't contain the expected number of columns");
@@ -234,9 +258,126 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
+    private List<String> getHeaders(DelimitedFileReader reader) {
+        while (reader.hasNextLine()) {
+            List<String> values = reader.nextLine();
+            if (getHandler().isHeaderLine(values)) {
+                return values;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    void load(ArrayDesign arrayDesign) {
+        arrayDesign.setName(FilenameUtils.getBaseName(getDesignFile().getName()));
+        arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + arrayDesign.getName());
+        arrayDesign.setNumberOfFeatures(getNumberOfFeatures());
+    }
+
+    private int getNumberOfFeatures() {
+        DelimitedFileReader reader = getReader();
+        try {
+            positionAtAnnotation(reader);
+            int numberOfFeatures = 0;
+            while (reader.hasNextLine()) {
+                if (getHandler().isLineFollowingAnnotation(reader.nextLine())) {
+                    break;
+                }
+                numberOfFeatures++;
+            }
+            return numberOfFeatures;
+        } finally {
+            reader.close();
+        }
+    }
+
+    private void positionAtAnnotation(DelimitedFileReader reader) {
+        reset(reader);
+        boolean isHeader = false;
+        while (!isHeader && reader.hasNextLine()) {
+            isHeader = getHandler().isHeaderLine(reader.nextLine());
+        }
+    }
+
+    private void reset(DelimitedFileReader reader) {
+        try {
+            reader.reset();
+        } catch (IOException e) {
+            throw new IllegalStateException("Couldn't reset file " + getDesignFile().getName(), e);
+        }
+    }
+
+    static String getValue(List<String> values, Enum header) {
+        return values.get(header.ordinal());
+    }
+
+    static Integer getIntegerValue(List<String> values, Enum header) {
+        String stringValue = getValue(values, header);
+        if (StringUtils.isBlank(stringValue)) {
+            return null;
+        } else {
+            return Integer.parseInt(stringValue);
+        }
+    }
+
+    static Long getLongValue(List<String> values, Enum header) {
+        String stringValue = getValue(values, header);
+        if (StringUtils.isBlank(stringValue)) {
+            return null;
+        } else {
+            return Long.parseLong(stringValue);
+        }
+    }
+
+    private AbstractIlluminaDesignHandler getHandler() {
+        if (handler == null) {
+            handler = createHandler();
+        }
+        return handler;
+    }
+
+    private AbstractIlluminaDesignHandler createHandler() {
+        DelimitedFileReader reader = getReader();
+        try {
+            List<AbstractIlluminaDesignHandler> candidateHandlers = getCandidateHandlers();
+            while (reader.hasNextLine()) {
+                List<String> values = reader.nextLine();
+                for (AbstractIlluminaDesignHandler candidateHandler : candidateHandlers) {
+                    if (candidateHandler.isHeaderLine(values)) {
+                        return candidateHandler;
+                    }
+                }
+            }
+            return null;
+        } finally {
+            reader.close();
+        }
+    }
+
+    private List<AbstractIlluminaDesignHandler> getCandidateHandlers() {
+        List<AbstractIlluminaDesignHandler> handlers = new ArrayList<AbstractIlluminaDesignHandler>();
+        handlers.add(new IlluminaExpressionCsvDesignHandler());
+        handlers.add(new IlluminaGenotypingCsvDesignHandler());
+        return handlers;
+    }
+
     @Override
     Logger getLog() {
         return LOG;
+    }
+
+    private DelimitedFileReader getReader() {
+        return getReader(getFile());
+    }
+
+    static DelimitedFileReader getReader(File illuminaCsvFile) {
+        try {
+            return DelimitedFileReaderFactory.INSTANCE.getCsvReader(illuminaCsvFile);
+        } catch (IOException e) {
+            throw new IllegalStateException("Couldn't read file " + illuminaCsvFile.getName(), e);
+        }
+
     }
 
 }

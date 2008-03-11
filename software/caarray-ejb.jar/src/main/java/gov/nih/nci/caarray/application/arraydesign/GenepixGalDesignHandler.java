@@ -154,10 +154,14 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         ProbeGroup group = new ProbeGroup(details);
         details.getProbeGroups().add(group);
         DelimitedFileReader reader = getReader();
-        loadHeaderInformation(reader);
-        positionAtDataRecords(reader);
-        while (reader.hasNextLine()) {
-            addToDetails(details, group, reader.nextLine());
+        try {
+            loadHeaderInformation(reader);
+            positionAtDataRecords(reader);
+            while (reader.hasNextLine()) {
+                addToDetails(details, group, reader.nextLine());
+            }
+        } finally {
+            reader.close();
         }
     }
 
@@ -293,13 +297,17 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
 
     private int getNumberOfFeatures() {
         DelimitedFileReader reader = getReader();
-        positionAtDataRecords(reader);
-        int numberOfFeatures = 0;
-        while (reader.hasNextLine()) {
-            reader.nextLine();
-            numberOfFeatures++;
+        try {
+            positionAtDataRecords(reader);
+            int numberOfFeatures = 0;
+            while (reader.hasNextLine()) {
+                reader.nextLine();
+                numberOfFeatures++;
+            }
+            return numberOfFeatures;
+        } finally {
+            reader.close();
         }
-        return numberOfFeatures;
     }
 
     private void positionAtDataRecords(DelimitedFileReader reader) {
@@ -336,12 +344,16 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
     @Override
     void validate(FileValidationResult result) {
         DelimitedFileReader reader = getReader();
-        validateFormat(reader, result);
-        if (result.isValid()) {
-            validateHeader(reader, result);
-        }
-        if (result.isValid()) {
-            validateData(reader, result);
+        try {
+            validateFormat(reader, result);
+            if (result.isValid()) {
+                validateHeader(reader, result);
+            }
+            if (result.isValid()) {
+                validateData(reader, result);
+            }
+        } finally {
+            reader.close();
         }
     }
 
