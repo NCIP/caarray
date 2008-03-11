@@ -640,6 +640,7 @@
                     <attribute name="Implementation-Vendor" value="5am Solutions"/>
                 </section>
             </manifest>
+            <metainf dir="${caarray-ejb.resources.dir}" includes="*.xml" />
             <fileset dir="${caarray-ejb.classes.dir}" />
         </jar>
     </target>
