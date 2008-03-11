@@ -178,4 +178,14 @@ final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
     public int getCurrentLineNumber() {
         return currentLineNumber;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void close() {
+        if (reader != null) {
+            reader.close();
+        }
+        reader = null;
+    }
 }

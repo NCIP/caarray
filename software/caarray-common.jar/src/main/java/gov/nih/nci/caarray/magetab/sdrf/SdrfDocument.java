@@ -125,7 +125,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache =
         new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
     private final Map<NodeKey, AbstractSampleDataRelationshipNode> lineNodeCache =
-        new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();    
+        new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
     private AbstractSampleDataRelationshipNode currentNode;
     private Unitable currentUnitable;
     private TermSourceable currentTermSourceable;
@@ -204,6 +204,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             }
         } catch (IllegalArgumentException e) {
             addErrorMessage("SDRF type not found: " + e.getMessage());
+        } finally {
+            tabDelimitedReader.close();
         }
     }
 
@@ -395,7 +397,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         image.link(currentHybridization);
         currentNode = image;
     }
-    
+
     private void handleScan(SdrfColumn column, String value) {
         handleNode(column, value, currentHybridization);
         currentScan = (Scan) currentNode;
@@ -599,7 +601,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             lineNodeCache.put(nodeKey, node);
         } else {
             if (!lineNodeCache.containsKey(nodeKey)) {
-                lineNodeCache.put(nodeKey, node); 
+                lineNodeCache.put(nodeKey, node);
             } else if (node.getNodeType().isName()) {
                 addErrorMessage(currentLineNumber, currentColumnNumber, "Duplicate "
                         + column.getHeading().getTypeName() + " " + value);

@@ -153,11 +153,13 @@ public final class IdfDocument extends AbstractMageTabDocument {
         parse(tabDelimitedReader, true);
         try {
             tabDelimitedReader.reset();
+            parse(tabDelimitedReader, false);
+            validateMatchingColumns();
         } catch (IOException e) {
             throw new MageTabParsingException("Couldn't create the tab-delimited file reader", e);
+        } finally {
+            tabDelimitedReader.close();
         }
-        parse(tabDelimitedReader, false);
-        validateMatchingColumns();
     }
 
     private void parse(DelimitedFileReader tabDelimitedReader, boolean processingTermSources) {
