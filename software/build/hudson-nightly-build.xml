@@ -28,9 +28,9 @@
     
     <target name="deploy:start-jboss" depends="deploy:check-if-jboss-is-running" unless="jboss.running"
         description="Override target defined in build.xml to start jboss using PSEXEC.exe">
-        <get-next-minute property="next-minute" />
+        <get-next-minute property="next-minute.0" />
         <exec executable="at">
-              <arg value="${next-minute}" />
+              <arg value="${next-minute.0}" />
               <arg value="/interactive" />
               <arg value="${jboss.home}\bin\run.bat" />
         </exec>
@@ -51,12 +51,13 @@
 
     <target name="test:selenium:start-server">
         <echo message="Starting Selenium RC server on port ${selenium.server.port}" />
-        <get-next-minute property="next-minute" />
+        <get-next-minute property="next-minute.1" />
         <exec executable="at">
-              <arg value="${next-minute}" />
-              <!--arg value="/interactive" /-->
+              <arg value="${next-minute.1}" />
+              <arg value="/interactive" />
               <arg value="C:\dev\java_platforms\jdk1.5.0_10\bin\java -jar ${selenium-server.jar} -port ${selenium.server.port}" />
         </exec>
+        <sleep seconds="60"/>
     </target>
 
     <target name="deploy:stop-jboss">
