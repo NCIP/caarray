@@ -18,20 +18,6 @@
 
 
     <import file="build.xml"/>
-
-	<scriptdef name="get-next-minute" language="beanshell">
-	<attribute name="property" />
-	  date = new java.text.SimpleDateFormat("HH:mm")
-	    .format(new Date(System.currentTimeMillis() + 60000));
-	  project.setProperty(attributes.get("property"), date);
-	</scriptdef>
-
-	<get-next-minute property="next-minute" />
-	<exec executable="at">
-		  <arg value="${next-minute}" />
-		  <arg value="/interactive" />
-		  <arg value="${jboss.home}\bin\run.bat" />
-	</exec>
 	
 	<property name="psexec.exe.cmd" value="${basedir}/build/resources/cruisecontrol/windows/psexec.exe"/>
 
@@ -51,7 +37,7 @@
 			  <arg value="/interactive" />
 			  <arg value="${jboss.home}\bin\run.bat" />
 		</exec>
-		<sleep seconds="60"/>
+		
     </target>
 
     <target name="nightly-build" depends="continuous-integration,
