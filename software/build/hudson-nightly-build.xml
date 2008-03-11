@@ -55,9 +55,11 @@
 
     <target name="test:selenium:start-server">
         <echo message="Starting Selenium RC server on port ${selenium.server.port}" />
+		<!--
 		<exec executable="${psexec.exe.cmd}" dir=".">
 		   <arg line="-u ${psexec.system.username} -p ${psexec.system.password} -d -i -w . java -jar ${selenium-server.jar} -port ${selenium.server.port}" />
 		</exec>
+		-->
 		<get-next-minute property="next-minute" />
 		<exec executable="at">
 			  <arg value="${next-minute}" />
