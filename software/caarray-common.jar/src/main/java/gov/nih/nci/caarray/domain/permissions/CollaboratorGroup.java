@@ -110,7 +110,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  */
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "CSM_GROUP", "CSM_USER" }) })
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "csm_group", "csm_user" }) })
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class CollaboratorGroup implements PersistentObject, Protectable {
     //
@@ -190,7 +190,7 @@ public class CollaboratorGroup implements PersistentObject, Protectable {
     }
 
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    @Column(name = "CSM_GROUP", nullable = false)
+    @Column(name = "csm_group", nullable = false)
     private long getGroupId() {
         return group.getGroupId();
     }
@@ -201,7 +201,7 @@ public class CollaboratorGroup implements PersistentObject, Protectable {
     }
 
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    @Column(name = "CSM_USER", nullable = false)
+    @Column(name = "csm_user", nullable = false)
     private long getOwnerId() {
         return owner.getUserId();
     }

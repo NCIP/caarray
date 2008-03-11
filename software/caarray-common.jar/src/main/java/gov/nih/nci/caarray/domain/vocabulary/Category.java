@@ -184,9 +184,9 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
      * @return the parent
      */
     @ManyToMany
-    @JoinTable(name = "CATEGORY_PARENTS",
-            joinColumns = @JoinColumn(name = "CATEGORY_ID"),
-            inverseJoinColumns = @JoinColumn(name = "PARENT_CATEGORY_ID"))
+    @JoinTable(name = "category_parents",
+            joinColumns = @JoinColumn(name = "category_id"),
+            inverseJoinColumns = @JoinColumn(name = "parent_category_id"))
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Category> getParents() {
         return parents;

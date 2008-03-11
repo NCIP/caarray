@@ -163,8 +163,8 @@ public class Parameter extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "DEFAULT_VALUE_ID")
-    @ForeignKey(name = "PARAMETER_DEFAULTVALUE_FK")
+    @JoinColumn(name = "default_value_id")
+    @ForeignKey(name = "parameter_defaultvalue_fk")
     public ParameterValue getDefaultValue() {
         return this.defaultValue;
     }
@@ -183,7 +183,7 @@ public class Parameter extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @JoinColumn(updatable = false)
-    @ForeignKey(name = "PARAMETER_PROTOCOL_FK")
+    @ForeignKey(name = "parameter_protocol_fk")
     @NotNull
     public Protocol getProtocol() {
         return this.protocol;

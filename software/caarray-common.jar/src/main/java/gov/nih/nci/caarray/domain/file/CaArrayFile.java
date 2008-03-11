@@ -120,7 +120,7 @@ import org.hibernate.annotations.ForeignKey;
 /**
  */
 @Entity
-@Table(name = "CAARRAYFILE")
+@Table(name = "caarrayfile")
 public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaArrayFile>, ProtectableDescendent {
     private static final long serialVersionUID = 1234567890L;
 
@@ -200,7 +200,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     @ManyToOne
     @JoinColumn(updatable = false)
-    @ForeignKey(name = "CAARRAYFILE_PROJECT_FK")
+    @ForeignKey(name = "caarrayfile_project_fk")
     public Project getProject() {
         return this.project;
     }
@@ -310,7 +310,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @return the validationResult
      */
     @OneToOne(cascade = CascadeType.ALL)
-    @ForeignKey(name = "CAARRAYFILE_VALIDATION_RESULT_FK")
+    @ForeignKey(name = "caarrayfile_validation_result_fk")
     public FileValidationResult getValidationResult() {
         return this.validationResult;
     }

@@ -253,7 +253,7 @@ public class Protocol extends AbstractCaArrayEntity implements Protectable {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PROTOCOL_TYPE_FK")
+    @ForeignKey(name = "protocol_type_fk")
     @NotNull
     public Term getType() {
         return this.type;
@@ -313,7 +313,7 @@ public class Protocol extends AbstractCaArrayEntity implements Protectable {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PROTOCOL_TERM_SOURCE_FK")
+    @ForeignKey(name = "protocol_term_source_fk")
     @NotNull
     public TermSource getSource() {
         return this.source;

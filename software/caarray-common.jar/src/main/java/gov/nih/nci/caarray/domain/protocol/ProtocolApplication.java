@@ -126,7 +126,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PROTOCOLAPP_PROTOCOL")
+    @ForeignKey(name = "protocolapp_protocol")
     public Protocol getProtocol() {
         return protocol;
     }
@@ -146,7 +146,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      * @return the image
      */
     @ManyToOne
-    @ForeignKey(name = "PROTOCOLAPP_IMAGE_FK")
+    @ForeignKey(name = "protocolapp_image_fk")
     public Image getImage() {
         return image;
     }
@@ -185,7 +185,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      * @return the abstractBioMaterial
      */
     @ManyToOne
-    @ForeignKey(name = "PROTOCOLAPP_BIOMATERIAL")
+    @ForeignKey(name = "protocolapp_biomaterial")
     public AbstractBioMaterial getBioMaterial() {
         return bioMaterial;
     }
@@ -201,7 +201,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      * @return the arrayData
      */
     @ManyToOne
-    @ForeignKey(name = "PROTOCOLAPP_ARRAYDATA_FK")
+    @ForeignKey(name = "protocolapp_arraydata_fk")
     public AbstractArrayData getArrayData() {
         return arrayData;
     }

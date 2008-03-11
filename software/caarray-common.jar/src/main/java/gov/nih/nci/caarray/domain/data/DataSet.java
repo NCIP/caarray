@@ -150,13 +150,13 @@ public final class DataSet extends AbstractCaArrayObject {
      * @return the quantitationTypes
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @IndexColumn(name = "QUANTITATIONTYPE_INDEX")
+    @IndexColumn(name = "quantitationtype_index")
     @JoinTable(
-            name = "DATASETQUANTITATIONTYPE",
-            joinColumns = { @JoinColumn(name = "DATASET_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "QUANTITATIONTYPE_ID") }
+            name = "datasetquantitationtype",
+            joinColumns = { @JoinColumn(name = "dataset_id") },
+            inverseJoinColumns = { @JoinColumn(name = "quantitationtype_id") }
     )
-    @ForeignKey(name = "DATASET_FK", inverseName = "QUANTITATIONTYPE_FK")
+    @ForeignKey(name = "dataset_fk", inverseName = "quantitationtype_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public List<QuantitationType> getQuantitationTypes() {
         return quantitationTypes;

@@ -138,7 +138,7 @@ public class PhysicalProbe extends AbstractProbe {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(updatable = false)
-    @ForeignKey(name = "PROBE_GROUP_FK")
+    @ForeignKey(name = "probe_group_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public ProbeGroup getProbeGroup() {
         return probeGroup;
@@ -153,9 +153,9 @@ public class PhysicalProbe extends AbstractProbe {
      */
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
-            name = "PROBEFEATURE",
-            joinColumns = { @JoinColumn(name = "PHYSICAL_PROBE_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "FEATURE_ID") }
+            name = "probefeature",
+            joinColumns = { @JoinColumn(name = "physical_probe_id") },
+            inverseJoinColumns = { @JoinColumn(name = "feature_id") }
     )
     public Set<Feature> getFeatures() {
         return features;
@@ -170,8 +170,8 @@ public class PhysicalProbe extends AbstractProbe {
      * @return the design details
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(updatable = false, name = "PHYSICALPROBE_DETAILS_ID")
-    @ForeignKey(name = "PHYSICALPROBE_DETAILS_FK")
+    @JoinColumn(updatable = false, name = "physicalprobe_details_id")
+    @ForeignKey(name = "physicalprobe_details_fk")
     public ArrayDesignDetails getArrayDesignDetails() {
         return arrayDesignDetails;
     }
@@ -184,7 +184,7 @@ public class PhysicalProbe extends AbstractProbe {
      * @return the controlType
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @ForeignKey(name = "PHYSICALPROBE_CONTROLTYPE_FK")
+    @ForeignKey(name = "physicalprobe_controltype_fk")
     public Term getControlType() {
         return controlType;
     }

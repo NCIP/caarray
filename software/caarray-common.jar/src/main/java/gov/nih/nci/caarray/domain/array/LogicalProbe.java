@@ -131,9 +131,9 @@ public class LogicalProbe extends AbstractProbe {
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "LOGICALPROBE_PHYSICALPROBE",
-            joinColumns = { @JoinColumn(name = "LOGICAL_PROBE_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "PHYSICAL_PROBE_ID") }
+            name = "logicalprobe_physicalprobe",
+            joinColumns = { @JoinColumn(name = "logical_probe_id") },
+            inverseJoinColumns = { @JoinColumn(name = "physical_probe_id") }
     )
     public Set<PhysicalProbe> getProbes() {
         return probes;
@@ -148,8 +148,8 @@ public class LogicalProbe extends AbstractProbe {
      * @return the design details
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(updatable = false, name = "LOGICALPROBE_DETAILS_ID")
-    @ForeignKey(name = "LOGICALPROBE_DETAILS_FK")
+    @JoinColumn(updatable = false, name = "logicalprobe_details_id")
+    @ForeignKey(name = "logicalprobe_details_fk")
     public ArrayDesignDetails getArrayDesignDetails() {
         return arrayDesignDetails;
     }

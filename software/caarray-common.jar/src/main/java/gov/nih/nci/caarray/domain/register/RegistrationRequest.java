@@ -352,7 +352,7 @@ public class RegistrationRequest implements PersistentObject {
      * @return the state
      */
     @ManyToOne
-    @ForeignKey(name = "REGISTRATIONREQUEST_STATE_FK")
+    @ForeignKey(name = "registrationrequest_state_fk")
     public State getState() {
         return state;
     }
@@ -418,7 +418,7 @@ public class RegistrationRequest implements PersistentObject {
      */
     @ManyToOne
     @NotNull
-    @ForeignKey(name = "REGISTRATIONREQUEST_COUNTRY_FK")
+    @ForeignKey(name = "registrationrequest_country_fk")
     public Country getCountry() {
         return country;
     }

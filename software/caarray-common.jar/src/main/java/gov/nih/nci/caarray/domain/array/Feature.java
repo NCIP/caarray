@@ -187,8 +187,8 @@ public class Feature extends AbstractDesignElement {
      * @return the design details
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(updatable = false, name = "FEATURE_DETAILS_ID")
-    @ForeignKey(name = "FEATURE_DETAILS_FK")
+    @JoinColumn(updatable = false, name = "feature_details_id")
+    @ForeignKey(name = "feature_details_fk")
     public ArrayDesignDetails getArrayDesignDetails() {
         return arrayDesignDetails;
     }

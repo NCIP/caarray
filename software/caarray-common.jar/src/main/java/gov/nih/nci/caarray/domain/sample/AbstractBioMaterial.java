@@ -120,10 +120,10 @@ import org.hibernate.validator.NotNull;
  *
  */
 @Entity
-@Table(name = "BIOMATERIAL")
+@Table(name = "biomaterial")
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "discriminator", discriminatorType = DiscriminatorType.STRING)
 public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
@@ -142,7 +142,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "BIOMATERIAL_SITE_FK")
+    @ForeignKey(name = "biomaterial_site_fk")
     public Term getTissueSite() {
         return this.tissueSite;
     }
@@ -161,7 +161,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "BIOMATERIAL_MAT_TYPE_FK")
+    @ForeignKey(name = "biomaterial_mat_type_fk")
     public Term getMaterialType() {
         return this.materialType;
     }
@@ -180,7 +180,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "BIOMATERIAL_CELL_TYPE_FK")
+    @ForeignKey(name = "biomaterial_cell_type_fk")
     public Term getCellType() {
         return this.cellType;
     }
@@ -197,7 +197,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "BIOMATERIAL_DIS_STATE_FK")
+    @ForeignKey(name = "biomaterial_dis_state_fk")
     public Term getDiseaseState() {
         return this.diseaseState;
     }
@@ -298,7 +298,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "BIOMATERIAL_ORGANISM_FK")
+    @ForeignKey(name = "biomaterial_organism_fk")
     @AttributePolicy(deny = SecurityPolicy.TCGA_POLICY_NAME)
     public Organism getOrganism() {
         return this.organism;
@@ -341,9 +341,9 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
                 }
             }
         }
-        
+
         private static boolean isCharacteristicAllowed(TermBasedCharacteristic termChar) {
             return ArrayUtils.contains(ALLOWED_CHARACTERISTIC_CATEGORIES, termChar.getCategory().getName());
         }
-    }    
+    }
 }

@@ -165,7 +165,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "EXPERIMENTCONTACT_CONTACT_FK")
+    @ForeignKey(name = "experimentcontact_contact_fk")
     public AbstractContact getContact() {
         return contact;
     }
@@ -187,11 +187,11 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     @ManyToMany(fetch = FetchType.LAZY)
     @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
     @JoinTable(
-            name = "EXPERIMENTCONTACTROLE",
-            joinColumns = { @JoinColumn(name = "EXPERIMENTCONTACT_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "ROLE_ID") }
+            name = "experimentcontactrole",
+            joinColumns = { @JoinColumn(name = "experimentcontact_id") },
+            inverseJoinColumns = { @JoinColumn(name = "role_id") }
     )
-    @ForeignKey(name = "INVESTCONT_CONTACT_FK", inverseName = "INVESTCONT_ROLE_FK")
+    @ForeignKey(name = "investcont_contact_fk", inverseName = "investcont_role_fk")
     public Set<Term> getRoles() {
         return roles;
     }
@@ -211,7 +211,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @JoinColumn(name = "experiment", insertable = false, updatable = false)
-    @ForeignKey(name = "EXPCONTACT_INVEST_FK")
+    @ForeignKey(name = "expcontact_invest_fk")
     public Experiment getExperiment() {
         return experiment;
     }

@@ -117,7 +117,7 @@ import org.hibernate.validator.NotNull;
 @UniqueConstraints(constraints = {
         @UniqueConstraint(fields = {@UniqueConstraintField(name = "value"), @UniqueConstraintField(name = "source") }),
         @UniqueConstraint(fields = {@UniqueConstraintField(name = "accession"),
-                @UniqueConstraintField(name = "source") }) }, 
+                @UniqueConstraintField(name = "source") }) },
                 message = "{term.uniqueConstraint}")
 public class Term extends AbstractCaArrayEntity implements Comparable<Term> {
     /**
@@ -170,7 +170,7 @@ public class Term extends AbstractCaArrayEntity implements Comparable<Term> {
     public void setValue(final String valueVal) {
         this.value = valueVal;
     }
-    
+
     /**
      * Gets the url at which this term can be accessed, if available.
      *
@@ -214,9 +214,9 @@ public class Term extends AbstractCaArrayEntity implements Comparable<Term> {
      */
     @ManyToMany
     @JoinTable(
-            name = "TERM_CATEGORIES",
-            joinColumns = @JoinColumn(name = "TERM_ID"),
-            inverseJoinColumns = @JoinColumn(name = "CATEGORY_ID")
+            name = "term_categories",
+            joinColumns = @JoinColumn(name = "term_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Category> getCategories() {
@@ -261,7 +261,7 @@ public class Term extends AbstractCaArrayEntity implements Comparable<Term> {
     public void setSource(final TermSource sourceVal) {
         this.source = sourceVal;
     }
-    
+
     /**
      * @return the value and the term source of this term, which identify
      * the term unambiguously

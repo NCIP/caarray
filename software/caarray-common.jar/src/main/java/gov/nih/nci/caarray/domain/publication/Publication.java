@@ -188,7 +188,7 @@ public class Publication extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PUBLICATION_STATUS_FK")
+    @ForeignKey(name = "publication_status_fk")
     public Term getStatus() {
         return status;
     }
@@ -209,7 +209,7 @@ public class Publication extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PUBLICATION_TYPE_FK")
+    @ForeignKey(name = "publication_type_fk")
     public Term getType() {
         return type;
     }

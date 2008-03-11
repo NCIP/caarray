@@ -115,13 +115,13 @@ public final class DesignElementList extends AbstractCaArrayEntity {
      * @return the designElements
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @IndexColumn(name = "DESIGNELEMENT_INDEX")
+    @IndexColumn(name = "designelement_index")
     @JoinTable(
-            name = "DESIGNELEMENTLIST_DESIGNELEMENT",
-            joinColumns = { @JoinColumn(name = "DESIGNELEMENTLIST_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "DESIGNELEMENT_ID") }
+            name = "designelementlist_designelement",
+            joinColumns = { @JoinColumn(name = "designelementlist_id") },
+            inverseJoinColumns = { @JoinColumn(name = "designelement_id") }
     )
-    @ForeignKey(name = "DELDEDESIGNELEMENTLIST_FK", inverseName = "DELDEDESIGNELEMENT_FK")
+    @ForeignKey(name = "deldedesignelementlist_fk", inverseName = "deldedesignelement_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public List<AbstractDesignElement> getDesignElements() {
         return designElements;

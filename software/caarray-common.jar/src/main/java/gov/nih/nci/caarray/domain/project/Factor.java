@@ -158,7 +158,7 @@ public class Factor extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "FACTOR_TYPE_FK")
+    @ForeignKey(name = "factor_type_fk")
     @NotNull
     public Term getType() {
         return this.type;

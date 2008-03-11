@@ -99,7 +99,7 @@ public class NamingStrategy extends ImprovedNamingStrategy {
     @Override
     public String classToTableName(String className) {
         String superStr = super.classToTableName(className);
-        return superStr.toUpperCase(Locale.US);
+        return superStr.toLowerCase(Locale.US);
     }
 
     /**
@@ -109,7 +109,7 @@ public class NamingStrategy extends ImprovedNamingStrategy {
     public String collectionTableName(String ownerEntity, String ownerEntityTable, String associatedEntity,
             String associatedEntityTable, String propertyName) {
         return super.collectionTableName(ownerEntity, ownerEntityTable, associatedEntity,
-                                         associatedEntityTable, propertyName).toUpperCase();
+                                         associatedEntityTable, propertyName).toLowerCase();
     }
 
     /**
@@ -118,7 +118,7 @@ public class NamingStrategy extends ImprovedNamingStrategy {
     @Override
     public String columnName(String columnName) {
         String superStr = super.columnName(columnName);
-        return superStr.toUpperCase(Locale.US);
+        return superStr.toLowerCase(Locale.US);
     }
 
     /**
@@ -128,7 +128,7 @@ public class NamingStrategy extends ImprovedNamingStrategy {
     public String foreignKeyColumnName(String propertyName, String propertyEntityName, String propertyTableName,
             String referencedColumnName) {
         return super.foreignKeyColumnName(propertyName, propertyEntityName, propertyTableName,
-                                          referencedColumnName).toUpperCase();
+                                          referencedColumnName).toLowerCase();
     }
 
     /**
@@ -136,7 +136,7 @@ public class NamingStrategy extends ImprovedNamingStrategy {
      */
     @Override
     public String joinKeyColumnName(String joinedColumn, String joinedTable) {
-        return super.joinKeyColumnName(joinedColumn, joinedTable).toUpperCase();
+        return super.joinKeyColumnName(joinedColumn, joinedTable).toLowerCase();
     }
 
     /**
@@ -144,7 +144,7 @@ public class NamingStrategy extends ImprovedNamingStrategy {
      */
     @Override
     public String logicalCollectionColumnName(String columnName, String propertyName, String referencedColumn) {
-        return super.logicalCollectionColumnName(columnName, propertyName, referencedColumn).toUpperCase();
+        return super.logicalCollectionColumnName(columnName, propertyName, referencedColumn).toLowerCase();
     }
 
     /**
@@ -154,7 +154,7 @@ public class NamingStrategy extends ImprovedNamingStrategy {
     public String logicalCollectionTableName(String tableName, String ownerEntityTable, String associatedEntityTable,
             String propertyName) {
         return super.logicalCollectionTableName(tableName, ownerEntityTable, associatedEntityTable,
-                                                propertyName).toUpperCase();
+                                                propertyName).toLowerCase();
     }
 
     /**
@@ -162,7 +162,7 @@ public class NamingStrategy extends ImprovedNamingStrategy {
      */
     @Override
     public String logicalColumnName(String columnName, String propertyName) {
-        return super.logicalColumnName(columnName, propertyName).toUpperCase();
+        return super.logicalColumnName(columnName, propertyName).toLowerCase();
     }
 
     /**
@@ -171,7 +171,7 @@ public class NamingStrategy extends ImprovedNamingStrategy {
     @Override
     public String propertyToColumnName(String propertyName) {
         String superStr =  super.propertyToColumnName(propertyName);
-        return superStr.toUpperCase(Locale.US);
+        return superStr.toLowerCase(Locale.US);
     }
 
     /**
@@ -180,6 +180,6 @@ public class NamingStrategy extends ImprovedNamingStrategy {
     @Override
     public String tableName(String tableName) {
         String superStr =  super.tableName(tableName);
-        return superStr.toUpperCase(Locale.US);
+        return superStr.toLowerCase(Locale.US);
     }
 }

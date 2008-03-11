@@ -106,11 +106,11 @@ import org.hibernate.validator.NotNull;
  *
  */
 @Entity
-@Table(name = "CHARACTERISTIC")
+@Table(name = "characteristic")
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(
-        name = "DISCRIMINATOR",
+        name = "discriminator",
         discriminatorType = DiscriminatorType.STRING
 )
 public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
@@ -125,7 +125,7 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
     public AbstractCharacteristic() {
         // empty
     }
-        
+
     /**
      * Creates a new AbstractCharacteristic with given category.
      * @param category the category
@@ -140,7 +140,7 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
      * @return the abstractBioMaterial
      */
     @ManyToOne
-    @ForeignKey(name = "CHARACTERISTIC_BIOMATERIAL_FK")
+    @ForeignKey(name = "characteristic_biomaterial_fk")
     public AbstractBioMaterial getBioMaterial() {
         return bioMaterial;
     }
@@ -151,7 +151,7 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
     public void setBioMaterial(AbstractBioMaterial abstractBioMaterial) {
         this.bioMaterial = abstractBioMaterial;
     }
-    
+
     /**
      * @return the category for this characteristic
      */
@@ -168,7 +168,7 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
      */
     public void setCategory(Category category) {
         this.category = category;
-    }    
+    }
 
     /**
      * {@inheritDoc}
@@ -179,7 +179,7 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the value of this characteristic as a string displayable 
+     * @return the value of this characteristic as a string displayable
      * in the ui
      */
     @Transient

@@ -156,7 +156,7 @@ public class ParameterValue extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PARAMVALUE_PARAMETER_FK")
+    @ForeignKey(name = "paramvalue_parameter_fk")
     public Parameter getParameter() {
         return parameter;
     }
@@ -174,7 +174,7 @@ public class ParameterValue extends AbstractCaArrayEntity {
      * @return the protocolApplication
      */
     @ManyToOne
-    @ForeignKey(name = "PARAMVALUE_PROTOCOLAPP_FK")
+    @ForeignKey(name = "paramvalue_protocolapp_fk")
     public ProtocolApplication getProtocolApplication() {
         return protocolApplication;
     }

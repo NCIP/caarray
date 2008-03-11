@@ -95,9 +95,9 @@ import javax.persistence.Table;
  * Base class for all array design elements.
  */
 @Entity
-@Table(name = "DESIGN_ELEMENT")
+@Table(name = "design_element")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "discriminator", discriminatorType = DiscriminatorType.STRING)
 public abstract class AbstractDesignElement extends AbstractCaArrayObject {
 
     /**

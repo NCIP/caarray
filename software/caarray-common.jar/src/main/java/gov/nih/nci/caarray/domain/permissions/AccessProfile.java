@@ -128,22 +128,22 @@ public class AccessProfile implements PersistentObject, Serializable {
     private Project projectForHostProfile;
     private Project projectForGroupProfile;
     private CollaboratorGroup group;
-    
+
     /**
      * Hibernate-only constructor.
      */
     @SuppressWarnings("unused")
-    public AccessProfile() { 
-        // no body        
+    public AccessProfile() {
+        // no body
     }
-    
+
     /**
      * Creates a new profile with given initial security level.
      * @param securityLevel initial security level
      */
-    public AccessProfile(SecurityLevel securityLevel) { 
+    public AccessProfile(SecurityLevel securityLevel) {
         this.securityLevel = securityLevel;
-    }        
+    }
 
     /**
      * @return database identifier
@@ -156,7 +156,7 @@ public class AccessProfile implements PersistentObject, Serializable {
 
     /**
      * Sets the id.
-     * 
+     *
      * @param id the id to set
      * @deprecated should only be used by castor, hibernate and struts
      */
@@ -170,7 +170,7 @@ public class AccessProfile implements PersistentObject, Serializable {
      * @return the securityLevel
      */
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "SECURITY_LEVEL")
+    @Column(nullable = false, name = "security_level")
     private SecurityLevel getSecurityLevelInternal() {
         return this.securityLevel;
     }
@@ -219,8 +219,8 @@ public class AccessProfile implements PersistentObject, Serializable {
      * @return Mapping of samples to the security level for each sample
      */
     @CollectionOfElements(fetch = FetchType.LAZY)
-    @MapKeyManyToMany(joinColumns = @JoinColumn(name = "SAMPLE_ID", nullable = false))
-    @JoinTable(name = "ACCESS_PROFILE_SAMPLES", joinColumns = @JoinColumn(name = "ACCESS_PROFILE_ID"))
+    @MapKeyManyToMany(joinColumns = @JoinColumn(name = "sample_id", nullable = false))
+    @JoinTable(name = "access_profile_samples", joinColumns = @JoinColumn(name = "access_profile_id"))
     @Column(name = "security_level")
     @Enumerated(EnumType.STRING)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
@@ -296,29 +296,29 @@ public class AccessProfile implements PersistentObject, Serializable {
     }
 
     /**
-     * @return whether this is a public profile 
+     * @return whether this is a public profile
      */
     @Transient
     public boolean isPublicProfile() {
         return this.projectForPublicProfile != null;
     }
-    
+
     /**
-     * @return whether this is a host profile 
+     * @return whether this is a host profile
      */
     @Transient
     public boolean isHostProfile() {
         return this.projectForHostProfile != null;
-    }    
+    }
 
     /**
-     * @return whether this is a group profile 
+     * @return whether this is a group profile
      */
     @Transient
     public boolean isGroupProfile() {
         return this.projectForGroupProfile != null;
-    }    
- 
+    }
+
     /**
      * @return the project to which this access profile belongs
      */
@@ -347,7 +347,7 @@ public class AccessProfile implements PersistentObject, Serializable {
      * This method should not generally never be called. It needs to remain public
      * as it must be called by Project.addProfile to establish the symmetric link
      */
-    public void setGroup(CollaboratorGroup group) { 
+    public void setGroup(CollaboratorGroup group) {
         this.group = group;
     }
 }

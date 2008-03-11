@@ -195,11 +195,11 @@ public class Person extends AbstractContact {
      */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "PERSONORGANIZATION",
-            joinColumns = { @JoinColumn(name = "PERSON_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "ORGANIZATION_ID") }
+            name = "personorganization",
+            joinColumns = { @JoinColumn(name = "person_id") },
+            inverseJoinColumns = { @JoinColumn(name = "organization_id") }
     )
-    @ForeignKey(name = "PERORG_PERSON_FK", inverseName = "PERORG_ORGANIZATION_FK")
+    @ForeignKey(name = "perorg_person_fk", inverseName = "perorg_organization_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Organization> getAffiliations() {
         return this.affiliations;
