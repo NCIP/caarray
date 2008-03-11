@@ -198,6 +198,37 @@
         </fileset>
     </path>
 
+    <path id="caarray-grid-client.dependencies.path">
+        <fileset refid="caarray-client.dependencies.fileset" />
+        <fileset dir="${lib.dir}">
+            <include name="addressing-1.0.jar" />
+            <include name="cog-axis.jar" />
+            <include name="cog-jglobus.jar" />
+            <include name="commons-discovery-0.2.jar" />
+            <include name="commons-logging-1.1.jar" />
+            <include name="jce-jdk13-125.jar" />
+            <include name="wsrf_core.jar" />
+            <include name="wsrf_core_stubs.jar" />
+            <include name="wss4j.jar" />
+            <include name="xercesImpl.jar" />
+        </fileset>
+        <fileset dir="${caaray-svc.dir}/lib">
+            <include name="caGrid-1.1-core.jar" />
+            <include name="caGrid-1.1-data-utils.jar" />
+            <include name="caGrid-1.1-metadata-common.jar" />
+            <include name="caGrid-1.1-metadata-security.jar" />
+            <include name="caGrid-1.1-ServiceSecurityProvider-client.jar" />
+            <include name="caGrid-1.1-ServiceSecurityProvider-common.jar" />
+            <include name="caGrid-1.1-ServiceSecurityProvider-stubs.jar" />
+            <include name="castor-1.0.4.jar" />
+        </fileset>
+        <fileset dir="${caaray-svc.dir}/build/lib">
+            <include name="CaArraySvc-client.jar" />
+            <include name="CaArraySvc-common.jar" />
+            <include name="CaArraySvc-stubs.jar" />
+        </fileset>
+    </path>
+
     <path id="no.dependencies.path">
         <fileset dir="${lib.dir}">
             <exclude name="**/*" />
@@ -491,6 +522,13 @@
             </filterset>
         </copy>
         <ant dir="${caaray-svc.dir}" target="compile" inheritall="false">
+            <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
+            <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
+        </ant>
+    </target>
+
+    <target name="jar:caarray-svc" depends="compile:caarray-svc">
+        <ant dir="${caaray-svc.dir}" target="jar" inheritall="false">
             <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
             <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
         </ant>
@@ -922,11 +960,11 @@
 
     <target name="test:instrument:caarray.war" depends="compile:caarray.war">
         <cobertura-instrument todir="${caarray-war.instrumented.classes.dir}" datafile="${cobertura.file}">
-	    <!-- do not have good way of testing the upload handler via junit for the time being -->
+      <!-- do not have good way of testing the upload handler via junit for the time being -->
             <fileset dir="${caarray-war.classes.dir}">
-	      <include name="**/*.class" />
-	      <exclude name="**/fileupload/*.class" />
-	    </fileset>
+        <include name="**/*.class" />
+        <exclude name="**/fileupload/*.class" />
+      </fileset>
         </cobertura-instrument>
     </target>
 
@@ -1031,7 +1069,7 @@
         <echo taskname="selenium-shutdown" message="DGF Errors during shutdown are expected" />
     </target>
 
-    <target name="test:functional:compile-tests" depends="test:selenium:compile-tests,test:api:compile-tests" />
+    <target name="test:functional:compile-tests" depends="test:selenium:compile-tests,test:api:compile-tests,test:grid:compile-tests" />
 
     <target name="test:selenium:compile-tests" depends="compile:caarray-common.jar,compile:caarray-client.jar,compile:caarray-ejb.jar">
         <mkdir dir="${test.classes.dir}" />
@@ -1064,13 +1102,28 @@
                 <path refid="caarray-client.dependencies.path" />
             </classpath>
             <include name="gov.nih.nci.caarray.test.base.TestProperties.java" />
-            <include name="**/api/**" />
+            <include name="**/api/java/**" />
+        </javac>
+    </target>
+
+    <target name="test:grid:compile-tests" depends="build:caarray-client.jar,jar:caarray-svc">
+        <mkdir dir="${test.classes.dir}" />
+        <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true">
+            <classpath>
+                <fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
+                <pathelement location="${junit.jar}" />
+                <path refid="caarray-client.dependencies.path" />
+                <path refid="caarray-grid-client.dependencies.path" />
+            </classpath>
+            <include name="gov.nih.nci.caarray.test.base.TestProperties.java" />
+            <include name="**/api/grid/**" />
         </javac>
     </target>
 
     <target name="test:functional:run-tests">
         <antcall target="test:selenium:run-tests" />
         <antcall target="test:api:run-tests" />
+        <!-- <antcall target="test:grid:run-tests" /> -->
     </target>
 
     <target name="test:selenium:run-tests" depends="test:selenium:compile-tests,test:unpack-test-data,build:caarray-client.jar,database:reinitialize">
@@ -1084,9 +1137,12 @@
     </target>
 
     <target name="test:api:run-tests" depends="test:api:compile-tests,build:caarray-client.jar">
-        <run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};${junit.jar}" classpathref.id="caarray-client.dependencies.path" source.include="**/Api*.java" source.exclude="**/AbstractApi*.java" />
+        <run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/java" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};${junit.jar}" classpathref.id="caarray-client.dependencies.path" source.include="**/Api*.java" source.exclude="**/Abstract*.java" />
     </target>
 
+    <target name="test:grid:run-tests" depends="test:grid:compile-tests,build:caarray-client.jar,jar:caarray-svc">
+        <run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/grid" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};${junit.jar}" classpathref.id="caarray-grid-client.dependencies.path" source.include="**/Grid*.java" source.exclude="**/Abstract*.java" />
+    </target>
 
     <!-- ******************************************************************* -->
     <!-- ** CHECK TARGETS                                                 ** -->
