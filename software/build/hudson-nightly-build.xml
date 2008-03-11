@@ -19,6 +19,13 @@
 
     <import file="build.xml"/>
     
+    <scriptdef name="get-next-minute" language="beanshell">
+        <attribute name="property" />
+        date = new java.text.SimpleDateFormat("HH:mm")
+          .format(new Date(System.currentTimeMillis() + 60000));
+        project.setProperty(attributes.get("property"), date);
+    </scriptdef>
+    
     <target name="deploy:start-jboss" depends="deploy:check-if-jboss-is-running" unless="jboss.running"
         description="Override target defined in build.xml to start jboss using PSEXEC.exe">
         <get-next-minute property="next-minute" />
