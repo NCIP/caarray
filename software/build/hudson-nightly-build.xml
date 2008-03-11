@@ -5,39 +5,28 @@
 <project name="caarray-cc-nightly" default="nightly-build" basedir="..">
 
     <description>
-	 This build script is used to invoke the normal build.xml via
-	 the delegating-build.xml with the caveat that certain targets within the
-	 build.xml need to overridden.
-	    -->Why?
-	 Certain targets responsible for lauching processes (start jboss)
-	 need to use the psexec.exe process to launch the process because CC will block waiting for the process
-	 that is started to complete which is not what we want.
+     This build script is used to invoke the normal build.xml 
+     with the caveat that certain targets within the
+     build.xml need to overridden.
+        -->Why?
+     Certain targets responsible for lauching processes (start jboss)
+     need to use the 'at' command to launch the process because Hudson will block waiting for the process
+     that is started to complete which is not what we want. 
+     -- http://hudson.gotdns.com/wiki/display/HUDSON/Spawning+processes+from+build
 
-	 Default target for this script is 'nightly' which is imported via build.xml
+     Default target for this script is 'nightly' which is imported via build.xml
     </description>
 
-
     <import file="build.xml"/>
-	
-	<property name="psexec.exe.cmd" value="${basedir}/build/resources/cruisecontrol/windows/psexec.exe"/>
-
+    
     <target name="deploy:start-jboss" depends="deploy:check-if-jboss-is-running" unless="jboss.running"
-    	description="Override target defined in build.xml to start jboss using PSEXEC.exe">
-		<!--
-		<echo message="psexec.exe.cmd=${psexec.exe.cmd}"/>
-		<echo message="psexec.system.username=${psexec.system.username}" />
-		<echo message="psexec.system.password=${psexec.system.password}" />
-		<exec executable="${psexec.exe.cmd}" dir="${jboss.home}/bin">
-		   <arg line="-u ${psexec.system.username} -p ${psexec.system.password} -d -i -w ${jboss.home}/bin/ ${jboss.home}/bin/run.bat" />
-		</exec>
-		-->
-		<get-next-minute property="next-minute" />
-		<exec executable="at">
-			  <arg value="${next-minute}" />
-			  <arg value="/interactive" />
-			  <arg value="${jboss.home}\bin\run.bat" />
-		</exec>
-		
+        description="Override target defined in build.xml to start jboss using PSEXEC.exe">
+        <get-next-minute property="next-minute" />
+        <exec executable="at">
+              <arg value="${next-minute}" />
+              <arg value="/interactive" />
+              <arg value="${jboss.home}\bin\run.bat" />
+        </exec>
     </target>
 
     <target name="nightly-build" depends="continuous-integration,
@@ -55,18 +44,12 @@
 
     <target name="test:selenium:start-server">
         <echo message="Starting Selenium RC server on port ${selenium.server.port}" />
-		<!--
-		<exec executable="${psexec.exe.cmd}" dir=".">
-		   <arg line="-u ${psexec.system.username} -p ${psexec.system.password} -d -i -w . java -jar ${selenium-server.jar} -port ${selenium.server.port}" />
-		</exec>
-		-->
-		<get-next-minute property="next-minute" />
-		<exec executable="at">
-			  <arg value="${next-minute}" />
-			  <!--arg value="/interactive" /-->
-			  <arg value="C:\dev\java_platforms\jdk1.5.0_10\bin\java -jar ${selenium-server.jar} -port ${selenium.server.port}" />
-		</exec>
-		
+        <get-next-minute property="next-minute" />
+        <exec executable="at">
+              <arg value="${next-minute}" />
+              <!--arg value="/interactive" /-->
+              <arg value="C:\dev\java_platforms\jdk1.5.0_10\bin\java -jar ${selenium-server.jar} -port ${selenium.server.port}" />
+        </exec>
     </target>
 
     <target name="deploy:stop-jboss">
