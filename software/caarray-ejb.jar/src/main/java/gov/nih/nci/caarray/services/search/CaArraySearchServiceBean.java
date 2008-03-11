@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
@@ -93,6 +94,7 @@ import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -109,7 +111,8 @@ import org.jboss.annotation.ejb.TransactionTimeout;
  */
 @Stateless
 @Remote(CaArraySearchService.class)
-@Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
+@PermitAll
+@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 @TransactionTimeout(CaArraySearchServiceBean.TIMEOUT_SECONDS)
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class CaArraySearchServiceBean implements CaArraySearchService {

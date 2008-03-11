@@ -92,12 +92,14 @@ import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -112,12 +114,14 @@ import org.jboss.annotation.ejb.TransactionTimeout;
  */
 @Remote(DataRetrievalService.class)
 @Stateless
+@PermitAll
 /*
  * Transaction required for these "getter" methods because database changes may occur as a side effect.
  */
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 @TransactionTimeout(DataRetrievalServiceBean.TIMEOUT_SECONDS)
-@Interceptors({ HibernateSessionInterceptor.class, DataSetConfiguringInterceptor.class })
+@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class,
+    DataSetConfiguringInterceptor.class })
 public class DataRetrievalServiceBean implements DataRetrievalService {
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;

@@ -80,84 +80,43 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.file;
+package gov.nih.nci.caarray.services;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.services.AuthorizationInterceptor;
-import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
-import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.annotation.security.PermitAll;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
-
-import org.apache.log4j.Logger;
+import javax.annotation.Resource;
+import javax.ejb.SessionContext;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.InvocationContext;
 
 /**
- * Implementation of the remote API file retrieval subsystem.
+ * Associates the current authenticated user (if any) of remote EJBs with the current
+ * session.
  */
-@Stateless
-@Remote(FileRetrievalService.class)
-@PermitAll
-@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
-public class FileRetrievalServiceBean implements FileRetrievalService {
+public class AuthorizationInterceptor {
 
-    private static final Logger LOG = Logger.getLogger(FileRetrievalServiceBean.class);
-    private static final int CHUNK_SIZE = 4096;
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    @Resource private SessionContext sessionContext;
 
     /**
-     * {@inheritDoc}
+     * Ensures that the current authenticated user is associated with the current
+     * session so that security filtering is correct.
+     *
+     * @param invContext the method context
+     * @return the method result
+     * @throws Exception if invoking the method throws an exception.
      */
-    public byte[] readFile(final CaArrayFile caArrayFileArg) {
-        // Look up the fully-populated CaArray object since the one passed in by remote clients will have contents set
-        // to null (not serializable).
-        CaArrayFile caArrayFile = getSearchDao().query(caArrayFileArg).get(0);
-        InputStream is = null;
+    @AroundInvoke
+    @SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "unchecked" }) // method invocation wrapper requires
+                                                                              // throws Exception
+    public Object prepareReturnValue(InvocationContext invContext) throws Exception {
+        String username;
         try {
-            File file = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
-            is = new FileInputStream(file.getPath());
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            final byte[] bytes = new byte[CHUNK_SIZE];
-            int size = 0;
-            while ((size = is.read(bytes)) != -1) {
-                baos.write(bytes, 0, size);
-            }
-            return baos.toByteArray();
-        } catch (final IOException e) {
-            LOG.error("IOException: " + caArrayFile, e);
-            return null;
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            } catch (final IOException ioe) {
-                LOG.warn("IOException closing inputstream.", ioe);
-            }
-            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
+            username = sessionContext.getCallerPrincipal().getName();
+        } catch (IllegalStateException e) {
+            username = SecurityUtils.ANONYMOUS_USERNAME;
         }
-    }
-
-    private SearchDao getSearchDao() {
-        return getDaoFactory().getSearchDao();
-    }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
+        UsernameHolder.setUser(username);
+        return invContext.proceed();
     }
 }
