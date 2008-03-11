@@ -86,6 +86,8 @@ import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataS
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.array.Array;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -105,12 +107,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 
@@ -143,6 +147,14 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
     @Override
     public void prepare() throws VocabularyServiceException {
         super.prepare();
+        
+        Set<ArrayDesign> arrayDesigns = getProject().getExperiment().getArrayDesigns();
+        if (arrayDesigns != null && arrayDesigns.size() == 1) {
+            if (currentHybridization.getArray() == null) {
+                currentHybridization.setArray(new Array());
+            }
+            currentHybridization.getArray().setDesign(arrayDesigns.iterator().next());
+        }
 
         if (this.currentHybridization.getId() != null) {
             Hybridization retrieved = getGenericDataService().getPersistentObject(Hybridization.class,
@@ -199,6 +211,18 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
         throw new NotImplementedException("Copying not supported for hybridizations");
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("PMD.UselessOverridingMethod")
+    @RequiredFieldValidator(fieldName = "currentHybridization.array.design",
+            key = "struts.validator.requiredString", message = "")
+    public String save() {
+        // needed to added additional validation
+        return super.save();
+    };
+    
     /**
      * {@inheritDoc}
      */

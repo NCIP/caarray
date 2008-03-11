@@ -8,6 +8,10 @@
         <s:textarea name="currentHybridization.description" key="currentHybridization.description" rows="3" cols="80"
             tabindex="2" />
         <caarray:annotationAssociationPicker baseId="labeledExtractPicker" entityName="Hybridization" associatedEntityName="Labeled Extract" itemId="${currentHybridization.id}" tabIndex="3" />
+        <s:select required="true" key="currentHybridization.array.design" tabindex="4"
+                  list="project.experiment.arrayDesigns" listValue="name" listKey="id" value="currentHybridization.array.design.id"
+                  headerKey="" headerValue=""/>
+        
         <s:hidden name="currentHybridization.id" />
         <s:hidden name="project.id" />
         <s:hidden name="editMode" />

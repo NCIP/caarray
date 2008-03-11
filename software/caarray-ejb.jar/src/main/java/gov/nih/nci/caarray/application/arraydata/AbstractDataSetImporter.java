@@ -82,9 +82,12 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -99,6 +102,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -240,10 +244,16 @@ abstract class AbstractDataSetImporter {
         Experiment experiment = getCaArrayFile().getProject().getExperiment();
         Hybridization hybridization = new Hybridization();
         hybridization.setName(hybridizationName);
+        Array array = new Array();
+        TemporaryFileCache temporaryFileCache = TemporaryFileCacheLocator.getTemporaryFileCache();
+        File file = temporaryFileCache.getFile(caArrayFile);
+        array.setDesign(getDataFileHandler().getArrayDesign(getArrayDesignService(), file));
+        temporaryFileCache.closeFile(caArrayFile);
+        hybridization.setArray(array);
         experiment.getHybridizations().add(hybridization);
         return hybridization;
     }
-    
+
     Hybridization lookupOrCreateHybridization(String hybridizationName, boolean createAnnotation) {
         Hybridization hybridization = lookupHybridization(hybridizationName);
         if (hybridization == null) {
@@ -286,4 +296,8 @@ abstract class AbstractDataSetImporter {
         experiment.getSources().add(source);
     }
 
+    private ArrayDesignService getArrayDesignService() {
+        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
+    }
+    
 }

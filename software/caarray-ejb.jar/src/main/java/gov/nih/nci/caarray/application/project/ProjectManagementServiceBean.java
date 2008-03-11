@@ -328,7 +328,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
         if (project.getId() == null) {
             // for the initial save, we will need to save experiment first since we need to assign a public
-            // identifer, which requires the id to be set
+            // identifier, which requires the id to be set
             getProjectDao().save(project.getExperiment());
         }
         // need to save twice, since we need to update the public

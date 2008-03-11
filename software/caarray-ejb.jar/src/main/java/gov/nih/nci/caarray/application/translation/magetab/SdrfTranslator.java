@@ -494,21 +494,25 @@ final class SdrfTranslator extends AbstractTranslator {
     // Translates arraydesigns to a linked array-arraydesign pair in the caArray domain.
     private void translateArrayDesigns(SdrfDocument document) {
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign : document.getAllArrayDesigns()) {
-            ArrayDesign arrayDesign = null;
-            if (sdrfArrayDesign.isArrayDesignRef()) {
-                arrayDesign = processArrayDesignRef(sdrfArrayDesign.getName());
-            } else {
-                arrayDesign = processArrayDesignFile(sdrfArrayDesign.getName());
-            }
-            // Generate an array to link the hybridization to the arraydesign.
-            Array array = new Array();
-            array.setDesign(arrayDesign);
-            this.nodeTranslations.put(sdrfArrayDesign, array);
+            ArrayDesign arrayDesign = getArrayDesign(sdrfArrayDesign);
             getTranslationResult().getArrayDesigns().add(arrayDesign);
             if (getTranslationResult().getInvestigations().size() > 0) {
                 getTranslationResult().getInvestigations().iterator().next().getArrayDesigns().add(arrayDesign);
             }
         }
+    }
+    
+    /**
+     * Get a caArray ArrayDesign object from an MAGETAB ArrayDesign.
+     */
+    private ArrayDesign getArrayDesign(gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign) {
+        ArrayDesign arrayDesign = null;
+        if (sdrfArrayDesign.isArrayDesignRef()) {
+            arrayDesign = processArrayDesignRef(sdrfArrayDesign.getName());
+        } else {
+            arrayDesign = processArrayDesignFile(sdrfArrayDesign.getName());
+        }
+        return arrayDesign;
     }
 
     // Process a reference to an array design in the caArray or in an external database.
@@ -674,9 +678,9 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private void linkHybridizationToArrays(gov.nih.nci.caarray.magetab.sdrf.Hybridization sdrfHybridization,
             Hybridization hybridization) {
-
-            Array array = (Array) this.nodeTranslations.get(sdrfHybridization.getArrayDesign());
-            hybridization.setArray(array);
+        Array array = new Array();
+        array.setDesign(getArrayDesign(sdrfHybridization.getArrayDesign()));
+        hybridization.setArray(array);
     }
 
     private void linkHybridizationToImages(gov.nih.nci.caarray.magetab.sdrf.Hybridization sdrfHybridization,

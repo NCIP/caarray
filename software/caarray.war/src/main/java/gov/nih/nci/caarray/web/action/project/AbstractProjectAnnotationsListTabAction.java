@@ -111,7 +111,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
 
     /**
      * default constructor.
-     * @param resourceKey the base resouce key.
+     * @param resourceKey the base resource key.
      * @param associatedResourceKey the resource key for the associated annotation
      * @param pagedItems the paged list to use for this tab's item list
      */
@@ -204,7 +204,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
     public abstract Collection<T> getCurrentAssociationsCollection();
 
     /**
-     * MEthod to get the collection of annotations on the association to update when changes are persisted.
+     * Method to get the collection of annotations on the association to update when changes are persisted.
      * @param item the item to retrieve the collection from.
      * @return the collection to update
      */

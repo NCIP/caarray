@@ -208,6 +208,11 @@ public enum FileType implements Comparable<FileType>  {
     NIMBLEGEN_GFF,
 
     /**
+     * Nimblegen NDF format.
+     */
+    NIMBLEGEN_NDF,
+
+    /**
      * The MAGE_TAB Array Design Format file type.
      */
     MAGE_TAB_ADF,
@@ -245,6 +250,7 @@ public enum FileType implements Comparable<FileType>  {
         ARRAY_DESIGN_FILE_TYPES.add(GENEPIX_GAL);
         ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
         ARRAY_DESIGN_FILE_TYPES.add(IMAGENE_TPL);
+        ARRAY_DESIGN_FILE_TYPES.add(NIMBLEGEN_NDF);
         ARRAY_DESIGN_FILE_TYPES.add(UCSF_SPOT_SPT);
         PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
         PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);

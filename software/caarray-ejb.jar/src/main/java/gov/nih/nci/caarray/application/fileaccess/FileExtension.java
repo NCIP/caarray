@@ -109,7 +109,8 @@ enum FileExtension {
     SPT(FileType.UCSF_SPOT_SPT),
     TSV(FileType.AGILENT_TSV),
     TPL(FileType.IMAGENE_TPL),
-    DATA(FileType.MAGE_TAB_DATA_MATRIX);
+    DATA(FileType.MAGE_TAB_DATA_MATRIX),
+    NDF(FileType.NIMBLEGEN_NDF);
 
     private final FileType type;
 

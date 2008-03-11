@@ -281,6 +281,8 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             return new ImageneTplHandler(designFile, getVocabularyService(), daoFactory);
         } else if (FileType.UCSF_SPOT_SPT.equals(type)) {
             return new UcsfSpotSptHandler(designFile, getVocabularyService(), daoFactory);
+        } else if (FileType.NIMBLEGEN_NDF.equals(type)) {
+            return new NimbleGenNdfHandler(designFile, getVocabularyService(), daoFactory);
         } else {
             throw new IllegalArgumentException("Unsupported array design file type: " + type);
         }

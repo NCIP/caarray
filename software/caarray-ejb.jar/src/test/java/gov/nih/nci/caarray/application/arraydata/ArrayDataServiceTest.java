@@ -519,6 +519,7 @@ public class ArrayDataServiceTest {
         assertEquals(6528, f635MedianColumn.getValues().length);
         assertEquals(138, f635MedianColumn.getValues()[0]);
         assertEquals(6, f635MedianColumn.getValues()[6527]);
+        assertNotNull(hybridizationData.getHybridization().getArray());
     }
 
     private void testIlluminaData() throws InvalidDataFileException {
@@ -535,6 +536,7 @@ public class ArrayDataServiceTest {
         assertEquals(10, signalColumn.getValues().length);
         assertEquals(5.8, signalColumn.getValues()[0]);
         assertEquals(3.6, signalColumn.getValues()[9]);
+        assertNotNull(hybridizationData.getHybridization().getArray());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -565,6 +567,7 @@ public class ArrayDataServiceTest {
             chpData.getExpressionResults(i, results);
             assertEquals(results.getSignal(), signalColumn.getValues()[i]);
         }
+        assertNotNull(hybridizationData.getHybridization().getArray());
     }
 
     private void testSnpChpData() throws InvalidDataFileException {
@@ -586,6 +589,7 @@ public class ArrayDataServiceTest {
             chpData.getGenotypingResults(i, results);
             assertEquals(results.getAlleleCallString(), alleleColumn.getValues()[i]);
         }
+        assertNotNull(hybridizationData.getHybridization().getArray());
     }
 
     private void testCelData() throws InvalidDataFileException {
@@ -611,6 +615,7 @@ public class ArrayDataServiceTest {
         BooleanColumn isMaskedColumn = (BooleanColumn) hybridizationData.getColumns().get(4);
         BooleanColumn isOutlierColumn = (BooleanColumn) hybridizationData.getColumns().get(5);
         ShortColumn numPixelsColumn = (ShortColumn) hybridizationData.getColumns().get(6);
+        assertNotNull(hybridizationData.getHybridization().getArray());
         for (int rowIndex = 0; rowIndex < fusionCelData.getCells(); rowIndex++) {
             fusionCelData.getEntry(rowIndex, fusionCelEntry);
             assertEquals(fusionCelData.indexToX(rowIndex), xColumn.getValues()[rowIndex]);
