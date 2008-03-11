@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The test
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This test Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the test Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the test Software; (ii) distribute and
+ * have distributed to and by third parties the test Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,105 +80,103 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.test.base;
+package gov.nih.nci.caarray.test.api.grid.search;
+
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.domain.contact.Person;
+import gov.nih.nci.caarray.test.api.AbstractApiTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
+import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
+import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
+
+import java.rmi.RemoteException;
+import java.util.Iterator;
+
+import org.junit.Test;
 
 /**
- * Environment properties passed in to tests.
+ * A client searching for persons using CQL through the CaArray Grid service.
+ *
+ * @author Rashmi Srinivasa
  */
-public final class TestProperties {
+public class GridCqlSearchPerson extends AbstractApiTest {
+    private static final String[] LAST_NAMES = { "Laufs", "Freuhauf", "Wenz", "Li", "Zeller", "Fleckenstein" };
 
-    public static final String SERVER_HOSTNAME_KEY = "server.hostname";
-    public static final String SERVER_PORT_KEY = "server.port";
-    public static final String SERVER_JNDI_PORT_KEY = "server.jndi.port";
-    public static final String GRID_SERVER_HOSTNAME_KEY = "globoss.server.hostname";
-    public static final String GRID_SERVER_PORT_KEY = "globoss.server.http.port";
-
-    public static final String SERVER_HOSTNAME_DEFAULT = "localhost";
-    public static final String SERVER_PORT_DEFAULT = "8181";
-    public static final String SERVER_JNDI_PORT_DEFAULT = "11299";
-    public static final String GRID_SERVER_PORT_DEFAULT = "80";
-
-    public static final String SELENIUM_SERVER_PORT_KEY = "selenium.server.port";
-    public static final String SELENIUM_SERVER_PORT_DEFAULT = "8081";
-
-    // Experiment names and array designs used in API tests
-    public static final String AFFYMETRIX_SPECIFICATION_DESIGN = "Test3";
-    public static final String AFFYMETRIX_HUMAN_DESIGN = "HG-U133_Plus_2";
-    public static final String GENEPIX_DESIGN = "JoeDeRisi-fix";
-    public static final String ILLUMINA_DESIGN = "Human_WG-6";
-
-    public static final String AFFYMETRIX_SPECIFICATION_WITH_DATA_01 = "Affymetrix Specification with Data 01";
-    public static final String AFFYMETRIX_HUMAN_WITH_DATA_01 = "Affymetrix Human with Data 01";
-    public static final String GENEPIX_COW_WITH_DATA_01 = "Genepix Cow with Data 01 ";
-    public static final String ILLUMINA_RAT_WITH_DATA_01 = "Illumina Rat with Data 01";
-    public static final String AFFYMETRIX_EXPERIMENT_WITH_CHP_DATA_01 = "Affymetrix Experiment with CHP Data 01";
-
-    public static final String AFFYMETRIX_CEL_QUANTITATION_TYPES = "CELX,CELY,CELintensity,CELintensityStdev,CELMask,CELOutlier,CELPixels";
-    public static final String AFFYMETRIX_CHP_QUANTITATION_TYPES = "CHPSignal";
-    public static final String GENEPIX_QUANTITATION_TYPES = "F635 Mean,F635 Median";
-    public static final String ILLUMINA_QUANTITATION_TYPES = "AVG_Signal,BEAD_STDEV,Avg_NBEADS,Detection";
-
-    public static String getServerHostname() {
-        return System.getProperty(SERVER_HOSTNAME_KEY, SERVER_HOSTNAME_DEFAULT);
+    @Test
+    public void testCqlSearchPerson() {
+        try {
+            CaArraySvcClient client = new CaArraySvcClient(TestProperties.getGridServiceUrl());
+            logForSilverCompatibility(TEST_NAME, "Grid-CQL-Searching for Persons...");
+            for (String lastName : LAST_NAMES) {
+                boolean resultIsOkay = searchPersons(client, lastName);
+                assertTrue("Error: Response did not match request.", resultIsOkay);
+            }
+        } catch (RemoteException e) {
+            StringBuilder trace = buildStackTrace(e);
+            logForSilverCompatibility(TEST_OUTPUT, "Remote exception: " + e + "\nTrace: " + trace);
+            assertTrue("Remote exception: " + e, false);
+        } catch (Throwable t) {
+            // Catches things like out-of-memory errors and logs them.
+            StringBuilder trace = buildStackTrace(t);
+            logForSilverCompatibility(TEST_OUTPUT, "Throwable: " + t + "\nTrace: " + trace);
+            assertTrue("Throwable: " + t, false);
+        }
     }
 
-    public static int getServerPort() {
-        return Integer.parseInt(System.getProperty(SERVER_PORT_KEY, SERVER_PORT_DEFAULT));
+    private boolean searchPersons(CaArraySvcClient client, String lastName) throws RemoteException {
+        CQLQuery cqlQuery = createCqlQuery(lastName);
+        CQLQueryResults cqlResults = client.query(cqlQuery);
+        logForSilverCompatibility(API_CALL, "Grid search(CQLQuery)");
+        // printCqlResultsAsXml(cqlResults, "GridCqlSearchPerson.xml");
+        boolean resultIsOkay = isResultOkay(cqlResults, lastName);
+        if (resultIsOkay) {
+            logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + cqlResults.getObjectResult().length
+                    + " persons with last name " + lastName + ".");
+        } else {
+            logForSilverCompatibility(TEST_OUTPUT, "Error: Response did not match request.");
+        }
+        return resultIsOkay;
     }
 
-    public static int getServerJndiPort() {
-        return Integer.parseInt(System.getProperty(SERVER_JNDI_PORT_KEY, SERVER_JNDI_PORT_DEFAULT));
+    private CQLQuery createCqlQuery(String lastName) {
+        CQLQuery cqlQuery = new CQLQuery();
+        Object target = new Object();
+        target.setName("gov.nih.nci.caarray.domain.contact.Person");
+
+        Attribute affiliationAttribute = new Attribute();
+        affiliationAttribute.setName("lastName");
+        affiliationAttribute.setValue(lastName);
+        affiliationAttribute.setPredicate(Predicate.EQUAL_TO);
+
+        target.setAttribute(affiliationAttribute);
+
+        cqlQuery.setTarget(target);
+        return cqlQuery;
     }
 
-    public static int getSeleniumServerPort() {
-        return Integer.parseInt(System.getProperty(SELENIUM_SERVER_PORT_KEY, SELENIUM_SERVER_PORT_DEFAULT));
-    }
-
-    public static String getGridServerHostname() {
-        return System.getProperty(GRID_SERVER_HOSTNAME_KEY, SERVER_HOSTNAME_DEFAULT);
-    }
-
-    public static int getGridServerPort() {
-        return Integer.parseInt(System.getProperty(GRID_SERVER_PORT_KEY, GRID_SERVER_PORT_DEFAULT));
-    }
-
-    public static String getGridServiceUrl() {
-        return ("http://" + getGridServerHostname() + ":" + getGridServerPort() + "/wsrf/services/cagrid/CaArraySvc");
-    }
-    // Experiment names and array designs used in API tests
-    public static String getAffymetrixSpecificationDesignName() {
-        return AFFYMETRIX_SPECIFICATION_DESIGN;
-    }
-
-    public static String getAffymetrixHumanDesignName() {
-        return AFFYMETRIX_HUMAN_DESIGN;
-    }
-
-    public static String getGenepixDesignName() {
-        return GENEPIX_DESIGN;
-    }
-
-    public static String getIlluminaDesignName() {
-        return ILLUMINA_DESIGN;
-    }
-
-    public static String getAffymetricSpecificationName() {
-        return AFFYMETRIX_SPECIFICATION_WITH_DATA_01;
-    }
-
-    public static String getAffymetricHumanName() {
-        return AFFYMETRIX_HUMAN_WITH_DATA_01;
-    }
-
-    public static String getGenepixCowName() {
-        return GENEPIX_COW_WITH_DATA_01;
-    }
-
-    public static String getIlluminaRatName() {
-        return ILLUMINA_RAT_WITH_DATA_01;
-    }
-
-    public static String getAffymetricChpName() {
-        return AFFYMETRIX_EXPERIMENT_WITH_CHP_DATA_01;
+    private boolean isResultOkay(CQLQueryResults cqlResults, String lastName) {
+        if (cqlResults.getObjectResult() == null) {
+            return false;
+        }
+        Iterator iter = new CQLQueryResultsIterator(cqlResults, CaArraySvcClient.class
+                .getResourceAsStream("client-config.wsdd"));
+        if (!(iter.hasNext())) {
+            return false;
+        }
+        while (iter.hasNext()) {
+            Person retrievedPerson = (Person) (iter.next());
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Person.getFirstName(): " + retrievedPerson.getFirstName());
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Person.getLastName(): " + retrievedPerson.getLastName());
+            // Check if retrieved person matches requested search criteria.
+            if (!lastName.equalsIgnoreCase(retrievedPerson.getLastName())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

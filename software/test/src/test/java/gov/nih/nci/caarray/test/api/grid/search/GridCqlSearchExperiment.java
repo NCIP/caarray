@@ -80,60 +80,52 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.test.api.java.search;
+package gov.nih.nci.caarray.test.api.grid.search;
 
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.domain.contact.Person;
-import gov.nih.nci.caarray.services.CaArrayServer;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.test.api.AbstractApiTest;
 import gov.nih.nci.caarray.test.base.TestProperties;
+import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
+import gov.nih.nci.cagrid.cqlquery.Association;
 import gov.nih.nci.cagrid.cqlquery.Attribute;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Group;
+import gov.nih.nci.cagrid.cqlquery.LogicalOperator;
 import gov.nih.nci.cagrid.cqlquery.Object;
 import gov.nih.nci.cagrid.cqlquery.Predicate;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
+import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
 
+import java.rmi.RemoteException;
 import java.util.Iterator;
-import java.util.List;
 
 import org.junit.Test;
 
 /**
- * A client searching for persons using CQL through CaArray's Remote Java API.
+ * A client searching for experiments using CQL through the CaArray Grid service.
  *
  * @author Rashmi Srinivasa
  */
-public class ApiCqlSearchPerson extends AbstractApiTest {
-    private static final String[] LAST_NAMES = {
-        "Laufs",
-        "Freuhauf",
-        "Wenz",
-        "Li",
-        "Zeller",
-        "Fleckenstein"
-    };
+public class GridCqlSearchExperiment extends AbstractApiTest {
+    private static final String[] MANUFACTURER_NAMES = { "Affymetrix", "Illumina" };
+    private static final String[] ORGANISM_NAMES = { "human", "black rat" };
 
     @Test
-    public void testCqlSearchPerson() {
+    public void testCqlSearchExperiment() {
         try {
-            CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties
-                    .getServerJndiPort());
-            server.connect();
-            CaArraySearchService searchService = server.getSearchService();
-            logForSilverCompatibility(TEST_NAME, "CQL-Searching for Persons...");
-            for (String lastName : LAST_NAMES) {
-                boolean resultIsOkay = searchPersons(searchService, lastName);
+            CaArraySvcClient client = new CaArraySvcClient(TestProperties.getGridServiceUrl());
+            logForSilverCompatibility(TEST_NAME, "Grid-CQL-Searching for Experiments...");
+            int i = 0;
+            for (String manufacturerName : MANUFACTURER_NAMES) {
+                String organismName = ORGANISM_NAMES[i++];
+                boolean resultIsOkay = searchExperiments(client, manufacturerName, organismName);
                 assertTrue("Error: Response did not match request.", resultIsOkay);
             }
-        } catch (ServerConnectionException e) {
+        } catch (RemoteException e) {
             StringBuilder trace = buildStackTrace(e);
-            logForSilverCompatibility(TEST_OUTPUT, "Server connection exception: " + e + "\nTrace: " + trace);
-            assertTrue("Server connection exception: " + e, false);
-        } catch (RuntimeException e) {
-            StringBuilder trace = buildStackTrace(e);
-            logForSilverCompatibility(TEST_OUTPUT, "Runtime exception: " + e + "\nTrace: " + trace);
-            assertTrue("Runtime exception: " + e, false);
+            logForSilverCompatibility(TEST_OUTPUT, "Remote exception: " + e + "\nTrace: " + trace);
+            assertTrue("Remote exception: " + e, false);
         } catch (Throwable t) {
             // Catches things like out-of-memory errors and logs them.
             StringBuilder trace = buildStackTrace(t);
@@ -142,51 +134,83 @@ public class ApiCqlSearchPerson extends AbstractApiTest {
         }
     }
 
-    private boolean searchPersons(CaArraySearchService searchService, String lastName) {
-        CQLQuery cqlQuery = createCqlQuery(lastName);
-        List personList = searchService.search(cqlQuery);
-        logForSilverCompatibility(API_CALL, "CaArraySearchService.search(CQLQuery)");
-        boolean resultIsOkay = isResultOkay(personList, lastName);
+    private boolean searchExperiments(CaArraySvcClient client, String manufacturerName, String organismName)
+            throws RemoteException {
+        CQLQuery cqlQuery = createCqlQuery(manufacturerName, organismName);
+        CQLQueryResults cqlResults = client.query(cqlQuery);
+        logForSilverCompatibility(API_CALL, "Grid search(CQLQuery)");
+        boolean resultIsOkay = isResultOkay(cqlResults, manufacturerName, organismName);
         if (resultIsOkay) {
-            logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + personList.size()
-                    + " persons with last name " + lastName + ".");
+            logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + cqlResults.getObjectResult().length
+                    + " experiments with array provider " + manufacturerName + " and organism " + organismName + ".");
         } else {
-            logForSilverCompatibility(TEST_OUTPUT, "Error: Response did not match request. Retrieved " + personList.size()
-                    + " persons.");
+            logForSilverCompatibility(TEST_OUTPUT, "Error: Response did not match request.");
         }
         return resultIsOkay;
     }
 
-    private CQLQuery createCqlQuery(String lastName) {
+    private CQLQuery createCqlQuery(String manufacturerName, String organismName) {
         CQLQuery cqlQuery = new CQLQuery();
         Object target = new Object();
-        target.setName("gov.nih.nci.caarray.domain.contact.Person");
+        target.setName("gov.nih.nci.caarray.domain.project.Experiment");
 
-        Attribute affiliationAttribute = new Attribute();
-        affiliationAttribute.setName("lastName");
-        affiliationAttribute.setValue(lastName);
-        affiliationAttribute.setPredicate(Predicate.EQUAL_TO);
+        Association manufacturerAssociation = new Association();
+        manufacturerAssociation.setName("gov.nih.nci.caarray.domain.contact.Organization");
+        Attribute manufacturerAttribute = new Attribute();
+        manufacturerAttribute.setName("name");
+        manufacturerAttribute.setValue(manufacturerName);
+        manufacturerAttribute.setPredicate(Predicate.EQUAL_TO);
+        manufacturerAssociation.setAttribute(manufacturerAttribute);
+        manufacturerAssociation.setRoleName("manufacturer");
 
-        target.setAttribute(affiliationAttribute);
+        Association organismAssociation = new Association();
+        organismAssociation.setName("edu.georgetown.pir.Organism");
+        Attribute organismAttribute = new Attribute();
+        organismAttribute.setName("commonName");
+        organismAttribute.setValue(organismName);
+        organismAttribute.setPredicate(Predicate.EQUAL_TO);
+        organismAssociation.setAttribute(organismAttribute);
+        organismAssociation.setRoleName("organism");
+
+        Group associations = new Group();
+        associations.setAssociation(new Association[] { manufacturerAssociation, organismAssociation });
+        associations.setLogicRelation(LogicalOperator.AND);
+        target.setGroup(associations);
 
         cqlQuery.setTarget(target);
         return cqlQuery;
     }
 
-    private boolean isResultOkay(List personList, String lastName) {
-        if (personList.isEmpty()) {
+    private boolean isResultOkay(CQLQueryResults cqlResults, String manufacturerName, String organismName) {
+        if (cqlResults.getObjectResult() == null) {
             return false;
         }
-
-        Iterator i = personList.iterator();
-        while (i.hasNext()) {
-            Person retrievedPerson = (Person) i.next();
-            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Person.getFirstName(): " + retrievedPerson.getFirstName());
-            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Person.getLastName(): " + retrievedPerson.getLastName());
-            // Check if retrieved person matches requested search criteria.
-            if (!lastName.equalsIgnoreCase(retrievedPerson.getLastName())) {
+        Iterator iter = new CQLQueryResultsIterator(cqlResults, CaArraySvcClient.class
+                .getResourceAsStream("client-config.wsdd"));
+        if (!(iter.hasNext())) {
+            return false;
+        }
+        while (iter.hasNext()) {
+            Experiment retrievedExperiment = (Experiment) (iter.next());
+            // The following code commented out because of upcoming defect re: manufacturer attribute being null.
+            // Check if retrieved experiment matches requested search criteria.
+            //logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getManufacturer().getName(): "
+            //+ retrievedExperiment.getManufacturer().getName());
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getOrganism().getCommonName(): "
+                    + retrievedExperiment.getOrganism().getCommonName());
+            //if ((!manufacturerName.equals(retrievedExperiment.getManufacturer().getName()))
+            //|| (!organismName.equals(retrievedExperiment.getOrganism().getCommonName()))) {
+            //return false;
+            //}
+            // Check if retrieved experiment has mandatory fields.
+            if ((retrievedExperiment.getTitle() == null) || (retrievedExperiment.getServiceType() == null)
+                    || (retrievedExperiment.getAssayType() == null)) {
                 return false;
             }
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getServiceType().getResourceKey(): "
+                    + retrievedExperiment.getServiceType().getResourceKey());
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getAssayType(): "
+                    + retrievedExperiment.getAssayType());
         }
         return true;
     }
