@@ -6,23 +6,34 @@
     <jsp:useBean id="currentTime" class="java.util.Date"/>
     <c:set var="uploadId" value="${currentTime.time}"/>
     
+    <c:url value="/project/files/upload.action/${uploadId}" var="uploadActionUrl"/>    
     <c:url value="/ajax/uploadProgress.action" var="uploadProgressUrl">
         <c:param name="__multipart_upload_id" value="${uploadId}"/>
     </c:url>
-
      <c:url value="/project/details.action" var="projectDetailsUrl">
         <c:param name="project.id" value="${project.id}"/>
         <c:param name="initialTab" value="data" />
     </c:url>
  
     <iframe id='target_upload' name='target_upload' src='' style='display: none'> </iframe>
-    <div id="uploadFileDiv" style="display: none">
-        <form action="<c:url value="/project/files/upload.action/${uploadId}"/>" id="uploadForm" enctype="multipart/form-data" method="post" target="target_upload">
-            <input type="hidden" name="project.id" value="${project.id}"/>
-        </form>
+    <div id="uploadFileDiv">
+        <div class="boxpad2extend">
+            <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
+                <s:form action="project/files/upload" id="uploadForm" namespace="" enctype="multipart/form-data" method="post"  target="target_upload">
+                    <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
+                    <s:file id="upload" name="upload" label="File" />
+                </s:form>
+
+                <caarray:actions>
+                    <caarray:linkButton actionClass="cancel" text="Cancel" onclick="window.close()"/>
+                    <caarray:linkButton actionClass="add" text="Add More Files" onclick="moreUploads();"/>
+                    <caarray:linkButton actionClass="save" text="Upload" onclick="beginUpload()"/>
+                </caarray:actions>
+            </c:if>
+        </div>
     </div>
 
-    <div class="padme">
+    <div class="padme" id="uploadProgress" style="display: none">
         <div id="tabboxwrapper_notabs">
             <div class="boxpad2">
                 <h3>
@@ -55,11 +66,21 @@
    </div>
   
 <script type="text/javascript">
-    var progressBar = new Control.ProgressBar('uploadProgressBar', { afterChange: function(progress, active) { $('uploadPercent').innerHTML = progress; } });
+    var progressBar;
     var pbPoller;
     var currentItemNumber = 1;
     var processingFinished = false;
 
+   function moreUploads() {
+        formTable = $('uploadFileDiv').getElementsByTagName('table')[0];
+        newRow = $(formTable.rows[0].cloneNode(true));
+        newFile = newRow.down('input');
+        newFile.value = '';
+        newFile.id = '';
+
+        formTable.tBodies[0].appendChild(newRow);
+    }
+    
     function closeAndGoToProjectData() {
         window.opener.location = '${projectDetailsUrl}';
         window.close();
@@ -83,6 +104,7 @@
           $('uploadProgressFileList').tBodies[0].rows[currentItemNumber - 1].cells[1].innerHTML = "Done";
           if (!processingFinished) {
               $('uploadingMessage').innerHTML = "Your file(s) have finished uploading and are now being processed by the server. Please continue to leave this window open until this is complete.";
+              new Effect.Highlight('uploadingMessage', { duration: 5.0 });
           }
           pbPoller.stop();
         }
@@ -95,23 +117,35 @@
         $("closeWindow").style.display = "";
         alert('Your file upload is complete');  
     }
-            
-    (function () {
-        var myForm = $('uploadForm');
-        var origFormFiles = $(window.opener.document.getElementById('uploadForm')).getElementsBySelector('input[type=file]');
-        var progressTable = $('uploadProgressFileList');
-        var fnameRegexp = new RegExp("[^/]+$");
 
-        for (var i = 0; i < origFormFiles.length; i++) {
-            if (origFormFiles[i].value.length > 0) {
-                var fileCopy = origFormFiles[i].cloneNode(true);
-                myForm.appendChild(fileCopy);
+    function beginUpload() {
+        $('uploadForm').action='${uploadActionUrl}';
+        $('uploadFileDiv').hide();
+        initializeProgressDisplay();
+        $('uploadForm').submit();
+        window.onbeforeunload = confirmCloseWindow;
+    }
+    
+            
+    function initializeProgressDisplay() {
+        var myForm = $('uploadForm');
+        var formFiles = myForm.getElementsBySelector('input[type=file]');
+        var progressTable = $('uploadProgressFileList');
+        var fnameRegexp = new RegExp("[^/\\\\]+$");
+
+        for (var i = 0; i < formFiles.length; i++) {
+            if (formFiles[i].value.length > 0) {
                 var fileRow = progressTable.tBodies[0].insertRow(progressTable.tBodies[0].rows.length-1);          
-                fileRow.insertCell(0).innerHTML = fileCopy.value.match(fnameRegexp)[0];          
+                fileRow.insertCell(0).innerHTML = formFiles[i].value.match(fnameRegexp)[0];          
                 fileRow.insertCell(1);                    
+            } else {
+                formFiles[i].disabled=true;
             }
         }
 
+        $('uploadProgress').show();        
+
+        progressBar = new Control.ProgressBar('uploadProgressBar', { afterChange: function(progress, active) { $('uploadPercent').innerHTML = progress; } })
         pbPoller = new PeriodicalExecuter(function() {
             new Ajax.Request('${uploadProgressUrl}', {
                 onSuccess: function(request) {
@@ -120,11 +154,7 @@
                 }
             });
          }, 2);
-
-        window.onbeforeunload = confirmCloseWindow;
-        
-        $('uploadForm').submit();
-    })();
+    };
 </script>
 </page:applyDecorator>
     

@@ -6,25 +6,12 @@
 </c:url>
 
 <script type="text/javascript">
-    moreUploads = function() {
-        formTable = $('uploadFileDiv').getElementsByTagName('table')[0];
-        newRow = formTable.rows[0].cloneNode(true);
-        newFile = newRow.getElementsByTagName('input')[0];
-        newFile.value = '';
-        newFile.id = '';
-
-        formTableTbody = formTable.getElementsByTagName('tbody')[0];
-        formTableTbody.appendChild(newRow);
-    }
-
     doFilter = function() {
       Caarray.submitAjaxForm('selectFilesForm', 'unimportedForm', {url: '${listUnimportedFormUrl}'});
     }
     
     openUploadWindow = function() {
        window.open('${uploadInBackgroundUrl}', '_blank', "width=685,height=350,left=0,top=0,toolbar,scrollbars,resizable,status=yes");     
-       $('uploadFileDiv').hide();
-       $('uploadInProgressDiv').show();
     }
 </script>
 
@@ -35,32 +22,11 @@
         <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
             <div class="addlink">
                 <fmt:message key="experiment.data.upload" var="uploadLabel" />
-                <caarray:linkButton actionClass="add" text="${uploadLabel}" onclick="Element.show('uploadFileDiv');"/>
+                <caarray:linkButton actionClass="add" text="${uploadLabel}" onclick="openUploadWindow()"/>
             </div>
         </c:if>
     </div>
-    
-    <div id="uploadFileDiv" style="display: none;">
-        <div class="boxpad2extend">
-            <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
-                <s:form action="project/files/upload" id="uploadForm" namespace="" enctype="multipart/form-data" method="post">
-                    <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
-                    <s:file id="upload" name="upload" label="File" />
-                </s:form>
-
-                <caarray:actions>
-                    <caarray:linkButton actionClass="cancel" text="Cancel" onclick="Effect.Fade('uploadFileDiv', { duration: 0.1 } );"/>
-                    <caarray:linkButton actionClass="add" text="Add More Files" onclick="moreUploads();"/>
-                    <caarray:linkButton actionClass="save" text="Upload" onclick="openUploadWindow()"/>
-                </caarray:actions>
-            </c:if>
-        </div>
-    </div>
-
-    <div id="uploadInProgressDiv" style="display: none;">
-        <fmt:message key="data.file.upload.inProgress"/>
-    </div>    
-    
+        
   <div class="tableboxpad" id="unimportedForm">
       <%@ include file="/WEB-INF/pages/project/files/listUnimportedForm.jsp" %>
     </div>
