@@ -1065,6 +1065,7 @@
     </target>
 
     <target name="test:selenium:stop-server">
+        <mkdir dir="${target.dir}/temp" />
         <get taskname="selenium-shutdown" src="http://localhost:${selenium.server.port}/selenium-server/driver/?cmd=shutDown" dest="${target.dir}/temp/selenium-shutdown-result.txt" ignoreerrors="true" />
         <echo taskname="selenium-shutdown" message="DGF Errors during shutdown are expected" />
     </target>
