@@ -613,10 +613,10 @@ var PermissionUtils = {
 // Download stuff here
 //
 
-function DownloadMgr(dUrl, dgUrl, iUrl, maxDownloadSize) {
+function DownloadMgr(dUrl, dgUrl, removeImageUrl, maxDownloadSize) {
   this.downloadUrl = dUrl;
   this.downloadGroupsUrl = dgUrl;
-  this.imageUrl = iUrl;
+  this.removeImageUrl = removeImageUrl;
   this.downloadIds = new Array();
   this.downloadSizeArray = new Array();
   this.count = 0;
@@ -624,17 +624,11 @@ function DownloadMgr(dUrl, dgUrl, iUrl, maxDownloadSize) {
   this.maxDownloadSize = maxDownloadSize;
 }
 
-DownloadMgr.prototype.downloadUrl;
-DownloadMgr.prototype.imageUrl;
-DownloadMgr.prototype.downloadIds;
-DownloadMgr.prototype.downloadSizeArray;
-DownloadMgr.prototype.count;
-
-DownloadMgr.prototype.addDownloadRow = function(name, id, size) {
-  this.addDownloadRow(name, id, size, null);
+DownloadMgr.prototype.addDownloadRow = function(name, id, addLink, size) {
+  this.addDownloadRow(name, id, addLink, size, null);
 }
 
-DownloadMgr.prototype.addDownloadRow = function(name, id, size, doAlert) {
+DownloadMgr.prototype.addDownloadRow = function(name, id, addLink, size, doAlert) {
     for (i = 0; i < this.downloadIds.length; ++i) {
       if (this.downloadIds[i] == id) {
         if (doAlert == null) {
@@ -654,12 +648,13 @@ DownloadMgr.prototype.addDownloadRow = function(name, id, size, doAlert) {
   row.id = 'downloadRow' + this.count;
 
   var cell = row.insertCell(0);
-  cell.innerHTML = '<img src="'+ this.imageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + this.count + ')"/>&nbsp;&nbsp;' + name;
+  cell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + this.count + ', ' + size + '); return false;"/>&nbsp;&nbsp;' + name;
 
   this.addTotalRow();
+  new Effect.Highlight($(addLink).up('tr'));
 }
 
-DownloadMgr.prototype.removeRow = function(toRemove) {
+DownloadMgr.prototype.removeRow = function(toRemove, size) {
   var tbl = document.getElementById('downloadTbl');
   var row = document.getElementById('downloadRow' + toRemove);
   for (i = 0; i < tbl.rows.length; ++i) {
