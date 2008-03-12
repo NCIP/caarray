@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-war
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-war Software License (the License) is between NCI and You. You (or
+ * This caArray Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-war Software to (i) use, install, access, operate,
+ * its rights in the caArray Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-war Software; (ii) distribute and
- * have distributed to and by third parties the caarray-war Software and any
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,132 +80,94 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.validator;
+package gov.nih.nci.caarray.web.upgrade;
 
+import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.validator.ClassValidator;
-import org.hibernate.validator.InvalidValue;
-
-import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.util.ValueStack;
-import com.opensymphony.xwork2.validator.ValidationException;
-import com.opensymphony.xwork2.validator.validators.FieldValidatorSupport;
+import org.hibernate.engine.SessionFactoryImplementor;
+import org.w3c.dom.Element;
 
 /**
- * Class to provide hibernate validator support in Struts 2.
- *
- * @author Scott Miller
+ * Executes a SQL script as part of an application upgrade.
  */
-@SuppressWarnings("PMD.CyclomaticComplexity")
-public class HibernateValidator extends FieldValidatorSupport {
+final class SqlScriptMigrationStep extends AbstractMigrationStep {
 
-    private static final Logger LOG = Logger.getLogger(HibernateValidator.class);
-    private static final Map<Class<?>, ClassValidator<?>> CLASS_VALIDATOR_MAP =
-        new HashMap<Class<?>, ClassValidator<?>>();
+    private static final Logger LOG = Logger.getLogger(SqlScriptMigrationStep.class);
 
-    private String resourceKeyBase;
-    private String conditionalExpression;
+    private final String script;
+
+    SqlScriptMigrationStep(Element element) {
+        this.script = getContent(element);
+    }
+
+    @Override
+    void execute() throws MigrationStepFailedException {
+        InputStream instream = this.getClass().getResourceAsStream("/" + script);
+        BufferedReader in = new BufferedReader(new InputStreamReader(instream));
+        Connection connection = null;
+        try {
+            connection =
+                ((SessionFactoryImplementor) HibernateUtil.getSessionFactory()).getConnectionProvider().getConnection();
+            String line = null;
+            StringBuffer sqlStatement = new StringBuffer();
+            Statement s = connection.createStatement();
+            while ((line = in.readLine()) != null) {
+                line = line.trim();
+                if (line.startsWith("--")) { continue; }
+                if (line.endsWith(";")) {
+                    sqlStatement.append(line.substring(0, line.length() - 1));
+                    LOG.info("Executing SQL statement: " + sqlStatement.toString());
+                    s.executeUpdate(sqlStatement.toString());
+                    sqlStatement = new StringBuffer();
+                } else {
+                    sqlStatement.append(line).append(' ');
+                }
+            }
+        } catch (SQLException e) {
+            throw new MigrationStepFailedException(e);
+        } catch (IOException e) {
+            throw new MigrationStepFailedException(e);
+        } finally {
+            close(connection);
+            close(instream);
+        }
+    }
+
+    private void close(InputStream instream) {
+        try {
+            if (instream != null) {
+                instream.close();
+            }
+        } catch (IOException e) {
+            LOG.error("Couldn't close InputStream", e);
+        }
+    }
+
+    private void close(Connection connection) {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            LOG.error("Couldn't close connection", e);
+        }
+    }
 
     /**
      * {@inheritDoc}
      */
-    public void validate(Object object) throws ValidationException {
-        ValueStack stack = ActionContext.getContext().getValueStack();
-        if (StringUtils.isNotBlank(getConditionalExpression())) {
-            Boolean ret = (Boolean) stack.findValue(getConditionalExpression());
-            if (!ret) {
-                return;
-            }
-        }
-        String fieldName = getFieldName();
-        Object value = getFieldValue(fieldName, object);
-        stack.push(object);
-        if (value instanceof Collection) {
-            Collection<?> coll = (Collection<?>) value;
-            Object[] array = coll.toArray();
-            validateArrayElements(array, fieldName);
-        } else if (value instanceof Object[]) {
-            Object[] array = (Object[]) value;
-            validateArrayElements(array, fieldName);
-        } else {
-            validateObject(fieldName, value);
-        }
-        stack.pop();
+    @Override
+    public String toString() {
+        return "SQL migration script " + script;
     }
 
-    private void validateArrayElements(Object[] array, String fieldName) {
-        for (int i = 0; i < array.length; i++) {
-            Object o = array[i];
-            validateObject(fieldName + "[" + i + "]", o);
-        }
-    }
-
-    @SuppressWarnings({"unchecked", "PMD.ExcessiveMethodLength" })
-    private void validateObject(String fieldName, Object o) {
-        if (o == null) {
-            LOG.warn("The visited object is null, VisitorValidator will not be able to handle validation properly. "
-                    + "Please make sure the visited object is not null for VisitorValidator to function properly");
-            return;
-        }
-
-        ClassValidator classValidator = CLASS_VALIDATOR_MAP.get(o.getClass());
-        if (classValidator == null) {
-            classValidator = new ClassValidator(o.getClass());
-            CLASS_VALIDATOR_MAP.put(o.getClass(), classValidator);
-        }
-        InvalidValue[] validationMessages = classValidator.getInvalidValues(o);
-
-        if (validationMessages.length > 0) {
-            for (InvalidValue message : validationMessages) {
-                StringBuffer errorField = new StringBuffer(fieldName);
-                StringBuffer errorFieldKey = new StringBuffer(fieldName);
-                if (StringUtils.isNotBlank(getResourceKeyBase())) {
-                    errorFieldKey = new StringBuffer(getResourceKeyBase());
-                }
-                String msg = message.getMessage();
-                if (StringUtils.isNotBlank(message.getPropertyPath())) {
-                    errorField = new StringBuffer(fieldName).append(".").append(message.getPropertyPath());
-                    errorFieldKey = new StringBuffer(errorFieldKey).append(".").append(message.getPropertyPath());
-                    msg = StringUtils.replace(msg, "(fieldName)",
-                                              getValidatorContext().getText(errorFieldKey.toString()));
-                }
-                getValidatorContext().addFieldError(errorField.toString(), msg);
-            }
-        }
-    }
-
-    /**
-     * @return the resourceKeyBase
-     */
-    public String getResourceKeyBase() {
-        return this.resourceKeyBase;
-    }
-
-    /**
-     * @param resourceKeyBase the resourceKeyBase to set
-     */
-    public void setResourceKeyBase(String resourceKeyBase) {
-        this.resourceKeyBase = resourceKeyBase;
-    }
-
-    /**
-     * @return the conditionalExpression
-     */
-    public String getConditionalExpression() {
-        return this.conditionalExpression;
-    }
-
-    /**
-     * @param conditionalExpression the conditionalExpression to set
-     */
-    public void setConditionalExpression(String conditionalExpression) {
-        this.conditionalExpression = conditionalExpression;
-    }
 }

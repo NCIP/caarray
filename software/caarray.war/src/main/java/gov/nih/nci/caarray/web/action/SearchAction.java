@@ -192,7 +192,7 @@ public class SearchAction extends ActionSupport {
      */
     public String basicSearch() {
         SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
-        ProjectManagementService pms = ActionHelper.getProjectManagementService();
+        ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
         int projectCount = pms.searchCount(keyword, categories);
         tabs = new LinkedHashMap<String, Integer>();
         tabs.put(EXPERIMENTS_TAB, projectCount);
@@ -204,7 +204,7 @@ public class SearchAction extends ActionSupport {
      */
     public String experiments() {
         currentTab = EXPERIMENTS_TAB;
-        ProjectManagementService pms = ActionHelper.getProjectManagementService();
+        ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
         SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
         List<Project> projects = pms.searchByCategory(this.results.getPageSortParams(), keyword, categories);
         int projectCount = pms.searchCount(keyword, categories);

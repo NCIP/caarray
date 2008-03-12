@@ -19,10 +19,10 @@
             <display:setProperty name="pagination.sortdirection.param" value="pagedItems.sortDirection" />
             <display:setProperty name="pagination.pagenumber.param" value="pagedItems.pageNumber" />
             <display:column titleKey="experiment.hybridizations.name" sortable="true" sortProperty="NAME">
-                <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Hybridization" action="view" itemId="${row.id}" isSubtab="true"/>
+                <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Hybridization" action="view" itemId="${row.id}" isSubtab="true" maxWidth="30"/>
             </display:column>
             <display:column titleKey="experiment.hybridizations.relatedLabeledExtract">
-                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.labeledExtracts}" relatedEntityName="LabeledExtract" nameProperty="name" isSubtab="true"/>
+                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.labeledExtracts}" relatedEntityName="LabeledExtract" nameProperty="name" isSubtab="true" maxWidth="30"/>
             </display:column>
             <display:column titleKey="experiment.files.uncompressedSize">
                 <fmt:formatNumber value="${row.uncompressedSizeOfDataFiles / 1024}" maxFractionDigits="0"/>

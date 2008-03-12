@@ -8,16 +8,25 @@
   IE can't seem to handle defining downloadMgr on the downloadFiles page, so it's here,
   since this is the outer (non-ajax) page.
 --%>
-<c:url var="downloadUrl" value="/project/files/download.action"/>
+<c:url var="downloadUrl" value="/project/files/download.action">
+    <c:param name="project.id" value="${project.id}"/>
+</c:url>
+<c:url var="downloadGroupsUrl" value="/ajax/project/files/download.action">
+    <c:param name="project.id" value="${project.id}"/>
+</c:url>
 <c:url var="removeUrl" value="/images/ico_remove.gif"/>
+
 <script type="text/javascript">
-  downloadMgr = new DownloadMgr('${downloadUrl}', '${removeUrl}');
+  downloadMgr = new DownloadMgr('${downloadUrl}', '${downloadGroupsUrl}','${removeUrl}', <s:property value="@gov.nih.nci.caarray.web.action.project.ProjectFilesAction@MAX_DOWNLOAD_SIZE"/>);
   setExperimentTitleHeader = function(value) {
     $('experimentTitleHeader').innerHTML = value || 'New Experiment';
   }
 
   submitWorkflowForm = function() {
     var confirmMsg = "Are you sure you want to change the project's status?";
+    <c:if test="${!project.submissionAllowed && !project.makingPublicAllowed && project.public}">
+        confirmMsg += " This action will place the experiment in the \"<fmt:message key='proposalStatus.inProgress'/>\" state, allowing you to edit it again.";
+    </c:if>
     if (TabUtils.hasFormChanges()) {
         confirmMsg = "There are unsaved changed in your form that will be lost. Are you sure you want to proceed to change the project's status?";
     }
@@ -61,7 +70,7 @@
             </c:if>
         </c:if>
         </jsp:attribute>
-  </caarray:helpPrint>
+    </caarray:helpPrint>
 
 
     <c:url value="/ajax/project/tab/Overview/load.action" var="overviewUrl">
@@ -104,7 +113,7 @@
     <div class="padme">
         <h2>
             <span class="dark">Experiment:</span>
-            <span id="experimentTitleHeader">
+            <span id="experimentTitleHeader" style="word-wrap:break-word">
                 <c:out value="${project.experiment.title}" default="New Experiment"/>
             </span>
         </h2>

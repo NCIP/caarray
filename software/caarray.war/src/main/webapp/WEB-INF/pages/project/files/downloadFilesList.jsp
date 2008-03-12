@@ -9,6 +9,6 @@
           onchange="Caarray.submitAjaxForm('extensionForm', 'downloadFilesList')"/>
     <s:hidden name="project.id" value="${project.id}" />
         <input type="submit" class="enableEnterSubmit"/>
-  </s:form>
+    </s:form>
   <%@ include file="/WEB-INF/pages/project/files/downloadFilesListTable.jsp" %>
 </div>

@@ -82,10 +82,10 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getArrayDesignService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getArrayDesignService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getVocabularyService;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
@@ -172,7 +172,8 @@ public class ProjectOverviewAction extends ProjectTabAction {
     @SkipValidation
     public String retrieveArrayDesigns() {
         if (this.manufacturerId != null && this.assayTypeValue != null) {
-            Organization provider = getGenericDataService().retrieveEntity(Organization.class, this.manufacturerId);
+            Organization provider = getGenericDataService().getPersistentObject(Organization.class,
+                    this.manufacturerId);
             this.arrayDesigns = getArrayDesignService().getImportedArrayDesigns(provider,
                     AssayType.getByValue(assayTypeValue));
         }

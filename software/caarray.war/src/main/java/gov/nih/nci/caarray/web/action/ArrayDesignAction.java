@@ -82,14 +82,16 @@
  */
 package gov.nih.nci.caarray.web.action;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getArrayDesignService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getFileAccessService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getFileManagementService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getArrayDesignService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileAccessService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getVocabularyService;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -106,6 +108,7 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
@@ -127,6 +130,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     private File upload;
     private String uploadFileName;
     private String uploadContentType;
+    private String uploadFormatType;
     private List<ArrayDesign> arrayDesigns;
     private List<Organization> providers;
     private Set<Term> featureTypes;
@@ -183,6 +187,18 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         this.uploadContentType = uploadContentType;
     }
     /**
+     * @return the uploadFormatType
+     */
+    public String getUploadFormatType() {
+        return uploadFormatType;
+    }
+    /**
+     * @param uploadFormatType the uploadFormatType to set
+     */
+    public void setUploadFormatType(String uploadFormatType) {
+        this.uploadFormatType = uploadFormatType;
+    }
+    /**
      * @return the arrayDesigns
      */
     public List<ArrayDesign> getArrayDesigns() {
@@ -225,7 +241,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     public void prepare() {
         this.organisms = getVocabularyService().getOrganisms();
         this.providers = getArrayDesignService().getAllProviders();
-        this.featureTypes = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.TECHNOLOGY_TYPE);
+        this.featureTypes = CaArrayActionHelper.getTermsFromCategory(ExperimentOntologyCategory.TECHNOLOGY_TYPE);
         if (arrayDesign != null && arrayDesign.getId() != null) {
             ArrayDesign retrieved = getArrayDesignService().getArrayDesign(arrayDesign.getId());
             if (retrieved == null) {
@@ -294,8 +310,13 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
                 getArrayDesignService().saveArrayDesign(arrayDesign);
             } else {
                 CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
+                if (uploadFormatType != null && FileType.valueOf(uploadFormatType) != null) {
+                    designFile.setFileType(FileType.valueOf(uploadFormatType));
+                }
                 getFileManagementService().saveArrayDesign(arrayDesign, designFile);
-                getFileManagementService().importArrayDesignDetails(arrayDesign);
+                if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
+                    getFileManagementService().importArrayDesignDetails(arrayDesign);
+                }
             }
         } catch (InvalidDataFileException e) {
             FileValidationResult result = e.getFileValidationResult();

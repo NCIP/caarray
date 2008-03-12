@@ -82,13 +82,12 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.io.ByteArrayInputStream;
@@ -102,6 +101,7 @@ import java.util.Set;
 import org.ajaxtags.xml.AjaxXmlBuilder;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
@@ -131,7 +131,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
     }
 
     private void initForm() {
-        setProtocolTypes(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PROTOCOL_TYPE));
+        setProtocolTypes(CaArrayActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PROTOCOL_TYPE));
     }
 
     /**
@@ -179,7 +179,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      */
     @SkipValidation
     public String retrieveXmlProtocolList() {
-        setProtocols(ActionHelper.getVocabularyService().getProtocolByProtocolType(getProtocolType()));
+        setProtocols(CaArrayActionHelper.getVocabularyService().getProtocolByProtocolType(getProtocolType()));
         return "xmlProtocolList";
     }
 
@@ -300,5 +300,5 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      */
     public void setCurrentProtocolApplication(ProtocolApplication p) {
         // does nothing, only here so it can be referenced in the jsp as a bean property
-    }
+    }    
 }

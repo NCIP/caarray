@@ -82,16 +82,16 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getFileAccessService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getFileManagementService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileAccessService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
-import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -108,8 +108,10 @@ import java.util.zip.ZipException;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.set.TransformedSet;
 import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
@@ -126,6 +128,11 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
                                                 expression = "selectedFiles.size() > 0"))
 public class ProjectFilesAction extends AbstractBaseProjectAction implements Preparable {
+    /**
+     * Maximum total uncompressed size (in bytes) of files that can be downloaded in a single ZIP. If files selected
+     * for download have a greater combined size, then the user will be presented with a group download page.
+     */
+    public static final long MAX_DOWNLOAD_SIZE = 1024 * 1024 * 300;
     private static final String UPLOAD_INPUT = "upload";
     private static final long serialVersionUID = 1L;
     private static final String ACTION_UNIMPORTED = "listUnimported";
@@ -149,6 +156,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private List<File> uploads;
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+    private int downloadSequenceNumber;
+    private final List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
+    private String downloadFileName;
     private InputStream downloadStream;
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
     private String listAction;
@@ -273,7 +283,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      *
      * @return the string matching the result to follow
      */
-    @SuppressWarnings("unchecked")
     @SkipValidation
     public String downloadFiles() {
         for (CaArrayFile f : getProject().getFiles()) {
@@ -337,9 +346,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 skippedFiles++;
             }
         }
-        ActionHelper.saveMessage(deletedFiles + " files deleted.");
+        ActionHelper.saveMessage(deletedFiles + " file(s) deleted.");
         if (skippedFiles > 0) {
-            ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for deletion.");
+            ActionHelper.saveMessage(skippedFiles + " file(s) were not in a status that allows for deletion.");
         }
     }
 
@@ -365,7 +374,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 }
                 getFileAccessService().save(caArrayFile);
             }
-            ActionHelper.saveMessage(getSelectedFiles().size() + " files updated.");
+            ActionHelper.saveMessage(getSelectedFiles().size() + " file(s) updated.");
         }
         return prepListUnimportedPage();
     }
@@ -487,7 +496,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         if (!fileSet.getFiles().isEmpty()) {
             getFileManagementService().addSupplementalFiles(getProject(), fileSet);
         }
-        ActionHelper.saveMessage(fileSet.getFiles().size() + " supplemental files added to project.");
+        ActionHelper.saveMessage(fileSet.getFiles().size() + " supplemental file(s) added to project.");
         refreshProject();
         return prepListUnimportedPage();
     }
@@ -536,20 +545,55 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         }
 
         ActionHelper.saveMessage(count + " files uploaded.");
+        MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
         return UPLOAD_INPUT;
     }
 
     /**
      * Prepares for download by zipping selected files and setting the internal InputStream.
-     *
+     * 
      * @return SUCCESS
      * @throws IOException if
      */
     @SkipValidation
     public String download() throws IOException {
-        File zipFile = getProjectManagementService().prepareForDownload(getSelectedFiles());
-        this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
-        return "download";
+        computeDownloadGroups();
+        if (downloadFileGroups.size() == 1) {
+            File zipFile = getProjectManagementService().prepareForDownload(getSelectedFiles());
+            this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
+            this.downloadFileName = determineDownloadFileName();
+            return "download";
+        } else {
+            return "downloadGroups";
+        }
+    }
+    
+    private String determineDownloadFileName() {
+        return "caArray_" + getProject().getExperiment().getPublicIdentifier() + "_files"
+                + (this.downloadSequenceNumber > 0 ? this.downloadSequenceNumber : "") + ".zip";        
+    }
+    
+    private void computeDownloadGroups() {
+        downloadFileGroups.clear();
+        DownloadGroup currentGroup = new DownloadGroup();
+        downloadFileGroups.add(currentGroup);
+        for (CaArrayFile file : getSelectedFiles()) {
+            if (currentGroup.getTotalUncompressedSize() + file.getUncompressedSize() > MAX_DOWNLOAD_SIZE) {
+                currentGroup = new DownloadGroup();
+                downloadFileGroups.add(currentGroup);
+            }
+            currentGroup.addFile(file);
+        }
+    }
+
+    /**
+     * Action for displaying the upload in background form.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
+    public String uploadInBackground() {
+        return "uploadInBackground";
     }
 
     /**
@@ -708,5 +752,33 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 prepListUnimportedPage();
             }
         }
+    }
+
+    /**
+     * @return the download groups
+     */
+    public List<DownloadGroup> getDownloadFileGroups() {
+        return downloadFileGroups;
+    }
+
+    /**
+     * @return the downloadFileName
+     */
+    public String getDownloadFileName() {
+        return downloadFileName;
+    }
+
+    /**
+     * @return the downloadSequenceNumber
+     */
+    public int getDownloadSequenceNumber() {
+        return downloadSequenceNumber;
+    }
+
+    /**
+     * @param downloadSequenceNumber the downloadSequenceNumber to set
+     */
+    public void setDownloadSequenceNumber(int downloadSequenceNumber) {
+        this.downloadSequenceNumber = downloadSequenceNumber;
     }
 }

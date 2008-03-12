@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-war
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-war Software License (the License) is between NCI and You. You (or
+ * This caArray Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-war Software to (i) use, install, access, operate,
+ * its rights in the caArray Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-war Software; (ii) distribute and
- * have distributed to and by third parties the caarray-war Software and any
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,66 +80,49 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.interceptor;
+package gov.nih.nci.caarray.web.upgrade;
 
-
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.interceptor.ParametersInterceptor;
-import com.opensymphony.xwork2.util.OgnlValueStack;
-import com.opensymphony.xwork2.util.ValueStack;
+import org.w3c.dom.Element;
 
 /**
- * Test for the display tag params interceptor.
- * @author Scott Miller
+ * Upgrades the caArray application by invoking the upgrade method of a supplied migration
+ * utility class.
  */
-public class DisplayTagParametersInterceptorTest {
+class ClassBasedMigrationStep extends AbstractMigrationStep {
 
-    @Test
-    public void testParameterNameAware() throws Exception {
-        DisplayTagParametersInterceptor interceptor = new DisplayTagParametersInterceptor();
-        interceptor.setExcludeParams("barKey");
-        TestAction action = new TestAction();
-        MapBackedValueStack stack = new MapBackedValueStack();
+    private final String className;
 
-        final Map<String, Object> expected = new HashMap<String, Object>();
-        expected.put("fooKey", "fooValue");
-        expected.put("d-", "d-value2");
-        expected.put("d-key", "d-value");
-
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("fooKey", "fooValue");
-        parameters.put("barKey", "barValue");
-        parameters.put("d-1", "error");
-        parameters.put("d-", "d-value2");
-        parameters.put("d-key", "d-value");
-
-        Method setParamMethod = ParametersInterceptor.class.
-            getDeclaredMethod("setParameters", Object.class, ValueStack.class, Map.class);
-        setParamMethod.setAccessible(true);
-        setParamMethod.invoke(interceptor, action, stack, parameters);
-        Assert.assertEquals(expected, stack.actual);
-
-        Assert.assertEquals(false, DisplayTagParametersInterceptor.isDisplayTagParam(null));
+    ClassBasedMigrationStep(Element element) {
+        this.className = getContent(element);
     }
 
-    class TestAction extends ActionSupport {
-        private static final long serialVersionUID = 1L;
-    }
-
-    class MapBackedValueStack extends OgnlValueStack {
-        private static final long serialVersionUID = 1L;
-        final Map<String, Object> actual = new HashMap<String, Object>();
-
-        @Override
-        public void setValue(String expr, Object value) {
-            this.actual.put(expr, value);
+    @Override
+    void execute() throws MigrationStepFailedException {
+        try {
+            Class migratorClass = Class.forName(className);
+            Object migratorObject = migratorClass.newInstance();
+            if (migratorObject instanceof Migrator) {
+                Migrator migrator = (Migrator) migratorObject;
+                migrator.migrate();
+            } else {
+                throw new MigrationStepFailedException("Configured migration class "
+                        + className + " is not an instance of Migrator");
+            }
+        } catch (ClassNotFoundException e) {
+            throw new MigrationStepFailedException(e);
+        } catch (InstantiationException e) {
+            throw new MigrationStepFailedException(e);
+        } catch (IllegalAccessException e) {
+            throw new MigrationStepFailedException(e);
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "Migration class " + className;
+    }
+
 }

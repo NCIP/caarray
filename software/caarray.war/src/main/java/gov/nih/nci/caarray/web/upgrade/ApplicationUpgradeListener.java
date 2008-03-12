@@ -80,70 +80,35 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.authentication;
+package gov.nih.nci.caarray.web.upgrade;
 
-import gov.nih.nci.security.authentication.loginmodules.LDAPLoginModule;
-import gov.nih.nci.security.exceptions.internal.CSInternalConfigurationException;
-import gov.nih.nci.security.exceptions.internal.CSInternalInsufficientAttributesException;
-import gov.nih.nci.security.exceptions.internal.CSInternalLoginException;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
-import java.util.Map;
-
-import javax.security.auth.Subject;
-import javax.security.auth.callback.CallbackHandler;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 /**
- * Performs authentication services in the jaas environment.  caArray needs
- * both CSM authentication, using the CSM tables with encrypted passwords,
- * and the JBoss password stacking mechanism to be able to authenticate
- * via LDAP but get role information from CSM.  This class bridges between
- * the CSM world and JBoss.
+ * Runs the necessary list of upgrade scripts and utilities necessary to upgrade caArray
+ * from its previously registered version to the current version.
  */
-public class CaArrayLDAPLoginModule extends LDAPLoginModule {
-
-    private static final Logger LOG = Logger.getLogger(CaArrayLDAPLoginModule.class);
-    private Map<String, Object> state;
+public class ApplicationUpgradeListener implements ServletContextListener {
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    @SuppressWarnings("unchecked")
-    public void initialize(Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options) {
-        super.initialize(subject, callbackHandler, sharedState, options);
-        this.state = sharedState;
+    public void contextDestroyed(ServletContextEvent arg0) {
+        // do nothing
     }
 
     /**
-     * Delegates to the superclass and, if successful, adds options for JBoss password stacking.
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-    @Override
-    protected boolean validate(Map options, String user, char[] password, Subject subject)
-            throws CSInternalConfigurationException, CSInternalInsufficientAttributesException,
-                   CSInternalLoginException {
-        String passwdStr = new String(password);
-        if (StringUtils.isBlank(passwdStr)) {
-            // CSM incorrectly returns true for blank passwords
-            LOG.debug("Rejecting blank password login attempt for user: " + user);
-            return false;
+    public void contextInitialized(ServletContextEvent arg0) {
+        if (UpgradeManager.getInstance().isUpgradeRequired()) {
+            HibernateUtil.openAndBindSession();
+            UpgradeManager.getInstance().performUpgrades();
+            HibernateUtil.unbindAndCleanupSession();
         }
-
-        boolean result = super.validate(options, user, password, subject);
-
-        if (result) {
-            // These are the two options JBoss will look for with the useFirstPass option
-            state.put("javax.security.auth.login.name", user);
-            state.put("javax.security.auth.login.password", password);
-        }
-
-        return result;
     }
-
 
 }
-

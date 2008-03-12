@@ -82,11 +82,14 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.array.Array;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.search.HybridizationSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -94,7 +97,6 @@ import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
-import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.io.File;
@@ -105,11 +107,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 
@@ -142,9 +147,17 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
     @Override
     public void prepare() throws VocabularyServiceException {
         super.prepare();
+        
+        Set<ArrayDesign> arrayDesigns = getProject().getExperiment().getArrayDesigns();
+        if (arrayDesigns != null && arrayDesigns.size() == 1) {
+            if (currentHybridization.getArray() == null) {
+                currentHybridization.setArray(new Array());
+            }
+            currentHybridization.getArray().setDesign(arrayDesigns.iterator().next());
+        }
 
         if (this.currentHybridization.getId() != null) {
-            Hybridization retrieved = getGenericDataService().retrieveEntity(Hybridization.class,
+            Hybridization retrieved = getGenericDataService().getPersistentObject(Hybridization.class,
                                                                               this.currentHybridization.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentHybridization,
@@ -198,6 +211,18 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
         throw new NotImplementedException("Copying not supported for hybridizations");
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("PMD.UselessOverridingMethod")
+    @RequiredFieldValidator(fieldName = "currentHybridization.array.design",
+            key = "struts.validator.requiredString", message = "")
+    public String save() {
+        // needed to added additional validation
+        return super.save();
+    };
+    
     /**
      * {@inheritDoc}
      */
@@ -295,6 +320,10 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
         }
         // clean up upstream associations to the subgraph of objects
         getProject().getFiles().removeAll(getCurrentHybridization().getAllDataFiles());
+        // clean up factor value associations
+        for (FactorValue fv : getCurrentHybridization().getFactorValues()) {
+            fv.getFactor().getFactorValues().remove(fv);
+        }
         return true;
     }
 }

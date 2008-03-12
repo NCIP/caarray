@@ -89,7 +89,6 @@ import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
@@ -100,6 +99,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.opensymphony.xwork2.Action;
 
 /**
@@ -124,14 +124,14 @@ public class ProtocolManagementActionTest {
              */
             @Override
             @SuppressWarnings({"unchecked", "deprecation"})
-            public <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId) {
+            public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
                 if (entityClass.equals(Protocol.class) && entityId.equals(new Long(1))) {
                     Protocol p = new Protocol();
                     p.setId(1l);
                     p.setName("test protocol");
                     return (T) p;
                 }
-                return super.retrieveEntity(entityClass, entityId);
+                return super.getPersistentObject(entityClass, entityId);
             }
 
         };

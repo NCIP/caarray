@@ -7,7 +7,9 @@
 <caarray:tabPane subtab="true">
     <caarray:projectListTabItemForm entityName="Source" item="${currentSource}" itemName="${currentSource.name}"
         isSubtab="true">
-        <s:textfield name="currentSource.name" key="experiment.sources.name" required="true" size="80" tabindex="1" />
+        <c:if test="${editMode}">
+            <s:textfield name="currentSource.name" key="experiment.sources.name" required="true" size="80" tabindex="1" />
+        </c:if>
         <s:textarea name="currentSource.description" key="experiment.sources.description" rows="3" cols="80" tabindex="2" />
         <caarray:termSelector baseId="tissueSite" category="<%= ExperimentOntologyCategory.ORGANISM_PART %>" tabIndex="3" termField="${currentSource.tissueSite}"
             termFieldName="currentSource.tissueSite" required="true" returnInitialTab1="annotations" returnInitialTab2="sources" returnInitialTab2Url="${thisUrl}" />

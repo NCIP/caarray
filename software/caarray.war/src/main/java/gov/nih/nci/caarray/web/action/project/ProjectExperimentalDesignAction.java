@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.web.action.project;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 
 import java.util.Set;
 
@@ -112,10 +112,11 @@ public class ProjectExperimentalDesignAction extends ProjectTabAction {
     public void prepare() throws VocabularyServiceException {
         super.prepare();
 
-        this.experimentDesignTypes = ActionHelper
+        this.experimentDesignTypes = CaArrayActionHelper
                 .getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENT_DESIGN_TYPE);
-        this.qualityControlTypes = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.QUALITY_CONTROL_TYPE);
-        this.replicateTypes = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.REPLICATE_TYPE);
+        this.qualityControlTypes = CaArrayActionHelper
+                .getTermsFromCategory(ExperimentOntologyCategory.QUALITY_CONTROL_TYPE);
+        this.replicateTypes = CaArrayActionHelper.getTermsFromCategory(ExperimentOntologyCategory.REPLICATE_TYPE);
     }
 
     /**

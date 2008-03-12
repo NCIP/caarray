@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;

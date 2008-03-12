@@ -82,7 +82,8 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
@@ -92,13 +93,14 @@ import gov.nih.nci.caarray.domain.search.ExtractSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
@@ -134,7 +136,7 @@ public class ProjectExtractsAction extends AbstractProjectProtocolAnnotationList
         super.prepare();
 
         if (this.currentExtract.getId() != null) {
-            Extract retrieved = getGenericDataService().retrieveEntity(Extract.class, this.currentExtract.getId());
+            Extract retrieved = getGenericDataService().getPersistentObject(Extract.class, this.currentExtract.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentExtract,
                         SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
@@ -148,8 +150,8 @@ public class ProjectExtractsAction extends AbstractProjectProtocolAnnotationList
      * {@inheritDoc}
      */
     @Override
-    protected void doCopyItem() throws ProposalWorkflowException {
-        ActionHelper.getProjectManagementService().copyExtract(getProject(), this.currentExtract.getId());
+    protected void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException {
+        CaArrayActionHelper.getProjectManagementService().copyExtract(getProject(), this.currentExtract.getId());
     }
 
     /**

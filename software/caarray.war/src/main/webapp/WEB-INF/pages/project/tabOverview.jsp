@@ -16,7 +16,9 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
             Required fields are marked with <span class="required">*asterisks*</span>.
         </p>
         <s:form action="ajax/project/tab/Overview/save" namespace="/protected" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper'); return false;">
-            <s:textfield required="true" key="project.experiment.title" size="80" tabindex="1"/>
+            <c:if test="${editMode}">
+                <s:textfield required="true" key="project.experiment.title" size="80" tabindex="1" maxlength="254"/>
+            </c:if>
             <s:textarea key="project.experiment.description" cols="80" rows="5" tabindex="2"/>
             <s:textfield theme="readonly" label="Status" value="%{getText(project.status.resourceKey)}"/>
             <s:textfield theme="readonly" name="project.experiment.publicIdentifier" label="Experiment Identifier"/>
@@ -33,7 +35,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
                       list="manufacturers" listKey="id" listValue="name"
                       headerKey="" headerValue="--Select a Provider--" value="project.experiment.manufacturer.id">
                 <s:param name="after">
-                    <span id="progressMsg" style="display:none;"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /> Loading.. </span>
+                    <span id="progressMsg" style="display:none;"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /> Loading... </span>
                 </s:param>
             </s:select>
 
@@ -65,10 +67,14 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
 
         <c:url var="getArrayDesignsUrl" value="/ajax/project/tab/Overview/retrieveArrayDesigns.action" />
         <c:if test="${editMode}">
+            <c:set var="execOnLoad" value="false"/>
+            <s:if test="fieldErrors['project.experiment.arrayDesigns'] != null">
+                <c:set var="execOnLoad" value="true"/>
+            </s:if>
             <ajax:select baseUrl="${getArrayDesignsUrl}"
                 source="projectForm_project_experiment_manufacturer" target="projectForm_project_experiment_arrayDesigns"
                 parameters="manufacturerId={projectForm_project_experiment_manufacturer},assayTypeValue={projectForm_project_experiment_assayType}"
-                preFunction="startArrayDesignLookup" postFunction="finishArrayDesignLookup"/>
+                preFunction="startArrayDesignLookup" postFunction="finishArrayDesignLookup" executeOnLoad="${execOnLoad}"/>
             <ajax:select baseUrl="${getArrayDesignsUrl}"
                 source="projectForm_project_experiment_assayType" target="projectForm_project_experiment_arrayDesigns"
                 parameters="manufacturerId={projectForm_project_experiment_manufacturer},assayTypeValue={projectForm_project_experiment_assayType}"

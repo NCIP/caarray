@@ -82,8 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
@@ -92,6 +91,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
@@ -111,7 +111,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
 
     /**
      * default constructor.
-     * @param resourceKey the base resouce key.
+     * @param resourceKey the base resource key.
      * @param associatedResourceKey the resource key for the associated annotation
      * @param pagedItems the paged list to use for this tab's item list
      */
@@ -154,6 +154,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
         if (doDelete) {
             return super.delete();
         }
+        updatePagedList();
         return "list";
     }
 
@@ -203,7 +204,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
     public abstract Collection<T> getCurrentAssociationsCollection();
 
     /**
-     * MEthod to get the collection of annotations on the association to update when changes are persisted.
+     * Method to get the collection of annotations on the association to update when changes are persisted.
      * @param item the item to retrieve the collection from.
      * @return the collection to update
      */

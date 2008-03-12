@@ -103,72 +103,16 @@ import gov.nih.nci.security.SecurityServiceProvider;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.exceptions.CSException;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.interceptor.validation.SkipValidation;
-
-import com.opensymphony.xwork2.ActionContext;
 
 /**
  * Helper class for actions.
  * @author Scott Miller
- *
  */
-public final class ActionHelper {
-
-    private static final Logger LOG = Logger.getLogger(ActionHelper.class);
-
-    private ActionHelper() {
-
-    }
-
-    /**
-     * Save the message in the session, appending if messages already exist.
-     * @param msg the message to put in the session.
-     */
-    @SuppressWarnings("unchecked")
-    public static void saveMessage(String msg) {
-        List messages = (List) ServletActionContext.getRequest().getSession().getAttribute("messages");
-        if (messages == null) {
-            messages = new ArrayList<String>();
-        }
-        messages.add(msg);
-        ServletActionContext.getRequest().getSession().setAttribute("messages", messages);
-    }
-
-    /**
-     * Get the messages.
-     * @return the messages
-     */
-    @SuppressWarnings("unchecked")
-    public static List<String> getMessages() {
-        return (List<String>) ServletActionContext.getRequest().getSession().getAttribute("messages");
-    }
-
-    /**
-     * @return whether the SkipValidation annotation is set on the current action
-     */
-    public static boolean isSkipValidationSetOnCurrentAction() {
-        try {
-            String methodName = ActionContext.getContext().getActionInvocation().getProxy().getMethod();
-            Method method = ActionContext.getContext()
-                                         .getActionInvocation()
-                                         .getAction()
-                                         .getClass()
-                                         .getDeclaredMethod(methodName);
-            if (method.getAnnotation(SkipValidation.class) != null) {
-                return true;
-            }
-        } catch (NoSuchMethodException e) {
-            // Should be impossible
-            LOG.fatal(e.getMessage(), e);
-        }
-        return false;
+public final class CaArrayActionHelper {
+    
+    private CaArrayActionHelper() {
+        
     }
 
     /**

@@ -9,7 +9,7 @@
 <%@ attribute name="linkContent" required="false" %>
 <%@ attribute name="linkRenderer" required="false" fragment="true"%>
 <%@ attribute name="confirmText" required="false"%>
-
+<%@ attribute name="maxWidth" required="false" type="java.lang.Integer"%>
 
 <%@ variable name-given="actionUrl"%>
 <%@ variable name-given="loadTabFunction"%>
@@ -32,7 +32,7 @@
             <c:set var="linkContent"><img src="<c:url value="/images/ico_${action}.gif"/>" alt="<fmt:message key="button.${action}"/>"></c:set>
         </c:if>
         <a href="#" onclick="if (!${showPopup} || confirm('${confirmText}')) { TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}');} return false;">
-            <c:out value="${linkContent}" escapeXml="false"/>
+            <caarray:abbreviate value="${linkContent}" maxWidth="${maxWidth}" escapeXml="false"/>
         </a>
     </c:when>
     <c:otherwise>

@@ -5,8 +5,8 @@
         <c:when test="${pageContext.request.remoteUser != null}">
             <div class="navheader">Welcome to caArray</div>
             <ul class="caarraymenu">
-              <li class="liheader">Home</li>
-               <li><a href="<c:url value="/home.action" />">Browse</a></li>
+                <li class="liheader">Home</li>
+                <li><a href="<c:url value="/home.action" />">Browse</a></li>
                 <li class="liheader">Experiment Management</li>
                 <li><a href="<c:url value="/protected/project/workspace.action" />">My Experiment Workspace</a></li>
                 <li><a href="<c:url value="/protected/project/create.action" />">Create/Propose Experiment</a></li>
@@ -27,7 +27,8 @@
         <c:otherwise>
             <div class="navheader">Welcome to caArray</div>
             <ul class="caarraymenu">
-                <li><a href="<c:url value="/home.action" />">Login</a></li>
+                <li><a href="<c:url value="/home.action" />">Browse</a></li>
+                <li><a href="<c:url value="/protected/project/workspace.action" />">Login</a></li>
                 <li><a href="<c:url value="/registration/input.action"/>">Register</a></li>
             </ul>
         </c:otherwise>

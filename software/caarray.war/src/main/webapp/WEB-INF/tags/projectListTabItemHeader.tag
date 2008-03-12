@@ -35,7 +35,7 @@
         </h3>
     </c:when>
     <c:otherwise>
-        <h3>
+        <h3 style="word-wrap:break-word">
             <c:out value="${linkToList}" escapeXml="false"/>
              > ${itemName}
         </h3>

@@ -68,7 +68,7 @@
                             <c:param name="initialTab2" value="samples"/>
                             <c:param name="initialTab2Url" value="${sampleUrl}"/>
                         </c:url>
-                        <a href="${projectUrl}">${sample.name}</a>
+                        <a href="${projectUrl}"><caarray:abbreviate value="${sample.name}" maxWidth="30"/></a>
                     </td>
                     <td>${sample.description}</td>
                     <td>

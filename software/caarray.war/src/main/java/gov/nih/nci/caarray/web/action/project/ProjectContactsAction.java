@@ -86,8 +86,8 @@ import gov.nih.nci.caarray.domain.contact.AbstractContact;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.lang.reflect.InvocationTargetException;
@@ -181,8 +181,8 @@ public class ProjectContactsAction extends ProjectTabAction {
         }
     )
     public String save() {
-        Term piRole = ActionHelper.getMOTerm(ExperimentContact.PI_ROLE);
-        Term mainPocRole = ActionHelper.getMOTerm(ExperimentContact.MAIN_POC_ROLE);
+        Term piRole = CaArrayActionHelper.getMOTerm(ExperimentContact.PI_ROLE);
+        Term mainPocRole = CaArrayActionHelper.getMOTerm(ExperimentContact.MAIN_POC_ROLE);
 
         ExperimentContact pi = getProject().getExperiment().getPrimaryInvestigator();
         if (pi != null) {

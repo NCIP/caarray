@@ -103,8 +103,9 @@ import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 
 /**
+ * Note: the actual HibernateValidator class has been moved to nci-commons, but the test remains here because
+ * hibernate, etc isn't available there for testing.
  * @author Scott Miller
- *
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class HibernateValidatorTest extends AbstractBaseStrutsTest {

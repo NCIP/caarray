@@ -17,15 +17,15 @@
             <display:setProperty name="pagination.sortdirection.param" value="pagedItems.sortDirection" />
             <display:setProperty name="pagination.pagenumber.param" value="pagedItems.pageNumber" />
             <display:column titleKey="experiment.labeledExtracts.name" sortable="true" sortProperty="NAME">
-                <caarray:projectListTabActionLink linkContent="${row.name}" entityName="LabeledExtract" action="view" itemId="${row.id}" isSubtab="true"/>
+                <caarray:projectListTabActionLink linkContent="${row.name}" entityName="LabeledExtract" action="view" itemId="${row.id}" isSubtab="true" maxWidth="30"/>
             </display:column>
             <display:column property="description" sortProperty="DESCRIPTION" titleKey="experiment.labeledExtracts.description" sortable="true" />
             <display:column property="materialType.value" titleKey="currentLabeledExtract.materialType"/>
             <display:column titleKey="experiment.labeledExtracts.relatedExtract">
-                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.extracts}" relatedEntityName="Extract" nameProperty="name" isSubtab="true"/>
+                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.extracts}" relatedEntityName="Extract" nameProperty="name" isSubtab="true" maxWidth="30"/>
             </display:column>
             <display:column titleKey="experiment.labeledExtracts.relatedHybridizations">
-                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.hybridizations}" relatedEntityName="Hybridization" nameProperty="name" isSubtab="true"/>
+                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.hybridizations}" relatedEntityName="Hybridization" nameProperty="name" isSubtab="true" maxWidth="30"/>
             </display:column>
             <caarray:projectListTabActionColumns entityName="LabeledExtract" item="${row}" actions="!edit,!copy,!delete" 
                 isSubtab="true" canWriteProject="${canWriteProject}"/>

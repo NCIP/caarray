@@ -51,17 +51,18 @@
                                 <s:textfield theme="readonly" key="arrayDesign.name" size="50" tabindex="1"/>
                                 <s:textfield theme="readonly" key="arrayDesign.lsid" size="50" tabindex="2"/>
                             </s:if>
-                            <s:select theme="${lockedTheme}" required="true" key="arrayDesign.assayType" tabindex="3"
+                            <s:textarea key="arrayDesign.description" cols="80" rows="5" tabindex="3"/>
+                            <s:select theme="${lockedTheme}" required="true" key="arrayDesign.assayType" tabindex="4"
                                       list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
                                       listKey="getValue()" headerKey="" headerValue="--Please select an Assay Type--"/>
-                            <s:select theme="${lockedTheme}" required="true" key="arrayDesign.provider" tabindex="4"
+                            <s:select theme="${lockedTheme}" required="true" key="arrayDesign.provider" tabindex="5"
                                       list="providers" listKey="id" listValue="name"
                                       headerKey="" headerValue="--Please select a Provider--" value="arrayDesign.provider.id"/>
-                            <s:textfield required="true" key="arrayDesign.version" size="50" tabindex="5"/>
-                            <s:select required="true" key="arrayDesign.technologyType" tabindex="6"
+                            <s:textfield required="true" key="arrayDesign.version" size="50" tabindex="6"/>
+                            <s:select required="true" key="arrayDesign.technologyType" tabindex="7"
                                       list="featureTypes" listKey="id" listValue="valueAndSource" value="arrayDesign.technologyType.id"
                                       headerKey="" headerValue="--Please select a Feature Type--"/>
-                            <s:select required="true" key="arrayDesign.organism" tabindex="7"
+                            <s:select required="true" key="arrayDesign.organism" tabindex="8"
                                       list="organisms" listKey="id" listValue="nameAndSource" value="arrayDesign.organism.id"
                                       headerKey="" headerValue="--Please select an Organism--"/>
                             <s:hidden name="arrayDesign.id"/>
@@ -72,21 +73,26 @@
                                 <s:textfield theme="readonly" key="arrayDesign.designFile.name" label="Current File"/>
                             </s:if>
                             <s:if test="${editMode && !locked}">
-                                <s:file required="${empty arrayDesign.id}" name="upload" label="Browse to File" tabindex="8"/>
+                                <s:file required="${empty arrayDesign.id}" name="upload" label="Browse to File" tabindex="9"/>
+                                <s:select name="uploadFormatType" key="arrayDesign.designFile.fileType" tabindex="10"
+                                          list="@gov.nih.nci.caarray.domain.file.FileType@getArrayDesignFileTypes()"
+                                          listValue="%{getText('experiment.files.filetype.' + name)}"
+                                          listKey="name" headerKey="" headerValue="Automatic"/>
                             </s:if>
                         </tbody>
                         <input type="submit" class="enableEnterSubmit"/>
                     </s:form>
                     <caarray:actions>
                         <c:url value="/protected/arrayDesign/list.action" var="listUrl"/>
-                        <caarray:action url="${listUrl}" actionClass="cancel" text="Cancel" tabindex="8" />
+                        <caarray:action url="${listUrl}" actionClass="cancel" text="Cancel" tabindex="11" />
                         <s:if test="${editMode}">
-                            <caarray:action onclick="TabUtils.showSubmittingText(); document.getElementById('arrayDesignForm').submit();" actionClass="save" text="Save" tabindex="9"/>
-                        </s:if><s:else>
+                            <caarray:action onclick="TabUtils.showSubmittingText(); document.getElementById('arrayDesignForm').submit();" actionClass="save" text="Save" tabindex="12"/>
+                        </s:if>
+                        <s:else>
                             <c:url value="/protected/arrayDesign/edit.action" var="editUrl">
                                 <c:param name="arrayDesign.id" value="${arrayDesign.id}"/>
                             </c:url>
-                            <caarray:action url="${editUrl}" actionClass="edit" text="Edit" tabindex="9"/>
+                            <caarray:action url="${editUrl}" actionClass="edit" text="Edit" tabindex="13"/>
                         </s:else>
                     </caarray:actions>
                 </div>
