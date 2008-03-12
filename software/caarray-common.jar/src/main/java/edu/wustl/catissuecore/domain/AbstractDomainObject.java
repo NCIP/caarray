@@ -87,7 +87,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * 

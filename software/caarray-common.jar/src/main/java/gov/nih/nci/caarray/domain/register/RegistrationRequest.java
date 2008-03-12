@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.domain.register;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.country.Country;
 import gov.nih.nci.caarray.domain.state.State;
 
@@ -100,6 +99,8 @@ import org.hibernate.validator.Email;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 import org.hibernate.validator.Pattern;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * @author John Hedden
@@ -351,7 +352,7 @@ public class RegistrationRequest implements PersistentObject {
      * @return the state
      */
     @ManyToOne
-    @ForeignKey(name = "REGISTRATIONREQUEST_STATE_FK")
+    @ForeignKey(name = "registrationrequest_state_fk")
     public State getState() {
         return state;
     }
@@ -418,7 +419,7 @@ public class RegistrationRequest implements PersistentObject {
      */
     @ManyToOne
     @NotNull
-    @ForeignKey(name = "REGISTRATIONREQUEST_COUNTRY_FK")
+    @ForeignKey(name = "registrationrequest_country_fk")
     public Country getCountry() {
         return country;
     }

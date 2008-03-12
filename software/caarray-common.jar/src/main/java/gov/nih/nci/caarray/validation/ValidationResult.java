@@ -136,6 +136,19 @@ public final class ValidationResult implements Serializable {
     }
 
     /**
+     * Returns the messages of given type, ordered by file and location.
+     * @param type type of messages to return
+     * @return the messages.
+     */
+    public List<ValidationMessage> getMessages(ValidationMessage.Type type) {
+        List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
+        for (FileValidationResult fileValidationResult : getFileValidationResults()) {
+            messages.addAll(fileValidationResult.getMessages(type));
+        }
+        return Collections.unmodifiableList(messages);
+    }
+
+    /**
      * Returns all the file validation results in order by file.
      *
      * @return the file validation results.

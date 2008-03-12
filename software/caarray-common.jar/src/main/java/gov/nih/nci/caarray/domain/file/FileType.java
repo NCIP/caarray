@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.file;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -127,14 +128,29 @@ public enum FileType implements Comparable<FileType>  {
     AFFYMETRIX_TXT,
 
     /**
+     * Agilent CSV format.
+     */
+    AGILENT_CSV,
+
+    /**
      * Agilent TSV format.
      */
     AGILENT_TSV,
 
     /**
-     * Agilent TXT format.
+     * Agilent raw TXT format.
      */
-    AGILENT_TXT,
+    AGILENT_RAW_TXT,
+
+    /**
+     * Agilent derived TXT format.
+     */
+    AGILENT_DERIVED_TXT,
+
+    /**
+     * Agilent XML format.
+     */
+    AGILENT_XML,
 
     /**
      * Genepix array design GAL file.
@@ -177,6 +193,11 @@ public enum FileType implements Comparable<FileType>  {
     IMAGENE_TIF,
 
     /**
+     * Imagene TPL array design format.
+     */
+    IMAGENE_TPL,
+
+    /**
      * Nimblegen TXT format.
      */
     NIMBLEGEN_TXT,
@@ -185,6 +206,11 @@ public enum FileType implements Comparable<FileType>  {
      * Nimblegen GFF format.
      */
     NIMBLEGEN_GFF,
+
+    /**
+     * Nimblegen NDF format.
+     */
+    NIMBLEGEN_NDF,
 
     /**
      * The MAGE_TAB Array Design Format file type.
@@ -204,20 +230,34 @@ public enum FileType implements Comparable<FileType>  {
     /**
      * The MAGE_TAB Sample and Data Relationship Format file type.
      */
-    MAGE_TAB_SDRF;
+    MAGE_TAB_SDRF,
 
-    private static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = new HashSet<FileType>();
+    /**
+     * The UCSF Spot SPT array design file type.
+     */
+    UCSF_SPOT_SPT;
+
+    private static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = new LinkedHashSet<FileType>();
+    private static final Set<FileType> PARSEABLE_ARRAY_DESIGN_FILE_TYPES = new HashSet<FileType>();
     private static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
     private static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
     private static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
 
-
     static {
         ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
-        ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
+        ARRAY_DESIGN_FILE_TYPES.add(AGILENT_CSV);
+        ARRAY_DESIGN_FILE_TYPES.add(AGILENT_XML);
         ARRAY_DESIGN_FILE_TYPES.add(GENEPIX_GAL);
+        ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
+        ARRAY_DESIGN_FILE_TYPES.add(IMAGENE_TPL);
+        ARRAY_DESIGN_FILE_TYPES.add(NIMBLEGEN_NDF);
+        ARRAY_DESIGN_FILE_TYPES.add(UCSF_SPOT_SPT);
+        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
+        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
+        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(GENEPIX_GAL);
         RAW_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_IDAT);
         RAW_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
+        RAW_ARRAY_DATA_FILE_TYPES.add(AGILENT_RAW_TXT);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_EXP);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_TXT);
@@ -226,7 +266,7 @@ public enum FileType implements Comparable<FileType>  {
         DERIVED_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_TXT);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(IMAGENE_TXT);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(AGILENT_TXT);
+        DERIVED_ARRAY_DATA_FILE_TYPES.add(AGILENT_DERIVED_TXT);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(NIMBLEGEN_GFF);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(NIMBLEGEN_TXT);
         PARSEABLE_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
@@ -240,6 +280,13 @@ public enum FileType implements Comparable<FileType>  {
      */
     public boolean isArrayDesign() {
         return ARRAY_DESIGN_FILE_TYPES.contains(this);
+    }
+
+    /**
+     * @return true if the system supports parsing this array design format.
+     */
+    public boolean isParseableArrayDesign() {
+        return PARSEABLE_ARRAY_DESIGN_FILE_TYPES.contains(this);
     }
 
     /**
@@ -277,5 +324,11 @@ public enum FileType implements Comparable<FileType>  {
         return name();
     }
 
+    /**
+     * @return the ArrayDesignFileTypes
+     */
+    public static Set<FileType> getArrayDesignFileTypes() {
+        return ARRAY_DESIGN_FILE_TYPES;
+    }
 
 }

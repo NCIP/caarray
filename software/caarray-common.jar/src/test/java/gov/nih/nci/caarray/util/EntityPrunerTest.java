@@ -87,7 +87,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
@@ -101,6 +100,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Test cases for the entity pruner

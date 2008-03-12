@@ -90,71 +90,88 @@ public enum SdrfNodeType {
     /**
      * Source.
      */
-    SOURCE,
+    SOURCE(true),
 
     /**
      * Sample.
      */
-    SAMPLE,
+    SAMPLE(true),
 
     /**
      * Extract.
      */
-    EXTRACT,
+    EXTRACT(true),
 
     /**
      * LabeledExtract.
      */
-    LABELED_EXTRACT,
+    LABELED_EXTRACT(true),
 
     /**
      * Hybridization.
      */
-    HYBRIDIZATION,
+    HYBRIDIZATION(true),
 
     /**
      * Scan.
      */
-    SCAN,
+    SCAN(true),
 
     /**
      * Normalization.
      */
-    NORMALIZATION,
+    NORMALIZATION(true),
 
     /**
      * ArrrayDataFile.
      */
-    ARRAY_DATA_FILE,
+    ARRAY_DATA_FILE(true),
 
     /**
      * ArrrayDataMatrix.
      */
-    ARRAY_DATA_MATRIX,
+    ARRAY_DATA_MATRIX(true),
 
     /**
      * DerivedArrrayDataFile.
      */
-    DERIVED_ARRAY_DATA_FILE,
+    DERIVED_ARRAY_DATA_FILE(true),
 
     /**
      * DerivedArrrayDataMatrix.
      */
-    DERIVED_ARRAY_DATA_MATRIX,
+    DERIVED_ARRAY_DATA_MATRIX(true),
 
     /**
      * Image.
      */
-    IMAGE,    
+    IMAGE(true),    
+
     /**
      * ArrayDesign.
      */
-    ARRAY_DESIGN,
+    ARRAY_DESIGN(false),
     
     /**
      * comment.
      */
-    COMMENT;    
+    COMMENT(false);    
 
+    private boolean name = false;
     
+    
+    /**
+     * @param name whether this node type is a name node type.
+     */
+    private SdrfNodeType(boolean name) {
+        this.name = name;
+    }
+
+    /**
+     * @return whether this node type is a "name" node type, ie it names an entity. Name nodes must be unique within a
+     * source-hyb-data chain
+     */
+    public boolean isName() {
+        return name;
+    }
 }

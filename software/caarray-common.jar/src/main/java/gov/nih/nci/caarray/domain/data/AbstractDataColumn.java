@@ -106,10 +106,10 @@ import org.hibernate.annotations.IndexColumn;
  * to a single <code>QuantitationType</code>.
  */
 @Entity
-@Table(name = "DATACOLUMN")
+@Table(name = "datacolumn")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(
-        name = "DISCRIMINATOR",
+        name = "discriminator",
         discriminatorType = DiscriminatorType.STRING)
 @SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
 public abstract class AbstractDataColumn extends AbstractCaArrayObject {
@@ -148,7 +148,7 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
      * @return the quantitationType
      */
     @ManyToOne
-    @ForeignKey(name = "COLUMN_QUANTITATIONTYPE_FK")
+    @ForeignKey(name = "column_quantitationtype_fk")
     public QuantitationType getQuantitationType() {
         return quantitationType;
     }
@@ -159,35 +159,35 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     public void setQuantitationType(QuantitationType quantitationType) {
         this.quantitationType = quantitationType;
     }
-    
+
     @Column(columnDefinition = "LONGBLOB")
     byte[] getSerializedValues() {
         return valuesSerializer.getSerializedValues();
     }
-    
+
     void setSerializedValues(byte[] serializedValues) {
         valuesSerializer.setSerializedValue(serializedValues);
     }
-    
+
     @Transient
     Serializable getValuesAsSerializable() {
         return valuesSerializer.getValue();
     }
-    
+
     void setSerializableValues(Serializable values) {
         valuesSerializer.setValue(values);
     }
 
     /**
      * Initializes this column to hold the number of values given.
-     * 
+     *
      * @param numberOfValues number of values
      */
     public abstract void initializeArray(int numberOfValues);
 
     /**
      * Indicates whether this column is already loaded.
-     * 
+     *
      * @return true if data has been loaded.
      */
     @Transient
@@ -200,8 +200,8 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
      */
     @ManyToOne
     @JoinColumn(updatable = false, nullable = false)
-    @ForeignKey(name = "COLUMN_HYBRIDIZATIONDATA_FK")
-    @IndexColumn(name = "COLUMN_INDEX")
+    @ForeignKey(name = "column_hybridizationdata_fk")
+    @IndexColumn(name = "column_index")
     public HybridizationData getHybridizationData() {
         return hybridizationData;
     }

@@ -88,6 +88,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+
 /**
  * Base class for all persistent caArray domain objects.
  */
@@ -108,6 +110,11 @@ public abstract class AbstractCaArrayObject implements PersistentObject {
 
     private Long id;
     private String bigid;
+
+    /**
+     * Default hibernate batch size.
+     */
+    public static final int DEFAULT_BATCH_SIZE = 20;
 
     /**
      * Returns the id.

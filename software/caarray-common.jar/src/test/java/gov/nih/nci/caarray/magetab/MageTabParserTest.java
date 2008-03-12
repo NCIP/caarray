@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.magetab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.idf.Investigation;
@@ -102,7 +101,6 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 
 /**
@@ -121,7 +119,9 @@ public class MageTabParserTest {
         ValidationResult result;
         result = parser.validate(fileSet);
         assertFalse(result.isValid());
-        assertEquals(15, result.getMessages().size());
+        assertEquals(92, result.getMessages().size());
+        // check for the fix to gforge defect 12541
+        assertTrue(result.getMessages().toString().contains("ERROR: Referenced Factor Name EF1 was not found in the IDF"));
     }
 
     @Test
@@ -213,6 +213,37 @@ public class MageTabParserTest {
         checkSdrfTranslation(documentSet.getSdrfDocuments().iterator().next());
         checkArrayDesigns(documentSet);
         assertTrue(documentSet.getValidationResult().isValid());
+    }
+    
+    @Test
+    public void testDefect12537() throws MageTabParsingException, InvalidDataException {
+        MageTabInputFileSet fileSet = TestMageTabSets.DEFECT_12537_ERROR_INPUT_SET;
+        ValidationResult validationResult = parser.validate(fileSet);
+        assertFalse(validationResult.isValid());
+        List<ValidationMessage> errors = validationResult.getMessages(ValidationMessage.Type.ERROR);
+        assertEquals(3, errors.size());
+        for (int i = 0; i < 3; i++) {
+            assertEquals(i + 2, errors.get(i).getLine());
+            assertEquals(38, errors.get(i).getColumn());
+            assertTrue(errors.get(i).getMessage().contains("Duplicate Normalization Name"));
+        }
+
+        fileSet = TestMageTabSets.DEFECT_12537_INPUT_SET;
+        MageTabDocumentSet documentSet = parser.parse(fileSet);
+        assertNotNull(documentSet);
+        assertTrue(documentSet.getValidationResult().isValid());
+        assertEquals(2, documentSet.getDataMatrixes().size());
+        assertEquals(3, documentSet.getNativeDataFiles().size());
+        assertEquals(1, documentSet.getIdfDocuments().size());
+        assertEquals(1, documentSet.getSdrfDocuments().size());
+        
+        SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
+        assertEquals(2, sdrfDocument.getAllDerivedArrayDataMatrixFiles().size());
+        assertEquals(3, sdrfDocument.getAllHybridizations().size());
+        for (Hybridization hyb : sdrfDocument.getAllHybridizations()) {
+            assertEquals(2, hyb.getSuccessorDerivedArrayDataMatrixFiles().size());
+            assertEquals(1, hyb.getSuccessorArrayDataFiles().size());            
+        }
     }
 
     private void checkSdrfTranslation(SdrfDocument document) {

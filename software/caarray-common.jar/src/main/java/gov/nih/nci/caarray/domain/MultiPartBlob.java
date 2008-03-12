@@ -105,7 +105,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * This class is used to get around a mysql issue where the mysql server uses memory extremetly
+ * This class is used to get around a mysql issue where the mysql server uses memory extremely
  * poorly on a connection where a blob is being used.  In order to get around this memory issue we
  * are breaking a single blob up in to many smaller blobs.
  * @author Scott Miller
@@ -117,7 +117,7 @@ public class MultiPartBlob implements Serializable {
     private static final int DEFAULT_BLOB_SIZE = 50 * 1024 * 1024;
 
     /**
-     * Constant holding the default blobl size.  By default it will be 50 MB.
+     * Constant holding the default blob size.  By default it will be 50 MB.
      */
     private static int blobSize = DEFAULT_BLOB_SIZE;
 
@@ -154,7 +154,7 @@ public class MultiPartBlob implements Serializable {
      * Method that takes an input stream and breaks it up in to multiple blobs.
      * Note that this method loads each chunk in to a byte[], while this is not
      * ideal, this will be done by the mysql driver anyway, so we are not adding
-     * a new inefficiancy.
+     * a new inefficiency.
      * @param data the input stream to store.
      * @throws IOException on error reading from the stream.
      */

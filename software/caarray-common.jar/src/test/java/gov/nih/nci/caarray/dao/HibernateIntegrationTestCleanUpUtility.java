@@ -105,6 +105,17 @@ public final class HibernateIntegrationTestCleanUpUtility {
 
     private static final Logger LOG = Logger.getLogger(HibernateIntegrationTestCleanUpUtility.class);
     private static List<Class<?>> classesToRemove;
+    
+    private static final Class<?>[] CSM_CLASSES = {gov.nih.nci.security.authorization.domainobjects.Application.class,
+        gov.nih.nci.security.authorization.domainobjects.Group.class,
+        gov.nih.nci.security.authorization.domainobjects.Privilege.class,
+        gov.nih.nci.security.authorization.domainobjects.ProtectionElement.class,
+        gov.nih.nci.security.authorization.domainobjects.ProtectionGroup.class,
+        gov.nih.nci.security.authorization.domainobjects.Role.class,
+        gov.nih.nci.security.authorization.domainobjects.User.class,
+        gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup.class,
+        gov.nih.nci.security.authorization.domainobjects.UserProtectionElement.class,
+        gov.nih.nci.security.authorization.domainobjects.FilterClause.class };
 
     private HibernateIntegrationTestCleanUpUtility() {
         super();
@@ -168,7 +179,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
         classesToRemove = new LinkedList<Class<?>>();
         for (ClassMetadata classMetadata : classMetadataMap.values()) {
             Class<?> persistentClass = classMetadata.getMappedClass(EntityMode.POJO);
-            if (!ArrayUtils.contains(HibernateUtil.CSM_CLASSES, persistentClass)) {
+            if (!ArrayUtils.contains(CSM_CLASSES, persistentClass)) {
                 classesToRemove.add(persistentClass);
             }
         }

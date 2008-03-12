@@ -150,13 +150,14 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         StringBuilder queryStr = new StringBuilder("from ").append(ArrayDesign.class.getName()).append(
                 " ad where ad.provider = :provider ");
         if (importedOnly) {
-            queryStr.append(" and ad.designFile.status = :status ");
+            queryStr.append(" and (ad.designFile.status = :status1 or ad.designFile.status = :status2) ");
         }
         queryStr.append("order by name asc");
         Query query = getCurrentSession().createQuery(queryStr.toString());
         query.setEntity("provider", provider);
         if (importedOnly) {
-            query.setString("status", FileStatus.IMPORTED.name());
+            query.setString("status1", FileStatus.IMPORTED.name());
+            query.setString("status2", FileStatus.IMPORTED_NOT_PARSED.name());
         }
         return query.list();
     }
@@ -169,14 +170,15 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         StringBuilder queryStr = new StringBuilder("from ").append(ArrayDesign.class.getName()).append(
                 " ad where ad.provider = :provider and ad.assayType = :assayType ");
         if (importedOnly) {
-            queryStr.append(" and ad.designFile.status = :status ");
+            queryStr.append(" and (ad.designFile.status = :status1 or ad.designFile.status = :status2) ");
         }
         queryStr.append("order by name asc");
         Query query = getCurrentSession().createQuery(queryStr.toString());
         query.setEntity("provider", provider);
         query.setString("assayType", assayType.getValue());
         if (importedOnly) {
-            query.setString("status", FileStatus.IMPORTED.name());
+            query.setString("status1", FileStatus.IMPORTED.name());
+            query.setString("status2", FileStatus.IMPORTED_NOT_PARSED.name());
         }
         return query.list();
     }

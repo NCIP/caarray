@@ -140,7 +140,7 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
     /**
      * @return the column
      */
-    @Column(name = "FILE_COLUMN")
+    @Column(name = "file_column")
     public int getColumn() {
         return column;
     }
@@ -155,7 +155,7 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
     /**
      * @return the line
      */
-    @Column(name = "FILE_LINE")
+    @Column(name = "file_line")
     public int getLine() {
         return line;
     }
@@ -183,7 +183,7 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
      * @return the type
      */
     @Enumerated(EnumType.STRING)
-    @Column(name = "TYPE", length = MAX_TYPE_LENGTH, nullable = false)
+    @Column(name = "type", length = MAX_TYPE_LENGTH, nullable = false)
     public Type getType() {
         return type;
     }

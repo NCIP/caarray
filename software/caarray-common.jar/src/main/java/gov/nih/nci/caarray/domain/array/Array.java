@@ -156,7 +156,7 @@ public class Array extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
-    @ForeignKey(name = "ARRAY_PRODUCTION_IDK")
+    @ForeignKey(name = "array_production_idk")
     public ProtocolApplication getProduction() {
         return production;
     }
@@ -178,7 +178,7 @@ public class Array extends AbstractCaArrayEntity {
      */
     @ManyToOne()
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAY_DESIGN_IDK")
+    @ForeignKey(name = "array_design_idk")
     public ArrayDesign getDesign() {
         return design;
     }
@@ -197,7 +197,7 @@ public class Array extends AbstractCaArrayEntity {
      * @return the array group
      */
     @ManyToOne
-    @ForeignKey(name = "ARRAY_GROUP_IDK")
+    @ForeignKey(name = "array_group_idk")
     public ArrayGroup getArrayGroup() {
         return arrayGroup;
     }

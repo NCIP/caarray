@@ -101,10 +101,10 @@ import javax.persistence.Table;
  * created from a Participant.
  */
 @Entity
-@Table(name = "SPECIMEN")
+@Table(name = "specimen")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(
-        name = "DISCRIMINATOR",
+        name = "discriminator",
         discriminatorType = DiscriminatorType.STRING
 )
 @DiscriminatorValue("SPECIMEN")

@@ -148,12 +148,12 @@ public class ArrayDataType extends AbstractCaArrayObject {
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "ARRAYDATATYPE_QUANTITATIONTYPES",
-            joinColumns = { @javax.persistence.JoinColumn(name = "ARRAYDATATYPE_ID") },
-            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "QUANTITATIONTYPE_ID") }
+            name = "arraydatatype_quantitationtypes",
+            joinColumns = { @javax.persistence.JoinColumn(name = "arraydatatype_id") },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "quantitationtype_id") }
     )
-    @ForeignKey(name = "ARRAYDATATYPE_QUANTITATIONTYPES_ARRAYDATATYPE_FK",
-            inverseName = "ARRAYDATATYPE_QUANTITATIONTYPES_QUANTITATIONTYPE_FK")
+    @ForeignKey(name = "arraydatatype_quantitationtypes_arraydatatype_fk",
+            inverseName = "arraydatatype_quantitationtypes_quantitationtype_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<QuantitationType> getQuantitationTypes() {
         return quantitationTypes;

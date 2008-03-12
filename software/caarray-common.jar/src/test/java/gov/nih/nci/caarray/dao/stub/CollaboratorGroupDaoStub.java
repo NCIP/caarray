@@ -83,11 +83,12 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.CollaboratorGroupDao;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 
 import java.util.Collections;
 import java.util.List;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Dao stub.

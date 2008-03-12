@@ -125,7 +125,7 @@ public class RawArrayData extends AbstractArrayData {
      */
     @OneToOne()
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "RAWDATA_HYBRIDIZATION_FK")
+    @ForeignKey(name = "rawdata_hybridization_fk")
     public Hybridization getHybridization() {
         return hybridization;
     }
