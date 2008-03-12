@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-ejb-jar
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
+ * This caArray Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
+ * its rights in the caArray Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-ejb-jar Software and any
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,95 +80,43 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application;
+package gov.nih.nci.caarray.services;
 
-import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.hibernate.criterion.Order;
-
-import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import javax.annotation.Resource;
+import javax.ejb.SessionContext;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.InvocationContext;
 
 /**
- * @author dkokotov
- *
+ * Associates the current authenticated user (if any) of remote EJBs with the current
+ * session.
  */
-public class GenericDataServiceStub implements GenericDataService {
-    private PersistentObject deletedObject = null;
-    private PersistentObject savedObject = null;
+public class AuthorizationInterceptor {
+
+    @Resource private SessionContext sessionContext;
 
     /**
-     * {@inheritDoc}
+     * Ensures that the current authenticated user is associated with the current
+     * session so that security filtering is correct.
+     *
+     * @param invContext the method context
+     * @return the method result
+     * @throws Exception if invoking the method throws an exception.
      */
-    public String getIncrementingCopyName(Class<?> entityClass, String fieldName, String name) {
-        return name + "2";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void delete(PersistentObject object) {
-        this.deletedObject = object;
-    }
-
-    /**
-     * @return the last object passed to delete, if any.
-     */
-    public PersistentObject getDeletedObject() {
-        return this.deletedObject;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
-        return null;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public int collectionSize(Collection<? extends PersistentObject> collection) {
-        return 0;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection,
-            PageSortParams<T> pageSortParams) {
-        return new ArrayList<T>(collection);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders)
-            throws IllegalAccessException, InstantiationException {
-        return new ArrayList<T>();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void save(PersistentObject object) {
-        this.savedObject = object;
-    }
-
-    /**
-     * @return the savedObject
-     */
-    public PersistentObject getSavedObject() {
-        return this.savedObject;
+    @AroundInvoke
+    @SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "unchecked" }) // method invocation wrapper requires
+                                                                              // throws Exception
+    public Object prepareReturnValue(InvocationContext invContext) throws Exception {
+        String username;
+        try {
+            username = sessionContext.getCallerPrincipal().getName();
+        } catch (IllegalStateException e) {
+            username = SecurityUtils.ANONYMOUS_USERNAME;
+        }
+        UsernameHolder.setUser(username);
+        return invContext.proceed();
     }
 }

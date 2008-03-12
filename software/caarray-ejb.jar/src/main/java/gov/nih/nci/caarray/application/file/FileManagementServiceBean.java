@@ -181,15 +181,15 @@ public class FileManagementServiceBean implements FileManagementService {
      * {@inheritDoc}
      */
     @TransactionTimeout(SAVE_ARRAY_DESIGN_TIMEOUT)
-    public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile)
-    throws InvalidDataFileException, IllegalAccessException {
+    public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile) throws InvalidDataFileException,
+            IllegalAccessException {
         boolean newArrayDesign = arrayDesign.getId() == null;
         CaArrayFile oldFile = arrayDesign.getDesignFile();
         designFile.setFileStatus(FileStatus.VALIDATING);
         arrayDesign.setDesignFile(designFile);
         getDaoFactory().getProjectDao().save(designFile);
         getArrayDesignService().saveArrayDesign(arrayDesign);
-        getArrayDesignService().importDesign(arrayDesign);
+        getArrayDesignService().importDesign(arrayDesign);            
         if (FileStatus.VALIDATION_ERRORS.equals(designFile.getFileStatus())) {
             if (newArrayDesign) {
                 getDaoFactory().getArrayDao().remove(arrayDesign);
@@ -255,7 +255,5 @@ public class FileManagementServiceBean implements FileManagementService {
     ArrayDesignService getArrayDesignService() {
         return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
     }
-
-
 
 }

@@ -82,33 +82,25 @@
  */
 package gov.nih.nci.caarray.application;
 
+import gov.nih.nci.caarray.domain.search.PageSortParams;
+
 import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.criterion.Order;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Generic service for handling data.
  * @author Scott Miller
  */
-public interface GenericDataService {
+public interface GenericDataService extends com.fiveamsolutions.nci.commons.service.GenericDataService {
 
     /**
      * The default JNDI name to use to lookup <code>ProjectManagementService</code>.
      */
     String JNDI_NAME = "caarray/GenericDataServiceBean/local";
-
-    /**
-     * Retrieves the object from the database.
-     * @param <T> the type of entity to retrieve
-     * @param entityClass the class of the object to retrieve
-     * @param entityId the id of the enity to retrieve
-     * @return the entity.
-     */
-    <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId);
 
     /**
      * Retrieves all instances of the given class.
@@ -181,7 +173,7 @@ public interface GenericDataService {
      * criterion, then any instances for which that association is null will not be included in the results (as an inner
      * join is used)
      * 
-     * @param <T> the class of objects to expext in return.
+     * @param <T> the class of objects to expect in return.
      * @param collection the collection from which to retrieve the subset
      * @param pageSortParams parameters specifying how the collection is to be sorted and which page is to be retrieved
      * @return the list of objects representing the requested subset

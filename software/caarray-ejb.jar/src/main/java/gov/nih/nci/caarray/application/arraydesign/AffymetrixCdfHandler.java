@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
@@ -114,13 +113,12 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
 
     private static final String LSID_AUTHORITY = "Affymetrix.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
-    private static final String LSID_NAMESPACE_PROBE_LIST = "DesignElementList";
     private static final Logger LOG = Logger.getLogger(AffymetrixCdfHandler.class);
     private static final int PROBE_SET_BATCH_SIZE = 25;
 
     private boolean[][] featureCreated;
 
-    private FusionCDFData fusionCDFData;
+    private AffymetrixCdfReader cdfReader;
 
     private ProbeGroup probeGroup;
 
@@ -132,13 +130,13 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     @Override
     void validate(FileValidationResult result) {
         try {
-            if (!loadFusionCDFData()) {
-                LOG.error("We were unable to process an uploaded array design file.  The Affy parser recorded the "
-                        + " following error" + fusionCDFData.getError());
-                result.addMessage(ValidationMessage.Type.ERROR,
-                        "Unable to read the CDF file : " + fusionCDFData.getFileName());
-            }
+            loadCdfReader();
             checkForDuplicateDesign(result);
+        } catch (AffymetrixCdfReadException e) {
+            LOG.error("We were unable to process an uploaded array design file.  The Affy parser recorded the "
+                    + " following error: " + e.getMessage());
+            result.addMessage(ValidationMessage.Type.ERROR,
+                    "Unable to read the CDF file : " + getDesignFile().getName());
         } finally {
             closeCdf();
         }
@@ -150,29 +148,30 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     private void checkForDuplicateDesign(FileValidationResult result) {
         ArrayDesign existingDesign =
             getDaoFactory().getArrayDao().getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE,
-                    fusionCDFData.getChipType());
+                    cdfReader.getCdfData().getChipType());
         if (existingDesign != null) {
-            result.addMessage(Type.ERROR, "Affymetrix design " + fusionCDFData.getChipType()
+            result.addMessage(Type.ERROR, "Affymetrix design " + cdfReader.getCdfData().getChipType()
                     + " has already been imported");
         }
     }
 
     private void closeCdf() {
-        // See development tracker issue #9735 and dev tracker #10925 for details on why System.gc() used here
-        fusionCDFData.clear();
-        fusionCDFData = null;
-        System.gc();
+        cdfReader.close();
     }
 
     @Override
     void load(ArrayDesign arrayDesign) {
         try {
-            loadFusionCDFData();
+            loadCdfReader();
+            FusionCDFData fusionCDFData = cdfReader.getCdfData();
             arrayDesign.setName(fusionCDFData.getChipType());
             arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + fusionCDFData.getChipType());
             int rows = fusionCDFData.getHeader().getRows();
             int cols = fusionCDFData.getHeader().getCols();
             arrayDesign.setNumberOfFeatures(rows * cols);
+        } catch (AffymetrixCdfReadException e) {
+            LOG.error("Unexpected failure to read CDF that previously passed validation", e);
+            throw new IllegalStateException(e);
         } finally {
             closeCdf();
         }
@@ -181,25 +180,48 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     @Override
     void createDesignDetails(ArrayDesign arrayDesign) {
         try {
-            ArrayDesignDetails designDetails = new ArrayDesignDetails();
-            arrayDesign.setDesignDetails(designDetails);
-            getArrayDao().save(arrayDesign);
-            getArrayDao().flushSession();
-
-            loadFusionCDFData();
-            probeGroup = new ProbeGroup(designDetails);
-            probeGroup.setName(LSID_AUTHORITY + ":" + probeGroup.getClass().getSimpleName() + ":All."
-                    + fusionCDFData.getChipType());
-            getDaoFactory().getSearchDao().save(probeGroup);
-            initializeFeaturesCreated(fusionCDFData.getHeader());
-
-            handleProbeSets(designDetails);
-            handleQCProbeSets(designDetails);
-            createMissingFeatures(designDetails);
-            
+            ArrayDesignDetails designDetails = createDesignDetailsInstance(arrayDesign);
+            loadCdfReader();
+            populateDesignDetails(designDetails);
+            createProbeSetDesignElementList(arrayDesign);
+        } catch (AffymetrixCdfReadException e) {
+            LOG.error("Unexpected failure to read CDF that previously passed validation", e);
+            throw new IllegalStateException(e);
         } finally {
             closeCdf();
         }
+    }
+
+    private void createProbeSetDesignElementList(ArrayDesign arrayDesign) throws AffymetrixCdfReadException {
+        DesignElementList probeSetList =
+            AffymetrixChpDesignElementListUtility.createDesignElementList(getRefreshedDesign(arrayDesign));
+        getArrayDao().save(probeSetList);
+        flushAndClearSession();
+    }
+
+    private ArrayDesign getRefreshedDesign(ArrayDesign arrayDesign) {
+        return getArrayDao().getArrayDesign(arrayDesign.getId());
+    }
+
+    private void populateDesignDetails(ArrayDesignDetails designDetails) {
+        FusionCDFData fusionCDFData = cdfReader.getCdfData();
+        probeGroup = new ProbeGroup(designDetails);
+        probeGroup.setName(LSID_AUTHORITY + ":" + probeGroup.getClass().getSimpleName() + ":All."
+                + fusionCDFData.getChipType());
+        getDaoFactory().getSearchDao().save(probeGroup);
+        initializeFeaturesCreated(fusionCDFData.getHeader());
+
+        handleProbeSets(designDetails);
+        handleQCProbeSets(designDetails);
+        createMissingFeatures(designDetails);
+    }
+
+    private ArrayDesignDetails createDesignDetailsInstance(ArrayDesign arrayDesign) {
+        ArrayDesignDetails designDetails = new ArrayDesignDetails();
+        arrayDesign.setDesignDetails(designDetails);
+        getArrayDao().save(arrayDesign);
+        getArrayDao().flushSession();
+        return designDetails;
     }
 
     private void initializeFeaturesCreated(FusionCDFHeader fusionCDFHeader) {
@@ -207,16 +229,12 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     private void handleProbeSets(ArrayDesignDetails designDetails) {
-        DesignElementList designElementList = new DesignElementList();
-        designElementList.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE_PROBE_LIST 
-                + ":" + fusionCDFData.getChipType());
-        designElementList.setDesignElementTypeEnum(DesignElementType.LOGICAL_PROBE);
-        getArrayDao().save(designElementList);
+        FusionCDFData fusionCDFData = cdfReader.getCdfData();
         int numProbeSets = fusionCDFData.getHeader().getNumProbeSets();
         FusionCDFProbeSetInformation probeSetInformation = new FusionCDFProbeSetInformation();
         for (int index = 0; index < numProbeSets; index++) {
             fusionCDFData.getProbeSetInformation(index, probeSetInformation);
-            handleProbeSet(probeSetInformation, fusionCDFData.getProbeSetName(index), designDetails, designElementList);
+            handleProbeSet(probeSetInformation, fusionCDFData.getProbeSetName(index), designDetails);
             if (index % PROBE_SET_BATCH_SIZE == 0) {
                 flushAndClearSession();
                 this.probeGroup = getDaoFactory().getSearchDao().retrieve(ProbeGroup.class, probeGroup.getId());
@@ -225,11 +243,10 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     private void handleProbeSet(FusionCDFProbeSetInformation probeSetInformation, String probeSetName,
-            ArrayDesignDetails designDetails, DesignElementList designElementList) {
+            ArrayDesignDetails designDetails) {
         LogicalProbe logicalProbe = new LogicalProbe(designDetails);
         logicalProbe.setName(probeSetName);
         getArrayDao().save(logicalProbe);
-        designElementList.getDesignElements().add(logicalProbe);
         int numLists = probeSetInformation.getNumLists();
         for (int listIndex = 0; listIndex < numLists; listIndex++) {
             PhysicalProbe probe = new PhysicalProbe(designDetails, probeGroup);
@@ -268,6 +285,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     private void handleQCProbeSets(ArrayDesignDetails designDetails) {
+        FusionCDFData fusionCDFData = cdfReader.getCdfData();
         int numQCProbeSets = fusionCDFData.getHeader().getNumQCProbeSets();
         FusionCDFQCProbeSetInformation qcProbeSetInformation = new FusionCDFQCProbeSetInformation();
         for (int index = 0; index < numQCProbeSets; index++) {
@@ -306,19 +324,8 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private boolean loadFusionCDFData() {
-        fusionCDFData = new FusionCDFData();
-        fusionCDFData.setFileName(getFile().getAbsolutePath());
-        boolean success = fusionCDFData.read();
-        if (!success) {
-            // This invokes a fileChannel.map call that could possibly fail due to a bug in Java
-            // that causes previous memory mapped files to not be released until after GC.  So
-            // we force a gc here to ensure that is not the cause of our problems
-            System.gc();
-            fusionCDFData.clear();
-            success = fusionCDFData.read();
-        }
-        return success;
+    private void loadCdfReader() throws AffymetrixCdfReadException {
+        cdfReader = AffymetrixCdfReader.create(getFile());
     }
 
 

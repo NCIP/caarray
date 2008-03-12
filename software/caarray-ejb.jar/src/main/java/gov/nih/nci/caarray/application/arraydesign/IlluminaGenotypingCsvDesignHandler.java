@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-ejb-jar
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
+ * This caArray Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
+ * its rights in the caArray Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-ejb-jar Software and any
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,95 +80,141 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application;
+package gov.nih.nci.caarray.application.arraydesign;
 
-import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
+import gov.nih.nci.caarray.domain.array.SNPProbeAnnotation;
+import gov.nih.nci.caarray.validation.FileValidationResult;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.criterion.Order;
-
-import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import org.apache.commons.lang.StringUtils;
 
 /**
- * @author dkokotov
- *
+ * Reads Illumina genotyping and gene expression array description files.
  */
-public class GenericDataServiceStub implements GenericDataService {
-    private PersistentObject deletedObject = null;
-    private PersistentObject savedObject = null;
+final class IlluminaGenotypingCsvDesignHandler extends AbstractIlluminaDesignHandler {
 
-    /**
-     * {@inheritDoc}
-     */
-    public String getIncrementingCopyName(Class<?> entityClass, String fieldName, String name) {
-        return name + "2";
-    }
+    private static final String CONTROLS_SECTION_HEADER = "[Controls]";
+    private static final String DB_SNP_SOURCE_NAME = "dbSNP";
+    private static final int SNP_FIELD_LENGTH = 5;
+    private static final int SNP_ALLELE_A_POSITION = 1;
+    private static final int SNP_ALLELE_B_POSITION = 3;
 
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
-        return null;
+    IlluminaGenotypingCsvDesignHandler() {
+        super();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void delete(PersistentObject object) {
-        this.deletedObject = object;
+    LogicalProbe createLogicalProbe(ArrayDesignDetails details, List<String> values) {
+        String name = getValue(values, Header.NAME);
+        LogicalProbe logicalProbe = new LogicalProbe(details);
+        logicalProbe.setName(name);
+        SNPProbeAnnotation annotation = new SNPProbeAnnotation();
+        if (isInteger(getValue(values, Header.CHR))) {
+            annotation.setChromosome(getIntegerValue(values, Header.CHR));
+        }
+        if (!StringUtils.isBlank(getValue(values, Header.SNP))) {
+            annotation.setAlleleA(String.valueOf(getValue(values, Header.SNP).charAt(SNP_ALLELE_A_POSITION)));
+            annotation.setAlleleB(String.valueOf(getValue(values, Header.SNP).charAt(SNP_ALLELE_B_POSITION)));
+        }
+        annotation.setPhysicalPosition(getLongValue(values, Header.MAPINFO));
+        if (isDbSnpEntry(values)) {
+            annotation.setDbSNPId(name);
+            annotation.setDbSNPVersion(getIntegerValue(values, Header.SOURCEVERSION));
+        }
+        logicalProbe.setAnnotation(annotation);
+        return logicalProbe;
+    }
+
+    private boolean isDbSnpEntry(List<String> values) {
+        return getValue(values, Header.SOURCE).startsWith(DB_SNP_SOURCE_NAME);
+    }
+
+    @Override
+    void validateValues(List<String> values, FileValidationResult result, int lineNumber) {
+        validateFieldLength(values, Header.SNP, result, lineNumber, SNP_FIELD_LENGTH);
+        validateLongField(values, Header.MAPINFO, result, lineNumber);
+        if (isDbSnpEntry(values)) {
+            validateIntegerField(values, Header.SOURCEVERSION, result, lineNumber);
+        }
+    }
+
+    @Override
+    Enum[] getExpectedHeaders(List<String> headers) {
+        if (headers.size() == Header.values().length) {
+            return Header.values();
+        } else {
+            return Header.ALTERNATE_HEADER_LIST;
+        }
+    }
+
+    @Override
+    @SuppressWarnings("PMD.PositionLiteralsFirstInComparisons") // false positive
+    boolean isLineFollowingAnnotation(List<String> values) {
+        return !values.isEmpty() && CONTROLS_SECTION_HEADER.equals(values.get(0));
+    }
+
+    @Override
+    boolean isHeaderLine(List<String> values) {
+        if (values.size() != Header.values().length && values.size() != Header.ALTERNATE_HEADER_LIST.length) {
+            return false;
+        }
+        for (int i = 0; i < values.size(); i++) {
+            if (!values.get(i).equalsIgnoreCase(Header.values()[i].name())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
-     * @return the last object passed to delete, if any.
+     * Enumeration of expected headers in Illumina genoytyping CSV descriptor.
      */
-    public PersistentObject getDeletedObject() {
-        return this.deletedObject;
-    }
+    static enum Header {
+        ILMNID,
+        NAME,
+        ILMNSTRAND,
+        SNP,
+        ADDRESSA_ID,
+        ALLELEA_PROBESEQ,
+        ADDRESSB_ID,
+        ALLELEB_PROBESEQ,
+        GENOMEBUILD,
+        CHR,
+        MAPINFO,
+        PLOIDY,
+        SPECIES,
+        SOURCE,
+        SOURCEVERSION,
+        SOURCESTRAND,
+        SOURCESEQ,
+        TOPGENOMICSEQ,
+        BEADSETID,
+        CNV_PROBE,
+        INTENSITY_ONLY,
+        EXP_CLUSTERS;
 
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
-        return null;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public int collectionSize(Collection<? extends PersistentObject> collection) {
-        return 0;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection,
-            PageSortParams<T> pageSortParams) {
-        return new ArrayList<T>(collection);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders)
-            throws IllegalAccessException, InstantiationException {
-        return new ArrayList<T>();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void save(PersistentObject object) {
-        this.savedObject = object;
-    }
-
-    /**
-     * @return the savedObject
-     */
-    public PersistentObject getSavedObject() {
-        return this.savedObject;
+        private static final Header[] ALTERNATE_HEADER_LIST = new Header[] {
+            ILMNID,
+            NAME,
+            ILMNSTRAND,
+            SNP,
+            ADDRESSA_ID,
+            ALLELEA_PROBESEQ,
+            ADDRESSB_ID,
+            ALLELEB_PROBESEQ,
+            GENOMEBUILD,
+            CHR,
+            MAPINFO,
+            PLOIDY,
+            SPECIES,
+            SOURCE,
+            SOURCEVERSION,
+            SOURCESTRAND,
+            SOURCESEQ,
+            TOPGENOMICSEQ,
+            BEADSETID
+        };
     }
 }

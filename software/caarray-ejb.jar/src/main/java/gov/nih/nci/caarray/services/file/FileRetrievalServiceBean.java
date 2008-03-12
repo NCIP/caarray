@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 
@@ -95,6 +96,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -106,7 +108,8 @@ import org.apache.log4j.Logger;
  */
 @Stateless
 @Remote(FileRetrievalService.class)
-@Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
+@PermitAll
+@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class FileRetrievalServiceBean implements FileRetrievalService {
 
     private static final Logger LOG = Logger.getLogger(FileRetrievalServiceBean.class);

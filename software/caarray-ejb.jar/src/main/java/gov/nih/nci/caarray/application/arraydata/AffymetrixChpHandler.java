@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.arraydata;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
+import gov.nih.nci.caarray.application.arraydesign.AffymetrixChpDesignElementListUtility;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
@@ -127,7 +128,6 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     private static final Logger LOG = Logger.getLogger(AffymetrixChpHandler.class);
     private static final String LSID_AUTHORITY = "Affymetrix.com";
     private static final String LSID_NAMESPACE_DESIGN = "PhysicalArrayDesign";
-    private static final String LSID_NAMESPACE_ELEMENT_LIST = "DesignElementList";
 
     private static final Map<String, AffymetrixExpressionChpQuantitationType> EXPRESSION_TYPE_MAP =
         new HashMap<String, AffymetrixExpressionChpQuantitationType>();
@@ -164,7 +164,7 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
         typeSet.addAll(types);
         if (dataSet.getDesignElementList() == null) {
-            loadDesignElementList(dataSet, file, arrayDesignService);
+            getDesignElementList(dataSet, file, arrayDesignService);
         }
         FusionCHPLegacyData chpData = getChpData(file);
         prepareColumns(dataSet, types, chpData.getHeader().getNumProbeSets());
@@ -182,12 +182,11 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         }
     }
 
-
-    private void loadDesignElementList(DataSet dataSet, File file,
+    private void getDesignElementList(DataSet dataSet, File file,
             ArrayDesignService arrayDesignService) {
         ArrayDesign design = getArrayDesign(arrayDesignService, file);
-        DesignElementList probeList = arrayDesignService.getDesignElementList(LSID_AUTHORITY, 
-                LSID_NAMESPACE_ELEMENT_LIST, design.getLsidObjectId());
+        DesignElementList probeList =
+            AffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
         dataSet.setDesignElementList(probeList);
     }
 

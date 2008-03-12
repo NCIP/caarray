@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.fileaccess;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.BufferedOutputStream;
@@ -104,7 +105,6 @@ import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
@@ -198,10 +198,9 @@ public class FileAccessServiceBean implements FileAccessService {
     }
 
     private void setTypeFromExtension(CaArrayFile caArrayFile, String filename) {
-        String extension = FilenameUtils.getExtension(filename);
-        FileExtension fileExtension = FileExtension.getByExtension(extension);
-        if (fileExtension != null) {
-            caArrayFile.setFileType(fileExtension.getType());
+        FileType type = FileExtension.getTypeFromExtension(filename);
+        if (type != null) {
+            caArrayFile.setFileType(type);
         }
     }
 

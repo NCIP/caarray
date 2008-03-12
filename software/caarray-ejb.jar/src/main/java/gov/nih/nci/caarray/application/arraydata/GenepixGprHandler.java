@@ -118,7 +118,7 @@ import org.apache.log4j.Logger;
 /**
  * Validates and reads data from all versions of Genepix GPR data files.
  */
-@SuppressWarnings("PMD.CyclomaticComplexity")
+@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength" })
 final class GenepixGprHandler extends AbstractDataFileHandler {
 
     private static final String LSID_AUTHORITY = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;
@@ -191,7 +191,11 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     @Override
     QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(File file) {
         DelimitedFileReader reader = getReader(file);
-        return getQuantitationTypeDescriptors(reader);
+        try {
+            return getQuantitationTypeDescriptors(reader);
+        } finally {
+            reader.close();
+        }
     }
 
     private QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(List<String> headers) {
@@ -255,15 +259,20 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     List<String> getSampleNames(File dataFile, String hybridizationName) {
         List<String> names = new ArrayList<String>();
         String basename = FilenameUtils.getBaseName(dataFile.getName());
-        Map<String, String[]> headers = getHeaders(getReader(dataFile));
-        names.add(basename + "-635");
-        names.add(basename + "-532");
-        if (headers.containsKey(WAVELENGTHS_HEADER) && headers.get(WAVELENGTHS_HEADER).length > 2) {
-            addThreeAndFourColorNames(names, basename, headers.get(WAVELENGTHS_HEADER));
-        } else if (headers.containsKey(IMAGE_NAME_HEADER) && headers.get(IMAGE_NAME_HEADER).length > 2) {
-            addThreeAndFourColorNames(names, basename, headers.get(IMAGE_NAME_HEADER));
+        DelimitedFileReader reader = getReader(dataFile);
+        try {
+            Map<String, String[]> headers = getHeaders(reader);
+            names.add(basename + "-635");
+            names.add(basename + "-532");
+            if (headers.containsKey(WAVELENGTHS_HEADER) && headers.get(WAVELENGTHS_HEADER).length > 2) {
+                addThreeAndFourColorNames(names, basename, headers.get(WAVELENGTHS_HEADER));
+            } else if (headers.containsKey(IMAGE_NAME_HEADER) && headers.get(IMAGE_NAME_HEADER).length > 2) {
+                addThreeAndFourColorNames(names, basename, headers.get(IMAGE_NAME_HEADER));
+            }
+            return names;
+        } finally {
+            reader.close();
         }
-        return names;
     }
 
     private void addThreeAndFourColorNames(List<String> names, String basename, String[] values) {
@@ -301,17 +310,21 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     @Override
     void loadData(DataSet dataSet, List<QuantitationType> types, File file, ArrayDesignService arrayDesignService) {
         DelimitedFileReader reader = getReader(file);
-        prepareColumns(dataSet, types, getNumberOfDataRows(reader));
-        if (dataSet.getDesignElementList() == null) {
-            loadDesignElementList(dataSet, reader, arrayDesignService);
-        }
-        Set<QuantitationTypeDescriptor> descriptorSet = getDescriptorSet(types);
-        for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
-            loadData(hybridizationData, descriptorSet, reader);
+        try {
+            prepareColumns(dataSet, types, getNumberOfDataRows(reader));
+            if (dataSet.getDesignElementList() == null) {
+                loadDesignElementList(dataSet, reader, arrayDesignService);
+            }
+            Set<QuantitationTypeDescriptor> descriptorSet = getDescriptorSet(types);
+            for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
+                loadData(hybridizationData, descriptorSet, reader);
+            }
+        } finally {
+            reader.close();
         }
     }
 
-    private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, 
+    private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader,
             ArrayDesignService arrayDesignService) {
         DesignElementList probeList = new DesignElementList();
         probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
@@ -369,9 +382,13 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         DelimitedFileReader reader = getReader(file);
-        validateHeader(reader, result);
-        if (result.isValid()) {
-            validateData(reader, result);
+        try {
+            validateHeader(reader, result);
+            if (result.isValid()) {
+                validateData(reader, result);
+            }
+        } finally {
+            reader.close();
         }
     }
 
@@ -581,7 +598,12 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
 
     @Override
     ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
-        return getArrayDesign(arrayDesignService, getReader(file));
+        DelimitedFileReader reader = getReader(file);
+        try {
+            return getArrayDesign(arrayDesignService, reader);
+        } finally {
+            reader.close();
+        }
     }
 
     private ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, DelimitedFileReader reader) {

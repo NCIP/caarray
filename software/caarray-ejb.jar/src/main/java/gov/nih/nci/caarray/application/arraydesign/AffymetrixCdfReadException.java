@@ -80,59 +80,17 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydata;
-
-import gov.nih.nci.caarray.domain.array.Feature;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+package gov.nih.nci.caarray.application.arraydesign;
 
 /**
- * Provides lookup of array design <code>Features</code> by location information. 
+ * Exception that indicates an Affymetrix CDF file couldn't be succesfully read.
  */
-final class FeatureLookup {
+public final class AffymetrixCdfReadException extends Exception {
 
-    private final Map<String, Feature> featureMap;
+    private static final long serialVersionUID = 1L;
 
-    FeatureLookup(Collection<Feature> features) {
-        featureMap = new HashMap<String, Feature>(features.size());
-        for (Feature feature : features) {
-            addFeature(feature);
-        }
-    }
-
-    private void addFeature(Feature feature) {
-        featureMap.put(getLocationString(feature), feature);
-    }
-
-    private String getLocationString(Feature feature) {
-        return getLocationString(feature.getBlockColumn(), feature.getBlockRow(), 
-                feature.getColumn(), feature.getRow());
-    }
-
-    private String getLocationString(int column, int row) {
-        return getLocationString(0, 0, column, row);
-    }
-
-    private String getLocationString(int blockColumn, int blockRow, int column, int row) {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(blockColumn);
-        stringBuffer.append(',');
-        stringBuffer.append(blockRow);
-        stringBuffer.append(',');
-        stringBuffer.append(column);
-        stringBuffer.append(',');
-        stringBuffer.append(row);
-        return stringBuffer.toString();
-    }
-    
-    Feature getFeature(int blockColumn, int blockRow, int column, int row) {
-        return featureMap.get(getLocationString(blockColumn, blockRow, column, row));
-    }
-    
-    Feature getFeature(int column, int row) {
-        return featureMap.get(getLocationString(column, row));
+    AffymetrixCdfReadException(String message) {
+        super(message);
     }
 
 }

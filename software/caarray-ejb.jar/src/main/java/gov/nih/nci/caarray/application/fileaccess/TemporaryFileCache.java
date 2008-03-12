@@ -97,7 +97,7 @@ public interface TemporaryFileCache {
     /**
      * Returns a file <code>java.io.File</code> which will hold the uncompressed data for the 
      * <code>CaArrayFile</code> object provided. The client should eventually call closeFile() for this
-     * <code>CaArrayFile</code> (or closeFiles()) to allow the temporary file to be cleanded up.
+     * <code>CaArrayFile</code> (or closeFiles()) to allow the temporary file to be cleaned up.
      *
      * @param caArrayFile logical file whose contents are needed
      * @return the <code>java.io.File</code> pointing to the temporary file on the filesystem which will

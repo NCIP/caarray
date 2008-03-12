@@ -82,9 +82,11 @@
  */
 package gov.nih.nci.caarray.application.fileaccess;
 
+import gov.nih.nci.caarray.domain.file.FileType;
+
 import java.util.Locale;
 
-import gov.nih.nci.caarray.domain.file.FileType;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * File extensions mappable by caArray.
@@ -104,8 +106,11 @@ enum FileExtension {
     IDAT(FileType.ILLUMINA_IDAT),
     IDF(FileType.MAGE_TAB_IDF),
     SDRF(FileType.MAGE_TAB_SDRF),
+    SPT(FileType.UCSF_SPOT_SPT),
     TSV(FileType.AGILENT_TSV),
-    DATA(FileType.MAGE_TAB_DATA_MATRIX);
+    TPL(FileType.IMAGENE_TPL),
+    DATA(FileType.MAGE_TAB_DATA_MATRIX),
+    NDF(FileType.NIMBLEGEN_NDF);
 
     private final FileType type;
 
@@ -126,6 +131,20 @@ enum FileExtension {
             if (fileExtension.name().equals(extensionStringUpper)) {
                 return fileExtension;
             }
+        }
+        return null;
+    }
+    
+    /**
+     * Determine a file's type based on its extension.
+     * @param filename name of file
+     * @return the FileType corresponding to the file extension or null if no matching file type
+     */
+    static FileType getTypeFromExtension(String filename) {
+        String extension = FilenameUtils.getExtension(filename);
+        FileExtension fileExtension = FileExtension.getByExtension(extension);
+        if (fileExtension != null) {
+            return fileExtension.getType();
         }
         return null;
     }

@@ -147,6 +147,7 @@ public class MageTabTranslatorTest {
     public void testTranslate() {
         testSpecificationDocuments();
         testTcgaBroadDocuments();
+        testGskTestDocuments();
     }
 
     private void testSpecificationDocuments() {
@@ -202,6 +203,17 @@ public class MageTabTranslatorTest {
         assertEquals(26, investigation.getSamples().size());
         assertEquals(26, investigation.getExtracts().size());
         assertEquals(26, investigation.getLabeledExtracts().size());
+    }
+
+    private void testGskTestDocuments() {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.GSK_TEST_SET);
+        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.GSK_TEST_SET, fileSet);
+        Experiment experiment = result.getInvestigations().iterator().next();
+        assertEquals(6, experiment.getSources().size());
+        assertEquals(6, experiment.getSamples().size());
+        assertEquals(6, experiment.getExtracts().size());
+        assertEquals(6, experiment.getLabeledExtracts().size());
+        assertEquals(6, experiment.getHybridizations().size());
     }
 
     @Test

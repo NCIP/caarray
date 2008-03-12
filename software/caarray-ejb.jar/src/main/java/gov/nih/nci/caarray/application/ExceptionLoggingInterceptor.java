@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application;
 
+import javax.ejb.ApplicationException;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
@@ -105,8 +106,11 @@ public class ExceptionLoggingInterceptor {
         try {
             return invContext.proceed();
         } catch (Exception e) {
-            Logger log = Logger.getLogger(invContext.getTarget().getClass());
-            log.error("Exception thrown while invoking " + invContext.getMethod().getName(), e);
+            // do not log exceptions annotated w/AnnotationException - they are expected
+            if (e.getClass().getAnnotation(ApplicationException.class) == null) {
+                Logger log = Logger.getLogger(invContext.getTarget().getClass());
+                log.error("Exception thrown while invoking " + invContext.getMethod().getName(), e);               
+            }
             throw e;
         }
     }

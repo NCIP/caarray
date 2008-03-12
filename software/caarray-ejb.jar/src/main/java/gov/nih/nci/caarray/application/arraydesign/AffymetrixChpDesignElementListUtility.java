@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-ejb-jar
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
+ * This caArray Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
+ * its rights in the caArray Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-ejb-jar Software and any
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,95 +80,102 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application;
+package gov.nih.nci.caarray.application.arraydesign;
 
-import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
+import gov.nih.nci.caarray.domain.data.DesignElementType;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-import org.hibernate.criterion.Order;
-
-import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import affymetrix.fusion.cdf.FusionCDFData;
 
 /**
- * @author dkokotov
- *
+ * Utility class used to generate and retrieve the singleton <code>DesignElementList</code> to be used for all parsed
+ * CHP files.
  */
-public class GenericDataServiceStub implements GenericDataService {
-    private PersistentObject deletedObject = null;
-    private PersistentObject savedObject = null;
+public final class AffymetrixChpDesignElementListUtility {
 
-    /**
-     * {@inheritDoc}
-     */
-    public String getIncrementingCopyName(Class<?> entityClass, String fieldName, String name) {
-        return name + "2";
-    }
+    private static final String LSID_AUTHORITY = "Affymetrix.com";
+    private static final String LSID_NAMESPACE_ELEMENT_LIST = "DesignElementList";
+    private static final String LSID_OBJECT_ID_ELEMENT_LIST_PREFIX = "LogicalProbes";
 
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
-        return null;
+    private AffymetrixChpDesignElementListUtility() {
+        super();
     }
 
     /**
-     * {@inheritDoc}
+     * Creates the singleton <code>DesignElementList</code> for CHP files associated with the given
+     * Affymetrix design. The <code>DesignElementList</code> is created only and not persisted. Clients
+     * are expected to persist the list.
+     *
+     * @param design the design to create the <code>DesignElementList</code> for
+     * @return the created list.
+     * @throws AffymetrixCdfReadException if the CDF file associated with the design couldn't be read.
      */
-    public void delete(PersistentObject object) {
-        this.deletedObject = object;
+    public static DesignElementList createDesignElementList(ArrayDesign design) throws AffymetrixCdfReadException {
+        checkDesign(design);
+        AffymetrixCdfReader reader = null;
+        try {
+            File cdfFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(design.getDesignFile());
+            DesignElementList designElementList = new DesignElementList();
+            designElementList.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE_ELEMENT_LIST
+                    + ":" + getDesignElementListObjectId(design));
+            designElementList.setDesignElementTypeEnum(DesignElementType.LOGICAL_PROBE);
+            Map<String, LogicalProbe> probeSetMap = getProbeSetMap(design);
+            reader = AffymetrixCdfReader.create(cdfFile);
+            FusionCDFData fusionCDFData = reader.getCdfData();
+            int numProbeSets = fusionCDFData.getHeader().getNumProbeSets();
+            for (int index = 0; index < numProbeSets; index++) {
+                designElementList.getDesignElements().add(probeSetMap.get(fusionCDFData.getProbeSetName(index)));
+            }
+            return designElementList;
+        } finally {
+            close(reader);
+        }
     }
 
     /**
-     * @return the last object passed to delete, if any.
+     * Returns the existing <code>DesignElementList</code> for CHP files associated with the given
+     * Affymetrix design, or null if none exists.
+     *
+     * @param design the design to retrieve the <code>DesignElementList</code> for
+     * @param arrayDesignService service instance used to retrieve the list
+     * @return the corresponding list or null.
      */
-    public PersistentObject getDeletedObject() {
-        return this.deletedObject;
+    public static DesignElementList getDesignElementList(ArrayDesign design, ArrayDesignService arrayDesignService) {
+        return arrayDesignService.getDesignElementList(LSID_AUTHORITY, LSID_NAMESPACE_ELEMENT_LIST,
+                getDesignElementListObjectId(design));
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
-        return null;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public int collectionSize(Collection<? extends PersistentObject> collection) {
-        return 0;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection,
-            PageSortParams<T> pageSortParams) {
-        return new ArrayList<T>(collection);
+    private static void checkDesign(ArrayDesign design) {
+        if (!LSID_AUTHORITY.equals(design.getLsidAuthority())) {
+            throw new IllegalArgumentException("ArrayDesign must be an Affymetrix design");
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders)
-            throws IllegalAccessException, InstantiationException {
-        return new ArrayList<T>();
+    private static String getDesignElementListObjectId(ArrayDesign design) {
+        return LSID_OBJECT_ID_ELEMENT_LIST_PREFIX + "." + design.getLsidObjectId();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void save(PersistentObject object) {
-        this.savedObject = object;
+    private static void close(AffymetrixCdfReader reader) {
+        if (reader != null) {
+            reader.close();
+        }
     }
 
-    /**
-     * @return the savedObject
-     */
-    public PersistentObject getSavedObject() {
-        return this.savedObject;
+    private static Map<String, LogicalProbe> getProbeSetMap(ArrayDesign design) {
+        Set<LogicalProbe> logicalProbes = design.getDesignDetails().getLogicalProbes();
+        Map<String, LogicalProbe> probeSetMap = new HashMap<String, LogicalProbe>(logicalProbes.size());
+        for (LogicalProbe probe : logicalProbes) {
+            probeSetMap.put(probe.getName(), probe);
+        }
+        return probeSetMap;
     }
+
 }
