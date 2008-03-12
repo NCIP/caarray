@@ -134,7 +134,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private MultiPartBlob multiPartBlob;
 
     // transient properties
-    private InputStream inputStreamToClose;
+    private transient InputStream inputStreamToClose;
     private File fileToDelete;
 
     /**
