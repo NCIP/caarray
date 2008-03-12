@@ -386,7 +386,6 @@ var TabUtils = {
             TabUtils.savedFormData = null;
         }
     },
-
     setSelectedTab : function() {
         tabMenuItems = $('tabbed').getElementsByTagName('li');
         for(var i = 0; i < tabMenuItems.length; i++) {
@@ -614,12 +613,15 @@ var PermissionUtils = {
 // Download stuff here
 //
 
-function DownloadMgr(dUrl, iUrl) {
+function DownloadMgr(dUrl, dgUrl, iUrl, maxDownloadSize) {
   this.downloadUrl = dUrl;
+  this.downloadGroupsUrl = dgUrl;
   this.imageUrl = iUrl;
   this.downloadIds = new Array();
   this.downloadSizeArray = new Array();
   this.count = 0;
+  this.totalDownloadSize = 0;
+  this.maxDownloadSize = maxDownloadSize;
 }
 
 DownloadMgr.prototype.downloadUrl;
@@ -643,6 +645,7 @@ DownloadMgr.prototype.addDownloadRow = function(name, id, size, doAlert) {
     }
     this.downloadIds.push(id);
     this.downloadSizeArray.push(size);
+    this.totalDownloadSize += size;
     ++this.count;
 
   var tbl = document.getElementById('downloadTbl');
@@ -664,6 +667,7 @@ DownloadMgr.prototype.removeRow = function(toRemove) {
       tbl.deleteRow(i);
       this.downloadSizeArray.splice(i - 1, 1);
       this.downloadIds.splice(i - 1, 1);
+      this.totalDownloadSize -= size;
     }
   }
   this.addTotalRow();
@@ -672,6 +676,7 @@ DownloadMgr.prototype.removeRow = function(toRemove) {
 DownloadMgr.prototype.resetDownloadInfo = function() {
   this.downloadIds = new Array();
   this.downloadSizeArray = new Array();
+  this.totalDownloadSize = 0;
   var tbl = document.getElementById('downloadTbl');
   while (tbl.rows.length > 1) {
     tbl.deleteRow(1);
@@ -688,11 +693,7 @@ DownloadMgr.prototype.addTotalRow = function() {
   lastRow = tbl.rows.length;
   var row = tbl.insertRow(lastRow);
   var cell = row.insertCell(0);
-  var downloadSize = 0;
-  for (i = 0; i < this.downloadSizeArray.length; ++i) {
-    downloadSize += this.downloadSizeArray[i];
-  }
-  var textNode = document.createTextNode(" Job Size: " + (downloadSize / 1024 | 0) + " KB");
+  var textNode = document.createTextNode(" Job Size: " + (this.totalDownloadSize / 1024 | 0) + " KB");
   cell.appendChild(textNode);
 }
 
@@ -704,12 +705,18 @@ DownloadMgr.prototype.doDownloadFiles = function() {
   var curLoc = window.location;
   var params = '';
   for (i = 0; i < this.downloadIds.length; ++i) {
-    if (i != 0) {
-      params = params + '&';
-    }
-    params = params + 'selectedFiles=' + this.downloadIds[i];
+    params = params + '&selectedFiles=' + this.downloadIds[i];
   }
-  window.location= this.downloadUrl + "?" + params;
+
+  if (this.totalDownloadSize < this.maxDownloadSize) {
+      var iframe = document.createElement("iframe"); 
+      iframe.src = this.downloadUrl + params;
+      iframe.style.display="none";
+      document.body.appendChild(iframe);       
+  } else {
+      TabUtils.loadLinkInSubTab('Download Data', this.downloadGroupsUrl + params);
+  }
+
   this.resetDownloadInfo();
 }
 

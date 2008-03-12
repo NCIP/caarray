@@ -128,6 +128,11 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
                                                 expression = "selectedFiles.size() > 0"))
 public class ProjectFilesAction extends AbstractBaseProjectAction implements Preparable {
+    /**
+     * Maximum total uncompressed size (in bytes) of files that can be downloaded in a single ZIP. If files selected
+     * for download have a greater combined size, then the user will be presented with a group download page.
+     */
+    public static final long MAX_DOWNLOAD_SIZE = 1024 * 1024 * 300;
     private static final String UPLOAD_INPUT = "upload";
     private static final long serialVersionUID = 1L;
     private static final String ACTION_UNIMPORTED = "listUnimported";
@@ -151,6 +156,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private List<File> uploads;
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+    private int downloadSequenceNumber;
+    private final List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
+    private String downloadFileName;
     private InputStream downloadStream;
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
     private String listAction;
@@ -543,15 +551,39 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Prepares for download by zipping selected files and setting the internal InputStream.
-     *
+     * 
      * @return SUCCESS
      * @throws IOException if
      */
     @SkipValidation
     public String download() throws IOException {
-        File zipFile = getProjectManagementService().prepareForDownload(getSelectedFiles());
-        this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
-        return "download";
+        computeDownloadGroups();
+        if (downloadFileGroups.size() == 1) {
+            File zipFile = getProjectManagementService().prepareForDownload(getSelectedFiles());
+            this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
+            this.downloadFileName = determineDownloadFileName();
+            return "download";
+        } else {
+            return "downloadGroups";
+        }
+    }
+    
+    private String determineDownloadFileName() {
+        return "caArray_" + getProject().getExperiment().getPublicIdentifier() + "_files"
+                + (this.downloadSequenceNumber > 0 ? this.downloadSequenceNumber : "") + ".zip";        
+    }
+    
+    private void computeDownloadGroups() {
+        downloadFileGroups.clear();
+        DownloadGroup currentGroup = new DownloadGroup();
+        downloadFileGroups.add(currentGroup);
+        for (CaArrayFile file : getSelectedFiles()) {
+            if (currentGroup.getTotalUncompressedSize() + file.getUncompressedSize() > MAX_DOWNLOAD_SIZE) {
+                currentGroup = new DownloadGroup();
+                downloadFileGroups.add(currentGroup);
+            }
+            currentGroup.addFile(file);
+        }
     }
 
     /**
@@ -720,5 +752,33 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 prepListUnimportedPage();
             }
         }
+    }
+
+    /**
+     * @return the download groups
+     */
+    public List<DownloadGroup> getDownloadFileGroups() {
+        return downloadFileGroups;
+    }
+
+    /**
+     * @return the downloadFileName
+     */
+    public String getDownloadFileName() {
+        return downloadFileName;
+    }
+
+    /**
+     * @return the downloadSequenceNumber
+     */
+    public int getDownloadSequenceNumber() {
+        return downloadSequenceNumber;
+    }
+
+    /**
+     * @param downloadSequenceNumber the downloadSequenceNumber to set
+     */
+    public void setDownloadSequenceNumber(int downloadSequenceNumber) {
+        this.downloadSequenceNumber = downloadSequenceNumber;
     }
 }

@@ -8,10 +8,16 @@
   IE can't seem to handle defining downloadMgr on the downloadFiles page, so it's here,
   since this is the outer (non-ajax) page.
 --%>
-<c:url var="downloadUrl" value="/project/files/download.action"/>
+<c:url var="downloadUrl" value="/project/files/download.action">
+    <c:param name="project.id" value="${project.id}"/>
+</c:url>
+<c:url var="downloadGroupsUrl" value="/ajax/project/files/download.action">
+    <c:param name="project.id" value="${project.id}"/>
+</c:url>
 <c:url var="removeUrl" value="/images/ico_remove.gif"/>
+
 <script type="text/javascript">
-  downloadMgr = new DownloadMgr('${downloadUrl}', '${removeUrl}');
+  downloadMgr = new DownloadMgr('${downloadUrl}', '${downloadGroupsUrl}','${removeUrl}', <s:property value="@gov.nih.nci.caarray.web.action.project.ProjectFilesAction@MAX_DOWNLOAD_SIZE"/>);
   setExperimentTitleHeader = function(value) {
     $('experimentTitleHeader').innerHTML = value || 'New Experiment';
   }
