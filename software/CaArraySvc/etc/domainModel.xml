@@ -175,7 +175,7 @@
     </ns1:UMLAssociationEdge>
    </ns1:targetUMLAssociationEdge>
    <ns1:sourceUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="0" minCardinality="0" roleName="">
+    <ns1:UMLAssociationEdge maxCardinality="-1" minCardinality="0" roleName="">
      <ns1:UMLClassReference refid="46E95F75-73CA-7473-E044-0003BA3F9857"/>
     </ns1:UMLAssociationEdge>
    </ns1:sourceUMLAssociationEdge>
@@ -213,18 +213,6 @@
    <ns1:sourceUMLAssociationEdge>
     <ns1:UMLAssociationEdge maxCardinality="-1" minCardinality="0" roleName="derivedDataCollection">
      <ns1:UMLClassReference refid="46E95F75-73DF-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:sourceUMLAssociationEdge>
-  </ns1:UMLAssociation>
-  <ns1:UMLAssociation bidirectional="false">
-   <ns1:targetUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="-1" minCardinality="-1" roleName="arrays">
-     <ns1:UMLClassReference refid="46E95F75-73FD-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:targetUMLAssociationEdge>
-   <ns1:sourceUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="1" minCardinality="1" roleName="">
-     <ns1:UMLClassReference refid="46E95F75-73E8-7473-E044-0003BA3F9857"/>
     </ns1:UMLAssociationEdge>
    </ns1:sourceUMLAssociationEdge>
   </ns1:UMLAssociation>
@@ -530,18 +518,6 @@
   </ns1:UMLAssociation>
   <ns1:UMLAssociation bidirectional="false">
    <ns1:targetUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="1" minCardinality="1" roleName="design">
-     <ns1:UMLClassReference refid="46E95F75-73C2-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:targetUMLAssociationEdge>
-   <ns1:sourceUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="-1" minCardinality="-1" roleName="">
-     <ns1:UMLClassReference refid="46E95F75-73FD-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:sourceUMLAssociationEdge>
-  </ns1:UMLAssociation>
-  <ns1:UMLAssociation bidirectional="false">
-   <ns1:targetUMLAssociationEdge>
     <ns1:UMLAssociationEdge maxCardinality="-1" minCardinality="0" roleName="designElements">
      <ns1:UMLClassReference refid="46E95F75-73C3-7473-E044-0003BA3F9857"/>
     </ns1:UMLAssociationEdge>
@@ -612,18 +588,6 @@
     </ns1:UMLAssociationEdge>
    </ns1:sourceUMLAssociationEdge>
   </ns1:UMLAssociation>
-  <ns1:UMLAssociation bidirectional="true">
-   <ns1:targetUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="1" minCardinality="1" roleName="microarray">
-     <ns1:UMLClassReference refid="46E95F75-73C7-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:targetUMLAssociationEdge>
-   <ns1:sourceUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="-1" minCardinality="0" roleName="reporterCollection">
-     <ns1:UMLClassReference refid="46E95F75-7401-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:sourceUMLAssociationEdge>
-  </ns1:UMLAssociation>
   <ns1:UMLAssociation bidirectional="false">
    <ns1:targetUMLAssociationEdge>
     <ns1:UMLAssociationEdge maxCardinality="1" minCardinality="0" roleName="diseaseState">
@@ -674,30 +638,6 @@
   </ns1:UMLAssociation>
   <ns1:UMLAssociation bidirectional="false">
    <ns1:targetUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="1" minCardinality="0" roleName="microarray">
-     <ns1:UMLClassReference refid="46E95F75-73C7-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:targetUMLAssociationEdge>
-   <ns1:sourceUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="0" minCardinality="0" roleName="">
-     <ns1:UMLClassReference refid="46E95F75-73C2-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:sourceUMLAssociationEdge>
-  </ns1:UMLAssociation>
-  <ns1:UMLAssociation bidirectional="false">
-   <ns1:targetUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="1" minCardinality="0" roleName="array">
-     <ns1:UMLClassReference refid="46E95F75-73FD-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:targetUMLAssociationEdge>
-   <ns1:sourceUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="-1" minCardinality="-1" roleName="">
-     <ns1:UMLClassReference refid="46E95F75-73E6-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:sourceUMLAssociationEdge>
-  </ns1:UMLAssociation>
-  <ns1:UMLAssociation bidirectional="false">
-   <ns1:targetUMLAssociationEdge>
     <ns1:UMLAssociationEdge maxCardinality="-1" minCardinality="0" roleName="experimentDesignTypes">
      <ns1:UMLClassReference refid="46E95F75-73FB-7473-E044-0003BA3F9857"/>
     </ns1:UMLAssociationEdge>
@@ -705,18 +645,6 @@
    <ns1:sourceUMLAssociationEdge>
     <ns1:UMLAssociationEdge maxCardinality="-1" minCardinality="0" roleName="">
      <ns1:UMLClassReference refid="46E95F75-73E8-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:sourceUMLAssociationEdge>
-  </ns1:UMLAssociation>
-  <ns1:UMLAssociation bidirectional="true">
-   <ns1:targetUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="1" minCardinality="0" roleName="arrayGroup">
-     <ns1:UMLClassReference refid="46E95F75-73C0-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:targetUMLAssociationEdge>
-   <ns1:sourceUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="-1" minCardinality="1" roleName="arrays">
-     <ns1:UMLClassReference refid="46E95F75-73FD-7473-E044-0003BA3F9857"/>
     </ns1:UMLAssociationEdge>
    </ns1:sourceUMLAssociationEdge>
   </ns1:UMLAssociation>
@@ -1028,18 +956,6 @@
    </ns1:targetUMLAssociationEdge>
    <ns1:sourceUMLAssociationEdge>
     <ns1:UMLAssociationEdge maxCardinality="1" minCardinality="1" roleName="">
-     <ns1:UMLClassReference refid="46E95F75-73FD-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:sourceUMLAssociationEdge>
-  </ns1:UMLAssociation>
-  <ns1:UMLAssociation bidirectional="false">
-   <ns1:targetUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="1" minCardinality="0" roleName="production">
-     <ns1:UMLClassReference refid="46E95F75-73EE-7473-E044-0003BA3F9857"/>
-    </ns1:UMLAssociationEdge>
-   </ns1:targetUMLAssociationEdge>
-   <ns1:sourceUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="1" minCardinality="1" roleName="">
      <ns1:UMLClassReference refid="46E95F75-73C7-7473-E044-0003BA3F9857"/>
     </ns1:UMLAssociationEdge>
    </ns1:sourceUMLAssociationEdge>
@@ -1291,7 +1207,7 @@
     </ns1:UMLAssociationEdge>
    </ns1:targetUMLAssociationEdge>
    <ns1:sourceUMLAssociationEdge>
-    <ns1:UMLAssociationEdge maxCardinality="0" minCardinality="0" roleName="">
+    <ns1:UMLAssociationEdge maxCardinality="1" minCardinality="1" roleName="">
      <ns1:UMLClassReference refid="46E95F75-73C2-7473-E044-0003BA3F9857"/>
     </ns1:UMLAssociationEdge>
    </ns1:sourceUMLAssociationEdge>
