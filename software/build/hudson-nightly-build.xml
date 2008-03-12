@@ -1,0 +1,72 @@
+<!-- *********************************************************************** -->
+<!-- ** PROJECT:   caarray-cc-nightly                                     ** -->
+<!-- *********************************************************************** -->
+
+<project name="caarray-cc-nightly" default="nightly-build" basedir="..">
+
+    <description>
+     This build script is used to invoke the normal build.xml 
+     with the caveat that certain targets within the
+     build.xml need to overridden.
+        -->Why?
+     Certain targets responsible for lauching processes (start jboss)
+     need to use the 'at' command to launch the process because Hudson will block waiting for the process
+     that is started to complete which is not what we want. 
+     -- http://hudson.gotdns.com/wiki/display/HUDSON/Spawning+processes+from+build
+
+     Default target for this script is 'nightly' which is imported via build.xml
+    </description>
+
+    <import file="build.xml"/>
+    
+    <scriptdef name="get-next-minute" language="beanshell">
+        <attribute name="property" />
+        date = new java.text.SimpleDateFormat("HH:mm")
+          .format(new Date(System.currentTimeMillis() + 60000));
+        project.setProperty(attributes.get("property"), date);
+    </scriptdef>
+    
+    <target name="deploy:start-jboss" depends="deploy:check-if-jboss-is-running" unless="jboss.running"
+        description="Override target defined in build.xml to start jboss using PSEXEC.exe">
+        <get-next-minute property="next-minute.0" />
+        <exec executable="at">
+              <arg value="${next-minute.0}" />
+              <arg value="/interactive" />
+              <arg value="${jboss.home}\bin\run.bat" />
+        </exec>
+    </target>
+
+    <target name="nightly-build" depends="continuous-integration,
+        deploy:stop-jboss,
+        deploy:start-jboss,
+        deploy:deploy-and-wait,
+        test:functional,
+        test:junit-report,
+        deploy:stop-jboss,
+        test:check-functional-test-results" />
+
+    <target name="test:functional" unless="notest" description="overridden to not fail build immediately on failing tests.">
+        <antcall target="test:functional:run-tests"/>
+    </target>
+
+    <target name="test:selenium:start-server">
+        <echo message="Starting Selenium RC server on port ${selenium.server.port}" />
+        <get-next-minute property="next-minute.1" />
+        <exec executable="at">
+              <arg value="${next-minute.1}" />
+              <arg value="/interactive" />
+              <arg value="C:\dev\java_platforms\jdk1.5.0_10\bin\java -jar ${selenium-server.jar} -port ${selenium.server.port}" />
+        </exec>
+        <sleep seconds="60"/>
+    </target>
+
+    <target name="deploy:stop-jboss">
+        <java classname="org.jboss.Shutdown" fork="true" spawn="false">
+            <arg line="-s ${jboss.server.hostname}:${jboss.server.jndi.port} -S" />
+            <classpath>
+                <pathelement location="${jboss.home}/bin/shutdown.jar" />
+            </classpath>
+        </java>
+        <sleep seconds="60"/>
+    </target>
+</project>
