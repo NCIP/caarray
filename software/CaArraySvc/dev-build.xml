@@ -55,6 +55,7 @@
 	    <copy todir="lib" file="../lib/log4j-1.2.13.jar"/>
         <copy todir="lib" file="../caarray-client.jar/target/caarray-client.jar"/>
 	    <copy todir="lib" file="../lib/cglib-2.1.3.jar"/>
+	    <copy todir="lib" file="../lib/nci-commons-core-1.0.1.jar"/>
 	</target>
 
 	<!-- ============================================================== -->
