@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The test
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This test Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the test Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the test Software; (ii) distribute and
+ * have distributed to and by third parties the test Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,105 +80,114 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.test.functional;
+package gov.nih.nci.caarray.test.api.java.search;
 
-import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.domain.contact.Person;
+import gov.nih.nci.caarray.services.CaArrayServer;
+import gov.nih.nci.caarray.services.ServerConnectionException;
+import gov.nih.nci.caarray.services.search.CaArraySearchService;
+import gov.nih.nci.caarray.test.api.AbstractApiTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
 
-import java.io.File;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
-import java.util.zip.ZipFile;
 
 import org.junit.Test;
 
 /**
- * Uploads and deletes 1,2,4,8,16,32,64,128 cell files
- * 
+ * A client searching for persons using CQL through CaArray's Remote Java API.
+ *
+ * @author Rashmi Srinivasa
  */
-public class Import64CelZipTest extends AbstractSeleniumTest {
-
-    private static final int FIFTY_MINUTES_IN_MILLISECOND = 3000000;
-    private static final boolean NO_FILE_NAME_ASSERT = false;
-    private List<File> zipFiles = new ArrayList<File>();
-    public static final String DIRECTORY = 
-            "L:\\NCICB\\caArray\\QA\\testdata_central_caArray2\\Affymetrix\\HG-U133_Plus_2\\CEL\\Public_Rembrandt_from_caArray1.6\\exponential_CEL_ZIPs\\";
+public class ApiCqlSearchPerson extends AbstractApiTest {
+    private static final String[] LAST_NAMES = {
+        "Laufs",
+        "Freuhauf",
+        "Wenz",
+        "Li",
+        "Zeller",
+        "Fleckenstein"
+    };
 
     @Test
-    public void testImportAndRetrieval() throws Exception {
-        String title = "64 import " + System.currentTimeMillis();
-        buildTestData();
-
-        // - Login
-        loginAsPrincipalInvestigator();
-
-        // Create project
-        createExperiment(title);
-
-        // - go to the data tab
-        selenium.click("link=Data");
-        waitForTab();
-
-        selenium.click("link=Upload New File(s)");
-
-        // Upload the following files:
-
-        for (File celFile : zipFiles) {
-            long startTime = System.currentTimeMillis();
-            long endTime = 0;
-            ZipFile zipfile = new ZipFile(celFile.getAbsolutePath());
-            int numberOfFiles = zipfile.size() - 1;
-            System.out.println("Upload of " +celFile.getName()+ " started at " + DateFormat.getTimeInstance().format(new Date()));
-            
-            // - Upload the zip file
-            upload(celFile, FIFTY_MINUTES_IN_MILLISECOND, NO_FILE_NAME_ASSERT);
-            checkFileStatus("Uploaded", THIRD_COLUMN, numberOfFiles);
-            waitForAction();
-            assertTrue(selenium.isTextPresent("files uploaded"));
-            endTime = System.currentTimeMillis();
-            DecimalFormat df= new DecimalFormat("0.##"); 
-            String totalTime = df.format((endTime - startTime)/60000f);
-            
-            // - print out the upload time
-            System.out.println("Uploaded " + numberOfFiles + " files ("+celFile.getName()+") in " + totalTime + " minutes");
-            startTime = System.currentTimeMillis();
-            
-            // - remove the cel files
-            delete(celFile);
-            endTime = System.currentTimeMillis();
-            totalTime = df.format((endTime - startTime)/60000f);
-            
-            // - print out the delete time
-            System.out.println("Deleted " + celFile.getName()+ " in " + totalTime + " minutes");
+    public void testCqlSearchPerson() {
+        try {
+            CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties
+                    .getServerJndiPort());
+            server.connect();
+            CaArraySearchService searchService = server.getSearchService();
+            logForSilverCompatibility(TEST_NAME, "CQL-Searching for Persons...");
+            for (String lastName : LAST_NAMES) {
+                boolean resultIsOkay = searchPersons(searchService, lastName);
+                assertTrue("Error: Response did not match request.", resultIsOkay);
+            }
+        } catch (ServerConnectionException e) {
+            StringBuilder trace = buildStackTrace(e);
+            logForSilverCompatibility(TEST_OUTPUT, "Server connection exception: " + e + "\nTrace: " + trace);
+            assertTrue("Server connection exception: " + e, false);
+        } catch (RuntimeException e) {
+            StringBuilder trace = buildStackTrace(e);
+            logForSilverCompatibility(TEST_OUTPUT, "Runtime exception: " + e + "\nTrace: " + trace);
+            assertTrue("Runtime exception: " + e, false);
+        } catch (Throwable t) {
+            // Catches things like out-of-memory errors and logs them.
+            StringBuilder trace = buildStackTrace(t);
+            logForSilverCompatibility(TEST_OUTPUT, "Throwable: " + t + "\nTrace: " + trace);
+            assertTrue("Throwable: " + t, false);
         }
     }
 
-    /**
-     * @param celFile
-     */
-    private void delete(File celFile) {
-        selenium.click("selectAllCheckbox");
-        selenium.click("link=Delete");
-        waitForAction();
-    }
-
-    private void buildTestData() {
-        zipFiles.add(new File(DIRECTORY + "001CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "002CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "004CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "008CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "016CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "032CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "064CEL.zip"));
-        zipFiles.add(new File(DIRECTORY + "128CEL.zip"));
-    }
- 
-    private void checkFileStatus(String status, int column, int numberOfFiles) {
-        for (int i = 1; i < numberOfFiles; i++) {
-            assertEquals(status, selenium.getTable("row." + i + "." + column));
+    private boolean searchPersons(CaArraySearchService searchService, String lastName) {
+        CQLQuery cqlQuery = createCqlQuery(lastName);
+        List personList = searchService.search(cqlQuery);
+        logForSilverCompatibility(API_CALL, "CaArraySearchService.search(CQLQuery)");
+        boolean resultIsOkay = isResultOkay(personList, lastName);
+        if (resultIsOkay) {
+            logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + personList.size()
+                    + " persons with last name " + lastName + ".");
+        } else {
+            logForSilverCompatibility(TEST_OUTPUT, "Error: Response did not match request. Retrieved " + personList.size()
+                    + " persons.");
         }
+        return resultIsOkay;
     }
 
+    private CQLQuery createCqlQuery(String lastName) {
+        CQLQuery cqlQuery = new CQLQuery();
+        Object target = new Object();
+        target.setName("gov.nih.nci.caarray.domain.contact.Person");
+
+        Attribute affiliationAttribute = new Attribute();
+        affiliationAttribute.setName("lastName");
+        affiliationAttribute.setValue(lastName);
+        affiliationAttribute.setPredicate(Predicate.EQUAL_TO);
+
+        target.setAttribute(affiliationAttribute);
+
+        cqlQuery.setTarget(target);
+        return cqlQuery;
+    }
+
+    private boolean isResultOkay(List personList, String lastName) {
+        if (personList.isEmpty()) {
+            return false;
+        }
+
+        Iterator i = personList.iterator();
+        while (i.hasNext()) {
+            Person retrievedPerson = (Person) i.next();
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Person.getFirstName(): " + retrievedPerson.getFirstName());
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Person.getLastName(): " + retrievedPerson.getLastName());
+            // Check if retrieved person matches requested search criteria.
+            if (!lastName.equalsIgnoreCase(retrievedPerson.getLastName())) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

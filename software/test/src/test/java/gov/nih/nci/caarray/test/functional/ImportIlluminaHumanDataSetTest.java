@@ -83,41 +83,108 @@
 package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
+import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
+
+import java.io.File;
+import java.text.DateFormat;
+import java.util.Date;
+
+import org.junit.Test;
 
 /**
- * Test case #8141.
+ * Test case #7959.
  *
- * UC7218: Submit Experiment Proposal - Basic Flow
+ * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
-public class SubmitProjectProposalBasicTest extends AbstractSeleniumTest {
+public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
 
-    public void testBasicFlow() throws Exception {
-        String title = "test" + System.currentTimeMillis();
+    private static final int NUMBER_OF_FILES = 1;
+    private static final int TWO_MINUTES = 12;
+    private static final String ARRAY_DESIGN_NAME = "Human_WG-6";
+    private static final String ORGANISM = "Rattus rattus (ncbitax)";
+    private static final String PROVIDER = "Illumina";
 
-        // - Open the PI user workspace
+    @Test
+    public void testImportAndRetrieval() throws Exception {
+        String title = TestProperties.getIlluminaRatName();
+        long startTime = System.currentTimeMillis();
+        long endTime = 0;
+        System.out.println("Started at " + DateFormat.getTimeInstance().format(new Date()));
+
+        // - Login
         loginAsPrincipalInvestigator();
 
-        //  create an experiment
-        createExperiment(title);
+        // - Add the array design
+        importArrayDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV, PROVIDER, ORGANISM);
 
-        // - The system returns to the workspace page (verify)
-        clickAndWait("link=My Experiment Workspace");
+        // Create project
+        createExperiment(title, ARRAY_DESIGN_NAME, PROVIDER, ORGANISM);
+        String experimentId = selenium.getText("//tr[4]/td[2]");
+
+        // - go to the data tab
+        selenium.click("link=Data");
         waitForTab();
-        // - Verify that the new project is listed in the workspace
-        // - Page thru the experiments till it is found
-        findTitleAcrossMultiPages(title);
+
+        selenium.click("link=Upload New File(s)");
+
+        // Upload the following files:
+        upload(IlluminaArrayDataFiles.HUMAN_WG6);
+        // change the file type to "Illumina CSV Data File".
+        selenium.click("selectFilesForm_selectedFiles");
+        selenium.click("link=Change File Type");
+        waitForText("Required fields are marked");
+        selenium.select("projectForm_selectedFiles_0__fileType", "label=Illumina Data CSV");
+        selenium.click("link=Save");
+        waitForText("1 file(s) updated", FIFTEEN_MINUTES);
+        // - Check if they are uploaded
+        checkFileStatus("Uploaded", THIRD_COLUMN);
+        waitForAction();
+
+        // - Import files
+        selenium.click("selectAllCheckbox");
+        selenium.click("link=Import");
+        waitForAction();
+
+        // - hit the refresh button until files are imported
+        waitForImport("Nothing found to display");
+
+        // - click on the Imported data tab
+        selenium.click("link=Imported Data");
+        Thread.sleep(1000);
+        selenium.click("link=Imported Data");
+        Thread.sleep(1000);
+        waitForText("One item found");
+
+        // - validate the status
+        checkFileStatus("Imported", SECOND_COLUMN);
+
+        // make experiment public
+        submitExperiment();
+        makeExperimentPublic(experimentId);
+
+        endTime = System.currentTimeMillis();
+        String totalTime = df.format((endTime - startTime) / 60000f);
+        System.out.println("total time = " + totalTime);
     }
-    @Override
-    protected void findTitleAcrossMultiPages(String text) throws Exception {
-        for (int loop = 0;; loop++) {
-            if (selenium.isTextPresent(text)) {
-                assertTrue(selenium.isTextPresent(text));
-                break;
-            } else {
-                // Moving to next page
-                selenium.click("link=Next");
-                Thread.sleep(3000);
-            }
+
+    private void importArrayDesign(File arrayDesign, String provider, String organism) throws Exception {
+        selenium.click("link=Manage Array Designs");
+        selenium.waitForPageToLoad("30000");
+        if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
+            addArrayDesign(arrayDesign, provider, organism);
+            // get the array design row so we do not find the wrong Imported text
+            int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
+            // wait for array design to be imported
+            waitForArrayDesignImport(TWO_MINUTES, column);
         }
     }
+
+    private void checkFileStatus(String status, int column) {
+        for (int i = 1; i < NUMBER_OF_FILES; i++) {
+            assertEquals(status, selenium.getTable("row." + i + "." + column));
+        }
+    }
+
 }

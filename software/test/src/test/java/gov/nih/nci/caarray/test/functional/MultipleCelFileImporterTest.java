@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
@@ -93,16 +94,15 @@ import org.junit.Test;
 /**
  * Imports the largest Affy CEL files (HG-U133
  */
-public class MultipleCelFileImporter extends AbstractSeleniumTest {
+public class MultipleCelFileImporterTest extends AbstractSeleniumTest {
 
     private static final int NUM_SETS_OF_TEN = 1;
-    private static final String ARRAY_DESIGN_NAME = "HG-U133_Plus_2";
-
+    private int FOURTY_MINUTES = 2400;
 
     @Test
     public void testUploadFiles() throws Exception {
         loginAsPrincipalInvestigator();
-        importArrayDesign(ARRAY_DESIGN_NAME, AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
+        importArrayDesign(TestProperties.AFFYMETRIX_HUMAN_DESIGN, AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
         for (int i = 0; i < NUM_SETS_OF_TEN; i++) {
             importTenFiles();
         }
@@ -112,20 +112,30 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
         selenium.click("link=Manage Array Designs");
         selenium.waitForPageToLoad("30000");
         if (doesArrayDesignExists(arrayDesignName)) {
-            assertTrue(arrayDesignName + " is present", 1==1);
-        }else{
-            addArrayDesign(arrayDesignName, arrayDesign);
+            assertTrue(arrayDesignName + " is present", 1 == 1);
+        } else {
+            addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+            // get the array design row so we do not find the wrong Imported text
+            int row = getExperimentRow(arrayDesignName, ZERO_COLUMN);
+            // wait for array design to be imported
+            waitForArrayDesignImport(FOURTY_MINUTES, row);
         }
     }
 
-    private boolean doesArrayDesignExists(String arrayDesignName) {
-        return selenium.isTextPresent(arrayDesignName);
-    }
+    // private void importArrayDesign(String arrayDesignName, File arrayDesign) throws Exception {
+    // selenium.click("link=Manage Array Designs");
+    // selenium.waitForPageToLoad("30000");
+    // if (doesArrayDesignExists(arrayDesignName)) {
+    // assertTrue(arrayDesignName + " is present", 1==1);
+    // }else{
+    // addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+    // }
+    // }
 
     public void importTenFiles() throws Exception {
-        String title = "test" + System.currentTimeMillis();
+        String title = TestProperties.getAffymetricHumanName();
         // Create experiment
-        createExperiment(title, ARRAY_DESIGN_NAME);
+        String experimentId = createExperiment(title, TestProperties.AFFYMETRIX_HUMAN_DESIGN);
         // go to the data tab
         selenium.click("link=Data");
         waitForTab();
@@ -150,7 +160,7 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
         // import button
         selenium.click("link=Import");
         waitForAction();
-        clickAndWait("link=My Experiment Workspace");
+        submitExperiment();
+        makeExperimentPublic(experimentId);
     }
-
 }

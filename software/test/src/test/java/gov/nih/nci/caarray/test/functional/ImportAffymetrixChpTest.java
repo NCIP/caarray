@@ -82,20 +82,14 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.services.CaArrayServer;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 import gov.nih.nci.caarray.test.base.TestProperties;
+import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -104,15 +98,16 @@ import org.junit.Test;
  * 
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
-public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
+public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
 
-    private static final int NUMBER_OF_FILES = 10;
+    private static final int NUMBER_OF_FILES = 1;
     private static final int TWO_MINUTES = 12;
     private static final String ARRAY_DESIGN_NAME = "Test3";
+    private static final String ORGANISM = "Rattus rattus (ncbitax)";
 
     @Test
     public void testImportAndRetrieval() throws Exception {
-        String title = "files" + System.currentTimeMillis();
+        String title = TestProperties.getAffymetricChpName();
         long startTime = System.currentTimeMillis();
         long endTime = 0;
         System.out.println("Started at " + DateFormat.getTimeInstance().format(new Date()));
@@ -124,7 +119,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
 
         // Create project
-        createExperiment(title,ARRAY_DESIGN_NAME);
+        String experimentId = createExperiment(title, ARRAY_DESIGN_NAME, AFFYMETRIX_PROVIDER, ORGANISM);
 
         // - go to the data tab
         selenium.click("link=Data");
@@ -132,28 +127,11 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
         selenium.click("link=Upload New File(s)");
 
-        // Upload the following files:
-        // - MAGE-TAB IDF
-        // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
-        // - MAGE-TAB Derived Data Matrix
-        // - CEL files referenced in SDRF
-
-        upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
-        upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
-        upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
-        FileFilter celFilter = new FileFilter() {
-            public boolean accept(File pathname) {
-                return pathname.getName().toLowerCase().endsWith(".cel");
-            }
-        };
-        for (File celFile : MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY.listFiles(celFilter)) {
-            upload(celFile);
-        }
+        upload(AffymetrixArrayDataFiles.TEST3_CHP);
         // - Check if they are uploaded
         checkFileStatus("Uploaded", THIRD_COLUMN);
         waitForAction();
-        assertTrue(selenium.isTextPresent("files uploaded"));
+        assertTrue(selenium.isTextPresent("file(s) uploaded"));
 
         // - Import files
         selenium.click("selectAllCheckbox");
@@ -164,74 +142,38 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         waitForImport("Nothing found to display");
 
         // - click on the Imported data tab
+        // ** this tab consistently fails.  Selenium will press the tab but not switch the page from
+        //      the Upload page.
         selenium.click("link=Imported Data");
-        waitForText("10 items found, displaying all items");
+        Thread.sleep(3000);
+        selenium.click("link=Imported Data");
+        Thread.sleep(1000);  
+
+        waitForText("One item found");
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);
-
-        // - Make public so it can be searched thru API
-        makeExperimentPublic(title);
-        endTime = System.currentTimeMillis();
-        String totalTime = df.format((endTime - startTime)/60000f);
-        System.out.println("total time = " + totalTime);
-
-        // - Get the data thru the API
-        verifyDataViaApi(title);
-    }
-
-    private void makeExperimentPublic(String title) {
-        submitExperiment();
-
-        clickAndWait("link=My Experiment Workspace");
-        waitForTab();
-
-        assertTrue(selenium.isTextPresent(title));
-        // - Make the experiment public
-        int row = getExperimentRow(title, FIRST_COLUMN);
-        // - Click on the image to enter the edit mode again
-        selenium.click("//tr[" + row + "]/td[7]/a/img");
-        waitForText("Overall Experiment Characteristics");
-
+        
         // make experiment public
-        setExperimentPublic();
+        submitExperiment();
+        makeExperimentPublic(experimentId);
+ 
+        endTime = System.currentTimeMillis();
+        String totalTime = df.format((endTime - startTime) / 60000f);
+        System.out.println("total time = " + totalTime);
     }
+    
 
     private void importArrayDesign(File arrayDesign) throws Exception {
         selenium.click("link=Manage Array Designs");
         selenium.waitForPageToLoad("30000");
         if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
-            addArrayDesign(ARRAY_DESIGN_NAME, arrayDesign);
+            addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, ORGANISM);
             // get the array design row so we do not find the wrong Imported text
             int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
             // wait for array design to be imported
             waitForArrayDesignImport(TWO_MINUTES, column);
         }
-    }
-
-    private boolean doesArrayDesignExists(String arrayDesignName) {
-        return selenium.isTextPresent(arrayDesignName);
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-
-    private void verifyDataViaApi(String experimentTitle) throws ServerConnectionException {
-        CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
-        server.connect();
-        CaArraySearchService searchService = server.getSearchService();
-        Experiment searchExperiment = new Experiment();
-        searchExperiment.setTitle(experimentTitle);
-        List<Experiment> matches = searchService.search(searchExperiment);
-        Experiment experiment = matches.get(0);
-        assertEquals(6, experiment.getSources().size());
-        assertEquals(6, experiment.getSamples().size());
-        assertEquals(6, experiment.getExtracts().size());
-        assertEquals(6, experiment.getLabeledExtracts().size());
-        assertEquals(6, experiment.getHybridizations().size());
-        System.out.println("java api was successful");
     }
 
     private void checkFileStatus(String status, int column) {

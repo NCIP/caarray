@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The test
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This test Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the test Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the test Software; (ii) distribute and
+ * have distributed to and by third parties the test Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,117 +80,30 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.test.functional;
+package gov.nih.nci.caarray.test.api;
 
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.services.CaArrayServer;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
-import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
-import gov.nih.nci.caarray.test.base.TestProperties;
-import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
-
-import java.util.List;
-
-import org.junit.Test;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
- * Test case #7959.
- * 
- * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
+ * Base class for all API tests that test the Remote Java API and Grid API.
+ * Provides utilities to log all output needed for caBIG Silver Compatibility review.
+ *
+ * @author Rashmi Srinivasa
  */
-public class ImportGenePixSetTest extends AbstractSeleniumTest {
+public class AbstractApiTest {
+    protected static final String TEST_NAME = "TEST NAME";
+    protected static final String API_CALL = "API CALL";
+    protected static final String TRAVERSE_OBJECT_GRAPH = "TRAVERSING OBJECT GRAPH";
+    protected static final String TEST_OUTPUT = "TEST OUTPUT";
 
-    private static final int NUMBER_OF_FILES = 4;
-    private static final String FIRST_COLUMN = "1";
- 
-    @Test
-    public void testImportAndRetrieval() throws Exception {
-        String title = "gpr files" + System.currentTimeMillis();
-
-        // - Login
-        loginAsPrincipalInvestigator();
-
-        // Create project
-        createExperiment(title);
-
-        // - go to the data tab
-        selenium.click("link=Data");
-        waitForTab();
-
-        selenium.click("link=Upload New File(s)");
-
-        // Upload the following GenePix files:
-
-        upload(GenepixArrayDataFiles.GPR_3_0_6);
-        upload(GenepixArrayDataFiles.GPR_4_0_1);
-        upload(GenepixArrayDataFiles.GPR_4_1_1);
-        upload(GenepixArrayDataFiles.GPR_5_0_1);
-        // - Check if they are uploaded
-        checkFileStatus("Uploaded", THIRD_COLUMN);
-        waitForAction();
-        assertTrue(selenium.isTextPresent("files uploaded"));
-
-        // - Import files
-        selenium.click("selectAllCheckbox");
-        selenium.click("link=Import");
-        waitForAction();
-
-        // - hit the refresh button until files are imported
-        waitForImport("Nothing found to display");
-
-        // - click on the Imported data tab
-        selenium.click("link=Imported Data");
-        waitForText("displaying all items");
-
-        // - validate the status
-        checkFileStatus("Imported", SECOND_COLUMN);
-
-        // Submit the experiment
-        makeExperimentPublic(title);
- 
-        // - Get the data thru the API
-        verifyDataViaApi(title);
+    protected static void logForSilverCompatibility (String header, String outputText) {
+        System.out.println(header + ": " + outputText);
     }
 
-    private void makeExperimentPublic(String title) throws Exception{
-        submitExperiment();
-
-        clickAndWait("link=My Experiment Workspace");
-        waitForTab();
-
-        findTitleAcrossMultiPages(title);
-        // - Make the experiment public
-        int row = getExperimentRow(title, FIRST_COLUMN);
-        // - Click on the image to enter the edit mode again
-        selenium.click("//tr[" + row + "]/td[7]/a/img");
-        waitForText("Overall Experiment Characteristics");
-
-        // make experiment public
-        setExperimentPublic();
+    protected StringBuilder buildStackTrace(Throwable t) {
+        StringWriter sw = new StringWriter();
+        t.printStackTrace(new PrintWriter(sw, true));
+        return new StringBuilder(sw.toString());
     }
-
-
-    private void verifyDataViaApi(String experimentTitle) throws ServerConnectionException {
-        CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
-        server.connect();
-        CaArraySearchService searchService = server.getSearchService();
-        Experiment searchExperiment = new Experiment();
-        searchExperiment.setTitle(experimentTitle);
-        List<Experiment> matches = searchService.search(searchExperiment);
-        Experiment experiment = matches.get(0);
-        assertEquals(8, experiment.getSources().size());
-        assertEquals(8, experiment.getSamples().size());
-//        assertEquals(8, experiment.getExtracts().size());
-//        assertEquals(8, experiment.getLabeledExtracts().size());
-        assertEquals(4, experiment.getHybridizations().size());
-        System.out.println("Verified thru the Java API");
-    }
-
-    private void checkFileStatus(String status, int column) {
-        for (int i = 1; i < NUMBER_OF_FILES; i++) {
-            assertEquals(status, selenium.getTable("row." + i + "." + column));
-        }
-    }
-
 }

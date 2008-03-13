@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The test
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This test Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the test Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the test Software; (ii) distribute and
+ * have distributed to and by third parties the test Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,98 +80,95 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.test.functional;
+package gov.nih.nci.caarray.test.api.java.arraydesign;
 
-import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
-import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.services.CaArrayServer;
+import gov.nih.nci.caarray.services.ServerConnectionException;
+import gov.nih.nci.caarray.services.arraydesign.ArrayDesignDetailsService;
+import gov.nih.nci.caarray.services.search.CaArraySearchService;
+import gov.nih.nci.caarray.test.api.AbstractApiTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
 
-import java.io.File;
+import java.util.List;
 
 import org.junit.Test;
 
 /**
- * 
- * Use Case UC#7231. Test Case #10320, #10321, #10324, #10325 Requirements: Browse by Experiments, Organism, Array
- * Providers, and Unique Array Designs
- * 
+ * A client downloading the details of an array design through CaArray's Remote Java API.
+ *
+ * @author Rashmi Srinivasa
  */
-public class BrowseExperimentTest extends AbstractSeleniumTest {
-    private static final int TWO_MINUTES = 12;
-    private static final String ARRAY_DESIGN_NAME = "Test3";
+public class ApiArrayDesignDownload extends AbstractApiTest {
+    private static final String[] ARRAY_DESIGN_NAMES = {
+        TestProperties.getAffymetrixSpecificationDesignName(),
+        TestProperties.getIlluminaDesignName(),
+        TestProperties.getGenepixDesignName()
+    };
 
     @Test
-    public void testNew() throws Exception {
-        String title = "browsable " + System.currentTimeMillis();
-        // - Login
-        loginAsPrincipalInvestigator();
-
-        // - Add the array design
-        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
-
-        // - Create an Experiment
-        String experimentId = createExperiment(title, ARRAY_DESIGN_NAME, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
-
-        // - Submit Experiment Proposal
-        submitExperiment();
-        makeExperimentPublic(experimentId);
-
-        // - logout
-        selenium.click("link=Logout");
-        waitForText("Browse caArray");
-
-        // - Click on Experiments link on the login page
-        selenium.click("link=Experiments");
-        waitForText("found");
-        // - Assert the Experiment is visible without logging in
-        findTitleAcrossMultiPages(experimentId);
-
-        // - Browse by Organisms
-        selenium.click("link=Browse");
-        waitForText("Welcome to the caArray Data Portal");
-        selenium.click("link=Organisms");
-        waitForText("found");
-        // Click on the Homo Sapien tab incase there is more than one tab
-        selenium.click("link=Homo sapiens (*");
-        waitForTab();
-        // - Assert the Experiment is visible without logging in
-        findTitleAcrossMultiPages(experimentId);
-
-        // - Browse by Array Providers
-        selenium.click("link=Browse");
-        waitForText("Welcome to the caArray Data Portal");
-        selenium.click("link=Array Providers");
-        waitForText("found");
-        // Click on the Affymetrix tab incase there is more than one tab
-        selenium.click("link=Affymetrix (*");
-        waitForTab();
-
-        // - Assert the Experiment is visible without logging in
-        findTitleAcrossMultiPages(experimentId);
-
-        // - Browse by Unique Array Designs
-        selenium.click("link=Browse");
-        waitForText("Welcome to the caArray Data Portal");
-        selenium.click("link=Unique Array Designs");
-        waitForText("found");
-        // Click on the Affymetrix tab incase there is more than one tab
-        selenium.click("link=Test3 (*");
-        waitForTab();
-
-        // - Assert the Experiment is visible without logging in
-        findTitleAcrossMultiPages(experimentId);
+    public void testDownloadArrayDesignDetails() {
+        try {
+            CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties
+                    .getServerJndiPort());
+            server.connect();
+            CaArraySearchService searchService = server.getSearchService();
+            logForSilverCompatibility(TEST_NAME, "Downloading Array Design details...");
+            for (String arrayDesignName : ARRAY_DESIGN_NAMES) {
+                logForSilverCompatibility(TEST_OUTPUT, "from Experiment: " + arrayDesignName);
+                downloadDetailsFromArrayDesign(server, searchService, arrayDesignName);
+            }
+        } catch (ServerConnectionException e) {
+            StringBuilder trace = buildStackTrace(e);
+            logForSilverCompatibility(TEST_OUTPUT, "Server connection exception: " + e + "\nTrace: " + trace);
+            assertTrue("Server connection exception: " + e, false);
+        } catch (RuntimeException e) {
+            StringBuilder trace = buildStackTrace(e);
+            logForSilverCompatibility(TEST_OUTPUT, "Runtime exception: " + e + "\nTrace: " + trace);
+            assertTrue("Runtime exception: " + e, false);
+        } catch (Throwable t) {
+            // Catches things like out-of-memory errors and logs them.
+            StringBuilder trace = buildStackTrace(t);
+            logForSilverCompatibility(TEST_OUTPUT, "Throwable: " + t + "\nTrace: " + trace);
+            assertTrue("Throwable: " + t, false);
+        }
     }
 
-    private void importArrayDesign(File arrayDesign) throws Exception {
-        selenium.click("link=Manage Array Designs");
-        selenium.waitForPageToLoad("30000");
-        if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
-            addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
-
-            // get the array design row so we do not find the wrong Imported text
-            int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
-            // wait for array design to be imported
-            waitForArrayDesignImport(TWO_MINUTES, column);
+    private void downloadDetailsFromArrayDesign(CaArrayServer server, CaArraySearchService searchService, String arrayDesignName) {
+        ArrayDesign arrayDesign = lookupArrayDesign(searchService, arrayDesignName);
+        if (arrayDesign != null) {
+            ArrayDesignDetailsService arrayDesignDetailsService = server.getArrayDesignDetailsService();
+            ArrayDesignDetails details = arrayDesignDetailsService.getDesignDetails(arrayDesign);
+            logForSilverCompatibility(API_CALL, "ArrayDesignDetailsService.getDesignDetails()");
+            if (details != null) {
+                logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + arrayDesignName + " with " + details.getFeatures().size() + " features, "
+                        + details.getProbeGroups().size() + " probe groups, " + details.getProbes().size()
+                        + " probes and " + details.getLogicalProbes().size() + " logical probes.");
+                assertTrue(true);
+            } else {
+                logForSilverCompatibility(TEST_OUTPUT, "Error: Array Design Details was null.");
+                assertTrue("Error: Array Design Details was null.", false);
+            }
+        } else {
+            logForSilverCompatibility(TEST_OUTPUT, "Error: Array Design was null.");
+            assertTrue("Error: Array Design was null.", false);
         }
+    }
+
+    private ArrayDesign lookupArrayDesign(CaArraySearchService service, String arrayDesignName) {
+        ArrayDesign exampleArrayDesign = new ArrayDesign();
+        exampleArrayDesign.setName(arrayDesignName);
+
+        List<ArrayDesign> arrayDesignList = service.search(exampleArrayDesign);
+        logForSilverCompatibility(API_CALL, "CaArraySearchService.search(ArrayDesign)");
+        int numArrayDesignsFound = arrayDesignList.size();
+        if (numArrayDesignsFound == 0) {
+            return null;
+        }
+        ArrayDesign arrayDesign = arrayDesignList.get(0);
+        return arrayDesign;
     }
 
 }

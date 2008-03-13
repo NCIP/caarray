@@ -80,97 +80,103 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.test.functional;
+package gov.nih.nci.caarray.test.api.grid.search;
 
-import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.domain.contact.Person;
+import gov.nih.nci.caarray.test.api.AbstractApiTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
+import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
+import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
+
+import java.rmi.RemoteException;
+import java.util.Iterator;
 
 import org.junit.Test;
 
-public class LoginBasicFlowTest extends AbstractSeleniumTest {
+/**
+ * A client searching for persons using CQL through the CaArray Grid service.
+ *
+ * @author Rashmi Srinivasa
+ */
+public class GridCqlSearchPerson extends AbstractApiTest {
+    private static final String[] LAST_NAMES = { "Laufs", "Freuhauf", "Wenz", "Li", "Zeller", "Fleckenstein" };
 
-    private static final String EXPERIMENT_WORKSPACE = "Experiment Workspace";
-
-    /*
-     * TC 8661
-     * Login use case basic flow.  user logs in and has the provided access
-     */
     @Test
-    public void testBasicFlow() throws Exception {
-        loginAsPrincipalInvestigator();
-        // page after login is Experiment Workspace
-        assertTrue(selenium.isTextPresent(EXPERIMENT_WORKSPACE));
-   }
-
-    /*
-     * login, create a project, try to upload without entering a file name.
-     * Covers TC9491 -  7218: Submit Experiment Proposal - AF
-     *   The method createExperiment creates a draft experiment
-     */
-    @Test
-    public void testEmptyUpload() throws Exception {
-        String title = "empty Upload" + System.currentTimeMillis();
-        loginAsPrincipalInvestigator();
-
-        // Create project
-        createExperiment(title);
-        // go to the data tab
-        selenium.click("link=Data");
-        waitForTab();
-
-        // - Click upload link with no files
-        selenium.click("link=Upload New File(s)");
-        selenium.click("link=Upload");
-        waitForAction();
-        
-        assertTrue(selenium.isTextPresent("0 files uploaded"));
-    }
-    /*
-     * login, create a project, import a file with validation errors, validate the error page
-     */
-    @Test
-    public void testImportIDFWithValidationErrors() throws Exception {
-        loginAsPrincipalInvestigator();
-
-        String title = "test" + System.currentTimeMillis();
-        // - Create project
-        createExperiment(title);
-        // - go to the data tab
-        selenium.click("link=Data");
-        waitForTab();
-        
-        // - Upload file
-        selenium.click("link=Upload New File(s)");
-        upload(MageTabDataFiles.TCGA_BROAD_IDF);
-        
-        // - Import file
-        selenium.click("selectAllCheckbox");
-        selenium.click("link=Import"); 
-
-        // wait for file to upload
-        refreshImport("Failed Validation");
-        
-        // - Click failed validation link
-        selenium.click("link=Failed Validation");
-        waitForText("Validation Messages");
-        
-        assertTrue(selenium.isTextPresent("Publication Title value is missing"));
-       
+    public void testCqlSearchPerson() {
+        try {
+            CaArraySvcClient client = new CaArraySvcClient(TestProperties.getGridServiceUrl());
+            logForSilverCompatibility(TEST_NAME, "Grid-CQL-Searching for Persons...");
+            for (String lastName : LAST_NAMES) {
+                boolean resultIsOkay = searchPersons(client, lastName);
+                assertTrue("Error: Response did not match request.", resultIsOkay);
+            }
+        } catch (RemoteException e) {
+            StringBuilder trace = buildStackTrace(e);
+            logForSilverCompatibility(TEST_OUTPUT, "Remote exception: " + e + "\nTrace: " + trace);
+            assertTrue("Remote exception: " + e, false);
+        } catch (Throwable t) {
+            // Catches things like out-of-memory errors and logs them.
+            StringBuilder trace = buildStackTrace(t);
+            logForSilverCompatibility(TEST_OUTPUT, "Throwable: " + t + "\nTrace: " + trace);
+            assertTrue("Throwable: " + t, false);
+        }
     }
 
-    private boolean refreshImport(String waitForText) throws InterruptedException{
-        for (int loop = 1;; loop++) {
-            // security from run away loop
-            if (loop == 20){
-                fail();
+    private boolean searchPersons(CaArraySvcClient client, String lastName) throws RemoteException {
+        CQLQuery cqlQuery = createCqlQuery(lastName);
+        CQLQueryResults cqlResults = client.query(cqlQuery);
+        logForSilverCompatibility(API_CALL, "Grid search(CQLQuery)");
+        // printCqlResultsAsXml(cqlResults, "GridCqlSearchPerson.xml");
+        boolean resultIsOkay = isResultOkay(cqlResults, lastName);
+        if (resultIsOkay) {
+            logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + cqlResults.getObjectResult().length
+                    + " persons with last name " + lastName + ".");
+        } else {
+            logForSilverCompatibility(TEST_OUTPUT, "Error: Response did not match request.");
+        }
+        return resultIsOkay;
+    }
+
+    private CQLQuery createCqlQuery(String lastName) {
+        CQLQuery cqlQuery = new CQLQuery();
+        Object target = new Object();
+        target.setName("gov.nih.nci.caarray.domain.contact.Person");
+
+        Attribute affiliationAttribute = new Attribute();
+        affiliationAttribute.setName("lastName");
+        affiliationAttribute.setValue(lastName);
+        affiliationAttribute.setPredicate(Predicate.EQUAL_TO);
+
+        target.setAttribute(affiliationAttribute);
+
+        cqlQuery.setTarget(target);
+        return cqlQuery;
+    }
+
+    private boolean isResultOkay(CQLQueryResults cqlResults, String lastName) {
+        if (cqlResults.getObjectResult() == null) {
+            return false;
+        }
+        Iterator iter = new CQLQueryResultsIterator(cqlResults, CaArraySvcClient.class
+                .getResourceAsStream("client-config.wsdd"));
+        if (!(iter.hasNext())) {
+            return false;
+        }
+        while (iter.hasNext()) {
+            Person retrievedPerson = (Person) (iter.next());
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Person.getFirstName(): " + retrievedPerson.getFirstName());
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Person.getLastName(): " + retrievedPerson.getLastName());
+            // Check if retrieved person matches requested search criteria.
+            if (!lastName.equalsIgnoreCase(retrievedPerson.getLastName())) {
                 return false;
             }
-            selenium.click(REFRESH_BUTTON); // refresh
-            Thread.sleep(3000);
-            if (selenium.isTextPresent(waitForText)) {
-                 return true;
-            } 
         }
-     
+        return true;
     }
 }
