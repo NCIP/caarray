@@ -131,11 +131,11 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private FileValidationResult validationResult;
     private int uncompressedSize;
     private int compressedSize;
-    private MultiPartBlob multiPartBlob;
 
     // transient properties
+    private transient MultiPartBlob multiPartBlob;
     private transient InputStream inputStreamToClose;
-    private File fileToDelete;
+    private transient File fileToDelete;
 
     /**
      * Gets the name.
