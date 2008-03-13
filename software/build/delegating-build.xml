@@ -31,7 +31,7 @@
             <update dir="${basedir}" />
         </svn>
         <copy todir="${basedir}/../.." file="software/build/cruisecontrol_config.xml" />
-        <ant antfile="build/cc-nightly-build.xml"
+        <ant antfile="build/hudson-nightly-build.xml"
             dir="software"
             target="nightly-build" />
         <svn username="${svn.username}" password="${svn.password}">
