@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>caarray-ejb-jar-2_0_0</name>
+	<name>caarray-ejb.jar</name>
 	<comment></comment>
 	<projects>
 		<project>caarray-common.jar</project>

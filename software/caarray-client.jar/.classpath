@@ -4,8 +4,8 @@
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar-2_0_0"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/caarray-ejb-jar-2_0_0"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/caarray-ejb.jar"/>
 	<classpathentry kind="lib" path="/lib-2.0.0/caGrid-1.1-data-stubs.jar"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>
