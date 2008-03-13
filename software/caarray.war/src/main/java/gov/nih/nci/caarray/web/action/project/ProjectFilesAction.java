@@ -132,7 +132,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * Maximum total uncompressed size (in bytes) of files that can be downloaded in a single ZIP. If files selected
      * for download have a greater combined size, then the user will be presented with a group download page.
      */
-    public static final long MAX_DOWNLOAD_SIZE = 1024 * 1024 * 300;
+    public static final long MAX_DOWNLOAD_SIZE = 1024 * 1024 * 150;
     private static final String UPLOAD_INPUT = "upload";
     private static final long serialVersionUID = 1L;
     private static final String ACTION_UNIMPORTED = "listUnimported";
@@ -544,7 +544,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                     new String[] {conflict }));
         }
 
-        ActionHelper.saveMessage(count + " files uploaded.");
+        ActionHelper.saveMessage(count + " file(s) uploaded.");
         MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
         return UPLOAD_INPUT;
     }
@@ -574,16 +574,33 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
     
     private void computeDownloadGroups() {
-        downloadFileGroups.clear();
-        DownloadGroup currentGroup = new DownloadGroup();
-        downloadFileGroups.add(currentGroup);
+        this.downloadFileGroups.clear();
         for (CaArrayFile file : getSelectedFiles()) {
-            if (currentGroup.getTotalUncompressedSize() + file.getUncompressedSize() > MAX_DOWNLOAD_SIZE) {
-                currentGroup = new DownloadGroup();
-                downloadFileGroups.add(currentGroup);
-            }
-            currentGroup.addFile(file);
+            addToDownloadGroups(file);
         }
+    }
+
+    /**
+     * Add given file to the download groups. The goal is to find the best possible group to put it, such that the total
+     * number of groups will be minimized. the algorithm is to put it in the group which will then have the closest
+     * to max allowable size without going over
+     * @param file the file to add
+     */
+    private void addToDownloadGroups(CaArrayFile file) {
+        DownloadGroup bestGroup = null;
+        long maxNewSize = 0;
+        for (DownloadGroup group : this.downloadFileGroups) {
+            long newGroupSize = group.getTotalCompressedSize() + file.getCompressedSize();
+            if (newGroupSize < MAX_DOWNLOAD_SIZE && newGroupSize > maxNewSize) {
+                maxNewSize = newGroupSize;
+                bestGroup = group;
+            }            
+        }
+        if (bestGroup == null) {
+            bestGroup = new DownloadGroup();
+            this.downloadFileGroups.add(bestGroup);
+        }
+        bestGroup.addFile(file);        
     }
 
     /**
@@ -782,3 +799,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         this.downloadSequenceNumber = downloadSequenceNumber;
     }
 }
+
+
+

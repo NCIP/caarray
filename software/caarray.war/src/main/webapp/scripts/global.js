@@ -1,3 +1,11 @@
+// graceful  degradation of firebug's console object
+if (! ("console" in window) || !("firebug" in console)) {
+    var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group"
+                 , "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+    window.console = {};
+    for (var i = 0; i <names.length; ++i) window.console[names[i]] = function() {};
+}
+
 /* This function is used to change the style class of an element */
 function swapClass(obj, newStyle) {
     obj.className = newStyle;
@@ -420,7 +428,7 @@ var TabUtils = {
         var elts = document.getElementsByClassName('loadingText');
         var loadingElt = elts.length > 0 ? elts[0] : null;
         if (loadingElt) {
-			//DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
+      //DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
             //console.log("showing existing loading text");
             $(loadingElt).show();
             if (!keepMainContent) {
@@ -433,7 +441,7 @@ var TabUtils = {
             }
             if (tabwrapperdiv) {
                 // write out the loading text
-				//DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
+        //DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
                 //console.log("creating new loading text");
                 tabwrapperdiv.innerHTML = '<div><img alt="Indicator" align="absmiddle" src="' + contextPath + '/images/indicator.gif"/>&nbsp;Loading...</div>';
             }
@@ -442,7 +450,7 @@ var TabUtils = {
             $('tabHeader').hide();
         }
     },
-    
+
     showLoadingTextKeepMainContent: function() {
         TabUtils.showLoadingText(true);
     },
@@ -494,6 +502,53 @@ var TabUtils = {
             }
         }
         return tabMenuItems[0].getElementsByTagName('a')[0];
+    },
+    addScrollTabs: function(tabPanelId, selectedTab) {
+        var tabs = $(tabPanelId).getElementsByTagName('li')
+        var tabList = tabs[0].parentNode;
+        tabList.numTabs = tabs.length;
+        tabList.index = selectedTab;
+        tabList.offsets = new Array(tabList.numTabs);
+        totalOffset = 0;
+        for (i=0; i<tabList.numTabs; i++) {
+          tabList.offsets[i] = totalOffset;
+          totalOffset += tabs[i].offsetWidth;
+        }
+        if (tabList.parentNode.offsetWidth-totalOffset > 0) {
+          return;
+        } else {
+          tabList.style.width = totalOffset+"px";
+        }
+        new Effect.Move(tabList,{ x: -tabList.offsets[selectedTab], mode: 'absolute'});
+
+        innerPrev = document.createElement('div');
+        innerPrev.innerHTML = '&lt;';
+        innerPrev.className = 'scrollButton';
+        prevButton = document.createElement('div');
+        prevButton.className = 'leftScrollBox';
+        prevButton.appendChild(innerPrev);
+        prevButton.onclick = function() {
+          if (tabList.index > 0) {
+            new Effect.Move(tabList,{ x: -tabList.offsets[--tabList.index], mode: 'absolute', duration: .3});
+          }
+        };
+        tabList.parentNode.appendChild(prevButton);
+
+        innerNext = document.createElement('div');
+        innerNext.innerHTML = '&gt;';
+        innerNext.className = 'scrollButton';
+        nextButton = document.createElement('div');
+        nextButton.className = 'rightScrollBox';
+        nextButton.appendChild(innerNext);
+        nextButton.onclick = function() {
+          var curOffset = tabList.offsets[tabList.index];
+          var maxOffset = tabList.offsetWidth - tabList.parentNode.offsetWidth;
+          if (curOffset < maxOffset && tabList.index < tabList.numTabs-1) {
+            var newOffset = Math.min(maxOffset, tabList.offsets[++tabList.index]);
+            new Effect.Move(tabList,{ x: -newOffset, mode: 'absolute', duration: .3});
+          }
+        };
+        tabList.parentNode.appendChild(nextButton);
     }
 }
 
@@ -558,10 +613,10 @@ var PermissionUtils = {
 // Download stuff here
 //
 
-function DownloadMgr(dUrl, dgUrl, iUrl, maxDownloadSize) {
+function DownloadMgr(dUrl, dgUrl, removeImageUrl, maxDownloadSize) {
   this.downloadUrl = dUrl;
   this.downloadGroupsUrl = dgUrl;
-  this.imageUrl = iUrl;
+  this.removeImageUrl = removeImageUrl;
   this.downloadIds = new Array();
   this.downloadSizeArray = new Array();
   this.count = 0;
@@ -569,17 +624,11 @@ function DownloadMgr(dUrl, dgUrl, iUrl, maxDownloadSize) {
   this.maxDownloadSize = maxDownloadSize;
 }
 
-DownloadMgr.prototype.downloadUrl;
-DownloadMgr.prototype.imageUrl;
-DownloadMgr.prototype.downloadIds;
-DownloadMgr.prototype.downloadSizeArray;
-DownloadMgr.prototype.count;
-
-DownloadMgr.prototype.addDownloadRow = function(name, id, size) {
-  this.addDownloadRow(name, id, size, null);
+DownloadMgr.prototype.addDownloadRow = function(name, id, addLink, size) {
+  this.addDownloadRow(name, id, addLink, size, null);
 }
 
-DownloadMgr.prototype.addDownloadRow = function(name, id, size, doAlert) {
+DownloadMgr.prototype.addDownloadRow = function(name, id, addLink, size, doAlert) {
     for (i = 0; i < this.downloadIds.length; ++i) {
       if (this.downloadIds[i] == id) {
         if (doAlert == null) {
@@ -599,12 +648,13 @@ DownloadMgr.prototype.addDownloadRow = function(name, id, size, doAlert) {
   row.id = 'downloadRow' + this.count;
 
   var cell = row.insertCell(0);
-  cell.innerHTML = '<img src="'+ this.imageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + this.count + ')"/>&nbsp;&nbsp;' + name;
+  cell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + this.count + ', ' + size + '); return false;"/>&nbsp;&nbsp;' + name;
 
   this.addTotalRow();
+  new Effect.Highlight($(addLink).up('tr'));
 }
 
-DownloadMgr.prototype.removeRow = function(toRemove) {
+DownloadMgr.prototype.removeRow = function(toRemove, size) {
   var tbl = document.getElementById('downloadTbl');
   var row = document.getElementById('downloadRow' + toRemove);
   for (i = 0; i < tbl.rows.length; ++i) {
@@ -780,3 +830,4 @@ var TermPickerUtils = {
         return autoUpdater;
     }
 }
+

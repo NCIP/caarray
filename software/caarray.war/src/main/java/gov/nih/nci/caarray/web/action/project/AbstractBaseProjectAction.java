@@ -115,6 +115,12 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
      * the UI.   
      */
     public static final int TRUNCATED_TITLE_WIDTH = 80;
+    
+    /**
+     * Width (in characters) to which the experiment title should be truncated to prevent messages from overflowing
+     * the UI.   
+     */
+    public static final int TRUNCATED_TITLE_WIDTH = 80;
 
     private Project project = new Project();
 

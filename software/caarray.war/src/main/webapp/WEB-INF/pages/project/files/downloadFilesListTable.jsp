@@ -11,7 +11,7 @@
         requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id">
         <caarray:displayTagProperties/>
         <display:column title="${addAll}">
-          <a href="#" name="todownload" onclick="downloadMgr.addDownloadRow('${row.name}', '${row.id}', ${row.compressedSize})">
+          <a href="#" name="todownload" onclick="downloadMgr.addDownloadRow('${row.name}', '${row.id}', this, ${row.compressedSize}); return false;">
             <img src="<c:url value="/images/ico_add.gif"/>" alt="Add ${row.name}"/>
           </a>
         </display:column>
