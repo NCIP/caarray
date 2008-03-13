@@ -114,6 +114,8 @@ class ClassBasedMigrationStep extends AbstractMigrationStep {
             throw new MigrationStepFailedException(e);
         } catch (IllegalAccessException e) {
             throw new MigrationStepFailedException(e);
+        } catch (RuntimeException e) {
+            throw new MigrationStepFailedException(e);
         }
     }
 
