@@ -6,7 +6,7 @@
         <sql-script>migrate-2.0.1.alpha1-to-2.0.1.alpha2.sql</sql-script>
         <migrator-class>gov.nih.nci.caarray.web.upgrade.AffymetrixChpDesignElementListFixer</migrator-class>
     </migration>
-    <migration fromVersion="2.01.alpha2" toVersion="2.0.1.rc1">
+    <migration fromVersion="2.0.1.alpha2" toVersion="2.0.1.rc1">
         <sql-script>migrate-2.0.1.alpha2-to-2.0.1.rc1.sql</sql-script>
     </migration>
 </migrations>
