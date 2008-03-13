@@ -132,7 +132,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * Maximum total uncompressed size (in bytes) of files that can be downloaded in a single ZIP. If files selected
      * for download have a greater combined size, then the user will be presented with a group download page.
      */
-    public static final long MAX_DOWNLOAD_SIZE = 1024 * 1024 * 50;
+    public static final long MAX_DOWNLOAD_SIZE = 1024 * 1024 * 150;
     private static final String UPLOAD_INPUT = "upload";
     private static final long serialVersionUID = 1L;
     private static final String ACTION_UNIMPORTED = "listUnimported";
