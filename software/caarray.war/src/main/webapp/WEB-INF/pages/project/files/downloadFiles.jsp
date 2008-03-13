@@ -28,11 +28,17 @@
     </div>
     <caarray:actions divclass="actionsthin">
         <caarray:action onclick="downloadMgr.resetDownloadInfo();" actionClass="cancel" text="Cancel" />
-        <caarray:action onclick="$('downloadInProgressMsg').show(); downloadMgr.doDownloadFiles();" actionClass="launch_download" text="Launch Download Job" />
+        <caarray:action onclick="showDownloadInProgress(); downloadMgr.doDownloadFiles();" actionClass="launch_download" text="Launch Download Job" />
     </caarray:actions>
 </caarray:tabPane>
 <script type="text/javascript">
 <!--
-  downloadMgr.resetDownloadInfo();
+    downloadMgr.resetDownloadInfo();
+  
+    showDownloadInProgress = function() {
+        if (downloadMgr.downloadIds.length > 0) {
+            $('downloadInProgressMsg').show();
+        }
+    }
 -->
 </script>
