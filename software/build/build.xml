@@ -114,6 +114,7 @@
     <property name="jboss-aspect-jdk50-client.jar" value="${lib.dir}/jboss-aspect-jdk50-client.jar" />
     <property name="jbossall-client.jar" value="${lib.dir}/jbossall-client.jar" />
     <property name="jboss-ejb3-client.jar" value="${lib.dir}/jboss-ejb3-client.jar" />
+    <property name="jboss-ejb3x.jar" value="${lib.dir}/jboss-ejb3x.jar" />
     <property name="jboss-annotations-ejb3.jar" value="${lib.dir}/jboss-annotations-ejb3.jar" />
     <property name="jta.jar" value="${lib.dir}/jta.jar" />
     <property name="junit.jar" value="${lib.dir}/junit-4.3.1.jar" />
@@ -191,6 +192,7 @@
             <include name="hibernate-annotations.jar" />
             <include name="log4j-1.2.13.jar" />
             <include name="jboss-ejb3-client.jar" />
+            <include name="jboss-ejb3x.jar" />
             <include name="jbossall-client.jar" />
             <include name="jboss-aspect-jdk50-client.jar" />
             <include name="jboss-aop-jdk50-client.jar" />
@@ -568,13 +570,14 @@
                 <section name="gov/nih/nci/caarray/">
                     <attribute name="Specification-Title" value="caArray"/>
                     <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
-                    <attribute name="Specification-Vendor" value="5am Solutions"/>
+                    <attribute name="Specification-Vendor" value="5AM Solutions"/>
                     <attribute name="Implementation-Title" value="caArray"/>
                     <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
-                    <attribute name="Implementation-Vendor" value="5am Solutions"/>
+                    <attribute name="Implementation-Vendor" value="5AM Solutions"/>
                 </section>
             </manifest>
             <fileset dir="${caarray-client.classes.dir}" />
+            <fileset dir="${caarray-client.resources.dir}" />
             <fileset dir="${caarray-common.classes.dir}">
                 <include name="**/domain/**" />
                 <include name="**/query/**" />
@@ -594,7 +597,6 @@
     <target name="build:caarray-client.zip" depends="build:caarray-client.jar,javadoc:caarray-client">
         <zip destfile="${caarray-client.target.dir}/caarray-client.zip">
             <fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
-            <zipfileset dir="${caarray-client.resources.dir}" includes="auth.conf" prefix="etc" />
             <zipfileset prefix="lib" refid="caarray-client.dependencies.fileset" />
             <zipfileset dir="${caarray-client.target.dir}" includes="docs/**" />
         </zip>
@@ -603,7 +605,6 @@
     <target name="build:caarray-client.tar.gz" depends="build:caarray-client.jar,javadoc:caarray-client">
         <tar destfile="${caarray-client.target.dir}/caarray-client.tar">
             <fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
-            <tarfileset dir="${caarray-client.resources.dir}" includes="auth.conf" prefix="etc" />
             <tarfileset prefix="lib" refid="caarray-client.dependencies.fileset" />
             <tarfileset dir="${caarray-client.target.dir}" includes="docs/**" />
         </tar>
@@ -617,10 +618,10 @@
                 <section name="gov/nih/nci/caarray/">
                     <attribute name="Specification-Title" value="caArray"/>
                     <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
-                    <attribute name="Specification-Vendor" value="5am Solutions"/>
+                    <attribute name="Specification-Vendor" value="5AM Solutions"/>
                     <attribute name="Implementation-Title" value="caArray"/>
                     <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
-                    <attribute name="Implementation-Vendor" value="5am Solutions"/>
+                    <attribute name="Implementation-Vendor" value="5AM Solutions"/>
                 </section>
             </manifest>
             <fileset dir="${caarray-common.classes.dir}" />
@@ -634,10 +635,10 @@
                 <section name="gov/nih/nci/caarray/">
                     <attribute name="Specification-Title" value="caArray"/>
                     <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
-                    <attribute name="Specification-Vendor" value="5am Solutions"/>
+                    <attribute name="Specification-Vendor" value="5AM Solutions"/>
                     <attribute name="Implementation-Title" value="caArray"/>
                     <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
-                    <attribute name="Implementation-Vendor" value="5am Solutions"/>
+                    <attribute name="Implementation-Vendor" value="5AM Solutions"/>
                 </section>
             </manifest>
             <metainf dir="${caarray-ejb.resources.dir}" includes="*.xml" />
@@ -684,10 +685,10 @@
            <section name="gov/nih/nci/caarray/">
                <attribute name="Specification-Title" value="caArray"/>
                <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
-               <attribute name="Specification-Vendor" value="5am Solutions"/>
+               <attribute name="Specification-Vendor" value="5AM Solutions"/>
                <attribute name="Implementation-Title" value="caArray"/>
                <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
-               <attribute name="Implementation-Vendor" value="5am Solutions"/>
+               <attribute name="Implementation-Vendor" value="5AM Solutions"/>
            </section>
       </manifest>
       <lib dir="${lib.dir}">
@@ -747,10 +748,10 @@
                 <section name="gov/nih/nci/caarray/">
                     <attribute name="Specification-Title" value="caArray"/>
                     <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
-                    <attribute name="Specification-Vendor" value="5am Solutions"/>
+                    <attribute name="Specification-Vendor" value="5AM Solutions"/>
                     <attribute name="Implementation-Title" value="caArray"/>
                     <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
-                    <attribute name="Implementation-Vendor" value="5am Solutions"/>
+                    <attribute name="Implementation-Vendor" value="5AM Solutions"/>
                 </section>
             </manifest>
             <fileset dir="${caarray-ear.target.dir}/xml" includes="jboss-service.xml">
@@ -1672,6 +1673,7 @@
         <pathelement location="${ognl-2.6.11.jar}" />
         <pathelement location="${struts2-core-2.0.9.jar}" />
         <pathelement location="${xwork-2.0.4.jar}" />
+        <pathelement location="${nci-commons-core.jar}"/>
         <pathelement path="${caarray-client.classes.dir}" />
         <pathelement path="${caarray-common.classes.dir}" />
         <pathelement path="${caarray-ejb.classes.dir}" />
