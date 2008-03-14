@@ -80,55 +80,48 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.test.api.java.arraydesign;
+package gov.nih.nci.caarray.test.api.grid.file;
 
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.services.CaArrayServer;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.arraydesign.ArrayDesignDetailsService;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.test.api.AbstractApiTest;
 import gov.nih.nci.caarray.test.base.TestProperties;
+import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
+import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
 
-import java.util.List;
+import java.rmi.RemoteException;
 
 import org.junit.Test;
 
 /**
- * A client downloading the details of an array design through CaArray's Remote Java API.
+ * A client downloading file contents through the CaArray Grid service.
  *
  * @author Rashmi Srinivasa
  */
-public class ApiArrayDesignDownload extends AbstractApiTest {
-    private static final String[] ARRAY_DESIGN_NAMES = {
-        TestProperties.getAffymetrixSpecificationDesignName(),
-        TestProperties.getIlluminaDesignName(),
-        //TestProperties.getAffymetrixHumanDesignName(), // Causes server to run out of memory
-        TestProperties.getGenepixDesignName()
+public class GridFileDownload extends AbstractApiTest {
+    private static final String[] FILE_NAMES = {
+        "H_TK6 MDR1 replicate 1.cel",
+        "Test3-1-121502.CHP",
+        //"Human_WG-6_data.csv", // Causes Grid server to run out of memory
+        //"4_1_1_x.gpr"
     };
 
     @Test
-    public void testDownloadArrayDesignDetails() {
+    public void testDownloadFileContents() {
         try {
-            CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties
-                    .getServerJndiPort());
-            server.connect();
-            CaArraySearchService searchService = server.getSearchService();
-            logForSilverCompatibility(TEST_NAME, "Downloading Array Design details...");
-            for (String arrayDesignName : ARRAY_DESIGN_NAMES) {
-                logForSilverCompatibility(TEST_OUTPUT, "from Experiment: " + arrayDesignName);
-                downloadDetailsFromArrayDesign(server, searchService, arrayDesignName);
+            CaArraySvcClient client = new CaArraySvcClient(TestProperties.getGridServiceUrl());
+            logForSilverCompatibility(TEST_NAME, "Grid-Downloading file contents...");
+            for (String fileName : FILE_NAMES) {
+                downloadContents(client, fileName);
             }
-        } catch (ServerConnectionException e) {
+        } catch (RemoteException e) {
             StringBuilder trace = buildStackTrace(e);
-            logForSilverCompatibility(TEST_OUTPUT, "Server connection exception: " + e + "\nTrace: " + trace);
-            assertTrue("Server connection exception: " + e, false);
-        } catch (RuntimeException e) {
-            StringBuilder trace = buildStackTrace(e);
-            logForSilverCompatibility(TEST_OUTPUT, "Runtime exception: " + e + "\nTrace: " + trace);
-            assertTrue("Runtime exception: " + e, false);
+            logForSilverCompatibility(TEST_OUTPUT, "Remote exception: " + e + "\nTrace: " + trace);
+            assertTrue("Remote exception: " + e, false);
         } catch (Throwable t) {
             // Catches things like out-of-memory errors and logs them.
             StringBuilder trace = buildStackTrace(t);
@@ -137,39 +130,38 @@ public class ApiArrayDesignDownload extends AbstractApiTest {
         }
     }
 
-    private void downloadDetailsFromArrayDesign(CaArrayServer server, CaArraySearchService searchService, String arrayDesignName) {
-        ArrayDesign arrayDesign = lookupArrayDesign(searchService, arrayDesignName);
-        if (arrayDesign != null) {
-            ArrayDesignDetailsService arrayDesignDetailsService = server.getArrayDesignDetailsService();
-            ArrayDesignDetails details = arrayDesignDetailsService.getDesignDetails(arrayDesign);
-            logForSilverCompatibility(API_CALL, "ArrayDesignDetailsService.getDesignDetails()");
-            if (details != null) {
-                logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + arrayDesignName + " with " + details.getFeatures().size() + " features, "
-                        + details.getProbeGroups().size() + " probe groups, " + details.getProbes().size()
-                        + " probes and " + details.getLogicalProbes().size() + " logical probes.");
-                assertTrue(true);
+    private void downloadContents(CaArraySvcClient client, String fileName) throws RemoteException {
+        logForSilverCompatibility(TEST_OUTPUT, "... from file " + fileName);
+        CaArrayFile caArrayFile = lookupFile(client, fileName);
+        if (caArrayFile != null) {
+            byte[] byteArray = client.readFile(caArrayFile);
+            logForSilverCompatibility(API_CALL, "Grid readFile(CaArrayFile)");
+            if (byteArray != null) {
+                logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + byteArray.length + " bytes.");
+                assertTrue(byteArray.length > 0);
             } else {
-                logForSilverCompatibility(TEST_OUTPUT, "Error: Array Design Details was null.");
-                assertTrue("Error: Array Design Details was null.", false);
+                logForSilverCompatibility(TEST_OUTPUT, "Error: Retrieved null byte array.");
+                assertTrue("Error: Retrieved null byte array.", false);
             }
         } else {
-            logForSilverCompatibility(TEST_OUTPUT, "Error: Array Design was null.");
-            assertTrue("Error: Array Design was null.", false);
+            logForSilverCompatibility(TEST_OUTPUT, "Error: Could not find file " + fileName);
+            assertTrue("Error: Could not find file.", false);
         }
     }
 
-    private ArrayDesign lookupArrayDesign(CaArraySearchService service, String arrayDesignName) {
-        ArrayDesign exampleArrayDesign = new ArrayDesign();
-        exampleArrayDesign.setName(arrayDesignName);
-
-        List<ArrayDesign> arrayDesignList = service.search(exampleArrayDesign);
-        logForSilverCompatibility(API_CALL, "CaArraySearchService.search(ArrayDesign)");
-        int numArrayDesignsFound = arrayDesignList.size();
-        if (numArrayDesignsFound == 0) {
-            return null;
-        }
-        ArrayDesign arrayDesign = arrayDesignList.get(0);
-        return arrayDesign;
+    private CaArrayFile lookupFile(CaArraySvcClient client, String fileName) throws RemoteException {
+        CQLQuery cqlQuery = new CQLQuery();
+        gov.nih.nci.cagrid.cqlquery.Object target = new gov.nih.nci.cagrid.cqlquery.Object();
+        target.setName("gov.nih.nci.caarray.domain.file.CaArrayFile");
+        Attribute fileNameAttribute = new Attribute();
+        fileNameAttribute.setName("name");
+        fileNameAttribute.setValue(fileName);
+        fileNameAttribute.setPredicate(Predicate.EQUAL_TO);
+        target.setAttribute(fileNameAttribute);
+        cqlQuery.setTarget(target);
+        CQLQueryResults cqlResults = client.query(cqlQuery);
+        CQLQueryResultsIterator iter = new CQLQueryResultsIterator(cqlResults, CaArraySvcClient.class
+                .getResourceAsStream("client-config.wsdd"));
+        return (CaArrayFile) iter.next();
     }
-
 }

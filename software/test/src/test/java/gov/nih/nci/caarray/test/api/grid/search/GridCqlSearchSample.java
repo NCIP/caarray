@@ -80,55 +80,48 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.test.api.java.arraydesign;
+package gov.nih.nci.caarray.test.api.grid.search;
 
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.services.CaArrayServer;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.arraydesign.ArrayDesignDetailsService;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.test.api.AbstractApiTest;
 import gov.nih.nci.caarray.test.base.TestProperties;
+import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
+import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
 
-import java.util.List;
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.junit.Test;
 
 /**
- * A client downloading the details of an array design through CaArray's Remote Java API.
+ * A client searching for samples using CQL through the CaArray Grid service.
  *
  * @author Rashmi Srinivasa
  */
-public class ApiArrayDesignDownload extends AbstractApiTest {
-    private static final String[] ARRAY_DESIGN_NAMES = {
-        TestProperties.getAffymetrixSpecificationDesignName(),
-        TestProperties.getIlluminaDesignName(),
-        //TestProperties.getAffymetrixHumanDesignName(), // Causes server to run out of memory
-        TestProperties.getGenepixDesignName()
-    };
+public class GridCqlSearchSample extends AbstractApiTest {
+    private static final String[] NAMES = { "TK6 replicate 1" };
 
     @Test
-    public void testDownloadArrayDesignDetails() {
+    public void testCqlSearchSample() {
         try {
-            CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties
-                    .getServerJndiPort());
-            server.connect();
-            CaArraySearchService searchService = server.getSearchService();
-            logForSilverCompatibility(TEST_NAME, "Downloading Array Design details...");
-            for (String arrayDesignName : ARRAY_DESIGN_NAMES) {
-                logForSilverCompatibility(TEST_OUTPUT, "from Experiment: " + arrayDesignName);
-                downloadDetailsFromArrayDesign(server, searchService, arrayDesignName);
+            CaArraySvcClient client = new CaArraySvcClient(TestProperties.getGridServiceUrl());
+            logForSilverCompatibility(TEST_NAME, "Grid-CQL-Searching for Samples...");
+            for (String sampleName : NAMES) {
+                boolean resultIsOkay = searchSamples(client, sampleName);
+                assertTrue("Error: Response did not match request.", resultIsOkay);
             }
-        } catch (ServerConnectionException e) {
+        } catch (RemoteException e) {
             StringBuilder trace = buildStackTrace(e);
-            logForSilverCompatibility(TEST_OUTPUT, "Server connection exception: " + e + "\nTrace: " + trace);
-            assertTrue("Server connection exception: " + e, false);
-        } catch (RuntimeException e) {
-            StringBuilder trace = buildStackTrace(e);
-            logForSilverCompatibility(TEST_OUTPUT, "Runtime exception: " + e + "\nTrace: " + trace);
-            assertTrue("Runtime exception: " + e, false);
+            logForSilverCompatibility(TEST_OUTPUT, "Remote exception: " + e + "\nTrace: " + trace);
+            assertTrue("Remote exception: " + e, false);
         } catch (Throwable t) {
             // Catches things like out-of-memory errors and logs them.
             StringBuilder trace = buildStackTrace(t);
@@ -137,39 +130,59 @@ public class ApiArrayDesignDownload extends AbstractApiTest {
         }
     }
 
-    private void downloadDetailsFromArrayDesign(CaArrayServer server, CaArraySearchService searchService, String arrayDesignName) {
-        ArrayDesign arrayDesign = lookupArrayDesign(searchService, arrayDesignName);
-        if (arrayDesign != null) {
-            ArrayDesignDetailsService arrayDesignDetailsService = server.getArrayDesignDetailsService();
-            ArrayDesignDetails details = arrayDesignDetailsService.getDesignDetails(arrayDesign);
-            logForSilverCompatibility(API_CALL, "ArrayDesignDetailsService.getDesignDetails()");
-            if (details != null) {
-                logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + arrayDesignName + " with " + details.getFeatures().size() + " features, "
-                        + details.getProbeGroups().size() + " probe groups, " + details.getProbes().size()
-                        + " probes and " + details.getLogicalProbes().size() + " logical probes.");
-                assertTrue(true);
-            } else {
-                logForSilverCompatibility(TEST_OUTPUT, "Error: Array Design Details was null.");
-                assertTrue("Error: Array Design Details was null.", false);
-            }
+    private boolean searchSamples(CaArraySvcClient client, String sampleName) throws RemoteException {
+        CQLQuery cqlQuery = createCqlQuery(sampleName);
+        CQLQueryResults cqlResults = client.query(cqlQuery);
+        logForSilverCompatibility(API_CALL, "Grid search(CQLQuery)");
+        boolean resultIsOkay = isResultOkay(cqlResults, sampleName);
+        if (resultIsOkay) {
+            logForSilverCompatibility(TEST_OUTPUT, "Retrieved " + cqlResults.getObjectResult().length
+                    + " samples with name " + sampleName + ".");
         } else {
-            logForSilverCompatibility(TEST_OUTPUT, "Error: Array Design was null.");
-            assertTrue("Error: Array Design was null.", false);
+            logForSilverCompatibility(TEST_OUTPUT, "Error: Response did not match request.");
         }
+        return resultIsOkay;
     }
 
-    private ArrayDesign lookupArrayDesign(CaArraySearchService service, String arrayDesignName) {
-        ArrayDesign exampleArrayDesign = new ArrayDesign();
-        exampleArrayDesign.setName(arrayDesignName);
+    private CQLQuery createCqlQuery(String sampleName) {
+        CQLQuery cqlQuery = new CQLQuery();
+        Object target = new Object();
+        target.setName("gov.nih.nci.caarray.domain.sample.Sample");
 
-        List<ArrayDesign> arrayDesignList = service.search(exampleArrayDesign);
-        logForSilverCompatibility(API_CALL, "CaArraySearchService.search(ArrayDesign)");
-        int numArrayDesignsFound = arrayDesignList.size();
-        if (numArrayDesignsFound == 0) {
-            return null;
-        }
-        ArrayDesign arrayDesign = arrayDesignList.get(0);
-        return arrayDesign;
+        Attribute nameAttribute = new Attribute();
+        nameAttribute.setName("name");
+        nameAttribute.setValue(sampleName);
+        nameAttribute.setPredicate(Predicate.EQUAL_TO);
+
+        target.setAttribute(nameAttribute);
+
+        cqlQuery.setTarget(target);
+        return cqlQuery;
     }
 
+    private boolean isResultOkay(CQLQueryResults cqlResults, String sampleName) {
+        if (cqlResults.getObjectResult() == null) {
+            return false;
+        }
+        Iterator iter = new CQLQueryResultsIterator(cqlResults, CaArraySvcClient.class
+                .getResourceAsStream("client-config.wsdd"));
+        if (!(iter.hasNext())) {
+            return false;
+        }
+        while (iter.hasNext()) {
+            Sample retrievedSample = (Sample) (iter.next());
+            // Check if retrieved sample matches requested search criteria.
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Sample.getName(): " + retrievedSample.getName());
+            if (!sampleName.equalsIgnoreCase(retrievedSample.getName())) {
+                return false;
+            }
+            Set<Extract> extracts = retrievedSample.getExtracts();
+            if (extracts == null) {
+                logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Sample.getExtracts(): null");
+            } else {
+                logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Sample.getExtracts(): size = " + extracts.size());
+            }
+        }
+        return true;
+    }
 }
