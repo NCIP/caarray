@@ -280,6 +280,8 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             return new UcsfSpotSptHandler(designFile, getVocabularyService(), daoFactory);
         } else if (FileType.NIMBLEGEN_NDF.equals(type)) {
             return new NimbleGenNdfHandler(designFile, getVocabularyService(), daoFactory);
+        } else if (FileType.MAGE_TAB_ADF.equals(type)) {
+            return new MageTabAdfHandler(designFile, getVocabularyService(), daoFactory);
         } else {
             throw new IllegalArgumentException("Unsupported array design file type: " + type);
         }

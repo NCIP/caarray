@@ -120,6 +120,7 @@ import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.GenepixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
@@ -540,6 +541,14 @@ public class ArrayDesignServiceTest {
         assertEquals("caarray.nci.nih.gov", arrayDesign.getLsidAuthority());
         assertEquals("domain", arrayDesign.getLsidNamespace());
         assertEquals("HumanHap300v2_A", arrayDesign.getLsidObjectId());
+
+        designFile = getCaArrayFile(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF, FileType.MAGE_TAB_ADF);
+        arrayDesign = createDesign(null, null, null, designFile);
+        arrayDesignService.importDesign(arrayDesign);
+        assertEquals("a-mexp-58f_excerpt_v1.0", arrayDesign.getName());
+        assertEquals("caarray.nci.nih.gov", arrayDesign.getLsidAuthority());
+        assertEquals("domain", arrayDesign.getLsidNamespace());
+        assertEquals("a-mexp-58f_excerpt_v1.0", arrayDesign.getLsidObjectId());
     }
     
     private ArrayDesign createDesign(Organization provider, Organism organism, AssayType assayType,
