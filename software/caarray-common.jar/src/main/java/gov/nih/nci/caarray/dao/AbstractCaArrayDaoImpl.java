@@ -270,8 +270,22 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      */
     public void clearSession() {
         HibernateUtil.getCurrentSession().clear();
-    }    
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void mergeObject(Object object) {
+        HibernateUtil.getCurrentSession().merge(object);
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void evictObject(Object object) {
+        HibernateUtil.getCurrentSession().evict(object);
+    }
+    
     AbstractCaArrayEntity getEntityByLsid(Class entityClass, String lsidAuthority, String lsidNamespace, 
             String lsidObjectId) {
         Query q = HibernateUtil.getCurrentSession().createQuery(

@@ -181,7 +181,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
         List<Term> terms = criteria.list();
         return terms.isEmpty() ? null : terms.get(0);
     }
-
+    
     @Override
     Logger getLog() {
         return LOG;

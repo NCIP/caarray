@@ -236,6 +236,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the technologyType
      */
+    @NotNull
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "arraydesign_technology_fk")
@@ -256,6 +257,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the version
      */
+    @NotNull
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getVersion() {
         return version;
@@ -275,6 +277,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the provider
      */
+    @NotNull
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "arraydesign_provider_fk")
@@ -287,14 +290,13 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @param providerVal the provider
      */
-    public void setProvider(final
-      Organization providerVal) {
+    public void setProvider(final Organization providerVal) {
         this.provider = providerVal;
     }
 
     /**
      * Gets the printing.
-     *
+     * 
      * @return the printing
      */
     @ManyToOne
@@ -309,14 +311,14 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @param printingVal the printing
      */
-    public void setPrinting(final
-      ProtocolApplication printingVal) {
+    public void setPrinting(final ProtocolApplication printingVal) {
         this.printing = printingVal;
     }
 
     /**
      * @return the designFile
      */
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "design_file_fk")
@@ -359,6 +361,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the type
      */
+    @NotNull
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getAssayType() {
         return assayType;
@@ -394,6 +397,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the organism
      */
+    @NotNull
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "arraydesign_organism_fk")

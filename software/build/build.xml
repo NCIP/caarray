@@ -494,7 +494,6 @@
                 <pathelement location="${ejb3-persistence.jar}" />
                 <pathelement location="${hibernate.jar}" />
                 <pathelement location="${hibernate-annotations.jar}" />
-                <pathelement location="${javaee.jar}" />
                 <pathelement location="${csmapi.jar}" />
                 <pathelement location="${log4j.jar}" />
                 <pathelement location="${cglib.jar}" />
@@ -946,7 +945,6 @@
                 <pathelement location="${ejb3-persistence.jar}" />
                 <pathelement location="${hibernate.jar}" />
                 <pathelement location="${hibernate-annotations.jar}" />
-                <pathelement location="${javaee.jar}" />
                 <pathelement location="${csmapi.jar}" />
                 <pathelement location="${cglib.jar}" />
                 <pathelement location="${nci-commons-core.jar}" />

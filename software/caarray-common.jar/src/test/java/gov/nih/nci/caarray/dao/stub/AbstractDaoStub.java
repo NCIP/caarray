@@ -170,5 +170,19 @@ public class AbstractDaoStub implements CaArrayDao {
     public void clearSession() {
         // no-op
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void mergeObject(Object object) {
+        // no-op
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void evictObject(Object object) {
+        // no-op
+    }
 
 }

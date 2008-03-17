@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.domain.array;
 
 import static org.junit.Assert.assertEquals;
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -132,10 +133,13 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         arrayDesign.setTechnologyType(new Term());
         arrayDesign.getTechnologyType().setValue("testval4");
         arrayDesign.getTechnologyType().setCategory(cat);
-        arrayDesign.getTechnologyType().setSource(ts);       
+        arrayDesign.getTechnologyType().setSource(ts);
         AssayType nextAssayType = getNextValue(AssayType.values(), arrayDesign.getAssayTypeEnum());
         arrayDesign.setAssayType(nextAssayType.getValue());
         arrayDesign.setVersion(getUniqueStringValue());
+        arrayDesign.setOrganism(new Organism());
+        arrayDesign.getOrganism().setScientificName("Homo sapiens");
+        arrayDesign.getOrganism().setTermSource(ts);
         ArrayDesignDetails designDetails = new ArrayDesignDetails();
         arrayDesign.setDesignDetails(designDetails);
         Feature feature = new Feature(designDetails);
@@ -195,15 +199,11 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
     @Override
     protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
         ArrayDesign arrayDesign = (ArrayDesign) caArrayObject;
-        arrayDesign.setDesignFile(null);
         arrayDesign.setNumberOfFeatures(null);
         arrayDesign.setPolymerType(null);
         arrayDesign.setPrinting(null);
-        arrayDesign.setProvider(null);
         arrayDesign.setSubstrateType(null);
         arrayDesign.setSurfaceType(null);
-        arrayDesign.setTechnologyType(null);
-        arrayDesign.setVersion(null);
     }
 
     @Override

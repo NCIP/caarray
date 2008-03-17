@@ -93,7 +93,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
-import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -183,9 +182,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             result = new FileValidationResult(null);
         }
         if (isDuplicate(arrayDesign))   {
-            result.addMessage(Type.ERROR,
-                    "An array design already exists with the name "
-                    + arrayDesign.getName()
+            result.addMessage(Type.ERROR, "An array design already exists with the name " + arrayDesign.getName()
                     + " and provider " + arrayDesign.getProvider().getName());
             designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
             designFile.setValidationResult(result);
@@ -370,11 +367,11 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         }
         Long id = arrayDesign.getId();
         if (id != null && isArrayDesignLocked(id)) {
-            HibernateUtil.getCurrentSession().evict(arrayDesign);
+            getArrayDao().evictObject(arrayDesign);
             if (!validateLockedDesign(arrayDesign)) {
                 throw new IllegalAccessException("Cannot modify locked fields on an array design");
             }
-            HibernateUtil.getCurrentSession().merge(arrayDesign);
+            getArrayDao().mergeObject(arrayDesign);
         } else {
             getArrayDao().save(arrayDesign);
         }
@@ -409,7 +406,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
                 || !loadedArrayDesign.getDesignFile().equals(arrayDesign.getDesignFile())) {
             return false;
         }
-        HibernateUtil.getCurrentSession().evict(loadedArrayDesign);
+        getArrayDao().evictObject(loadedArrayDesign);
         return true;
     }
 

@@ -161,7 +161,7 @@ public interface CaArrayDao {
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
      * and its associations, or null if none exists.  This method ignores collection associations
-     * (ie, one-to-many), but handles non-collection associatations such as many-to-one or
+     * (ie, one-to-many), but handles non-collection associations such as many-to-one or
      * one-to-one.
      *
      * @param <T> entity type
@@ -179,5 +179,18 @@ public interface CaArrayDao {
     /**
      * Clears the current Hibernate <code>Session</code>.
      */
-    void clearSession();    
+    void clearSession();
+    
+    /**
+     * Merges a persistent object into the current Hibernate <code>Session</code>.
+     * @param object object to merge
+     */
+    void mergeObject(Object object);
+
+    /**
+     * Evicts a persistent object from the current Hibernate <code>Session</code>.
+     * @param object object to evict
+     */
+    void evictObject(Object object);
+
 }
