@@ -106,10 +106,15 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
+
 /**
  * Responsible for importing parsed MAGE-TAB data into caArray.
  */
 class MageTabImporter {
+
+    private static final Logger LOG = Logger.getLogger(MageTabImporter.class);
+
     private final CaArrayDaoFactory daoFactory;
     private final MageTabTranslator translator;
 
@@ -119,6 +124,7 @@ class MageTabImporter {
     }
 
     void validateFiles(CaArrayFileSet fileSet) {
+        LOG.info("Validating MAGE-TAB document set");
         updateFileStatus(fileSet, FileStatus.VALIDATING);
         MageTabInputFileSet inputSet = getInputFileSet(fileSet);
         try {
@@ -148,6 +154,7 @@ class MageTabImporter {
     }
 
     void importFiles(Project targetProject, CaArrayFileSet fileSet) throws MageTabParsingException {
+        LOG.info("Importing MAGE-TAB document set");
         updateFileStatus(fileSet, FileStatus.IMPORTING);
         MageTabInputFileSet inputSet = getInputFileSet(fileSet);
         MageTabDocumentSet documentSet;
