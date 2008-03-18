@@ -10,5 +10,6 @@
     </migration>
     <migration fromVersion="2.0.1.rc1" toVersion="2.0.1.rc2">
         <sql-script>migrate-2.0.1.rc1-to-2.0.1.rc2.sql</sql-script>
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.IlluminaExpressionDesignFixer</migrator-class>
     </migration>
 </migrations>
