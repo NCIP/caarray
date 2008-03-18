@@ -119,9 +119,6 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         this.selenium.click("link=Data");
         waitForTab();
 
-        // - start the upload
-        this.selenium.click("link=Upload New File(s)");
-
         // Upload the following files:
         // - MAGE-TAB IDF
         // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
@@ -141,8 +138,6 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
         // - Check if they are uploaded
         checkFileStatus("Uploaded", THIRD_COLUMN);
-        waitForAction();
-        assertTrue(selenium.isTextPresent("file(s) uploaded"));
 
         // - Import files
         selenium.click("selectAllCheckbox");

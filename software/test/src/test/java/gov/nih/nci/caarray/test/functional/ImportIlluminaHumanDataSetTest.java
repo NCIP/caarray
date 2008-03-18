@@ -127,10 +127,10 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         selenium.click("link=Data");
         waitForTab();
 
-        selenium.click("link=Upload New File(s)");
-
         // Upload the following files:
         upload(IlluminaArrayDataFiles.HUMAN_WG6);
+        checkFileStatus("Uploaded", THIRD_COLUMN);
+
         // change the file type to "Illumina CSV Data File".
         selenium.click("selectFilesForm_selectedFiles");
         selenium.click("link=Change File Type");

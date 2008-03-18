@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.test.base;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 
 import com.thoughtworks.selenium.SeleneseTestCase;
 
@@ -139,6 +140,15 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.click(linkOrButton);
         waitForPageToLoad();
     }
+    
+    protected void pause(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     /*
      * Login using any of the preloaded users. The password is hardcoded for these users caarrayadmin caarrayuser
@@ -174,16 +184,30 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     protected void upload(File file, long timeoutSeconds, boolean runAssert) throws IOException {
+        selenium.click("link=Upload New File(s)");
+        waitForPopup("uploadWindow", timeoutSeconds);
+        selenium.selectWindow("uploadWindow");        
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         selenium.type("upload", filePath);
         selenium.click(UPLOAD_BUTTON);
-        waitForAction(timeoutSeconds);
+        pause(2000);
+        waitForDiv("uploadProgressFileList", timeoutSeconds);
+        selenium.getAlert();
+        
         if (runAssert) {
             if (file == null) {
                 fail("upload file name is null");
             }
             assertTrue(file.getName() + " was not uploaded.", selenium.isTextPresent(file.getName()));
         }
+        
+        selenium.click("link=Close Window");
+        selenium.selectWindow(null);
+        
+        pause(1000);
+        selenium.click("link=Data");
+        waitForTab();
+        waitForSecondLevelTab();
     }
 
     protected void waitForElementWithId(String id, long timeoutSeconds) {
@@ -221,11 +245,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     protected void waitForSecondLevelTab() {
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        pause(200);
         waitForSecondLevelTab(PAGE_TIMEOUT_SECONDS);
     }
 
@@ -246,12 +266,12 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                     break;
             } catch (Exception e) {
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            pause(1000);
         }
+    }
+    
+    protected void waitForPopup(String id, long waitTime) {
+        selenium.waitForPopUp(id, toMillisecondsString(waitTime));
     }
 
     protected String createExperiment(String title, String arrayDesignName) throws InterruptedException {
@@ -329,12 +349,8 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             if (found) {
                 return;
             } else {
+                pause(1000);
                 // - sleep for one second if not found yet
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    fail("Something failed in Thread.sleep in AbstractSelenium:selectArrayDesign()");
-                }
             }
             if (second > 30) {
                 fail("Unable to find the array design " + arrayDesignName + " after " + second + " seconds");
@@ -383,16 +399,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             } else {
                 // Moving to next page
                 selenium.click("link=Next");
-                try {
-                    Thread.sleep(4000); // TBD - figure out what to "wait" on. All pages are similar. No "waiting" icon
-                } catch (InterruptedException e) {
-                    fail("Thread sleep threw an exception in findTitleAcrossMultiPages");
-                    e.printStackTrace();
-                }
+                pause(4000); // TBD - figure out what to "wait" on. All pages are similar. No "waiting" icon
             }
         }
     }
-
+    
     protected void setExperimentPublic() {
         String makeExperimentPublicButton = "//span/span";
         selenium.click(makeExperimentPublicButton);
@@ -422,14 +433,14 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected boolean waitForArrayDesignImport(int seconds, int row) throws Exception {
         for (int loop = 1; loop < seconds; loop++) {
             selenium.click("link=Manage Array Designs");
-            Thread.sleep(2000);
+            pause(2000);
             waitForText("Edit");
             // done
             String rowText = selenium.getTable("row." + row + ".7");
             if (rowText.equalsIgnoreCase(IMPORTED)) {
                 return true;
             } else {
-                Thread.sleep(10000);
+                pause(10000);
             }
         }
         fail("Timeout waiting for Array Design to Import");
@@ -464,18 +475,13 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                     fail("Did not find " + text);
                 }
                 waitForDiv("loadingText");
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                pause(2000);
                 loop = 0;
             }
         }
     }
 
-    protected int getExperimentRow(String text, String column, String textToWaitFor) throws InterruptedException {
+    protected int getExperimentRow(String text, String column, String textToWaitFor) {
         for (int loop = 1;; loop++) {
             if (text.equalsIgnoreCase(selenium.getTable("row." + loop + "." + column))) {
                 return loop;
@@ -485,13 +491,13 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                 // this will fail once there are no more pages and the text parameter is not found
                 selenium.click("link=Next");
                 waitForText(textToWaitFor);
-                Thread.sleep(1000);
+                pause(1000);
                 loop = 0;
             }
         }
     }
 
-    protected boolean waitForImport(String textToWaitFor) throws Exception {
+    protected boolean waitForImport(String textToWaitFor) {
         int ten_minutes = 60;
         for (int time = 1;; time++) {
             if (time == ten_minutes) {
@@ -509,7 +515,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                 // done
                 return true;
             } else {
-                Thread.sleep(10000);
+                pause(10000);
             }
         }
     }

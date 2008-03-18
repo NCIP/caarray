@@ -118,17 +118,12 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         selenium.click("link=Data");
         waitForTab();
 
-        selenium.click("link=Upload New File(s)");
-
         // Upload the following GenePix files:
-
         upload(GenepixArrayDataFiles.GPR_3_0_6);
         upload(GenepixArrayDataFiles.GPR_4_0_1);
         upload(GenepixArrayDataFiles.GPR_4_1_1);
         // - Check if they are uploaded
         checkFileStatus("Uploaded", THIRD_COLUMN);
-        waitForAction();
-        assertTrue(selenium.isTextPresent("file(s) uploaded"));
 
         // - Import files
         selenium.click("selectAllCheckbox");
@@ -140,6 +135,7 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
 
         // - click on the Imported data tab
         selenium.click("link=Imported Data");
+
         // TBD - sometimes the Import button is pressed but the app stays on the Upload page - test will time out when that occurs
         // ** this tab consistently fails.  Selenium will press the tab but not switch the page from
         //      the Upload page.

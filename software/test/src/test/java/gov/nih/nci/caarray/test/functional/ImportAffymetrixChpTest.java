@@ -125,13 +125,10 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         selenium.click("link=Data");
         waitForTab();
 
-        selenium.click("link=Upload New File(s)");
-
         upload(AffymetrixArrayDataFiles.TEST3_CHP);
+
         // - Check if they are uploaded
         checkFileStatus("Uploaded", THIRD_COLUMN);
-        waitForAction();
-        assertTrue(selenium.isTextPresent("file(s) uploaded"));
 
         // - Import files
         selenium.click("selectAllCheckbox");
@@ -145,9 +142,9 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         // ** this tab consistently fails.  Selenium will press the tab but not switch the page from
         //      the Upload page.
         selenium.click("link=Imported Data");
-        Thread.sleep(3000);
+        pause(3000);
         selenium.click("link=Imported Data");
-        Thread.sleep(1000);  
+        pause(1000);  
 
         waitForText("One item found");
 

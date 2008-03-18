@@ -152,6 +152,8 @@
     <property name="nci-commons-struts2.jar" value="${lib.dir}/nci-commons-struts2-1.0.1.jar" />
     <property name="ezmorph.jar" value="${lib.dir}/ezmorph-1.0.4.jar" />
     <property name="json-lib.jar" value="${lib.dir}/json-lib-2.0-jdk15.jar" />
+    <property name="cargo-core-uberjar.jar" value="${lib.dir}/cargo-core-uberjar-0.9.jar"/>
+    <property name="cargo-ant.jar" value="${lib.dir}/cargo-ant-0.9.jar"/>
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -294,6 +296,13 @@
         </classpath>
     </taskdef>
 
+    <taskdef resource="cargo.tasks">
+        <classpath>
+            <pathelement location="${cargo-core-uberjar.jar}" />
+            <pathelement location="${cargo-ant.jar}" />
+        </classpath>
+    </taskdef>
+
     <!-- ******************************************************************* -->
     <!-- ** MAIN TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
@@ -307,8 +316,8 @@
     </target>
 
     <target name="nightly-build" depends="continuous-integration,
-        deploy:start-jboss,
-        deploy:deploy-and-wait,
+        database:reinitialize,
+        deploy:start-jboss-and-deploy,
         test:functional,
         deploy:stop-jboss,
         test:check-functional-test-results" />
@@ -666,69 +675,69 @@
                 <filter token="ldap.searchbase" value="${ldap.searchbase}" />
                 <filter token="ldap.searchprefix" value="${ldap.searchprefix}" />
                 <filter token="ldap.install" value="${ldap.install}" />
-      </filterset>
-    </copy>
-    <copy todir="${caarray-war.classes.dir}">
-      <fileset dir="${caarray-war.src.dir}" includes="*.xml,*.properties, template/**/*" />
-      <fileset dir="${caarraydb.sql.src.dir}/migration" includes="*.sql" />
-    </copy>
-    <war destfile="${caarray.war}" webxml="${caarray-war.target.dir}/xml/web.xml">
-      <fileset dir="${caarray-war.webapp.dir}">
-        <exclude name="WEB-INF/**" />
-      </fileset>
-      <webinf dir="${caarray-war.webapp.dir}/WEB-INF">
-        <exclude name="web.xml" />
-      </webinf>
-      <classes dir="${caarray-war.classes.dir}" />
-      <manifest>
-           <section name="gov/nih/nci/caarray/">
-               <attribute name="Specification-Title" value="caArray"/>
-               <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
-               <attribute name="Specification-Vendor" value="5AM Solutions"/>
-               <attribute name="Implementation-Title" value="caArray"/>
-               <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
-               <attribute name="Implementation-Vendor" value="5AM Solutions"/>
-           </section>
-      </manifest>
-      <lib dir="${lib.dir}">
-        <include name="spring.jar" />
-        <include name="spring-mock.jar" />
-        <include name="acegi-security-1.0.5.jar" />
-        <include name="acegi-security-jboss-1.0.5.jar" />
-        <include name="commons-beanutils-1.7.0.jar" />
-        <include name="commons-codec-1.3.jar" />
-        <include name="commons-collections-3.2.jar" />
-        <include name="commons-digester-1.6.jar" />
-        <include name="commons-discovery-0.2.jar" />
-        <include name="commons-el-1.0.jar" />
-        <include name="commons-fileupload-1.2.jar" />
-        <include name="commons-io-1.3.2.jar" />
-        <include name="commons-logging-1.1.jar" />
-        <include name="displaytag-1.1.1.jar" />
-        <include name="freemarker-2.3.8.jar" />
-        <include name="jstl.jar" />
-        <include name="standard.jar" />
-        <include name="log4j-1.2.13.jar" />
-        <include name="junit-4.3.1.jar" />
-        <include name="oscache-2.4.1.jar" />
-        <include name="sitemesh-2.3.jar" />
-        <include name="struts2-codebehind-plugin-2.0.9.jar" />
-        <include name="struts2-core-2.0.9.jar" />
-        <include name="struts2-sitemesh-plugin-2.0.9.jar" />
-        <include name="struts2-spring-plugin-2.0.9.jar" />
-        <include name="urlrewrite-2.6.0.jar" />
-        <include name="xwork-2.0.4.jar" />
-        <include name="ognl-2.6.11.jar" />
-        <include name="ajaxtags-1.3-beta-rc7.jar" />
-        <include name="jericho-html-2.4.jar" />
-        <include name="json-lib-2.0-jdk15.jar" />
-        <include name="ezmorph-1.0.4.jar" />
-        <include name="nci-commons-struts2-1.0.1.jar" />
-      </lib>
-      <zipfileset dir="${caarray-war.target.dir}/help/caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help"
+            </filterset>
+        </copy>
+        <copy todir="${caarray-war.classes.dir}">
+            <fileset dir="${caarray-war.src.dir}" includes="*.xml,*.properties, template/**/*" />
+            <fileset dir="${caarraydb.sql.src.dir}/migration" includes="*.sql" />
+        </copy>
+        <war destfile="${caarray.war}" webxml="${caarray-war.target.dir}/xml/web.xml">
+            <fileset dir="${caarray-war.webapp.dir}">
+                <exclude name="WEB-INF/**" />
+            </fileset>
+            <webinf dir="${caarray-war.webapp.dir}/WEB-INF">
+                <exclude name="web.xml" />
+            </webinf>
+            <classes dir="${caarray-war.classes.dir}" />
+            <manifest>
+                <section name="gov/nih/nci/caarray/">
+                    <attribute name="Specification-Title" value="caArray"/>
+                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
+                    <attribute name="Specification-Vendor" value="5AM Solutions"/>
+                    <attribute name="Implementation-Title" value="caArray"/>
+                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
+                    <attribute name="Implementation-Vendor" value="5AM Solutions"/>
+                </section>
+            </manifest>
+            <lib dir="${lib.dir}">
+                <include name="spring.jar" />
+                <include name="spring-mock.jar" />
+                <include name="acegi-security-1.0.5.jar" />
+                <include name="acegi-security-jboss-1.0.5.jar" />
+                <include name="commons-beanutils-1.7.0.jar" />
+                <include name="commons-codec-1.3.jar" />
+                <include name="commons-collections-3.2.jar" />
+                <include name="commons-digester-1.6.jar" />
+                <include name="commons-discovery-0.2.jar" />
+                <include name="commons-el-1.0.jar" />
+                <include name="commons-fileupload-1.2.jar" />
+                <include name="commons-io-1.3.2.jar" />
+                <include name="commons-logging-1.1.jar" />
+                <include name="displaytag-1.1.1.jar" />
+                <include name="freemarker-2.3.8.jar" />
+                <include name="jstl.jar" />
+                <include name="standard.jar" />
+                <include name="log4j-1.2.13.jar" />
+                <include name="junit-4.3.1.jar" />
+                <include name="oscache-2.4.1.jar" />
+                <include name="sitemesh-2.3.jar" />
+                <include name="struts2-codebehind-plugin-2.0.9.jar" />
+                <include name="struts2-core-2.0.9.jar" />
+                <include name="struts2-sitemesh-plugin-2.0.9.jar" />
+                <include name="struts2-spring-plugin-2.0.9.jar" />
+                <include name="urlrewrite-2.6.0.jar" />
+                <include name="xwork-2.0.4.jar" />
+                <include name="ognl-2.6.11.jar" />
+                <include name="ajaxtags-1.3-beta-rc7.jar" />
+                <include name="jericho-html-2.4.jar" />
+                <include name="json-lib-2.0-jdk15.jar" />
+                <include name="ezmorph-1.0.4.jar" />
+                <include name="nci-commons-struts2-1.0.1.jar" />
+            </lib>
+            <zipfileset dir="${caarray-war.target.dir}/help/caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help"
         prefix="help"/>
-    </war>
-  </target>
+        </war>
+    </target>
 
     <target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar">
         <mkdir dir="${caarray-ear.target.dir}" />
@@ -960,11 +969,11 @@
 
     <target name="test:instrument:caarray.war" depends="compile:caarray.war">
         <cobertura-instrument todir="${caarray-war.instrumented.classes.dir}" datafile="${cobertura.file}">
-      <!-- do not have good way of testing the upload handler via junit for the time being -->
+            <!-- do not have good way of testing the upload handler via junit for the time being -->
             <fileset dir="${caarray-war.classes.dir}">
-        <include name="**/*.class" />
-        <exclude name="**/fileupload/*.class" />
-      </fileset>
+                <include name="**/*.class" />
+                <exclude name="**/fileupload/*.class" />
+            </fileset>
         </cobertura-instrument>
     </target>
 
@@ -1049,6 +1058,7 @@
 
     <target name="test:functional" unless="notest">
         <antcall target="test:functional:run-tests" />
+        <antcall target="test:functional:report" />
         <fail if="junit.failure" message="There were functional test failures." />
     </target>
 
@@ -1121,13 +1131,23 @@
         </javac>
     </target>
 
-    <target name="test:functional:run-tests">
-        <antcall target="test:selenium:run-tests" />
-        <antcall target="test:api:run-tests" />
-        <!-- <antcall target="test:grid:run-tests" /> -->
+    <target name="test:functional:run-tests" depends="test:selenium:run-tests,test:api:run-tests"/>
+    
+    <target name="test:functional:report">
+        <mkdir dir="${site.dir}/functional" />
+        <junitreport todir="${site.dir}/junit">
+            <fileset dir="${test.target.dir}/junit/selenium">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <fileset dir="${test.target.dir}/junit/api/java">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report format="frames" todir="${site.dir}/functional" />
+        </junitreport>
     </target>
 
-    <target name="test:selenium:run-tests" depends="test:selenium:compile-tests,test:unpack-test-data,build:caarray-client.jar,database:reinitialize">
+
+    <target name="test:selenium:run-tests" depends="test:selenium:compile-tests,test:unpack-test-data,build:caarray-client.jar">
         <antcall target="test:selenium:start-server" />
         <run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/selenium" classpath="${cglib.jar}:${test.classes.dir};${caarray-client.jar};${test.data.classes.dir};${commons-lang.jar};${test.data.files.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
         <antcall target="test:selenium:stop-server" />
@@ -1357,18 +1377,21 @@
 
     <target name="deploy" depends="deploy:caarray.ear,deploy:caarray-svc" description="Deploy the application to JBoss" />
 
-    <target name="deploy:caarray.ear" depends="build:caarray.ear,prepare:create-local.properties">
+    <target name="deploy:caarray.ear-dependencies" depends="prepare:create-local.properties">
         <copy file="${resource.dir}/deploy/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
             <filterset refid="caarray.filterset" />
         </copy>
         <copy file="${clm.jar}" todir="${jboss.lib.dir}" overwrite="true" />
         <copy file="${mysql-connector.jar}" todir="${jboss.lib.dir}" overwrite="true" />
-        <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
         <copy file="${resource.dir}/deploy/${jboss-mail-service.file}" todir="${jboss.deploy.dir}" />
         <replace file="${jboss.deploy.dir}/${jboss-mail-service.file}">
             <replacefilter token="@SMTPHOST@" value="${mail.smtp.host}" />
             <replacefilter token="@SMTPPORT@" value="${mail.smtp.port}" />
         </replace>
+    </target>
+
+    <target name="deploy:caarray.ear" depends="build:caarray.ear,deploy:caarray.ear-dependencies">
+        <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
     </target>
 
     <target name="deploy:caarray-svc" depends="build:caarray-svc,prepare:create-local.properties">
@@ -1381,27 +1404,25 @@
         <delete file="${jboss.deploy.dir}/mail-service.xml" />
     </target>
 
-    <target name="deploy:deploy-and-wait" depends="deploy">
-        <sleep seconds="5" />
-        <waitfor maxwait="60" maxwaitunit="second" checkevery="5" checkeveryunit="second">
-            <http url="http://${jboss.server.hostname}:${jboss.server.port}/caarray" />
-        </waitfor>
-    </target>
-
     <target name="deploy:stop-jboss">
-        <java classname="org.jboss.Shutdown" fork="true" spawn="false">
-            <arg line="-s ${jboss.server.hostname}:${jboss.server.jndi.port} -S" />
-            <classpath>
-                <pathelement location="${jboss.home}/bin/shutdown.jar" />
-            </classpath>
-        </java>
+        <cargo containerId="jboss4x" action="stop" home="${jboss.home}" refid="${jboss.pid}"/>
     </target>
 
     <target name="deploy:start-jboss" depends="deploy:check-if-jboss-is-running" unless="jboss.running">
-        <exec executable="cmd" dir="${jboss.home}/bin" spawn="true">
-            <env key="NOPAUSE" value="true" />
-            <arg line="/c run.bat" />
-        </exec>
+        <cargo containerId="jboss4x" action="start" home="${jboss.home}" wait="false" id="${jboss.pid}">
+            <configuration type="existing" home="${jboss.home}/server/default">
+                <property name="cargo.jboss.configuration" value="default"/>
+            </configuration>
+        </cargo>
+    </target>
+
+    <target name="deploy:start-jboss-and-deploy" depends="deploy:check-if-jboss-is-running,deploy:caarray.ear-dependencies" unless="jboss.running">
+        <cargo containerId="jboss4x" action="start" home="${jboss.home}" wait="false" id="${jboss.pid}">
+            <configuration type="existing" home="${jboss.home}/server/default">
+                <property name="cargo.jboss.configuration" value="default"/>
+                <deployable type="ear" file="${caarray.ear}"/>
+            </configuration>
+        </cargo>
     </target>
 
     <target name="deploy:check-if-jboss-is-running">

@@ -1,6 +1,12 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <page:applyDecorator name="popup">
+    <html>
+        <head>
+            <title>Experiment Data Upload</title>
+        </head>
+        <body>
+        
     <h1>Experiment Data Upload</h1>
 
     <jsp:useBean id="currentTime" class="java.util.Date"/>
@@ -156,5 +162,7 @@
          }, 2);
     };
 </script>
+    </body>
+</html>
 </page:applyDecorator>
     

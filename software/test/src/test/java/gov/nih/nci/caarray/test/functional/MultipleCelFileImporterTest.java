@@ -98,6 +98,7 @@ public class MultipleCelFileImporterTest extends AbstractSeleniumTest {
 
     private static final int NUM_SETS_OF_TEN = 1;
     private int FOURTY_MINUTES = 2400;
+    private static final int NUMBER_OF_FILES = 10;
 
     @Test
     public void testUploadFiles() throws Exception {
@@ -122,16 +123,6 @@ public class MultipleCelFileImporterTest extends AbstractSeleniumTest {
         }
     }
 
-    // private void importArrayDesign(String arrayDesignName, File arrayDesign) throws Exception {
-    // selenium.click("link=Manage Array Designs");
-    // selenium.waitForPageToLoad("30000");
-    // if (doesArrayDesignExists(arrayDesignName)) {
-    // assertTrue(arrayDesignName + " is present", 1==1);
-    // }else{
-    // addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
-    // }
-    // }
-
     public void importTenFiles() throws Exception {
         String title = TestProperties.getAffymetricHumanName();
         // Create experiment
@@ -139,8 +130,6 @@ public class MultipleCelFileImporterTest extends AbstractSeleniumTest {
         // go to the data tab
         selenium.click("link=Data");
         waitForTab();
-
-        selenium.click("link=Upload New File(s)");
 
         upload(MageTabDataFiles.PERFORMANCE_10_IDF);
         upload(MageTabDataFiles.PERFORMANCE_10_SDRF);
@@ -154,6 +143,7 @@ public class MultipleCelFileImporterTest extends AbstractSeleniumTest {
         upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file8.CEL"));
         upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file9.CEL"));
         upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file10.CEL"));
+        checkFileStatus("Uploaded", THIRD_COLUMN);
 
         // Import the files.
         selenium.click("selectAllCheckbox");
@@ -162,5 +152,13 @@ public class MultipleCelFileImporterTest extends AbstractSeleniumTest {
         waitForAction();
         submitExperiment();
         makeExperimentPublic(experimentId);
+    }
+    
+    private void checkFileStatus(String status, int column) {
+        System.out.println("statu = " + status);
+        for (int row = 1; row < NUMBER_OF_FILES; row++) {
+            System.out.println("row = " + row);
+            assertEquals(status, selenium.getTable("row." + row + "." + column));
+        }
     }
 }
