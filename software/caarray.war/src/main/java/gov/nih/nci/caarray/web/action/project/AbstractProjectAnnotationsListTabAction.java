@@ -148,6 +148,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
      * {@inheritDoc}
      */
     @Override
+    @SkipValidation
     public String delete() {
         addOrphan(getItem());
         boolean doDelete = handleDelete();
