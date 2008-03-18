@@ -4,7 +4,7 @@
   <table class="searchresults">
     <tr>
         <td>
-      		<%@ include file="/WEB-INF/pages/project/files/downloadFilesList.jsp" %>
+          <%@ include file="/WEB-INF/pages/project/files/downloadFilesList.jsp" %>
         </td>
         <td width="100%" style="padding-left: 10px;">
           <div id="downloadInProgressMsg" class="confirm_msg" style="display:none"><fmt:message key="experiment.files.download.inProgress"/></div>
@@ -32,13 +32,11 @@
     </caarray:actions>
 </caarray:tabPane>
 <script type="text/javascript">
-<!--
     downloadMgr.resetDownloadInfo();
-  
+
     showDownloadInProgress = function() {
         if (downloadMgr.downloadIds.length > 0) {
             $('downloadInProgressMsg').show();
         }
     }
--->
 </script>
