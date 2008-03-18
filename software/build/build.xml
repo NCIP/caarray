@@ -73,6 +73,7 @@
     <property name="caarraydb.dir" value="${basedir}/caarraydb" />
     <property name="caarraydb.target.dir" value="${caarraydb.dir}/target" />
     <property name="caarraydb.sql.src.dir" value="${caarraydb.dir}/src/main/sql" />
+    <property name="caarraydb.sql.test.dir" value="${caarraydb.dir}/src/test/sql" />
     <property name="caarraydb.sql.dir" value="${caarraydb.target.dir}/sql" />
 
     <property name="caaray-svc.dir" value="${basedir}/CaArraySvc" />
@@ -1009,15 +1010,19 @@
                 <pathelement location="${commons-fileupload.jar}" />
                 <pathelement location="${ezmorph.jar}" />
                 <pathelement location="${json-lib.jar}" />
+                <pathelement location="${mysql-connector.jar}" />
             </classpath>
         </javac>
+        <copy todir="${caarray-war.test.classes.dir}">
+            <fileset dir="${caarraydb.sql.test.dir}/migration" includes="*.sql,*.xml" />
+        </copy>
     </target>
 
-    <target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,test:unpack-test-data">
+    <target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,configure-datasource-for-test,test:unpack-test-data">
         <run-junit-tests test.src.dir="${caarray-war.test.src.dir}"
                          xml.output.dir="${caarray-war.target.dir}/junit"
                          instrumented.classes="${caarray-war.instrumented.classes.dir}"
-                         classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-beanutils.jar};${commons-logging.jar};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar};${cglib.jar};${commons-io.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${mysql-connector.jar};${c3p0.jar};${cglib.jar};${clm.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${nci-commons-struts2.jar};${nci-commons-core.jar};${commons-fileupload.jar};${ezmorph.jar};${json-lib.jar}" />
+                         classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-beanutils.jar};${commons-logging.jar};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar};${cglib.jar};${commons-io.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${mysql-connector.jar};${c3p0.jar};${cglib.jar};${clm.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${nci-commons-struts2.jar};${nci-commons-core.jar};${commons-fileupload.jar};${ezmorph.jar};${json-lib.jar};${affxfusion.jar}" />
     </target>
 
     <target name="test:junit-report">
@@ -1132,7 +1137,7 @@
     </target>
 
     <target name="test:functional:run-tests" depends="test:selenium:run-tests,test:api:run-tests"/>
-    
+
     <target name="test:functional:report">
         <mkdir dir="${site.dir}/functional" />
         <junitreport todir="${site.dir}/junit">
