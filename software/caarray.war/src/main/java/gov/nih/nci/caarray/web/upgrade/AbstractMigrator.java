@@ -82,131 +82,56 @@
  */
 package gov.nih.nci.caarray.web.upgrade;
 
-import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
-import gov.nih.nci.caarray.application.arraydesign.AffymetrixCdfReadException;
-import gov.nih.nci.caarray.application.arraydesign.AffymetrixChpDesignElementListUtility;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.file.FileType;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import affymetrix.fusion.chp.FusionCHPDataReg;
 import affymetrix.fusion.chp.FusionCHPGenericData;
 import affymetrix.fusion.chp.FusionCHPLegacyData;
 import affymetrix.fusion.chp.FusionCHPTilingData;
+import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 /**
- * Creates corrected <code>DesignElementLists</code> for any Affymetrix designs and associates
- * lists to CHP <code>DataSets</code>.
+ * Base class with useful resources for migrators.
  */
-public class AffymetrixChpDesignElementListFixer extends AbstractMigrator {
+public abstract class AbstractMigrator implements Migrator {
 
-    private static final Logger LOG = Logger.getLogger(AffymetrixChpDesignElementListFixer.class);
+    private final ArrayDesignService designService;
+    private final GenericDataService dataService;
+    private final CaArrayDaoFactory daoFactory;
 
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
-    public void migrate() throws MigrationStepFailedException {
-        initialize();
-        try {
-            createDesignElementLists();
-            fixChpDataSets();
-        } catch (AffymetrixCdfReadException e) {
-            throw new MigrationStepFailedException(e);
-        }
-    }
-
-    private void initialize() {
+    protected AbstractMigrator() {
+        designService =
+            (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
+        dataService =
+            (GenericDataService) ServiceLocatorFactory.getLocator().lookup(GenericDataService.JNDI_NAME);
+        daoFactory = CaArrayDaoFactory.INSTANCE;
         FusionCHPLegacyData.registerReader();
         FusionCHPGenericData.registerReader();
         FusionCHPTilingData.registerReader();
     }
 
-    private void createDesignElementLists() throws AffymetrixCdfReadException {
-        List<ArrayDesign> affymetrixDesigns = getAllAffymetrixDesigns();
-        for (ArrayDesign design : affymetrixDesigns) {
-            LOG.info("Creating fixed DesignElementList for design " + design.getName());
-            DesignElementList probeSetList =
-                AffymetrixChpDesignElementListUtility.createDesignElementList(design);
-            getDataService().save(probeSetList);
-        }
+    /**
+     * @return the daoFactory
+     */
+    protected final CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
     }
 
-    private void fixChpDataSets() throws MigrationStepFailedException {
-        List<DerivedArrayData> chpDatas = getAllChpDatas();
-        for (DerivedArrayData chpData : chpDatas) {
-            fix(chpData);
-        }
+    /**
+     * @return the dataService
+     */
+    protected final GenericDataService getDataService() {
+        return dataService;
     }
 
-    private void fix(DerivedArrayData chpData) {
-        LOG.info("Fixing CHP data " + chpData.getName());
-        ArrayDesign design = getDesign(chpData);
-        DesignElementList designElementList =
-            AffymetrixChpDesignElementListUtility.getDesignElementList(design, getDesignService());
-        chpData.getDataSet().setDesignElementList(designElementList);
-        getDaoFactory().getArrayDao().save(chpData.getDataSet());
-    }
-
-    private ArrayDesign getDesign(DerivedArrayData chpData) {
-        File chpFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(chpData.getDataFile());
-        FusionCHPLegacyData affyChpData =
-            FusionCHPLegacyData.fromBase(FusionCHPDataReg.read(chpFile.getAbsolutePath()));
-        String objectId = affyChpData.getHeader().getChipType();
-        affyChpData.clear();
-        affyChpData = null;
-        System.gc();
-        return getDesignService().getArrayDesign("Affymetrix.com", "PhysicalArrayDesign", objectId);
-    }
-
-    private List<DerivedArrayData> getAllChpDatas() throws MigrationStepFailedException {
-        List<DerivedArrayData> chpDatas = new ArrayList<DerivedArrayData>();
-        List<DerivedArrayData> allDatas = getAllDerivedDatas();
-        for (DerivedArrayData data : allDatas) {
-            if (isChpData(data)) {
-                chpDatas.add(data);
-            }
-        }
-        return chpDatas;
-    }
-
-    private boolean isChpData(DerivedArrayData data) {
-        return data.getType() != null
-            && (AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CHP.getName().equals(data.getType().getName())
-            || AffymetrixArrayDataTypes.AFFYMETRIX_SNP_CHP.getName().equals(data.getType().getName()));
-    }
-
-    private List<DerivedArrayData> getAllDerivedDatas() throws MigrationStepFailedException {
-        try {
-            return getDataService().retrieveAll(DerivedArrayData.class);
-        } catch (IllegalAccessException e) {
-            throw new MigrationStepFailedException(e);
-        } catch (InstantiationException e) {
-            throw new MigrationStepFailedException(e);
-        }
-    }
-
-    private List<ArrayDesign> getAllAffymetrixDesigns() {
-        List<ArrayDesign> allDesigns = getDesignService().getArrayDesigns();
-        List<ArrayDesign> affyDesigns = new ArrayList<ArrayDesign>();
-        for (ArrayDesign design : allDesigns) {
-            if (isAffymetrixDesign(design)) {
-                affyDesigns.add(design);
-            }
-        }
-        return affyDesigns;
-    }
-
-    private boolean isAffymetrixDesign(ArrayDesign design) {
-        return design.getDesignFile() != null
-            && FileType.AFFYMETRIX_CDF.equals(design.getDesignFile().getFileType());
+    /**
+     * @return the designService
+     */
+    protected final ArrayDesignService getDesignService() {
+        return designService;
     }
 
 }

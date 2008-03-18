@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.web.upgrade;
 
+
 /**
  * Indicates that a step failed in execution.
  */
@@ -95,6 +96,10 @@ class MigrationStepFailedException extends Exception {
 
     MigrationStepFailedException(String message) {
         super(message);
+    }
+
+    MigrationStepFailedException(String message, Throwable t) {
+        super(message, t);
     }
 
 }
