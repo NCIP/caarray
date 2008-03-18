@@ -504,6 +504,7 @@ final class SdrfTranslator extends AbstractTranslator {
     
     /**
      * Get a caArray ArrayDesign object from an MAGETAB ArrayDesign.
+     * @param sdrfArrayDesign MAGETAB array design - must not be null
      */
     private ArrayDesign getArrayDesign(gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign) {
         ArrayDesign arrayDesign = null;
@@ -679,7 +680,9 @@ final class SdrfTranslator extends AbstractTranslator {
     private void linkHybridizationToArrays(gov.nih.nci.caarray.magetab.sdrf.Hybridization sdrfHybridization,
             Hybridization hybridization) {
         Array array = new Array();
-        array.setDesign(getArrayDesign(sdrfHybridization.getArrayDesign()));
+        if (sdrfHybridization.getArrayDesign() != null) {
+            array.setDesign(getArrayDesign(sdrfHybridization.getArrayDesign()));
+        }
         hybridization.setArray(array);
     }
 

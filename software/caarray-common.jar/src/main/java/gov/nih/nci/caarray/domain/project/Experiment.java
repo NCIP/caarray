@@ -980,7 +980,7 @@ public class Experiment extends AbstractCaArrayEntity {
     public Set<ArrayDesign> getArrayDesignsFromHybs() {
         Set<ArrayDesign> designs = new HashSet<ArrayDesign>();
         for (Hybridization h : getHybridizations()) {
-            if (h.getArray() != null) {
+            if (h.getArray() != null && h.getArray().getDesign() != null) {
                 designs.add(h.getArray().getDesign());
             }
         }

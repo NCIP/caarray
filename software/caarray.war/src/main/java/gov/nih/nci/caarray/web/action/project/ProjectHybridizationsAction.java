@@ -114,7 +114,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
-import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
+import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 
@@ -216,8 +216,9 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
      */
     @Override
     @SuppressWarnings("PMD.UselessOverridingMethod")
-    @RequiredFieldValidator(fieldName = "currentHybridization.array.design",
-            key = "struts.validator.requiredString", message = "")
+    @FieldExpressionValidator(fieldName = "currentHybridization.array.design",
+            key = "struts.validator.requiredString", message = "",
+            expression = "currentHybridization.array.design != null || project.experiment.arrayDesigns.isEmpty")
     public String save() {
         // needed to added additional validation
         return super.save();
