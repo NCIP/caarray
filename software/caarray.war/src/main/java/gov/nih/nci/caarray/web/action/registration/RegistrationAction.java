@@ -164,7 +164,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
             // We call the service to save, then send email.  This is non-transactional behavior,
             // but it's okay in this case.  The request gets logged to our db, but if email doesn't
             // send, we tell the user to retry.  (We don't send email in service because Email helper
-            // makes assemptions about the environment that are innappropriate for the service tier.)
+            // makes assumptions about the environment that are inappropriate for the service tier.)
             CaArrayActionHelper.getRegistrationService().register(getRegistrationRequest());
             LOGGER.debug("done saving registration request; sending email");
             EmailHelper.registerEmail(getRegistrationRequest());

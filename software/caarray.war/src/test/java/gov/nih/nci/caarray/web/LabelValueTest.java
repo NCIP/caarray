@@ -100,9 +100,7 @@ public class LabelValueTest {
         label1.setLabel("label1");
         label1.setValue("value1");
         assertNotNull(label1.getValue());
-        LabelValue label2 = new LabelValue();
-        label2.setLabel("label2");
-        label2.setValue("value2");
+        LabelValue label2 = new LabelValue("label2", "value2");
         assertNotNull(label2.getValue());
         assertNotNull(label2.toString());
         label1.compareTo(label2);

@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.web.action;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
@@ -97,6 +98,8 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
@@ -136,17 +139,22 @@ public class ArrayDesignActionTest {
     }
 
     @SuppressWarnings("deprecation")
-    @Test
+    @Test(expected=PermissionDeniedException.class)
     public void testPrepare() {
+        arrayDesignAction.prepare();
+        assertNull(arrayDesignAction.getArrayDesign());
+        assertEquals(1, arrayDesignAction.getOrganisms().size());
+        assertEquals(1, arrayDesignAction.getProviders().size());
+        assertEquals(10, arrayDesignAction.getFeatureTypes().size());
+        
         ArrayDesign design = new ArrayDesign();
         design.setId(DESIGN_ID);
         arrayDesignAction.setArrayDesign(design);
         arrayDesignAction.prepare();
-        assertEquals(1, arrayDesignAction.getOrganisms().size());
-        assertEquals(1, arrayDesignAction.getProviders().size());
-        assertEquals(10, arrayDesignAction.getFeatureTypes().size());
+        assertEquals(DESIGN_ID, arrayDesignAction.getArrayDesign().getId());
 
         design.setId(2L);
+        arrayDesignAction.setArrayDesign(design);
         arrayDesignAction.prepare();
     }
 
@@ -183,8 +191,10 @@ public class ArrayDesignActionTest {
         String result = arrayDesignAction.save();
         assertEquals(Action.SUCCESS, result);
 
+        arrayDesignAction.getArrayDesign().setId(DESIGN_ID);
         arrayDesignAction.setUploadFileName("uploadFileName");
         arrayDesignAction.setUpload(null);
+        arrayDesignAction.setUploadFormatType(FileType.UCSF_SPOT_SPT.name());
         result = arrayDesignAction.save();
         assertEquals(Action.INPUT, result);
     }
@@ -206,8 +216,14 @@ public class ArrayDesignActionTest {
             return designs;
         }
         @Override
+        @SuppressWarnings("deprecation")
         public ArrayDesign getArrayDesign(Long id) {
-            return DESIGN_ID.equals(id) ? new ArrayDesign() : null;
+            ArrayDesign arrayDesign = null;
+            if (DESIGN_ID.equals(id)) {
+                arrayDesign = new ArrayDesign();
+                arrayDesign.setId(id);
+            }
+            return arrayDesign;
         }
         @Override
         public List<Organization> getAllProviders() {

@@ -86,7 +86,6 @@ import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 
@@ -262,9 +261,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
             session.removeAttribute(RETURN_INITIAL_TAB2_URL);
             return edit();
         }
-        if (getProtocol() != null) {
-            HibernateUtil.getCurrentSession().evict(getProtocol());
-        }
+
         setProtocols(CaArrayActionHelper.getGenericDataService().retrieveAll(Protocol.class, Order.asc("name")));
         return SUCCESS;
     }
