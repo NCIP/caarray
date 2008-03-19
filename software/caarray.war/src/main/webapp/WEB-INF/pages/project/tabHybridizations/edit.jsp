@@ -1,4 +1,10 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+
+<c:url var="thisUrl" value="/ajax/project/listTab/Hybridizations/edit.action">
+    <c:param name="project.id" value="${project.id}" />
+    <c:param name="currentHybridization.id" value="${currentHybridization.id}" />
+</c:url>
+
 <caarray:tabPane subtab="true">
     <caarray:projectListTabItemForm entityName="Hybridization" item="${currentHybridization}" itemName="${currentHybridization.name}"
         isSubtab="true">
@@ -20,10 +26,11 @@
         <s:else>
             <s:hidden key="currentHybridization.array.design"/>
         </s:else>
-
+        <caarray:protocolSelector returnInitialTab1="annotations" returnInitialTab2="hybridizations" returnInitialTab2Url="${thisUrl}" tabIndex1="5" tabIndex2="6" />        
         <s:hidden name="currentHybridization.id" />
         <s:hidden name="project.id" />
         <s:hidden name="editMode" />
         <input type="submit" class="enableEnterSubmit"/>
     </caarray:projectListTabItemForm>
+    <caarray:protocolSelectorAjaxInit />
 </caarray:tabPane>

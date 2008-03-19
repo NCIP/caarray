@@ -111,6 +111,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Test;
@@ -387,6 +388,16 @@ public class MageTabParserTest {
         result = parser.validate(inputFileSet);
         assertNotNull(result);
         assertTrue(result.isValid());
+    }
+
+    @Test
+    public void testValidateMisplacedFactorValues() throws MageTabParsingException {
+        MageTabInputFileSet inputFileSet = TestMageTabSets.MAGE_TAB_MISPLACED_FACTOR_VALUES_INPUT_SET;
+        ValidationResult result = parser.validate(inputFileSet);
+        assertNotNull(result);
+        assertFalse(result.isValid());
+        assertEquals(3, StringUtils.countMatches(result.toString(), "Factor Value columns must come after (to the right of) a Hybridization column"));
+        assertFalse(result.toString().contains("Exception"));
     }
 
     @Test

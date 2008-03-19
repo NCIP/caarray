@@ -99,6 +99,8 @@ import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -267,7 +269,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
                 try {
                     handleValue(columns.get(i), StringUtils.trim(values.get(i)));
                 } catch (Exception e) {
-                    addError(e.toString());
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    addError(e.toString() + ": " + sw.toString());
                 }
             }
             currentNode = null;
@@ -439,7 +443,11 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             factorValue.addToSdrfList(this);
             factorValue.setValue(value);
             currentUnitable = factorValue;
-            currentHybridization.getFactorValues().add(factorValue);
+            if (currentHybridization != null) {
+                currentHybridization.getFactorValues().add(factorValue);                               
+            } else {
+                addError("Factor Value columns must come after (to the right of) a Hybridization column");
+            }
         } else {
             addError("Referenced Factor Name "
                     + column.getHeading().getQualifier() + " was not found in the IDF");

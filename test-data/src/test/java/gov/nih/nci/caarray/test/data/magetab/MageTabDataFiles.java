@@ -176,6 +176,12 @@ public class MageTabDataFiles {
     public static final File SPECIFICATION_ERROR_EXAMPLE_SDRF =
         new File(MageTabDataFiles.class.getResource("/magetab/baddata/error-e-mexp-428_v1.0.sdrf").getFile());
 
+    public static final File MISPLACED_FACTOR_VALUES_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/baddata/NCI60_v2.idf").getFile());
+
+    public static final File MISPLACED_FACTOR_VALUES_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/baddata/NCI60_v2_short.sdrf").getFile());
+
     public static final File PERFORMANCE_1_IDF =
         new File(MageTabDataFiles.class.getResource("/magetab/performance/performance_test1.idf").getFile());
 

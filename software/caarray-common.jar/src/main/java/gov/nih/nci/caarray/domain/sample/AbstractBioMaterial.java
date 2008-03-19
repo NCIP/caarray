@@ -87,6 +87,7 @@ import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.AttributeMutator;
@@ -124,7 +125,7 @@ import org.hibernate.validator.NotNull;
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "discriminator", discriminatorType = DiscriminatorType.STRING)
-public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
+public abstract class AbstractBioMaterial extends AbstractCaArrayEntity implements ProtocolApplicable {
     private static final long serialVersionUID = 1234567890L;
 
     private Term tissueSite;
@@ -291,6 +292,20 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setProtocolApplications(final Set<ProtocolApplication> protocolApplicationsVal) {
         this.protocolApplications = protocolApplicationsVal;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void addProtocolApplication(ProtocolApplication protocolApplication) {
+        this.protocolApplications.add(protocolApplication);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void clearProtocolApplications() {
+        this.protocolApplications.clear();
     }
 
     /**

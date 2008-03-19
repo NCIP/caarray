@@ -114,6 +114,11 @@ public final class TestMageTabSets {
     /**
      * Example set of documents included with MAGE-TAB specification.
      */
+    public static final MageTabInputFileSet MAGE_TAB_MISPLACED_FACTOR_VALUES_INPUT_SET = getMisplacedFactorValuesInputSet();
+    
+    /**
+     * Example set of documents included with MAGE-TAB specification.
+     */
     public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_INPUT_SET = getSpecificationInputSet();
 
     /**
@@ -198,6 +203,13 @@ public final class TestMageTabSets {
             e.printStackTrace(System.err);
             return null;
         }
+    }
+    
+    private static MageTabInputFileSet getMisplacedFactorValuesInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.MISPLACED_FACTOR_VALUES_IDF);
+        fileSet.addSdrf(MageTabDataFiles.MISPLACED_FACTOR_VALUES_SDRF);
+        return fileSet;
     }
 
     private static MageTabInputFileSet getEbiTemplateInputSet() {

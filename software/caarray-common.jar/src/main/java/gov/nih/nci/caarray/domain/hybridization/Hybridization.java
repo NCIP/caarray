@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.FactorValue;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -99,6 +100,7 @@ import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -126,7 +128,7 @@ import org.hibernate.validator.NotNull;
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class Hybridization extends AbstractCaArrayEntity implements ProtectableDescendent {
+public class Hybridization extends AbstractCaArrayEntity implements ProtectableDescendent, ProtocolApplicable {
 
     private static final long serialVersionUID = 1234567890L;
     private static final String MAPPED_BY = "hybridization";
@@ -311,6 +313,30 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
         this.protocolApplication = protocolApplicationVal;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Transient
+    public Set<ProtocolApplication> getProtocolApplications() {
+        return Collections.singleton(this.protocolApplication);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void addProtocolApplication(ProtocolApplication pa) {
+        if (this.protocolApplication == null) {
+            this.protocolApplication = pa;
+        }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void clearProtocolApplications() {
+        this.protocolApplication = null;
+    }
+    
     /**
      * Gets the labeledExtract.
      *

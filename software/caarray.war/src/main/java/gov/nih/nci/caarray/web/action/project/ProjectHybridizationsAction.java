@@ -123,7 +123,7 @@ import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
  * @author Dan Kokotov
  */
 @Validation
-public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListTabAction<LabeledExtract> {
+public class ProjectHybridizationsAction extends AbstractProjectProtocolAnnotationListTabAction<LabeledExtract> {
     private static final long serialVersionUID = 1L;
 
     private Hybridization currentHybridization = new Hybridization();
