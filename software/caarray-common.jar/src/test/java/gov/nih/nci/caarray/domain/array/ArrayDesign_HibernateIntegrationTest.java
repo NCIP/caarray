@@ -143,6 +143,10 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         ArrayDesignDetails designDetails = new ArrayDesignDetails();
         arrayDesign.setDesignDetails(designDetails);
         Feature feature = new Feature(designDetails);
+        feature.setBlockColumn((short) getUniqueIntValue());
+        feature.setBlockRow((short) getUniqueIntValue());
+        feature.setColumn((short) getUniqueIntValue());
+        feature.setRow((short) getUniqueIntValue());
         designDetails.getFeatures().add(feature);
         ProbeGroup probeGroup = new ProbeGroup(designDetails);
         designDetails.getProbeGroups().add(probeGroup);
@@ -182,6 +186,8 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
             ArrayDesignDetails originalDetails = original.getDesignDetails();
             ArrayDesignDetails retrievedDetails = retrieved.getDesignDetails();
             assertEquals(originalDetails.getFeatures().size(), retrievedDetails.getFeatures().size());
+            assertEquals(originalDetails.getFeatures().iterator().next().toString(),
+                    retrievedDetails.getFeatures().iterator().next().toString());
             ExpressionProbeAnnotation originalAnnotation =
                 (ExpressionProbeAnnotation) originalDetails.getProbes().iterator().next().getAnnotation();
             ExpressionProbeAnnotation retrievedAnnotation =
