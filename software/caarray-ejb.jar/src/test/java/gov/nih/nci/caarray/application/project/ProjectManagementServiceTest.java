@@ -267,41 +267,27 @@ public class ProjectManagementServiceTest {
     }
 
     /**
-     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProject(Project)}.
+     * Test method for {@link ProjectManagementService#saveProject(Project, PersistentObject...)}.
      */
-    @Test
-    public void testSaveProject() {
+    @Test(expected=PermissionDeniedException.class)
+    public void testSaveProject() throws Exception {
         Project project = new Project();
-        try {
-            AbstractCaArrayEntity e = new Sample();
-            this.projectManagementService.saveProject(project, e);
-            assertEquals(project, this.daoFactoryStub.projectDao.lastSaved);
-            assertEquals(e, this.daoFactoryStub.projectDao.lastDeleted);
-        } catch (ProposalWorkflowException e) {
-            fail("Unexpected exception: " + e);
-        } catch (InconsistentProjectStateException e) {
-            fail("Unexpected exception: " + e);
-        }
+        AbstractCaArrayEntity e = new Sample();
+        this.projectManagementService.saveProject(project, e);
+        assertEquals(project, this.daoFactoryStub.projectDao.lastSaved);
+        assertEquals(e, this.daoFactoryStub.projectDao.lastDeleted);
 
         project = new Project();
         UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
-        try {
-            this.projectManagementService.saveProject(project);
-            fail("anonymous user should not have been allowed to save a project");
-        } catch (ProposalWorkflowException e) {
-            fail("Unexpected exception: " + e);
-        } catch (InconsistentProjectStateException e) {
-            fail("Unexpected exception: " + e);
-        } catch (PermissionDeniedException e) {
-            // expected exception
-        }
+        this.projectManagementService.saveProject(project);
+        fail("anonymous user should not have been allowed to save a project");
     }
     
     /**
-     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProject(Project)}.
+     * Test method for {@link ProjectManagementService#saveProject(Project, PersistentObject...)}.
      */
     @Test
-    public void testSaveProjectWithInconsistentArrayDesigns() {
+    public void testSaveProjectWithInconsistentArrayDesigns() throws Exception {
         Project project = new Project();
         ArrayDesign ad1 = new ArrayDesign();
         ad1.setName("Test1");
@@ -315,15 +301,12 @@ public class ProjectManagementServiceTest {
         a1.setDesign(ad2);
         h1.setArray(a1);
         project.getExperiment().getHybridizations().add(h1);
-
-        try {
-            this.projectManagementService.saveProject(project);
-            // should be ok
-        } catch (InconsistentProjectStateException e) {
-            fail("Unexpected inconstient state exception: " + e);
-        } catch (ProposalWorkflowException e) {
-            fail("Unexpected workflow exception: " + e);
-        }
+        
+        Hybridization h2 = new Hybridization();
+        Array a2 = new Array();
+        h2.setArray(a2);
+        project.getExperiment().getHybridizations().add(h2);        
+        this.projectManagementService.saveProject(project);
 
         project.getExperiment().getArrayDesigns().remove(ad2);
         try {
@@ -333,17 +316,14 @@ public class ProjectManagementServiceTest {
             assertEquals(Reason.INCONSISTENT_ARRAY_DESIGNS, e.getReason());
             assertEquals(1, e.getArguments().length);
             assertEquals("Test2", e.getArguments()[0]);
-        } catch (ProposalWorkflowException e) {
-            fail("Unexpected workflow exception: " + e);
         }
-
     }    
 
     /**
-     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProject(Project)}.
+     * Test method for {@link ProjectManagementService#saveProject(Project, PersistentObject...)}.
      */
     @Test
-    public void testSaveProjectWithImportingFiles() {
+    public void testSaveProjectWithImportingFiles() throws Exception {
         Project project = new Project();
         CaArrayFile file1 = new CaArrayFile();
         file1.setProject(project);
@@ -356,14 +336,7 @@ public class ProjectManagementServiceTest {
         source.setExperiment(project.getExperiment());
         project.getExperiment().getSources().add(source);
 
-        try {
-            this.projectManagementService.saveProject(project);
-            // should be ok
-        } catch (InconsistentProjectStateException e) {
-            fail("Unexpected inconstient state exception: " + e);
-        } catch (ProposalWorkflowException e) {
-            fail("Unexpected workflow exception: " + e);
-        }
+        this.projectManagementService.saveProject(project);
 
         file1.setFileStatus(FileStatus.IMPORTING);
         try {
@@ -371,75 +344,44 @@ public class ProjectManagementServiceTest {
             fail("Expected to throw inconsistent state exception");
         } catch (InconsistentProjectStateException e) {
             assertEquals(Reason.IMPORTING_FILES, e.getReason());
-        } catch (ProposalWorkflowException e) {
-            fail("Unexpected workflow exception: " + e);
         }
         try {
             this.projectManagementService.copySource(project, 1L);
             fail("Expected to throw inconsistent state exception");
         } catch (InconsistentProjectStateException e) {
             assertEquals(Reason.IMPORTING_FILES, e.getReason());
-        } catch (ProposalWorkflowException e) {
-            fail("Unexpected workflow exception: " + e);
         }
         
         file1.setFileStatus(FileStatus.IMPORTED);
-        try {
-            this.projectManagementService.saveProject(project);
-            // should be ok
-        } catch (InconsistentProjectStateException e) {
-            fail("Unexpected inconstient state exception: " + e);
-        } catch (ProposalWorkflowException e) {
-            fail("Unexpected workflow exception: " + e);
-        }
-        try {
-            this.projectManagementService.copySource(project, 1L);
-            // should be ok
-        } catch (InconsistentProjectStateException e) {
-            fail("Unexpected inconstient state exception: " + e);
-        } catch (ProposalWorkflowException e) {
-            fail("Unexpected workflow exception: " + e);
-        }
-
+        this.projectManagementService.saveProject(project);
+        this.projectManagementService.copySource(project, 1L);
     }    
 
     /**
-     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProject(Project)}.
+     * Test method for {@link ProjectManagementService#copyFactor(Project, long)}.
      */
     @Test
-    public void testCopyFactor() {
+    public void testCopyFactor() throws Exception {
         Project project = new Project();
-        try {
-            this.projectManagementService.saveProject(project);
-            Factor factor = this.projectManagementService.copyFactor(project, 1);
-            assertNotNull(factor);
-            assertEquals("Test2", factor.getName());
-            assertEquals(1, project.getExperiment().getFactors().size());
-        } catch (ProposalWorkflowException e) {
-            fail("Unexpected exception: " + e);
-        } catch (InconsistentProjectStateException e) {
-            fail("Unexpected exception: " + e);
-        }
+        this.projectManagementService.saveProject(project);
+        Factor factor = this.projectManagementService.copyFactor(project, 1);
+        assertNotNull(factor);
+        assertEquals("Test2", factor.getName());
+        assertEquals(1, project.getExperiment().getFactors().size());
     }
 
     /**
-     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProject(Project)}.
+     * Test method for {@link ProjectManagementService#copySource(Project, long)}.
      */
     @Test
-    public void testCopySource() {
+    public void testCopySource() throws Exception {
         Project project = new Project();
-        try {
-            this.projectManagementService.saveProject(project);
-            Source source = this.projectManagementService.copySource(project, 1);
-            assertNotNull(source);
-            assertEquals("Test2", source.getName());
-            assertEquals("Test", source.getDescription());
-            assertEquals(1, project.getExperiment().getSources().size());
-        } catch (ProposalWorkflowException e) {
-            fail("Unexpected exception: " + e);
-        } catch (InconsistentProjectStateException e) {
-            fail("Unexpected exception: " + e);
-        }
+        this.projectManagementService.saveProject(project);
+        Source source = this.projectManagementService.copySource(project, 1);
+        assertNotNull(source);
+        assertEquals("Test2", source.getName());
+        assertEquals("Test", source.getDescription());
+        assertEquals(1, project.getExperiment().getSources().size());
     }
 
     /**

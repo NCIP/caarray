@@ -98,6 +98,9 @@ public class MageTabDataFiles {
     public static final File SPECIFICATION_EXAMPLE_SDRF =
         new File(MageTabDataFiles.class.getResource("/magetab/specification/e-mexp-428_v1.0.sdrf").getFile());
 
+    public static final File SPECIFICATION_EXAMPLE_NO_ARRAY_DESIGN_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/specification_no_array_design/e-mexp-428_v1.0.sdrf").getFile());
+
     public static final File SPECIFICATION_EXAMPLE_ADF =
         new File(MageTabDataFiles.class.getResource("/magetab/specification/a-mexp-58f_excerpt_v1.0.adf").getFile());
 

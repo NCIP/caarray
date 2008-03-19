@@ -82,11 +82,6 @@
  */
 package gov.nih.nci.caarray.magetab;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Collection;
-import java.util.Locale;
-
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
@@ -96,6 +91,11 @@ import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.validation.InvalidDataException;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.Collection;
+import java.util.Locale;
 
 /**
  * MAGE-TAB document sets to be used as test data.
@@ -120,6 +120,12 @@ public final class TestMageTabSets {
      * Example set of documents included with MAGE-TAB specification.
      */
     public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_INPUT_SET = getSpecificationInputSet();
+
+    /**
+     * Example set of documents based on the MAGE-TAB specification example, with no array design ref in the SDRF.
+     */
+    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET =
+        getSpecificationNoArrayDesignInputSet();
 
     /**
      * Example set of documents included with MAGE-TAB specification, minus the data matrix
@@ -151,6 +157,11 @@ public final class TestMageTabSets {
      * Document set parsed from the MAGE-TAB specification example files.
      */
     public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_SET = getSet(MAGE_TAB_SPECIFICATION_INPUT_SET);
+
+    /**
+     * Document set parsed from the MAGE-TAB specification example files, with no array design references in the SDRF.
+     */
+    public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET = getSet(MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET);
 
     /**
      * Document set parsed from the MAGE-TAB specification example files.
@@ -258,6 +269,16 @@ public final class TestMageTabSets {
         MageTabInputFileSet fileSet = new MageTabInputFileSet();
         fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+        fileSet.addAdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
+        fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
+        addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY);
+        return fileSet;
+    }
+
+    private static MageTabInputFileSet getSpecificationNoArrayDesignInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_NO_ARRAY_DESIGN_SDRF);
         fileSet.addAdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
         fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY);
