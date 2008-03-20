@@ -344,7 +344,7 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickConditionDiseaseStateLinks() {
         selenium.click("link=Conditions/Disease States");
-        waitForText("Value");
+        waitForText("Value");              
         assertTrue(selenium.isTextPresent("Add Conditions/Disease States"));
         selenium.click("link=Value");
         clickCommonHeaders();

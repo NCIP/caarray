@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
@@ -245,10 +244,7 @@ abstract class AbstractDataSetImporter {
         Hybridization hybridization = new Hybridization();
         hybridization.setName(hybridizationName);
         Array array = new Array();
-        TemporaryFileCache temporaryFileCache = TemporaryFileCacheLocator.getTemporaryFileCache();
-        File file = temporaryFileCache.getFile(caArrayFile);
-        array.setDesign(getDataFileHandler().getArrayDesign(getArrayDesignService(), file));
-        temporaryFileCache.closeFile(caArrayFile);
+        array.setDesign(getDataFileHandler().getArrayDesign(getArrayDesignService(), getFile()));
         hybridization.setArray(array);
         experiment.getHybridizations().add(hybridization);
         return hybridization;

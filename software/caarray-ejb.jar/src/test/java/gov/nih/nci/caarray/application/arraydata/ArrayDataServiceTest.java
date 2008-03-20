@@ -523,6 +523,11 @@ public class ArrayDataServiceTest {
     }
 
     private void testIlluminaData() throws InvalidDataFileException {
+        testIlluminaDataSmall();
+        testIlluminaDataFull();
+    }
+
+    private void testIlluminaDataSmall() throws InvalidDataFileException {
         CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
         this.arrayDataService.importData(illuminaFile, true);
         DerivedArrayData illuminaData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(illuminaFile);
@@ -536,6 +541,19 @@ public class ArrayDataServiceTest {
         assertEquals(10, signalColumn.getValues().length);
         assertEquals(5.8, signalColumn.getValues()[0]);
         assertEquals(3.6, signalColumn.getValues()[9]);
+        assertNotNull(hybridizationData.getHybridization().getArray());
+    }
+
+    private void testIlluminaDataFull() throws InvalidDataFileException {
+        CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
+        this.arrayDataService.importData(illuminaFile, true);
+        DerivedArrayData illuminaData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(illuminaFile);
+        assertEquals(19, illuminaData.getHybridizations().size());
+        DataSet dataSet = this.arrayDataService.getData(illuminaData);
+        assertNotNull(dataSet.getDesignElementList());
+        assertEquals(19, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        assertEquals(4, hybridizationData.getColumns().size());
         assertNotNull(hybridizationData.getHybridization().getArray());
     }
 
