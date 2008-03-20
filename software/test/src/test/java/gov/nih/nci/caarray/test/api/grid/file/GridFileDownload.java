@@ -160,6 +160,7 @@ public class GridFileDownload extends AbstractApiTest {
         target.setAttribute(fileNameAttribute);
         cqlQuery.setTarget(target);
         CQLQueryResults cqlResults = client.query(cqlQuery);
+        logForSilverCompatibility(API_CALL, "Grid query(CQLQuery)");
         CQLQueryResultsIterator iter = new CQLQueryResultsIterator(cqlResults, CaArraySvcClient.class
                 .getResourceAsStream("client-config.wsdd"));
         return (CaArrayFile) iter.next();

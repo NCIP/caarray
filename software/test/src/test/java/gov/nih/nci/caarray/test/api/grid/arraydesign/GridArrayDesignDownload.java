@@ -166,6 +166,7 @@ public class GridArrayDesignDownload extends AbstractApiTest {
         target.setAttribute(arrayDesignNameAttribute);
         cqlQuery.setTarget(target);
         CQLQueryResults cqlResults = client.query(cqlQuery);
+        logForSilverCompatibility(API_CALL, "Grid query(CQLQuery)");
         CQLQueryResultsIterator iter = new CQLQueryResultsIterator(cqlResults, CaArraySvcClient.class
                 .getResourceAsStream("client-config.wsdd"));
         return (ArrayDesign) iter.next();
