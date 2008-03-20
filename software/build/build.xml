@@ -610,7 +610,7 @@
         </jar>
     </target>
 
-    <target name="build:caarray-client.zip" depends="build:caarray-client.jar,javadoc:caarray-client,build:caarray-svc,build:CaArraySvc-stubs.jar">
+    <target name="build:caarray-client.zip" depends="build:caarray-client.jar,javadoc:caarray-client,build:caarray-svc-jars">
         <zip destfile="${caarray-client.target.dir}/caarray-client.zip">
             <fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
             <fileset dir="${caarray-client.dir}/src/distribution/resources" />
@@ -625,7 +625,7 @@
         </zip>
     </target>
 
-    <target name="build:caarray-client.tar.gz" depends="build:caarray-client.jar,javadoc:caarray-client,build:caarray-svc,build:CaArraySvc-stubs.jar">
+    <target name="build:caarray-client.tar.gz" depends="build:caarray-client.jar,javadoc:caarray-client,build:caarray-svc-jars">
         <tar destfile="${caarray-client.target.dir}/caarray-client.tar">
             <fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
             <fileset dir="${caarray-client.dir}/src/distribution/resources" />
@@ -840,8 +840,11 @@
         <antcall target="compile:caarray-svc" />
     </target>
 
-    <target name="build:CaArraySvc-stubs.jar" depends="compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar">
-        <ant dir="${caaray-svc.dir}" target="jarStubs" inheritall="false" />
+    <target name="build:caarray-svc-jars" depends="compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar">
+        <ant dir="${caaray-svc.dir}" inheritall="false">
+            <target name="jar" />
+            <target name="jarStubs" />
+        </ant>
     </target>
 
     <!-- ******************************************************************* -->
