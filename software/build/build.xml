@@ -183,6 +183,36 @@
         </fileset>
     </path>
 
+    <fileset dir="${lib.dir}" id="grid.dependencies.lib.fileset">
+        <include name="addressing-1.0.jar" />
+        <include name="cog-axis.jar" />
+        <include name="cog-jglobus.jar" />
+        <include name="commons-discovery-0.2.jar" />
+        <include name="commons-logging-1.1.jar" />
+        <include name="jce-jdk13-125.jar" />
+        <include name="wsrf_core.jar" />
+        <include name="wsrf_core_stubs.jar" />
+        <include name="wss4j.jar" />
+        <include name="xercesImpl.jar" />
+    </fileset>
+
+    <fileset dir="${caaray-svc.dir}/lib" id="grid.dependencies.caarray-svc.lib.fileset">
+        <include name="caGrid-1.1-data-utils.jar" />
+        <include name="caGrid-1.1-core.jar" />
+        <include name="caGrid-1.1-metadata-common.jar" />
+        <include name="caGrid-1.1-metadata-security.jar" />
+        <include name="caGrid-1.1-ServiceSecurityProvider-client.jar" />
+        <include name="caGrid-1.1-ServiceSecurityProvider-common.jar" />
+        <include name="caGrid-1.1-ServiceSecurityProvider-stubs.jar" />
+        <include name="castor-1.0.4.jar" />
+    </fileset>
+
+    <fileset dir="${caaray-svc.dir}/build/lib" id="grid.dependencies.caarray-svc.build.fileset">
+        <include name="CaArraySvc-client.jar" />
+        <include name="CaArraySvc-common.jar" />
+        <include name="CaArraySvc-stubs.jar" />
+    </fileset>
+
     <path id="caarray-client.dependencies.path">
         <fileset dir="${lib.dir}" id="caarray-client.dependencies.fileset">
             <include name="axis.jar" />
@@ -194,6 +224,7 @@
             <include name="hibernate3.jar" />
             <include name="hibernate-annotations.jar" />
             <include name="log4j-1.2.13.jar" />
+            <include name="javassist.jar" />
             <include name="jboss-ejb3-client.jar" />
             <include name="jboss-ejb3x.jar" />
             <include name="jbossall-client.jar" />
@@ -205,33 +236,9 @@
 
     <path id="caarray-grid-client.dependencies.path">
         <fileset refid="caarray-client.dependencies.fileset" />
-        <fileset dir="${lib.dir}">
-            <include name="addressing-1.0.jar" />
-            <include name="cog-axis.jar" />
-            <include name="cog-jglobus.jar" />
-            <include name="commons-discovery-0.2.jar" />
-            <include name="commons-logging-1.1.jar" />
-            <include name="jce-jdk13-125.jar" />
-            <include name="wsrf_core.jar" />
-            <include name="wsrf_core_stubs.jar" />
-            <include name="wss4j.jar" />
-            <include name="xercesImpl.jar" />
-        </fileset>
-        <fileset dir="${caaray-svc.dir}/lib">
-            <include name="caGrid-1.1-core.jar" />
-            <include name="caGrid-1.1-data-utils.jar" />
-            <include name="caGrid-1.1-metadata-common.jar" />
-            <include name="caGrid-1.1-metadata-security.jar" />
-            <include name="caGrid-1.1-ServiceSecurityProvider-client.jar" />
-            <include name="caGrid-1.1-ServiceSecurityProvider-common.jar" />
-            <include name="caGrid-1.1-ServiceSecurityProvider-stubs.jar" />
-            <include name="castor-1.0.4.jar" />
-        </fileset>
-        <fileset dir="${caaray-svc.dir}/build/lib">
-            <include name="CaArraySvc-client.jar" />
-            <include name="CaArraySvc-common.jar" />
-            <include name="CaArraySvc-stubs.jar" />
-        </fileset>
+        <fileset refid="grid.dependencies.caarray-svc.build.fileset" />
+        <fileset refid="grid.dependencies.caarray-svc.lib.fileset" />
+        <fileset refid="grid.dependencies.lib.fileset" />
     </path>
 
     <path id="no.dependencies.path">
@@ -603,19 +610,33 @@
         </jar>
     </target>
 
-    <target name="build:caarray-client.zip" depends="build:caarray-client.jar,javadoc:caarray-client">
+    <target name="build:caarray-client.zip" depends="build:caarray-client.jar,javadoc:caarray-client,build:caarray-svc,build:CaArraySvc-stubs.jar">
         <zip destfile="${caarray-client.target.dir}/caarray-client.zip">
             <fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
+            <fileset dir="${caarray-client.dir}/src/distribution/resources" />
             <zipfileset prefix="lib" refid="caarray-client.dependencies.fileset" />
             <zipfileset dir="${caarray-client.target.dir}" includes="docs/**" />
+            <zipfileset prefix="example/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/*.java" />
+            <zipfileset prefix="grid/etc" dir="${caaray-svc.dir}/src/gov/nih/nci/cagrid/caarray/client" includes="client-config.wsdd" />
+            <zipfileset prefix="grid/lib" refid="grid.dependencies.lib.fileset" />
+            <zipfileset prefix="grid/lib" refid="grid.dependencies.caarray-svc.lib.fileset" />
+            <zipfileset prefix="grid/lib" refid="grid.dependencies.caarray-svc.build.fileset" />
+            <zipfileset prefix="grid/schema" dir="${caaray-svc.dir}/schema/CaArraySvc" />
         </zip>
     </target>
 
-    <target name="build:caarray-client.tar.gz" depends="build:caarray-client.jar,javadoc:caarray-client">
+    <target name="build:caarray-client.tar.gz" depends="build:caarray-client.jar,javadoc:caarray-client,build:caarray-svc,build:CaArraySvc-stubs.jar">
         <tar destfile="${caarray-client.target.dir}/caarray-client.tar">
             <fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
+            <fileset dir="${caarray-client.dir}/src/distribution/resources" />
             <tarfileset prefix="lib" refid="caarray-client.dependencies.fileset" />
             <tarfileset dir="${caarray-client.target.dir}" includes="docs/**" />
+            <tarfileset prefix="example/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/*.java" />
+            <tarfileset prefix="grid/etc" dir="${caaray-svc.dir}/src/gov/nih/nci/cagrid/caarray/client" includes="client-config.wsdd" />
+            <tarfileset prefix="grid/lib" refid="grid.dependencies.lib.fileset" />
+            <tarfileset prefix="grid/lib" refid="grid.dependencies.caarray-svc.lib.fileset" />
+            <tarfileset prefix="grid/lib" refid="grid.dependencies.caarray-svc.build.fileset" />
+            <tarfileset prefix="grid/schema" dir="${caaray-svc.dir}/schema/CaArraySvc" />
         </tar>
         <gzip src="${caarray-client.target.dir}/caarray-client.tar" destfile="${caarray-client.target.dir}/caarray-client.tar.gz" />
     </target>
@@ -817,6 +838,10 @@
 
     <target name="build:caarray-svc" unless="noglobus">
         <antcall target="compile:caarray-svc" />
+    </target>
+
+    <target name="build:CaArraySvc-stubs.jar" depends="compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar">
+        <ant dir="${caaray-svc.dir}" target="jarStubs" inheritall="false" />
     </target>
 
     <!-- ******************************************************************* -->
