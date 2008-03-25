@@ -1,4 +1,0 @@
-[autorun]
-action=Install caArray 2.0
-icon=install.bat
-open=install.bat
