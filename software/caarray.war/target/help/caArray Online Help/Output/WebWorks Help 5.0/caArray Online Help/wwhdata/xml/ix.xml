@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WebWorksHelpIX version="5.0" xmlns="urn:WebWorks-Help-Index-Schema">
+  <g t="A" o="002">
+    <i t="account, requesting new user">
+      <j l="10#1127125" />
+    </i>
+    <i t="adding">
+      <i t="array designs">
+        <j l="50" />
+      </i>
+      <i t="group">
+        <j l="84#1139981" />
+      </i>
+      <i t="publication">
+        <j l="38#1152286" />
+      </i>
+      <i t="vocabulary term">
+        <j l="36#1215651" />
+        <j l="36#1208160" />
+        <j l="60#1100496" />
+      </i>
+    </i>
+    <i t="annotations">
+      <i t="adding vocabulary">
+        <j l="36#1215651" />
+      </i>
+    </i>
+    <i t="Annotations tab">
+      <j l="27#1138994" />
+    </i>
+    <i t="Application Support">
+      <j l="15#1141142" />
+    </i>
+    <i t="Application Support, caArray">
+      <j l="88#1083452" />
+    </i>
+    <i t="array designs">
+      <i t="adding">
+        <j l="50" />
+      </i>
+      <i t="managing">
+        <j l="48#1091472" />
+      </i>
+      <i t="viewing">
+        <j l="49#1091490" />
+      </i>
+    </i>
+    <i t="Array Designs">
+      <i t="editing">
+        <j l="51#1095750" />
+      </i>
+    </i>
+  </g>
+  <g t="B" o="002">
+    <i t="biological source materials">
+      <i t="description">
+        <j l="30#1151323" />
+      </i>
+      <i t="relationship between">
+        <j l="30#1150918" />
+      </i>
+    </i>
+    <i t="browsing">
+      <i t="after login">
+        <j l="8#1131193" />
+      </i>
+      <i t="before login">
+        <j l="7#1180781" />
+      </i>
+      <i t="caArray">
+        <j l="6" />
+        <j l="18#1133651" />
+      </i>
+    </i>
+  </g>
+  <g t="C" o="002">
+    <i t="caArray">
+      <i t="About caArray sidebar links">
+        <j l="14#1125422" />
+      </i>
+      <i t="browsing">
+        <j l="6" />
+        <j l="18#1133651" />
+      </i>
+      <i t="common uses">
+        <j l="16#1147576" />
+      </i>
+      <i t="compatible browsers">
+        <j l="5#1153777" />
+      </i>
+      <i t="Data Portal page">
+        <j l="9#1124018" />
+      </i>
+      <i t="interface description">
+        <j l="13" />
+      </i>
+      <i t="launching">
+        <j l="5#1153777" />
+        <j l="5#1102033" />
+      </i>
+      <i t="login">
+        <j l="7#1180781" />
+      </i>
+      <i t="My Experiment Workspace">
+        <j l="16#1132747" />
+      </i>
+      <i t="objectives">
+        <j l="2#1088830" />
+      </i>
+      <i t="overview">
+        <j l="2#1088830" />
+      </i>
+      <i t="relationship to caBIG">
+        <j l="3#1086800" />
+      </i>
+      <i t="requesting user account">
+        <j l="10#1127125" />
+      </i>
+      <i t="search results">
+        <j l="20#1143038" />
+      </i>
+      <i t="searching the repository">
+        <j l="19#1137686" />
+      </i>
+      <i t="task tabs">
+        <j l="16#1132747" />
+      </i>
+      <i t="user interface footer">
+        <j l="15#1140727" />
+      </i>
+      <i t="Welcome page">
+        <j l="14#1134653" />
+      </i>
+      <i t="Welcome to caArray sidebar links">
+        <j l="14#1147085" />
+      </i>
+    </i>
+    <i t="caBIG, relationship to caArray">
+      <j l="3#1086800" />
+    </i>
+    <i t="collaboration group">
+      <i t="creating">
+        <j l="84" />
+      </i>
+      <i t="editing">
+        <j l="86" />
+      </i>
+      <i t="viewing details">
+        <j l="85" />
+      </i>
+    </i>
+    <i t="collaboration groups">
+      <i t="managing">
+        <j l="83#1138506" />
+      </i>
+      <i t="setting experiment visibility">
+        <j l="45#1188588" />
+      </i>
+    </i>
+    <i t="Contact tab">
+      <j l="26#1138709" />
+    </i>
+    <i t="creating">
+      <i t="collaboration group">
+        <j l="84" />
+      </i>
+      <i t="experiment">
+        <j l="24#1136437" />
+      </i>
+      <i t="group">
+        <j l="84#1139981" />
+      </i>
+      <i t="protocol">
+        <j l="55#1091828" />
+      </i>
+      <i t="user account">
+        <j l="82#1125506" />
+      </i>
+    </i>
+    <i t="curation tasks">
+      <j l="47#1091446" />
+    </i>
+  </g>
+  <g t="D" o="002">
+    <i t="Data portal page">
+      <j l="9#1124018" />
+    </i>
+    <i t="Data tab">
+      <i t="deleting a file">
+        <j l="66#1136694" />
+      </i>
+      <i t="description">
+        <j l="37#1204204" />
+      </i>
+      <i t="downloading data files">
+        <j l="77#1132728" />
+      </i>
+      <i t="importing files">
+        <j l="70#1154021" />
+      </i>
+      <i t="Manage Data subtab">
+        <j l="63#1163685" />
+      </i>
+      <i t="Supplemental Files">
+        <j l="73#1140756" />
+      </i>
+      <i t="uploading data">
+        <j l="64#1143572" />
+      </i>
+      <i t="validating data">
+        <j l="67#1136552" />
+      </i>
+    </i>
+    <i t="deleting">
+      <i t="data file">
+        <j l="66#1136694" />
+      </i>
+    </i>
+    <i t="downloading data files">
+      <j l="77#1132728" />
+    </i>
+    <i t="draft status, Experiment visiblity in">
+      <j l="44#1188277" />
+    </i>
+  </g>
+  <g t="E" o="002">
+    <i t="editing">
+      <i t="Array Designs">
+        <j l="51#1095750" />
+      </i>
+      <i t="collaboration group">
+        <j l="86" />
+      </i>
+      <i t="protocol">
+        <j l="56#1091902" />
+      </i>
+      <i t="vocabulary term">
+        <j l="61#1100327" />
+      </i>
+    </i>
+    <i t="editing protocol typer">
+      <j l="57" />
+    </i>
+    <i t="experiment">
+      <i t="adding vocabulary">
+        <j l="36#1215651" />
+      </i>
+      <i t="Annotation tab">
+        <j l="27#1138994" />
+      </i>
+      <i t="Contact tab">
+        <j l="26#1138709" />
+      </i>
+      <i t="creating">
+        <j l="24#1136437" />
+      </i>
+      <i t="Data tab">
+        <j l="63#1139918" />
+      </i>
+      <i t="managing data submission">
+        <j l="63#1163685" />
+      </i>
+      <i t="Overview tab">
+        <j l="25#1149732" />
+      </i>
+      <i t="Publications tab">
+        <j l="38#1152286" />
+      </i>
+      <i t="status">
+        <j l="39#1191326" />
+      </i>
+      <i t="submitting">
+        <j l="39#1191326" />
+      </i>
+      <i t="updating">
+        <j l="40" />
+      </i>
+      <i t="uploading data to">
+        <j l="64#1143572" />
+      </i>
+    </i>
+    <i t="Experimental Factors tab">
+      <j l="29#1132408" />
+    </i>
+    <i t="experiments, overview">
+      <j l="22#1148910" />
+    </i>
+    <i t="extract">
+      <i t="adding new">
+        <j l="33#1141501" />
+      </i>
+      <i t="description">
+        <j l="30#1154351" />
+      </i>
+    </i>
+    <i t="extracting caArray files">
+      <j l="77#1132728" />
+    </i>
+    <i t="Extracts tab">
+      <j l="33#1141501" />
+    </i>
+  </g>
+  <g t="F" o="002">
+    <i t="file types, importable">
+      <j l="71#1144166" />
+    </i>
+  </g>
+  <g t="G" o="002">
+    <i t="Global Quick Links">
+      <j l="14#1124248" />
+    </i>
+    <i t="group">
+      <i t="creating">
+        <j l="84#1139981" />
+      </i>
+      <i t="viewing details page">
+        <j l="85" />
+      </i>
+    </i>
+  </g>
+  <g t="H" o="002">
+    <i t="help in caArray">
+      <j l="11" />
+    </i>
+    <i t="hybridization, adding new">
+      <j l="35#1190394" />
+    </i>
+    <i t="Hybridizations tab">
+      <j l="35#1190394" />
+    </i>
+  </g>
+  <g t="I" o="002">
+    <i t="importable data file types">
+      <j l="71#1144166" />
+    </i>
+    <i t="Importing">
+      <i t="MAGE-TAB data">
+        <j l="74#1164199" />
+      </i>
+    </i>
+    <i t="importing data files">
+      <j l="70#1154021" />
+    </i>
+  </g>
+  <g t="L" o="002">
+    <i t="labeled extract">
+      <i t="adding new">
+        <j l="34#1151842" />
+      </i>
+      <i t="description">
+        <j l="30#1150895" />
+      </i>
+    </i>
+    <i t="Labeled Extracts tab">
+      <j l="34#1151842" />
+    </i>
+    <i t="launching caArray">
+      <j l="5#1153777" />
+      <j l="5#1102033" />
+    </i>
+    <i t="login">
+      <j l="9#1124018" />
+    </i>
+  </g>
+  <g t="M" o="002">
+    <i t="MAGE-TAB data, importing">
+      <j l="74#1164199" />
+    </i>
+    <i t="managing">
+      <i t="array designs">
+        <j l="48#1091472" />
+      </i>
+      <i t="controlled vocabulary terms">
+        <j l="32" />
+      </i>
+      <i t="data">
+        <j l="63#1163685" />
+      </i>
+      <i t="user accounts">
+        <j l="82#1125506" />
+      </i>
+      <i t="user groups">
+        <j l="83#1138506" />
+      </i>
+      <i t="vocabulary terms">
+        <j l="58#1091975" />
+      </i>
+    </i>
+    <i t="My Experiment Workspace">
+      <j l="16#1132747" />
+    </i>
+  </g>
+  <g t="N" o="002">
+    <i t="NCICB Application Support">
+      <j l="15#1141142" />
+      <j l="88#1083452" />
+    </i>
+  </g>
+  <g t="O" o="002">
+    <i t="online help">
+      <i t="icons">
+        <j l="11" />
+      </i>
+      <i t="using">
+        <j l="11" />
+      </i>
+    </i>
+    <i t="Overview tab">
+      <j l="25#1149732" />
+    </i>
+  </g>
+  <g t="P" o="002">
+    <i t="protocol">
+      <i t="creating">
+        <j l="55#1091828" />
+      </i>
+      <i t="editing">
+        <j l="56#1091902" />
+      </i>
+    </i>
+    <i t="protocol types">
+      <i t="editing">
+        <j l="57" />
+      </i>
+      <i t="viewing">
+        <j l="54#1091766" />
+      </i>
+    </i>
+    <i t="protocols">
+      <i t="description">
+        <j l="52#1091664" />
+      </i>
+      <i t="viewing">
+        <j l="53#1091690" />
+      </i>
+    </i>
+    <i t="publication, adding">
+      <j l="38#1152286" />
+    </i>
+    <i t="Publications tab">
+      <j l="38#1152286" />
+    </i>
+  </g>
+  <g t="R" o="002">
+    <i t="registering new user">
+      <j l="10#1127125" />
+    </i>
+  </g>
+  <g t="S" o="002">
+    <i t="sample">
+      <i t="adding new">
+        <j l="32#1141248" />
+      </i>
+      <i t="description">
+        <j l="30#1154349" />
+      </i>
+    </i>
+    <i t="Samples tab">
+      <j l="32#1141248" />
+    </i>
+    <i t="search results">
+      <j l="20#1143038" />
+    </i>
+    <i t="searching">
+      <i t="caArray repository">
+        <j l="19#1137686" />
+      </i>
+      <i t="from caArray login screen">
+        <j l="7#1180781" />
+      </i>
+    </i>
+    <i t="source">
+      <i t="adding new">
+        <j l="31#1150568" />
+      </i>
+      <i t="description">
+        <j l="30#1154426" />
+      </i>
+    </i>
+    <i t="source materials">
+      <i t="annotations for">
+        <j l="30#1150878" />
+      </i>
+      <i t="characteristics">
+        <j l="30#1150878" />
+      </i>
+      <i t="definition">
+        <j l="30#1150878" />
+      </i>
+    </i>
+    <i t="Sources tab">
+      <j l="30#1154426" />
+      <j l="31#1150568" />
+    </i>
+    <i t="status of experiment">
+      <j l="39#1191326" />
+    </i>
+    <i t="submitted status, visibility in">
+      <j l="44#1188308" />
+    </i>
+    <i t="submitting experiment">
+      <j l="39#1191326" />
+    </i>
+    <i t="supplemental fles">
+      <j l="73#1140756" />
+    </i>
+  </g>
+  <g t="T" o="002">
+    <i t="Technical Support">
+      <j l="15#1141142" />
+    </i>
+  </g>
+  <g t="U" o="002">
+    <i t="uploading data to experiment">
+      <j l="64#1143572" />
+    </i>
+    <i t="user account, login">
+      <j l="9#1124018" />
+    </i>
+    <i t="user account, new">
+      <j l="82#1125506" />
+    </i>
+    <i t="user groups">
+      <i t="editing">
+        <j l="86" />
+      </i>
+      <i t="managing">
+        <j l="83#1138506" />
+      </i>
+    </i>
+  </g>
+  <g t="V" o="002">
+    <i t="validating data file">
+      <j l="67#1136552" />
+    </i>
+    <i t="validation errors">
+      <j l="69#1141256" />
+    </i>
+    <i t="viewing">
+      <i t="array designs">
+        <j l="49#1091490" />
+      </i>
+      <i t="collaboration group details">
+        <j l="85" />
+      </i>
+      <i t="protocol types">
+        <j l="54#1091766" />
+      </i>
+      <i t="protocols">
+        <j l="53#1091690" />
+      </i>
+      <i t="vocabulary">
+        <j l="59#1099725" />
+      </i>
+    </i>
+    <i t="visibility">
+      <i t="collaboration groups, setting">
+        <j l="45#1188588" />
+      </i>
+      <i t="Experiment in draft status">
+        <j l="44#1188277" />
+      </i>
+      <i t="Experiment in submitted status">
+        <j l="44#1188308" />
+      </i>
+    </i>
+    <i t="vocabulary">
+      <i t="viewing">
+        <j l="59#1099725" />
+      </i>
+    </i>
+    <i t="vocabulary term">
+      <i t="adding">
+        <j l="36#1215651" />
+        <j l="60#1100496" />
+      </i>
+      <i t="editing">
+        <j l="61#1100327" />
+      </i>
+    </i>
+    <i t="vocabulary terms">
+      <i t="adding">
+        <j l="36#1208160" />
+      </i>
+    </i>
+    <i t="vocabulary terms, managing">
+      <j l="58#1091975" />
+    </i>
+  </g>
+</WebWorksHelpIX>

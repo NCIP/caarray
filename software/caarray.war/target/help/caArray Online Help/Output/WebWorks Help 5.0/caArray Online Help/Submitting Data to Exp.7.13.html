@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Importing MAGE-TAB Data</title>
+    <link rel="StyleSheet" href="css/Submitting%20Data%20to%20Exp.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+  </head>
+  <body style="" onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <a class="WebWorks_Breadcrumb_Link" href="Submitting%20Data%20to%20Exp.7.1.html#1164194">Submitting Data to an Experiment</a> &gt; Importing MAGE-TAB Data</div>
+    <hr align="left" />
+    <blockquote>
+      <div class="Heading1"><a name="1164194">Importing MAGE-TAB Data</a></div>
+      <div class="Body_Text"><a name="1164199">Array data can be uploaded, validated and imported as MAGE-TAB files. The common </a>flows are represented as follows:</div>
+      <div class="Bullet_outer" style="margin-left: 18pt;">
+        <table border="0" cellspacing="0" cellpadding="0" id="SummaryNotRequired_np1164353">
+          <tr style="vertical-align: baseline;">
+            <td>
+              <div class="Bullet_inner" style="width: 18pt; white-space: nowrap;">•</div>
+            </td>
+            <td width="100%">
+              <div class="Bullet_inner"><a name="1164353">MAGE-TAB IDF, with no referenced SDRFs</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="Note_Main_Body_outer" style="margin-left: 13px;vertical-align: baseline;">
+        <table border="0" cellspacing="0" cellpadding="0" id="SummaryNotRequired_np1167181">
+          <tr style="vertical-align: baseline;">
+            <td>
+              <div class="Note_Main_Body_inner" style="width: 15px; white-space: nowrap;color: #000000; font-family: Arial; font-size: 11.0pt; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none;">
+                <span style="left: -20px; position: relative; top: 12px;">
+                  <img src="Lightbulb.gif" alt="*" id="bullet1167181" border="0" width="30" height="30" />
+                </span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="Note_Main_Body_inner" style="color: #000000; font-family: Arial; font-size: 11.0pt; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none;"><span style="color: #000000; font-family: Arial; font-size: 11.0pt; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none; vertical-align: baseline;"><a name="1167181">SDRF is a data format that represents </a></span><span style="text-decoration: underline;">S</span>ample and <span style="text-decoration: underline;">D</span>ata <span style="text-decoration: underline;">R</span>elationships.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="Bullet_outer" style="margin-left: 18pt;">
+        <table border="0" cellspacing="0" cellpadding="0" id="SummaryNotRequired_np1164388">
+          <tr style="vertical-align: baseline;">
+            <td>
+              <div class="Bullet_inner" style="width: 18pt; white-space: nowrap;">•</div>
+            </td>
+            <td width="100%">
+              <div class="Bullet_inner"><a name="1164388">MAGE-TAB SDRF, with only source hybridizations. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="Body_Text"><a name="1164390">In the MAGE-TAB SDRF being imported, if one or more biomaterial nodes is missing </a>(no samples, extracts and/or labeled extracts are explicitly mentioned) in the Source &gt; Sample &gt; Extract &gt; Labeled Extract &gt; Hybridization chain, caArray generates appropriate intermediate nodes to complete the chain. (Protocols and characteristics can be present between the source and hybridization data.) The number of nodes generated will depend on the left side of the “flow”.</div>
+      <div class="Body_Text"><a name="1164398">Examples:</a></div>
+      <div class="Bullet_outer" style="margin-left: 18pt;">
+        <table border="0" cellspacing="0" cellpadding="0" id="SummaryNotRequired_np1164256">
+          <tr style="vertical-align: baseline;">
+            <td>
+              <div class="Bullet_inner" style="width: 18pt; white-space: nowrap;">•</div>
+            </td>
+            <td width="100%">
+              <div class="Bullet_inner"><a name="1164256">If the SDRF describes one source connected to three extracts, one sample will </a>be auto-generated and inserted in the chain. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="Bullet_outer" style="margin-left: 18pt;">
+        <table border="0" cellspacing="0" cellpadding="0" id="SummaryNotRequired_np1164257">
+          <tr style="vertical-align: baseline;">
+            <td>
+              <div class="Bullet_inner" style="width: 18pt; white-space: nowrap;">•</div>
+            </td>
+            <td width="100%">
+              <div class="Bullet_inner"><a name="1164257">If the SDRF describes 3 sources combined to generate 1 extract, 3 samples will </a>be auto-generated and inserted into the chain.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="Body_Text"><a name="1164218">If biomaterials missing in the SDRF are auto-generated, caArray “intelligently” </a>associates protocol applications with the most appropriate auto-generated node. Note that this applies only to protocol applications in the SDRF whose association to biomaterial nodes is ambiguous. For example, if the SDRF contains a sample followed by a labeling protocol followed by a hybridizatioln, the labeling protocol will be associated with the auto-generated extract &gt; labeled extract portion of the chain.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          // Add related topics
+          //
+          WWHAddRelatedTopic("Uploading Data Files", "caArray_Online_Help", "Submitting%20Data%20to%20Exp.7.3.html#1139724");
+          WWHAddRelatedTopic("Validating Data Files", "caArray_Online_Help", "Submitting%20Data%20to%20Exp.7.6.html#1136551");
+          WWHAddRelatedTopic("Importing Data", "caArray_Online_Help", "Submitting%20Data%20to%20Exp.7.9.html#1154019");
+          WWHAddRelatedTopic("Files Types that can be Imported into caArray", "caArray_Online_Help", "Submitting%20Data%20to%20Exp.7.10.html#1144121");
+          WWHAddRelatedTopic("Steps for Importing Data", "caArray_Online_Help", "Submitting%20Data%20to%20Exp.7.11.html#1144185");
+          WWHAddRelatedTopic("Supplemental Files", "caArray_Online_Help", "Submitting%20Data%20to%20Exp.7.12.html#1140744");
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+function FileData_Pairs(x)
+{
+x.t("user","interface");
+x.t("proposed","existing");
+x.t("interface","caarray");
+x.t("interface","navigating");
+x.t("interface","getting");
+x.t("interface","display");
+x.t("caarray","user");
+x.t("caarray","navigating");
+x.t("caarray","provides");
+x.t("navigating","caarray");
+x.t("getting","started");
+x.t("tasks","proposed");
+x.t("provides","user-friendly");
+x.t("started","caarray");
+x.t("display","options");
+x.t("options","relating");
+x.t("user-friendly","interface");
+x.t("accessing","documentation");
+x.t("login","accessing");
+x.t("performing","tasks");
+x.t("documentation","performing");
+x.t("existing","experiments");
+x.t("relating","login");
+}
