@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -304,5 +305,17 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         };
         Number count = (Number) HibernateUtil.doUnfiltered(u);
         return count.intValue() > 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<LogicalProbe> getLogicalProbesReadOnly(ArrayDesign design) {
+        String queryString = "from " + LogicalProbe.class.getName() + " where arrayDesignDetails = :details";
+        Query query = getCurrentSession().createQuery(queryString);
+        query.setReadOnly(true);
+        query.setParameter("details", design.getDesignDetails());
+        return query.list();
     }
 }

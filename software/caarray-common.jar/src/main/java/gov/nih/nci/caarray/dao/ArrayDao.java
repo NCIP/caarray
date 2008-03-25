@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -226,4 +227,13 @@ public interface ArrayDao extends CaArrayDao {
      * @return the matching design list or null.
      */
     DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId);
+
+    /**
+     * Returns the <code>LogicalProbes</code> associated with the given design marked
+     * as read-only in Hibernate, for memory optimization.
+     *
+     * @param design get probes for this design
+     * @return the set of read-only probes.
+     */
+    List<LogicalProbe> getLogicalProbesReadOnly(ArrayDesign design);
 }
