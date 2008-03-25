@@ -92,10 +92,14 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+
+import java.util.Collection;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
@@ -112,6 +116,7 @@ import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 public class ProjectSourcesActionTest {
     private final ProjectSourcesAction action = new ProjectSourcesAction();
     private static Source DUMMY_SOURCE;
+    private static int NUM_SOURCES = 2;
 
     @Before
     public void setUp() throws Exception {
@@ -164,6 +169,19 @@ public class ProjectSourcesActionTest {
         assertTrue(ActionHelper.getMessages().contains("experiment.annotations.cantdelete"));
     }
 
+    @Test
+    public void testLoad() {
+        Project p = new Project();
+        Experiment e = new Experiment();
+        p.setExperiment(e);
+        for (int i=0; i<NUM_SOURCES; i++) {
+            e.getSources().add(new Source());
+        }
+        action.setProject(p);
+        assertEquals("list", action.load());
+        assertEquals(NUM_SOURCES, action.getPagedItems().getFullListSize());
+    }
+
     private static class LocalGenericDataService extends GenericDataServiceStub {
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
@@ -172,5 +190,10 @@ public class ProjectSourcesActionTest {
             }
             return null;
         }
+        @Override
+        public int collectionSize(Collection<? extends PersistentObject> collection) {
+            return collection.size();
+        }
+
     }
 }

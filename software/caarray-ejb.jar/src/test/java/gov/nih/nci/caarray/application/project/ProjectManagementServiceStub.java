@@ -172,7 +172,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         p.setId(id);
         return p;
     }
-    
+
     public Project getProjectByPublicId(String publicId) {
         Project p = new Project();
         p.getExperiment().setPublicIdentifier(publicId);
@@ -187,7 +187,8 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         // no-op
     }
 
-    public void saveProject(Project project, PersistentObject... orphans) throws ProposalWorkflowException {
+    public void saveProject(Project project, PersistentObject... orphans) throws ProposalWorkflowException,
+            InconsistentProjectStateException {
         // no-op
     }
 
@@ -205,7 +206,12 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     }
 
     public File prepareForDownload(Collection<CaArrayFile> ids) {
-        return null;
+        try {
+            return File.createTempFile("tmp", ".zip");
+        } catch (IOException e) {
+            return null;
+        }
+
     }
 
     /**

@@ -111,6 +111,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author Winston Cheng
@@ -128,7 +129,9 @@ public class ProjectSamplesActionTest {
         locatorStub.addLookup(GenericDataService.JNDI_NAME, new LocalGenericDataService());
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, new ProjectManagementServiceStub());
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
+        DUMMY_SAMPLE = new Sample();
         DUMMY_SAMPLE.setId(1L);
+        DUMMY_SOURCE = new Source();
         ServletActionContext.setRequest(new MockHttpServletRequest());
     }
 
@@ -206,8 +209,20 @@ public class ProjectSamplesActionTest {
         assertTrue(toAdd.getSamples().contains(DUMMY_SAMPLE));
         assertFalse(toRemove.getSamples().contains(DUMMY_SAMPLE));
         assertEquals(p2, DUMMY_SAMPLE.getProtocolApplications().iterator().next().getProtocol());
-
     }
+
+    @Test
+    public void testEdit() {
+        ProtocolApplication pa = new ProtocolApplication();
+        Protocol p = new Protocol();
+        p.setName("protocol1");
+        pa.setProtocol(p);
+        DUMMY_SAMPLE.getProtocolApplications().add(pa);
+        action.setCurrentSample(DUMMY_SAMPLE);
+        assertEquals(Action.INPUT, action.edit());
+        assertEquals(p, action.getProtocol());
+    }
+
 
     @Test
     public void testDelete() {

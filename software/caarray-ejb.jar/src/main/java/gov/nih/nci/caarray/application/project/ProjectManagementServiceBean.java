@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.file.InvalidFileException;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
@@ -153,7 +154,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 @Stateless
 @Interceptors(ExceptionLoggingInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-@SuppressWarnings("PMD.ExcessiveClassLength")
+@SuppressWarnings({"PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity" })
 public class ProjectManagementServiceBean implements ProjectManagementService {
     private static final Logger LOG = Logger.getLogger(ProjectManagementServiceBean.class);
     private static final int UPLOAD_TIMEOUT = 1800;
@@ -192,7 +193,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @TransactionTimeout(UPLOAD_TIMEOUT)
     public int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> conflictingFiles)
-        throws ProposalWorkflowException, IOException, InconsistentProjectStateException {
+        throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException {
         // create set of existing files
         Set<String> existingFileNameSet = new HashSet<String>();
         for (CaArrayFile file : project.getFiles()) {
@@ -211,7 +212,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
     private int processUploadedFile(Project project, File file, String fileName, Set<String> existingFileNameSet,
             List<String> conflictingFiles) throws ProposalWorkflowException, IOException,
-            InconsistentProjectStateException {
+            InconsistentProjectStateException, InvalidFileException {
         Pattern p = Pattern.compile(".zip$");
         Matcher m = p.matcher(fileName.toLowerCase()); // NOPMD
         int count = 0;
@@ -220,11 +221,15 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                if (existingFileNameSet.contains(entry.getName())) {
-                    conflictingFiles.add(entry.getName());
+                String entryName = entry.getName();
+                if (entryName.indexOf('/') >= 0 || entryName.indexOf('\\') >= 0) {
+                    throw new InvalidFileException("Directories not supported", "directoriesNotSupported");
+                }
+                if (existingFileNameSet.contains(entryName)) {
+                    conflictingFiles.add(entryName);
                 } else {
-                    doAddStream(project, zipFile.getInputStream(entry), entry.getName());
-                    existingFileNameSet.add(entry.getName());
+                    doAddStream(project, zipFile.getInputStream(entry), entryName);
+                    existingFileNameSet.add(entryName);
                     count++;
                 }
             }
@@ -343,11 +348,11 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     /**
-     * Checks whether the project has files that are currently importing. if not, does nothing, 
+     * Checks whether the project has files that are currently importing. if not, does nothing,
      * otherwise throws an exception because you cannot edit a project while it has
      * files being imported
-     * 
-     * @param project project to check 
+     *
+     * @param project project to check
      * @throws InconsistentProjectStateException if the project state is not consistent
      */
     private void checkImportInProgress(Project project) throws InconsistentProjectStateException {
@@ -355,14 +360,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             throw new InconsistentProjectStateException(Reason.IMPORTING_FILES);
         }
     }
-    
+
     /**
      * Checks whether the user-specified array designs in the given project are consistent with ones
      * inferred from actual hybridization data. if they are, does nothing, otherwise throws an exception.
-     * 
-     * @param project project to check 
+     *
+     * @param project project to check
      * @throws InconsistentProjectStateException if the project state is not consistent
-     */    
+     */
     private void checkArrayDesignsConsistent(Project project) throws InconsistentProjectStateException {
         Set<ArrayDesign> declaredDesigns = project.getExperiment().getArrayDesigns();
         Set<ArrayDesign> usedDesigns = project.getExperiment().getArrayDesignsFromHybs();
@@ -373,7 +378,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             }
         }
         if (!missingDesignNames.isEmpty()) {
-            throw new InconsistentProjectStateException(Reason.INCONSISTENT_ARRAY_DESIGNS, 
+            throw new InconsistentProjectStateException(Reason.INCONSISTENT_ARRAY_DESIGNS,
                     missingDesignNames.toArray());
         }
     }

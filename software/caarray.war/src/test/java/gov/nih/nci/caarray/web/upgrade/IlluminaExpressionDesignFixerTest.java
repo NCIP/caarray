@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,100 +80,124 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.fileaccess;
+package gov.nih.nci.caarray.web.upgrade;
 
+import static org.junit.Assert.assertNotNull;
+import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.GenericDataServiceStub;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
+import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.io.FilenameUtils;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
- * File extensions mappable by caArray.
+ * @author Winston Cheng
+ *
  */
-enum FileExtension {
+public class IlluminaExpressionDesignFixerTest {
+    private IlluminaExpressionDesignFixer migrator;
 
-    CDF(FileType.AFFYMETRIX_CDF),
-    CEL(FileType.AFFYMETRIX_CEL),
-    CHP(FileType.AFFYMETRIX_CHP),
-    CSV(FileType.ILLUMINA_DESIGN_CSV),
-    DAT(FileType.AFFYMETRIX_DAT),
-    EXP(FileType.AFFYMETRIX_EXP),
-    RPT(FileType.AFFYMETRIX_RPT),
-    GAL(FileType.GENEPIX_GAL),
-    GPR(FileType.GENEPIX_GPR),
-    ADF(FileType.MAGE_TAB_ADF),
-    IDAT(FileType.ILLUMINA_IDAT),
-    IDF(FileType.MAGE_TAB_IDF, "IDF.TXT"),
-    SDRF(FileType.MAGE_TAB_SDRF, "SDRF.TXT"),
-    SPT(FileType.UCSF_SPOT_SPT),
-    TSV(FileType.AGILENT_TSV),
-    TPL(FileType.IMAGENE_TPL),
-    DATA(FileType.MAGE_TAB_DATA_MATRIX),
-    NDF(FileType.NIMBLEGEN_NDF);
+    private final LocalDaoFactoryStub localDaoFactoryStub = new LocalDaoFactoryStub();
+    private final LocalArrayDesignService localArrayDesignService = new LocalArrayDesignService();
+    private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
 
-    private final FileType type;
-    private final String[] altExtensions;
+    private final ArrayDesign ILLUMINA_DESIGN = new ArrayDesign();
 
-    FileExtension(FileType type) {
-        this.type = type;
-        this.altExtensions = new String[]{};
+    @Before
+    @SuppressWarnings("deprecation")
+    public void setUp() {
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        localArrayDesignService.setDaoFactory(localDaoFactoryStub);
+        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, localArrayDesignService);
+        locatorStub.addLookup(GenericDataService.JNDI_NAME, new GenericDataServiceStub());
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
+        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
+        TemporaryFileCacheLocator.resetTemporaryFileCache();
+
+        migrator = new IlluminaExpressionDesignFixer();
+        migrator.setDaoFactory(localDaoFactoryStub);
+
+        importIlluminaDesign();
     }
 
-    FileExtension(FileType type, String... altExtensions) {
-        this.type = type;
-        this.altExtensions = altExtensions;
-    }
-
-    FileType getType() {
-        return type;
-    }
-
-    static FileExtension getByExtension(String extensionString) {
-        if (extensionString == null) {
-            throw new IllegalArgumentException("Null extensionString");
+    @Test
+    public void testMigrate() throws Exception {
+        Set<LogicalProbe> probes = ILLUMINA_DESIGN.getDesignDetails().getLogicalProbes();
+        for (LogicalProbe probe : probes) {
+            probe.setAnnotation(null);
         }
-        String extensionStringUpper = extensionString.toUpperCase(Locale.getDefault());
-        for (FileExtension fileExtension : values()) {
-            if (fileExtension.name().equals(extensionStringUpper)) {
-                return fileExtension;
+        migrator.migrate();
+        for (LogicalProbe probe : probes) {
+            assertNotNull(probe.getAnnotation());
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void importIlluminaDesign() {
+        CaArrayFile designFile = this.fileAccessServiceStub.add(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
+        designFile.setFileType(FileType.ILLUMINA_DESIGN_CSV);
+
+        ILLUMINA_DESIGN.setDesignFile(designFile);
+        ILLUMINA_DESIGN.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
+        ILLUMINA_DESIGN.setId(1L);
+        ILLUMINA_DESIGN.setName("illumina design");
+
+        localArrayDesignService.importDesign(ILLUMINA_DESIGN);
+        localArrayDesignService.importDesignDetails(ILLUMINA_DESIGN);
+    }
+
+    private class LocalArrayDesignService extends ArrayDesignServiceBean {
+        @Override
+        public List<ArrayDesign> getArrayDesigns() {
+            List<ArrayDesign> designs =  new ArrayList<ArrayDesign>();
+            designs.add(ILLUMINA_DESIGN);
+            return designs;
+        }
+        @Override
+        public ArrayDesign getArrayDesign(Long id) {
+            if (id != null && id.equals(1L)) {
+                return ILLUMINA_DESIGN;
             }
-            for (String ext : fileExtension.altExtensions) {
-                if (ext.equals(extensionStringUpper)) {
-                    return fileExtension;
+            return null;
+        }
+    }
+
+    private static class LocalDaoFactoryStub extends DaoFactoryStub {
+        @Override
+        public ArrayDao getArrayDao() {
+            return new ArrayDaoStub() {
+                @Override
+                public void save(PersistentObject object) {
+                    // manually create reverse association automatically created by database fk relationship
+                    if (object instanceof LogicalProbe) {
+                        LogicalProbe probe = (LogicalProbe) object;
+                        probe.getArrayDesignDetails().getLogicalProbes().add(probe);
+                    }
                 }
-            }
-        }
-        return null;
-    }
 
-    /**
-     * Determine a file's type based on its extension.
-     * @param filename name of file
-     * @return the FileType corresponding to the file extension or null if no matching file type
-     */
-    static FileType getTypeFromExtension(String filename) {
-        String extension = getExtension(filename);
-        FileExtension fileExtension = FileExtension.getByExtension(extension);
-        if (fileExtension != null) {
-            return fileExtension.getType();
+            };
         }
-        return null;
-    }
 
-    private static String getExtension(String filename) {
-        String extension = null;
-        String upperFileName = filename.toUpperCase(Locale.getDefault());
-        for (FileExtension fileExtension : values()) {
-            for (String ext : fileExtension.altExtensions) {
-                if (upperFileName.endsWith("." + ext)) {
-                    extension = ext;
-                }
-            }
-        }
-        if (extension == null) {
-            extension = FilenameUtils.getExtension(filename);
-        }
-        return extension;
     }
 }

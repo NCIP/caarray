@@ -110,6 +110,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 
 
@@ -155,6 +156,7 @@ public class ProjectFilesActionTest {
             }
         };
         Project project = new Project();
+        project.getExperiment().setPublicIdentifier("publicId");
         CaArrayFile file = new CaArrayFile();
         file.setName("testfile1.cel");
         file.setProject(project);
@@ -221,6 +223,10 @@ public class ProjectFilesActionTest {
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATION_ERRORS);
         file.setFileType(FileType.AFFYMETRIX_CHP);
+        selectedFiles.add(file);
+        file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADED);
         selectedFiles.add(file);
         assertEquals(LIST_UNIMPORTED, this.action.validateFiles());
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
@@ -294,9 +300,31 @@ public class ProjectFilesActionTest {
         file.setFileStatus(FileStatus.VALIDATION_ERRORS);
         file.setFileType(FileType.AFFYMETRIX_CHP);
         selectedFiles.add(file);
+        file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADED);
+        selectedFiles.add(file);
         assertEquals(LIST_UNIMPORTED, this.action.importFiles());
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
         assertEquals(3, fileManagementServiceStub.getImportedFilecCount());
+    }
+
+    @Test
+    public void testAddSupplemental() {
+        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        this.action.setSelectedFiles(selectedFiles);
+
+        CaArrayFile file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.SUPPLEMENTAL);
+        selectedFiles.add(file);
+        file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.SUPPLEMENTAL);
+        selectedFiles.add(file);
+
+        assertEquals(LIST_UNIMPORTED, this.action.addSupplementalFiles());
+        assertEquals(2, fileManagementServiceStub.getSupplementalFileCount());
     }
 
     @Test
@@ -402,6 +430,39 @@ public class ProjectFilesActionTest {
     }
 
     @Test
+    public void testDownload() throws Exception {
+        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        this.action.setSelectedFiles(selectedFiles);
+        LocalCaArrayFile file = new LocalCaArrayFile();
+        file.setCompressedSize(6);
+        selectedFiles.add(file);
+
+        this.action.setDownloadSequenceNumber(1);
+        assertEquals("download",action.download());
+        assertEquals("caArray_publicId_files1.zip", this.action.getDownloadFileName());
+
+        selectedFiles = new ArrayList<CaArrayFile>();
+        this.action.setSelectedFiles(selectedFiles);
+        file = new LocalCaArrayFile();
+        file.setCompressedSize(6);
+        selectedFiles.add(file);
+        file = new LocalCaArrayFile();
+        file.setCompressedSize((int)ProjectFilesAction.MAX_DOWNLOAD_SIZE-5);
+        selectedFiles.add(file);
+        file = new LocalCaArrayFile();
+        file.setCompressedSize(6);
+        selectedFiles.add(file);
+        file = new LocalCaArrayFile();
+        file.setCompressedSize((int)ProjectFilesAction.MAX_DOWNLOAD_SIZE-5);
+        selectedFiles.add(file);
+        file = new LocalCaArrayFile();
+        file.setCompressedSize(6);
+        selectedFiles.add(file);
+        assertEquals("downloadGroups",action.download());
+        assertEquals(3,this.action.getDownloadFileGroups().size());
+    }
+
+    @Test
     public void validateMessages() {
         assertEquals(Action.SUCCESS, this.action.validationMessages());
     }
@@ -446,5 +507,17 @@ public class ProjectFilesActionTest {
         action.setFileType(FileType.AFFYMETRIX_CDF.toString());
         assertEquals(FileType.AFFYMETRIX_CDF.toString(), action.getFileType());
 
+    }
+
+    private class LocalCaArrayFile extends CaArrayFile {
+        private int size;
+
+        @Override
+        public int getCompressedSize() {
+            return size;
+        }
+        public void setCompressedSize(int compressedSize) {
+            size = compressedSize;
+        }
     }
 }

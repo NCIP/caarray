@@ -86,8 +86,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
+import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.contact.Person;
@@ -106,6 +109,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 
 /**
@@ -115,6 +120,8 @@ import com.opensymphony.xwork2.Action;
 public class ProjectContactsActionTest {
     private final ProjectContactsAction action = new ProjectContactsAction();
     private static final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
+    private static final LocalProjectManagementServiceStub projectManagementServiceStub = new LocalProjectManagementServiceStub();
+
     private static User STANDARD_USER;
     private static Person DUMMY_PERSON_1 = new Person();
     private static Person DUMMY_PERSON_2 = new Person();
@@ -125,7 +132,7 @@ public class ProjectContactsActionTest {
     public void setUp() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(VocabularyService.JNDI_NAME, vocabularyServiceStub);
-        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, new ProjectManagementServiceStub());
+        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectManagementServiceStub);
         Project project = new Project();
         action.setProject(project);
         PI_ROLE = vocabularyServiceStub.getTerm(null, ExperimentContact.PI_ROLE);
@@ -198,6 +205,24 @@ public class ProjectContactsActionTest {
         getExperimentContacts().add(piContact);
         piContact.getRoles().add(MAIN_POC_ROLE);
         assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
+
+        // ProposalWorkflowException
+        Project p = new Project();
+        p.setId(2L);
+        p.setExperiment(new Experiment());
+        p.getExperiment().setTitle("title");
+        this.action.setProject(p);
+        assertEquals(Action.INPUT, this.action.save());
+        assertTrue(ActionHelper.getMessages().contains("project.saveProblem"));
+
+        // InconsistentProjectStateException
+        p = new Project();
+        p.setId(3L);
+        p.setExperiment(new Experiment());
+        p.getExperiment().setTitle("title");
+        this.action.setProject(p);
+        assertEquals(Action.INPUT, this.action.save());
+        assertTrue(action.getActionErrors().contains("project.inconsistentState.importing_files"));
     }
 
     private Experiment getExperiment() {
@@ -205,5 +230,21 @@ public class ProjectContactsActionTest {
     }
     private List<ExperimentContact> getExperimentContacts() {
         return getExperiment().getExperimentContacts();
+    }
+
+    private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
+        @Override
+        public void saveProject(Project project, PersistentObject... orphans) throws ProposalWorkflowException,
+            InconsistentProjectStateException {
+            Long id = project.getId();
+            if (id == null) {
+                return;
+            } else if (id.equals(2L)) {
+                throw new ProposalWorkflowException();
+            } else if (id.equals(3L)) {
+                throw new InconsistentProjectStateException(Reason.IMPORTING_FILES, new Object[] {});
+            }
+        }
+
     }
 }

@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.web.action.project;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileAccessService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManagementService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.file.InvalidFileException;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -532,6 +533,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         } catch (ZipException e) {
             ActionHelper.saveMessage(getText("errorUploadingZip"));
             return UPLOAD_INPUT;
+        } catch (InvalidFileException ue) {
+            ActionHelper.saveMessage(getText(ue.getMessage()));
+            return UPLOAD_INPUT;
         } catch (Exception e) {
             String msg = "Unable to upload file: " + e.getMessage();
             LOG.error(msg, e);
@@ -551,7 +555,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Prepares for download by zipping selected files and setting the internal InputStream.
-     * 
+     *
      * @return SUCCESS
      * @throws IOException if
      */
@@ -567,12 +571,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             return "downloadGroups";
         }
     }
-    
+
     private String determineDownloadFileName() {
         return "caArray_" + getProject().getExperiment().getPublicIdentifier() + "_files"
-                + (this.downloadSequenceNumber > 0 ? this.downloadSequenceNumber : "") + ".zip";        
+                + (this.downloadSequenceNumber > 0 ? this.downloadSequenceNumber : "") + ".zip";
     }
-    
+
     private void computeDownloadGroups() {
         this.downloadFileGroups.clear();
         for (CaArrayFile file : getSelectedFiles()) {
@@ -594,13 +598,13 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             if (newGroupSize < MAX_DOWNLOAD_SIZE && newGroupSize > maxNewSize) {
                 maxNewSize = newGroupSize;
                 bestGroup = group;
-            }            
+            }
         }
         if (bestGroup == null) {
             bestGroup = new DownloadGroup();
             this.downloadFileGroups.add(bestGroup);
         }
-        bestGroup.addFile(file);        
+        bestGroup.addFile(file);
     }
 
     /**

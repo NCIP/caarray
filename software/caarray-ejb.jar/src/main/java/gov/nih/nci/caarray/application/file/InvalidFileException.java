@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-ejb-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-ejb-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,100 +80,36 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.fileaccess;
-
-import gov.nih.nci.caarray.domain.file.FileType;
-
-import java.util.Locale;
-
-import org.apache.commons.io.FilenameUtils;
+package gov.nih.nci.caarray.application.file;
 
 /**
- * File extensions mappable by caArray.
+ * @author Winston Cheng
+ *
  */
-enum FileExtension {
+public class InvalidFileException extends Exception {
+    private String resourceKey;
 
-    CDF(FileType.AFFYMETRIX_CDF),
-    CEL(FileType.AFFYMETRIX_CEL),
-    CHP(FileType.AFFYMETRIX_CHP),
-    CSV(FileType.ILLUMINA_DESIGN_CSV),
-    DAT(FileType.AFFYMETRIX_DAT),
-    EXP(FileType.AFFYMETRIX_EXP),
-    RPT(FileType.AFFYMETRIX_RPT),
-    GAL(FileType.GENEPIX_GAL),
-    GPR(FileType.GENEPIX_GPR),
-    ADF(FileType.MAGE_TAB_ADF),
-    IDAT(FileType.ILLUMINA_IDAT),
-    IDF(FileType.MAGE_TAB_IDF, "IDF.TXT"),
-    SDRF(FileType.MAGE_TAB_SDRF, "SDRF.TXT"),
-    SPT(FileType.UCSF_SPOT_SPT),
-    TSV(FileType.AGILENT_TSV),
-    TPL(FileType.IMAGENE_TPL),
-    DATA(FileType.MAGE_TAB_DATA_MATRIX),
-    NDF(FileType.NIMBLEGEN_NDF);
-
-    private final FileType type;
-    private final String[] altExtensions;
-
-    FileExtension(FileType type) {
-        this.type = type;
-        this.altExtensions = new String[]{};
-    }
-
-    FileExtension(FileType type, String... altExtensions) {
-        this.type = type;
-        this.altExtensions = altExtensions;
-    }
-
-    FileType getType() {
-        return type;
-    }
-
-    static FileExtension getByExtension(String extensionString) {
-        if (extensionString == null) {
-            throw new IllegalArgumentException("Null extensionString");
-        }
-        String extensionStringUpper = extensionString.toUpperCase(Locale.getDefault());
-        for (FileExtension fileExtension : values()) {
-            if (fileExtension.name().equals(extensionStringUpper)) {
-                return fileExtension;
-            }
-            for (String ext : fileExtension.altExtensions) {
-                if (ext.equals(extensionStringUpper)) {
-                    return fileExtension;
-                }
-            }
-        }
-        return null;
+    /**
+     * Constructs an invalid file exception with a resource key.
+     * @param message Error message
+     * @param key resource key for message to display on UI
+     */
+    public InvalidFileException(String message, String key) {
+        super(message);
+        this.resourceKey = key;
     }
 
     /**
-     * Determine a file's type based on its extension.
-     * @param filename name of file
-     * @return the FileType corresponding to the file extension or null if no matching file type
+     * @return the resourceKey
      */
-    static FileType getTypeFromExtension(String filename) {
-        String extension = getExtension(filename);
-        FileExtension fileExtension = FileExtension.getByExtension(extension);
-        if (fileExtension != null) {
-            return fileExtension.getType();
-        }
-        return null;
+    public String getResourceKey() {
+        return resourceKey;
     }
 
-    private static String getExtension(String filename) {
-        String extension = null;
-        String upperFileName = filename.toUpperCase(Locale.getDefault());
-        for (FileExtension fileExtension : values()) {
-            for (String ext : fileExtension.altExtensions) {
-                if (upperFileName.endsWith("." + ext)) {
-                    extension = ext;
-                }
-            }
-        }
-        if (extension == null) {
-            extension = FilenameUtils.getExtension(filename);
-        }
-        return extension;
+    /**
+     * @param resourceKey the resourceKey to set
+     */
+    public void setResourceKey(String resourceKey) {
+        this.resourceKey = resourceKey;
     }
 }

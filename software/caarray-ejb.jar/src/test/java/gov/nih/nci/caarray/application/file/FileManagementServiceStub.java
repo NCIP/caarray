@@ -95,6 +95,7 @@ public class FileManagementServiceStub implements FileManagementService {
 
     int validatedFileCount = 0;
     int importedFilecCount = 0;
+    int supplementalFileCount = 0;
 
     public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
         this.importedFilecCount += fileSet.getFiles().size();
@@ -118,13 +119,21 @@ public class FileManagementServiceStub implements FileManagementService {
         return this.importedFilecCount;
     }
 
+    /**
+     * @return the supplementalFileCount
+     */
+    public int getSupplementalFileCount() {
+        return this.supplementalFileCount;
+    }
+
     public void reset() {
         this.validatedFileCount = 0;
         this.importedFilecCount = 0;
+        this.supplementalFileCount = 0;
     }
 
     public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
-        // no-op
+        this.supplementalFileCount += fileSet.getFiles().size();
     }
 
     public void importArrayDesignAnnotationFile(ArrayDesign arrayDesign, CaArrayFile annotationFile) {

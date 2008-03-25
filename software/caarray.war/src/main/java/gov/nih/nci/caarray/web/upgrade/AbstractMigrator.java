@@ -97,7 +97,7 @@ public abstract class AbstractMigrator implements Migrator {
 
     private final ArrayDesignService designService;
     private final GenericDataService dataService;
-    private final CaArrayDaoFactory daoFactory;
+    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;;
 
     /**
      * Constructor.
@@ -107,7 +107,6 @@ public abstract class AbstractMigrator implements Migrator {
             (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
         dataService =
             (GenericDataService) ServiceLocatorFactory.getLocator().lookup(GenericDataService.JNDI_NAME);
-        daoFactory = CaArrayDaoFactory.INSTANCE;
         FusionCHPLegacyData.registerReader();
         FusionCHPGenericData.registerReader();
         FusionCHPTilingData.registerReader();
@@ -116,8 +115,16 @@ public abstract class AbstractMigrator implements Migrator {
     /**
      * @return the daoFactory
      */
-    protected final CaArrayDaoFactory getDaoFactory() {
+    protected CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
+    }
+
+    /**
+     * Set the daoFactory.
+     * @param daoFactory DAO factory
+     */
+    protected void setDaoFactory(CaArrayDaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
     }
 
     /**

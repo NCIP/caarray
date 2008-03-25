@@ -233,24 +233,22 @@ public class ProjectManagementServiceTest {
             files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
             fileNames.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
             int count = this.projectManagementService.uploadFiles(project, files, fileNames, conflicts);
-            assertEquals(13, count);
-            assertEquals(13, project.getFiles().size());
+            assertEquals(12, count);
+            assertEquals(12, project.getFiles().size());
             assertNotNull(project.getFiles().iterator().next().getProject());
             assertContains(project.getFiles(), "Test1.zip");
             assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
-            assertContains(project.getFiles(), "folder1/Test1.txt");
             assertEquals(1, conflicts.size());
             assertTrue(conflicts.contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
 
             conflicts = new ArrayList<String>();
             count = this.projectManagementService.uploadFiles(project, files, fileNames, conflicts);
             assertEquals(0, count);
-            assertEquals(13, project.getFiles().size());
+            assertEquals(12, project.getFiles().size());
             assertNotNull(project.getFiles().iterator().next().getProject());
             assertContains(project.getFiles(), "Test1.zip");
-            assertContains(project.getFiles(), "folder1/Test1.txt");
             assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
-            assertEquals(14, conflicts.size());
+            assertEquals(13, conflicts.size());
             assertTrue(conflicts.contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
         } catch (ProposalWorkflowException e) {
             fail("Should not have gotten a workflow exception adding files");
@@ -282,7 +280,7 @@ public class ProjectManagementServiceTest {
         this.projectManagementService.saveProject(project);
         fail("anonymous user should not have been allowed to save a project");
     }
-    
+
     /**
      * Test method for {@link ProjectManagementService#saveProject(Project, PersistentObject...)}.
      */
@@ -295,17 +293,17 @@ public class ProjectManagementServiceTest {
         ad2.setName("Test2");
         project.getExperiment().getArrayDesigns().add(ad1);
         project.getExperiment().getArrayDesigns().add(ad2);
-        
+
         Hybridization h1 = new Hybridization();
         Array a1 = new Array();
         a1.setDesign(ad2);
         h1.setArray(a1);
         project.getExperiment().getHybridizations().add(h1);
-        
+
         Hybridization h2 = new Hybridization();
         Array a2 = new Array();
         h2.setArray(a2);
-        project.getExperiment().getHybridizations().add(h2);        
+        project.getExperiment().getHybridizations().add(h2);
         this.projectManagementService.saveProject(project);
 
         project.getExperiment().getArrayDesigns().remove(ad2);
@@ -317,7 +315,7 @@ public class ProjectManagementServiceTest {
             assertEquals(1, e.getArguments().length);
             assertEquals("Test2", e.getArguments()[0]);
         }
-    }    
+    }
 
     /**
      * Test method for {@link ProjectManagementService#saveProject(Project, PersistentObject...)}.
@@ -351,11 +349,11 @@ public class ProjectManagementServiceTest {
         } catch (InconsistentProjectStateException e) {
             assertEquals(Reason.IMPORTING_FILES, e.getReason());
         }
-        
+
         file1.setFileStatus(FileStatus.IMPORTED);
         this.projectManagementService.saveProject(project);
         this.projectManagementService.copySource(project, 1L);
-    }    
+    }
 
     /**
      * Test method for {@link ProjectManagementService#copyFactor(Project, long)}.
@@ -411,7 +409,7 @@ public class ProjectManagementServiceTest {
         assertOnAbstractBioMaterialCopy(e);
         assertEquals(1, project.getExperiment().getExtracts().size());
         assertTrue(!e.getSamples().isEmpty());
-    } 
+    }
 
     private void assertOnAbstractBioMaterialCopy(AbstractBioMaterial abm) {
         assertNotNull(abm);
