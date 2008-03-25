@@ -1,0 +1,14 @@
+##
+## IMPORTANT NOTE:
+##
+## This file is sourced from deploy.properties.org.  deploy.properties is NOT
+## under source control.  
+##
+
+#Service Deployment Properties
+#Tue Jan 15 15:12:21 EST 2008
+index.service.index.refresh_milliseconds=30000
+perform.index.service.registration=true
+index.service.url=@grid.index.url@
+service.deployment.prefix=cagrid
+index.service.registration.refresh_seconds=600
