@@ -89,7 +89,9 @@ import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.DesignElementType;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -120,21 +122,30 @@ public final class AffymetrixChpDesignElementListUtility {
      */
     public static DesignElementList createDesignElementList(ArrayDesign design) throws AffymetrixCdfReadException {
         checkDesign(design);
+        List<String> probeSetNames = getProbeSetNames(design);
+        DesignElementList designElementList = new DesignElementList();
+        designElementList.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE_ELEMENT_LIST
+                + ":" + getDesignElementListObjectId(design));
+        designElementList.setDesignElementTypeEnum(DesignElementType.LOGICAL_PROBE);
+        Map<String, LogicalProbe> probeSetMap = getProbeSetMap(design);
+        for (String probeSetName : probeSetNames) {
+            designElementList.getDesignElements().add(probeSetMap.get(probeSetName));
+        }
+        return designElementList;
+    }
+
+    private static List<String> getProbeSetNames(ArrayDesign design) throws AffymetrixCdfReadException {
         AffymetrixCdfReader reader = null;
         try {
             File cdfFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(design.getDesignFile());
-            DesignElementList designElementList = new DesignElementList();
-            designElementList.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE_ELEMENT_LIST
-                    + ":" + getDesignElementListObjectId(design));
-            designElementList.setDesignElementTypeEnum(DesignElementType.LOGICAL_PROBE);
-            Map<String, LogicalProbe> probeSetMap = getProbeSetMap(design);
             reader = AffymetrixCdfReader.create(cdfFile);
             FusionCDFData fusionCDFData = reader.getCdfData();
             int numProbeSets = fusionCDFData.getHeader().getNumProbeSets();
+            List<String> probeSetNames = new ArrayList<String>(numProbeSets);
             for (int index = 0; index < numProbeSets; index++) {
-                designElementList.getDesignElements().add(probeSetMap.get(fusionCDFData.getProbeSetName(index)));
+                probeSetNames.add(fusionCDFData.getProbeSetName(index));
             }
-            return designElementList;
+            return probeSetNames;
         } finally {
             close(reader);
         }
