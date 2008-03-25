@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -99,6 +100,7 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
 
@@ -188,6 +190,13 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     }
 
     public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<LogicalProbe> getLogicalProbesReadOnly(ArrayDesign design) {
         return null;
     }
 }
