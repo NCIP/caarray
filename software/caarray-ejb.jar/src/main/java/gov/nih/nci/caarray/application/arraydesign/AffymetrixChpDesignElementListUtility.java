@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.arraydesign;
 
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
@@ -93,7 +94,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import affymetrix.fusion.cdf.FusionCDFData;
 
@@ -117,17 +117,19 @@ public final class AffymetrixChpDesignElementListUtility {
      * are expected to persist the list.
      *
      * @param design the design to create the <code>DesignElementList</code> for
+     * @param arrayDao used to retrieve <code>LogicalProges</code> from design
      * @return the created list.
      * @throws AffymetrixCdfReadException if the CDF file associated with the design couldn't be read.
      */
-    public static DesignElementList createDesignElementList(ArrayDesign design) throws AffymetrixCdfReadException {
+    public static DesignElementList createDesignElementList(ArrayDesign design, ArrayDao arrayDao)
+    throws AffymetrixCdfReadException {
         checkDesign(design);
         List<String> probeSetNames = getProbeSetNames(design);
         DesignElementList designElementList = new DesignElementList();
         designElementList.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE_ELEMENT_LIST
                 + ":" + getDesignElementListObjectId(design));
         designElementList.setDesignElementTypeEnum(DesignElementType.LOGICAL_PROBE);
-        Map<String, LogicalProbe> probeSetMap = getProbeSetMap(design);
+        Map<String, LogicalProbe> probeSetMap = getProbeSetMap(design, arrayDao);
         for (String probeSetName : probeSetNames) {
             designElementList.getDesignElements().add(probeSetMap.get(probeSetName));
         }
@@ -180,8 +182,8 @@ public final class AffymetrixChpDesignElementListUtility {
         }
     }
 
-    private static Map<String, LogicalProbe> getProbeSetMap(ArrayDesign design) {
-        Set<LogicalProbe> logicalProbes = design.getDesignDetails().getLogicalProbes();
+    private static Map<String, LogicalProbe> getProbeSetMap(ArrayDesign design, ArrayDao arrayDao) {
+        List<LogicalProbe> logicalProbes = arrayDao.getLogicalProbesReadOnly(design);
         Map<String, LogicalProbe> probeSetMap = new HashMap<String, LogicalProbe>(logicalProbes.size());
         for (LogicalProbe probe : logicalProbes) {
             probeSetMap.put(probe.getName(), probe);

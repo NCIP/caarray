@@ -194,7 +194,8 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
 
     private void createProbeSetDesignElementList(ArrayDesign arrayDesign) throws AffymetrixCdfReadException {
         DesignElementList probeSetList =
-            AffymetrixChpDesignElementListUtility.createDesignElementList(getRefreshedDesign(arrayDesign));
+            AffymetrixChpDesignElementListUtility.createDesignElementList(getRefreshedDesign(arrayDesign),
+                    getArrayDao());
         getArrayDao().save(probeSetList);
         flushAndClearSession();
     }
