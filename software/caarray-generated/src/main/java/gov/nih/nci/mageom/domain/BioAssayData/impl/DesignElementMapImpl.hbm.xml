@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.DesignElement.impl">
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.impl.DesignElementMapImpl" table="DESIGNELEMENTMAP" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <discriminator column="OJBCONCRETECLASS" />
+    <property name="identifier" column="IDENTIFIER" type="string" />
+    <property name="name" column="NAME" type="string" />
+    <set name="protocolApplications" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.Protocol.impl.ProtocolApplicationImpl" />
+    </set>
+    <subclass name="CompositeCompositeMapImpl" discriminator-value="org.biomage.BioAssayData.CompositeCompositeMap">
+      <set name="compositePositionSources" lazy="true">
+        <key column="ID" />
+        <one-to-many class="CompositePositionImpl" />
+      </set>
+      <many-to-one name="compositeSequence" column="COMPOSITE_SEQUENCE_ID" class="CompositeSequenceImpl" />
+    </subclass>
+    <subclass name="ReporterCompositeMapImpl" discriminator-value="org.biomage.BioAssayData.ReporterCompositeMap">
+      <set name="reporterPositionSources" lazy="true">
+        <key column="ID" />
+        <one-to-many class="ReporterPositionImpl" />
+      </set>
+      <many-to-one name="compositeSequence" column="COMPOSITE_SEQUENCE_ID" class="CompositeSequenceImpl" />
+    </subclass>
+    <subclass name="FeatureReporterMapImpl" discriminator-value="org.biomage.BioAssayData.FeatureReporterMap">
+      <set name="featureInformationSources" lazy="true">
+        <key column="ID" />
+        <one-to-many class="FeatureInformationImpl" />
+      </set>
+      <many-to-one name="reporter" column="REPORTER_ID" class="ReporterImpl" />
+    </subclass>
+  </class>
+</hibernate-mapping>
+

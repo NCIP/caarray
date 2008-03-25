@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.Description.impl">
+  <class name="OntologyEntryImpl" table="ONTOLOGYENTRY" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="category" column="CATEGORY" type="string" />
+    <property name="description" column="DESCRIPTION" type="string" />
+    <property name="value" column="VALUE" type="string" />
+    <many-to-one name="ontologyReference" column="ONTOLOGY_REFERENCE_ID" class="DatabaseEntryImpl" />
+    <set name="associations" lazy="true">
+      <key column="ID" />
+      <one-to-many class="OntologyEntryImpl" />
+    </set>
+    <set name="propertySets" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

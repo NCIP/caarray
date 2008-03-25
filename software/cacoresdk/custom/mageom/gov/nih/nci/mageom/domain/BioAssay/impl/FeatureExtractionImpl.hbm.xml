@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.BioAssay.impl">
+  <class name="FeatureExtractionImpl" table="FEATUREEXTRACTION" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="identifier" column="IDENTIFIER" type="string" />
+    <property name="name" column="NAME" type="string" />
+    <set name="protocolApplications" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.Protocol.impl.ProtocolApplicationImpl" />
+    </set>
+    <many-to-one name="physicalBioAssaySource" column="PHYSICAL_BIOASSAY_SOURCE_ID" class="PhysicalBioAssayImpl" />
+    <many-to-one name="measuredBioAssayTarget" column="MEASURED_BIOASSAY_TARGET_ID" class="MeasuredBioAssayImpl" />
+  </class>
+</hibernate-mapping>
+

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ===================================================================== -->
+<!--                                                                       -->
+<!--  Sample TreeCache Service Configuration                               -->
+<!--  Recommended for use as Hibernate's 2nd Level Cache                   -->
+<!--  For use with JBossCache >= 1.3.0 ONLY!!!                             -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+
+<server>
+    <!-- ==================================================================== -->
+    <!-- Defines TreeCache configuration                                      -->
+    <!-- ==================================================================== -->
+
+    <classpath codebase="./lib" archives="jboss-cache.jar, jgroups.jar"/>
+    
+    <mbean code="org.jboss.cache.TreeCache"
+        name="jboss.cache:service=TreeCache">
+
+        <depends>jboss:service=Naming</depends>
+        <depends>jboss:service=TransactionManager</depends>
+
+        <!--
+        Configure the TransactionManager
+    -->
+        <attribute name="TransactionManagerLookupClass">org.jboss.cache.GenericTransactionManagerLookup</attribute>
+
+
+        <!--
+            Node locking scheme:
+                OPTIMISTIC
+                PESSIMISTIC (default)
+        -->
+        <attribute name="NodeLockingScheme">PESSIMISTIC</attribute>
+
+        <!--
+            Note that this attribute is IGNORED if your NodeLockingScheme above is OPTIMISTIC.
+
+            Isolation level : SERIALIZABLE
+                              REPEATABLE_READ (default)
+                              READ_COMMITTED
+                              READ_UNCOMMITTED
+                              NONE
+        -->
+        <attribute name="IsolationLevel">REPEATABLE_READ</attribute>
+
+        <!--
+             Valid modes are LOCAL
+                             REPL_ASYNC
+                             REPL_SYNC
+                             INVALIDATION_ASYNC
+                             INVALIDATION_SYNC
+        -->
+
+       <!-- This should ideally be set to INVALIDATION_ASYNC but due to JBCACHE-806 this has to be REPL_ASYNC for now -->
+        <attribute name="CacheMode">LOCAL</attribute>
+
+        <!--
+        Just used for async repl: use a replication queue
+        -->
+        <attribute name="UseReplQueue">false</attribute>
+
+        <!--
+            Replication interval for replication queue (in ms)
+        -->
+        <attribute name="ReplQueueInterval">0</attribute>
+
+        <!--
+            Max number of elements which trigger replication
+        -->
+        <attribute name="ReplQueueMaxElements">0</attribute>
+
+        <!--
+         Whether or not to fetch state on joining a cluster
+         NOTE this used to be called FetchStateOnStartup and has been renamed to be more descriptive.
+        -->
+        <attribute name="FetchInMemoryState">false</attribute>
+
+        <!--
+            Number of milliseconds to wait until all responses for a
+            synchronous call have been received.
+        -->
+        <attribute name="SyncReplTimeout">20000</attribute>
+
+        <!-- Max number of milliseconds to wait for a lock acquisition -->
+        <attribute name="LockAcquisitionTimeout">15000</attribute>
+
+        <!--
+            The max amount of time (in milliseconds) we wait until the
+            initial state (ie. the contents of the cache) are retrieved from
+            existing members in a clustered environment
+        -->
+        <attribute name="InitialStateRetrievalTimeout">20000</attribute>
+        
+        <!-- Name of the eviction policy class. -->
+        <attribute name="EvictionPolicyClass"></attribute>
+       
+       <!--
+          Indicate whether to use region based marshalling or not. Set this to true if you are running under a scoped
+          class loader, e.g., inside an application server. Default is "false".
+       -->
+       <attribute name="UseRegionBasedMarshalling">false</attribute>
+
+    </mbean>
+</server>

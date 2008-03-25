@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.Experiment.impl">
+  <class name="ExperimentImpl" table="EXPERIMENT" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="identifier" column="IDENTIFIER" type="string" />
+    <property name="name" column="NAME" type="string" />
+    <set name="bioAssays" table="EXPERIMENTBIOASSAY" lazy="true">
+      <key column="EXPERIMENT_ID" />
+      <many-to-many class="gov.nih.nci.mageom.domain.BioAssay.impl.BioAssayImpl" column="BIOASSAY_ID" />
+    </set>
+    <set name="bioAssayData" table="EXPERIMENTBIOASSAYDATA" lazy="true">
+      <key column="EXPERIMENT_ID" />
+      <many-to-many class="gov.nih.nci.mageom.domain.BioAssayData.impl.BioAssayDataImpl" column="BIOASSAY_DATA_ID" />
+    </set>
+    <set name="analysisResults" table="ANALYSISRESULTS" lazy="true">
+      <key column="EXPERIMENT_ID" />
+      <many-to-many class="gov.nih.nci.mageom.domain.HigherLevelAnalysis.impl.BioAssayDataClusterImpl" column="BIOASSAY_DATA_CLUSTER_ID" />
+    </set>
+    <set name="providers" table="EXPERIMENTPROVIDER" lazy="true">
+      <key column="EXPERIMENT_ID" />
+      <many-to-many class="gov.nih.nci.mageom.domain.AuditAndSecurity.impl.ContactImpl" column="CONTACT_ID" />
+    </set>
+    <set name="experimentDesigns" lazy="true">
+      <key column="ID" />
+      <one-to-many class="ExperimentDesignImpl" />
+    </set>
+    <many-to-one name="security" column="DESC_SECURITY_ID" class="gov.nih.nci.mageom.domain.AuditAndSecurity.impl.SecurityImpl" />
+    <set name="propertySets" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

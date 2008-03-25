@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.impl">
+  <class name="NameValueTypeImpl" table="NAMEVALUETYPE" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="name" column="NAME" type="string" />
+    <property name="type" column="TYPE" type="string" />
+    <property name="value" column="VALUE" type="string" />
+    <many-to-one name="parentPropertySet" column="NAME_VALUE_TYPE_ID" class="NameValueTypeImpl" />
+  </class>
+</hibernate-mapping>
+

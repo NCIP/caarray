@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.ArrayDesign.impl">
+  <class name="ZoneImpl" table="ZONE" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="identifier" column="IDENTIFIER" type="string" />
+    <property name="name" column="NAME" type="string" />
+    <property name="column" column="ZONE_COLUMN" type="int" />
+    <property name="lowerRightX" column="LOWERRIGHTX" type="float" />
+    <property name="lowerRightY" column="LOWERRIGHTY" type="float" />
+    <property name="row" column="ZONE_ROW" type="int" />
+    <property name="upperLeftX" column="UPPERLEFTX" type="float" />
+    <property name="upperLeftY" column="UPPERLEFTY" type="float" />
+    <many-to-one name="distanceUnit" column="DISTANCE_UNIT_ID" class="gov.nih.nci.mageom.domain.Measurement.impl.DistanceUnitImpl" />
+    <many-to-one name="security" column="DESC_SECURITY_ID" class="gov.nih.nci.mageom.domain.AuditAndSecurity.impl.SecurityImpl" />
+    <set name="propertySets" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

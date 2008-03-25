@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.ArrayDesign.impl">
+  <class name="ZoneGroupImpl" table="ZONEGROUP" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="spacingsBetweenZonesX" column="SPACINGSBETWEENZONESX" type="float" />
+    <property name="spacingsBetweenZonesY" column="SPACINGSBETWEENZONESY" type="float" />
+    <property name="zonesPerX" column="ZONESPERX" type="int" />
+    <property name="zonesPerY" column="ZONESPERY" type="int" />
+    <many-to-one name="zoneLayout" column="ZONE_LAYOUT_ID" class="ZoneLayoutImpl" />
+    <many-to-one name="distanceUnit" column="DISTANCE_UNIT_ID" class="gov.nih.nci.mageom.domain.Measurement.impl.DistanceUnitImpl" />
+    <set name="zoneLocations" lazy="true">
+      <key column="ID" />
+      <one-to-many class="ZoneImpl" />
+    </set>
+    <set name="propertySets" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

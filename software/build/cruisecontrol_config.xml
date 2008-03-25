@@ -1,0 +1,169 @@
+<!-- *********************************************************************** -->
+<!-- ** MASTER CRUISECONTROL CONTROL FILES                                ** -->
+<!-- *********************************************************************** -->
+<cruisecontrol>
+
+    <property environment="env" toupper="true" />
+    <property name="svn.users.file" value="svn.users.properties"/>
+    <property name="email.buildresultsurl.prefix" value="http://${env.CCNAME}:${env.CCWEBPORT}/buildresults/"/>
+
+    <plugin name="htmlemail"
+        classname="net.sourceforge.cruisecontrol.publishers.HTMLEmailPublisher"
+        mailhost="mailfwd.nih.gov"
+        returnaddress="matyass@mail.nih.gov"
+        returnname="CRUISECONTROL"
+        subjectprefix="BUILD:"
+        xsldir="${env.CCDIR}/webapps/cruisecontrol/xsl"
+        css="${env.CCDIR}/webapps/cruisecontrol/css/cruisecontrol.css" />
+
+    <project name="caarray2" buildafterfailed="false">
+
+        <labelincrementer separator="_" defaultLabel="CAARRAY_BL_1" />
+
+        <bootstrappers>
+            <currentbuildstatusbootstrapper file="logs/${project.name}/buildstatus.txt" />
+            <svnbootstrapper localworkingcopy="projects/${project.name}" file="software\build\delegating-build.xml" />
+        </bootstrappers>
+
+        <modificationset quietperiod="0" ignoreFiles="*/docs/*/*.*, /trunk/qa/*/*.*">
+            <svn localworkingcopy="projects/${project.name}" />
+        </modificationset>
+
+        <schedule interval="60">
+            <ant anthome="C:\dev\tools\apache-ant-1.7.0"
+                buildfile="projects\${project.name}\software\build\delegating-build.xml" target="build" uselogger="true"
+                usedebug="false">
+            </ant>
+        </schedule>
+
+        <log dir="logs\${project.name}">
+            <merge dir="projects\${project.name}\software\build\site\junit" />
+            <gzip every="1" unit="MONTH"/>
+            <delete every="3" unit="MONTH" ignoreSuffix="true"/>
+        </log>
+
+        <publishers>
+            <artifactspublisher dir="projects\${project.name}\software\build\site" dest="artifacts\${project.name}" />
+            <currentbuildstatuspublisher file="logs/${project.name}/buildstatus.txt" />
+            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}">
+                <always address="teamcaarray@5amsolutions.com" />
+            </htmlemail>
+        </publishers>
+
+    </project>
+
+    <project name="caarray2-nightly" buildafterfailed="false">
+
+        <labelincrementer separator="_" defaultLabel="CAARRAY-NIGHTLY_BL_1" />
+
+        <bootstrappers>
+            <currentbuildstatusbootstrapper file="logs/${project.name}/buildstatus.txt" />
+            <svnbootstrapper localworkingcopy="projects/${project.name}" file="software\build\delegating-build.xml" />
+        </bootstrappers>
+
+        <modificationset quietperiod="0" ignoreFiles="*/docs/*/*.*, /qa/*/*.*">
+            <svn localworkingcopy="projects/${project.name}" />
+        </modificationset>
+
+        <schedule interval="1800">
+            <ant anthome="C:\dev\tools\apache-ant-1.7.0"
+                buildfile="projects\${project.name}\software\build\delegating-build.xml" target="nightly" uselogger="true"
+                usedebug="false"
+                time="2359">
+                <property name="psexec.system.username" value="cruisecontrol"/>
+                <property name="psexec.system.password" value="5AM#nci"/>
+            </ant>
+        </schedule>
+
+        <log dir="logs\${project.name}">
+            <merge dir="projects\${project.name}\software\build\site\junit" />
+            <gzip every="1" unit="WEEK"/>
+            <delete every="2" unit="WEEK" ignoreSuffix="true"/>
+        </log>
+
+        <publishers>
+            <artifactspublisher dir="projects\${project.name}\software\build\site" dest="artifacts\${project.name}" />
+            <currentbuildstatuspublisher file="logs/${project.name}/buildstatus.txt" />
+            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}">
+                <always address="teamcaarray@5amsolutions.com" />
+            </htmlemail>
+        </publishers>
+
+    </project>
+
+    <!--
+    -->
+    <project name="caarray2-docs_end-user-doco" buildafterfailed="false">
+
+	        <modificationset quietperiod="0">
+	            <svn localworkingcopy="projects/caarray2/docs/end_user_documentation" />
+	        </modificationset>
+
+	        <schedule interval="60">
+				<ant anthome="C:\dev\tools\apache-ant-1.7.0"
+					buildfile="build.xml" target="main" uselogger="true"
+					usedebug="false">
+				</ant>
+	        </schedule>
+
+	        <log dir="logs\${project.name}">
+	            <gzip every="1" unit="WEEK"/>
+	            <delete every="2" unit="WEEK" ignoreSuffix="true"/>
+	        </log>
+
+	        <publishers>
+	            <currentbuildstatuspublisher file="logs/${project.name}/buildstatus.txt" />
+	            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}">
+	                <always address="swand@mail.nih.gov" />
+	                <always address="klemmj@mail.nih.gov" />
+	                <always address="gendlemb@mail.nih.gov" />
+	                <always address="hadfielj@mail.nih.gov" />
+	                <always address="matyass@mail.nih.gov" />
+	            </htmlemail>
+	        </publishers>
+
+    </project>
+
+		<!--
+
+
+    <project name="caarray2-remote-build" buildafterfailed="false">
+
+
+
+	        <modificationset quietperiod="0">
+			    <forceonly />
+	            <svn localworkingcopy="projects/caarray2/software/build" />
+	        </modificationset>
+
+	        <schedule interval="60">
+				<ant anthome="C:\dev\tools\apache-ant-1.7.0"
+					buildfile="projects\${project.name}\software\build\remote-build.xml" target="all" uselogger="true"
+					usedebug="false">
+				  <property name="notest" value="true"/>
+				  <property name="nocheck" value="true"/>
+				  <property name="buildNumber" value="CRUISE"/>				  
+				  <property name="build.tag_built" value="trunk-remoteDeployfromCC"/>
+				  <property name="envpropertyfile" value="C:/dev/scm-private/trunk/caarray2/properties/DEV.properties"/>
+				</ant>
+	        </schedule>
+
+	        <log dir="logs\${project.name}">
+	        </log>
+
+	        <publishers>
+	            <currentbuildstatuspublisher file="logs/${project.name}/buildstatus.txt" />
+	            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}">
+	                <always address="duvallp@mail.nih.gov" />
+	                <always address="gursesl@mail.nih.gov" />
+					<always address="masonwi@mail.nih.gov" />
+	            </htmlemail>
+	        </publishers>
+
+    </project>
+
+	-->
+
+
+
+</cruisecontrol>

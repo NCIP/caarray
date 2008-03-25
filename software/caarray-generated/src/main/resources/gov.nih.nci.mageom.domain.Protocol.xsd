@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Protocol" xmlns:gov.nih.nci.mageom.domain="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain" xmlns:gov.nih.nci.mageom.domain.Array="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Array" xmlns:gov.nih.nci.mageom.domain.ArrayDesign="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.ArrayDesign" xmlns:gov.nih.nci.mageom.domain.AuditAndSecurity="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.AuditAndSecurity" xmlns:gov.nih.nci.mageom.domain.BioAssay="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssay" xmlns:gov.nih.nci.mageom.domain.BioAssayData="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" xmlns:gov.nih.nci.mageom.domain.BioEvent="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioEvent" xmlns:gov.nih.nci.mageom.domain.BioMaterial="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioMaterial" xmlns:gov.nih.nci.mageom.domain.BioSequence="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioSequence" xmlns:gov.nih.nci.mageom.domain.BQS="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BQS" xmlns:gov.nih.nci.mageom.domain.Description="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Description" xmlns:gov.nih.nci.mageom.domain.DesignElement="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" xmlns:gov.nih.nci.mageom.domain.Experiment="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Experiment" xmlns:gov.nih.nci.mageom.domain.HigherLevelAnalysis="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.HigherLevelAnalysis" xmlns:gov.nih.nci.mageom.domain.Measurement="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Measurement" xmlns:gov.nih.nci.mageom.domain.QuantitationType="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" targetNamespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Protocol" elementFormDefault="qualified">
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioMaterial" schemaLocation="gov.nih.nci.mageom.domain.BioMaterial.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Measurement" schemaLocation="gov.nih.nci.mageom.domain.Measurement.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.HigherLevelAnalysis" schemaLocation="gov.nih.nci.mageom.domain.HigherLevelAnalysis.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Description" schemaLocation="gov.nih.nci.mageom.domain.Description.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssay" schemaLocation="gov.nih.nci.mageom.domain.BioAssay.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" schemaLocation="gov.nih.nci.mageom.domain.QuantitationType.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.AuditAndSecurity" schemaLocation="gov.nih.nci.mageom.domain.AuditAndSecurity.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.ArrayDesign" schemaLocation="gov.nih.nci.mageom.domain.ArrayDesign.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BQS" schemaLocation="gov.nih.nci.mageom.domain.BQS.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioEvent" schemaLocation="gov.nih.nci.mageom.domain.BioEvent.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" schemaLocation="gov.nih.nci.mageom.domain.BioAssayData.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioSequence" schemaLocation="gov.nih.nci.mageom.domain.BioSequence.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain" schemaLocation="gov.nih.nci.mageom.domain.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" schemaLocation="gov.nih.nci.mageom.domain.DesignElement.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Experiment" schemaLocation="gov.nih.nci.mageom.domain.Experiment.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Array" schemaLocation="gov.nih.nci.mageom.domain.Array.xsd" />
+  <xs:element name="Parameterizable" type="Parameterizable" />
+  <xs:complexType name="Parameterizable">
+    <xs:complexContent>
+      <xs:extension base="gov.nih.nci.mageom.domain:Identifiable">
+        <xs:sequence>
+          <xs:element name="parameterTypes" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element ref="Parameter" minOccurs="0" maxOccurs="unbounded" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:long" />
+        <xs:attribute name="URI" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Parameter" type="Parameter" />
+  <xs:complexType name="Parameter">
+    <xs:complexContent>
+      <xs:extension base="gov.nih.nci.mageom.domain:Identifiable">
+        <xs:sequence>
+          <xs:element name="defaultValue" type="gov.nih.nci.mageom.domain.Measurement:Measurement" minOccurs="0" maxOccurs="1" />
+          <xs:element name="dataType" type="gov.nih.nci.mageom.domain.Description:OntologyEntry" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:long" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Protocol" type="Protocol" />
+  <xs:complexType name="Protocol">
+    <xs:complexContent>
+      <xs:extension base="Parameterizable">
+        <xs:sequence>
+          <xs:element name="softwares" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element ref="Software" minOccurs="0" maxOccurs="unbounded" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="hardwares" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element ref="Hardware" minOccurs="0" maxOccurs="unbounded" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="type" type="gov.nih.nci.mageom.domain.Description:OntologyEntry" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="text" type="xs:string" />
+        <xs:attribute name="title" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ProtocolApplication" type="ProtocolApplication" />
+  <xs:complexType name="ProtocolApplication">
+    <xs:complexContent>
+      <xs:extension base="ParameterizableApplication">
+        <xs:sequence>
+          <xs:element name="hardwareApplications" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element ref="HardwareApplication" minOccurs="0" maxOccurs="unbounded" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="softwareApplications" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element ref="SoftwareApplication" minOccurs="0" maxOccurs="unbounded" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="protocol" type="Protocol" minOccurs="0" maxOccurs="1" />
+          <xs:element name="performers" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element ref="Person" minOccurs="0" maxOccurs="unbounded" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="activityDate" type="xs:dateTime" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Hardware" type="Hardware" />
+  <xs:complexType name="Hardware">
+    <xs:complexContent>
+      <xs:extension base="Parameterizable">
+        <xs:sequence>
+          <xs:element name="hardwareManufacturers" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element ref="Contact" minOccurs="0" maxOccurs="unbounded" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="softwares" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element ref="Software" minOccurs="0" maxOccurs="unbounded" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="type" type="gov.nih.nci.mageom.domain.Description:OntologyEntry" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="make" type="xs:string" />
+        <xs:attribute name="model" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="HardwareApplication" type="HardwareApplication" />
+  <xs:complexType name="HardwareApplication">
+    <xs:complexContent>
+      <xs:extension base="ParameterizableApplication">
+        <xs:sequence>
+          <xs:element name="hardware" type="Hardware" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="serialNumber" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="SoftwareApplication" type="SoftwareApplication" />
+  <xs:complexType name="SoftwareApplication">
+    <xs:complexContent>
+      <xs:extension base="ParameterizableApplication">
+        <xs:sequence>
+          <xs:element name="software" type="Software" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="releaseDate" type="xs:dateTime" />
+        <xs:attribute name="version" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ParameterValue" type="ParameterValue" />
+  <xs:complexType name="ParameterValue">
+    <xs:complexContent>
+      <xs:extension base="gov.nih.nci.mageom.domain:Extendable">
+        <xs:sequence>
+          <xs:element name="parameterType" type="Parameter" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:long" />
+        <xs:attribute name="value" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ParameterizableApplication" type="ParameterizableApplication" />
+  <xs:complexType name="ParameterizableApplication">
+    <xs:complexContent>
+      <xs:extension base="gov.nih.nci.mageom.domain:Describable">
+        <xs:sequence>
+          <xs:element name="parameterValues" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element ref="ParameterValue" minOccurs="0" maxOccurs="unbounded" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:long" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Software" type="Software" />
+  <xs:complexType name="Software">
+    <xs:complexContent>
+      <xs:extension base="Parameterizable">
+        <xs:sequence>
+          <xs:element name="hardware" type="Hardware" minOccurs="0" maxOccurs="1" />
+          <xs:element name="softwares" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element ref="Software" minOccurs="0" maxOccurs="unbounded" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="softwareManufacturers" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element ref="Contact" minOccurs="0" maxOccurs="unbounded" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="type" type="gov.nih.nci.mageom.domain.Description:OntologyEntry" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
+
