@@ -1,1 +1,0 @@
-update term_source set name='caArray' where name='Caarray';
