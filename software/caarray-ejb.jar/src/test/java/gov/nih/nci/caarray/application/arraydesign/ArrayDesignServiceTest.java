@@ -151,7 +151,7 @@ public class ArrayDesignServiceTest {
     private final LocalDaoFactoryStub caArrayDaoFactoryStub = new LocalDaoFactoryStub();
     private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
-    
+
     private static Organization DUMMY_ORGANIZATION = new Organization();
     private static Organism DUMMY_ORGANISM = new Organism();
     private static Term DUMMY_TERM = new Term();
@@ -172,7 +172,7 @@ public class ArrayDesignServiceTest {
         DUMMY_TERM.setCategory(cat);
         DUMMY_TERM.setSource(ts);
     }
-    
+
     private static ArrayDesignService createArrayDesignService(DaoFactoryStub caArrayDaoFactoryStub,
             final FileAccessServiceStub fileAccessServiceStub, VocabularyServiceStub vocabularyServiceStub) {
         ArrayDesignServiceBean bean = new ArrayDesignServiceBean();
@@ -190,7 +190,7 @@ public class ArrayDesignServiceTest {
         ArrayDesign design = new ArrayDesign();
         this.arrayDesignService.importDesign(design);
         assertNull(design.getName());
-        
+
         design.setDesignFile(getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         this.arrayDesignService.importDesign(design);
         assertEquals("Test3", design.getName());
@@ -209,7 +209,7 @@ public class ArrayDesignServiceTest {
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
         assertEquals("Test3", design.getLsidObjectId());
         assertNull(design.getDescription());
-        
+
         design.setDescription("new description");
         this.arrayDesignService.saveArrayDesign(design);
         ArrayDesign updatedDesign = this.arrayDesignService.getArrayDesign(design.getId());
@@ -239,7 +239,7 @@ public class ArrayDesignServiceTest {
         // array designs with ID == 2 are considered locked by the test stub
         design.setId(2L);
         this.arrayDesignService.importDesign(design);
-        
+
         // since the test DB is in memory, we have to instantiate a new copy of this design to alter it
         design = createDesign(null, null, null, getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         design.setId(2L);
@@ -254,7 +254,7 @@ public class ArrayDesignServiceTest {
         // array designs with ID == 2 are considered locked by the test stub
         design.setId(2L);
         this.arrayDesignService.importDesign(design);
-        
+
         // since the test DB is in memory, we have to instantiate a new copy of this design to alter it
         design = createDesign(null, null, null, getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         design.setId(2L);
@@ -269,7 +269,7 @@ public class ArrayDesignServiceTest {
         // array designs with ID == 2 are considered locked by the test stub
         design.setId(2L);
         this.arrayDesignService.importDesign(design);
-        
+
         // since the test DB is in memory, we have to instantiate a new copy of this design to alter it
         design = createDesign(null, null, null, getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         design.setId(2L);
@@ -282,7 +282,7 @@ public class ArrayDesignServiceTest {
         ArrayDesign design = new ArrayDesign();
         this.arrayDesignService.importDesignDetails(design);
         assertNull(design.getNumberOfFeatures());
-        
+
         design.setDesignFile(getGenepixCaArrayFile(GenepixArrayDesignFiles.DEMO_GAL));
         this.arrayDesignService.importDesign(design);
         this.arrayDesignService.importDesignDetails(design);
@@ -489,7 +489,7 @@ public class ArrayDesignServiceTest {
         FileValidationResult result = this.arrayDesignService.validateDesign(design);
         assertFalse(result.isValid());
         assertTrue(result.getMessages().iterator().next().getMessage().contains("has already been imported"));
-        
+
         ArrayDesign design2 = createDesign(null, null, null, getCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF,
                 FileType.UCSF_SPOT_SPT));
         this.arrayDesignService.importDesign(design2);
@@ -497,7 +497,7 @@ public class ArrayDesignServiceTest {
         assertFalse(result.isValid());
         assertTrue(result.getMessages().iterator().next().getMessage().contains("design already exists with the name"));
     }
-    
+
     @Test
     public void testImportDesign_UnsupportedVendors() {
         // The specific file doesn't matter, because the type will determine how the file is handled
@@ -509,7 +509,7 @@ public class ArrayDesignServiceTest {
         assertEquals("Agilent.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
         assertEquals("HumanHap300v2_A", arrayDesign.getLsidObjectId());
-        
+
         designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.AGILENT_XML);
         arrayDesign = createDesign(null, null, null, designFile);
         arrayDesignService.importDesign(arrayDesign);
@@ -517,7 +517,7 @@ public class ArrayDesignServiceTest {
         assertEquals("Agilent.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
         assertEquals("HumanHap300v2_A", arrayDesign.getLsidObjectId());
-        
+
         designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.IMAGENE_TPL);
         arrayDesign = createDesign(null, null, null, designFile);
         arrayDesignService.importDesign(arrayDesign);
@@ -525,7 +525,7 @@ public class ArrayDesignServiceTest {
         assertEquals("caarray.nci.nih.gov", arrayDesign.getLsidAuthority());
         assertEquals("domain", arrayDesign.getLsidNamespace());
         assertEquals("HumanHap300v2_A", arrayDesign.getLsidObjectId());
-        
+
         designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.NIMBLEGEN_NDF);
         arrayDesign = createDesign(null, null, null, designFile);
         arrayDesignService.importDesign(arrayDesign);
@@ -533,7 +533,7 @@ public class ArrayDesignServiceTest {
         assertEquals("caarray.nci.nih.gov", arrayDesign.getLsidAuthority());
         assertEquals("domain", arrayDesign.getLsidNamespace());
         assertEquals("HumanHap300v2_A", arrayDesign.getLsidObjectId());
-        
+
         designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.UCSF_SPOT_SPT);
         arrayDesign = createDesign(null, null, null, designFile);
         arrayDesignService.importDesign(arrayDesign);
@@ -550,7 +550,7 @@ public class ArrayDesignServiceTest {
         assertEquals("domain", arrayDesign.getLsidNamespace());
         assertEquals("a-mexp-58f_excerpt_v1.0", arrayDesign.getLsidObjectId());
     }
-    
+
     private ArrayDesign createDesign(Organization provider, Organism organism, AssayType assayType,
             CaArrayFile caArrayFile) {
         ArrayDesign arrayDesign = new ArrayDesign();
@@ -559,7 +559,7 @@ public class ArrayDesignServiceTest {
             provider = DUMMY_ORGANIZATION;
         }
         arrayDesign.setProvider(provider);
-        
+
         if (organism == null) {
             organism = DUMMY_ORGANISM;
         }
@@ -574,7 +574,7 @@ public class ArrayDesignServiceTest {
             caArrayFile = new CaArrayFile();
         }
         arrayDesign.setDesignFile(caArrayFile);
-        
+
         arrayDesign.setTechnologyType(DUMMY_TERM);
         return arrayDesign;
     }
@@ -627,6 +627,11 @@ public class ArrayDesignServiceTest {
         public ArrayDao getArrayDao() {
             return new ArrayDaoStub() {
 
+                @Override
+                public List<LogicalProbe> getLogicalProbesReadOnly(ArrayDesign design) {
+                    return new ArrayList<LogicalProbe>(design.getDesignDetails().getLogicalProbes());
+                }
+
                 @SuppressWarnings("deprecation")
                 @Override
                 public void save(PersistentObject object) {
@@ -661,7 +666,7 @@ public class ArrayDesignServiceTest {
                 public ArrayDesign getArrayDesign(long id) {
                     return (ArrayDesign) LocalDaoFactoryStub.this.objectMap.get(id);
                 }
-                
+
                 /**
                  * {@inheritDoc}
                  */
