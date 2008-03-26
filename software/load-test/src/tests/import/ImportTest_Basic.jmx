@@ -241,7 +241,7 @@
             <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Project ID Extractor" enabled="true">
               <stringProp name="RegexExtractor.useHeaders">false</stringProp>
               <stringProp name="RegexExtractor.refname">projectId</stringProp>
-              <stringProp name="RegexExtractor.regex">project.id=(.+?)&amp;</stringProp>
+              <stringProp name="RegexExtractor.regex">project.id=(.+?)&apos;</stringProp>
               <stringProp name="RegexExtractor.template">$1$</stringProp>
               <stringProp name="RegexExtractor.default"></stringProp>
               <stringProp name="RegexExtractor.match_number"></stringProp>
@@ -313,7 +313,6 @@
               <stringProp name="HTTPSampler.FILE_FIELD">upload</stringProp>
               <stringProp name="HTTPSampler.monitor">false</stringProp>
               <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-              <stringProp name="TestPlan.comments">Temporarily uploading smaller data set until Large Import defect is fixed.</stringProp>
             </HTTPSampler>
             <hashTree/>
             <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="List Uploaded Files" enabled="true">
@@ -352,6 +351,15 @@
               <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
             </HTTPSampler>
             <hashTree>
+              <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Upload Complete" enabled="true">
+                <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                <stringProp name="RegexExtractor.refname">uploadComplete</stringProp>
+                <stringProp name="RegexExtractor.regex">&gt; Uploaded</stringProp>
+                <stringProp name="RegexExtractor.template">1</stringProp>
+                <stringProp name="RegexExtractor.default">0</stringProp>
+                <stringProp name="RegexExtractor.match_number">10</stringProp>
+              </RegexExtractor>
+              <hashTree/>
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 01" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">fileId01</stringProp>
@@ -442,6 +450,168 @@
                 <stringProp name="RegexExtractor.match_number">10</stringProp>
               </RegexExtractor>
               <hashTree/>
+            </hashTree>
+            <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop 60 times waiting for Upload to finish" enabled="true">
+              <boolProp name="LoopController.continue_forever">true</boolProp>
+              <stringProp name="LoopController.loops">60</stringProp>
+              <stringProp name="TestPlan.comments">If upload doesn&apos;t finish in 10 minutes, we give up and assume that something went wrong (instead of looping forever).</stringProp>
+            </LoopController>
+            <hashTree>
+              <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">
+                <stringProp name="IfController.condition">${uploadComplete} != 1</stringProp>
+                <stringProp name="IfController.evaluateAll">false</stringProp>
+              </IfController>
+              <hashTree>
+                <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for Ten Seconds" enabled="true">
+                  <stringProp name="ConstantTimer.delay">10000</stringProp>
+                </ConstantTimer>
+                <hashTree/>
+                <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="List Uploaded Files" enabled="true">
+                  <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+                    <collectionProp name="Arguments.arguments">
+                      <elementProp name="" elementType="HTTPArgument">
+                        <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                        <stringProp name="Argument.value">${projectId}</stringProp>
+                        <stringProp name="Argument.metadata">=</stringProp>
+                        <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                        <stringProp name="Argument.name">project.id</stringProp>
+                      </elementProp>
+                      <elementProp name="" elementType="HTTPArgument">
+                        <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                        <stringProp name="Argument.value">true</stringProp>
+                        <stringProp name="Argument.metadata">=</stringProp>
+                        <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                        <stringProp name="Argument.name">editMode</stringProp>
+                      </elementProp>
+                    </collectionProp>
+                  </elementProp>
+                  <stringProp name="HTTPSampler.domain"></stringProp>
+                  <stringProp name="HTTPSampler.port"></stringProp>
+                  <stringProp name="HTTPSampler.protocol"></stringProp>
+                  <stringProp name="HTTPSampler.method">GET</stringProp>
+                  <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                  <stringProp name="HTTPSampler.path">/caarray/protected/ajax/project/files/listUnimported.action</stringProp>
+                  <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                  <boolProp name="HTTPSampler.auto_redirects">true</boolProp>
+                  <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                  <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                  <stringProp name="HTTPSampler.mimetype"></stringProp>
+                  <stringProp name="HTTPSampler.FILE_NAME"></stringProp>
+                  <stringProp name="HTTPSampler.FILE_FIELD"></stringProp>
+                  <stringProp name="HTTPSampler.monitor">false</stringProp>
+                  <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                </HTTPSampler>
+                <hashTree>
+                  <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Upload Complete" enabled="true">
+                    <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                    <stringProp name="RegexExtractor.refname">uploadComplete</stringProp>
+                    <stringProp name="RegexExtractor.regex">&gt; Uploaded</stringProp>
+                    <stringProp name="RegexExtractor.template">1</stringProp>
+                    <stringProp name="RegexExtractor.default">0</stringProp>
+                    <stringProp name="RegexExtractor.match_number">10</stringProp>
+                  </RegexExtractor>
+                  <hashTree/>
+                  <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 01" enabled="true">
+                    <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                    <stringProp name="RegexExtractor.refname">fileId01</stringProp>
+                    <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
+                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.default">null</stringProp>
+                    <stringProp name="RegexExtractor.match_number">1</stringProp>
+                  </RegexExtractor>
+                  <hashTree/>
+                  <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 01" enabled="true">
+                    <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                    <stringProp name="RegexExtractor.refname">fileId01</stringProp>
+                    <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
+                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.default">null</stringProp>
+                    <stringProp name="RegexExtractor.match_number">1</stringProp>
+                  </RegexExtractor>
+                  <hashTree/>
+                  <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 02" enabled="true">
+                    <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                    <stringProp name="RegexExtractor.refname">fileId02</stringProp>
+                    <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
+                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.default">null</stringProp>
+                    <stringProp name="RegexExtractor.match_number">2</stringProp>
+                  </RegexExtractor>
+                  <hashTree/>
+                  <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 03" enabled="true">
+                    <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                    <stringProp name="RegexExtractor.refname">fileId03</stringProp>
+                    <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
+                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.default">null</stringProp>
+                    <stringProp name="RegexExtractor.match_number">3</stringProp>
+                  </RegexExtractor>
+                  <hashTree/>
+                  <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 04" enabled="true">
+                    <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                    <stringProp name="RegexExtractor.refname">fileId04</stringProp>
+                    <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
+                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.default">null</stringProp>
+                    <stringProp name="RegexExtractor.match_number">4</stringProp>
+                  </RegexExtractor>
+                  <hashTree/>
+                  <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 05" enabled="true">
+                    <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                    <stringProp name="RegexExtractor.refname">fileId05</stringProp>
+                    <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
+                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.default">null</stringProp>
+                    <stringProp name="RegexExtractor.match_number">5</stringProp>
+                  </RegexExtractor>
+                  <hashTree/>
+                  <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 06" enabled="true">
+                    <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                    <stringProp name="RegexExtractor.refname">fileId06</stringProp>
+                    <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
+                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.default">null</stringProp>
+                    <stringProp name="RegexExtractor.match_number">6</stringProp>
+                  </RegexExtractor>
+                  <hashTree/>
+                  <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 07" enabled="true">
+                    <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                    <stringProp name="RegexExtractor.refname">fileId07</stringProp>
+                    <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
+                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.default">null</stringProp>
+                    <stringProp name="RegexExtractor.match_number">7</stringProp>
+                  </RegexExtractor>
+                  <hashTree/>
+                  <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 08" enabled="true">
+                    <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                    <stringProp name="RegexExtractor.refname">fileId08</stringProp>
+                    <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
+                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.default">null</stringProp>
+                    <stringProp name="RegexExtractor.match_number">8</stringProp>
+                  </RegexExtractor>
+                  <hashTree/>
+                  <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 09" enabled="true">
+                    <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                    <stringProp name="RegexExtractor.refname">fileId09</stringProp>
+                    <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
+                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.default">null</stringProp>
+                    <stringProp name="RegexExtractor.match_number">9</stringProp>
+                  </RegexExtractor>
+                  <hashTree/>
+                  <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 10" enabled="true">
+                    <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                    <stringProp name="RegexExtractor.refname">fileId10</stringProp>
+                    <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
+                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.default">null</stringProp>
+                    <stringProp name="RegexExtractor.match_number">10</stringProp>
+                  </RegexExtractor>
+                  <hashTree/>
+                </hashTree>
+              </hashTree>
             </hashTree>
             <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Import Files" enabled="true">
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
