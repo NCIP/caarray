@@ -102,11 +102,14 @@ public class HibernateSessionInterceptor {
     @AroundInvoke
     @SuppressWarnings("PMD.SignatureDeclareThrowsException") // method invocation wrapper requires throws Exception
     public Object manageHibernateSession(InvocationContext invContext) throws Exception {
-        HibernateUtil.openAndBindSession();
-        Object returnValue = invContext.proceed();
-        HibernateUtil.getCurrentSession().flush();
-        HibernateUtil.unbindAndCleanupSession();
-        return returnValue;
+        try {
+            HibernateUtil.openAndBindSession();
+            Object returnValue = invContext.proceed();
+            HibernateUtil.getCurrentSession().flush();
+            return returnValue;
+        } finally {
+            HibernateUtil.unbindAndCleanupSession();
+        }
     }
 
 
