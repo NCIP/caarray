@@ -261,7 +261,7 @@
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Project ID Extractor" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">projectId</stringProp>
-                <stringProp name="RegexExtractor.regex">project.id=(.+?)&amp;</stringProp>
+                <stringProp name="RegexExtractor.regex">project.id=(.+?)&apos;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
                 <stringProp name="RegexExtractor.default"></stringProp>
                 <stringProp name="RegexExtractor.match_number"></stringProp>
@@ -558,7 +558,7 @@ Dr. Zhivago</stringProp>
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Project ID Extractor" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">projectId</stringProp>
-                <stringProp name="RegexExtractor.regex">project.id=(.+?)&amp;</stringProp>
+                <stringProp name="RegexExtractor.regex">project.id=(.+?)&apos;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
                 <stringProp name="RegexExtractor.default"></stringProp>
                 <stringProp name="RegexExtractor.match_number"></stringProp>
