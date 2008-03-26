@@ -93,60 +93,69 @@ import org.apache.commons.io.FilenameUtils;
  */
 enum FileExtension {
 
-    CDF(FileType.AFFYMETRIX_CDF),
-    CEL(FileType.AFFYMETRIX_CEL),
-    CHP(FileType.AFFYMETRIX_CHP),
-    CSV(FileType.ILLUMINA_DESIGN_CSV),
-    DAT(FileType.AFFYMETRIX_DAT),
-    EXP(FileType.AFFYMETRIX_EXP),
-    RPT(FileType.AFFYMETRIX_RPT),
-    GAL(FileType.GENEPIX_GAL),
-    GPR(FileType.GENEPIX_GPR),
-    ADF(FileType.MAGE_TAB_ADF),
-    IDAT(FileType.ILLUMINA_IDAT),
-    IDF(FileType.MAGE_TAB_IDF),
-    SDRF(FileType.MAGE_TAB_SDRF),
-    SPT(FileType.UCSF_SPOT_SPT),
-    TSV(FileType.AGILENT_TSV),
-    TPL(FileType.IMAGENE_TPL),
-    DATA(FileType.MAGE_TAB_DATA_MATRIX),
-    NDF(FileType.NIMBLEGEN_NDF);
+	CDF(FileType.AFFYMETRIX_CDF),
+	CEL(FileType.AFFYMETRIX_CEL),
+	CHP(FileType.AFFYMETRIX_CHP),
+	CSV(FileType.ILLUMINA_DESIGN_CSV),
+	DAT(FileType.AFFYMETRIX_DAT),
+	EXP(FileType.AFFYMETRIX_EXP),
+	RPT(FileType.AFFYMETRIX_RPT),
+	GAL(FileType.GENEPIX_GAL),
+	GPR(FileType.GENEPIX_GPR),
+	ADF(FileType.MAGE_TAB_ADF),
+	IDAT(FileType.ILLUMINA_IDAT),
+	IDF(FileType.MAGE_TAB_IDF),
+	SDRF(FileType.MAGE_TAB_SDRF),
+	SPT(FileType.UCSF_SPOT_SPT),
+	TSV(FileType.AGILENT_TSV),
+	TPL(FileType.IMAGENE_TPL),
+	DATA(FileType.MAGE_TAB_DATA_MATRIX),
+	NDF(FileType.NIMBLEGEN_NDF),
 
-    private final FileType type;
+	// caRPLA
+	RPLAIDF(FileType.RPLA_TAB_RPLAIDF),
 
-    FileExtension(FileType type) {
-        this.type = type;
-    }
+	SRADF(FileType.RPLA_TAB_SRADF) ;
 
-    FileType getType() {
-        return type;
-    }
+	private final FileType	type;
 
-    static FileExtension getByExtension(String extensionString) {
-        if (extensionString == null) {
-            throw new IllegalArgumentException("Null extensionString");
-        }
-        String extensionStringUpper = extensionString.toUpperCase(Locale.getDefault());
-        for (FileExtension fileExtension : values()) {
-            if (fileExtension.name().equals(extensionStringUpper)) {
-                return fileExtension;
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * Determine a file's type based on its extension.
-     * @param filename name of file
-     * @return the FileType corresponding to the file extension or null if no matching file type
-     */
-    static FileType getTypeFromExtension(String filename) {
-        String extension = FilenameUtils.getExtension(filename);
-        FileExtension fileExtension = FileExtension.getByExtension(extension);
-        if (fileExtension != null) {
-            return fileExtension.getType();
-        }
-        return null;
-    }
+	FileExtension(FileType type) {
+		this.type = type;
+	}
+
+	FileType getType () {
+		return type;
+	}
+
+	static FileExtension getByExtension ( String extensionString) {
+		if (extensionString == null) {
+			throw new IllegalArgumentException("Null extensionString");
+		}
+		String extensionStringUpper = extensionString.toUpperCase(Locale
+				.getDefault());
+		for (FileExtension fileExtension : values()) {
+			if (fileExtension.name().equals(extensionStringUpper)) {
+				return fileExtension;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Determine a file's type based on its extension.
+	 * 
+	 * @param filename
+	 *            name of file
+	 * @return the FileType corresponding to the file extension or null if no
+	 *         matching file type
+	 */
+	static FileType getTypeFromExtension ( String filename) {
+		String extension = FilenameUtils.getExtension(filename);
+		FileExtension fileExtension = FileExtension.getByExtension(extension);
+		if (fileExtension != null) {
+			return fileExtension.getType();
+		}
+		return null;
+	}
 
 }
