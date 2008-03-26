@@ -303,11 +303,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         if (provider == null) {
             provider = AFFYMETRIX_PROVIDER; // default to Affy
         }
-        selenium.select("projectForm_project_experiment_manufacturer", "label=" + provider);
+       // selenium.select("projectForm_project_experiment_manufacturer", "label=" + provider);
         // ** Neither of the following would wait properly for the list of Array Designs to fill **
         // Thread.sleep(1000);
         // waitForElementWithId("progressMsg");
-        selectArrayDesign(arrayDesignName);
+        selectArrayDesign(arrayDesignName, provider);
 
         // - Organism
         if (organism == null) {
@@ -315,7 +315,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         }
         selenium.select("projectForm_project_experiment_organism", "label=" + organism);
 
-        // - Save the Experiment
+        // - Save the Experiment  
         selenium.click("link=Save");
         waitForAction();
         // get the experiment id
@@ -329,13 +329,15 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
      * 
      * @param arrayDesignName
      */
-    private void selectArrayDesign(String arrayDesignName) {
+    private void selectArrayDesign(String arrayDesignName, String provider) {
         String[] values;
         boolean found = false;
-        
+        selenium.select("projectForm_project_experiment_manufacturer", "label=" + provider);
+
         if (arrayDesignName == null) {
             return;
         }
+
         for (int second = 1;; second++) {
             values = selenium.getSelectOptions("projectForm_project_experiment_arrayDesigns");
             // - find the array design in the list of values
@@ -352,8 +354,14 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                 pause(1000);
                 // - sleep for one second if not found yet
             }
+            if (second%5 == 0){
+                selenium.select("projectForm_project_experiment_manufacturer", "label=--Select a Provider--");
+                pause(1000);
+                selenium.select("projectForm_project_experiment_manufacturer", "label=" + provider);
+                System.out.println("Reselected provider " + provider);
+            }
             if (second > 30) {
-                fail("Unable to find the array design " + arrayDesignName + " after " + second + " seconds");
+               fail("Unable to find the array design " + arrayDesignName + " after " + second + " seconds");
             }
         }
     }

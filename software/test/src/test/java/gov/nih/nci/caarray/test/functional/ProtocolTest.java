@@ -83,20 +83,28 @@
 package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
+import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+
+import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 public class ProtocolTest extends AbstractSeleniumTest {
     private String protocolName = "GROWTH" + System.currentTimeMillis();
+    private static final int TWO_MINUTES = 12;
+
 
     @Test
     public void testProtocol() throws Exception {
         String title = "_uc1" + System.currentTimeMillis();
 
         loginAsPrincipalInvestigator();
+        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
         createProtocol(protocolName);
-        createExperiment(title);
+        createExperiment(title, TestProperties.getAffymetrixSpecificationDesignName());
+        // switch to annotations tab and enter in all the annotations
         selenium.click("link=Annotations");
         waitForTab();
         addExperimentDesign();
@@ -231,6 +239,18 @@ public class ProtocolTest extends AbstractSeleniumTest {
         selenium.select("protocolForm_protocol_source", "label=caArray 2.0");
         selenium.click("link=Save");
         waitForText("has been successfully saved");
+    }
+    private void importArrayDesign(File arrayDesign) throws Exception {
+        selenium.click("link=Manage Array Designs");
+        selenium.waitForPageToLoad("30000");
+        if (!doesArrayDesignExists(TestProperties.getAffymetrixSpecificationDesignName())) {
+            addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+
+            // get the array design row so we do not find the wrong Imported text
+            int column = getExperimentRow(TestProperties.getAffymetrixSpecificationDesignName(), ZERO_COLUMN);
+            // wait for array design to be imported
+            waitForArrayDesignImport(TWO_MINUTES, column);
+        }
     }
 
 }

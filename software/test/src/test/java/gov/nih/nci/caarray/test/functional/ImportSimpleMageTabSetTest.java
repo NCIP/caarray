@@ -103,7 +103,6 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 10;
     private static final int TWO_MINUTES = 12;
-    private static final String ARRAY_DESIGN_NAME = "Test3";
 
     @Test
     public void testImportAndRetrieval() throws Exception {
@@ -119,7 +118,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
 
         // Create project
-        String experimentId = createExperiment(title,ARRAY_DESIGN_NAME);
+        String experimentId = createExperiment(title,TestProperties.getAffymetrixSpecificationDesignName());
 
         // - go to the data tab
         selenium.click("link=Data");
@@ -133,7 +132,6 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
         upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
-        upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
         upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
         FileFilter celFilter = new FileFilter() {
             public boolean accept(File pathname) {
@@ -157,7 +155,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         // - click on the Imported data tab
         selenium.click("link=Imported Data");
         pause(3000);
-        waitForText("10 items found, displaying all items");
+        waitForText("9 items found, displaying all items");
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);
@@ -174,11 +172,11 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
     private void importArrayDesign(File arrayDesign) throws Exception {
         selenium.click("link=Manage Array Designs");
         selenium.waitForPageToLoad("30000");
-        if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
+        if (!doesArrayDesignExists(TestProperties.getAffymetrixSpecificationDesignName())) {
             addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
 
             // get the array design row so we do not find the wrong Imported text
-            int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
+            int column = getExperimentRow(TestProperties.getAffymetrixSpecificationDesignName(), ZERO_COLUMN);
             // wait for array design to be imported
             waitForArrayDesignImport(TWO_MINUTES, column);
         }

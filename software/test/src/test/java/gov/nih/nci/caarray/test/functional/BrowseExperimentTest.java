@@ -100,7 +100,7 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
     private static final String ARRAY_DESIGN_NAME = "Test3";
 
     @Test
-    public void testNew() throws Exception {
+    public void testBrowsing() throws Exception {
         String title = "browsable " + System.currentTimeMillis();
         // - Login
         loginAsPrincipalInvestigator();
@@ -124,6 +124,8 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         waitForText("found");
         // - Assert the Experiment is visible without logging in
         findTitleAcrossMultiPages(experimentId);
+        // - Assert correct columns are displayed as per use case 
+        assertColumnHeaders();
 
         // - Browse by Organisms
         selenium.click("link=Browse");
@@ -135,6 +137,8 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         waitForTab();
         // - Assert the Experiment is visible without logging in
         findTitleAcrossMultiPages(experimentId);
+        // - Assert correct columns are displayed as per use case 
+        assertColumnHeaders();
 
         // - Browse by Array Providers
         selenium.click("link=Browse");
@@ -144,9 +148,10 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         // Click on the Affymetrix tab incase there is more than one tab
         selenium.click("link=Affymetrix (*");
         waitForTab();
-
         // - Assert the Experiment is visible without logging in
         findTitleAcrossMultiPages(experimentId);
+        // - Assert correct columns are displayed as per use case 
+        assertColumnHeaders();
 
         // - Browse by Unique Array Designs
         selenium.click("link=Browse");
@@ -156,9 +161,21 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         // Click on the Affymetrix tab incase there is more than one tab
         selenium.click("link=Test3 (*");
         waitForTab();
-
         // - Assert the Experiment is visible without logging in
         findTitleAcrossMultiPages(experimentId);
+        // - Assert correct columns are displayed as per use case 
+        assertColumnHeaders();
+    }
+
+    private void assertColumnHeaders() {
+        verifyEquals("Experiment ID", selenium.getText("link=Experiment ID"));
+        verifyEquals("Experiment Title", selenium.getText("link=Experiment Title"));
+        verifyEquals("Assay Type", selenium.getText("link=Assay Type"));
+        assertTrue("Primary Contact header not found", selenium.isTextPresent("Primary Contact"));
+        verifyEquals("Organism", selenium.getText("link=Organism"));
+        assertTrue("Condition/Disease State header not found", selenium.isTextPresent("Condition/Disease State"));
+        assertTrue("Samples header not found", selenium.isTextPresent("Samples"));
+        verifyEquals("Updated", selenium.getText("link=Updated"));
     }
 
     private void importArrayDesign(File arrayDesign) throws Exception {

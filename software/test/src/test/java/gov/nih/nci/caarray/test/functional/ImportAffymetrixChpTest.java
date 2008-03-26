@@ -102,7 +102,6 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 1;
     private static final int TWO_MINUTES = 12;
-    private static final String ARRAY_DESIGN_NAME = "Test3";
     private static final String ORGANISM = "Rattus rattus (ncbitax)";
 
     @Test
@@ -119,7 +118,7 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
 
         // Create project
-        String experimentId = createExperiment(title, ARRAY_DESIGN_NAME, AFFYMETRIX_PROVIDER, ORGANISM);
+        String experimentId = createExperiment(title, TestProperties.getAffymetrixSpecificationDesignName(), AFFYMETRIX_PROVIDER, ORGANISM);
 
         // - go to the data tab
         selenium.click("link=Data");
@@ -164,10 +163,10 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
     private void importArrayDesign(File arrayDesign) throws Exception {
         selenium.click("link=Manage Array Designs");
         selenium.waitForPageToLoad("30000");
-        if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
+        if (!doesArrayDesignExists(TestProperties.getAffymetrixSpecificationDesignName())) {
             addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, ORGANISM);
             // get the array design row so we do not find the wrong Imported text
-            int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
+            int column = getExperimentRow(TestProperties.getAffymetrixSpecificationDesignName(), ZERO_COLUMN);
             // wait for array design to be imported
             waitForArrayDesignImport(TWO_MINUTES, column);
         }
