@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.action;
 
 import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.antibody.AntibodyService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.application.country.CountryService;
@@ -107,169 +108,231 @@ import java.util.Set;
 
 /**
  * Helper class for actions.
+ * 
  * @author Scott Miller
  */
 public final class CaArrayActionHelper {
-    
-    private CaArrayActionHelper() {
-        
-    }
 
-    /**
-     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
-     * via static import
-     * @return the service
-     */
-    public static ProjectManagementService getProjectManagementService() {
-        return (ProjectManagementService) ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
-    }
+	private CaArrayActionHelper() {
 
-    /**
-     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
-     * via static import
-     * @return the service
-     */
-    public static PermissionsManagementService getPermissionsManagementService() {
-        return (PermissionsManagementService) ServiceLocatorFactory.getLocator()
-                                                                   .lookup(PermissionsManagementService.JNDI_NAME);
-    }
+	}
 
-    /**
-     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
-     * via static import
-     * @return the service
-     */
-    public static FileAccessService getFileAccessService() {
-        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
-    }
-    
-    /**
-     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
-     * via static import
-     * @return countryService
-     */
-    public static CountryService getCountryService() {
-        return (CountryService) ServiceLocatorFactory.getLocator().lookup(CountryService.JNDI_NAME);
-    }
+	/**
+	 * Convenience method for obtaining the singleton service. Intended to mixed
+	 * in to action classes via static import
+	 * 
+	 * @return the service
+	 */
+	public static ProjectManagementService getProjectManagementService () {
+		return (ProjectManagementService) ServiceLocatorFactory
+				.getLocator()
+				.lookup(ProjectManagementService.JNDI_NAME);
+	}
 
-    /**
-     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
-     * via static import
-     * @return StateService
-     */
-    public static StateService getStateService() {
-        return (StateService) ServiceLocatorFactory.getLocator().lookup(StateService.JNDI_NAME);
-    }
+	public static AntibodyService getAntibodyService () {
+		return (AntibodyService) ServiceLocatorFactory
+				.getLocator()
+				.lookup(AntibodyService.JNDI_NAME);
+	}
 
-    /**
-     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
-     * via static import
-     * @return the service
-     */
-    public static FileManagementService getFileManagementService() {
-        return (FileManagementService) ServiceLocatorFactory.getLocator().lookup(FileManagementService.JNDI_NAME);
-    }
+	/**
+	 * Convenience method for obtaining the singleton service. Intended to mixed
+	 * in to action classes via static import
+	 * 
+	 * @return the service
+	 */
+	public static PermissionsManagementService getPermissionsManagementService ()
+	{
+		return (PermissionsManagementService) ServiceLocatorFactory
+				.getLocator()
+				.lookup(PermissionsManagementService.JNDI_NAME);
+	}
 
-    /**
-     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
-     * via static import
-     * @return the service
-     */
-    public static VocabularyService getVocabularyService() {
-        return (VocabularyService) ServiceLocatorFactory.getLocator().lookup(VocabularyService.JNDI_NAME);
-    }
+	/**
+	 * Convenience method for obtaining the singleton service. Intended to mixed
+	 * in to action classes via static import
+	 * 
+	 * @return the service
+	 */
+	public static FileAccessService getFileAccessService () {
+		return (FileAccessService) ServiceLocatorFactory
+				.getLocator()
+				.lookup(FileAccessService.JNDI_NAME);
+	}
 
-    /**
-     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
-     * via static import
-     * @return the service
-     */
-    public static GenericDataService getGenericDataService() {
-        return (GenericDataService) ServiceLocatorFactory.getLocator().lookup(GenericDataService.JNDI_NAME);
-    }
+	/**
+	 * Convenience method for obtaining the singleton service. Intended to mixed
+	 * in to action classes via static import
+	 * 
+	 * @return countryService
+	 */
+	public static CountryService getCountryService () {
+		return (CountryService) ServiceLocatorFactory
+				.getLocator()
+				.lookup(CountryService.JNDI_NAME);
+	}
 
-    /**
-     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
-     * via static import
-     * @return the service
-     */
-    public static ArrayDesignService getArrayDesignService() {
-        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
-    }
+	/**
+	 * Convenience method for obtaining the singleton service. Intended to mixed
+	 * in to action classes via static import
+	 * 
+	 * @return StateService
+	 */
+	public static StateService getStateService () {
+		return (StateService) ServiceLocatorFactory
+				.getLocator()
+				.lookup(StateService.JNDI_NAME);
+	}
 
-    /**
-     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
-     * via static import
-     * @return the service
-     */
-    public static RegistrationService getRegistrationService() {
-        return (RegistrationService) ServiceLocatorFactory.getLocator().lookup(RegistrationService.JNDI_NAME);
-    }
+	/**
+	 * Convenience method for obtaining the singleton service. Intended to mixed
+	 * in to action classes via static import
+	 * 
+	 * @return the service
+	 */
+	public static FileManagementService getFileManagementService () {
+		return (FileManagementService) ServiceLocatorFactory
+				.getLocator()
+				.lookup(FileManagementService.JNDI_NAME);
+	}
 
-    /**
-     * get UserProvisioningManager.
-     * @return UserProvisioningManager provisioning manager
-     * @throws CSException on CSM error
-     */
-    public static UserProvisioningManager getUserProvisioningManager() throws CSException {
-            return SecurityServiceProvider.getUserProvisioningManager("caarray");
-    }
+	/**
+	 * Convenience method for obtaining the singleton service. Intended to mixed
+	 * in to action classes via static import
+	 * 
+	 * @return the service
+	 */
+	public static VocabularyService getVocabularyService () {
+		return (VocabularyService) ServiceLocatorFactory
+				.getLocator()
+				.lookup(VocabularyService.JNDI_NAME);
+	}
 
-    /**
-     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
-     * via static import
-     * @return the service
-     */
-    public static BrowseService getBrowseService() {
-        return (BrowseService) ServiceLocatorFactory.getLocator().lookup(BrowseService.JNDI_NAME);
-    }
-    
-    /**
-     * Retrieve the category corresponding to the given ExperimentOntologyCategory constant.
-     * @param category an ExperimentOntologyCategory constant describing a category
-     * @return the category, or null if none exists
-     */
-    public static Category getCategory(ExperimentOntologyCategory category) {
-      TermSource ts = getTermSource(category.getOntology());
-      return getVocabularyService().getCategory(ts, category.getCategoryName());
-    }
+	/**
+	 * Convenience method for obtaining the singleton service. Intended to mixed
+	 * in to action classes via static import
+	 * 
+	 * @return the service
+	 */
+	public static GenericDataService getGenericDataService () {
+		return (GenericDataService) ServiceLocatorFactory
+				.getLocator()
+				.lookup(GenericDataService.JNDI_NAME);
+	}
 
-    /**
-     * Retrieve the term source corresponding to the given ExperimentOntology constant.
-     * @param ontology an ExperimentOntology constant describing a TermSource
-     * @return the term source, or null if none exists
-     */
-    public static TermSource getTermSource(ExperimentOntology ontology) {
-        return getVocabularyService().getSource(ontology.getOntologyName(), ontology.getVersion());
-    }
+	/**
+	 * Convenience method for obtaining the singleton service. Intended to mixed
+	 * in to action classes via static import
+	 * 
+	 * @return the service
+	 */
+	public static ArrayDesignService getArrayDesignService () {
+		return (ArrayDesignService) ServiceLocatorFactory
+				.getLocator()
+				.lookup(ArrayDesignService.JNDI_NAME);
+	}
 
-    /**
-     * Retrieve the term with given value from the MGED Ontology term source.
-     * @param value value of the term to retrieve
-     * @return the term, or null if the term does not exist in the MGED Ontology term source
-     */
-    public static Term getMOTerm(String value) {
-        return getTerm(ExperimentOntology.MGED_ONTOLOGY, value);
-    }
+	/**
+	 * Convenience method for obtaining the singleton service. Intended to mixed
+	 * in to action classes via static import
+	 * 
+	 * @return the service
+	 */
+	public static RegistrationService getRegistrationService () {
+		return (RegistrationService) ServiceLocatorFactory
+				.getLocator()
+				.lookup(RegistrationService.JNDI_NAME);
+	}
 
-    /**
-     * Retrieve the term with given value from the term source corresponding to given ExperimentOntology constant.
-     * @param value value of the term to retrieve
-     * @param ontology an ExperimentOntology constant describing a TermSource
-     * @return the term, or null if the term does not exist in the term source
-     */
-    public static Term getTerm(ExperimentOntology ontology, String value) {
-        TermSource ts = getTermSource(ontology);
-        return getVocabularyService().getTerm(ts, value);
-    }
+	/**
+	 * get UserProvisioningManager.
+	 * 
+	 * @return UserProvisioningManager provisioning manager
+	 * @throws CSException
+	 *             on CSM error
+	 */
+	public static UserProvisioningManager getUserProvisioningManager ()
+			throws CSException
+	{
+		return SecurityServiceProvider.getUserProvisioningManager("caarray");
+	}
 
-    /**
-     * Retrieve the set of terms belonging to the category corresponding to the given ExperimentOntologyCategory 
-     * constant.
-     * @param category an ExperimentOntologyCategory constant describing a category
-     * @return the Set of Terms belonging to this category or its subcategories
-     */
-    public static Set<Term> getTermsFromCategory(ExperimentOntologyCategory category) {
-      return getVocabularyService().getTerms(getCategory(category));
-    }
+	/**
+	 * Convenience method for obtaining the singleton service. Intended to mixed
+	 * in to action classes via static import
+	 * 
+	 * @return the service
+	 */
+	public static BrowseService getBrowseService () {
+		return (BrowseService) ServiceLocatorFactory
+				.getLocator()
+				.lookup(BrowseService.JNDI_NAME);
+	}
+
+	/**
+	 * Retrieve the category corresponding to the given
+	 * ExperimentOntologyCategory constant.
+	 * 
+	 * @param category
+	 *            an ExperimentOntologyCategory constant describing a category
+	 * @return the category, or null if none exists
+	 */
+	public static Category getCategory ( ExperimentOntologyCategory category) {
+		TermSource ts = getTermSource(category.getOntology());
+		return getVocabularyService().getCategory(	ts,
+													category.getCategoryName());
+	}
+
+	/**
+	 * Retrieve the term source corresponding to the given ExperimentOntology
+	 * constant.
+	 * 
+	 * @param ontology
+	 *            an ExperimentOntology constant describing a TermSource
+	 * @return the term source, or null if none exists
+	 */
+	public static TermSource getTermSource ( ExperimentOntology ontology) {
+		return getVocabularyService().getSource(ontology.getOntologyName(),
+												ontology.getVersion());
+	}
+
+	/**
+	 * Retrieve the term with given value from the MGED Ontology term source.
+	 * 
+	 * @param value
+	 *            value of the term to retrieve
+	 * @return the term, or null if the term does not exist in the MGED Ontology
+	 *         term source
+	 */
+	public static Term getMOTerm ( String value) {
+		return getTerm(ExperimentOntology.MGED_ONTOLOGY, value);
+	}
+
+	/**
+	 * Retrieve the term with given value from the term source corresponding to
+	 * given ExperimentOntology constant.
+	 * 
+	 * @param value
+	 *            value of the term to retrieve
+	 * @param ontology
+	 *            an ExperimentOntology constant describing a TermSource
+	 * @return the term, or null if the term does not exist in the term source
+	 */
+	public static Term getTerm ( ExperimentOntology ontology, String value) {
+		TermSource ts = getTermSource(ontology);
+		return getVocabularyService().getTerm(ts, value);
+	}
+
+	/**
+	 * Retrieve the set of terms belonging to the category corresponding to the
+	 * given ExperimentOntologyCategory constant.
+	 * 
+	 * @param category
+	 *            an ExperimentOntologyCategory constant describing a category
+	 * @return the Set of Terms belonging to this category or its subcategories
+	 */
+	public static Set<Term> getTermsFromCategory ( ExperimentOntologyCategory category)
+	{
+		return getVocabularyService().getTerms(getCategory(category));
+	}
 }

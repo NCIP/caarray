@@ -80,124 +80,134 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.application.translation.rplatab;
+
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.OntologyTerm;
+import gov.nih.nci.carpla.rplatab.RplaTabDocumentSet;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
- * Factory used to retrieve DAO instances.
- *
- * @author ETavela
+ * Base class for translators.
  */
-class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
+abstract class AbstractTranslator {
 
-    /**
-     * Returns a <code>ProtocolDao</code>.
-     *
-     * @return a <code>ProtocolDao</code>.
-     */
-    public ProtocolDao getProtocolDao() {
-        return new ProtocolDaoImpl();
-    }
+    private final RplaTabDocumentSet documentSet;
+    private final CaArrayFileSet fileSet;
+    private final RplaTabTranslationResult translationResult;
+    private final CaArrayDaoFactory daoFactory;
+    private final Map<String, Organization> importedOrganizations = new HashMap<String, Organization>();
 
-    /**
-     * Returns a <code>VocabularyDao</code>.
-     *
-     * @return a <code>VocabularyDao</code>.
-     */
-    public VocabularyDao getVocabularyDao() {
-        return new VocabularyDaoImpl();
+    AbstractTranslator(RplaTabDocumentSet documentSet, CaArrayFileSet fileSet,
+            RplaTabTranslationResult translationResult, CaArrayDaoFactory daoFactory) {
+        this.documentSet = documentSet;
+        this.fileSet = fileSet;
+        this.translationResult = translationResult;
+        this.daoFactory = daoFactory;
     }
 
-    /**
-     * Returns an <code>ArrayDao</code>.
-     *
-     * @return an <code>ArrayDao</code>.
-     */
-    public ArrayDao getArrayDao() {
-        return new ArrayDaoImpl();
-    }
-    
-    public AntibodyDao getAntibodyDao() {
-        return new AntibodyDaoImpl();
-    }
-    
-    
-    
-    
-
-    /**
-     * Returns a <code>ProjectDao</code>.
-     *
-     * @return a <code>ProjectDao</code>.
-     */
-    public ProjectDao getProjectDao() {
-        return new ProjectDaoImpl();
+    AbstractTranslator(RplaTabDocumentSet documentSet, RplaTabTranslationResult translationResult,
+            CaArrayDaoFactory daoFactory) {
+        this.documentSet = documentSet;
+        this.fileSet = null;
+        this.translationResult = translationResult;
+        this.daoFactory = daoFactory;
     }
 
-    /**
-     * Returns a <code>SearchDao</code>.
-     *
-     * @return a <code>SearchDao</code>.
-     */
-    public SearchDao getSearchDao() {
-        return new SearchDaoImpl();
+    CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
     }
 
-    /**
-     * Returns a <code>FileDao</code>.
-     *
-     * @return a <code>FileDao</code>.
-     */
-    public FileDao getFileDao() {
-        return new FileDaoImpl();
+    RplaTabDocumentSet getDocumentSet() {
+        return documentSet;
     }
 
-    /**
-     * Returns a <code>ContactDao</code>.
-     *
-     * @return a <code>ContactDao</code>.
-     */
-    public ContactDao getContactDao() {
-        return new ContactDaoImpl();
-    }
-    /**
-     * Returns a <code>OrganismDao</code>.
-     *
-     * @return a <code>OrganismDao</code>.
-     */
-    public OrganismDao getOrganismDao() {
-        return new OrganismDaoImpl();
+    CaArrayFileSet getFileSet() {
+        return fileSet;
     }
 
-    /**
-     * Returns a <code>CountryDao</code>.
-     *
-     * @return a <code>CountryDao</code>.
-     */
-    public CountryDao getCountryDao() {
-        return new CountryDaoImpl();
+    CaArrayFile getFile(String name) {
+        if (fileSet == null) {
+            return null;
+        }
+        Set<CaArrayFile> files = fileSet.getFiles();
+        Iterator<CaArrayFile> i = files.iterator();
+        while (i.hasNext()) {
+            CaArrayFile caArrayFile = i.next();
+            if (name.equals(caArrayFile.getName())) {
+                return caArrayFile;
+            }
+        }
+        return null;
     }
 
-    /**
-     * Returns a <code>StateDao</code>.
-     *
-     * @return a <code>StateDao</code>.
-     */
-    public StateDao getStateDao() {
-        return new StateDaoImpl();
+    RplaTabTranslationResult getTranslationResult() {
+        return translationResult;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public CollaboratorGroupDao getCollaboratorGroupDao() {
-        return new CollaboratorGroupDaoImpl();
+    Collection<Term> getTerms(List<OntologyTerm> ontologyTerms) {
+        HashSet<Term> terms = new HashSet<Term>(ontologyTerms.size());
+        for (OntologyTerm ontologyTerm : ontologyTerms) {
+            terms.add(getTerm(ontologyTerm));
+        }
+        return terms;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public BrowseDao getBrowseDao() {
-        return new BrowseDaoImpl();
+    Term getTerm(OntologyTerm ontologyTerm) {
+        if (ontologyTerm == null) {
+            return null;
+        }
+        return translationResult.getTerm(ontologyTerm);
     }
+
+    abstract void translate();
+
+    abstract Logger getLog();
+
+    /**
+     * Creates or retrieves the org witht he given name.
+     * @param name the name.
+     * @return the org.
+     */
+    protected Organization getOrCreateOrganization(String name) {
+
+        Organization org = importedOrganizations.get(name);
+
+        if (org == null && StringUtils.isNotBlank(name)) {
+            Organization entityToMatch = new Organization();
+            entityToMatch.setName(name);
+
+            List<Organization> matchingEntities = getProjectDao().queryEntityAndAssociationsByExample(entityToMatch);
+            if (matchingEntities.isEmpty()) {
+                importedOrganizations.put(name, entityToMatch);
+                org = entityToMatch;
+            } else {
+                // use existing object in database.
+                org = matchingEntities.get(0);
+            }
+        }
+
+        return org;
+    }
+
+    ProjectDao getProjectDao() {
+        return getDaoFactory().getProjectDao();
+    }
+
 }
-

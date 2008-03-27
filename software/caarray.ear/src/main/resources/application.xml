@@ -18,6 +18,19 @@
     <module>
         <java>caarray-common.jar</java>
     </module>
+    
+    
+    
+    <!-- carpla -->
+    <module>
+        <ejb>rplatab.jar</ejb>
+    </module>
+   
+     <!-- carpla -->
+    
+    
+    
+    
     <module>
         <java>activation.jar</java>
     </module>

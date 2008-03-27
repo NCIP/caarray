@@ -80,124 +80,29 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.application.translation.rplatab;
+
+import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.validation.ValidationResult;
+import gov.nih.nci.carpla.rplatab.RplaTabDocumentSet;
+
 
 /**
- * Factory used to retrieve DAO instances.
- *
- * @author ETavela
+ * Interface to component used to translate MAGE-TAB files to the caArray domain model.
  */
-class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
+public interface RplaTabTranslator {
 
     /**
-     * Returns a <code>ProtocolDao</code>.
-     *
-     * @return a <code>ProtocolDao</code>.
+     * The default JNDI name to use to lookup <code>MageTabTranslator</code>.
      */
-    public ProtocolDao getProtocolDao() {
-        return new ProtocolDaoImpl();
-    }
+    String JNDI_NAME = "caarray/RplaTabTranslatorBean/local";
 
-    /**
-     * Returns a <code>VocabularyDao</code>.
-     *
-     * @return a <code>VocabularyDao</code>.
-     */
-    public VocabularyDao getVocabularyDao() {
-        return new VocabularyDaoImpl();
-    }
-
-    /**
-     * Returns an <code>ArrayDao</code>.
-     *
-     * @return an <code>ArrayDao</code>.
-     */
-    public ArrayDao getArrayDao() {
-        return new ArrayDaoImpl();
-    }
     
-    public AntibodyDao getAntibodyDao() {
-        return new AntibodyDaoImpl();
-    }
-    
-    
-    
-    
+    CaArrayTranslationResult translate(RplaTabDocumentSet documentSet, CaArrayFileSet fileSet);
 
-    /**
-     * Returns a <code>ProjectDao</code>.
-     *
-     * @return a <code>ProjectDao</code>.
-     */
-    public ProjectDao getProjectDao() {
-        return new ProjectDaoImpl();
-    }
+   
+    ValidationResult validate(RplaTabDocumentSet documentSet, CaArrayFileSet fileSet);
 
-    /**
-     * Returns a <code>SearchDao</code>.
-     *
-     * @return a <code>SearchDao</code>.
-     */
-    public SearchDao getSearchDao() {
-        return new SearchDaoImpl();
-    }
-
-    /**
-     * Returns a <code>FileDao</code>.
-     *
-     * @return a <code>FileDao</code>.
-     */
-    public FileDao getFileDao() {
-        return new FileDaoImpl();
-    }
-
-    /**
-     * Returns a <code>ContactDao</code>.
-     *
-     * @return a <code>ContactDao</code>.
-     */
-    public ContactDao getContactDao() {
-        return new ContactDaoImpl();
-    }
-    /**
-     * Returns a <code>OrganismDao</code>.
-     *
-     * @return a <code>OrganismDao</code>.
-     */
-    public OrganismDao getOrganismDao() {
-        return new OrganismDaoImpl();
-    }
-
-    /**
-     * Returns a <code>CountryDao</code>.
-     *
-     * @return a <code>CountryDao</code>.
-     */
-    public CountryDao getCountryDao() {
-        return new CountryDaoImpl();
-    }
-
-    /**
-     * Returns a <code>StateDao</code>.
-     *
-     * @return a <code>StateDao</code>.
-     */
-    public StateDao getStateDao() {
-        return new StateDaoImpl();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public CollaboratorGroupDao getCollaboratorGroupDao() {
-        return new CollaboratorGroupDaoImpl();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public BrowseDao getBrowseDao() {
-        return new BrowseDaoImpl();
-    }
 }
-

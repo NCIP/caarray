@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/caarray-ejb-jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/caarray-ejb.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/lib/acegi-security-1.0.5.jar"/>
@@ -107,5 +107,7 @@
 	<classpathentry kind="lib" path="/lib/json-lib-2.0-jdk15.jar"/>
 	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.1.jar"/>
 	<classpathentry kind="lib" path="/lib/nci-commons-struts2-1.0.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/carpla-common.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/carpla-ejb.jar"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>

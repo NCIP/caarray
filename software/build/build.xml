@@ -43,6 +43,31 @@
     <property name="caarray-common.test.classes.dir" value="${caarray-common.target.dir}/test-classes" />
     <property name="caarray-common.jar" value="${caarray-common.target.dir}/caarray-common.jar" />
 
+
+	
+	<!-- carpla -->
+	 <property name="rplatab.dir" value="${basedir}/rplatab.jar" />
+	    <property name="rplatab.src.dir" value="${rplatab.dir}/src/" />
+	    <property name="rplatab.resources.dir" value="${rplatab.dir}/src/main/resources" />
+	    <property name="rplatab.test.src.dir" value="${rplatab.dir}/src/test/java" />
+	    <property name="rplatab.test.files.dir" value="${rplatab.dir}/src/test/resources" />
+	    <property name="rplatab.target.dir" value="${rplatab.dir}/target" />
+	    <property name="rplatab.dir" value="${rplatab.target.dir}/classes" />
+	    <property name="rplatab.instrumented.classes.dir" value="${rplatab.target.dir}/instrumented-classes" />
+	    <property name="rplatab.test.classes.dir" value="${rplatab.target.dir}/test-classes" />
+	    <property name="rplatab.jar" value="${rplatab.target.dir}/rplatab.jar" />
+	<!-- carpla -->
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
     <property name="caarray-ejb.dir" value="${basedir}/caarray-ejb.jar" />
     <property name="caarray-ejb.src.dir" value="${caarray-ejb.dir}/src/main/java" />
     <property name="caarray-ejb.resources.dir" value="${caarray-ejb.dir}/src/main/resources" />
@@ -54,6 +79,19 @@
     <property name="caarray-ejb.test.resources.dir" value="${caarray-ejb.dir}/src/test/resources" />
     <property name="caarray-ejb.jar" value="${caarray-ejb.target.dir}/caarray-ejb.jar" />
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
     <property name="caarray-war.dir" value="${basedir}/caarray.war" />
     <property name="caarray-war.src.dir" value="${caarray-war.dir}/src/main/java" />
     <property name="caarray-war.webapp.dir" value="${caarray-war.dir}/src/main/webapp" />
@@ -67,7 +105,20 @@
     <property name="caarray-ear.dir" value="${basedir}/caarray.ear" />
     <property name="caarray-ear.resources.dir" value="${caarray-ear.dir}/src/main/resources" />
     <property name="caarray-ear.target.dir" value="${caarray-ear.dir}/target" />
+	
     <property name="caarray.ear" value="${caarray-ear.target.dir}/caarray.ear" />
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
     <property name="caarray-client.jar" value="${caarray-ear.target.dir}/caarray-client.jar" />
 
     <property name="caarraydb.dir" value="${basedir}/caarraydb" />
@@ -316,6 +367,19 @@
         <antcall target="test" />
     </target>
 
+	
+	<target name="carpla-current" depends="build-tags">
+	        <antcall target="clean" />
+	        <antcall target="database:reinitialize" />
+	        <antcall target="build" />
+	     
+	    </target>
+	
+	
+	
+	
+	
+	
     <target name="nightly-build" depends="continuous-integration,
         database:reinitialize,
         deploy:start-jboss-and-deploy,
@@ -335,8 +399,9 @@
         clean:site.dir,
         clean:test.classes.dir,
         clean:target.dir,
-        clean:gridsvc,
-        clean:caarraydb" description="Deletes all of the target directories" />
+      
+        clean:caarraydb
+    " description="Deletes all of the target directories" />
 
     <target name="clean:caarray-client.jar">
         <delete dir="${caarray-client.target.dir}" />
@@ -345,10 +410,21 @@
     <target name="clean:caarray-common.jar">
         <delete dir="${caarray-common.target.dir}" />
     </target>
+	
+	
+	
+	
+	
 
     <target name="clean:caarray-ejb.jar">
         <delete dir="${caarray-ejb.target.dir}" />
     </target>
+	
+    	
+	
+	
+	
+	
 
     <target name="clean:caarray.war">
         <delete dir="${caarray-war.target.dir}" />
@@ -437,8 +513,8 @@
     <target name="compile" depends="compile:caarray-client.jar,
       compile:caarray-common.jar,
         compile:caarray-ejb.jar,
-        compile:caarray.war,
-        compile:caarray-svc" />
+        
+       compile:caarray.war" />
 
     <target name="compile:caarray-client.jar" depends="compile:caarray-common.jar,compile:caarray-ejb.jar">
         <mkdir dir="${caarray-client.classes.dir}" />
@@ -485,12 +561,54 @@
             </classpath>
         </javac>
     </target>
+	
+	 <target name="compile:rplatab.jar">
+	        <mkdir dir="${rplatab.classes.dir}" />
+	        <javac srcdir="${rplatab.src.dir}" destdir="${rplatab.classes.dir}" debug="true">
+	            <classpath>
+	            	<pathelement location="${caarray-common.classes.dir}" />
+	                <pathelement location="${hibernate.jar}" />
+	                <pathelement location="${ejb3-persistence.jar}" />
+	                <pathelement location="${hibernate-annotations.jar}" />
+	                <pathelement location="${javaee.jar}" />
+	                <pathelement location="${commons-beanutils.jar}" />
+	                <pathelement location="${commons-collections.jar}" />
+	                <pathelement location="${commons-io.jar}" />
+	                <pathelement location="${commons-lang.jar}" />
+	                <pathelement location="${javacsv.jar}" />
+	                <pathelement location="${netcdf.jar}" />
+	                <pathelement location="${caarray-common.resources.dir}" />
+	                <pathelement location="${caarray-common.test.files.dir}" />
+	                <pathelement location="${csmapi.jar}" />
+	                <pathelement location="${clm.jar}" />
+	                <pathelement location="${caGrid-1.1-data-stubs.jar}" />
+	                <pathelement location="${caGrid-1.1-data-common.jar}" />
+	                <pathelement location="${caGrid-1.1-sdkQuery32-core.jar}" />
+	                <pathelement location="${commons-configuration.jar}" />
+	                <pathelement location="${log4j.jar}" />
+	                <pathelement location="${dom4j.jar}" />
+	                <pathelement location="${nci-commons-core.jar}"/>
+	            </classpath>
+	        </javac>
+	    </target>
+        	 
+	
+	
+	
+	
+	
+	
+	
+	
 
-    <target name="compile:caarray-ejb.jar" depends="compile:caarray-common.jar">
+    <target name="compile:caarray-ejb.jar" depends="compile:caarray-common.jar,compile:rplatab.jar">
         <mkdir dir="${caarray-ejb.classes.dir}" />
         <javac srcdir="${caarray-ejb.src.dir}" destdir="${caarray-ejb.classes.dir}" debug="true">
             <classpath>
-                <pathelement location="${caarray-common.classes.dir}" />
+            	<!-- carpla-->
+            	<pathelement location="${rplatab.classes.dir}" />
+            	<!-- carpla-->
+            	<pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${commons-beanutils.jar}" />
                 <pathelement location="${commons-collections.jar}" />
                 <pathelement location="${commons-configuration.jar}" />
@@ -511,6 +629,18 @@
             </classpath>
         </javac>
     </target>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
     <target name="compile:caarray.war" depends="compile:caarray-common.jar,compile:caarray-ejb.jar">
         <mkdir dir="${caarray-war.classes.dir}" />
@@ -518,6 +648,11 @@
             <classpath>
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${caarray-ejb.classes.dir}" />
+            	
+            	       
+            	
+            	
+            	
                 <fileset dir="${lib.dir}">
                     <include name="**/*.jar" />
                     <exclude name="checkstyle*.jar" />
@@ -567,10 +702,12 @@
 
     <target name="build" depends="build:caarray-client.jar,
       build:caarray-common.jar,
+    	
       build:caarray-ejb.jar,
+    
         build:caarray.war,
-        build:caarray.ear,
-        build:caarray-svc" description="Builds the application without deploying." />
+        build:caarray.ear
+        " description="Builds the application without deploying." />
 
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar">
         <mkdir dir="${caarray-client.target.dir}" />
@@ -636,6 +773,35 @@
             <fileset dir="${caarray-common.classes.dir}" />
         </jar>
     </target>
+	
+	
+	<target name="build:rplatab.jar" depends="configure-datasource-for-deploy">
+	        <mkdir dir="${rplatab.target.dir}" />
+	        <jar destfile="${rplatab.jar}">
+	            <manifest>
+	                <section name="gov/nih/nci/caarray/">
+	                    <attribute name="Specification-Title" value="caArray"/>
+	                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
+	                    <attribute name="Specification-Vendor" value="5AM Solutions"/>
+	                    <attribute name="Implementation-Title" value="caArray"/>
+	                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
+	                    <attribute name="Implementation-Vendor" value="5AM Solutions"/>
+	                </section>
+	            </manifest>
+	            <fileset dir="${rplatab.classes.dir}" />
+	        </jar>
+	    </target>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
     <target name="build:caarray-ejb.jar" depends="compile:caarray-ejb.jar">
         <mkdir dir="${caarray-ejb.target.dir}" />
@@ -654,6 +820,17 @@
             <fileset dir="${caarray-ejb.classes.dir}" />
         </jar>
     </target>
+	
+	
+	
+    	
+
+	
+	
+	
+	
+	
+	
 
     <target name="prepare:caarray.war:onlinehelp">
         <mkdir dir="${caarray-war.target.dir}/help" />
@@ -740,10 +917,26 @@
         </war>
     </target>
 
-    <target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar">
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+    <target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar,build:rplatab.jar">
         <mkdir dir="${caarray-ear.target.dir}" />
         <mkdir dir="${caarray-ear.target.dir}/xml" />
-        <copy todir="${caarray-ear.target.dir}/xml">
+    	
+     <copy todir="${caarray-ear.target.dir}/xml">
             <fileset dir="${caarray-ear.resources.dir}" includes="*.xml" excludes="application.xml" />
             <!-- 2 filter sets here because the database.url line has substitutions that otherwise wouldn't be applied -->
             <filterset>
@@ -765,15 +958,27 @@
             </manifest>
             <fileset dir="${caarray-ear.target.dir}/xml" includes="jboss-service.xml">
             </fileset>
+            	
+        	
             <fileset dir="${caarray-war.target.dir}">
                 <include name="caarray.war" />
             </fileset>
             <fileset dir="${caarray-ejb.target.dir}">
                 <include name="caarray-ejb.jar" />
             </fileset>
+        	
+        	
             <fileset dir="${caarray-common.target.dir}">
                 <include name="caarray-common.jar" />
             </fileset>
+        	<fileset dir="${rplatab.target.dir}">
+        	                <include name="rplatab.jar" />
+        	            </fileset>
+        	
+        	
+        	
+        	
+        	
             <fileset dir="${lib.dir}">
                 <include name="activation.jar" />
                 <include name="AffxFusion.jar" />
@@ -815,6 +1020,28 @@
         </ear>
     </target>
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
     <target name="build:caarray-svc" unless="noglobus">
         <antcall target="compile:caarray-svc" />
     </target>

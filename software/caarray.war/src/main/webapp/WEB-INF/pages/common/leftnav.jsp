@@ -21,6 +21,7 @@
                 <li><a href="<c:url value="/protected/arrayDesign/list.action" />">Manage Array Designs</a></li>
                 <li><a href="<c:url value="/protected/protocol/manage.action" />">Manage Protocols</a></li>
                 <li><a href="<c:url value="/protected/vocabulary/manage.action" />">Manage Vocabulary</a></li>
+                <li><a href="<c:url value="/protected/antibody/list.action" />">Manage Antibodies</a></li>
             </ul>
 
          </c:when>

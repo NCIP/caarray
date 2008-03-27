@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.dao;
 
+
+
 /**
  * Factory interface used to retrieve DAO instances.
  *
@@ -114,6 +116,17 @@ public interface CaArrayDaoFactory {
      * @return an <code>ArrayDao</code>.
      */
     ArrayDao getArrayDao();
+    
+    
+    
+    
+   
+    
+    
+    
+    
+    
+    
 
     /**
      * Returns a <code>ProjectDao</code>.
@@ -172,4 +185,6 @@ public interface CaArrayDaoFactory {
      * @return a <code>BrowseDao</code>.
      */
     BrowseDao getBrowseDao();
+
+	AntibodyDao getAntibodyDao ();
 }

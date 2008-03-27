@@ -262,6 +262,37 @@
             <result name="list">/WEB-INF/pages/arrayDesign/list.jsp</result>
         </action>
 
+
+
+
+ <!-- carpla begin-->
+    
+  <action name="antibody/*" class="gov.nih.nci.carpla.web.action.AntibodyAction" method="{1}">
+            <result name="list">/WEB-INF/pages/antibody/list.jsp</result>
+            <result name="input">/WEB-INF/pages/antibody/edit.jsp</result>
+            <result name="success" type="redirect-action">antibody/list</result>
+        </action>
+
+        <action name="ajax/antibody/*" class="gov.nih.nci.carpla.web.action.AntibodyAction" method="{1}">
+            <result name="list">/WEB-INF/pages/antibody/list.jsp</result>
+        </action>
+
+
+
+
+ <!-- carpla end -->
+
+
+
+
+
+
+
+
+
+
+
+
         <action name="vocabulary/manage">
             <result>/WEB-INF/pages/vocabulary/manage.jsp</result>
         </action>
@@ -282,6 +313,11 @@
             <result name="success">/WEB-INF/pages/protocol/list.jsp</result>
             <result name="projectEdit">/WEB-INF/pages/vocabulary/reloadProject.jsp</result>
         </action>
+
+
+
+
+
 
     </package>
 

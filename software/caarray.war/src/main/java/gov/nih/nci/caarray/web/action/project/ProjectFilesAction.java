@@ -392,6 +392,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         int unknownFiles = 0;
         int unparseableFiles = 0;
         boolean includesSdrf = includesType(getSelectedFiles(), FileType.MAGE_TAB_SDRF);
+        
+      // carpla: should probably also perform a similar check if sradf is not included...
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         for (CaArrayFile file : getSelectedFiles()) {
             if (file.getFileType() == null) {
@@ -407,6 +409,14 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 skippedFiles++;
             }
         }
+        
+        
+        
+        
+        
+        
+        
+        //carpla: and we're off to another service
         if (!fileSet.getFiles().isEmpty()) {
             getFileManagementService().validateFiles(getProject(), fileSet);
         }
