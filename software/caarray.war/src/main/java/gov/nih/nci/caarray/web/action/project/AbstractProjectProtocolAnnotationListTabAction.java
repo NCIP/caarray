@@ -123,7 +123,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
     /**
      * default constructor.
      *
-     * @param resourceKey the base resouce key.
+     * @param resourceKey the base resource key.
      * @param associatedResourceKey the resource key for the associated annotation
      * @param pagedItems the paged list to use for this tab's item list
      */
@@ -167,11 +167,11 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
                 protocolApplication = protApplicable.getProtocolApplications().iterator().next();
             }
             if (protApplicable instanceof AbstractBioMaterial) {
-                protocolApplication.setBioMaterial((AbstractBioMaterial) protApplicable);                
+                protocolApplication.setBioMaterial((AbstractBioMaterial) protApplicable);
             }
             protocolApplication.setProtocol(getProtocol());
             if (getCurrentProtocol() == null) {
-                protApplicable.addProtocolApplication(protocolApplication);                
+                protApplicable.addProtocolApplication(protocolApplication);
             }
         } else if (getProtocol() == null && getCurrentProtocol() != null) {
             addOrphan(protApplicable.getProtocolApplications().iterator().next());
@@ -305,5 +305,5 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      */
     public void setCurrentProtocolApplication(ProtocolApplication p) {
         // does nothing, only here so it can be referenced in the jsp as a bean property
-    }    
+    }
 }

@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src/java"/>
 	<classpathentry kind="lib" path="lib/ApacheJMeter_core.jar"/>
 	<classpathentry kind="lib" path="lib/ApacheJMeter_java.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/caarray-client-jar/target/caarray-client.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-client-jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar"/>
@@ -48,5 +47,6 @@
 	<classpathentry kind="lib" path="/lib/wsrf_core.jar"/>
 	<classpathentry kind="lib" path="/lib/wss4j.jar"/>
 	<classpathentry kind="lib" path="/lib/xercesImpl.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -102,7 +102,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * Contains hybridization data reprsented by an <code>AbstractArrayData</code> or as requested by a client.
+ * Contains hybridization data represented by an <code>AbstractArrayData</code> or as requested by a client.
  */
 @Entity
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")

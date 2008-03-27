@@ -102,7 +102,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 /**
- * Contains all the validation messsages for a single file.
+ * Contains all the validation messages for a single file.
  */
 @Entity
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")

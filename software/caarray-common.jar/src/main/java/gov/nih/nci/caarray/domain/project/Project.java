@@ -219,7 +219,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
             setPublicIdLocked(true);
             // this is correct for both submitting a draft project and retracting a project
             // from public availability. in the former, we need to make sure the project is visible
-            // if it wasnt before; in the latter we need to remove the public read access
+            // if it wasn't before; in the latter we need to remove the public read access
             getPublicProfile().setSecurityLevel(SecurityLevel.VISIBLE);
         }
 
@@ -299,7 +299,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @ManyToOne
     @JoinColumn(unique = true)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE })
     @ForeignKey(name = "project_experiment_fk")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     @Valid

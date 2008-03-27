@@ -612,7 +612,7 @@ public final class SecurityUtils {
         }
         if (o instanceof ProtectableDescendent) {
             Collection<? extends Protectable> protectables = ((ProtectableDescendent) o).relatedProtectables();
-            if (protectables == null) {
+          if (protectables == null) {
                 return true;
             }
             for (Protectable p : protectables) {

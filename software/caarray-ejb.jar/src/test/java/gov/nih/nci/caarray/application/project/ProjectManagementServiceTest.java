@@ -110,6 +110,7 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -199,60 +200,49 @@ public class ProjectManagementServiceTest {
     }
 
     @Test
-    public void testAddFile() {
+    public void testAddFile() throws Exception {
         Project project = this.projectManagementService.getProject(123L);
-        try {
-            CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-            assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName(), file.getName());
-            assertEquals(1, project.getFiles().size());
-            assertNotNull(project.getFiles().iterator().next().getProject());
-            assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        } catch (ProposalWorkflowException e) {
-            fail("Should not have gotten a workflow exception adding files");
-        } catch (InconsistentProjectStateException e) {
-            fail("Unexpected inconstient state exception: " + e);
-        }
+        CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName(), file.getName());
+        assertEquals(1, project.getFiles().size());
+        assertNotNull(project.getFiles().iterator().next().getProject());
+        assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
     }
 
     @Test
     public void testUploadFiles() throws Exception {
         Project project = this.projectManagementService.getProject(123L);
-        try {
-            List<String> conflicts = new ArrayList<String>();
-            List<String> fileNames = new ArrayList<String>();
-            List<File> files = new ArrayList<File>();
-            files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP);
-            fileNames.add("specification.zip");
+        List<String> conflicts = new ArrayList<String>();
+        List<String> fileNames = new ArrayList<String>();
+        List<File> files = new ArrayList<File>();
+        files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP);
+        fileNames.add("specification.zip");
 
-            files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-            fileNames.add("  ");
+        files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        fileNames.add("  ");
 
-            files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE);
-            fileNames.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
+        files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE);
+        fileNames.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
 
-            files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-            fileNames.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-            int count = this.projectManagementService.uploadFiles(project, files, fileNames, conflicts);
-            assertEquals(12, count);
-            assertEquals(12, project.getFiles().size());
-            assertNotNull(project.getFiles().iterator().next().getProject());
-            assertContains(project.getFiles(), "Test1.zip");
-            assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
-            assertEquals(1, conflicts.size());
-            assertTrue(conflicts.contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
-
-            conflicts = new ArrayList<String>();
-            count = this.projectManagementService.uploadFiles(project, files, fileNames, conflicts);
-            assertEquals(0, count);
-            assertEquals(12, project.getFiles().size());
-            assertNotNull(project.getFiles().iterator().next().getProject());
-            assertContains(project.getFiles(), "Test1.zip");
-            assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
-            assertEquals(13, conflicts.size());
-            assertTrue(conflicts.contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
-        } catch (ProposalWorkflowException e) {
-            fail("Should not have gotten a workflow exception adding files");
-        }
+        files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        fileNames.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
+        int count = this.projectManagementService.uploadFiles(project, files, fileNames, conflicts);
+        assertEquals(12, count);
+        assertEquals(12, project.getFiles().size());
+        assertNotNull(project.getFiles().iterator().next().getProject());
+        assertContains(project.getFiles(), "Test1.zip");
+        assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
+        assertEquals(1, conflicts.size());
+        assertTrue(conflicts.contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
+        conflicts = new ArrayList<String>();
+        count = this.projectManagementService.uploadFiles(project, files, fileNames, conflicts);
+        assertEquals(0, count);
+        assertEquals(12, project.getFiles().size());
+        assertNotNull(project.getFiles().iterator().next().getProject());
+        assertContains(project.getFiles(), "Test1.zip");
+        assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
+        assertEquals(13, conflicts.size());
+        assertTrue(conflicts.contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
     }
 
     private void assertContains(Set<CaArrayFile> caArrayFiles, String file) {
@@ -355,6 +345,39 @@ public class ProjectManagementServiceTest {
         this.projectManagementService.copySource(project, 1L);
     }
 
+    @Test
+    public void testDeleteProject() throws Exception {
+        Project project = new Project();
+        project.setId(1L);
+        this.projectManagementService.saveProject(project);
+        assertEquals(project, this.daoFactoryStub.projectDao.lastSaved);
+
+        Project retrieved = this.projectManagementService.getProject(1L);
+        assertEquals(project, retrieved);
+
+        this.projectManagementService.deleteProject(project);
+        retrieved = this.projectManagementService.getProject(1L);
+        assertNull(retrieved.getExperiment().getTitle());
+    }
+
+    @Test(expected = ProposalWorkflowException.class)
+    public void testDeleteNonDraftProject() throws Exception {
+        Project project = new Project();
+        project.setId(1L);
+        project.setStatus(ProposalStatus.IN_PROGRESS);
+        this.projectManagementService.saveProject(project);
+        this.projectManagementService.deleteProject(project);
+    }
+
+    @Test(expected = PermissionDeniedException.class)
+    public void testDeleteUnownedProject() throws Exception {
+        Project project = new Project();
+        project.setId(1L);
+        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
+        this.projectManagementService.saveProject(project);
+        this.projectManagementService.deleteProject(project);
+    }
+
     /**
      * Test method for {@link ProjectManagementService#copyFactor(Project, long)}.
      */
@@ -386,19 +409,13 @@ public class ProjectManagementServiceTest {
      * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProject(Project)}.
      */
     @Test
-    public void testCopySample() {
+    public void testCopySample() throws Exception {
         Project project = new Project();
-        try {
-            this.projectManagementService.saveProject(project);
-            Sample sample = this.projectManagementService.copySample(project, 1);
-            assertOnAbstractBioMaterialCopy(sample);
-            assertEquals(1, project.getExperiment().getSamples().size());
-            assertTrue(!sample.getSources().isEmpty());
-        } catch (ProposalWorkflowException e) {
-            fail("Unexpected exception: " + e);
-        } catch (InconsistentProjectStateException e) {
-            fail("Unexpected exception: " + e);
-        }
+        this.projectManagementService.saveProject(project);
+        Sample sample = this.projectManagementService.copySample(project, 1);
+        assertOnAbstractBioMaterialCopy(sample);
+        assertEquals(1, project.getExperiment().getSamples().size());
+        assertTrue(!sample.getSources().isEmpty());
     }
 
     @Test
@@ -441,16 +458,12 @@ public class ProjectManagementServiceTest {
     }
 
     @Test
-    public void testSetUseTcgaPolicy() {
+    public void testSetUseTcgaPolicy() throws Exception {
         Project project = this.projectManagementService.getProject(123L);
         UsernameHolder.setUser("caarrayadmin");
         createProtectionGroup(project);
         assertFalse(project.isUseTcgaPolicy());
-        try {
-            this.projectManagementService.setUseTcgaPolicy(123L, true);
-        } catch (ProposalWorkflowException e) {
-            fail("Should have been able to set tcga policy status");
-        }
+        this.projectManagementService.setUseTcgaPolicy(123L, true);
         project = this.projectManagementService.getProject(123L);
         assertTrue(project.isUseTcgaPolicy());
     }
@@ -473,30 +486,16 @@ public class ProjectManagementServiceTest {
 
         Project project = this.projectManagementService.getProject(123L);
         CaArrayFile file = null;
-        try {
-            file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        } catch (ProposalWorkflowException e) {
-            fail("Should not have gotten a workflow exception adding files");
-        } catch (InconsistentProjectStateException e) {
-            fail("Unexpected inconstient state exception: " + e);
-        }
+        file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
 
         File f = this.projectManagementService.prepareForDownload(Collections.singleton(file));
         checkFile(file, f);
 
-        try {
-            f = this.projectManagementService.prepareHybsForDownload(null, null);
-            assertNull(f);
-        } catch (IllegalArgumentException e) {
-            fail();
-        }
+        f = this.projectManagementService.prepareHybsForDownload(null, null);
+        assertNull(f);
 
-        try {
-            this.projectManagementService.prepareHybsForDownload(null, new ArrayList<Hybridization>());
-            assertNull(f);
-        } catch (IllegalArgumentException e) {
-            fail();
-        }
+        this.projectManagementService.prepareHybsForDownload(null, new ArrayList<Hybridization>());
+        assertNull(f);
 
         Hybridization h = new Hybridization();
         h.setArrayData(new RawArrayData());
@@ -579,6 +578,7 @@ public class ProjectManagementServiceTest {
         @Override
         public void remove(PersistentObject caArrayEntity) {
             this.lastDeleted = caArrayEntity;
+            this.savedObjects.remove(caArrayEntity.getId());
         }
 
         public PersistentObject getLastDeleted() {
@@ -603,6 +603,10 @@ public class ProjectManagementServiceTest {
         @SuppressWarnings({ "unchecked", "deprecation" })
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
+            PersistentObject po = this.projectDao.savedObjects.get(entityId);
+            if (po != null) {
+                return (T) po;
+            }
             if (Sample.class.equals(entityClass)) {
                 Sample s = getSample(entityId);
                 return (T) s;
@@ -626,27 +630,13 @@ public class ProjectManagementServiceTest {
         /**
          * {@inheritDoc}
          */
+        @SuppressWarnings("deprecation")
         private Project getProject(Long id) {
             if (this.projectDao.savedObjects.containsKey(id)) {
                 return (Project) this.projectDao.savedObjects.get(id);
             }
             Project project = new Project();
-            // Perform voodoo magic
-            try {
-                Method m = project.getClass().getSuperclass().getSuperclass().getDeclaredMethod("setId", Long.class);
-                m.setAccessible(true);
-                m.invoke(project, id);
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
+            project.setId(id);
             this.projectDao.save(project);
             return project;
         }
@@ -690,7 +680,6 @@ public class ProjectManagementServiceTest {
             abm.setId(entityId);
         }
     }
-
 
     private static class LocalSessionContextStub extends SessionContextStub {
 

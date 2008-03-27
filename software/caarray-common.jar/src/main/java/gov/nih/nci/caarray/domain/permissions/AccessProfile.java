@@ -223,7 +223,7 @@ public class AccessProfile implements PersistentObject, Serializable {
     @JoinTable(name = "access_profile_samples", joinColumns = @JoinColumn(name = "access_profile_id"))
     @Column(name = "security_level")
     @Enumerated(EnumType.STRING)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE })
     public Map<Sample, SampleSecurityLevel> getSampleSecurityLevels() {
         return this.sampleSecurityLevels;
     }

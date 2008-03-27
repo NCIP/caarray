@@ -179,6 +179,13 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return p;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void deleteProject(Project project) throws ProposalWorkflowException {
+        // no-op
+    }
+
     public Organization getOrganization(long id) {
         return null;
     }

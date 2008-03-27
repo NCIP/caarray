@@ -105,8 +105,8 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Hibernate interceptor that keeps track of object changes and queues up lists of interesting objects that will require
- * appropriate synchronization with CSM. on post-flush, the appopriate CSM operations are then performed. The actual CSM
- * logic is in SecurityUtils
+ * appropriate synchronization with CSM. on post-flush, the appropriate CSM operations are then performed. The actual
+ * CSM logic is in SecurityUtils
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class SecurityInterceptor extends EmptyInterceptor {

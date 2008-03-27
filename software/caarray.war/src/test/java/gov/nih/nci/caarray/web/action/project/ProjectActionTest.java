@@ -88,8 +88,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
+import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -99,6 +103,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 
 /**
@@ -108,7 +113,7 @@ public class ProjectActionTest {
 
     private static final String WORKSPACE = "workspace";
     ProjectAction action = new ProjectAction();
-    private static final ProjectManagementServiceStub projectManagementServiceStub = new ProjectManagementServiceStub();
+    private static final ProjectManagementServiceStub projectManagementServiceStub = new LocalProjectManagementServiceStub();
 
     @BeforeClass
     @SuppressWarnings("PMD")
@@ -202,5 +207,51 @@ public class ProjectActionTest {
         this.action.setProject(this.getTestProject(999l));
         assertEquals(Action.INPUT, this.action.changeWorkflowStatus());
         assertEquals(2, projectManagementServiceStub.getChangeWorkflowStatusCount());
+    }
+
+    @Test
+    public void testDelete() {
+        this.action.setProject(this.getTestProject(1l));
+        assertEquals(WORKSPACE, this.action.delete());
+        assertTrue(ActionHelper.getMessages().get(0).contains("project.deleted"));
+    }
+
+    @Test
+    public void testDeleteNonDraft() {
+        this.action.setProject(this.getTestProject(1l));
+        this.action.getProject().setStatus(ProposalStatus.PUBLIC);
+        assertEquals(WORKSPACE, this.action.delete());
+        assertTrue(ActionHelper.getMessages().get(0).contains("project.deleteOnlyDrafts"));
+    }
+
+    @Test
+    public void testDeleteNotFound() {
+        this.action.setProject(new Project());
+        UsernameHolder.setUser("someuser");
+        assertEquals(WORKSPACE, this.action.delete());
+        assertTrue(ActionHelper.getMessages().get(0).contains("project.notFound"));
+    }
+
+    @Test(expected = PermissionDeniedException.class)
+    public void testDeleteNoWritePermission() {
+        this.action.setProject(this.getTestProject(2l));
+        UsernameHolder.setUser("unauthorizeduser");
+        this.action.delete();
+    }
+
+    private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
+        /**
+         * {@inheritDoc}
+         */
+        public void deleteProject(Project project) throws ProposalWorkflowException {
+            if (UsernameHolder.getUser().equals("unauthorizeduser")) {
+                throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
+            }
+            if (project.getStatus() != ProposalStatus.DRAFT) {
+                throw new ProposalWorkflowException("Cannot delete a non-draft project");
+            }
+            // assume success if the checks pass
+        }
+
     }
 }

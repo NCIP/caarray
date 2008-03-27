@@ -171,6 +171,7 @@ public class VocabularyServiceTest {
         Term term = vocabularyService.getTerm(source, "term1");
         assertNotNull(term);
         assertEquals("term1", term.getValue());
+        assertEquals(source.getNameAndVersion(), term.getSource().getNameAndVersion());
     }
 
     /**
@@ -241,6 +242,7 @@ public class VocabularyServiceTest {
         org = vocabularyService.getOrganism(source, org2.getScientificName().toUpperCase());
         assertEquals(org2.getScientificName(), org.getScientificName());
         assertEquals(org2.getTermSource(), org.getTermSource());
+        assertEquals(org2.getTermSource().toString(), org.getTermSource().toString());
     }
 
     // ////// INNER CLASS TEST STUBS///////////////////////

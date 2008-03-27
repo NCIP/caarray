@@ -175,10 +175,4 @@ public class Import64CelZip extends AbstractSeleniumTest {
         zipFiles.add(new File(DIRECTORY + "128CEL.zip"));
     }
 
-    private void checkFileStatus(String status, int column, int numberOfFiles) {
-        for (int i = 1; i < numberOfFiles; i++) {
-            assertEquals(status, selenium.getTable("row." + i + "." + column));
-        }
-    }
-
 }

@@ -231,7 +231,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @return the array
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @Cascade(CascadeType.SAVE_UPDATE)  // Could eventually add DELETE cascade, but Arrays are shared
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     @ForeignKey(name = "hybridization_array_fk")
     public Array getArray() {
         return this.array;
@@ -240,8 +240,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     /**
      * Sets the array.
      *
-     * @param arrayVal
-     *            the array
+     * @param arrayVal the array
      */
     public void setArray(final Array arrayVal) {
         this.array = arrayVal;
@@ -308,8 +307,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @param protocolApplicationVal
      *            the protocolApplication
      */
-    public void setProtocolApplication(
-            final ProtocolApplication protocolApplicationVal) {
+    public void setProtocolApplication(final ProtocolApplication protocolApplicationVal) {
         this.protocolApplication = protocolApplicationVal;
     }
 

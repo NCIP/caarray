@@ -92,34 +92,29 @@ public class DeleteFileTest extends AbstractSeleniumTest {
     @Test
     public void testNew() throws Exception {
         String title = "test" + System.currentTimeMillis();
-        
+
         loginAsPrincipalInvestigator();
 
         createExperiment(title);
-        
+
         // - Go to the data tab
         selenium.click("link=Data");
         waitForTab();
-        
-        
+
+
         // Upload IDF file
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
-                
+
         // - file is present
         assertTrue(selenium.isTextPresent(MageTabDataFiles.TCGA_BROAD_IDF.getName()));
-        
+
         // - Delete file
-        selenium.click("selectAllCheckbox");   
+        selenium.click("selectAllCheckbox");
         selenium.click("link=Delete");
         waitForAction();
-        
+
         // - File is deleted
         assertFalse(selenium.isTextPresent(MageTabDataFiles.TCGA_BROAD_IDF.getName()));
     }
-
-
-
-
-
 
 }

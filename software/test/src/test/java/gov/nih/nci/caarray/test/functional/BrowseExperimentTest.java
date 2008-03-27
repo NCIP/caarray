@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 
 import java.io.File;
@@ -90,10 +91,10 @@ import java.io.File;
 import org.junit.Test;
 
 /**
- * 
+ *
  * Use Case UC#7231. Test Case #10320, #10321, #10324, #10325 Requirements: Browse by Experiments, Organism, Array
  * Providers, and Unique Array Designs
- * 
+ *
  */
 public class BrowseExperimentTest extends AbstractSeleniumTest {
     private static final int TWO_MINUTES = 12;
@@ -124,7 +125,7 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         waitForText("found");
         // - Assert the Experiment is visible without logging in
         findTitleAcrossMultiPages(experimentId);
-        // - Assert correct columns are displayed as per use case 
+        // - Assert correct columns are displayed as per use case
         assertColumnHeaders();
 
         // - Browse by Organisms
@@ -132,12 +133,12 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         waitForText("Welcome to the caArray Data Portal");
         selenium.click("link=Organisms");
         waitForText("found");
-        // Click on the Homo Sapien tab incase there is more than one tab
+        // Click on the Homo sapiens tab incase there is more than one tab
         selenium.click("link=Homo sapiens (*");
         waitForTab();
         // - Assert the Experiment is visible without logging in
         findTitleAcrossMultiPages(experimentId);
-        // - Assert correct columns are displayed as per use case 
+        // - Assert correct columns are displayed as per use case
         assertColumnHeaders();
 
         // - Browse by Array Providers
@@ -150,7 +151,7 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         waitForTab();
         // - Assert the Experiment is visible without logging in
         findTitleAcrossMultiPages(experimentId);
-        // - Assert correct columns are displayed as per use case 
+        // - Assert correct columns are displayed as per use case
         assertColumnHeaders();
 
         // - Browse by Unique Array Designs
@@ -163,8 +164,57 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         waitForTab();
         // - Assert the Experiment is visible without logging in
         findTitleAcrossMultiPages(experimentId);
-        // - Assert correct columns are displayed as per use case 
+        // - Assert correct columns are displayed as per use case
         assertColumnHeaders();
+    }
+
+    @Test
+    public void testDeleteProject() throws Exception {
+        String title = "delete " + System.currentTimeMillis();
+        loginAsPrincipalInvestigator();
+        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        String experimentId = createExperiment(title, ARRAY_DESIGN_NAME, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+
+        // file upload based on ImportAffymetrixChpTest.testImportAndRetrieval()
+        // - go to the data tab
+        selenium.click("link=Data");
+        waitForTab();
+        upload(AffymetrixArrayDataFiles.TEST3_CHP);
+        // - Check if they are uploaded
+        checkFileStatus("Uploaded", THIRD_COLUMN, 1);
+
+        // - Import files
+        selenium.click("selectAllCheckbox");
+        selenium.click("link=Import");
+        waitForAction();
+
+        // - hit the refresh button until files are imported
+        waitForImport("Nothing found to display");
+
+        selenium.click("link=My Experiment Workspace");
+        waitForText("Work Queue");
+        assertEquals("Status", selenium.getText("link=Status"));
+        assertEquals("Permissions", selenium.isTextPresent("Permissions"));
+        assertEquals("Edit", selenium.isTextPresent("Edit"));
+        assertEquals("Delete", selenium.isTextPresent("Delete"));
+
+        int row = getExperimentRow(experimentId, ZERO_COLUMN);
+        assertTrue(selenium.isElementPresent("//table[@id='row']/tbody/tr[" + row + "]/td[8]/a/img"));
+        selenium.chooseCancelOnNextConfirmation();
+        selenium.click("//tr[" + row + "]/td[8]/a/img");
+        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to delete this experiment\\?$"));
+        pause(500);
+        assertEquals(row, getExperimentRow(experimentId, ZERO_COLUMN));
+        selenium.click("//tr[" + row + "]/td[8]/a/img");
+        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to delete this experiment\\?$"));
+        waitForText("Experiment has been deleted.");
+        assertFalse(selenium.isTextPresent(experimentId));
+
+        experimentId = createExperiment(title, ARRAY_DESIGN_NAME, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+        submitExperiment();
+        waitForText("Work Queue");
+        row = getExperimentRow(experimentId, ZERO_COLUMN);
+        assertFalse(selenium.isElementPresent("//table[@id='row']/tbody/tr[" + row + "]/td[8]/a/img"));
     }
 
     private void assertColumnHeaders() {

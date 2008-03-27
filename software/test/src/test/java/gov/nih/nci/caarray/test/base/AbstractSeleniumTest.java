@@ -85,14 +85,13 @@ package gov.nih.nci.caarray.test.base;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 
 import com.thoughtworks.selenium.SeleneseTestCase;
 
 /**
  * Base class for all functional tests that use Selenium Remote Control. Provides proper set up in order to be called by
  * caArray's ant script.
- * 
+ *
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
@@ -140,7 +139,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.click(linkOrButton);
         waitForPageToLoad();
     }
-    
+
     protected void pause(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
@@ -186,24 +185,24 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected void upload(File file, long timeoutSeconds, boolean runAssert) throws IOException {
         selenium.click("link=Upload New File(s)");
         waitForPopup("uploadWindow", timeoutSeconds);
-        selenium.selectWindow("uploadWindow");        
+        selenium.selectWindow("uploadWindow");
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         selenium.type("upload", filePath);
         selenium.click(UPLOAD_BUTTON);
         pause(2000);
         waitForDiv("uploadProgressFileList", timeoutSeconds);
         selenium.getAlert();
-        
+
         if (runAssert) {
             if (file == null) {
                 fail("upload file name is null");
             }
             assertTrue(file.getName() + " was not uploaded.", selenium.isTextPresent(file.getName()));
         }
-        
+
         selenium.click("link=Close Window");
         selenium.selectWindow(null);
-        
+
         pause(1000);
         selenium.click("link=Data");
         waitForTab();
@@ -269,7 +268,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             pause(1000);
         }
     }
-    
+
     protected void waitForPopup(String id, long waitTime) {
         selenium.waitForPopUp(id, toMillisecondsString(waitTime));
     }
@@ -315,7 +314,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         }
         selenium.select("projectForm_project_experiment_organism", "label=" + organism);
 
-        // - Save the Experiment  
+        // - Save the Experiment
         selenium.click("link=Save");
         waitForAction();
         // get the experiment id
@@ -326,7 +325,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     /**
      * Waits for the list of Array Designs to fill before making the selection. Test fails if the array design is not in
      * the list
-     * 
+     *
      * @param arrayDesignName
      */
     private void selectArrayDesign(String arrayDesignName, String provider) {
@@ -411,7 +410,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             }
         }
     }
-    
+
     protected void setExperimentPublic() {
         String makeExperimentPublicButton = "//span/span";
         selenium.click(makeExperimentPublicButton);
@@ -432,7 +431,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     /**
-     * 
+     *
      * @param seconds
      * @param row
      * @return
@@ -457,11 +456,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     /**
-     * 
+     *
      * @param text - value to seach for
      * @param column - Table column which contains the search text
      * @return int the row number
-     * 
+     *
      * Returns the row where the data resides in a particular column For example - find title "Exp 1" in column 1
      * (column 1 holds the experiment names)
      */
@@ -545,6 +544,12 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
         // make experiment public
         setExperimentPublic();
+    }
+
+    protected void checkFileStatus(String status, int column, int numFiles) {
+        for (int i = 1; i < numFiles; i++) {
+            assertEquals(status, selenium.getTable("row." + i + "." + column));
+        }
     }
 
 }

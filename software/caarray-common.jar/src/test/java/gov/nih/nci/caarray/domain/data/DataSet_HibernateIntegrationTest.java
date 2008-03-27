@@ -86,6 +86,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject_HibernateIntegrationTest;
+import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -130,6 +131,11 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
         FloatColumn floatColumn = (FloatColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(1);
         floatColumn.initializeArray(NUMBER_OF_DATA_ROWS);
         setValues(floatColumn.getValues());
+
+        DesignElementList del = new DesignElementList();
+        del.setDesignElementTypeEnum(getNextValue(DesignElementType.values(), del.getDesignElementTypeEnum()));
+        del.getDesignElements().add(new Feature());
+        dataSet.setDesignElementList(del);
     }
 
     private void setValues(String[] values) {
@@ -191,6 +197,9 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
         dataSet.addHybridizationData(hybridization);
         dataSet.addQuantitationType(stringType);
         dataSet.addQuantitationType(floatType);
+        DesignElementList del = new DesignElementList();
+        del.setDesignElementTypeEnum(null);
+        dataSet.setDesignElementList(del);
         return dataSet;
     }
 
@@ -201,6 +210,7 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
         FloatColumn floatColumn = (FloatColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(1);
         stringColumn.setValues(null);
         floatColumn.setValues(null);
+        dataSet.setDesignElementList(null);
     }
 
 }

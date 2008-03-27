@@ -86,7 +86,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
             return loggedinDetails();
         } else {
             ActionHelper.saveMessage(getText("project.notFound"));
-            return WORKSPACE_RESULT;            
+            return WORKSPACE_RESULT;
         }
     }
 
@@ -105,7 +105,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
             return WORKSPACE_RESULT;
         }
     }
-    
+
     private String loggedinDetails() {
         if (getProject().getId() != null) {
             return "login-details-id";
@@ -114,7 +114,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
         } else {
             return WORKSPACE_RESULT;
         }
-                 
+
     }
 
     /**
@@ -152,8 +152,27 @@ public class ProjectAction extends AbstractBaseProjectAction {
     }
 
     /**
-     * @throws MessagingException 
-     * 
+     * Delete a project.
+     * @return path String
+     */
+    public String delete() {
+        if (getProject().getId() == null) {
+            return projectNotFound();
+        }
+        try {
+            getProjectManagementService().deleteProject(getProject());
+            ActionHelper.saveMessage(getText("project.deleted"));
+        } catch (ProposalWorkflowException e) {
+            List<String> args = new ArrayList<String>();
+            args.add(getText(ProposalStatus.DRAFT.getResourceKey()));
+            ActionHelper.saveMessage(getText("project.deleteOnlyDrafts", args));
+        }
+        return WORKSPACE_RESULT;
+    }
+
+    /**
+     * @throws MessagingException
+     *
      */
     private void sendSubmitExperimentEmail() throws MessagingException {
         HttpServletRequest request = ServletActionContext.getRequest();

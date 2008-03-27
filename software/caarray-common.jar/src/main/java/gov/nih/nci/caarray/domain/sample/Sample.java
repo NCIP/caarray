@@ -122,12 +122,8 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     private Specimen specimen;
     private Experiment experiment;
     private String externalSampleId;
-
-
-    /**
-     * The sources set.
-     */
     private Set<Source> sources = new HashSet<Source>();
+    private Set<Extract> extracts = new HashSet<Extract>();
 
     /**
      * Gets the sources.
@@ -148,11 +144,6 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     private void setSources(final Set<Source> sourcesVal) {
         this.sources = sourcesVal;
     }
-
-    /**
-     * The extracts set.
-     */
-    private Set<Extract> extracts = new HashSet<Extract>();
 
     /**
      * Gets the extracts.

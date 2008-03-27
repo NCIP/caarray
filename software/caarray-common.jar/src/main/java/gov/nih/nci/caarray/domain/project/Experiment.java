@@ -598,7 +598,8 @@ public class Experiment extends AbstractCaArrayEntity {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "experiment")
     @ForeignKey(name = "publication_expr_fk")
-    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Publication> getPublications() {
         return this.publications;
     }
@@ -647,7 +648,8 @@ public class Experiment extends AbstractCaArrayEntity {
             joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = {@JoinColumn(name = "source_id") })
     @ForeignKey(name = "experimentsource_invest_fk", inverseName = "experimentsource_source_fk")
-    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Source> getSources() {
         return this.sources;
     }
@@ -673,7 +675,8 @@ public class Experiment extends AbstractCaArrayEntity {
             inverseJoinColumns = {@JoinColumn(name = "sample_id") })
     @LazyCollection(LazyCollectionOption.EXTRA)
     @ForeignKey(name = "experimentsample_invest_fk", inverseName = "experimentsample_sample_fk")
-    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @Filter(name = "Project1", condition = SAMPLES_ALIAS_FILTER)
     public Set<Sample> getSamples() {
         return this.samples;
@@ -707,7 +710,8 @@ public class Experiment extends AbstractCaArrayEntity {
             joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = {@JoinColumn(name = "extract_id") })
     @ForeignKey(name = "experimentextract_invest_fk", inverseName = "experimentextract_extract_fk")
-    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @Filter(name = "Project1", condition = EXTRACTS_ALIAS_FILTER)
     public Set<Extract> getExtracts() {
         return this.extracts;
@@ -733,7 +737,8 @@ public class Experiment extends AbstractCaArrayEntity {
             joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = {@JoinColumn(name = "labeled_extract_id") })
     @ForeignKey(name = "experimentle_invest_fk", inverseName = "experimentle_le_fk")
-    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @Filter(name = "Project1", condition = LABELED_EXTRACTS_ALIAS_FILTER)
     public Set<LabeledExtract> getLabeledExtracts() {
         return this.labeledExtracts;
@@ -784,7 +789,8 @@ public class Experiment extends AbstractCaArrayEntity {
     @IndexColumn(name = "indx")
     @JoinColumn(name = "experiment")
     @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
-    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public List<ExperimentContact> getExperimentContacts() {
         return this.experimentContacts;
@@ -871,7 +877,8 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @OneToMany
     @JoinColumn(name = EXPERIMENT_REF)
-    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Factor> getFactors() {
         return this.factors;
     }
@@ -921,7 +928,7 @@ public class Experiment extends AbstractCaArrayEntity {
             joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = {@JoinColumn(name = "array_id") })
     @ForeignKey(name = "exprarray_invest_fk", inverseName = "exprarray_array_fk")
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE })
     public Set<Array> getArrays() {
         return this.arrays;
     }
@@ -942,7 +949,8 @@ public class Experiment extends AbstractCaArrayEntity {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = EXPERIMENT_REF)
     @ForeignKey(name = "hybridization_expr_fk")
-    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @Filter(name = "Project1", condition = HYBRIDIZATIONS_ALIAS_FILTER)
     public Set<Hybridization> getHybridizations() {
         return this.hybridizations;

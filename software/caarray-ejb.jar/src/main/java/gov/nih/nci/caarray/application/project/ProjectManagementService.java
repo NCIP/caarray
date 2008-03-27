@@ -194,6 +194,14 @@ public interface ProjectManagementService {
             InconsistentProjectStateException;
 
     /**
+     * Deletes a project. The project must be in the draft state.
+     *
+     * @param project the project to save
+     * @throws ProposalWorkflowException if the project cannot currently be deleted because it is not a draft
+     */
+    void deleteProject(Project project) throws ProposalWorkflowException;
+
+    /**
      * Moves a project into a new workflow status.
      *
      * @param projectId the id of the project to move to the given status

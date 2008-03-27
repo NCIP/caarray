@@ -223,6 +223,10 @@
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
         </action>
 
+        <action name="project/delete" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="delete">
+            <result name="workspace" type="redirect-action">project/workspace</result>
+        </action>
+
         <action name="project/changeWorkflowStatus" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="changeWorkflowStatus">
             <result name="workspace" type="redirect-action">project/workspace</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>

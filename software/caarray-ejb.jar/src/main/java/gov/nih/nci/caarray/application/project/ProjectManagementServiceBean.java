@@ -348,6 +348,29 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void deleteProject(Project project) throws ProposalWorkflowException {
+        LogUtil.logSubsystemEntry(LOG, project);
+        if (!project.isOwner(UsernameHolder.getCsmUser())) {
+            LogUtil.logSubsystemExit(LOG);
+            throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
+        }
+        if (project.getStatus() != ProposalStatus.DRAFT) {
+            LogUtil.logSubsystemExit(LOG);
+            throw new ProposalWorkflowException("Cannot delete a non-draft project");
+        }
+        // both hybridizations and project are trying to delete the save files via cascades, so explicitly
+        // delete hybridizations (and their files) first
+        for (Hybridization hyb : project.getExperiment().getHybridizations()) {
+            getProjectDao().remove(hyb);
+        }
+        getProjectDao().remove(project);
+        LogUtil.logSubsystemExit(LOG);
+    }
+
+    /**
      * Checks whether the project has files that are currently importing. if not, does nothing,
      * otherwise throws an exception because you cannot edit a project while it has
      * files being imported

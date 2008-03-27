@@ -1,4 +1,13 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+
+<script type="text/javascript">
+    confirmDelete = function() {
+        return confirm('<fmt:message key="project.confirmDelete"/>');
+    }
+</script>
+
+<%@page import="gov.nih.nci.caarray.domain.project.ProposalStatus"%>
+<c:set var="draftStatus" value="<%= ProposalStatus.DRAFT %>"/>
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <display:table class="searchresults" cellspacing="0" list="${projects}" requestURI="${sortUrl}"
         id="row" excludedParams="project.id" style="clear: none;">
@@ -56,6 +65,14 @@
                         <c:param name="project.id" value="${row.id}" />
                     </c:url>
                     <a href="${editProjectUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                </c:if>
+            </display:column>
+            <display:column titleKey="button.delete" class="centered" headerClass="centered">
+                <c:if test="${caarrayfn:canWrite(row, caarrayfn:currentUser()) && row.status == draftStatus}">
+                    <c:url value="/protected/project/delete.action" var="deleteProjectUrl">
+                        <c:param name="project.id" value="${row.id}" />
+                    </c:url>
+                    <a href="${deleteProjectUrl}" onclick="return confirmDelete();"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
                 </c:if>
             </display:column>
         </c:if>

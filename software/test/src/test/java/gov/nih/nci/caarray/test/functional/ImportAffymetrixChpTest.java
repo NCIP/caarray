@@ -95,7 +95,7 @@ import org.junit.Test;
 
 /**
  * Test case #7959.
- * 
+ *
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
 public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
@@ -127,7 +127,7 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         upload(AffymetrixArrayDataFiles.TEST3_CHP);
 
         // - Check if they are uploaded
-        checkFileStatus("Uploaded", THIRD_COLUMN);
+        checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // - Import files
         selenium.click("selectAllCheckbox");
@@ -143,22 +143,22 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         selenium.click("link=Imported Data");
         pause(3000);
         selenium.click("link=Imported Data");
-        pause(1000);  
+        pause(1000);
 
         waitForText("One item found");
 
         // - validate the status
-        checkFileStatus("Imported", SECOND_COLUMN);
-        
+        checkFileStatus("Imported", SECOND_COLUMN, NUMBER_OF_FILES);
+
         // make experiment public
         submitExperiment();
         makeExperimentPublic(experimentId);
- 
+
         endTime = System.currentTimeMillis();
         String totalTime = df.format((endTime - startTime) / 60000f);
         System.out.println("total time = " + totalTime);
     }
-    
+
 
     private void importArrayDesign(File arrayDesign) throws Exception {
         selenium.click("link=Manage Array Designs");
@@ -169,12 +169,6 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
             int column = getExperimentRow(TestProperties.getAffymetrixSpecificationDesignName(), ZERO_COLUMN);
             // wait for array design to be imported
             waitForArrayDesignImport(TWO_MINUTES, column);
-        }
-    }
-
-    private void checkFileStatus(String status, int column) {
-        for (int i = 1; i < NUMBER_OF_FILES; i++) {
-            assertEquals(status, selenium.getTable("row." + i + "." + column));
         }
     }
 
