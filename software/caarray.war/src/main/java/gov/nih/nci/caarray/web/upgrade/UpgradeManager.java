@@ -108,7 +108,7 @@ public final class UpgradeManager {
 
     private static final Logger LOG = Logger.getLogger(UpgradeManager.class);
     private static final String MIGRATION_FILE = "/db-migrations.xml";
-    private static final int TIMEOUT_SECONDS = 1800;
+    private static final int TIMEOUT_SECONDS = 28800;
 
     private static UpgradeManager instance = new UpgradeManager();
 

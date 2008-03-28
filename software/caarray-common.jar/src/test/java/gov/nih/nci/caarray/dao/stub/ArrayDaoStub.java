@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -100,6 +99,7 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
@@ -193,10 +193,20 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<LogicalProbe> getLogicalProbesReadOnly(ArrayDesign design) {
+    public void createDesignElementListEntry(DesignElementList designElementList, int elementIndex, Long logicalProbeId) {
+        // empty method
+    }
+    
+    public Long getLogicalProbeId(ArrayDesign design, String name) {
+        return null;
+    }
+    
+    public void createDesignElementListEntries(DesignElementList designElementList, int startIndex,
+            List<Long> logicalProbeIds) {
+        // empty method
+    }
+    
+    public Map<String, Long> getLogicalProbeNamesToIds(ArrayDesign design, List<String> names) {
         return null;
     }
 }

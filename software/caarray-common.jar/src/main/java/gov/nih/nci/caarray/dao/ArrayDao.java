@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -98,6 +97,7 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
@@ -229,11 +229,20 @@ public interface ArrayDao extends CaArrayDao {
     DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId);
 
     /**
-     * Returns the <code>LogicalProbes</code> associated with the given design marked
-     * as read-only in Hibernate, for memory optimization.
-     *
-     * @param design get probes for this design
-     * @return the set of read-only probes.
+     * Return a mapping of logical probe names to ids for the given list of probe names.
+     * @param design probes must belong to this design
+     * @param names the names of the probes for which to get ids
+     * @return the Map&lt;String, Long> of probe names to ids for the given names
      */
-    List<LogicalProbe> getLogicalProbesReadOnly(ArrayDesign design);
+    Map<String, Long> getLogicalProbeNamesToIds(ArrayDesign design, List<String> names);
+
+    /**
+     * Save a batch of design element entries in a design element list. The entries are put in the list starting at 
+     * a given index.
+     * @param designElementList the design element list to which the entries belong (must already be persistent)
+     * @param startIndex the starting index in the list at which the entries should be saved
+     * @param logicalProbeIds the ids of the design elements which should be added to the list starting at given index
+     */
+    void createDesignElementListEntries(DesignElementList designElementList, int startIndex, 
+            List<Long> logicalProbeIds);
 }

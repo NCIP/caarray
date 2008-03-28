@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.array.ProbeGroup;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
@@ -193,10 +192,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     private void createProbeSetDesignElementList(ArrayDesign arrayDesign) throws AffymetrixCdfReadException {
-        DesignElementList probeSetList =
-            AffymetrixChpDesignElementListUtility.createDesignElementList(getRefreshedDesign(arrayDesign),
-                    getArrayDao());
-        getArrayDao().save(probeSetList);
+        AffymetrixChpDesignElementListUtility.createDesignElementList(getRefreshedDesign(arrayDesign), getArrayDao());
         flushAndClearSession();
     }
 
