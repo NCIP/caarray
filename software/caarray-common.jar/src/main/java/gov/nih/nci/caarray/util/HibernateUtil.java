@@ -210,7 +210,7 @@ public final class HibernateUtil {
     public static SessionFactory getSessionFactory() {
         return getHibernateHelper().getSessionFactory();
     }
-
+    
     /**
      * Do something in an unfiltered session.
      * @param uc callback class

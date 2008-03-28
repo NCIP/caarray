@@ -99,6 +99,8 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
 
@@ -188,6 +190,23 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     }
 
     public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+        return null;
+    }
+
+    public void createDesignElementListEntry(DesignElementList designElementList, int elementIndex, Long logicalProbeId) {
+        // empty method
+    }
+    
+    public Long getLogicalProbeId(ArrayDesign design, String name) {
+        return null;
+    }
+    
+    public void createDesignElementListEntries(DesignElementList designElementList, int startIndex,
+            List<Long> logicalProbeIds) {
+        // empty method
+    }
+    
+    public Map<String, Long> getLogicalProbeNamesToIds(ArrayDesign design, List<String> names) {
         return null;
     }
 }

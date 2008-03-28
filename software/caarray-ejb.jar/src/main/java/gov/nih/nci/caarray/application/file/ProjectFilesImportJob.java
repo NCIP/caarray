@@ -107,7 +107,8 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
         CaArrayFileSet fileSet = getFileSet(getProject());
         try {
             doValidate(fileSet);
-            if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
+            if (fileSet.getStatus().equals(FileStatus.VALIDATED)
+                    || fileSet.getStatus().equals(FileStatus.VALIDATED_NOT_PARSED)) {
                 importAnnotation(fileSet);
                 importArrayData(fileSet);
             }

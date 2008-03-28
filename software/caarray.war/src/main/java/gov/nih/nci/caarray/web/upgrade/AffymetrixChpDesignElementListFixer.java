@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataT
 import gov.nih.nci.caarray.application.arraydesign.AffymetrixCdfReadException;
 import gov.nih.nci.caarray.application.arraydesign.AffymetrixChpDesignElementListUtility;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
@@ -130,12 +131,14 @@ public class AffymetrixChpDesignElementListFixer extends AbstractMigrator {
     }
 
     private void createDesignElementLists() throws AffymetrixCdfReadException {
-        List<ArrayDesign> affymetrixDesigns = getAllAffymetrixDesigns();
-        for (ArrayDesign design : affymetrixDesigns) {
+        ArrayDao arrayDao = getDaoFactory().getArrayDao();
+        List<Long> designIds = getAllAffymetrixDesignIds();
+        for (Long designId : designIds) {
+            ArrayDesign design = getDesignService().getArrayDesign(designId);
             LOG.info("Creating fixed DesignElementList for design " + design.getName());
-            DesignElementList probeSetList =
-                AffymetrixChpDesignElementListUtility.createDesignElementList(design);
-            getDataService().save(probeSetList);
+            AffymetrixChpDesignElementListUtility.createDesignElementList(design, arrayDao);
+            arrayDao.flushSession();
+            arrayDao.clearSession();
         }
     }
 
@@ -193,15 +196,15 @@ public class AffymetrixChpDesignElementListFixer extends AbstractMigrator {
         }
     }
 
-    private List<ArrayDesign> getAllAffymetrixDesigns() {
+    private List<Long> getAllAffymetrixDesignIds() {
         List<ArrayDesign> allDesigns = getDesignService().getArrayDesigns();
-        List<ArrayDesign> affyDesigns = new ArrayList<ArrayDesign>();
+        List<Long> affyDesignIds = new ArrayList<Long>();
         for (ArrayDesign design : allDesigns) {
             if (isAffymetrixDesign(design)) {
-                affyDesigns.add(design);
+                affyDesignIds.add(design.getId());
             }
         }
-        return affyDesigns;
+        return affyDesignIds;
     }
 
     private boolean isAffymetrixDesign(ArrayDesign design) {

@@ -128,6 +128,7 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfNodeType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -501,7 +502,7 @@ final class SdrfTranslator extends AbstractTranslator {
             }
         }
     }
-    
+
     /**
      * Get a caArray ArrayDesign object from an MAGETAB ArrayDesign.
      * @param sdrfArrayDesign MAGETAB array design - must not be null
@@ -773,7 +774,8 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private void reassociateProtocolApplications(AbstractBioMaterial bioMaterial,
             Set<ProtocolApplication> protocolApplications) {
-        for (ProtocolApplication pa : protocolApplications) {
+        for (Iterator<ProtocolApplication> i = protocolApplications.iterator(); i.hasNext();) {
+            ProtocolApplication pa = i.next();
             Term protocolType = pa.getProtocol().getType();
             for (ProtocolTypeAssociation typeAssoc : ProtocolTypeAssociation.values()) {
                 if (protocolType.getValue().equals(typeAssoc.getValue())
@@ -781,7 +783,7 @@ final class SdrfTranslator extends AbstractTranslator {
                         && bioMaterial.getClass().equals(typeAssoc.getNodeClass())) {
                     pa.setBioMaterial(bioMaterial);
                     bioMaterial.getProtocolApplications().add(pa);
-                    protocolApplications.remove(pa);
+                    i.remove();
                 }
             }
         }
