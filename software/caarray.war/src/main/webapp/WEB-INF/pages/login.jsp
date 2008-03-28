@@ -15,25 +15,25 @@
                 <div class="boxpad">
                     <p class="instructions">
                         caArray registered users may login below. First time here? Please <a href="<c:url value="/registration/input.action"/>">register</a>
-to become a caArray user.
+                        to become a caArray user.
                     </p>
 
                     <script type="text/javascript">
-                      function startLogin() {
-                        $('login_progress').show();
-                        <c:choose>
-                            <c:when test="${param.fromAjax == 'true'}">
-                        new Ajax.Request('<c:url value="/protected/project/workspace.action"/>', { onSuccess: completeLogin });
-                            </c:when>
-                            <c:otherwise>
-                        completeLogin();
-                            </c:otherwise>
-                        </c:choose>
-                      }
+                        function startLogin() {
+                            $('login_progress').show();
+                            <c:choose>
+                                <c:when test="${param.fromAjax == 'true'}">
+                            new Ajax.Request('<c:url value="/protected/project/workspace.action"/>', { onSuccess: completeLogin });
+                                </c:when>
+                                <c:otherwise>
+                            completeLogin();
+                                </c:otherwise>
+                            </c:choose>
+                        }
 
-                      function completeLogin() {
-                        $('login').submit();
-                      }
+                        function completeLogin() {
+                            $('login').submit();
+                        }
                     </script>
 
                     <div id="login_progress" style="display: none; margin: 3px 3px">

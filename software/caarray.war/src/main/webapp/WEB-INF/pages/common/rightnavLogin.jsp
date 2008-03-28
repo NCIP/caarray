@@ -11,14 +11,13 @@
 
 <script type="text/javascript">
 function startLogin() {
-$('login_progress').show();
-new Ajax.Request('<c:url value="/protected/project/workspace.action"/>', { onSuccess: completeLogin });
+    $('login_progress').show();
+    new Ajax.Request('<c:url value="/protected/project/workspace.action"/>', { onSuccess: completeLogin });
 }
 
 function completeLogin() {
-$('login').submit();
+    $('login').submit();
 }
-
 </script>
 <div id="sidebar" class="homepage">
     <h1>caArray Login</h1>

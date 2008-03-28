@@ -17,17 +17,17 @@
         <script type="text/javascript" src="<c:url value="/scripts/ajaxtags_controls.js"/>"></script>
         <script type="text/javascript" src="<c:url value="/scripts/ajaxtags_parser.js"/>"></script>
         <script type="text/javascript" language="javascript">
-		// for help script
-		var contextPath = "<%=request.getContextPath()%>";
+    		// for help script
+	       	var contextPath = "<%=request.getContextPath()%>";
 		</script>
         <script type="text/javascript" src="<c:url value='/scripts/help.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scripts/print.js'/>"></script>
         <decorator:head/>
     </head>
-    
+
     <c:if test="${pageContext.request.remoteUser == null}">
-        <c:set var="showLoginSidebar"><decorator:getProperty property="meta.showLoginSidebar" default="false"/></c:set>    
-    </c:if>    
+        <c:set var="showLoginSidebar"><decorator:getProperty property="meta.showLoginSidebar" default="false"/></c:set>
+    </c:if>
     <body id="${showLoginSidebar ? 'home' : 'twocol'}">
         <div id="wrapper">
             <jsp:include page="/WEB-INF/pages/common/header.jsp"/>
