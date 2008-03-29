@@ -1,4 +1,4 @@
-package gov.nih.nci.carpla.rplatab;
+package gov.nih.nci.carpla.rplatab.model;
 
 import gov.nih.nci.carpla.rplatab.model.Comment;
 

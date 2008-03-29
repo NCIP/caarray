@@ -216,6 +216,11 @@ public class RplaTabImporter {
 			try {
 				sfile.setFile(getFile(caArrayFile));
 			} catch (Exception e) {
+			    
+			    
+			    
+			    
+			    
 				e.printStackTrace();
 			}
 			inputFileSet.setSradfFile(sfile);

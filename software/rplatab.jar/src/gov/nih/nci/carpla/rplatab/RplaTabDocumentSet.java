@@ -18,11 +18,11 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
 
-
 import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.magetab.TermSource;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 import gov.nih.nci.carpla.rplatab.model.Antibody;
 import gov.nih.nci.carpla.rplatab.model.ArrayDataSectionPrincipal;
 import gov.nih.nci.carpla.rplatab.model.ArraySectionPrincipal;
@@ -55,33 +55,18 @@ import gov.nih.nci.carpla.rplatab.sradf.SradfHeaders;
 
 public class RplaTabDocumentSet {
 
-	
-	
-	private final ValidationResult validationResult = new ValidationResult();
-	
+	private RplaTabInputFileSet	_rinputfileset;
 
-	
-	 /**
-     * @return the validationResult
-     */
-    public ValidationResult getValidationResult() {
-        return validationResult;
-    }
+	public void setRplaTabInputFileSet ( RplaTabInputFileSet rplaTabInputFileSet)
+	{
+		_rinputfileset = rplaTabInputFileSet;
 
-	
-	
-	
-	
-	private File	_datasetDirectory;
-
-	public File getDatasetDirectory () {
-
-		return _datasetDirectory;
 	}
 
-	private void setDatasetDirectory ( File datasetDir) {
-		_datasetDirectory = datasetDir;
+	private ValidationResult	_validationResult	= new ValidationResult();
 
+	public ValidationResult getValidationResult () {
+		return _validationResult;
 	}
 
 	// ---------------------------------------------------------------------------
@@ -97,11 +82,6 @@ public class RplaTabDocumentSet {
 
 	public void setRplaIdfFile ( RplaIdfFile rplaIdfFile) {
 		_rplaidffile = rplaIdfFile;
-		System.out.println("*!*!*! Dataset dir to be used is: " + rplaIdfFile
-									.getFile()
-									.getParentFile()
-									.getAbsolutePath());
-		setDatasetDirectory(rplaIdfFile.getFile().getParentFile());
 
 	}
 
@@ -216,7 +196,6 @@ public class RplaTabDocumentSet {
 
 	}
 
-
 	// ---------------------------------------------------------------------------
 	// ---------------------------
 	// InvestigationTitle
@@ -307,35 +286,41 @@ public class RplaTabDocumentSet {
 	public ImageFile getOrCreateImageFile ( String name) {
 
 		if (_imageFiles.get(name) == null) {
-			ImageFile ifile = new ImageFile();
-
+			boolean found = false;
 			try {
-				File file = new File(getDatasetDirectory() + File.separator
-										+ name);
-				System.out.println("\nAbout to Set file-->" + file
-											.getAbsolutePath()
-									+ "<--");
-				ifile.setFile(file);
+
+				Iterator it = _rinputfileset.getMiscFiles().iterator();
+				while (it.hasNext()) {
+					File file = (File) it.next();
+					if (file.getName().compareTo(name) == 0) {
+						ImageFile ifile = new ImageFile();
+						ifile.setFile(file);
+						_imageFiles.put(name, ifile);
+						found = true;
+					}
+
+				}
+
+				if (found == false) {
+					this
+							.getValidationResult()
+							.addMessage(this.getSradfFile().getFile(),
+							            Type.ERROR,
+										"Image file for name=" + name
+												+ " cannot be found");
+				}
 
 			} catch (Exception e) {
-				
-				
-				 getValidationResult().addMessage(null, ValidationMessage.Type.ERROR,
-                 "Problem with file named" + name);
-				
-				
-				
-				
-				System.out.println("\nProblem with file named " + name);
+				this
+						.getValidationResult()
+						.addMessage(this.getSradfFile().getFile(),
+									Type.ERROR,
+									"Image file for name=" + name
+											+ " cannot be found");
+
 				e.printStackTrace();
 
-//				this
-//						.getMessages()
-//						.add(new ValidationMessage("file:" + name
-//													+ " not found"));
 			}
-
-			_imageFiles.put(name, ifile);
 
 		}
 		return _imageFiles.get(name);
@@ -346,28 +331,43 @@ public class RplaTabDocumentSet {
 	private Map<String, ArrayDataFile>	_arrayDataFiles	= new Hashtable<String, ArrayDataFile>();
 
 	public ArrayDataFile getOrCreateArrayDataFile ( String name) {
-		if (_arrayDataFiles.get(name) == null) {
-			ArrayDataFile adfile = new ArrayDataFile();
 
+		if (_arrayDataFiles.get(name) == null) {
+			boolean found = false;
 			try {
-				File file = new File(getDatasetDirectory() + File.separator
-										+ name);
-				System.out.println("\nAbout to Set file-->" + file
-											.getAbsolutePath()
-									+ "<--");
-				adfile.setFile(file);
+
+				Iterator it = _rinputfileset.getMiscFiles().iterator();
+				while (it.hasNext()) {
+					File file = (File) it.next();
+					if (file.getName().compareTo(name) == 0) {
+						ArrayDataFile adfile = new ArrayDataFile();
+						adfile.setFile(file);
+						_arrayDataFiles.put(name, adfile);
+						found = true;
+					}
+
+				}
+
+				if (found == false) {
+					this
+							.getValidationResult()
+							.addMessage(this.getSradfFile().getFile(),
+										Type.ERROR,
+										"Array data file for name=" + name
+												+ " cannot be found");
+				}
 
 			} catch (Exception e) {
-				System.out.println("\nProblem with file named " + name);
+				this
+						.getValidationResult()
+						.addMessage(this.getSradfFile().getFile(),
+						            Type.ERROR,
+									"Array data file for name=" + name
+											+ " cannot be found");
+
 				e.printStackTrace();
 
-//				this
-//						.getMessages()
-//						.add(new ValidationMessage("file:" + name
-//													+ " not found"));
 			}
-
-			_arrayDataFiles.put(name, adfile);
 
 		}
 		return _arrayDataFiles.get(name);
@@ -378,31 +378,8 @@ public class RplaTabDocumentSet {
 
 	private Map<String, DerivedArrayDataFile>	_derivedArrayDataFiles	= new Hashtable<String, DerivedArrayDataFile>();
 
+	// carplafix
 	public DerivedArrayDataFile getOrCreateDerivedArrayDataFile ( String name) {
-		if (_arrayDataFiles.get(name) == null) {
-			DerivedArrayDataFile adfile = new DerivedArrayDataFile();
-
-			try {
-				File file = new File(getDatasetDirectory() + File.separator
-										+ name);
-				System.out.println("\nAbout to Set file-->" + file
-											.getAbsolutePath()
-									+ "<--");
-				adfile.setFile(file);
-
-			} catch (Exception e) {
-				System.out.println("\nProblem with file named " + name);
-				e.printStackTrace();
-
-//				this
-//						.getMessages()
-//						.add(new ValidationMessage("file:" + name
-//													+ " not found"));
-			}
-
-			_derivedArrayDataFiles.put(name, adfile);
-
-		}
 		return _derivedArrayDataFiles.get(name);
 
 	}
@@ -457,15 +434,13 @@ public class RplaTabDocumentSet {
 
 	private final Hashtable<String, TermSource>	_termSources	= new Hashtable<String, TermSource>();
 
-	
-
 	public TermSource getTermSource ( String value) {
 		return _termSources.get(value);
 	}
 
 	public TermSource createTermSource ( String value) {
 		TermSource termSource = new TermSource(value);
-		
+
 		_termSources.put(value, termSource);
 		return termSource;
 
@@ -574,19 +549,18 @@ public class RplaTabDocumentSet {
 	}
 
 	// ###############################################################
-	public static void debugPrint ( RplaTabDocumentSet rdataset, PrintStream out) {
+	public static void debugPrint ( RplaTabDocumentSet rdataset, PrintStream out)
+	{
 
 		out
 				.println("\n**************In debugPrint***********************************************");
 
-		
-
-//		for (int ii = 0; ii < messages.size(); ii++) {
-//
-//			System.out.println("message " + ii
-//								+ " =\t"
-//								+ messages.get(ii).getMessage());
-//		}
+		// for (int ii = 0; ii < messages.size(); ii++) {
+		//
+		// System.out.println("message " + ii
+		// + " =\t"
+		// + messages.get(ii).getMessage());
+		// }
 
 		out.println(rdataset.getRplaIdfFile().getFile().getAbsolutePath());
 		out
@@ -669,13 +643,14 @@ public class RplaTabDocumentSet {
 	private static void debugPrintTermSources ( RplaTabDocumentSet rdataset,
 												PrintStream out)
 	{
-//		Hashtable<String, TermSource> termsources = rdataset.getTermSources();
-//		for (Enumeration e = termsources.keys(); e.hasMoreElements();) {
-//			TermSource ts = termsources.get(e.nextElement());
-//			out.println(ts.getName());
-//			// todo file, version...
-//
-//		}
+	// Hashtable<String, TermSource> termsources =
+	// rdataset.getTermSources();
+	// for (Enumeration e = termsources.keys(); e.hasMoreElements();) {
+	// TermSource ts = termsources.get(e.nextElement());
+	// out.println(ts.getName());
+	// // todo file, version...
+	//
+	// }
 	}
 
 	// #############################################################################
@@ -760,19 +735,18 @@ public class RplaTabDocumentSet {
 		return _assays.get(name);
 
 	}
-	private final Map<String, TermSource> termSourceCache = new HashMap<String, TermSource>();
-	   public Collection<TermSource> getTermSources() {
-	        return termSourceCache.values();
-	    }
 
-	
-	 private final Set<OntologyTerm> termCache = new HashSet<OntologyTerm>();
-	
-	//carplafix
-	public Collection<OntologyTerm> getTerms() {
-        return termCache;
-    }
-	
-	
+	private final Map<String, TermSource>	termSourceCache	= new HashMap<String, TermSource>();
+
+	public Collection<TermSource> getTermSources () {
+		return termSourceCache.values();
+	}
+
+	private final Set<OntologyTerm>	termCache	= new HashSet<OntologyTerm>();
+
+	// carplafix
+	public Collection<OntologyTerm> getTerms () {
+		return termCache;
+	}
 
 }
