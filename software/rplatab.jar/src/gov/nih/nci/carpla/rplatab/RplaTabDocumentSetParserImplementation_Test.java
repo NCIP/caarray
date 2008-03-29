@@ -17,9 +17,12 @@ public class RplaTabDocumentSetParserImplementation_Test {
 		RplaTabDocumentSet rdataset = null;
 		try {
 
+			// rfset.addAllFilesInDir("../rpla-test-data/data/mda_rpladaset");
+			// rfset.addAllFilesInDir("../rpla-test-data/data/invalid/missing_files/missing_referenced_files");
 			rfset
-					.addAllFilesInDir("/home/gvf/workspace/CARPLA-DOCS/comprehensive/REAL_RPLATAB_DATASET/Dataset1/");
-
+					.addAllFilesInDir("../rpla-test-data/data/invalid/invalid_headers/bad_sradf_samples_section_headers/bad_1");
+			// rfset
+			// .addAllFilesInDir("../rpla-test-data/data/invalid/invalid_headers/bad_sradf_samples_section_headers/bad_2");
 		} catch (RplaTabDatasetFileException re) {
 			re.printStackTrace();
 
@@ -43,6 +46,7 @@ public class RplaTabDocumentSetParserImplementation_Test {
 				.getValidationResult()
 				.getMessages()
 				.listIterator();
+		System.out.println("\n\nValidationMessages below:");
 		while (li.hasNext()) {
 			ValidationMessage mess = li.next();
 			System.out.println(mess.toString());

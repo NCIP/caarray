@@ -1,18 +1,22 @@
 package gov.nih.nci.carpla.rplatab.sradf;
 
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 import gov.nih.nci.carpla.rplatab.RplaConstants;
 import gov.nih.nci.carpla.rplatab.RplaTabDocumentSet;
+import gov.nih.nci.carpla.rplatab.RplaTabParsingException;
 
 
 import gov.nih.nci.carpla.rplatab.RplaConstants.SradfSectionType;
 
 import gov.nih.nci.carpla.rplatab.files.SradfFile;
 
+import gov.nih.nci.carpla.rplatab.sradf.javacc.generated.ParseException;
 import gov.nih.nci.carpla.rplatab.sradf.javacc.generated.RplaDatasetSradfGrammar;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Vector;
 
@@ -20,6 +24,7 @@ public class SradfHeaderReader {
 
 	public static SradfHeaders readSradfHeaders (	RplaTabDocumentSet dataset,
 													SradfFile sradfFile)
+	throws RplaTabParsingException
 	{
 
 		try {
@@ -86,10 +91,17 @@ public class SradfHeaderReader {
 
 			return sfi;
 
-		} catch (Exception e) {
-			e.printStackTrace();
-
+		} catch (ParseException pe) {
+			//System.out.println(pe.getMessage());
+			dataset.getValidationResult().addMessage(dataset.getSradfFile().getFile(), Type.ERROR,pe.getMessage() );
+			throw new RplaTabParsingException(pe.getMessage());
 		}
+		catch (IOException ioe) {
+			ioe.printStackTrace();
+			//add to ValidationResult
+		}
+		
+		
 		// TODO proper exception handling
 		return null;
 	}

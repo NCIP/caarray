@@ -61,8 +61,7 @@ public class RplaTabImporter {
 			}
 		} catch (RplaTabParsingException e) {
 			updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
-		} 
-		catch (InvalidDataException e) {
+		} catch (InvalidDataException e) {
 			handleInvalidRplaTab(fileSet, e);
 		}
 	}
@@ -91,31 +90,30 @@ public class RplaTabImporter {
 		RplaTabDocumentSet documentSet;
 		try {
 			documentSet = RplaTabDocumentSetParser.INSTANCE.parse(inputSet);
-			CaArrayTranslationResult  translationResult = translator
+			CaArrayTranslationResult translationResult = translator
 					.translate(documentSet, fileSet);
 			save(targetProject, translationResult);
 			updateFileStatus(fileSet, FileStatus.IMPORTED);
 		} catch (InvalidDataException e) {
-			handleInvalidRplaTab(fileSet, e); 
+			handleInvalidRplaTab(fileSet, e);
 		}
 	}
 
-//	private void handleInvalidMageTab ( CaArrayFileSet fileSet,
-//										InvalidDataException e)
-//	{
-//		ValidationResult validationResult = e.getValidationResult();
-//		for (CaArrayFile caArrayFile : fileSet.getFiles()) {
-//			File file = getFile(caArrayFile);
-//			FileValidationResult fileValidationResult = validationResult
-//					.getFileValidationResult(file);
-//			if (fileValidationResult != null) {
-//				handleValidationResult(caArrayFile, fileValidationResult);
-//			}
-//		}
-//	}
-//	
-	
-	
+	// private void handleInvalidMageTab ( CaArrayFileSet fileSet,
+	// InvalidDataException e)
+	// {
+	// ValidationResult validationResult = e.getValidationResult();
+	// for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+	// File file = getFile(caArrayFile);
+	// FileValidationResult fileValidationResult = validationResult
+	// .getFileValidationResult(file);
+	// if (fileValidationResult != null) {
+	// handleValidationResult(caArrayFile, fileValidationResult);
+	// }
+	// }
+	// }
+	//	
+
 	private void handleInvalidRplaTab ( CaArrayFileSet fileSet,
 										InvalidDataException e)
 	{
@@ -129,12 +127,6 @@ public class RplaTabImporter {
 			}
 		}
 	}
-	
-	
-	
-	
-	
-	
 
 	private void handleValidationResult (	CaArrayFile caArrayFile,
 											FileValidationResult fileValidationResult)
@@ -215,15 +207,12 @@ public class RplaTabImporter {
 			SradfFile sfile = new SradfFile();
 			try {
 				sfile.setFile(getFile(caArrayFile));
+
+				inputFileSet.setSradfFile(sfile);
 			} catch (Exception e) {
-			    
-			    
-			    
-			    
-			    
+
 				e.printStackTrace();
 			}
-			inputFileSet.setSradfFile(sfile);
 		}
 	}
 
@@ -233,8 +222,6 @@ public class RplaTabImporter {
 				.getFile(caArrayFile);
 	}
 
-
-	
 	private void save ( Project targetProject,
 						CaArrayTranslationResult translationResult)
 	{
@@ -242,13 +229,6 @@ public class RplaTabImporter {
 		saveArrayDesigns(translationResult);
 		saveInvestigations(targetProject, translationResult);
 	}
-	
-	
-	
-	
-	
-	
-	
 
 	private void saveTerms ( CaArrayTranslationResult translationResult) {
 		for (Term term : translationResult.getTerms()) {

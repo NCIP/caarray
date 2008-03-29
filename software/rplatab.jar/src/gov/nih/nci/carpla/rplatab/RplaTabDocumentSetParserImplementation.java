@@ -2,6 +2,7 @@ package gov.nih.nci.carpla.rplatab;
 
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 import gov.nih.nci.carpla.rplatab.RplaConstants.SradfSectionType;
 import gov.nih.nci.carpla.rplatab.files.ArrayDataFile;
 import gov.nih.nci.carpla.rplatab.files.DerivedArrayDataFile;
@@ -29,6 +30,7 @@ import gov.nih.nci.carpla.rplatab.sradf.SradfHeaderReader;
 import gov.nih.nci.carpla.rplatab.sradf.SradfHeaders;
 import gov.nih.nci.carpla.rplatab.sradf.SradfSectionHeaders;
 import gov.nih.nci.carpla.rplatab.sradf.SradfSectionRowReader;
+import gov.nih.nci.carpla.rplatab.sradf.javacc.generated.ParseException;
 
 import java.io.PrintStream;
 import java.util.HashSet;
@@ -89,8 +91,16 @@ public class RplaTabDocumentSetParserImplementation
 	{
 
 		// Only one SRADF file is supported, document this upstream
-		SradfHeaderReader.readSradfHeaders(	RplaTabDocumentSet,
-											RplaTabDocumentSet.getSradfFile());
+
+		try {
+			SradfHeaderReader.readSradfHeaders(	RplaTabDocumentSet,
+												RplaTabDocumentSet
+														.getSradfFile());
+
+		} catch (RplaTabParsingException rpe) {
+			// rpe.printStackTrace();
+			return;
+		}
 
 		List<SradfHeader> sh = RplaTabDocumentSet
 				.getSradfHeaders()
@@ -138,6 +148,10 @@ public class RplaTabDocumentSetParserImplementation
 	{
 
 		SradfHeaders sradfHeaders = RplaTabDocumentSet.getSradfHeaders();
+
+		if (sradfHeaders == null) {
+			return;
+		}
 
 		SradfFile sradfFile = RplaTabDocumentSet.getSradfFile();
 
@@ -642,22 +656,22 @@ public class RplaTabDocumentSetParserImplementation
 
 		if (sample == null) {
 
-			// RplaTabDocumentSet.getMessages().add(new ValidationMessage(
-			// "sectionrow=" + row_number_in_section
-			// + "\tsample with name="
-			// + name
-			// + "dne"));
+			// SortedMap<String, Sample> sm = RplaTabDocumentSet.getSamples();
+			//
+			// Iterator it = sm.keySet().iterator();
+			// System.out.println("\nSample named=" + name + " DNE");
+			// System.out.println("\nSample names that exist:");
+			// while (it.hasNext()) {
+			// String sname = (String) it.next();
+			// System.out.println(sname);
+			//
+			// }
 
-			SortedMap<String, Sample> sm = RplaTabDocumentSet.getSamples();
-
-			Iterator it = sm.keySet().iterator();
-			System.out.println("\nSample named=" + name + " DNE");
-			System.out.println("\nSample names that exist:");
-			while (it.hasNext()) {
-				String sname = (String) it.next();
-				System.out.println(sname);
-
-			}
+			RplaTabDocumentSet
+					.getValidationResult()
+					.addMessage(RplaTabDocumentSet.getSradfFile().getFile(),
+								Type.ERROR,
+								"Cannot find sample with name=" + name);
 
 		}
 
