@@ -55,6 +55,9 @@ import gov.nih.nci.carpla.rplatab.sradf.SradfHeaders;
 
 public class RplaTabDocumentSet {
 
+	
+	
+	//###############################################################
 	private RplaTabInputFileSet	_rinputfileset;
 
 	public void setRplaTabInputFileSet ( RplaTabInputFileSet rplaTabInputFileSet)
@@ -62,18 +65,15 @@ public class RplaTabDocumentSet {
 		_rinputfileset = rplaTabInputFileSet;
 
 	}
-
+	//###############################################################
 	private ValidationResult	_validationResult	= new ValidationResult();
 
 	public ValidationResult getValidationResult () {
 		return _validationResult;
 	}
 
-	// ---------------------------------------------------------------------------
-	// ---------------
-	// RplaIdfFile
-	// ---------------
-
+	
+	//###############################################################
 	private RplaIdfFile	_rplaidffile;
 
 	public RplaIdfFile getRplaIdfFile () {
@@ -85,10 +85,7 @@ public class RplaTabDocumentSet {
 
 	}
 
-	// ---------------------------------------------------------------------------
-	// ------------------
-	// SradfFile
-	// ------------------
+	//###############################################################
 	private SradfFile	_sradfFile;
 
 	public SradfFile getSradfFile () {
@@ -98,16 +95,10 @@ public class RplaTabDocumentSet {
 	public void setSradfFile ( SradfFile sradfFile) {
 		_sradfFile = sradfFile;
 
-		System.out.println("Dataset is set with sradf file = " + _sradfFile
-									.getFile()
-									.getAbsolutePath());
-
 	}
 
-	// ---------------------------------------------------------------------------
-	// ------------------
-	// SradfHeaders
-	// ------------------
+
+	//###############################################################
 	private SradfHeaders	_sradfHeaders;
 
 	public SradfHeaders getSradfHeaders () {
@@ -118,13 +109,8 @@ public class RplaTabDocumentSet {
 		_sradfHeaders = sradfHeaders;
 	}
 
-	// ---------------------------------------------------------------------------
-	// ------------------
-	// Sradf principal nodes or edges
-	// ------------------
-
-	// #############################
-
+	
+	//###############################################################
 	private SortedMap<Integer, List<SectionPrincipal>>	_samplessection_principal_objects_per_row	= new TreeMap<Integer, List<SectionPrincipal>>();
 	private SortedMap<Integer, List<SectionPrincipal>>	_arraysection_principal_objects_per_row		= new TreeMap<Integer, List<SectionPrincipal>>();
 	private SortedMap<Integer, List<SectionPrincipal>>	_arraydatasection_principal_objects_per_row	= new TreeMap<Integer, List<SectionPrincipal>>();
@@ -149,7 +135,7 @@ public class RplaTabDocumentSet {
 		}
 
 	}
-
+	//###############################################################
 	public List<SectionPrincipal> getPrincipalObjectsBySectionAndRow (	SradfSectionType sectionType,
 																		int rowNumber)
 	{
@@ -158,35 +144,32 @@ public class RplaTabDocumentSet {
 
 		case Samples:
 
-			List<SectionPrincipal> list = _samplessection_principal_objects_per_row
-					.get(rowNumber);
+			List<SectionPrincipal> list = _samplessection_principal_objects_per_row.get(rowNumber);
 			if (list != null)
 				return list;
 			else
-				_samplessection_principal_objects_per_row
-						.put(rowNumber, new ArrayList<SectionPrincipal>());
+				_samplessection_principal_objects_per_row.put(	rowNumber,
+																new ArrayList<SectionPrincipal>());
 			return _samplessection_principal_objects_per_row.get(rowNumber);
 
 		case Array:
 
-			List<SectionPrincipal> lista = _arraysection_principal_objects_per_row
-					.get(rowNumber);
+			List<SectionPrincipal> lista = _arraysection_principal_objects_per_row.get(rowNumber);
 			if (lista != null)
 				return lista;
 			else
-				_arraysection_principal_objects_per_row
-						.put(rowNumber, new ArrayList<SectionPrincipal>());
+				_arraysection_principal_objects_per_row.put(rowNumber,
+															new ArrayList<SectionPrincipal>());
 			return _arraysection_principal_objects_per_row.get(rowNumber);
 
 		case ArrayData:
 
-			List<SectionPrincipal> listb = _arraydatasection_principal_objects_per_row
-					.get(rowNumber);
+			List<SectionPrincipal> listb = _arraydatasection_principal_objects_per_row.get(rowNumber);
 			if (listb != null)
 				return listb;
 			else
-				_arraydatasection_principal_objects_per_row
-						.put(rowNumber, new ArrayList<SectionPrincipal>());
+				_arraydatasection_principal_objects_per_row.put(rowNumber,
+																new ArrayList<SectionPrincipal>());
 			return _arraydatasection_principal_objects_per_row.get(rowNumber);
 
 		default:
@@ -196,11 +179,8 @@ public class RplaTabDocumentSet {
 
 	}
 
-	// ---------------------------------------------------------------------------
-	// ---------------------------
-	// InvestigationTitle
-	// ---------------------------
-
+	
+	//###############################################################
 	private String	_investigationTitle;
 
 	public void setInvestigationTitle ( String title) {
@@ -216,14 +196,11 @@ public class RplaTabDocumentSet {
 	// Experimental Design
 	// ---------------------------
 
-	// ---------------------------------------------------------------------------
-	// ---------------------------
-	// Experimental Factors
-	// ---------------------------
+	
+	//###############################################################
+	private Map<String, ExperimentalFactor>	_experimentalFactors	= new Hashtable<String, ExperimentalFactor>();
 
-	private Hashtable<String, ExperimentalFactor>	_experimentalFactors	= new Hashtable<String, ExperimentalFactor>();
-
-	public Hashtable<String, ExperimentalFactor> getExperimentalFactors () {
+	public Map<String, ExperimentalFactor> getExperimentalFactors () {
 		return _experimentalFactors;
 	}
 
@@ -234,16 +211,8 @@ public class RplaTabDocumentSet {
 		return factor;
 	}
 
-	// public ExperimentalFactor createExperimentalFactor (String name) {
-	// ExperimentalFactor experimentalFactor = new ExperimentalFactor(name);
-	// return experimentalFactor;
-	// }
-
-	// ---------------------------------------------------------------------------
-	// ---------------------------
-	// Antibodies
-	// ---------------------------
-
+	
+	//###############################################################
 	private SortedMap<String, Antibody>	_antibodies	= new TreeMap<String, Antibody>();
 
 	public Antibody createAntibody ( String name) {
@@ -260,11 +229,7 @@ public class RplaTabDocumentSet {
 		return _antibodies.get(name);
 	}
 
-	// ---------------------------------------------------------------------------
-	// ---------------------------
-	// Dilutions
-	// ---------------------------
-
+	
 	// ---------------------------------------------------------------------------
 	// ---------------------------
 	// People
@@ -280,7 +245,8 @@ public class RplaTabDocumentSet {
 	// Dates
 	// ---------------------------
 
-	// Image Files
+	
+	//###############################################################
 	private Map<String, ImageFile>	_imageFiles	= new Hashtable<String, ImageFile>();
 
 	public ImageFile getOrCreateImageFile ( String name) {
@@ -302,17 +268,15 @@ public class RplaTabDocumentSet {
 				}
 
 				if (found == false) {
-					this
-							.getValidationResult()
+					this.getValidationResult()
 							.addMessage(this.getSradfFile().getFile(),
-							            Type.ERROR,
+										Type.ERROR,
 										"Image file for name=" + name
 												+ " cannot be found");
 				}
 
 			} catch (Exception e) {
-				this
-						.getValidationResult()
+				this.getValidationResult()
 						.addMessage(this.getSradfFile().getFile(),
 									Type.ERROR,
 									"Image file for name=" + name
@@ -326,8 +290,8 @@ public class RplaTabDocumentSet {
 		return _imageFiles.get(name);
 	}
 
-	// ArrayData Files
-
+	
+	//###############################################################
 	private Map<String, ArrayDataFile>	_arrayDataFiles	= new Hashtable<String, ArrayDataFile>();
 
 	public ArrayDataFile getOrCreateArrayDataFile ( String name) {
@@ -349,8 +313,7 @@ public class RplaTabDocumentSet {
 				}
 
 				if (found == false) {
-					this
-							.getValidationResult()
+					this.getValidationResult()
 							.addMessage(this.getSradfFile().getFile(),
 										Type.ERROR,
 										"Array data file for name=" + name
@@ -358,10 +321,9 @@ public class RplaTabDocumentSet {
 				}
 
 			} catch (Exception e) {
-				this
-						.getValidationResult()
+				this.getValidationResult()
 						.addMessage(this.getSradfFile().getFile(),
-						            Type.ERROR,
+									Type.ERROR,
 									"Array data file for name=" + name
 											+ " cannot be found");
 
@@ -374,8 +336,8 @@ public class RplaTabDocumentSet {
 
 	}
 
-	// DerivedArrayData Files
-
+	
+	//###############################################################
 	private Map<String, DerivedArrayDataFile>	_derivedArrayDataFiles	= new Hashtable<String, DerivedArrayDataFile>();
 
 	// carplafix
@@ -394,10 +356,8 @@ public class RplaTabDocumentSet {
 	// Experiment Description
 	// ---------------------------
 
-	// ---------------------------------------------------------------------------
-	// ------------------
-	// Protocols
-	// ------------------
+	
+	//###############################################################
 	private Map<String, Protocol>	_protocols	= new Hashtable<String, Protocol>();
 
 	public void addProtocol ( Protocol protocol) {
@@ -426,11 +386,25 @@ public class RplaTabDocumentSet {
 		return _protocols.get(name);
 
 	}
+	
+	
+	
+	
+	//carplafix
+	//###############################################################
+	private final Map<String, TermSource>	termSourceCache	= new HashMap<String, TermSource>();
 
-	// ---------------------------------------------------------------------------
-	// ------------------
-	// TermSources and TermSource Files
-	// ------------------
+	public Collection<TermSource> getTermSources () {
+		return termSourceCache.values();
+	}
+
+	private final Set<OntologyTerm>	termCache	= new HashSet<OntologyTerm>();
+
+	// carplafix
+	public Collection<OntologyTerm> getTerms () {
+		return termCache;
+	}
+	
 
 	private final Hashtable<String, TermSource>	_termSources	= new Hashtable<String, TermSource>();
 
@@ -446,19 +420,9 @@ public class RplaTabDocumentSet {
 
 	}
 
-	// ---------------------------------------------------------------------------
-
-	// ---------------------------------------------------------------------------
-
-	// ---------------------------------------------------------------------------
-
-	// ---------------------------------------------------------------------------
-
-	// ------------------
-	// Source
-	// ------------------
-
-	private final Hashtable<String, Source>	_sources	= new Hashtable<String, Source>();
+	
+	//###############################################################
+	private final Map<String, Source>	_sources	= new Hashtable<String, Source>();
 
 	public Source getOrCreateSource ( String bioSourceName) {
 
@@ -476,10 +440,8 @@ public class RplaTabDocumentSet {
 
 	}
 
-	// ------------------
-	// Sample
-	// ------------------
-
+	
+	//###############################################################
 	private final SortedMap<String, Sample>	_samples	= new TreeMap<String, Sample>();
 
 	public SortedMap<String, Sample> getSamples () {
@@ -506,10 +468,9 @@ public class RplaTabDocumentSet {
 		return (_samples.containsKey(name));
 	}
 
-	// ------------------
-	// RplArray
-	// ------------------
-	private final Hashtable<String, RPLArray>	_rplarrays	= new Hashtable<String, RPLArray>();
+	
+	//###############################################################
+	private final Map<String, RPLArray>	_rplarrays	= new Hashtable<String, RPLArray>();
 
 	public RPLArray createRPLArray ( String arrayName) {
 
@@ -524,13 +485,13 @@ public class RplaTabDocumentSet {
 	public RPLArray getRPLArray ( String arrayName) {
 		return _rplarrays.get(arrayName);
 	}
-
+	//###############################################################
 	public void verifyRplArrayLocationUniqueness ( RplArrayLocation rplArrayLocation)
 	{
 	// TODO Auto-generated method stub
 
 	}
-
+	//###############################################################
 	public RplArrayFeature createRplArrayFeature (	RPLArrayGroup rplArray,
 													Sample sample,
 													RplArrayLocation rplArrayLocation)
@@ -539,137 +500,13 @@ public class RplaTabDocumentSet {
 		return null;
 	}
 
-	// --------------------
-	// general
-	// --------------------
+	
 
-	public boolean exists ( Class class1, String name) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	
+	
 
-	// ###############################################################
-	public static void debugPrint ( RplaTabDocumentSet rdataset, PrintStream out)
-	{
-
-		out
-				.println("\n**************In debugPrint***********************************************");
-
-		// for (int ii = 0; ii < messages.size(); ii++) {
-		//
-		// System.out.println("message " + ii
-		// + " =\t"
-		// + messages.get(ii).getMessage());
-		// }
-
-		out.println(rdataset.getRplaIdfFile().getFile().getAbsolutePath());
-		out
-				.println("*************************************************************");
-		out
-				.println("Investigation Title = " + rdataset
-									.getInvestigationTitle());
-		// debugPrintExperimentalDesigns
-		out
-				.println("*************************************************************");
-		// debugPrintExperimentalFactors(rdataset, out);
-		out
-				.println("*************************************************************");
-		// debugPrintAntibodies(rdataset, out);
-		// debugPrintDilutions(rdataset,out);
-		// debugPrintPeople(rdataset,out);
-		// debugPrintQCs(rdataset,out);
-		// debugPrintReplicates(rdataset,out);
-		// debugPrintNormalizations(rdataset,out);
-		// debugPrintDates(rdataset,out);
-		// debugPrintPublications(rdataset,out);
-		out
-				.println("*************************************************************");
-		out.println(rdataset.getSradfFile().getFile().getAbsolutePath());
-		debugPrintTermSources(rdataset, out);
-		out
-				.println("*************************************************************");
-
-		debugPrintSectionPrincipals(rdataset,
-									RplaConstants.SradfSectionType.Samples,
-									out);
-		debugPrintSectionPrincipals(rdataset,
-									RplaConstants.SradfSectionType.Array,
-									out);
-		debugPrintSectionPrincipals(rdataset,
-									RplaConstants.SradfSectionType.ArrayData,
-									out);
-
-	}
-
-	private static void debugPrintSectionPrincipals (	RplaTabDocumentSet rdataset,
-														RplaConstants.SradfSectionType sectionType,
-														PrintStream out)
-	{
-
-		System.out
-				.println("*******debugPrintSectionPrincipals for " + sectionType
-									.name());
-
-		Iterator it = rdataset
-				.getSectionRowsPrincipalObjects(sectionType)
-				.keySet()
-				.iterator();
-
-		while (it.hasNext()) {
-
-			Integer intI = (Integer) it.next();
-
-			List<SectionPrincipal> principals_in_row = rdataset
-					.getPrincipalObjectsBySectionAndRow(sectionType, intI);
-			System.out.print("srownum=" + intI + "\t");
-			for (int ii = 0; ii < principals_in_row.size(); ii++) {
-
-				System.out.print(principals_in_row
-						.get(ii)
-						.getClass()
-						.getSimpleName()
-
-									+ ":"
-									+ ((HasName) principals_in_row.get(ii))
-											.getName()
-									+ "\t");
-			}
-			System.out.println();
-		}
-
-	}
-
+	
 	// #############################################################################
-	private static void debugPrintTermSources ( RplaTabDocumentSet rdataset,
-												PrintStream out)
-	{
-	// Hashtable<String, TermSource> termsources =
-	// rdataset.getTermSources();
-	// for (Enumeration e = termsources.keys(); e.hasMoreElements();) {
-	// TermSource ts = termsources.get(e.nextElement());
-	// out.println(ts.getName());
-	// // todo file, version...
-	//
-	// }
-	}
-
-	// #############################################################################
-	private static void debugPrintExperimentalFactors ( RplaTabDocumentSet rdataset,
-														PrintStream out)
-	{
-		Hashtable<String, ExperimentalFactor> factors = rdataset
-				.getExperimentalFactors();
-
-		for (Enumeration e = factors.keys(); e.hasMoreElements();) {
-			ExperimentalFactor factor = factors.get(e.nextElement());
-			out.println(factor.getName());
-			out.println(factor.getType());
-			// want to see term source ref too...
-		}
-
-	}
-
-	// Provider
 	private Hashtable<String, Provider>	_providers	= new Hashtable<String, Provider>();
 
 	public Provider getOrCreateProvider ( String providername) {
@@ -736,17 +573,127 @@ public class RplaTabDocumentSet {
 
 	}
 
-	private final Map<String, TermSource>	termSourceCache	= new HashMap<String, TermSource>();
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// ###############################################################
+	// ###############################################################
+	// ###############################################################
+	public static void debugPrint ( RplaTabDocumentSet rdataset, PrintStream out)
+	{
 
-	public Collection<TermSource> getTermSources () {
-		return termSourceCache.values();
+		out.println("\n**************In debugPrint***********************************************");
+
+		// for (int ii = 0; ii < messages.size(); ii++) {
+		//
+		// System.out.println("message " + ii
+		// + " =\t"
+		// + messages.get(ii).getMessage());
+		// }
+
+		out.println(rdataset.getRplaIdfFile().getFile().getAbsolutePath());
+		out.println("*************************************************************");
+		out.println("Investigation Title = " + rdataset.getInvestigationTitle());
+		// debugPrintExperimentalDesigns
+		out.println("*************************************************************");
+		// debugPrintExperimentalFactors(rdataset, out);
+		out.println("*************************************************************");
+		// debugPrintAntibodies(rdataset, out);
+		// debugPrintDilutions(rdataset,out);
+		// debugPrintPeople(rdataset,out);
+		// debugPrintQCs(rdataset,out);
+		// debugPrintReplicates(rdataset,out);
+		// debugPrintNormalizations(rdataset,out);
+		// debugPrintDates(rdataset,out);
+		// debugPrintPublications(rdataset,out);
+		out.println("*************************************************************");
+		out.println(rdataset.getSradfFile().getFile().getAbsolutePath());
+		debugPrintTermSources(rdataset, out);
+		out.println("*************************************************************");
+
+		debugPrintSectionPrincipals(rdataset,
+									RplaConstants.SradfSectionType.Samples,
+									out);
+		debugPrintSectionPrincipals(rdataset,
+									RplaConstants.SradfSectionType.Array,
+									out);
+		debugPrintSectionPrincipals(rdataset,
+									RplaConstants.SradfSectionType.ArrayData,
+									out);
+
 	}
 
-	private final Set<OntologyTerm>	termCache	= new HashSet<OntologyTerm>();
+	private static void debugPrintSectionPrincipals (	RplaTabDocumentSet rdataset,
+														RplaConstants.SradfSectionType sectionType,
+														PrintStream out)
+	{
 
-	// carplafix
-	public Collection<OntologyTerm> getTerms () {
-		return termCache;
+		System.out.println("*******debugPrintSectionPrincipals for " + sectionType.name());
+
+		Iterator it = rdataset.getSectionRowsPrincipalObjects(sectionType)
+				.keySet()
+				.iterator();
+
+		while (it.hasNext()) {
+
+			Integer intI = (Integer) it.next();
+
+			List<SectionPrincipal> principals_in_row = rdataset.getPrincipalObjectsBySectionAndRow(	sectionType,
+																									intI);
+			System.out.print("srownum=" + intI + "\t");
+			for (int ii = 0; ii < principals_in_row.size(); ii++) {
+
+				System.out.print(principals_in_row.get(ii)
+						.getClass()
+						.getSimpleName()
+
+									+ ":"
+									+ ((HasName) principals_in_row.get(ii)).getName()
+									+ "\t");
+			}
+			System.out.println();
+		}
+
 	}
+
+	// #############################################################################
+	private static void debugPrintTermSources ( RplaTabDocumentSet rdataset,
+												PrintStream out)
+	{
+	// Hashtable<String, TermSource> termsources =
+	// rdataset.getTermSources();
+	// for (Enumeration e = termsources.keys(); e.hasMoreElements();) {
+	// TermSource ts = termsources.get(e.nextElement());
+	// out.println(ts.getName());
+	// // todo file, version...
+	//
+	// }
+	}
+
+	// #############################################################################
+	private static void debugPrintExperimentalFactors ( RplaTabDocumentSet rdataset,
+														PrintStream out)
+	{
+//		Map<String, ExperimentalFactor> factors = rdataset.getExperimentalFactors();
+//
+//		for (Enumeration e = factors.keySet().; e.hasMoreElements();) {
+//			ExperimentalFactor factor = factors.get(e.nextElement());
+//			out.println(factor.getName());
+//			out.println(factor.getType());
+//			// want to see term source ref too...
+//		}
+
+	}
+
+	
+	
 
 }

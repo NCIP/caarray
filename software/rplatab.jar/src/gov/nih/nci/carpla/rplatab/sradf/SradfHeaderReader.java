@@ -85,7 +85,7 @@ public class SradfHeaderReader {
 
 			// sfi.setSradfFileHolder(sradffileholder);
 
-			System.out.println("******************************************************************");
+			
 
 			dataset.setSradfHeaders(sfi);
 
@@ -117,7 +117,7 @@ public class SradfHeaderReader {
 						.getFile()
 						.getAbsolutePath()));
 				str = in.readLine();// + "\n";
-				System.out.println("Will return : " + str);
+				
 				java.io.StringReader sr = new java.io.StringReader(str);
 				java.io.Reader r = new java.io.BufferedReader(sr);
 				return r;
@@ -134,7 +134,7 @@ public class SradfHeaderReader {
 				}
 
 				str = in.readLine();// + "\n";
-				System.out.println("Will return : " + str);
+				
 				java.io.StringReader sr = new java.io.StringReader(str);
 				java.io.Reader r = new java.io.BufferedReader(sr);
 				return r;
@@ -149,7 +149,7 @@ public class SradfHeaderReader {
 				}
 
 				str = in.readLine();// + "\n";
-				System.out.println("Will return : " + str);
+				
 				java.io.StringReader sr = new java.io.StringReader(str);
 				java.io.Reader r = new java.io.BufferedReader(sr);
 				return r;

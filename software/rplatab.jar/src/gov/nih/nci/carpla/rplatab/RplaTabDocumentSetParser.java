@@ -12,6 +12,8 @@ public interface RplaTabDocumentSetParser {
 	public RplaTabDocumentSet parse ( RplaTabInputFileSet rplaTabInputFileSet)
 			throws RplaTabParsingException,InvalidDataException;
 
+	
+	//Do we really need this? What exactly should validate do besides call parse anyway? 
 	public ValidationResult validate ( RplaTabInputFileSet inputSet)
 			throws RplaTabParsingException;
 	
