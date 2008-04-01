@@ -55,8 +55,7 @@ public class RplaTabDocumentSetParserImplementation
 	// ####################################################################
 	// ####################################################################
 	public ValidationResult validate ( RplaTabInputFileSet inputSet) {
-		// TODO Auto-generated method stub
-		return null;
+		return parse(inputSet).getValidationResult(); 
 	}
 
 	// ####################################################################

@@ -35,8 +35,7 @@ import org.apache.log4j.Logger;
 
 public class RplaTabImporter {
 
-	private static final Logger		LOG	= Logger
-												.getLogger(MageTabImporter.class);
+	private static final Logger		LOG	= Logger.getLogger(MageTabImporter.class);
 
 	private final CaArrayDaoFactory	daoFactory;
 	private final RplaTabTranslator	translator;
@@ -47,16 +46,16 @@ public class RplaTabImporter {
 	}
 
 	void validateFiles ( CaArrayFileSet fileSet) {
-		LOG.info("Validating MAGE-TAB document set");
+		System.out.println("In RplaTabImporter!!!!!!!!!");
+		LOG.info("Validating RPLA-TAB document set");
 		updateFileStatus(fileSet, FileStatus.VALIDATING);
 		RplaTabInputFileSet inputSet = getInputFileSet(fileSet);
 		try {
 			updateFileStatus(fileSet, FileStatus.VALIDATED);
-			handleResult(fileSet, RplaTabDocumentSetParser.INSTANCE
-					.validate(inputSet));
+			handleResult(	fileSet,
+							RplaTabDocumentSetParser.INSTANCE.validate(inputSet));
 			if (!fileSet.statusesContains(FileStatus.VALIDATION_ERRORS)) {
-				RplaTabDocumentSet documentSet = RplaTabDocumentSetParser.INSTANCE
-						.parse(inputSet);
+				RplaTabDocumentSet documentSet = RplaTabDocumentSetParser.INSTANCE.parse(inputSet);
 				handleResult(fileSet, translator.validate(documentSet, fileSet));
 			}
 		} catch (RplaTabParsingException e) {
@@ -68,10 +67,8 @@ public class RplaTabImporter {
 
 	private void handleResult ( CaArrayFileSet fileSet, ValidationResult result)
 	{
-		for (FileValidationResult fileValidationResult : result
-				.getFileValidationResults()) {
-			CaArrayFile caArrayFile = fileSet.getFile(fileValidationResult
-					.getFile());
+		for (FileValidationResult fileValidationResult : result.getFileValidationResults()) {
+			CaArrayFile caArrayFile = fileSet.getFile(fileValidationResult.getFile());
 			if (!result.isValid()) {
 				caArrayFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
 			} else {
@@ -82,7 +79,7 @@ public class RplaTabImporter {
 	}
 
 	void importFiles ( Project targetProject, CaArrayFileSet fileSet)
-			throws RplaTabParsingException
+																		throws RplaTabParsingException
 	{
 		LOG.info("Importing MAGE-TAB document set");
 		updateFileStatus(fileSet, FileStatus.IMPORTING);
@@ -90,8 +87,8 @@ public class RplaTabImporter {
 		RplaTabDocumentSet documentSet;
 		try {
 			documentSet = RplaTabDocumentSetParser.INSTANCE.parse(inputSet);
-			CaArrayTranslationResult translationResult = translator
-					.translate(documentSet, fileSet);
+			CaArrayTranslationResult translationResult = translator.translate(	documentSet,
+																				fileSet);
 			save(targetProject, translationResult);
 			updateFileStatus(fileSet, FileStatus.IMPORTED);
 		} catch (InvalidDataException e) {
@@ -120,8 +117,7 @@ public class RplaTabImporter {
 		ValidationResult validationResult = e.getValidationResult();
 		for (CaArrayFile caArrayFile : fileSet.getFiles()) {
 			File file = getFile(caArrayFile);
-			FileValidationResult fileValidationResult = validationResult
-					.getFileValidationResult(file);
+			FileValidationResult fileValidationResult = validationResult.getFileValidationResult(file);
 			if (fileValidationResult != null) {
 				handleValidationResult(caArrayFile, fileValidationResult);
 			}
@@ -150,8 +146,7 @@ public class RplaTabImporter {
 	}
 
 	private boolean isMageTabFile ( CaArrayFile file) {
-		return FileType.MAGE_TAB_ADF.equals(file.getFileType()) || FileType.MAGE_TAB_DATA_MATRIX
-						.equals(file.getFileType())
+		return FileType.MAGE_TAB_ADF.equals(file.getFileType()) || FileType.MAGE_TAB_DATA_MATRIX.equals(file.getFileType())
 				|| FileType.MAGE_TAB_IDF.equals(file.getFileType())
 				|| FileType.MAGE_TAB_SDRF.equals(file.getFileType());
 	}
@@ -217,9 +212,8 @@ public class RplaTabImporter {
 	}
 
 	private File getFile ( CaArrayFile caArrayFile) {
-		return TemporaryFileCacheLocator
-				.getTemporaryFileCache()
-				.getFile(caArrayFile);
+		return TemporaryFileCacheLocator.getTemporaryFileCache()
+										.getFile(caArrayFile);
 	}
 
 	private void save ( Project targetProject,
@@ -254,10 +248,9 @@ public class RplaTabImporter {
 		// model.
 		if (!translationResult.getInvestigations().isEmpty()) {
 			mergeTranslatedData(targetProject.getExperiment(),
-								translationResult
-										.getInvestigations()
-										.iterator()
-										.next());
+								translationResult	.getInvestigations()
+													.iterator()
+													.next());
 			getProjectDao().save(targetProject);
 		}
 	}
@@ -265,40 +258,36 @@ public class RplaTabImporter {
 	private void mergeTranslatedData (	Experiment originalExperiment,
 										Experiment translatedExperiment)
 	{
-		originalExperiment.getArrayDesigns().addAll(translatedExperiment
-				.getArrayDesigns());
+		originalExperiment	.getArrayDesigns()
+							.addAll(translatedExperiment.getArrayDesigns());
 		originalExperiment.getArrays().addAll(translatedExperiment.getArrays());
-		originalExperiment.setDateOfExperiment(translatedExperiment
-				.getDateOfExperiment());
-		originalExperiment
-				.setDescription(translatedExperiment.getDescription());
-		originalExperiment.getExtracts().addAll(translatedExperiment
-				.getExtracts());
-		originalExperiment.getFactors().addAll(translatedExperiment
-				.getFactors());
-		originalExperiment.getHybridizations().addAll(translatedExperiment
-				.getHybridizations());
-		originalExperiment.getLabeledExtracts().addAll(translatedExperiment
-				.getLabeledExtracts());
-		originalExperiment
-				.getExperimentDesignTypes()
-				.addAll(translatedExperiment.getExperimentDesignTypes());
-		originalExperiment.getNormalizationTypes().addAll(translatedExperiment
-				.getNormalizationTypes());
-		originalExperiment.getPublications().addAll(translatedExperiment
-				.getPublications());
-		originalExperiment.getQualityControlTypes().addAll(translatedExperiment
-				.getQualityControlTypes());
-		originalExperiment.getReplicateTypes().addAll(translatedExperiment
-				.getReplicateTypes());
-		originalExperiment.getSamples().addAll(translatedExperiment
-				.getSamples());
-		originalExperiment.getSources().addAll(translatedExperiment
-				.getSources());
-		originalExperiment.getExperimentContacts().addAll(translatedExperiment
-				.getExperimentContacts());
-		for (ExperimentContact ec : translatedExperiment
-				.getExperimentContacts()) {
+		originalExperiment.setDateOfExperiment(translatedExperiment.getDateOfExperiment());
+		originalExperiment.setDescription(translatedExperiment.getDescription());
+		originalExperiment	.getExtracts()
+							.addAll(translatedExperiment.getExtracts());
+		originalExperiment	.getFactors()
+							.addAll(translatedExperiment.getFactors());
+		originalExperiment	.getHybridizations()
+							.addAll(translatedExperiment.getHybridizations());
+		originalExperiment	.getLabeledExtracts()
+							.addAll(translatedExperiment.getLabeledExtracts());
+		originalExperiment	.getExperimentDesignTypes()
+							.addAll(translatedExperiment.getExperimentDesignTypes());
+		originalExperiment	.getNormalizationTypes()
+							.addAll(translatedExperiment.getNormalizationTypes());
+		originalExperiment	.getPublications()
+							.addAll(translatedExperiment.getPublications());
+		originalExperiment	.getQualityControlTypes()
+							.addAll(translatedExperiment.getQualityControlTypes());
+		originalExperiment	.getReplicateTypes()
+							.addAll(translatedExperiment.getReplicateTypes());
+		originalExperiment	.getSamples()
+							.addAll(translatedExperiment.getSamples());
+		originalExperiment	.getSources()
+							.addAll(translatedExperiment.getSources());
+		originalExperiment	.getExperimentContacts()
+							.addAll(translatedExperiment.getExperimentContacts());
+		for (ExperimentContact ec : translatedExperiment.getExperimentContacts()) {
 			ec.setExperiment(originalExperiment);
 		}
 	}

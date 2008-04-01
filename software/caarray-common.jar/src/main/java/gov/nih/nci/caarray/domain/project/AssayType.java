@@ -120,7 +120,20 @@ public enum AssayType implements ResourceBasedEnum {
     /**
      * Assay type used to interrogate methylation.
      */
-    METHYLATION("methylation");
+    METHYLATION("methylation"),
+    
+    //*********************************************************
+    // Reverse phase protein lysate array assay type ( caRPLA) 
+    //*********************************************************
+    RPLA("RPLA")
+    
+    
+    
+    
+    
+    
+    
+    ;
 
     
     private static final String RESOURCE_KEY_PREFIX = "assayType.";
