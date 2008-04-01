@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -101,7 +100,6 @@ import org.junit.Test;
 public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 1;
-    private static final int TWO_MINUTES = 12;
     private static final String ORGANISM = "Rattus rattus (ncbitax)";
 
     @Test
@@ -115,7 +113,7 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         loginAsPrincipalInvestigator();
 
         // - Add the array design
-        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF, TestProperties.getAffymetrixSpecificationDesignName(), AFFYMETRIX_PROVIDER, ORGANISM);
 
         // Create project
         String experimentId = createExperiment(title, TestProperties.getAffymetrixSpecificationDesignName(), AFFYMETRIX_PROVIDER, ORGANISM);
@@ -157,19 +155,6 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         endTime = System.currentTimeMillis();
         String totalTime = df.format((endTime - startTime) / 60000f);
         System.out.println("total time = " + totalTime);
-    }
-
-
-    private void importArrayDesign(File arrayDesign) throws Exception {
-        selenium.click("link=Manage Array Designs");
-        selenium.waitForPageToLoad("30000");
-        if (!doesArrayDesignExists(TestProperties.getAffymetrixSpecificationDesignName())) {
-            addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, ORGANISM);
-            // get the array design row so we do not find the wrong Imported text
-            int column = getExperimentRow(TestProperties.getAffymetrixSpecificationDesignName(), ZERO_COLUMN);
-            // wait for array design to be imported
-            waitForArrayDesignImport(TWO_MINUTES, column);
-        }
     }
 
 }

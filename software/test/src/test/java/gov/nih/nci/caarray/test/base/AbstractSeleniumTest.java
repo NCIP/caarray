@@ -91,7 +91,7 @@ import com.thoughtworks.selenium.SeleneseTestCase;
 /**
  * Base class for all functional tests that use Selenium Remote Control. Provides proper set up in order to be called by
  * caArray's ant script.
- *
+ * 
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
@@ -111,6 +111,9 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected static final String IMPORTED = "Imported";
     protected static final String AFFYMETRIX_PROVIDER = "Affymetrix";
     protected static final String HOMO_SAPIENS_ORGANISM = "Homo sapiens (ncbitax)";
+    private static final int FOURTY_MINUTES = 2400;
+
+
 
     @Override
     public void setUp() throws Exception {
@@ -273,19 +276,33 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.waitForPopUp(id, toMillisecondsString(waitTime));
     }
 
+    /**
+     * Create an experiment wih an array design and the default Afftmetrix provider and human organism
+     * @param title
+     * @param arrayDesignName
+     * @return String Experiment Identifier of the experiment e.g. admin-002
+     * @throws InterruptedException
+     */
     protected String createExperiment(String title, String arrayDesignName) throws InterruptedException {
         return createExperiment(title, arrayDesignName, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
     }
 
+    /**
+     * Create an experiment without an array design and the default Afftmetrix provider and human organism
+     * @param title
+     * @return String Experiment Identifier of the experiment e.g. admin-002
+     * @throws InterruptedException
+     */
     protected String createExperiment(String title) throws InterruptedException {
         String arrayDesignName = null;
         return createExperiment(title, arrayDesignName, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
     }
 
     /**
+     * Create an experiment
      * @param title
      * @throws InterruptedException
-     * @return String Experiment ID of the experiment e.g. admin-002
+     * @return String Experiment Identifier of the experiment e.g. admin-002
      */
     protected String createExperiment(String title, String arrayDesignName, String provider, String organism)
             throws InterruptedException {
@@ -302,7 +319,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         if (provider == null) {
             provider = AFFYMETRIX_PROVIDER; // default to Affy
         }
-       // selenium.select("projectForm_project_experiment_manufacturer", "label=" + provider);
+        // selenium.select("projectForm_project_experiment_manufacturer", "label=" + provider);
         // ** Neither of the following would wait properly for the list of Array Designs to fill **
         // Thread.sleep(1000);
         // waitForElementWithId("progressMsg");
@@ -317,17 +334,17 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         // - Save the Experiment
         selenium.click("link=Save");
         waitForAction();
-        // get the experiment id
+        // get the experiment identifier e.g. admin-00012
         experimentId = selenium.getText("//tr[4]/td[2]");
         return experimentId;
     }
 
-    /**
-     * Waits for the list of Array Designs to fill before making the selection. Test fails if the array design is not in
-     * the list
-     *
-     * @param arrayDesignName
-     */
+   /**
+    * Waits for the list of Array Designs to fill before making the selection. Test fails if the array design is not in
+    * the list
+    * @param arrayDesignName
+    * @param provider
+    */
     private void selectArrayDesign(String arrayDesignName, String provider) {
         String[] values;
         boolean found = false;
@@ -353,27 +370,54 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                 pause(1000);
                 // - sleep for one second if not found yet
             }
-            if (second%5 == 0){
+            if (second % 5 == 0) {
                 selenium.select("projectForm_project_experiment_manufacturer", "label=--Select a Provider--");
                 pause(1000);
                 selenium.select("projectForm_project_experiment_manufacturer", "label=" + provider);
                 System.out.println("Reselected provider " + provider);
             }
             if (second > 30) {
-               fail("Unable to find the array design " + arrayDesignName + " after " + second + " seconds");
+                fail("Unable to find the array design " + arrayDesignName + " after " + second + " seconds");
             }
         }
     }
 
-    protected void addArrayDesign(File arrayDesign) {
-        String arrayDesignProvider = AFFYMETRIX_PROVIDER;
-        String arrayDesignOrganism = HOMO_SAPIENS_ORGANISM;
-        addArrayDesign(arrayDesign, arrayDesignProvider, arrayDesignOrganism);
-    }
+   
+    /**
+     * Import array design with default provider and organism
+     * @param arrayDesignFile
+     * @param arrayDesignName
+     * @throws Exception
+     */
+    protected void importArrayDesign(File arrayDesignFile, String arrayDesignName) throws Exception {
+        importArrayDesign(arrayDesignFile, arrayDesignName, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+    }    
+    
+    /**
+     * Import the array design
+     * @param arrayDesignFile - file to be imported
+     * @param arrayDesignName - name of array design
+     * @param provider - array design provider
+     * @param Organism - array design organism
+     * @throws Exception 
+     */
+    protected void importArrayDesign(File arrayDesignFile, String arrayDesignName, String provider, String Organism) throws Exception  {
+        selenium.click("link=Manage Array Designs");
+        selenium.waitForPageToLoad("30000");
+        if (!doesArrayDesignExists(arrayDesignName)) {
+            addArrayDesign(arrayDesignFile, provider, Organism);
 
-    protected void addArrayDesign(File arrayDesign, String arrayDesignProvider, String arrayDesignOrganism) {
+            // get the array design row so we do not find the wrong Imported text
+            int column = getExperimentRow(arrayDesignName, ZERO_COLUMN);
+            // wait for array design to be imported
+            waitForArrayDesignImport(FOURTY_MINUTES, column);
+        }
+    }
+    private void addArrayDesign(File arrayDesign, String arrayDesignProvider, String arrayDesignOrganism) {
         selenium.click("link=Import a New Array Design");
         waitForText("Array Design Details");
+        // assert the Use Case required fields are present
+        assertArrayDesignRequiredFields();
         selenium.select("arrayDesignForm_arrayDesign_assayType", "label=Gene Expression");
         if (arrayDesignProvider == null) {
             arrayDesignProvider = AFFYMETRIX_PROVIDER; // default to Affy
@@ -391,6 +435,19 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.type("arrayDesignForm_upload", arrayDesign.toString());
         selenium.click("link=Save");
         waitForText("found");
+    }
+
+    /**
+     * assert the required field for Array Designs conform to the use case
+     *
+     */
+    private void assertArrayDesignRequiredFields() {
+        assertTrue(selenium.isTextPresent("Provider*"));
+        assertTrue(selenium.isTextPresent("Version Number*"));
+        assertTrue(selenium.isTextPresent("Feature Type*"));
+        assertTrue(selenium.isTextPresent("Organism*"));
+        assertTrue(selenium.isTextPresent("Browse to File*"));
+        assertTrue(selenium.isTextPresent("Assay Type*"));
     }
 
     protected void findTitleAcrossMultiPages(String text) {
@@ -431,7 +488,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     /**
-     *
+     * 
      * @param seconds
      * @param row
      * @return
@@ -456,11 +513,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     /**
-     *
+     * 
      * @param text - value to seach for
      * @param column - Table column which contains the search text
      * @return int the row number
-     *
+     * 
      * Returns the row where the data resides in a particular column For example - find title "Exp 1" in column 1
      * (column 1 holds the experiment names)
      */

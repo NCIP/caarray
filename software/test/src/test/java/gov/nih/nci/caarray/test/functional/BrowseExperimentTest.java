@@ -83,10 +83,9 @@
 package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-
-import java.io.File;
 
 import org.junit.Test;
 
@@ -97,8 +96,6 @@ import org.junit.Test;
  *
  */
 public class BrowseExperimentTest extends AbstractSeleniumTest {
-    private static final int TWO_MINUTES = 12;
-    private static final String ARRAY_DESIGN_NAME = "Test3";
 
     @Test
     public void testBrowsing() throws Exception {
@@ -107,10 +104,10 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         loginAsPrincipalInvestigator();
 
         // - Add the array design
-        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF, TestProperties.getAffymetrixSpecificationDesignName());
 
         // - Create an Experiment
-        String experimentId = createExperiment(title, ARRAY_DESIGN_NAME, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+        String experimentId = createExperiment(title, TestProperties.getAffymetrixSpecificationDesignName());
 
         // - Submit Experiment Proposal
         submitExperiment();
@@ -172,8 +169,8 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
     public void testDeleteProject() throws Exception {
         String title = "delete " + System.currentTimeMillis();
         loginAsPrincipalInvestigator();
-        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
-        String experimentId = createExperiment(title, ARRAY_DESIGN_NAME, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF, TestProperties.getAffymetrixSpecificationDesignName());
+        String experimentId = createExperiment(title, TestProperties.getAffymetrixSpecificationDesignName());
 
         // file upload based on ImportAffymetrixChpTest.testImportAndRetrieval()
         // - go to the data tab
@@ -210,7 +207,7 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         waitForText("Experiment has been deleted.");
         assertFalse(selenium.isTextPresent(experimentId));
 
-        experimentId = createExperiment(title, ARRAY_DESIGN_NAME, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+        experimentId = createExperiment(title, TestProperties.getAffymetrixSpecificationDesignName());
         submitExperiment();
         waitForText("Work Queue");
         row = getExperimentRow(experimentId, ZERO_COLUMN);
@@ -228,17 +225,6 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         verifyEquals("Updated", selenium.getText("link=Updated"));
     }
 
-    private void importArrayDesign(File arrayDesign) throws Exception {
-        selenium.click("link=Manage Array Designs");
-        selenium.waitForPageToLoad("30000");
-        if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
-            addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
 
-            // get the array design row so we do not find the wrong Imported text
-            int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
-            // wait for array design to be imported
-            waitForArrayDesignImport(TWO_MINUTES, column);
-        }
-    }
 
 }

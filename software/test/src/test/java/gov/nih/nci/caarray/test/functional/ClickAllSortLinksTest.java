@@ -83,15 +83,12 @@
 package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-
-import java.io.File;
 
 import org.junit.Test;
 
 public class ClickAllSortLinksTest extends AbstractSeleniumTest {
-    private static final String ARRAY_DESIGN_NAME = "Test3";
-    private static final int TWO_MINUTES = 12;
 
     @Test
     public void testSortLinks() throws Exception {
@@ -100,9 +97,9 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
         // - Login
         loginAsPrincipalInvestigator();
          // - Add the array design
-        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF, TestProperties.getAffymetrixSpecificationDesignName());
         // Create project
-        createExperiment(title, ARRAY_DESIGN_NAME);
+        createExperiment(title, TestProperties.getAffymetrixSpecificationDesignName());
         // annotation tab
         annotationLinks();
         // data tab
@@ -421,15 +418,4 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
         clickExperimentSortLinks();
     }
 
-    private void importArrayDesign(File arrayDesign) throws Exception {
-        selenium.click("link=Manage Array Designs");
-        selenium.waitForPageToLoad("30000");
-        if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
-            addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
-            // get the array design row so we do not find the wrong Imported text
-            int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
-            // wait for array design to be imported
-            waitForArrayDesignImport(TWO_MINUTES, column);
-        }
-    }
 }

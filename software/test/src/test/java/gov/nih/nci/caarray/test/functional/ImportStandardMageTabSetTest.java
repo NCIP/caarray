@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
@@ -101,7 +102,6 @@ import org.junit.Test;
 public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 30;
-    private static final int TWENTY_MINUTES = 120;
 
     @Test
     public void testImportAndRetrieval() throws Exception {
@@ -111,9 +111,9 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         System.out.println("Started at " + DateFormat.getTimeInstance().format(new Date()));
 
         loginAsPrincipalInvestigator();
-        importArrayDesign("HT_HG-U133A", AffymetrixArrayDesignFiles.HT_HG_U133A_CDF);
+        importArrayDesign(AffymetrixArrayDesignFiles.HT_HG_U133A_CDF, TestProperties.getAffymetrixU133ADesignName());
         // - Create Experiment
-        String experimentId = createExperiment(title, "HT_HG-U133A");
+        String experimentId = createExperiment(title, TestProperties.getAffymetrixU133ADesignName());
 
         // - go to the data tab
         this.selenium.click("link=Data");
@@ -159,20 +159,6 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         System.out.println("total time = " + totalTime);
     }
 
-
-    private void importArrayDesign(String arrayDesignName, File arrayDesign) throws Exception {
-        selenium.click("link=Manage Array Designs");
-        selenium.waitForPageToLoad("30000");
-        if (doesArrayDesignExists(arrayDesignName)) {
-            assertTrue(arrayDesignName + " is present", 1 == 1);
-        } else {
-            addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
-            // get the array design row so we do not find the wrong Imported text
-            int row = getExperimentRow(arrayDesignName, ZERO_COLUMN);
-            // wait for array design to be imported
-            waitForArrayDesignImport(TWENTY_MINUTES, row);
-        }
-    }
 
      private void checkFileStatus(String status, int column) {
         System.out.println("statu = " + status);

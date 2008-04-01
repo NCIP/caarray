@@ -106,6 +106,7 @@ public final class TestProperties {
     public static final String AFFYMETRIX_HUMAN_DESIGN = "HG-U133_Plus_2";
     public static final String GENEPIX_DESIGN = "JoeDeRisi-fix";
     public static final String ILLUMINA_DESIGN = "Human_WG-6";
+    public static final String AFFYMETRIX_U133A_DESIGN = "HT_HG-U133A";
 
     public static final String AFFYMETRIX_SPECIFICATION_WITH_DATA_01 = "Affymetrix Specification with Data 01";
     public static final String AFFYMETRIX_HUMAN_WITH_DATA_01 = "Affymetrix Human with Data 01";
@@ -148,6 +149,9 @@ public final class TestProperties {
     // Experiment names and array designs used in API tests
     public static String getAffymetrixSpecificationDesignName() {
         return AFFYMETRIX_SPECIFICATION_DESIGN;
+    }
+    public static String getAffymetrixU133ADesignName() {
+        return AFFYMETRIX_U133A_DESIGN;
     }
 
     public static String getAffymetrixHumanDesignName() {

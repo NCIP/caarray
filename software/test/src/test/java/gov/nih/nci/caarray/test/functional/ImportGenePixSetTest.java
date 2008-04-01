@@ -86,8 +86,6 @@ import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 
-import java.io.File;
-
 import org.junit.Test;
 
 /**
@@ -98,8 +96,6 @@ import org.junit.Test;
 public class ImportGenePixSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 3;
-    private static final int TWO_MINUTES = 12;
-    private static final String ARRAY_DESIGN_NAME = "JoeDeRisi-fix";
     private static final String ORGANISM = "Bos taurus (ncbitax)";
     private static final String PROVIDER = "GenePix";
 
@@ -110,9 +106,9 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         // - Login
         loginAsPrincipalInvestigator();
         // - Add the array design
-        importArrayDesign(GenepixArrayDataFiles.JOE_DERISI_FIX, PROVIDER, ORGANISM);
+        importArrayDesign(GenepixArrayDataFiles.JOE_DERISI_FIX, TestProperties.getGenepixDesignName(),PROVIDER, ORGANISM);
         // Create project
-        String experimentId = createExperiment(title, ARRAY_DESIGN_NAME, PROVIDER, ORGANISM);
+        String experimentId = createExperiment(title, TestProperties.getGenepixDesignName(), PROVIDER, ORGANISM);
 
         // - go to the data tab
         selenium.click("link=Data");
@@ -152,17 +148,6 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         makeExperimentPublic(experimentId);
     }
     
-    private void importArrayDesign(File arrayDesign, String provider, String organism) throws Exception {
-        selenium.click("link=Manage Array Designs");
-        selenium.waitForPageToLoad("30000");
-        if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
-            addArrayDesign(arrayDesign, provider, organism);
-            // get the array design row so we do not find the wrong Imported text
-            int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
-            // wait for array design to be imported
-            waitForArrayDesignImport(TWO_MINUTES, column);
-        }
-    }
 
     private void checkFileStatus(String status, int column) {
         for (int i = 1; i < NUMBER_OF_FILES; i++) {

@@ -102,7 +102,6 @@ import org.junit.Test;
 public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 10;
-    private static final int TWO_MINUTES = 12;
 
     @Test
     public void testImportAndRetrieval() throws Exception {
@@ -115,7 +114,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         loginAsPrincipalInvestigator();
 
         // - Add the array design
-        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF, TestProperties.getAffymetrixSpecificationDesignName());
 
         // Create project
         String experimentId = createExperiment(title,TestProperties.getAffymetrixSpecificationDesignName());
@@ -168,21 +167,6 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         submitExperiment();
         makeExperimentPublic(experimentId);
     }
-
-    private void importArrayDesign(File arrayDesign) throws Exception {
-        selenium.click("link=Manage Array Designs");
-        selenium.waitForPageToLoad("30000");
-        if (!doesArrayDesignExists(TestProperties.getAffymetrixSpecificationDesignName())) {
-            addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
-
-            // get the array design row so we do not find the wrong Imported text
-            int column = getExperimentRow(TestProperties.getAffymetrixSpecificationDesignName(), ZERO_COLUMN);
-            // wait for array design to be imported
-            waitForArrayDesignImport(TWO_MINUTES, column);
-        }
-    }
-
-
 
     private void checkFileStatus(String status, int column) {
         for (int i = 1; i < NUMBER_OF_FILES; i++) {

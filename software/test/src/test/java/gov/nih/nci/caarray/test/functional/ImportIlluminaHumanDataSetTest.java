@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -101,8 +100,6 @@ import org.junit.Test;
 public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 1;
-    private static final int TWO_MINUTES = 12;
-    private static final String ARRAY_DESIGN_NAME = "Human_WG-6";
     private static final String ORGANISM = "Rattus rattus (ncbitax)";
     private static final String PROVIDER = "Illumina";
 
@@ -117,10 +114,10 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         loginAsPrincipalInvestigator();
 
         // - Add the array design
-        importArrayDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV, PROVIDER, ORGANISM);
+        importArrayDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV, TestProperties.getIlluminaDesignName(),PROVIDER, ORGANISM);
 
         // Create project
-        createExperiment(title, ARRAY_DESIGN_NAME, PROVIDER, ORGANISM);
+        createExperiment(title, TestProperties.getIlluminaDesignName(), PROVIDER, ORGANISM);
         String experimentId = selenium.getText("//tr[4]/td[2]");
 
         // - go to the data tab
@@ -167,18 +164,6 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         endTime = System.currentTimeMillis();
         String totalTime = df.format((endTime - startTime) / 60000f);
         System.out.println("total time = " + totalTime);
-    }
-
-    private void importArrayDesign(File arrayDesign, String provider, String organism) throws Exception {
-        selenium.click("link=Manage Array Designs");
-        selenium.waitForPageToLoad("30000");
-        if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
-            addArrayDesign(arrayDesign, provider, organism);
-            // get the array design row so we do not find the wrong Imported text
-            int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
-            // wait for array design to be imported
-            waitForArrayDesignImport(TWO_MINUTES, column);
-        }
     }
 
     private void checkFileStatus(String status, int column) {
