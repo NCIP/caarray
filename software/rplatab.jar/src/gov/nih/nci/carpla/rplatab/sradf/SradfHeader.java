@@ -6,6 +6,13 @@ import java.util.Vector;
 
 public class SradfHeader {
 
+	private int					_column;
+	private String				_value;
+	private String				_term			= null;
+	private String				_optionalRefinedTerm			= null;
+	
+	private List<SradfHeader>	_annotheaders	= new ArrayList<SradfHeader>();
+
 	public SradfHeader(int col, String htype) {
 		_column = col;
 		_value = htype;
@@ -18,10 +25,15 @@ public class SradfHeader {
 		_term = term;
 	}
 
-	private int					_column;
-	private String				_value;
-	private String				_term			= null;
-	private List<SradfHeader>	_annotheaders	= new ArrayList<SradfHeader>();
+	public SradfHeader(	int col,
+						String htype,
+						String term,
+						String optionalrefinedterm) {
+		_column = col;
+		_value = htype;
+		_term = term;
+		_optionalRefinedTerm = optionalrefinedterm ;
+	}
 
 	public String getTerm () {
 		return _term;

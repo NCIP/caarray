@@ -43,9 +43,7 @@ public class SradfHeaderReader {
 
 			r.close();
 
-			// //pull out javacc-based parser out as interface..
-			// //have simple? alternate way to get headers, but for now....
-			// // --
+			
 			r = getHeaderReader(sradfFile, RplaConstants.SradfSectionType.Array);
 
 			parser.ReInit(r);

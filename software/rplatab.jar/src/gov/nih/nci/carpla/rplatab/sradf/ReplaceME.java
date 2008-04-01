@@ -10,12 +10,14 @@ public class ReplaceME {
 			return HEADERTYPE.SAMPLENAME;
 		} else if (columnHeaderString.compareTo("Protocol REF") == 0) {
 			return HEADERTYPE.PROTOCOLREF;
-		} else if (columnHeaderString.compareTo("Characteristic") == 0) {
-			return HEADERTYPE.CHARACTERISTIC;
+		} else if (columnHeaderString.compareTo("Characteristics") == 0) {
+			return HEADERTYPE.CHARACTERISTICS;
 		} else if (columnHeaderString.compareTo("Term Source REF") == 0) {
 			return HEADERTYPE.TERMSOURCEREF;
 		} else if (columnHeaderString.compareTo("Parameter Value") == 0) {
 			return HEADERTYPE.PARAMETERVALUE;
+		}else if (columnHeaderString.compareTo("Factor Value") == 0) {
+			return HEADERTYPE.FACTORVALUE;
 		}
 
 		else if (columnHeaderString.compareTo("Sample REF") == 0) {
@@ -58,6 +60,9 @@ public class ReplaceME {
 			return HEADERTYPE.ARRAYDATAFILE;
 		} else if (columnHeaderString.compareTo("Derived Array Data File") == 0) {
 			return HEADERTYPE.DERIVEDARRAYDATAFILE;
+		}
+		else if (columnHeaderString.compareTo("Comment") == 0) {
+			return HEADERTYPE.COMMENT;
 		}
 
 		else {

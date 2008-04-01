@@ -21,11 +21,14 @@ public class RplaTabDocumentSetParserImplementation_Test {
 	static public void main ( String[] args) {
 
 		ArrayList<String> list = new ArrayList<String>();
-		list.add("../rpla-test-data/data/mda_rpladaset");
-		list.add("../rpla-test-data/data/invalid/missing_files/missing_referenced_files");
+		list.add("../rpla-test-data/data/valid/mda_rpladaset");
+		list.add("../rpla-test-data/data/valid/valid_with_expfactors");
+		
 		list.add("../rpla-test-data/data/invalid/invalid_headers/bad_sradf_samples_section_headers/bad_1");
 		list.add("../rpla-test-data/data/invalid/invalid_headers/bad_sradf_samples_section_headers/bad_2");
 		list.add("../rpla-test-data/data/invalid/invalid_data/nonemptyattributesforemptyfield");
+		list.add("../rpla-test-data/data/invalid/invalid_headers/incorrectly_referenced_factor_values");
+		list.add("../rpla-test-data/data/invalid/missing_files/missing_referenced_files");
 		for (String dirpath : list) {
 			new RplaTabDocumentSetParserImplementation_Test().parse(dirpath,
 																	System.out);
@@ -37,9 +40,9 @@ public class RplaTabDocumentSetParserImplementation_Test {
 	public static void printHeaders ( RplaTabDocumentSet rset, PrintStream out)
 	{
 
-		List<SradfHeader> sh = rset.getSradfHeaders()
-				.getSamplesSectionHeaders()
-				.getHeaders();
+		List<SradfHeader> sh = rset	.getSradfHeaders()
+									.getSamplesSectionHeaders()
+									.getHeaders();
 
 		for (int ii = 0; ii < sh.size(); ii++) {
 
@@ -67,12 +70,12 @@ public class RplaTabDocumentSetParserImplementation_Test {
 													PrintStream out)
 	{
 		// TODO Auto-generated method stub
-		List<ValidationMessage> lm = rdataset.getValidationResult()
-				.getMessages();
+		List<ValidationMessage> lm = rdataset	.getValidationResult()
+												.getMessages();
 
-		ListIterator<ValidationMessage> li = rdataset.getValidationResult()
-				.getMessages()
-				.listIterator();
+		ListIterator<ValidationMessage> li = rdataset	.getValidationResult()
+														.getMessages()
+														.listIterator();
 
 		boolean hasError = false;
 		out.println("\n**********************************************************************");

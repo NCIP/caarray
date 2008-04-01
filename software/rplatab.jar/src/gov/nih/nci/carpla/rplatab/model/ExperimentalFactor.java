@@ -88,9 +88,9 @@ import java.io.Serializable;
 /**
  * A factor that is varied in an investigation design.
  */
-public final class ExperimentalFactor implements Serializable {
+public final class ExperimentalFactor implements SectionPrincipal, HasAttribute {
 
-    private static final long serialVersionUID = 5356087397773635534L;
+   
 
     private String name;
     private OntologyTerm type;

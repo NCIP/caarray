@@ -204,10 +204,12 @@ public class RplaTabDocumentSet {
 		return _experimentalFactors;
 	}
 
+	//should flag warning if already declared
 	public ExperimentalFactor createExperimentalFactor ( String name) {
 
 		ExperimentalFactor factor = new ExperimentalFactor();
 		factor.setName(name);
+		_experimentalFactors.put(name, factor);
 		return factor;
 	}
 
@@ -534,8 +536,8 @@ public class RplaTabDocumentSet {
 	// #############################################################################
 
 	public Comment createComment () {
-		// TODO Auto-generated method stub
-		return null;
+		Comment comment = new Comment();
+		return comment;
 	}
 
 	// #############################################################################

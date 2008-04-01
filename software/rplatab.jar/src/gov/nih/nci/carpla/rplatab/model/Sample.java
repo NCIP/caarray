@@ -82,27 +82,24 @@
  */
 package gov.nih.nci.carpla.rplatab.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A biological sample taken from a source.
  */
-public final class Sample extends AbstractBioMaterial
-														implements
-														SamplesSectionPrincipal,
-														HasCharacteristics,
-														HasAttribute{
+public final class Sample extends AbstractBioMaterial implements
 
-	private static final long	serialVersionUID	= 7180426686673666046L;
+SamplesSectionPrincipal, HasCharacteristics, HasComment, HasAttribute {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	// @Override
-	// public SdrfNodeType getNodeType() {
-	// return SdrfNodeType.SAMPLE;
-	// }
-	//
-	// @Override
-	// void addToSdrfList(SdrfDocument document) {
-	// document.getAllSamples().add(this);
-	// }
+	
+	private List<Comment> _comments = new ArrayList<Comment>();
+	
+	
+	
+	
+	public void addComment ( Comment comment) {
+		_comments.add(comment);
+	}
+
 }
