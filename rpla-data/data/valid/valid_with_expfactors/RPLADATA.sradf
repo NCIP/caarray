@@ -1,0 +1,21 @@
+Source Name	Characteristics[CellLine]	Term Source REF	Protocol REF	Parameter Value[cultureType]	Protocol REF	Parameter Value[compound]	Parameter Value[harvestTime]	Unit[TimeUnit]	Term Source REF	Sample Name	Comment[whatgoeshere?]	Factor Value[CellLine]
+T47D	T47D	ATCC	CellCulture	3D	->	->	0	hours	MGED Ontology	3D.P2.002.T47D.3D.Control.0h	T47D
+MDA-MB-231	MDA-MB-231	ATCC	CellCulture	3D	CompoundTreatment	U1026.EGF	1	hours	MGED Ontology	3D.P2.004.MDA-MB-231.3D.Control.4h	some comment	MDA-MB-231
+END_SAMPLES_SECTION
+Array REF	Block Row	Block Column	Row	Column	Sample REF	Dilution REF			
+ICBP_MDA_RPPA	1	1	1	1	3D.P2.002.T47D.3D.Control.0h	dil1			
+ICBP_MDA_RPPA	1	1	1	2	3D.P2.002.T47D.3D.Control.0h	dil2			
+ICBP_MDA_RPPA	1	1	1	3	3D.P2.002.T47D.3D.Control.0h	dil3			
+ICBP_MDA_RPPA	1	1	1	4	3D.P2.002.T47D.3D.Control.0h	dil4			
+ICBP_MDA_RPPA	1	1	1	5	3D.P2.002.T47D.3D.Control.0h	dil5			
+ICBP_MDA_RPPA	1	1	1	6	->	->			
+ICBP_MDA_RPPA	1	1	3	1	3D.P2.004.MDA-MB-231.3D.Control.4h	dil1			
+ICBP_MDA_RPPA	1	1	3	2	3D.P2.004.MDA-MB-231.3D.Control.4h	dil2			
+ICBP_MDA_RPPA	1	1	3	3	3D.P2.004.MDA-MB-231.3D.Control.4h	dil3			
+ICBP_MDA_RPPA	1	1	3	4	3D.P2.004.MDA-MB-231.3D.Control.4h	dil4			
+ICBP_MDA_RPPA	1	1	3	5	3D.P2.004.MDA-MB-231.3D.Control.4h	dil5			
+ICBP_MDA_RPPA	1	1	3	6	->	->				
+END_ARRAY_SECTION
+Array REF	Antibody REF	Assay Name	Technology Type	Term Source REF	Image File	Array Data File
+ICBP_MDA_RPPA	Akt	Akt	RPLA	->	Akt.tif	Akt.txt
+END_ARRAYDATA_SECTION
