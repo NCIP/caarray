@@ -557,14 +557,15 @@
     <!-- ******************************************************************* -->
     <target name="svn:getinfo" description="obtain subversion revision info" unless="nosvn">
         <taskdef resource="svntask.properties" classpath="${svnant.jar}:${svnClientAdapter.jar};${svnjavahl.jar}" />
-        <svn javahl="true">
-            <status path="${root.dir}" lastCommitAuthorProperty="svn.lastCommitAuthor"/>
+        <svn javahl="false">
+            <status path="${root.dir}" revisionProperty="svn.revision" urlProperty="svn.url" />
         </svn>
         <!--
           Note that if you explicitly define caarray.version it will take
           precedence over the one obtained from SVN
-      -->
-        <echo message="found svn author ${svn.lastCommitAuthor}" />
+          -->
+        <propertyregex property="caarray.version" input="${svn.url}" regexp="\/([^\/]+)$" select="\1" casesensitive="false" />
+        <echo message="found svn info: ${svn.url} ${svn.revision} ${caarray.version}" />
     </target>
 
     <!-- ******************************************************************* -->
@@ -578,7 +579,7 @@
         build:caarray.ear,
         build:caarray-svc" description="Builds the application without deploying." />
 
-    <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar">
+    <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,svn:getinfo">
         <mkdir dir="${caarray-client.target.dir}" />
         <jar destfile="${caarray-client.jar}">
             <manifest>
@@ -640,7 +641,7 @@
         <gzip src="${caarray-client.target.dir}/caarray-client.tar" destfile="${caarray-client.target.dir}/caarray-client.tar.gz" />
     </target>
 
-    <target name="build:caarray-common.jar" depends="configure-datasource-for-deploy">
+    <target name="build:caarray-common.jar" depends="compile:caarray-common.jar,configure-datasource-for-deploy,svn:getinfo">
         <mkdir dir="${caarray-common.target.dir}" />
         <jar destfile="${caarray-common.jar}">
             <manifest>
@@ -657,7 +658,7 @@
         </jar>
     </target>
 
-    <target name="build:caarray-ejb.jar" depends="compile:caarray-ejb.jar">
+    <target name="build:caarray-ejb.jar" depends="compile:caarray-ejb.jar,svn:getinfo">
         <mkdir dir="${caarray-ejb.target.dir}" />
         <jar destfile="${caarray-ejb.jar}">
             <manifest>
@@ -684,7 +685,7 @@
         </unzip>
     </target>
 
-    <target name="build:caarray.war" depends="compile:caarray.war, prepare:caarray.war:onlinehelp">
+    <target name="build:caarray.war" depends="compile:caarray.war, prepare:caarray.war:onlinehelp,svn:getinfo">
         <mkdir dir="${caarray-war.target.dir}" />
         <copy todir="${caarray-war.target.dir}/xml" file="${caarray-war.webapp.dir}/WEB-INF/web.xml" overwrite="true">
             <filterset>
@@ -760,7 +761,7 @@
         </war>
     </target>
 
-    <target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar">
+    <target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar,svn:getinfo">
         <mkdir dir="${caarray-ear.target.dir}" />
         <mkdir dir="${caarray-ear.target.dir}/xml" />
         <copy todir="${caarray-ear.target.dir}/xml">
