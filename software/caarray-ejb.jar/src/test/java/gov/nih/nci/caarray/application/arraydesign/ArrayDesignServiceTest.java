@@ -326,9 +326,6 @@ public class ArrayDesignServiceTest {
         assertEquals("Affymetrix.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
         assertEquals("Test3", design.getLsidObjectId());
-        DesignElementList designElementList =
-            AffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
-        checkChpDesignElementList(designElementList, AffymetrixArrayDesignFiles.TEST3_CDF);
         assertEquals(15876, design.getNumberOfFeatures());
     }
 
@@ -356,7 +353,7 @@ public class ArrayDesignServiceTest {
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
         assertEquals("Mapping10K_Xba131-xda", arrayDesign.getLsidObjectId());
     }
-
+    
     @Test
     public void testImportDesign_IlluminaHumanWG6() {
         CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
@@ -625,13 +622,18 @@ public class ArrayDesignServiceTest {
 
         @Override
         public ArrayDao getArrayDao() {
-            return new ArrayDaoStub() {
-
+            return new ArrayDaoStub() {                
                 @Override
-                public List<LogicalProbe> getLogicalProbesReadOnly(ArrayDesign design) {
-                    return new ArrayList<LogicalProbe>(design.getDesignDetails().getLogicalProbes());
+                public Map<String, Long> getLogicalProbeNamesToIds(ArrayDesign design, List<String> names) {
+                    Map<String, Long> map = new HashMap<String, Long>();
+                    for (LogicalProbe lp : design.getDesignDetails().getLogicalProbes()) {
+                        if (names.contains(lp.getName())) {
+                            map.put(lp.getName(), lp.getId());
+                        }
+                    }
+                    return map;
                 }
-
+                
                 @SuppressWarnings("deprecation")
                 @Override
                 public void save(PersistentObject object) {

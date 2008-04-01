@@ -556,16 +556,15 @@
     <!-- ** SVN TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
     <target name="svn:getinfo" description="obtain subversion revision info" unless="nosvn">
-        <taskdef resource="org/tigris/subversion/svnant/svnantlib.xml" classpath="${svnant.jar};${svnClientAdapter.jar}" />
-        <svn javahl="false">
-            <status path="${root.dir}" revisionProperty="svn.revision" urlProperty="svn.url" />
+        <taskdef resource="svntask.properties" classpath="${svnant.jar}:${svnClientAdapter.jar};${svnjavahl.jar}" />
+        <svn javahl="true">
+            <status path="${root.dir}" lastCommitAuthorProperty="svn.lastCommitAuthor"/>
         </svn>
         <!--
           Note that if you explicitly define caarray.version it will take
           precedence over the one obtained from SVN
       -->
-        <propertyregex property="caarray.version" input="${svn.url}" regexp="\/([^\/]+)$" select="\1" casesensitive="false" />
-        <echo message="found svn info: ${svn.url} ${svn.revision} ${caarray.version}" />
+        <echo message="found svn author ${svn.lastCommitAuthor}" />
     </target>
 
     <!-- ******************************************************************* -->
@@ -991,7 +990,7 @@
     </target>
 
     <target name="test:junit-caarray-ejb.jar" depends="test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:unpack-test-data">
-        <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${axis.jar};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-configuration.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${clm.jar}:${cglib.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${nci-commons-core.jar};${caGrid-1.1-data-stubs.jar}" />
+        <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${axis.jar};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-configuration.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${clm.jar}:${cglib.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${nci-commons-core.jar};${caGrid-1.1-data-stubs.jar};${caGrid-1.1-data-common.jar};${caGrid-1.1-sdkQuery32-core.jar}" />
     </target>
 
     <!-- caarray.war -->
@@ -1431,6 +1430,13 @@
 
     <target name="deploy:caarray-svc" depends="build:caarray-svc,prepare:create-local.properties">
         <ant dir="${caaray-svc.dir}" target="deployGlobus" inheritall="false" />
+    </target>
+
+    <target name="deploy:caarray-svc-jboss" depends="build:caarray-svc,prepare:create-local.properties">
+        <unzip src="${jboss-globus-serverinstance-config.zip}"  dest="${globoss.server.instance.home}"/>
+        <ant dir="${caaray-svc.dir}" target="deployJBoss" inheritall="false">
+            <property name="jboss.dir" value="${globoss.server.instance.home}"/>    
+        </ant>
     </target>
 
     <target name="undeploy" description="Undeploys the application from JBoss">

@@ -136,9 +136,7 @@ public class AffymetrixChpDesignElementListFixer extends AbstractMigrator {
         for (Long designId : designIds) {
             ArrayDesign design = getDesignService().getArrayDesign(designId);
             LOG.info("Creating fixed DesignElementList for design " + design.getName());
-            DesignElementList probeSetList =
-                AffymetrixChpDesignElementListUtility.createDesignElementList(design, arrayDao);
-            getDataService().save(probeSetList);
+            AffymetrixChpDesignElementListUtility.createDesignElementList(design, arrayDao);
             arrayDao.flushSession();
             arrayDao.clearSession();
         }

@@ -86,6 +86,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Index;
 
 /**
  * Reports on the presence or intensity of a given target probe.
@@ -122,6 +123,7 @@ public abstract class AbstractProbe extends AbstractDesignElement {
     /**
      * @return the name
      */
+    @Index(name = "ap_name_idx")
     public String getName() {
         return name;
     }
