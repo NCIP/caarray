@@ -119,7 +119,7 @@ import org.apache.log4j.Logger;
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
     @ActivationConfigProperty(propertyName = "destination", propertyValue = FileManagementMDB.QUEUE_JNDI_NAME),
     @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1")
-    })
+    }, messageListenerInterface = MessageListener.class)
 @Interceptors({ HibernateSessionInterceptor.class, ExceptionLoggingInterceptor.class })
 @TransactionManagement(TransactionManagementType.BEAN)
 public class FileManagementMDB implements MessageListener {

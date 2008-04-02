@@ -1,14 +1,15 @@
 package gov.nih.nci.caarray.application.arraydata.affymetrix;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
 
 import java.util.Comparator;
 
-import gov.nih.nci.caarray.domain.data.QuantitationType;
-
 import org.junit.Test;
 
-public class AffymetrixCelQuantitationTypeTest {
+public class AffymetrixQuantitationTypeTest {
 
     @Test
     public void testIsEquivalent() {
@@ -16,6 +17,12 @@ public class AffymetrixCelQuantitationTypeTest {
         assertFalse(AffymetrixCelQuantitationType.CEL_INTENSITY.isEquivalent(null));
         assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY.isEquivalent(type));
         assertFalse(AffymetrixCelQuantitationType.CEL_INTENSITY_STD_DEV.isEquivalent(type));
+        
+        type = createType(AffymetrixSnpChpQuantitationType.CHP_ALLELE);
+        assertFalse(AffymetrixSnpChpQuantitationType.CHP_ALLELE.isEquivalent(null));
+        assertTrue(AffymetrixSnpChpQuantitationType.CHP_ALLELE.isEquivalent(type));
+        assertFalse(AffymetrixSnpChpQuantitationType.CHP_RAS1.isEquivalent(type));
+        
     }
 
     private QuantitationType createType(AffymetrixCelQuantitationType descriptor) {
@@ -24,7 +31,14 @@ public class AffymetrixCelQuantitationTypeTest {
         type.setTypeClass(descriptor.getDataType().getTypeClass());
         return type;
     }
-    
+
+    private QuantitationType createType(AffymetrixSnpChpQuantitationType descriptor) {
+        QuantitationType type = new QuantitationType();
+        type.setName(descriptor.getName());
+        type.setTypeClass(descriptor.getDataType().getTypeClass());
+        return type;
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testGetComparator() {
         Comparator<QuantitationType> comparator = AffymetrixCelQuantitationType.getComparator();

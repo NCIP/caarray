@@ -99,7 +99,7 @@ import org.apache.log4j.Logger;
  * @author John Hedden
  *
  */
-@Local
+@Local(CountryService.class)
 @Stateless
 public class CountryServiceBean implements CountryService {
 

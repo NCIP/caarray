@@ -116,7 +116,7 @@ import org.hibernate.criterion.MatchMode;
 /**
  * Local implementation of interface.
  */
-@Local
+@Local(PermissionsManagementService.class)
 @Stateless
 @Interceptors(ExceptionLoggingInterceptor.class)
 @SuppressWarnings("unchecked") // CSM API is unchecked

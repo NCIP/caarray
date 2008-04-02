@@ -99,7 +99,7 @@ import javax.ejb.TransactionAttributeType;
  * @author Winston Cheng
  *
  */
-@Local
+@Local(BrowseService.class)
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class BrowseServiceBean implements BrowseService {

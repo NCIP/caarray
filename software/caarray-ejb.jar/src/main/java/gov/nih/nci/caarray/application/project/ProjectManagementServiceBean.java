@@ -150,7 +150,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 /**
  * Implementation entry point for the ProjectManagement subsystem.
  */
-@Local
+@Local(ProjectManagementService.class)
 @Stateless
 @Interceptors(ExceptionLoggingInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)

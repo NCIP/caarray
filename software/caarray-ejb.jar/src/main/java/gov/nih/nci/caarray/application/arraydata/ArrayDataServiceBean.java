@@ -105,7 +105,7 @@ import org.apache.log4j.Logger;
 /**
  * Entry point to the ArrayDataService subsystem.
  */
-@Local
+@Local(ArrayDataService.class)
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ArrayDataServiceBean implements ArrayDataService {

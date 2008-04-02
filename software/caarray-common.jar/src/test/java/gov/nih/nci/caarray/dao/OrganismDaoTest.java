@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 import static org.junit.Assert.assertEquals;
+import edu.georgetown.pir.AdditionalOrganismName;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -112,6 +113,11 @@ public class OrganismDaoTest extends AbstractDaoTest {
         TermSource t = new TermSource();
         t.setName("testtermsource");
         o.setTermSource(t);
+        
+        AdditionalOrganismName additionalName = new AdditionalOrganismName();
+        additionalName.setValue("additional name");
+        o.getAdditionalOrganismNameCollection().add(additionalName);
+        
         s.save(o);
         tx.commit();
 
@@ -119,7 +125,10 @@ public class OrganismDaoTest extends AbstractDaoTest {
         tx = HibernateUtil.beginTransaction();
         s = HibernateUtil.getCurrentSession();
         assertEquals(1, DAO_OBJECT.getAllOrganisms().size());
-        assertEquals("testscientificname", DAO_OBJECT.getOrganism(o.getId()).getScientificName());
+        Organism retrieved = DAO_OBJECT.getOrganism(o.getId());
+        assertEquals("testscientificname", retrieved.getScientificName());
+        assertEquals(1, retrieved.getAdditionalOrganismNameCollection().size());
+        assertEquals("additional name", retrieved.getAdditionalOrganismNameCollection().iterator().next().getValue());
         tx.commit();
     }
 }

@@ -96,7 +96,7 @@ import org.apache.log4j.Logger;
 /**
  * Implementation entry point for the Registration subsystem.
  */
-@Local
+@Local(RegistrationService.class)
 @Stateless
 public class RegistrationServiceBean implements RegistrationService {
 

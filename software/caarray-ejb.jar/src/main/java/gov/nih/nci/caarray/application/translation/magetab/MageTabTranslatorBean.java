@@ -101,7 +101,7 @@ import org.apache.log4j.Logger;
 /**
  * Implementation of the MAGE-TAB translation component.
  */
-@Local
+@Local(MageTabTranslator.class)
 @Stateless
 public class MageTabTranslatorBean implements MageTabTranslator {
 

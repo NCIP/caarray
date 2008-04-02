@@ -17,6 +17,8 @@
     <property name="site.dir" value="${build.dir}/site" />
     <property name="cobertura.dir" value="${site.dir}/cobertura" />
     <property name="cobertura.file" value="${cobertura.dir}/cobertura.ser" />
+    <property name="cobertura-functional.file" value="${cobertura.dir}/cobertura-functional.ser" />
+    <property name="cobertura-merged.file" value="${cobertura.dir}/cobertura-merged.ser" />
     <property name="ear.dist.dir" value="${basedir}/dist/ear" />
 
     <!-- Components -->
@@ -323,12 +325,11 @@
         <antcall target="test" />
     </target>
 
+    
     <target name="nightly-build" depends="continuous-integration,
         database:reinitialize,
-        deploy:start-jboss-and-deploy,
-        test:functional,
-        deploy:stop-jboss,
-        test:check-functional-test-results" />
+        build-functional,
+        test:functional" />
 
     <!-- ******************************************************************* -->
     <!-- ** CLEAN TARGETS                                                 ** -->
@@ -573,10 +574,14 @@
     <!-- ******************************************************************* -->
 
     <target name="build" depends="build:caarray-client.jar,
-      build:caarray-common.jar,
-      build:caarray-ejb.jar,
+        build:caarray-common.jar,
+        build:caarray-ejb.jar,
         build:caarray.war,
         build:caarray.ear,
+        build:caarray-svc" description="Builds the application without deploying." />
+
+    <target name="build-functional" depends="build:caarray-client.jar,
+        build:functional:caarray.ear,
         build:caarray-svc" description="Builds the application without deploying." />
 
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,svn:getinfo">
@@ -658,6 +663,8 @@
         </jar>
     </target>
 
+    <target name="build:functional:caarray-common.jar" depends="build:caarray-common.jar, test:instrument-functional:caarray-common.jar"/>
+
     <target name="build:caarray-ejb.jar" depends="compile:caarray-ejb.jar,svn:getinfo">
         <mkdir dir="${caarray-ejb.target.dir}" />
         <jar destfile="${caarray-ejb.jar}">
@@ -675,6 +682,8 @@
             <fileset dir="${caarray-ejb.classes.dir}" />
         </jar>
     </target>
+
+    <target name="build:functional:caarray-ejb.jar" depends="build:caarray-ejb.jar, test:instrument-functional:caarray-ejb.jar"/>
 
     <target name="prepare:caarray.war:onlinehelp">
         <mkdir dir="${caarray-war.target.dir}/help" />
@@ -761,79 +770,91 @@
         </war>
     </target>
 
+    <target name="build:functional:caarray.war" depends="build:caarray.war, test:instrument-functional:caarray.war"/>
+
+    <macrodef name="build-caarray.ear">
+        <sequential>
+            <mkdir dir="${caarray-ear.target.dir}" />
+            <mkdir dir="${caarray-ear.target.dir}/xml" />
+            <copy todir="${caarray-ear.target.dir}/xml">
+                <fileset dir="${caarray-ear.resources.dir}" includes="*.xml" excludes="application.xml" />
+                <!-- 2 filter sets here because the database.url line has substitutions that otherwise wouldn't be applied -->
+                <filterset>
+                    <filter token="database.url" value="${database.url}" />
+                </filterset>
+                <filterset refid="caarray.filterset" />
+            </copy>
+            <ear destfile="${caarray.ear}" appxml="${caarray-ear.resources.dir}/application.xml">
+                <metainf dir="${caarray-ear.target.dir}/xml" includes="*.xml" excludes="jboss-service.xml" />
+                <manifest>
+                    <section name="gov/nih/nci/caarray/">
+                        <attribute name="Specification-Title" value="caArray"/>
+                        <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
+                        <attribute name="Specification-Vendor" value="5AM Solutions"/>
+                        <attribute name="Implementation-Title" value="caArray"/>
+                        <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
+                        <attribute name="Implementation-Vendor" value="5AM Solutions"/>
+                    </section>
+                </manifest>
+                <fileset dir="${caarray-ear.target.dir}/xml" includes="jboss-service.xml">
+                </fileset>
+                <fileset dir="${caarray-war.target.dir}">
+                    <include name="caarray.war" />
+                </fileset>
+                <fileset dir="${caarray-ejb.target.dir}">
+                    <include name="caarray-ejb.jar" />
+                </fileset>
+                <fileset dir="${caarray-common.target.dir}">
+                    <include name="caarray-common.jar" />
+                </fileset>
+                <fileset dir="${lib.dir}">
+                    <include name="activation.jar" />
+                    <include name="AffxFusion.jar" />
+                    <include name="antlr-2.7.6.jar" />
+                    <include name="asm.jar" />
+                    <include name="asm-attrs.jar" />
+                    <include name="axis.jar" />
+                    <include name="castor-1.0.2.jar" />
+                    <include name="jdbc-se2.0.jar" />
+                    <include name="xerces-J_1.4.0.jar" />
+                    <include name="cglib-2.1.3.jar" />
+                    <include name="commons-beanutils-1.7.0.jar" />
+                    <include name="commons-collections-3.2.jar" />
+                    <include name="commons-discovery-0.2.jar" />
+                    <include name="commons-io-1.3.2.jar" />
+                    <include name="commons-lang-2.3.jar" />
+                    <include name="commons-logging-1.1.jar" />
+                    <include name="commons-discovery-0.2.jar" />
+                    <include name="commons-configuration-1.4.jar" />
+                    <include name="dom4j-1.6.1.jar" />
+                    <include name="javacsv.jar" />
+                    <include name="jaxrpc.jar" />
+                    <include name="jta.jar" />
+                    <include name="log4j-1.2.13.jar" />
+                    <include name="mail.jar" />
+                    <include name="saaj.jar" />
+                    <include name="spring.jar" />
+                    <include name="spring-richclient-full-0.1.0.jar" />
+                    <include name="wsdl4j-1.5.1.jar" />
+                    <include name="xercesImpl.jar" />
+                    <include name="xml-apis.jar" />
+                    <include name="netcdf.jar" />
+                    <include name="csmapi.jar" />
+                    <include name="caGrid-1.1-data-stubs.jar" />
+                    <include name="caGrid-1.1-data-common.jar" />
+                    <include name="caGrid-1.1-sdkQuery32-core.jar" />
+                    <include name="nci-commons-core-1.0.1.jar" />
+                </fileset>
+            </ear>
+        </sequential>
+    </macrodef>
+
     <target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar,svn:getinfo">
-        <mkdir dir="${caarray-ear.target.dir}" />
-        <mkdir dir="${caarray-ear.target.dir}/xml" />
-        <copy todir="${caarray-ear.target.dir}/xml">
-            <fileset dir="${caarray-ear.resources.dir}" includes="*.xml" excludes="application.xml" />
-            <!-- 2 filter sets here because the database.url line has substitutions that otherwise wouldn't be applied -->
-            <filterset>
-                <filter token="database.url" value="${database.url}" />
-            </filterset>
-            <filterset refid="caarray.filterset" />
-        </copy>
-        <ear destfile="${caarray.ear}" appxml="${caarray-ear.resources.dir}/application.xml">
-            <metainf dir="${caarray-ear.target.dir}/xml" includes="*.xml" excludes="jboss-service.xml" />
-            <manifest>
-                <section name="gov/nih/nci/caarray/">
-                    <attribute name="Specification-Title" value="caArray"/>
-                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}"/>
-                    <attribute name="Specification-Vendor" value="5AM Solutions"/>
-                    <attribute name="Implementation-Title" value="caArray"/>
-                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}"/>
-                    <attribute name="Implementation-Vendor" value="5AM Solutions"/>
-                </section>
-            </manifest>
-            <fileset dir="${caarray-ear.target.dir}/xml" includes="jboss-service.xml">
-            </fileset>
-            <fileset dir="${caarray-war.target.dir}">
-                <include name="caarray.war" />
-            </fileset>
-            <fileset dir="${caarray-ejb.target.dir}">
-                <include name="caarray-ejb.jar" />
-            </fileset>
-            <fileset dir="${caarray-common.target.dir}">
-                <include name="caarray-common.jar" />
-            </fileset>
-            <fileset dir="${lib.dir}">
-                <include name="activation.jar" />
-                <include name="AffxFusion.jar" />
-                <include name="antlr-2.7.6.jar" />
-                <include name="asm.jar" />
-                <include name="asm-attrs.jar" />
-                <include name="axis.jar" />
-                <include name="castor-1.0.2.jar" />
-                <include name="jdbc-se2.0.jar" />
-                <include name="xerces-J_1.4.0.jar" />
-                <include name="cglib-2.1.3.jar" />
-                <include name="commons-beanutils-1.7.0.jar" />
-                <include name="commons-collections-3.2.jar" />
-                <include name="commons-discovery-0.2.jar" />
-                <include name="commons-io-1.3.2.jar" />
-                <include name="commons-lang-2.3.jar" />
-                <include name="commons-logging-1.1.jar" />
-                <include name="commons-discovery-0.2.jar" />
-                <include name="commons-configuration-1.4.jar" />
-                <include name="dom4j-1.6.1.jar" />
-                <include name="javacsv.jar" />
-                <include name="jaxrpc.jar" />
-                <include name="jta.jar" />
-                <include name="log4j-1.2.13.jar" />
-                <include name="mail.jar" />
-                <include name="saaj.jar" />
-                <include name="spring.jar" />
-                <include name="spring-richclient-full-0.1.0.jar" />
-                <include name="wsdl4j-1.5.1.jar" />
-                <include name="xercesImpl.jar" />
-                <include name="xml-apis.jar" />
-                <include name="netcdf.jar" />
-                <include name="csmapi.jar" />
-                <include name="caGrid-1.1-data-stubs.jar" />
-                <include name="caGrid-1.1-data-common.jar" />
-                <include name="caGrid-1.1-sdkQuery32-core.jar" />
-                <include name="nci-commons-core-1.0.1.jar" />
-            </fileset>
-        </ear>
+        <build-caarray.ear/>
+    </target>
+
+    <target name="build:functional:caarray.ear" depends="build:functional:caarray.war,build:functional:caarray-ejb.jar,build:functional:caarray-common.jar">
+        <build-caarray.ear/>
     </target>
 
     <target name="build:caarray-svc" unless="noglobus">
@@ -898,6 +919,14 @@
         </cobertura-instrument>
     </target>
 
+    <target name="test:instrument-functional:caarray-client.jar" depends="compile:caarray-client.jar">
+        <cobertura-instrument todir="${caarray-client.instrumented.classes.dir}" datafile="${cobertura-functional.file}">
+            <fileset dir="${caarray-client.classes.dir}">
+                <include name="gov/nih/nci/caarray/**" />
+            </fileset>
+        </cobertura-instrument>
+    </target>
+
     <target name="test:compile:caarray-client.test.classes" depends="compile:caarray-client.jar,test:compile:test-data-classes">
         <mkdir dir="${caarray-client.test.classes.dir}" />
         <javac srcdir="${caarray-client.test.src.dir}" destdir="${caarray-client.test.classes.dir}" debug="true">
@@ -921,6 +950,12 @@
     <target name="test:instrument:caarray-common.jar">
         <cobertura-instrument todir="${caarray-common.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-common.classes.dir}" />
+        </cobertura-instrument>
+    </target>
+
+    <target name="test:instrument-functional:caarray-common.jar" depends="build:caarray-common.jar">
+        <cobertura-instrument datafile="${cobertura-functional.file}">
+            <fileset file="${caarray-common.jar}" />
         </cobertura-instrument>
     </target>
 
@@ -960,6 +995,12 @@
     <target name="test:instrument:caarray-ejb.jar" depends="compile:caarray-ejb.jar">
         <cobertura-instrument todir="${caarray-ejb.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-ejb.classes.dir}" />
+        </cobertura-instrument>
+    </target>
+
+    <target name="test:instrument-functional:caarray-ejb.jar" depends="build:caarray-ejb.jar">
+        <cobertura-instrument datafile="${cobertura-functional.file}">
+            <fileset file="${caarray-ejb.jar}" />
         </cobertura-instrument>
     </target>
 
@@ -1003,6 +1044,12 @@
                 <include name="**/*.class" />
                 <exclude name="**/fileupload/*.class" />
             </fileset>
+        </cobertura-instrument>
+    </target>
+
+    <target name="test:instrument-functional:caarray.war" depends="build:caarray.war">
+        <cobertura-instrument datafile="${cobertura-functional.file}">
+            <fileset file="${caarray.war}"/>
         </cobertura-instrument>
     </target>
 
@@ -1056,9 +1103,9 @@
     </target>
 
     <target name="test:junit-report">
-        <mkdir dir="${site.dir}/junit" />
+        <mkdir dir="${site.dir}/junit/unit" />
         <mkdir dir="${test.target.dir}/junit" />
-        <junitreport todir="${site.dir}/junit">
+        <junitreport todir="${site.dir}/junit/unit">
             <fileset dir="${caarray-client.target.dir}/junit">
                 <include name="TEST-*.xml" />
             </fileset>
@@ -1071,13 +1118,19 @@
             <fileset dir="${caarray-war.target.dir}/junit">
                 <include name="TEST-*.xml" />
             </fileset>
-            <report format="frames" todir="${site.dir}/junit" />
+            <report format="frames" todir="${site.dir}/junit/unit" />
         </junitreport>
     </target>
 
     <!-- Cobertura Test Targets -->
     <target name="test:cobertura-report">
-        <cobertura-report format="html" destdir="${site.dir}/cobertura" datafile="${cobertura.file}">
+        <cobertura-report format="xml" destdir="${site.dir}/cobertura/unit" datafile="${cobertura.file}">
+            <fileset dir="${caarray-client.src.dir}" />
+            <fileset dir="${caarray-common.src.dir}" />
+            <fileset dir="${caarray-ejb.src.dir}" />
+            <fileset dir="${caarray-war.src.dir}" />
+        </cobertura-report>
+        <cobertura-report format="html" destdir="${site.dir}/cobertura/unit" datafile="${cobertura.file}">
             <fileset dir="${caarray-client.src.dir}" />
             <fileset dir="${caarray-common.src.dir}" />
             <fileset dir="${caarray-ejb.src.dir}" />
@@ -1086,15 +1139,68 @@
     </target>
 
     <target name="test:cobertura-check">
-        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="66" totallinerate="73" />
+        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="68" totallinerate="76" />
     </target>
 
     <!-- Functional (Selenium) Test Targets -->
 
-    <target name="test:functional" unless="notest">
-        <antcall target="test:functional:run-tests" />
-        <antcall target="test:functional:report" />
+    <target name="test:functional" unless="notest" 
+        depends="test:functional:prepare, 
+        deploy:start-jboss-and-deploy, 
+        test:functional:run-tests,
+        deploy:stop-jboss,
+        test:functional:report, 
+        test:functional:cobertura-report">
         <fail if="junit.failure" message="There were functional test failures." />
+    </target>
+
+    <target name="test:functional:prepare">
+        <copy tofile="${build.dir}/cobertura.ser" file="${cobertura-functional.file}"/>
+        <copy file="${cobertura.jar}" todir="${jboss.lib.dir}" overwrite="true" />
+    </target>
+
+    <target name="test:functional:cobertura-report" 
+        depends="test:functional:cobertura-report-functional-only, 
+        test:functional:cobertura-report-check-unit, 
+        test:functional:cobertura-report-merged"/>
+
+    <target name="test:functional:cobertura-report-functional-only">
+        <move file="${build.dir}/cobertura.ser" tofile="${cobertura-functional.file}"/>
+        <cobertura-report format="xml" destdir="${site.dir}/cobertura/functional" datafile="${cobertura-functional.file}">
+            <fileset dir="${caarray-client.src.dir}" />
+            <fileset dir="${caarray-common.src.dir}" />
+            <fileset dir="${caarray-ejb.src.dir}" />
+            <fileset dir="${caarray-war.src.dir}" />
+        </cobertura-report>
+        <cobertura-report format="html" destdir="${site.dir}/cobertura/functional" datafile="${cobertura-functional.file}">
+            <fileset dir="${caarray-client.src.dir}" />
+            <fileset dir="${caarray-common.src.dir}" />
+            <fileset dir="${caarray-ejb.src.dir}" />
+            <fileset dir="${caarray-war.src.dir}" />
+        </cobertura-report>
+    </target>
+    
+    <target name="test:functional:cobertura-report-check-unit">
+        <available file="${cobertura.file}" property="cobertura.unit.exists"/>    
+    </target>
+
+    <target name="test:functional:cobertura-report-merged" if="cobertura.unit.exists">
+        <cobertura-merge datafile="${cobertura-merged.file}">
+            <fileset file="${cobertura-merged.file}"/>
+            <fileset file="${cobertura.file}"/>
+        </cobertura-merge>
+        <cobertura-report format="xml" destdir="${site.dir}/cobertura/merged" datafile="${cobertura-merged.file}">
+            <fileset dir="${caarray-client.src.dir}" />
+            <fileset dir="${caarray-common.src.dir}" />
+            <fileset dir="${caarray-ejb.src.dir}" />
+            <fileset dir="${caarray-war.src.dir}" />
+        </cobertura-report>
+        <cobertura-report format="html" destdir="${site.dir}/cobertura/merged" datafile="${cobertura-merged.file}">
+            <fileset dir="${caarray-client.src.dir}" />
+            <fileset dir="${caarray-common.src.dir}" />
+            <fileset dir="${caarray-ejb.src.dir}" />
+            <fileset dir="${caarray-war.src.dir}" />
+        </cobertura-report>
     </target>
 
     <target name="test:check-functional-test-results">
@@ -1169,15 +1275,15 @@
     <target name="test:functional:run-tests" depends="test:selenium:run-tests,test:api:run-tests"/>
 
     <target name="test:functional:report">
-        <mkdir dir="${site.dir}/functional" />
-        <junitreport todir="${site.dir}/junit">
+        <mkdir dir="${site.dir}/junit/functional" />
+        <junitreport todir="${site.dir}/junit/functional">
             <fileset dir="${test.target.dir}/junit/selenium">
                 <include name="TEST-*.xml" />
             </fileset>
             <fileset dir="${test.target.dir}/junit/api/java">
                 <include name="TEST-*.xml" />
             </fileset>
-            <report format="frames" todir="${site.dir}/functional" />
+            <report format="frames" todir="${site.dir}/junit/functional" />
         </junitreport>
     </target>
 
@@ -1429,6 +1535,10 @@
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
     </target>
 
+    <target name="deploy:functional:caarray.ear" depends="build:functional:caarray.ear,deploy:caarray.ear-dependencies">
+        <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
+    </target>
+
     <target name="deploy:caarray-svc" depends="build:caarray-svc,prepare:create-local.properties">
         <ant dir="${caaray-svc.dir}" target="deployGlobus" inheritall="false" />
     </target>
@@ -1447,11 +1557,15 @@
     </target>
 
     <target name="deploy:stop-jboss">
-        <cargo containerId="jboss4x" action="stop" home="${jboss.home}" refid="${jboss.pid}"/>
+        <cargo containerId="jboss4x" action="stop" home="${jboss.home}">
+            <configuration  home="${jboss.home}/server/default">
+                <property name="cargo.rmi.port" value="${jboss.server.jndi.port}"/>                                
+            </configuration>
+        </cargo>
     </target>
 
     <target name="deploy:start-jboss" depends="deploy:check-if-jboss-is-running" unless="jboss.running">
-        <cargo containerId="jboss4x" action="start" home="${jboss.home}" wait="false" id="${jboss.pid}">
+        <cargo containerId="jboss4x" action="start" home="${jboss.home}" wait="false" id="jboss.pid">
             <configuration type="existing" home="${jboss.home}/server/default">
                 <property name="cargo.jboss.configuration" value="default"/>
             </configuration>
@@ -1459,9 +1573,11 @@
     </target>
 
     <target name="deploy:start-jboss-and-deploy" depends="deploy:check-if-jboss-is-running,deploy:caarray.ear-dependencies" unless="jboss.running">
-        <cargo containerId="jboss4x" action="start" home="${jboss.home}" wait="false" id="${jboss.pid}">
+        <cargo containerId="jboss4x" action="start" home="${jboss.home}" wait="false" id="jboss.pid">
+            <sysproperty key="jboss.shutdown.forceHalt" value="false"/>
             <configuration type="existing" home="${jboss.home}/server/default">
                 <property name="cargo.jboss.configuration" value="default"/>
+                <property name="cargo.jvmargs" value="-Djboss.shutdown.forceHalt=false"/>
                 <deployable type="ear" file="${caarray.ear}"/>
             </configuration>
         </cargo>

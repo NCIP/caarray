@@ -34,7 +34,7 @@
             </junit>
         </sequential>
     </macrodef>
-
+    
     <macrodef name="display-properties">
         <attribute name="v" default="NOT SET" />
         <element name="some-tasks" optional="yes" />

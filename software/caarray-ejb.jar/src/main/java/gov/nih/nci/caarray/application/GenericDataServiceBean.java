@@ -107,7 +107,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * Implementation of the GenericDataService.
  * @author Scott Miller
  */
-@Local
+@Local(GenericDataService.class)
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class GenericDataServiceBean implements GenericDataService {

@@ -98,7 +98,7 @@ import org.apache.log4j.Logger;
  * @author Akhil Bhaskar (Amentra, Inc.)
  *
  */
-@Local
+@Local(StateService.class)
 @Stateless
 public class StateServiceBean implements StateService {
 

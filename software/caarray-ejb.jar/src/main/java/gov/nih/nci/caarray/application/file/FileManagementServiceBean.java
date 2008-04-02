@@ -109,7 +109,7 @@ import org.jboss.annotation.ejb.TransactionTimeout;
  * EJB implementation of the entry point to the FileManagement subsystem. Delegates functionality
  * to other components in the subsystem.
  */
-@Local
+@Local(FileManagementService.class)
 @Stateless
 @Interceptors(ExceptionLoggingInterceptor.class)
 public class FileManagementServiceBean implements FileManagementService {
