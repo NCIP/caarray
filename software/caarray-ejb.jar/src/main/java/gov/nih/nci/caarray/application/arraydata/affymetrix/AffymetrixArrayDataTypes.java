@@ -142,7 +142,7 @@ public enum AffymetrixArrayDataTypes implements ArrayDataTypeDescriptor {
      * {@inheritDoc}
      */
     public boolean isEquivalent(ArrayDataType arrayDataType) {
-        return name.equals(arrayDataType.getName());
+        return arrayDataType != null && name.equals(arrayDataType.getName());
     }
 
 

@@ -13,7 +13,7 @@ public class AffymetrixArrayDataTypeTest {
         ArrayDataType type = createType(AffymetrixArrayDataTypes.AFFYMETRIX_CEL);
         assertFalse(AffymetrixArrayDataTypes.AFFYMETRIX_CEL.isEquivalent(null));
         assertTrue(AffymetrixArrayDataTypes.AFFYMETRIX_CEL.isEquivalent(type));
-        assertTrue(AffymetrixArrayDataTypes.AFFYMETRIX_SNP_CHP.isEquivalent(type));
+        assertFalse(AffymetrixArrayDataTypes.AFFYMETRIX_SNP_CHP.isEquivalent(type));
     }
 
     private ArrayDataType createType(AffymetrixArrayDataTypes descriptor) {

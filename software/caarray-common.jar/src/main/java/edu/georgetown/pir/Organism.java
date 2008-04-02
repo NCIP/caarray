@@ -130,6 +130,7 @@ public class Organism implements PersistentObject {
      * @return the additionalOrganismNameCollection
      */
     @ManyToMany(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<AdditionalOrganismName> getAdditionalOrganismNameCollection() {
         return additionalOrganismNameCollection;
     }
