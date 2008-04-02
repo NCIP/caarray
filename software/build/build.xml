@@ -340,7 +340,7 @@
         clean:caarray.war,
         clean:caarray.ear,
         clean:site.dir,
-        clean:test.classes.dir,
+        clean:test,
         clean:target.dir,
         clean:gridsvc,
         clean:caarraydb" description="Deletes all of the target directories" />
@@ -365,8 +365,8 @@
         <delete dir="${caarray-ear.target.dir}" />
     </target>
 
-    <target name="clean:test.classes.dir">
-        <delete dir="${test.classes.dir}" />
+    <target name="clean:test">
+        <delete dir="${test.target.dir}" />
     </target>
 
     <target name="clean:site.dir">
@@ -1762,4 +1762,14 @@
         </javadoc>
     </target>
 
+    <!-- ******************************************************************* -->
+    <!-- ** DISTRIBUTION TARGETS                                          ** -->
+    <!-- ******************************************************************* -->
+    
+    <target name="dist:source" description="Creates a zip file with all source code for distribution on gforge file site" depends="clean">
+        <mkdir dir="${site.dir}/dist"/>
+        <zip destfile="${site.dir}/dist/caarray-src.zip">
+            <fileset dir="${basedir}" excludes="dist/**, load-test/**, **/eclipse-out/**, **/.svn/**" />
+        </zip>
+    </target>
 </project>
