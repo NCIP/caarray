@@ -179,7 +179,7 @@ public class Factor extends AbstractCaArrayEntity {
      * @return the factorValues
      */
     @OneToMany(mappedBy = "factor", fetch = FetchType.LAZY)
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     public Set<FactorValue> getFactorValues() {
         return this.factorValues;
     }

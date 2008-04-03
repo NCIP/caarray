@@ -13,4 +13,5 @@
         <migrator-class>gov.nih.nci.caarray.web.upgrade.IlluminaExpressionDesignFixer</migrator-class>
     </migration>
     <migration fromVersion="2.0.1.rc2" toVersion="2.0.1.rc3" />
+    <migration fromVersion="2.0.1.rc3" toVersion="2.0.1.rc4" />
 </migrations>

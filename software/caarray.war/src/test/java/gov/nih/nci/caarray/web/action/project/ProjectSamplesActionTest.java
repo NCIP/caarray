@@ -93,6 +93,10 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
+import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.Extract;
@@ -101,9 +105,12 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -210,17 +217,30 @@ public class ProjectSamplesActionTest {
     }
 
     @Test
-    public void testDelete() {
+    public void testDelete() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         DUMMY_SOURCE.getSamples().add(DUMMY_SAMPLE);
         DUMMY_SAMPLE.getSources().add(DUMMY_SOURCE);
-        action.setCurrentSample(DUMMY_SAMPLE);
+        Project p = new Project();
+        setProjectForExperiment(p.getExperiment(), p);
+        p.getPublicProfile().setSecurityLevel(SecurityLevel.READ_SELECTIVE);
+        p.getPublicProfile().getSampleSecurityLevels().put(DUMMY_SAMPLE, SampleSecurityLevel.READ);
+        DUMMY_SAMPLE.setExperiment(p.getExperiment());
+        action.setCurrentSample(DUMMY_SAMPLE);        
         assertEquals("list", action.delete());
         assertFalse(DUMMY_SOURCE.getSamples().contains(DUMMY_SAMPLE));
+        assertTrue(p.getPublicProfile().getSampleSecurityLevels().isEmpty());
 
         DUMMY_SAMPLE.getExtracts().add(new Extract());
         action.setCurrentSample(DUMMY_SAMPLE);
         assertEquals("list", action.delete());
         assertTrue(ActionHelper.getMessages().contains("experiment.annotations.cantdelete"));
+    }
+    
+    private void setProjectForExperiment(Experiment e, Project p) throws SecurityException, NoSuchMethodException,
+            IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        Method m = e.getClass().getDeclaredMethod("setProject", Project.class);
+        m.setAccessible(true);
+        m.invoke(e, p);
     }
 
     private static class LocalGenericDataService extends GenericDataServiceStub {

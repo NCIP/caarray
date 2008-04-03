@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
+import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.search.FactorSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -185,6 +186,20 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     protected void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException {
         getProjectManagementService().copyFactor(getProject(), this.currentFactor.getId());
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SkipValidation
+    @Override
+    public String delete() {
+        // clean up factor value associations
+        for (FactorValue fv : getCurrentFactor().getFactorValues()) {
+            fv.getHybridization().getFactorValues().remove(fv);
+        }        
+        return super.delete();
+    }
+
 
     /**
      * {@inheritDoc}
@@ -230,5 +245,5 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      */
     public void setCategories(Set<Term> categories) {
         this.categories = categories;
-    }
+    }    
 }
