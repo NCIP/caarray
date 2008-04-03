@@ -51,6 +51,6 @@ Protocol Name	Plated and digested cell lines	Ligation and amplification	Affymetr
 Protocol Type	grow	nucleic_acid_extraction	labeling	hybridization	image_acquisition	bioassay_data_transformation
 Protocol Description	Cell Lines were plated and digested with restriction enzyme Sty or NSP	"Digested DNA was ligated to an adaptor and amplified by PCR using Platinum Pfx DNA Polymerase, yeilding a product of 250-2000bp"	Genechip DNA Labeling biotin-labeled reagent for end-labeling fragmented PCR amplicons - https://www.affymetrix.com/support/downloads/manuals/500k_assay_manual.pdf	standard Affymetrix hybridization protocol - https://www.affymetrix.com/support/downloads/manuals/500k_assay_manual.pdf	standard Affymetrix scanning protocol - https://www.affymetrix.com/support/downloads/manuals/500k_assay_manual.pdf	Referenced normal CEPH population
 Protocol Term Source REF	MO	MO	MO	MO	MO	MO
-SDRF File	GSK_500K_March18.sdrf					
+SDRF File	GSK_500K.sdrf					
 Term Source Name	MO	caArray	NCI Thesaurus	ncbitax		
 Term Source File	http://mged.sourceforge.net/ontologies/MGEDontology.php	https://array.nci.nih.gov	http://nciterms.nci.nih.gov/NCIBrowser/Connect.do?dictionary=NCI_Thesaurus&bookmarktag=1	http://www.ncbi.nlm.nih.gov/Taxonomy/		
