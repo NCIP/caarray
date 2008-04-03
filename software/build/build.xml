@@ -190,7 +190,6 @@
         <include name="cog-axis.jar" />
         <include name="cog-jglobus.jar" />
         <include name="commons-discovery-0.2.jar" />
-        <include name="commons-logging-1.1.jar" />
         <include name="jce-jdk13-125.jar" />
         <include name="wsrf_core.jar" />
         <include name="wsrf_core_stubs.jar" />
@@ -221,6 +220,7 @@
             <include name="caGrid-1.1-data-stubs.jar" />
             <include name="commons-collections-3.2.jar" />
             <include name="commons-lang-2.3.jar" />
+            <include name="commons-logging-1.1.jar" />
             <include name="csmapi.jar" />
             <include name="ejb3-persistence.jar" />
             <include name="hibernate3.jar" />
@@ -325,7 +325,7 @@
         <antcall target="test" />
     </target>
 
-    
+
     <target name="nightly-build" depends="continuous-integration,
         database:reinitialize,
         build-functional,
@@ -1144,12 +1144,12 @@
 
     <!-- Functional (Selenium) Test Targets -->
 
-    <target name="test:functional" unless="notest" 
-        depends="test:functional:prepare, 
-        deploy:start-jboss-and-deploy, 
+    <target name="test:functional" unless="notest"
+        depends="test:functional:prepare,
+        deploy:start-jboss-and-deploy,
         test:functional:run-tests,
         deploy:stop-jboss,
-        test:functional:report, 
+        test:functional:report,
         test:functional:cobertura-report">
         <fail if="junit.failure" message="There were functional test failures." />
     </target>
@@ -1159,9 +1159,9 @@
         <copy file="${cobertura.jar}" todir="${jboss.lib.dir}" overwrite="true" />
     </target>
 
-    <target name="test:functional:cobertura-report" 
-        depends="test:functional:cobertura-report-functional-only, 
-        test:functional:cobertura-report-check-unit, 
+    <target name="test:functional:cobertura-report"
+        depends="test:functional:cobertura-report-functional-only,
+        test:functional:cobertura-report-check-unit,
         test:functional:cobertura-report-merged"/>
 
     <target name="test:functional:cobertura-report-functional-only">
@@ -1179,9 +1179,9 @@
             <fileset dir="${caarray-war.src.dir}" />
         </cobertura-report>
     </target>
-    
+
     <target name="test:functional:cobertura-report-check-unit">
-        <available file="${cobertura.file}" property="cobertura.unit.exists"/>    
+        <available file="${cobertura.file}" property="cobertura.unit.exists"/>
     </target>
 
     <target name="test:functional:cobertura-report-merged" if="cobertura.unit.exists">
@@ -1546,7 +1546,7 @@
     <target name="deploy:caarray-svc-jboss" depends="build:caarray-svc,prepare:create-local.properties">
         <unzip src="${jboss-globus-serverinstance-config.zip}"  dest="${globoss.server.instance.home}"/>
         <ant dir="${caaray-svc.dir}" target="deployJBoss" inheritall="false">
-            <property name="jboss.dir" value="${globoss.server.instance.home}"/>    
+            <property name="jboss.dir" value="${globoss.server.instance.home}"/>
         </ant>
     </target>
 
@@ -1559,7 +1559,7 @@
     <target name="deploy:stop-jboss">
         <cargo containerId="jboss4x" action="stop" home="${jboss.home}">
             <configuration  home="${jboss.home}/server/default">
-                <property name="cargo.rmi.port" value="${jboss.server.jndi.port}"/>                                
+                <property name="cargo.rmi.port" value="${jboss.server.jndi.port}"/>
             </configuration>
         </cargo>
     </target>
@@ -1883,7 +1883,7 @@
     <!-- ******************************************************************* -->
     <!-- ** DISTRIBUTION TARGETS                                          ** -->
     <!-- ******************************************************************* -->
-    
+
     <target name="dist:source" description="Creates a zip file with all source code for distribution on gforge file site" depends="clean">
         <mkdir dir="${site.dir}/dist"/>
         <zip destfile="${site.dir}/dist/caarray-src.zip">
