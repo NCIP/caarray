@@ -188,7 +188,6 @@
         <include name="cog-axis.jar" />
         <include name="cog-jglobus.jar" />
         <include name="commons-discovery-0.2.jar" />
-        <include name="commons-logging-1.1.jar" />
         <include name="jce-jdk13-125.jar" />
         <include name="wsrf_core.jar" />
         <include name="wsrf_core_stubs.jar" />
@@ -219,6 +218,7 @@
             <include name="caGrid-1.1-data-stubs.jar" />
             <include name="commons-collections-3.2.jar" />
             <include name="commons-lang-2.3.jar" />
+            <include name="commons-logging-1.1.jar" />
             <include name="csmapi.jar" />
             <include name="ejb3-persistence.jar" />
             <include name="hibernate3.jar" />
@@ -1435,7 +1435,7 @@
     <target name="deploy:caarray-svc-jboss" depends="build:caarray-svc,prepare:create-local.properties">
         <unzip src="${jboss-globus-serverinstance-config.zip}"  dest="${globoss.server.instance.home}"/>
         <ant dir="${caaray-svc.dir}" target="deployJBoss" inheritall="false">
-            <property name="jboss.dir" value="${globoss.server.instance.home}"/>    
+            <property name="jboss.dir" value="${globoss.server.instance.home}"/>
         </ant>
     </target>
 
@@ -1766,7 +1766,7 @@
     <!-- ******************************************************************* -->
     <!-- ** DISTRIBUTION TARGETS                                          ** -->
     <!-- ******************************************************************* -->
-    
+
     <target name="dist:source" description="Creates a zip file with all source code for distribution on gforge file site" depends="clean">
         <mkdir dir="${site.dir}/dist"/>
         <zip destfile="${site.dir}/dist/caarray-src.zip">
