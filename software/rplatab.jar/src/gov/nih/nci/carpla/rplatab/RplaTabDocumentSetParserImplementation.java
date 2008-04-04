@@ -157,8 +157,12 @@ public class RplaTabDocumentSetParserImplementation
 		while ((values = rowReader.nextRow()) != null) {
 			// checkNumberOfColumns(values.length, correctNumberOfColumns);
 
-			// assume first row in section is first
-
+		
+			
+			
+			if ( values[0].startsWith("#" ))
+				break;
+			
 			for (int current_index_in_principal_headers = 0; current_index_in_principal_headers < principalNodeSize; current_index_in_principal_headers++) {
 
 				SradfHeader header = sectionPrincipalHeaders.getHeaders()

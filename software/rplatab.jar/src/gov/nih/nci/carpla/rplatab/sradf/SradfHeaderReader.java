@@ -5,7 +5,6 @@ import gov.nih.nci.carpla.rplatab.RplaConstants;
 import gov.nih.nci.carpla.rplatab.RplaTabDocumentSet;
 import gov.nih.nci.carpla.rplatab.RplaTabParsingException;
 
-
 import gov.nih.nci.carpla.rplatab.RplaConstants.SradfSectionType;
 
 import gov.nih.nci.carpla.rplatab.files.SradfFile;
@@ -24,7 +23,7 @@ public class SradfHeaderReader {
 
 	public static SradfHeaders readSradfHeaders (	RplaTabDocumentSet dataset,
 													SradfFile sradfFile)
-	throws RplaTabParsingException
+																		throws RplaTabParsingException
 	{
 
 		try {
@@ -33,29 +32,26 @@ public class SradfHeaderReader {
 			java.io.Reader r = getHeaderReader(	sradfFile,
 												RplaConstants.SradfSectionType.Samples);
 
+			
+			
 			RplaDatasetSradfGrammar parser = new RplaDatasetSradfGrammar(r);
 
-			SradfSectionHeaders samplessectionheaders = parser
-					.parseSamplesSectionheaders();
-			
+			SradfSectionHeaders samplessectionheaders = parser.parseSamplesSectionheaders();
+
 			samplessectionheaders.setSectionType(RplaConstants.SradfSectionType.Samples);
 			// checkForMultipleTabs(samplessectionheaders);
 
 			r.close();
 
-			
 			r = getHeaderReader(sradfFile, RplaConstants.SradfSectionType.Array);
 
 			parser.ReInit(r);
-			SradfSectionHeaders arraylocationssectionheaders = parser
-					.parseArraySectionHeaders();
+			SradfSectionHeaders arraylocationssectionheaders = parser.parseArraySectionHeaders();
 
 			// checkForMultipleTabs(arraylocationssectionheaders);
 
-			
 			arraylocationssectionheaders.setSectionType(RplaConstants.SradfSectionType.Array);
-			
-			
+
 			r.close();
 
 			// --
@@ -63,12 +59,11 @@ public class SradfHeaderReader {
 								RplaConstants.SradfSectionType.ArrayData);
 
 			parser.ReInit(r);
-			SradfSectionHeaders arraydatasectionheaders = parser
-					.parseArrayDataSectionHeaders();
+			SradfSectionHeaders arraydatasectionheaders = parser.parseArrayDataSectionHeaders();
 
 			// checkForMultipleTabs(arraydatasectionheaders);
 			arraydatasectionheaders.setSectionType(RplaConstants.SradfSectionType.ArrayData);
-		
+
 			r.close();
 			r = null;
 
@@ -83,23 +78,22 @@ public class SradfHeaderReader {
 
 			// sfi.setSradfFileHolder(sradffileholder);
 
-			
-
 			dataset.setSradfHeaders(sfi);
 
 			return sfi;
 
 		} catch (ParseException pe) {
-			//System.out.println(pe.getMessage());
-			dataset.getValidationResult().addMessage(dataset.getSradfFile().getFile(), Type.ERROR,pe.getMessage() );
+			// System.out.println(pe.getMessage());
+			dataset.getValidationResult().addMessage(	dataset	.getSradfFile()
+																.getFile(),
+														Type.ERROR,
+														pe.getMessage());
 			throw new RplaTabParsingException(pe.getMessage());
-		}
-		catch (IOException ioe) {
+		} catch (IOException ioe) {
 			ioe.printStackTrace();
-			//add to ValidationResult
+			// add to ValidationResult
 		}
-		
-		
+
 		// TODO proper exception handling
 		return null;
 	}
@@ -111,10 +105,13 @@ public class SradfHeaderReader {
 		try {
 			if (section == SradfSectionType.Samples) {
 				String str = null;
-				BufferedReader in = new BufferedReader(new FileReader(sradffile
-						.getFile()
-						.getAbsolutePath()));
-				str = in.readLine();// + "\n";
+				BufferedReader in = new BufferedReader(new FileReader(sradffile	.getFile()
+																				.getAbsolutePath()));
+
+				while ((str = in.readLine()).startsWith("#"))
+					;
+				;// + "\n";
+
 				
 				java.io.StringReader sr = new java.io.StringReader(str);
 				java.io.Reader r = new java.io.BufferedReader(sr);
@@ -123,30 +120,28 @@ public class SradfHeaderReader {
 
 			else if (section == SradfSectionType.Array) {
 				String str = null;
-				BufferedReader in = new BufferedReader(new FileReader(sradffile
-						.getFile()
-						.getAbsolutePath()));
-				while (!(str = in.readLine())
-						.startsWith(RplaConstants.SradfSamplesSectionEnd)) {
+				BufferedReader in = new BufferedReader(new FileReader(sradffile	.getFile()
+																				.getAbsolutePath()));
+				while (!(str = in.readLine()).startsWith(RplaConstants.SradfSamplesSectionEnd)) {
 
 				}
-
-				str = in.readLine();// + "\n";
+				while ((str = in.readLine()).startsWith("#"))
+					;
+				// str = in.readLine();// + "\n";
 				
 				java.io.StringReader sr = new java.io.StringReader(str);
 				java.io.Reader r = new java.io.BufferedReader(sr);
 				return r;
 			} else if (section == SradfSectionType.ArrayData) {
 				String str = null;
-				BufferedReader in = new BufferedReader(new FileReader(sradffile
-						.getFile()
-						.getAbsolutePath()));
-				while (!(str = in.readLine())
-						.startsWith(RplaConstants.SradfArraySectionEnd)) {
+				BufferedReader in = new BufferedReader(new FileReader(sradffile	.getFile()
+																				.getAbsolutePath()));
+				while (!(str = in.readLine()).startsWith(RplaConstants.SradfArraySectionEnd)) {
 
 				}
-
-				str = in.readLine();// + "\n";
+				while ((str = in.readLine()).startsWith("#"))
+					;
+				// str = in.readLine();// + "\n";
 				
 				java.io.StringReader sr = new java.io.StringReader(str);
 				java.io.Reader r = new java.io.BufferedReader(sr);

@@ -101,6 +101,7 @@ public class SradfSectionRowReader {
 	private SradfSectionType	_sectionType;
 	private String				_endLine;
 
+	// ####################################################################
 	public String[] nextRow () {
 		String str = null;
 		String[] values;
@@ -119,6 +120,7 @@ public class SradfSectionRowReader {
 		return null;
 	}
 
+	// ####################################################################
 	public SradfSectionRowReader(File file, SradfSectionType sectionType) {
 		_sectionType = sectionType;
 		try {
@@ -127,7 +129,9 @@ public class SradfSectionRowReader {
 				_endLine = RplaConstants.SradfSamplesSectionEnd;
 				String str = null;
 				_in = new BufferedReader(new FileReader(file.getAbsolutePath()));
-				_in.readLine();
+
+				while ((str = _in.readLine()).startsWith("#")) {
+				}
 
 			}
 
@@ -135,12 +139,12 @@ public class SradfSectionRowReader {
 				_endLine = RplaConstants.SradfArraySectionEnd;
 				String str = null;
 				_in = new BufferedReader(new FileReader(file.getAbsolutePath()));
-				while ((str = _in.readLine())
-						.compareTo(RplaConstants.SradfSamplesSectionEnd) != 0) {
+				while ((str = _in.readLine()).compareTo(RplaConstants.SradfSamplesSectionEnd) != 0) {
 
 				}
 
-				_in.readLine();
+				while ((str = _in.readLine()).startsWith("#")) {
+				}
 
 			} else if (sectionType == SradfSectionType.ArrayData) {
 
@@ -148,13 +152,12 @@ public class SradfSectionRowReader {
 
 				_in = new BufferedReader(new FileReader(file.getAbsolutePath()));
 				String str = null;
-				while ((str = _in.readLine())
-						.compareTo(RplaConstants.SradfArraySectionEnd) != 0) {
+				while ((str = _in.readLine()).compareTo(RplaConstants.SradfArraySectionEnd) != 0) {
 
 				}
 
-				_in.readLine();
-
+				while ((str = _in.readLine()).startsWith("#")) {
+				}
 			}
 
 		} catch (Exception e) {

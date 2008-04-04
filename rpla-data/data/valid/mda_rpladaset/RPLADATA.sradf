@@ -1,3 +1,4 @@
+#
 Source Name	Characteristics[CellLine]	Term Source REF	Protocol REF	Parameter Value[cultureType]	Protocol REF	Parameter Value[compound]	Parameter Value[harvestTime]	Unit[TimeUnit]	Term Source REF	Sample Name
 T47D	T47D	ATCC	CellCulture	3D	->	->	0	hours	MGED Ontology	3D.P2.002.T47D.3D.Control.0h
 MDA-MB-231	MDA-MB-231	ATCC	CellCulture	3D	CompoundTreatment	U1026.EGF	1	hours	MGED Ontology	3D.P2.004.MDA-MB-231.3D.UO126.EGF.1h
@@ -191,7 +192,9 @@ MDA-MB-231	MDA-MB-231	ATCC	CellCulture	2D	->	->	0.5	hours	MGED Ontology	2D.P2.00
 T47D	T47D	ATCC	CellCulture	2D	CompoundTreatment	U1026.EGF	4	hours	MGED Ontology	2D.P2.001.T47D.UO126.EGF.4h
 MDA-MB-231	MDA-MB-231	ATCC	CellCulture	2D	->	->	18	hours	MGED Ontology	2D.P2.003.MDA-MB-231.Control.18h
 T47D	T47D	ATCC	CellCulture	2D	CompoundTreatment	DMSO.EGF	12	hours	MGED Ontology	2D.P2.001.T47D.DMSO.EGF.12h
+################################
 END_SAMPLES_SECTION
+################################
 Array REF	Block Row	Block Column	Row	Column	Sample REF	Dilution REF			
 ICBP_MDA_RPPA	1	1	1	1	3D.P2.002.T47D.3D.Control.0h	dil1			
 ICBP_MDA_RPPA	1	1	1	2	3D.P2.002.T47D.3D.Control.0h	dil2			
@@ -1345,7 +1348,9 @@ ICBP_MDA_RPPA	4	12	4	3	2D.P2.001.T47D.DMSO.EGF.12h	dil3
 ICBP_MDA_RPPA	4	12	4	4	2D.P2.001.T47D.DMSO.EGF.12h	dil4			
 ICBP_MDA_RPPA	4	12	4	5	2D.P2.001.T47D.DMSO.EGF.12h	dil5			
 ICBP_MDA_RPPA	4	12	4	6	->	->
+#############################
 END_ARRAY_SECTION
+#############################
 Array REF	Antibody REF	Assay Name	Technology Type	Term Source REF	Image File	Array Data File
 ICBP_MDA_RPPA	4EBP1	4EBP1	RPLA	->	4EBP1.tif	4EBP1.txt
 ICBP_MDA_RPPA	Akt	Akt	RPLA	->	Akt.tif	Akt.txt
@@ -1429,4 +1434,6 @@ ICBP_MDA_RPPA	Src aut	Src aut	RPLA	->	Src aut.tif	Src aut.txt
 ICBP_MDA_RPPA	Src man	Src man	RPLA	->	Src man.tif	Src man.txt
 ICBP_MDA_RPPA	STAT3	STAT3	RPLA	->	STAT3.tif	STAT3.txt
 ICBP_MDA_RPPA	survivin	survivin	RPLA	->	survivin.tif	survivin.txt
+#####################
 END_ARRAYDATA_SECTION
+#####################
