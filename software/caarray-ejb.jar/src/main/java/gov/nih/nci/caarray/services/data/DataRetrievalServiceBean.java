@@ -187,6 +187,7 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
             DataRetrievalRequest request) {
         HybridizationData hybridizationData = new HybridizationData();
         hybridizationData.setHybridization(copyFromHybridizationData.getHybridization());
+        hybridizationData.setId(copyFromHybridizationData.getId());
         dataSet.getHybridizationDataList().add(hybridizationData);
         copyColumns(hybridizationData, copyFromHybridizationData, request.getQuantitationTypes());
         hybridizationData.setDataSet(dataSet);
