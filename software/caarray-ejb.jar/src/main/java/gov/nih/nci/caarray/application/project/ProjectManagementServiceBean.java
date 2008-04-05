@@ -212,6 +212,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private int processUploadedFile(Project project, File file, String fileName, Set<String> existingFileNameSet,
             List<String> conflictingFiles) throws ProposalWorkflowException, IOException,
             InconsistentProjectStateException {
+    	LOG.info("");
         Pattern p = Pattern.compile(".zip$");
         Matcher m = p.matcher(fileName.toLowerCase()); // NOPMD
         int count = 0;

@@ -121,6 +121,7 @@ public class FileManagementServiceBean implements FileManagementService {
     private FileManagementJobSubmitter submitter = new JmsJobSubmitter();
 
     private void checkForImport(CaArrayFileSet fileSet) {
+    	LOG.info("");
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
             if (!caArrayFile.getFileStatus().isImportable()) {
                 throw new IllegalArgumentException("Illegal attempt to import file "
@@ -130,6 +131,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void checkForValidation(CaArrayFileSet fileSet) {
+    	LOG.info("checkForValidation");
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
             if (!caArrayFile.getFileStatus().isValidatable()) {
                 throw new IllegalArgumentException("Illegal attempt to validate file "
@@ -142,6 +144,7 @@ public class FileManagementServiceBean implements FileManagementService {
      * {@inheritDoc}
      */
     public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
+    	LOG.info("importFiles");
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForImport(fileSet);
         clearValidationMessages(fileSet);
@@ -158,6 +161,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet) {
+    	LOG.info("sendImportJobMessage");
         ProjectFilesImportJob job = new ProjectFilesImportJob(UsernameHolder.getUser(), targetProject, fileSet);
         getSubmitter().submitJob(job);
     }
@@ -166,6 +170,7 @@ public class FileManagementServiceBean implements FileManagementService {
      * {@inheritDoc}
      */
     public void validateFiles(Project project, CaArrayFileSet fileSet) {
+    	LOG.info("validateFiles");
         checkForValidation(fileSet);
         clearValidationMessages(fileSet);
         updateFileStatus(fileSet, FileStatus.IN_QUEUE);
@@ -173,6 +178,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void sendValidationJobMessage(Project project, CaArrayFileSet fileSet) {
+    	LOG.info("sendValidationJobMessage");
         ProjectFilesValidationJob job = new ProjectFilesValidationJob(UsernameHolder.getUser(), project, fileSet);
         getSubmitter().submitJob(job);
     }
@@ -232,6 +238,8 @@ public class FileManagementServiceBean implements FileManagementService {
      * {@inheritDoc}
      */
     public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
+    	LOG.info("addSupplementalFiles");
+    	
         if (targetProject == null) {
             throw new IllegalArgumentException("targetProject was null");
         }

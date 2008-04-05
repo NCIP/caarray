@@ -198,6 +198,7 @@ public class FileAccessServiceBean implements FileAccessService {
     }
 
     private void setTypeFromExtension(CaArrayFile caArrayFile, String filename) {
+    	LOG.info("finally..");
         FileType type = FileExtension.getTypeFromExtension(filename);
         if (type != null) {
             caArrayFile.setFileType(type);

@@ -151,8 +151,10 @@ enum FileExtension {
 	 */
 	static FileType getTypeFromExtension ( String filename) {
 		String extension = FilenameUtils.getExtension(filename);
+		System.out.println("FileExtension: filename=" + (filename));
 		FileExtension fileExtension = FileExtension.getByExtension(extension);
 		if (fileExtension != null) {
+			System.out.println("FileExtension : fileExtension=" + (fileExtension.toString()));
 			return fileExtension.getType();
 		}
 		return null;

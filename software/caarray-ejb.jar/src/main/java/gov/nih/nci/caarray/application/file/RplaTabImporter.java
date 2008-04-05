@@ -21,6 +21,7 @@ import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.carpla.rplatab.RplaTabDocumentSet;
 import gov.nih.nci.carpla.rplatab.RplaTabDocumentSetParser;
@@ -30,34 +31,59 @@ import gov.nih.nci.carpla.rplatab.files.RplaIdfFile;
 import gov.nih.nci.carpla.rplatab.files.SradfFile;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 public class RplaTabImporter {
 
-	private static final Logger		LOG	= Logger.getLogger(MageTabImporter.class);
+	private static final Logger		LOG	= Logger.getLogger(RplaTabImporter.class);
 
 	private final CaArrayDaoFactory	daoFactory;
 	private final RplaTabTranslator	translator;
 
+	// #######################################################################
 	RplaTabImporter(RplaTabTranslator translator, CaArrayDaoFactory daoFactory) {
 		this.translator = translator;
 		this.daoFactory = daoFactory;
 	}
 
+	// #######################################################################
 	void validateFiles ( CaArrayFileSet fileSet) {
-		System.out.println("In RplaTabImporter!!!!!!!!!");
+
 		LOG.info("Validating RPLA-TAB document set");
+
 		updateFileStatus(fileSet, FileStatus.VALIDATING);
+
 		RplaTabInputFileSet inputSet = getInputFileSet(fileSet);
 		try {
 			updateFileStatus(fileSet, FileStatus.VALIDATED);
+
+			LOG.info("calling RPLA-TAB validate document set");
 			handleResult(	fileSet,
 							RplaTabDocumentSetParser.INSTANCE.validate(inputSet));
+			// basically parsing twice 
+
 			if (!fileSet.statusesContains(FileStatus.VALIDATION_ERRORS)) {
+
 				RplaTabDocumentSet documentSet = RplaTabDocumentSetParser.INSTANCE.parse(inputSet);
+
+				List<ValidationMessage> validationMessages = documentSet.getValidationResult()
+																		.getMessages();
+				for (ValidationMessage vm : validationMessages) {
+
+					LOG.info(vm.getMessage());
+
+				}
+
 				handleResult(fileSet, translator.validate(documentSet, fileSet));
 			}
+
+			else {
+				LOG.info("FileStatus.VALIDATION_ERRORS were found.");
+
+			}
+
 		} catch (RplaTabParsingException e) {
 			updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
 		} catch (InvalidDataException e) {
@@ -65,23 +91,27 @@ public class RplaTabImporter {
 		}
 	}
 
+	// #######################################################################
 	private void handleResult ( CaArrayFileSet fileSet, ValidationResult result)
 	{
 		for (FileValidationResult fileValidationResult : result.getFileValidationResults()) {
 			CaArrayFile caArrayFile = fileSet.getFile(fileValidationResult.getFile());
 			if (!result.isValid()) {
 				caArrayFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
+				LOG.info("setting with FileStatus.VALIDATION_ERRORS : " + caArrayFile.getName());
 			} else {
 				caArrayFile.setFileStatus(FileStatus.VALIDATED);
+				LOG.info("setting with FileStatus.VALIDATED : " + caArrayFile.getName());
 			}
 			caArrayFile.setValidationResult(fileValidationResult);
 		}
 	}
 
+	// #######################################################################
 	void importFiles ( Project targetProject, CaArrayFileSet fileSet)
 																		throws RplaTabParsingException
 	{
-		LOG.info("Importing MAGE-TAB document set");
+		LOG.info("Importing RPLA-TAB document set");
 		updateFileStatus(fileSet, FileStatus.IMPORTING);
 		RplaTabInputFileSet inputSet = getInputFileSet(fileSet);
 		RplaTabDocumentSet documentSet;
@@ -138,9 +168,15 @@ public class RplaTabImporter {
 
 	private void updateFileStatus ( CaArrayFileSet fileSet, FileStatus status) {
 		for (CaArrayFile file : fileSet.getFiles()) {
-			if (isMageTabFile(file)) {
+			// if (isMageTabFile(file)) {
+			if (isRplaTabFile(file)) {
+				LOG.info(file.getName() + " is considered a RPLA-TAB file");
+
 				file.setFileStatus(status);
 				getProjectDao().save(file);
+			} else {
+				LOG.info(file.getName() + " is not considered a RPLA-TAB file");
+
 			}
 		}
 	}
@@ -149,6 +185,10 @@ public class RplaTabImporter {
 		return FileType.MAGE_TAB_ADF.equals(file.getFileType()) || FileType.MAGE_TAB_DATA_MATRIX.equals(file.getFileType())
 				|| FileType.MAGE_TAB_IDF.equals(file.getFileType())
 				|| FileType.MAGE_TAB_SDRF.equals(file.getFileType());
+	}
+
+	private boolean isRplaTabFile ( CaArrayFile file) {
+		return FileType.RPLA_TAB_RPLAIDF.equals(file.getFileType()) || FileType.RPLA_TAB_SRADF.equals(file.getFileType());
 	}
 
 	// private MageTabInputFileSet getInputFileSet(CaArrayFileSet fileSet) {
