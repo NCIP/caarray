@@ -444,7 +444,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             factorValue.setValue(value);
             currentUnitable = factorValue;
             if (currentHybridization != null) {
-                currentHybridization.getFactorValues().add(factorValue);                               
+                currentHybridization.getFactorValues().add(factorValue);
             } else {
                 addError("Factor Value columns must come after (to the right of) a Hybridization column");
             }
@@ -516,7 +516,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleTermSourceRef(String value) {
         TermSource termSource = getTermSource(value);
         if (termSource == null) {
-            addWarning("Term Source " + value + " is not defined in the IDF document");
+            addError("Term Source " + value + " is not defined in the IDF document");
         }
         currentTermSourceable.setTermSource(termSource);
     }

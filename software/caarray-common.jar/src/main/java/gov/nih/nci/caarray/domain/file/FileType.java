@@ -83,8 +83,10 @@
 
 package gov.nih.nci.caarray.domain.file;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -242,6 +244,8 @@ public enum FileType implements Comparable<FileType>  {
     private static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
     private static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
     private static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
+    private static final Map<FileType, FileType> RAW_TO_DERIVED_MAP = new HashMap<FileType, FileType>();
+    private static final Map<FileType, FileType> DERIVED_TO_RAW_MAP = new HashMap<FileType, FileType>();
 
     static {
         ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
@@ -274,6 +278,8 @@ public enum FileType implements Comparable<FileType>  {
         PARSEABLE_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
         PARSEABLE_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_CSV);
         PARSEABLE_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
+        RAW_TO_DERIVED_MAP.put(AGILENT_RAW_TXT, AGILENT_DERIVED_TXT);
+        DERIVED_TO_RAW_MAP.put(AGILENT_DERIVED_TXT, AGILENT_RAW_TXT);
     }
 
     /**
@@ -332,4 +338,19 @@ public enum FileType implements Comparable<FileType>  {
         return ARRAY_DESIGN_FILE_TYPES;
     }
 
+    /**
+     * @return the raw version of this file type
+     */
+    public FileType getRawType() {
+        FileType rawType = DERIVED_TO_RAW_MAP.get(this);
+        return (rawType == null) ? this : rawType;
+    }
+
+    /**
+     * @return the derived version of this file type
+     */
+    public FileType getDerivedType() {
+        FileType derivedType = RAW_TO_DERIVED_MAP.get(this);
+        return (derivedType == null) ? this : derivedType;
+    }
 }

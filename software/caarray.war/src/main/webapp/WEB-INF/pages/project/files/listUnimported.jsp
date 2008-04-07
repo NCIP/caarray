@@ -9,9 +9,22 @@
     doFilter = function() {
       Caarray.submitAjaxForm('selectFilesForm', 'unimportedForm', {url: '${listUnimportedFormUrl}'});
     }
-    
+
     openUploadWindow = function() {
-       uploadWindow = window.open('${uploadInBackgroundUrl}', '_blank', "width=685,height=350,left=0,top=0,toolbar,scrollbars,resizable,status=yes");     
+       uploadWindow = window.open('${uploadInBackgroundUrl}', '_blank', "width=685,height=350,left=0,top=0,toolbar,scrollbars,resizable,status=yes");
+    }
+
+    importFiles = function(importUrl) {
+        var formData = Form.serialize('selectFilesForm');
+        new Ajax.Request('<c:url value="/protected/ajax/project/files/validateSelectedImportFiles.action"/>', {
+            onSuccess: function(result) {
+                var json = eval('(' + result.responseText + ')');
+                if (json.validated || confirm(json.confirmMessage)) {
+                    TabUtils.submitTabFormToUrl('selectFilesForm', importUrl, 'tabboxlevel2wrapper');
+                }
+            },
+            parameters: formData
+        });
     }
 </script>
 
@@ -26,7 +39,7 @@
             </div>
         </c:if>
     </div>
-        
+
   <div class="tableboxpad" id="unimportedForm">
       <%@ include file="/WEB-INF/pages/project/files/listUnimportedForm.jsp" %>
     </div>
@@ -40,7 +53,7 @@
             <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />
             <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
             <c:url value="/protected/ajax/project/files/importFiles.action" var="importUrl"/>
-            <caarray:linkButton actionClass="import" text="Import" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${importUrl}', 'tabboxlevel2wrapper');" />
+            <caarray:linkButton actionClass="import" text="Import" onclick="importFiles('${importUrl}');" />
             <c:url value="/protected/ajax/project/files/addSupplementalFiles.action" var="supplementalUrl"/>
             <caarray:linkButton actionClass="import" text="Add Supplemental Files" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${supplementalUrl}', 'tabboxlevel2wrapper');" />
             <c:url value="/protected/ajax/project/files/listUnimported.action" var="unimportedUrl"/>

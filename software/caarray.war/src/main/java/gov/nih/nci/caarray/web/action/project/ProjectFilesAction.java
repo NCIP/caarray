@@ -99,12 +99,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.zip.ZipException;
+
+import net.sf.json.JSONObject;
 
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.set.TransformedSet;
@@ -129,6 +133,24 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
                                                 expression = "selectedFiles.size() > 0"))
 public class ProjectFilesAction extends AbstractBaseProjectAction implements Preparable {
+    /**
+     * Object to keep count of errors and generate error messages.
+     */
+    private class ErrorCounts {
+        private final Map<String, Integer> counts = new HashMap<String, Integer>();
+        void incrementCount(String msgKey) {
+            Integer count = counts.get(msgKey);
+            counts.put(msgKey, (count == null) ? 1 : count + 1);
+        }
+        List<String> getMessages() {
+            List<String> messages = new ArrayList<String>();
+            for (String key : counts.keySet()) {
+                messages.add(getText(key, new String[] {counts.get(key).toString()}));
+            }
+            return messages;
+        }
+    }
+
     /**
      * Maximum total uncompressed size (in bytes) of files that can be downloaded in a single ZIP. If files selected
      * for download have a greater combined size, then the user will be presented with a group download page.
@@ -387,47 +409,29 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     @SuppressWarnings({ "PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
     // validation checks can't be easily refactored to smaller methods.
     public String validateFiles() {
-        int validatedFiles = 0;
-        int skippedFiles = 0;
-        int arrayDesignFiles = 0;
-        int unknownFiles = 0;
-        int unparseableFiles = 0;
+        ErrorCounts errors = new ErrorCounts();
         boolean includesSdrf = includesType(getSelectedFiles(), FileType.MAGE_TAB_SDRF);
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         for (CaArrayFile file : getSelectedFiles()) {
             if (file.getFileType() == null) {
-                unknownFiles++;
+                errors.incrementCount("project.fileValidate.error.unknownType");
             } else if (file.getFileType().isArrayDesign()) {
-                arrayDesignFiles++;
+                errors.incrementCount("project.fileValidate.error.arrayDesign");
             } else if (!includesSdrf && !file.getFileType().isParseableData()) {
-                unparseableFiles++;
+                errors.incrementCount("project.fileValidate.error.unparseableFiles");
             } else if (file.getFileStatus().isValidatable()) {
                 fileSet.add(file);
-                validatedFiles++;
             } else {
-                skippedFiles++;
+                errors.incrementCount("project.fileValidate.error.invalidStatus");
             }
         }
         if (!fileSet.getFiles().isEmpty()) {
             getFileManagementService().validateFiles(getProject(), fileSet);
         }
         ActionHelper.saveMessage(getText("project.fileValidate.success",
-                new String[] {String.valueOf(validatedFiles)}));
-        if (arrayDesignFiles > 0) {
-            ActionHelper.saveMessage(getText("project.fileValidate.error.arrayDesign",
-                    new String[] {String.valueOf(arrayDesignFiles)}));
-        }
-        if (skippedFiles > 0) {
-            ActionHelper.saveMessage(getText("project.fileValidate.error.invalidStatus",
-                    new String[] {String.valueOf(skippedFiles)}));
-        }
-        if (unparseableFiles > 0) {
-            ActionHelper.saveMessage(getText("project.fileValidate.error.unparseableFiles",
-                    new String[] {String.valueOf(unparseableFiles)}));
-        }
-        if (unknownFiles > 0) {
-            ActionHelper.saveMessage(getText("project.fileValidate.error.unknownType",
-                    new String[] {String.valueOf(unknownFiles)}));
+                new String[] {String.valueOf(fileSet.getFiles().size())}));
+        for (String msg : errors.getMessages()) {
+            ActionHelper.saveMessage(msg);
         }
         return prepListUnimportedPage();
     }
@@ -442,46 +446,74 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     /**
+     * AJAX call to determine if all selected files can be imported.
+     * @return null
+     */
+    @SkipValidation
+    public String validateSelectedImportFiles() {
+        ErrorCounts errors = new ErrorCounts();
+        CaArrayFileSet fileSet = checkImportFiles(errors);
+        try {
+            JSONObject json = new JSONObject();
+            List<String> errorMsgs = errors.getMessages();
+            if (errorMsgs.isEmpty()) {
+                json.element("validated", true);
+            } else {
+                StringBuffer buffer = new StringBuffer();
+                for (String msg : errorMsgs) {
+                    buffer.append(msg).append('\n');
+                }
+                buffer.append("Would you like to continue importing the remaining "
+                        + fileSet.getFiles().size() + " file(s)?");
+                json.element("confirmMessage", buffer.toString());
+            }
+            ServletActionContext.getResponse().getWriter().write(json.toString());
+        } catch (IOException e) {
+            LOG.error("unable to write response", e);
+        }
+        return null;
+    }
+
+    /**
      * Method to import the files.
      * @return the string matching the result to follow
      */
     @SuppressWarnings("PMD.ExcessiveMethodLength")  // validation checks can't be easily refactored to smaller methods.
     public String importFiles() {
-        int importedFiles = 0;
-        int skippedFiles = 0;
-        int arrayDesignFiles = 0;
-        int unknownFiles = 0;
-        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
-        for (CaArrayFile file : getSelectedFiles()) {
-            if (file.getFileType() == null) {
-                unknownFiles++;
-            } else if (file.getFileType().isArrayDesign()) {
-                arrayDesignFiles++;
-            } else if (file.getFileStatus().isImportable()) {
-                fileSet.add(file);
-                importedFiles++;
-            } else {
-                skippedFiles++;
-            }
-        }
+        ErrorCounts errors = new ErrorCounts();
+        CaArrayFileSet fileSet = checkImportFiles(errors);
         if (!fileSet.getFiles().isEmpty()) {
             getFileManagementService().importFiles(getProject(), fileSet);
         }
-        ActionHelper.saveMessage(getText("project.fileImport.success", new String[] {String.valueOf(importedFiles)}));
-        if (arrayDesignFiles > 0) {
-            ActionHelper.saveMessage(getText("project.fileImport.error.arrayDesign",
-                    new String[] {String.valueOf(arrayDesignFiles)}));
-        }
-        if (skippedFiles > 0) {
-            ActionHelper.saveMessage(getText("project.fileImport.error.invalidStatus",
-                    new String[] {String.valueOf(skippedFiles)}));
-        }
-        if (unknownFiles > 0) {
-            ActionHelper.saveMessage(getText("project.fileImport.error.unknownType",
-                    new String[] {String.valueOf(unknownFiles)}));
+        ActionHelper.saveMessage(getText("project.fileImport.success",
+                new String[] {String.valueOf(fileSet.getFiles().size())}));
+        for (String msg : errors.getMessages()) {
+            ActionHelper.saveMessage(msg);
         }
         refreshProject();
         return prepListUnimportedPage();
+    }
+
+    /**
+     * Checks on which of the selected files can be imported, and stores counts
+     * of those that cannot be.
+     * @param errors object that stores the error counts
+     * @return the set of importable files
+     */
+    private CaArrayFileSet checkImportFiles(ErrorCounts errors) {
+        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
+        for (CaArrayFile file : getSelectedFiles()) {
+            if (file.getFileType() == null) {
+                errors.incrementCount("project.fileImport.error.unknownType");
+            } else if (file.getFileType().isArrayDesign()) {
+                errors.incrementCount("project.fileImport.error.arrayDesign");
+            } else if (file.getFileStatus().isImportable()) {
+                fileSet.add(file);
+            } else {
+                errors.incrementCount("project.fileImport.error.invalidStatus");
+            }
+        }
+        return fileSet;
     }
 
     /**

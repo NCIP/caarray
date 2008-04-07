@@ -173,3 +173,9 @@ UL.selectedItemList LI:hover
 #uploadProgressBar div {
     background-color:#fff;
 }
+
+#browsesearchwrapper
+{ width:598px }
+
+#browseboxhome, #searchboxhome
+{ width:294px }

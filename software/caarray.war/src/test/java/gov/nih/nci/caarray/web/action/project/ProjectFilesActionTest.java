@@ -100,17 +100,21 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import net.sf.json.JSONObject;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
-import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 
 
@@ -179,6 +183,47 @@ public class ProjectFilesActionTest {
         this.action.setUploadFileName(fileNames);
         assertEquals(UPLOAD, this.action.upload());
         assertEquals(1, projectManagementServiceStub.getFilesAddedCount());
+    }
+
+    @Test
+    public void testValidateSelectedImportFiles() {
+        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        this.action.setSelectedFiles(selectedFiles);
+        CaArrayFile file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADED);
+        file.setFileType(FileType.AFFYMETRIX_CHP);
+        selectedFiles.add(file);
+
+        LocalHttpServletResponse response = new LocalHttpServletResponse();
+        ServletActionContext.setResponse(response);
+        this.action.validateSelectedImportFiles();
+        JSONObject jsonResult = JSONObject.fromObject(response.getResponseText());
+        assertTrue(jsonResult.has("validated"));
+
+        // unknown file
+        file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADED);
+        selectedFiles.add(file);
+        // array design
+        file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADED);
+        file.setFileType(FileType.AFFYMETRIX_CDF);
+        selectedFiles.add(file);
+        // invalid status
+        file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.VALIDATING);
+        file.setFileType(FileType.AFFYMETRIX_CHP);
+        selectedFiles.add(file);
+
+        response = new LocalHttpServletResponse();
+        ServletActionContext.setResponse(response);
+        this.action.validateSelectedImportFiles();
+        jsonResult = JSONObject.fromObject(response.getResponseText());
+        assertTrue(jsonResult.has("confirmMessage"));
     }
 
     @Test
@@ -518,6 +563,18 @@ public class ProjectFilesActionTest {
         }
         public void setCompressedSize(int compressedSize) {
             size = compressedSize;
+        }
+    }
+    private class LocalHttpServletResponse extends MockHttpServletResponse {
+        private StringWriter out = new StringWriter();
+
+        @Override
+        public PrintWriter getWriter() {
+            return new PrintWriter(out);
+        }
+
+        public String getResponseText() {
+            return out.toString();
         }
     }
 }

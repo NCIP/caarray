@@ -555,6 +555,7 @@ final class SdrfTranslator extends AbstractTranslator {
             String fileName = sdrfData.getName();
             caArrayData.setName(fileName);
             CaArrayFile dataFile = getFile(fileName);
+            dataFile.setFileType(dataFile.getFileType().getRawType());
             caArrayData.setDataFile(dataFile);
             // Associate Scan with the raw data.
             for (Scan scan : sdrfData.getPredecessorScans()) {
@@ -593,6 +594,7 @@ final class SdrfTranslator extends AbstractTranslator {
             String fileName = sdrfData.getName();
             caArrayData.setName(fileName);
             CaArrayFile dataFile = getFile(fileName);
+            dataFile.setFileType(dataFile.getFileType().getDerivedType());
             caArrayData.setDataFile(dataFile);
             // Associate Normalization with the derived data.
             for (Normalization normalization : sdrfData.getPredecessorNormalizations()) {
