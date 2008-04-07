@@ -166,32 +166,26 @@ public class ProjectFilesAction extends AbstractBaseProjectAction
 	private static final String			KNOWN_FILE_TYPE			= "(Supported File Types)";
 
 	private static final Transformer	EXTENSION_TRANSFORMER	= new Transformer() {
-		/**
-		 * Transforms
-		 * files to
-		 * their
-		 * extensions.
-		 */
-		public Object transform ( Object o)
-		{
-			CaArrayFile f = (CaArrayFile) o;
-			int index = f	.getName()
-			.lastIndexOf('.');
-			if (index == -1) {
-				return "(No Extension)";
-			}
-			return f.getName()
-			.substring(index)
-			.toLowerCase(Locale.US);
-		}
-	};
+																	/**
+																	 * Transforms
+																	 * files to
+																	 * their
+																	 * extensions.
+																	 */
+																	public Object transform ( Object o)
+																	{
+																		CaArrayFile f = (CaArrayFile) o;
+																		int index = f	.getName()
+																						.lastIndexOf('.');
+																		if (index == -1) {
+																			return "(No Extension)";
+																		}
+																		return f.getName()
+																				.substring(index)
+																				.toLowerCase(Locale.US);
+																	}
+																};
 
-	
-	
-	
-	
-	
-	
 	private void initFileTypes () {
 		LOG.info("");
 		fileTypes.add(KNOWN_FILE_TYPE);
@@ -430,51 +424,105 @@ public class ProjectFilesAction extends AbstractBaseProjectAction
 		boolean includesSdrf = includesType(getSelectedFiles(),
 											FileType.MAGE_TAB_SDRF);
 
-		// carpla: should probably also perform a similar check if sradf is not
-		// included...
+		boolean includesSradf = includesType(	getSelectedFiles(),
+												FileType.RPLA_TAB_SRADF);
+
 		CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
-		for (CaArrayFile file : getSelectedFiles()) {
-			if (file.getFileType() == null) {
-				unknownFiles++;
-			} else if (file.getFileType().isArrayDesign()) {
-				arrayDesignFiles++;
-			} else if (!includesSdrf && !file.getFileType().isParseableData()) {
-				unparseableFiles++;
-			} else if (file.getFileStatus().isValidatable()) {
-				fileSet.add(file);
-				validatedFiles++;
-			} else {
-				skippedFiles++;
+
+		
+		//!!!!!!!!!
+		// carplafix
+		if (includesSradf) {
+			for (CaArrayFile file : getSelectedFiles()) {
+				if (file.getFileType() == null) {
+					unknownFiles++;
+					LOG.info("file, name=" + file.getName() + " is unknown");
+				} else if (file.getFileStatus().isValidatable()) {
+					LOG.info("adding file, name=" + file.getName()
+								+ "to fileset as validatable");
+					fileSet.add(file);
+					validatedFiles++;
+				} else {
+					skippedFiles++;
+				}
 			}
+			
+			if (!fileSet.getFiles().isEmpty()) {
+				getFileManagementService().validateFiles(getProject(), fileSet);
+			}
+
+			ActionHelper.saveMessage(getText(	"project.fileValidate.success",
+												new String[] { String.valueOf(validatedFiles) }));
+		
+			if (skippedFiles > 0) {
+				ActionHelper.saveMessage(getText(	"project.fileValidate.error.invalidStatus",
+													new String[] { String.valueOf(skippedFiles) }));
+			}
+			if (unparseableFiles > 0) {
+				ActionHelper.saveMessage(getText(	"project.fileValidate.error.unparseableFiles",
+													new String[] { String.valueOf(unparseableFiles) }));
+			}
+			if (unknownFiles > 0) {
+				ActionHelper.saveMessage(getText(	"project.fileValidate.error.unknownType",
+													new String[] { String.valueOf(unknownFiles) }));
+			}
+
+			
+			
+
 		}
 
-		// carpla: and we're off to another service
-		if (!fileSet.getFiles().isEmpty()) {
-			getFileManagementService().validateFiles(getProject(), fileSet);
-		}
-		ActionHelper.saveMessage(getText(	"project.fileValidate.success",
-											new String[] { String.valueOf(validatedFiles) }));
-		if (arrayDesignFiles > 0) {
-			ActionHelper.saveMessage(getText(	"project.fileValidate.error.arrayDesign",
-												new String[] { String.valueOf(arrayDesignFiles) }));
-		}
-		if (skippedFiles > 0) {
-			ActionHelper.saveMessage(getText(	"project.fileValidate.error.invalidStatus",
-												new String[] { String.valueOf(skippedFiles) }));
-		}
-		if (unparseableFiles > 0) {
-			ActionHelper.saveMessage(getText(	"project.fileValidate.error.unparseableFiles",
-												new String[] { String.valueOf(unparseableFiles) }));
-		}
-		if (unknownFiles > 0) {
-			ActionHelper.saveMessage(getText(	"project.fileValidate.error.unknownType",
-												new String[] { String.valueOf(unknownFiles) }));
+		else {
+
+			// -------------------------------------------------
+			for (CaArrayFile file : getSelectedFiles()) {
+				if (file.getFileType() == null) {
+					unknownFiles++;
+				} else if (file.getFileType().isArrayDesign()) {
+					arrayDesignFiles++;
+				} else if (!includesSdrf && !file	.getFileType()
+													.isParseableData()) {
+					unparseableFiles++;
+				} else if (file.getFileStatus().isValidatable()) {
+					fileSet.add(file);
+					validatedFiles++;
+				} else {
+					skippedFiles++;
+				}
+			}
+
+			if (!fileSet.getFiles().isEmpty()) {
+				getFileManagementService().validateFiles(getProject(), fileSet);
+			}
+
+			ActionHelper.saveMessage(getText(	"project.fileValidate.success",
+												new String[] { String.valueOf(validatedFiles) }));
+			if (arrayDesignFiles > 0) {
+				ActionHelper.saveMessage(getText(	"project.fileValidate.error.arrayDesign",
+													new String[] { String.valueOf(arrayDesignFiles) }));
+			}
+			if (skippedFiles > 0) {
+				ActionHelper.saveMessage(getText(	"project.fileValidate.error.invalidStatus",
+													new String[] { String.valueOf(skippedFiles) }));
+			}
+			if (unparseableFiles > 0) {
+				ActionHelper.saveMessage(getText(	"project.fileValidate.error.unparseableFiles",
+													new String[] { String.valueOf(unparseableFiles) }));
+			}
+			if (unknownFiles > 0) {
+				ActionHelper.saveMessage(getText(	"project.fileValidate.error.unknownType",
+													new String[] { String.valueOf(unknownFiles) }));
+			}
+
+			// -------------------------------------------------
+
 		}
 		return prepListUnimportedPage();
 	}
 
+	// ########################################################################
 	private boolean includesType ( List<CaArrayFile> fileList, FileType type) {
-		LOG.info("includesType");
+		LOG.info("");
 		for (CaArrayFile file : fileList) {
 			if (type.equals(file.getFileType())) {
 				return true;

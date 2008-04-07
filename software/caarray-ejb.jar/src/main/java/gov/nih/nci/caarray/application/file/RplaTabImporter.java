@@ -50,6 +50,7 @@ public class RplaTabImporter {
 
 	// #######################################################################
 	void validateFiles ( CaArrayFileSet fileSet) {
+		LOG.info("carplafix");
 
 		LOG.info("Validating RPLA-TAB document set");
 
@@ -60,27 +61,34 @@ public class RplaTabImporter {
 			updateFileStatus(fileSet, FileStatus.VALIDATED);
 
 			LOG.info("calling RPLA-TAB validate document set");
-			handleResult(	fileSet,
-							RplaTabDocumentSetParser.INSTANCE.validate(inputSet));
-			// basically parsing twice 
+
+			ValidationResult vres = RplaTabDocumentSetParser.INSTANCE.validate(inputSet);
+
+			handleResult(fileSet, vres);
+			// basically parsing twice
+			RplaTabDocumentSet documentSet = null;
 
 			if (!fileSet.statusesContains(FileStatus.VALIDATION_ERRORS)) {
 
-				RplaTabDocumentSet documentSet = RplaTabDocumentSetParser.INSTANCE.parse(inputSet);
-
-				List<ValidationMessage> validationMessages = documentSet.getValidationResult()
-																		.getMessages();
+				List<ValidationMessage> validationMessages = vres.getMessages();
 				for (ValidationMessage vm : validationMessages) {
 
 					LOG.info(vm.getMessage());
 
 				}
-
+				documentSet = RplaTabDocumentSetParser.INSTANCE.parse(inputSet);
 				handleResult(fileSet, translator.validate(documentSet, fileSet));
 			}
 
 			else {
 				LOG.info("FileStatus.VALIDATION_ERRORS were found.");
+
+				List<ValidationMessage> validationMessages = vres.getMessages();
+				for (ValidationMessage vm : validationMessages) {
+
+					LOG.info(vm.getMessage());
+
+				}
 
 			}
 

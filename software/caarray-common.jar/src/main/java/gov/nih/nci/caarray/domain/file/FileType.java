@@ -238,14 +238,29 @@ public enum FileType implements Comparable<FileType> {
 	UCSF_SPOT_SPT, 
 	
 	/**
-	 * The caRPLA IDF counterpart
+	 * The caRPLA IDF counterpart : .rplaidf
 	 */
 	RPLA_TAB_RPLAIDF,
 	
 	/**
-	 * The caRPLA SDRF counterpart
+	 * The caRPLA SDRF counterpart : .sradf
 	 */
-	RPLA_TAB_SRADF;
+	RPLA_TAB_SRADF,
+	
+	
+	
+	RPLA_TAB_TIFF,
+	RPLA_TAB_TXT
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	;
 	
 	
 	
@@ -273,12 +288,15 @@ public enum FileType implements Comparable<FileType> {
 		ARRAY_DESIGN_FILE_TYPES.add(NIMBLEGEN_NDF);
 		ARRAY_DESIGN_FILE_TYPES.add(UCSF_SPOT_SPT);
 		ARRAY_DESIGN_FILE_TYPES.add(MAGE_TAB_ADF);
+		//----------------------------------------------
 		PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
 		PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
 		PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(GENEPIX_GAL);
+		//----------------------------------------------
 		RAW_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_IDAT);
 		RAW_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
 		RAW_ARRAY_DATA_FILE_TYPES.add(AGILENT_RAW_TXT);
+		//----------------------------------------------
 		DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
 		DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_EXP);
 		DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_TXT);
@@ -290,6 +308,7 @@ public enum FileType implements Comparable<FileType> {
 		DERIVED_ARRAY_DATA_FILE_TYPES.add(AGILENT_DERIVED_TXT);
 		DERIVED_ARRAY_DATA_FILE_TYPES.add(NIMBLEGEN_GFF);
 		DERIVED_ARRAY_DATA_FILE_TYPES.add(NIMBLEGEN_TXT);
+		//----------------------------------------------
 		PARSEABLE_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
 		PARSEABLE_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
 		PARSEABLE_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_CSV);

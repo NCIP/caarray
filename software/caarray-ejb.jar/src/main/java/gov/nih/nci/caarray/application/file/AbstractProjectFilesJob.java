@@ -100,12 +100,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.hibernate.LockMode;
 
 /**
  * Encapsulates the data necessary for a project file management job.
  */
 abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
+	
+	
+	private static final Logger LOG = Logger.getLogger(AbstractProjectFilesJob.class);
 
 	private static final long	serialVersionUID	= 1L;
 
@@ -167,10 +171,10 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 	private void validateAnnotation ( CaArrayFileSet fileSet) {
 
 		if (containsRplaIDF(fileSet)) {
-			System.out.println("rplaidf found");
+			LOG.info("rplaidf found");
 			getRplaTabImporter().validateFiles(fileSet);
 		} else {
-			System.out.println("rplaidf not found");
+			LOG.info("rplaidf not found");
 			getMageTabImporter().validateFiles(fileSet);
 		}
 

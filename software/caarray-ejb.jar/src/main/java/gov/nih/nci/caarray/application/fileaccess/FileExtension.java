@@ -92,7 +92,8 @@ import org.apache.commons.io.FilenameUtils;
  * File extensions mappable by caArray.
  */
 enum FileExtension {
-
+	// #########################################
+	// #########################################
 	CDF(FileType.AFFYMETRIX_CDF),
 	CEL(FileType.AFFYMETRIX_CEL),
 	CHP(FileType.AFFYMETRIX_CHP),
@@ -111,12 +112,14 @@ enum FileExtension {
 	TPL(FileType.IMAGENE_TPL),
 	DATA(FileType.MAGE_TAB_DATA_MATRIX),
 	NDF(FileType.NIMBLEGEN_NDF),
-
-	// caRPLA
-	RPLAIDF(FileType.RPLA_TAB_RPLAIDF),
-
-	SRADF(FileType.RPLA_TAB_SRADF) ;
-
+	RPLAIDF(FileType.RPLA_TAB_RPLAIDF), // caRPLA
+	SRADF(FileType.RPLA_TAB_SRADF),// caRPLA
+	TXT(FileType.RPLA_TAB_TXT), // caRPLA not sure how the txt extension is supposed to be handled given the other FileTypeS based on .txt,
+	// anyway adding it here
+	TIF(FileType.RPLA_TAB_TIFF)// caRPLA
+	;
+	// #########################################
+	// #########################################
 	private final FileType	type;
 
 	FileExtension(FileType type) {
@@ -131,8 +134,7 @@ enum FileExtension {
 		if (extensionString == null) {
 			throw new IllegalArgumentException("Null extensionString");
 		}
-		String extensionStringUpper = extensionString.toUpperCase(Locale
-				.getDefault());
+		String extensionStringUpper = extensionString.toUpperCase(Locale.getDefault());
 		for (FileExtension fileExtension : values()) {
 			if (fileExtension.name().equals(extensionStringUpper)) {
 				return fileExtension;

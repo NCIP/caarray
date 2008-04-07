@@ -42,9 +42,14 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 public class RplaTabDocumentSetParserImplementation
 													implements
 													RplaTabDocumentSetParser {
+	
+	
+	private static final Logger		LOG	= Logger.getLogger(RplaTabDocumentSetParserImplementation.class);
 
 	// ####################################################################
 	// ####################################################################

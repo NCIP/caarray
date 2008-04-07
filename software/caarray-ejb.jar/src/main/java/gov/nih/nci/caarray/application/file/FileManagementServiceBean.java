@@ -131,12 +131,17 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void checkForValidation(CaArrayFileSet fileSet) {
-    	LOG.info("checkForValidation");
+    	LOG.info("");
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
             if (!caArrayFile.getFileStatus().isValidatable()) {
+            	LOG.info(caArrayFile.getName() +" is not validatable" );
                 throw new IllegalArgumentException("Illegal attempt to validate file "
                         + caArrayFile.getName() + " with status " + caArrayFile.getFileStatus());
             }
+            else{
+            	LOG.info(caArrayFile.getName() +" is validatable");
+            }
+            
         }
     }
 
@@ -144,7 +149,7 @@ public class FileManagementServiceBean implements FileManagementService {
      * {@inheritDoc}
      */
     public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-    	LOG.info("importFiles");
+    	LOG.info("");
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForImport(fileSet);
         clearValidationMessages(fileSet);
@@ -161,7 +166,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet) {
-    	LOG.info("sendImportJobMessage");
+    	LOG.info("");
         ProjectFilesImportJob job = new ProjectFilesImportJob(UsernameHolder.getUser(), targetProject, fileSet);
         getSubmitter().submitJob(job);
     }
@@ -170,7 +175,7 @@ public class FileManagementServiceBean implements FileManagementService {
      * {@inheritDoc}
      */
     public void validateFiles(Project project, CaArrayFileSet fileSet) {
-    	LOG.info("validateFiles");
+    	LOG.info("");
         checkForValidation(fileSet);
         clearValidationMessages(fileSet);
         updateFileStatus(fileSet, FileStatus.IN_QUEUE);
@@ -178,7 +183,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void sendValidationJobMessage(Project project, CaArrayFileSet fileSet) {
-    	LOG.info("sendValidationJobMessage");
+    	LOG.info("");
         ProjectFilesValidationJob job = new ProjectFilesValidationJob(UsernameHolder.getUser(), project, fileSet);
         getSubmitter().submitJob(job);
     }

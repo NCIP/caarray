@@ -116,6 +116,7 @@ public class RplaTabTranslatorBean implements RplaTabTranslator {
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public CaArrayTranslationResult translate(RplaTabDocumentSet documentSet, CaArrayFileSet fileSet) {
         LogUtil.logSubsystemEntry(LOG, documentSet);
+        LOG.info("");
         RplaTabTranslationResult translationResult = new RplaTabTranslationResult();
        // translateTermSources(documentSet, translationResult);
        // translateTerms(documentSet, translationResult, getVocabularyService());
@@ -130,7 +131,10 @@ public class RplaTabTranslatorBean implements RplaTabTranslator {
      */
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public ValidationResult validate(RplaTabDocumentSet documentSet, CaArrayFileSet fileSet) {
-        //validateSdrfs(documentSet, fileSet);
+        
+    	LOG.info("");
+    	//validateSdrfs(documentSet, fileSet);
+    	
         return documentSet.getValidationResult();
     }
 
