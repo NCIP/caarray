@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
@@ -286,6 +287,11 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
         }
         for (Source s : getCurrentAssociationsCollection()) {
             s.getSamples().remove(getCurrentSample());
+        }
+        // clear the sample from any access profiles 
+        // this is perhaps not the ideal place for this - would be preferrable in the business layer
+        for (AccessProfile ap : getCurrentSample().getExperiment().getProject().getAllAccessProfiles()) {
+            ap.getSampleSecurityLevels().remove(getCurrentSample());
         }
         return true;
     }

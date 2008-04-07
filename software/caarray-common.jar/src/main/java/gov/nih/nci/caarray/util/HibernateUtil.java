@@ -119,7 +119,7 @@ public final class HibernateUtil {
      * Get the hibernate helper.
      * @return the helper.
      */
-    public static HibernateHelper getHibernateHelper() {
+    private static HibernateHelper getHibernateHelper() {
         return HIBERNATE_HELPER;
     }
 
@@ -188,6 +188,7 @@ public final class HibernateUtil {
      * @see HibernateHelper#openAndBindSession()
      */
     public static void openAndBindSession() {
+        SecurityInterceptor.clear();
         getHibernateHelper().openAndBindSession();
     }
 
