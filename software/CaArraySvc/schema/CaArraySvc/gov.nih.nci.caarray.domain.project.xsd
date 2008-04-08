@@ -69,7 +69,7 @@
                             </xs:choice>
                         </xs:complexType>
                     </xs:element>
-\                    <xs:element name="factors" minOccurs="0">
+                    <xs:element name="factors" minOccurs="0">
                         <xs:complexType>
                             <xs:choice minOccurs="0" maxOccurs="unbounded">
                                 <xs:element ref="Factor" />
