@@ -107,106 +107,111 @@ import org.apache.log4j.Logger;
  */
 abstract class AbstractTranslator {
 
-    private final MageTabDocumentSet documentSet;
-    private final CaArrayFileSet fileSet;
-    private final MageTabTranslationResult translationResult;
-    private final CaArrayDaoFactory daoFactory;
-    private final Map<String, Organization> importedOrganizations = new HashMap<String, Organization>();
+	private final MageTabDocumentSet		documentSet;
+	private final CaArrayFileSet			fileSet;
+	private final MageTabTranslationResult	translationResult;
+	private final CaArrayDaoFactory			daoFactory;
+	private final Map<String, Organization>	importedOrganizations	= new HashMap<String, Organization>();
 
-    AbstractTranslator(MageTabDocumentSet documentSet, CaArrayFileSet fileSet,
-            MageTabTranslationResult translationResult, CaArrayDaoFactory daoFactory) {
-        this.documentSet = documentSet;
-        this.fileSet = fileSet;
-        this.translationResult = translationResult;
-        this.daoFactory = daoFactory;
-    }
+	AbstractTranslator(	MageTabDocumentSet documentSet,
+						CaArrayFileSet fileSet,
+						MageTabTranslationResult translationResult,
+						CaArrayDaoFactory daoFactory) {
+		this.documentSet = documentSet;
+		this.fileSet = fileSet;
+		this.translationResult = translationResult;
+		this.daoFactory = daoFactory;
+	}
 
-    AbstractTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
-            CaArrayDaoFactory daoFactory) {
-        this.documentSet = documentSet;
-        this.fileSet = null;
-        this.translationResult = translationResult;
-        this.daoFactory = daoFactory;
-    }
+	AbstractTranslator(	MageTabDocumentSet documentSet,
+						MageTabTranslationResult translationResult,
+						CaArrayDaoFactory daoFactory) {
+		this.documentSet = documentSet;
+		this.fileSet = null;
+		this.translationResult = translationResult;
+		this.daoFactory = daoFactory;
+	}
 
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
+	CaArrayDaoFactory getDaoFactory () {
+		return daoFactory;
+	}
 
-    MageTabDocumentSet getDocumentSet() {
-        return documentSet;
-    }
+	MageTabDocumentSet getDocumentSet () {
+		return documentSet;
+	}
 
-    CaArrayFileSet getFileSet() {
-        return fileSet;
-    }
+	CaArrayFileSet getFileSet () {
+		return fileSet;
+	}
 
-    CaArrayFile getFile(String name) {
-        if (fileSet == null) {
-            return null;
-        }
-        Set<CaArrayFile> files = fileSet.getFiles();
-        Iterator<CaArrayFile> i = files.iterator();
-        while (i.hasNext()) {
-            CaArrayFile caArrayFile = i.next();
-            if (name.equals(caArrayFile.getName())) {
-                return caArrayFile;
-            }
-        }
-        return null;
-    }
+	CaArrayFile getFile ( String name) {
+		if (fileSet == null) {
+			return null;
+		}
+		Set<CaArrayFile> files = fileSet.getFiles();
+		Iterator<CaArrayFile> i = files.iterator();
+		while (i.hasNext()) {
+			CaArrayFile caArrayFile = i.next();
+			if (name.equals(caArrayFile.getName())) {
+				return caArrayFile;
+			}
+		}
+		return null;
+	}
 
-    MageTabTranslationResult getTranslationResult() {
-        return translationResult;
-    }
+	MageTabTranslationResult getTranslationResult () {
+		return translationResult;
+	}
 
-    Collection<Term> getTerms(List<OntologyTerm> ontologyTerms) {
-        HashSet<Term> terms = new HashSet<Term>(ontologyTerms.size());
-        for (OntologyTerm ontologyTerm : ontologyTerms) {
-            terms.add(getTerm(ontologyTerm));
-        }
-        return terms;
-    }
+	Collection<Term> getTerms ( List<OntologyTerm> ontologyTerms) {
+		HashSet<Term> terms = new HashSet<Term>(ontologyTerms.size());
+		for (OntologyTerm ontologyTerm : ontologyTerms) {
+			terms.add(getTerm(ontologyTerm));
+		}
+		return terms;
+	}
 
-    Term getTerm(OntologyTerm ontologyTerm) {
-        if (ontologyTerm == null) {
-            return null;
-        }
-        return translationResult.getTerm(ontologyTerm);
-    }
+	Term getTerm ( OntologyTerm ontologyTerm) {
+		if (ontologyTerm == null) {
+			return null;
+		}
+		return translationResult.getTerm(ontologyTerm);
+	}
 
-    abstract void translate();
+	abstract void translate ();
 
-    abstract Logger getLog();
+	abstract Logger getLog ();
 
-    /**
-     * Creates or retrieves the org witht he given name.
-     * @param name the name.
-     * @return the org.
-     */
-    protected Organization getOrCreateOrganization(String name) {
+	/**
+	 * Creates or retrieves the org witht he given name.
+	 * 
+	 * @param name
+	 *            the name.
+	 * @return the org.
+	 */
+	protected Organization getOrCreateOrganization ( String name) {
 
-        Organization org = importedOrganizations.get(name);
+		Organization org = importedOrganizations.get(name);
 
-        if (org == null && StringUtils.isNotBlank(name)) {
-            Organization entityToMatch = new Organization();
-            entityToMatch.setName(name);
+		if (org == null && StringUtils.isNotBlank(name)) {
+			Organization entityToMatch = new Organization();
+			entityToMatch.setName(name);
 
-            List<Organization> matchingEntities = getProjectDao().queryEntityAndAssociationsByExample(entityToMatch);
-            if (matchingEntities.isEmpty()) {
-                importedOrganizations.put(name, entityToMatch);
-                org = entityToMatch;
-            } else {
-                // use existing object in database.
-                org = matchingEntities.get(0);
-            }
-        }
+			List<Organization> matchingEntities = getProjectDao()	.queryEntityAndAssociationsByExample(entityToMatch);
+			if (matchingEntities.isEmpty()) {
+				importedOrganizations.put(name, entityToMatch);
+				org = entityToMatch;
+			} else {
+				// use existing object in database.
+				org = matchingEntities.get(0);
+			}
+		}
 
-        return org;
-    }
+		return org;
+	}
 
-    ProjectDao getProjectDao() {
-        return getDaoFactory().getProjectDao();
-    }
+	ProjectDao getProjectDao () {
+		return getDaoFactory().getProjectDao();
+	}
 
 }

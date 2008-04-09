@@ -439,10 +439,11 @@ public class ProjectFilesAction extends AbstractBaseProjectAction
 					LOG.info("file, name=" + file.getName() + " is unknown");
 				} else if (file.getFileStatus().isValidatable()) {
 					LOG.info("adding file, name=" + file.getName()
-								+ "to fileset as validatable");
+								+ " to fileset as validatable");
 					fileSet.add(file);
 					validatedFiles++;
 				} else {
+					LOG.info("skipping " +  file.getName());
 					skippedFiles++;
 				}
 			}
@@ -580,6 +581,17 @@ public class ProjectFilesAction extends AbstractBaseProjectAction
 		return prepListUnimportedPage();
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Adds supplemental data files to the system.
 	 * 

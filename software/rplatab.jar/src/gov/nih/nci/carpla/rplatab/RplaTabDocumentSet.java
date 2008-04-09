@@ -23,6 +23,12 @@ import gov.nih.nci.caarray.magetab.TermSource;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
+
+
+
+
+
+
 import gov.nih.nci.carpla.rplatab.model.Antibody;
 import gov.nih.nci.carpla.rplatab.model.ArrayDataSectionPrincipal;
 import gov.nih.nci.carpla.rplatab.model.ArraySectionPrincipal;

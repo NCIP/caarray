@@ -196,7 +196,11 @@ public class RplaTabImporter {
 	}
 
 	private boolean isRplaTabFile ( CaArrayFile file) {
-		return FileType.RPLA_TAB_RPLAIDF.equals(file.getFileType()) || FileType.RPLA_TAB_SRADF.equals(file.getFileType());
+		return FileType.RPLA_TAB_RPLAIDF.equals(file.getFileType()) || FileType.RPLA_TAB_SRADF.equals(file.getFileType())
+				|| FileType.RPLA_TAB_TIFF.equals(file.getFileType())
+				|| FileType.RPLA_TAB_TXT.equals(file.getFileType())
+
+		;
 	}
 
 	// private MageTabInputFileSet getInputFileSet(CaArrayFileSet fileSet) {
@@ -257,6 +261,16 @@ public class RplaTabImporter {
 				e.printStackTrace();
 			}
 		}
+
+		else {
+			try {
+				inputFileSet.addFile(getFile(caArrayFile));
+			} catch (Exception e) {
+
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	private File getFile ( CaArrayFile caArrayFile) {

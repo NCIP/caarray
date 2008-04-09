@@ -87,11 +87,15 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import java.util.Locale;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 
 /**
  * File extensions mappable by caArray.
  */
 enum FileExtension {
+	
+	
+	
 	// #########################################
 	// #########################################
 	CDF(FileType.AFFYMETRIX_CDF),
@@ -121,7 +125,7 @@ enum FileExtension {
 	// #########################################
 	// #########################################
 	private final FileType	type;
-
+	private static final Logger		LOG	= Logger.getLogger(FileExtension.class);
 	FileExtension(FileType type) {
 		this.type = type;
 	}
@@ -153,10 +157,10 @@ enum FileExtension {
 	 */
 	static FileType getTypeFromExtension ( String filename) {
 		String extension = FilenameUtils.getExtension(filename);
-		System.out.println("FileExtension: filename=" + (filename));
+		
 		FileExtension fileExtension = FileExtension.getByExtension(extension);
 		if (fileExtension != null) {
-			System.out.println("FileExtension : fileExtension=" + (fileExtension.toString()));
+			
 			return fileExtension.getType();
 		}
 		return null;
