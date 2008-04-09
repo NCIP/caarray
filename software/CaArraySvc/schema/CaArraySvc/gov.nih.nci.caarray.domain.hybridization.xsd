@@ -9,7 +9,7 @@
     xmlns:gov.nih.nci.caarray.domain.sample="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample"
     xmlns:gov.nih.nci.caarray.domain.vocabulary="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary"
     targetNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization" elementFormDefault="qualified">
-    
+
     <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.protocol"
         schemaLocation="gov.nih.nci.caarray.domain.protocol.xsd" />
     <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data"
@@ -24,7 +24,7 @@
         schemaLocation="gov.nih.nci.caarray.domain.sample.xsd" />
     <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain"
         schemaLocation="gov.nih.nci.caarray.domain.xsd" />
-        
+
     <xs:element name="Hybridization" type="Hybridization" />
     <xs:complexType name="Hybridization">
         <xs:complexContent>
@@ -65,8 +65,13 @@
                     </xs:element>
                     <xs:element name="label" minOccurs="0" maxOccurs="1"
                         type="gov.nih.nci.caarray.domain.vocabulary:Term" />
-                    <xs:element name="protocolApplication" minOccurs="0" maxOccurs="1"
-                        type="gov.nih.nci.caarray.domain.protocol:ProtocolApplication" />
+                    <xs:element name="protocolApplications" minOccurs="0">
+                        <xs:complexType>
+                            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                <xs:element ref="gov.nih.nci.caarray.domain.protocol:ProtocolApplication" />
+                            </xs:choice>
+                        </xs:complexType>
+                    </xs:element>
                 </xs:sequence>
                 <xs:attribute name="amountOfMaterial" type="xs:float" />
                 <xs:attribute name="name" type="xs:string" />

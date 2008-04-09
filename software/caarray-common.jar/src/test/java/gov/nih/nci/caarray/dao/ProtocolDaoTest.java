@@ -334,6 +334,59 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         }
     }
 
+    /**
+     * Tests searching for a <code>Protocol</code> by name and type
+     */
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testSearchProtocolsByNameAndType() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.beginTransaction();
+            DAO_OBJECT.save(DUMMY_PROTOCOL_1);
+            DAO_OBJECT.save(DUMMY_PROTOCOL_2);
+            DAO_OBJECT.save(DUMMY_PROTOCOL_3);
+            Protocol p4 = new Protocol("DummyProtocol4", DUMMY_TERM_2, DUMMY_TERM_SOURCE_1);
+            DAO_OBJECT.save(p4);
+            tx.commit();
+
+            tx = HibernateUtil.beginTransaction();
+            List<Protocol> protocols = DAO_OBJECT.getProtocols(DUMMY_TERM_1, "dummy");
+            assertEquals(1, protocols.size());
+            assertEquals(DUMMY_PROTOCOL_1, protocols.get(0));
+
+            protocols = DAO_OBJECT.getProtocols(DUMMY_TERM_2, null);
+            assertEquals(3, protocols.size());
+            assertTrue(protocols.contains(DUMMY_PROTOCOL_2));
+            assertTrue(protocols.contains(DUMMY_PROTOCOL_3));
+            assertTrue(protocols.contains(p4));
+
+            protocols = DAO_OBJECT.getProtocols(DUMMY_TERM_2, "");
+            assertEquals(3, protocols.size());
+            assertTrue(protocols.contains(DUMMY_PROTOCOL_2));
+            assertTrue(protocols.contains(DUMMY_PROTOCOL_3));
+            assertTrue(protocols.contains(p4));
+
+            protocols = DAO_OBJECT.getProtocols(DUMMY_TERM_2, "dummy");
+            assertEquals(3, protocols.size());
+            assertTrue(protocols.contains(DUMMY_PROTOCOL_2));
+            assertTrue(protocols.contains(DUMMY_PROTOCOL_3));
+            assertTrue(protocols.contains(p4));
+
+            protocols = DAO_OBJECT.getProtocols(DUMMY_TERM_2, "dummyp");
+            assertEquals(1, protocols.size());
+            assertTrue(protocols.contains(p4));
+
+            protocols = DAO_OBJECT.getProtocols(DUMMY_TERM_2, "dummyadfadsf");
+            assertEquals(0, protocols.size());
+
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during search of protocol: " + e.getMessage());
+        }
+    }
 
     /**
      * Tests searching for a <code>Protocol</code> by example, including associations

@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
-import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -104,9 +103,9 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 
 
-  /**
-
-   */
+/**
+ * Application of a protocol to an entity, such as a bio material or hybridization.
+ */
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 public class ProtocolApplication extends AbstractCaArrayEntity {
@@ -114,7 +113,6 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
 
     private Protocol protocol;
     private Image image;
-    private AbstractBioMaterial bioMaterial;
     private AbstractArrayData arrayData;
     private String notes;
     private Set<ParameterValue> values = new HashSet<ParameterValue>();
@@ -179,22 +177,6 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setValues(final Set<ParameterValue> valuesVal) {
         this.values = valuesVal;
-    }
-
-    /**
-     * @return the abstractBioMaterial
-     */
-    @ManyToOne
-    @ForeignKey(name = "protocolapp_biomaterial")
-    public AbstractBioMaterial getBioMaterial() {
-        return bioMaterial;
-    }
-
-    /**
-     * @param abstractBioMaterial the abstractBioMaterial to set
-     */
-    public void setBioMaterial(AbstractBioMaterial abstractBioMaterial) {
-        this.bioMaterial = abstractBioMaterial;
     }
 
     /**

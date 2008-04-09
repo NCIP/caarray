@@ -271,7 +271,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     public void clearSession() {
         HibernateUtil.getCurrentSession().clear();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -285,8 +285,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     public void evictObject(Object object) {
         HibernateUtil.getCurrentSession().evict(object);
     }
-    
-    AbstractCaArrayEntity getEntityByLsid(Class entityClass, String lsidAuthority, String lsidNamespace, 
+
+    AbstractCaArrayEntity getEntityByLsid(Class entityClass, String lsidAuthority, String lsidNamespace,
             String lsidObjectId) {
         Query q = HibernateUtil.getCurrentSession().createQuery(
                     "from "

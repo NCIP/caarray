@@ -151,7 +151,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     }
 
     /**
-     * 
+     *
      */
     private void populateCurrentTerm() {
         if (getCurrentTerm() != null) {
@@ -161,7 +161,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
             if (getCurrentTerm().getCategories().isEmpty()) {
                 getCurrentTerm().setCategory(retrieveCategory());
             }
-        }        
+        }
     }
 
     /**
@@ -287,9 +287,9 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     public void setCategory(ExperimentOntologyCategory category) {
         this.category = category;
     }
-    
+
     private Category retrieveCategory() {
-        return CaArrayActionHelper.getCategory(getCategory());        
+        return CaArrayActionHelper.getCategory(getCategory());
     }
 
     /**

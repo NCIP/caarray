@@ -608,9 +608,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         to.setOrganism(from.getOrganism());
         for (ProtocolApplication pa : from.getProtocolApplications()) {
             ProtocolApplication newPa = new ProtocolApplication();
-            newPa.setBioMaterial(to);
             newPa.setProtocol(pa.getProtocol());
-            to.getProtocolApplications().add(newPa);
+            to.addProtocolApplication(newPa);
         }
     }
 

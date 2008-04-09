@@ -704,10 +704,10 @@ DownloadMgr.prototype.doDownloadFiles = function() {
   }
 
   if (this.totalDownloadSize < this.maxDownloadSize) {
-      var iframe = document.createElement("iframe"); 
+      var iframe = document.createElement("iframe");
       iframe.src = this.downloadUrl + params;
       iframe.style.display="none";
-      document.body.appendChild(iframe);       
+      document.body.appendChild(iframe);
   } else {
       TabUtils.loadLinkInSubTab('Download Data', this.downloadGroupsUrl + params);
   }
@@ -788,30 +788,30 @@ var AssociationPickerUtils = {
     }
 }
 
-var TermPickerUtils = {
-    processSelection : function(selectedItem, baseId, termLabel, termFieldName, multiple) {
+var ListPickerUtils = {
+    processSelection : function(selectedItem, baseId, listLabel, listFieldName, multiple) {
         var id = selectedItem.firstChild.value;
         if (id == null || id == '') {
             return;
         }
         if (multiple != 'true') {
             if ($(baseId + 'SelectedItemDiv').getElementsBySelector('input').length  > 0) {
-                alert('Only one ' + termLabel + ' may be selected.');
+                alert('Only one ' + listLabel + ' may be selected.');
                 return;
             }
         }
         if ($(baseId + 'SelectedItemDiv').getElementsBySelector('input[value="' + id + '"]').length  > 0) {
-            alert(termLabel + ' already selected.');
+            alert(listLabel + ' already selected.');
             return;
         }
 
         var newItem = document.createElement("li");
         var newInput = selectedItem.childNodes[0].cloneNode(false);
-        newInput.name = termFieldName;
+        newInput.name = listFieldName;
         newItem.appendChild(newInput);
         var newText = selectedItem.childNodes[1].cloneNode(false);
         newItem.appendChild(newText);
-        newItem.onclick = function() { TermPickerUtils.removeSelection(this); };
+        newItem.onclick = function() { ListPickerUtils.removeSelection(this); };
         $(baseId + 'SelectedItemDiv').appendChild(newItem);
     },
 
@@ -819,12 +819,38 @@ var TermPickerUtils = {
         Element.remove(selectedItem);
     },
 
-    createAutoUpdater : function(baseId, url, termLabel, category, termFieldName, multiple) {
+    forceUpdate : function(autoUpdater) {
+        Element.show(autoUpdater.update);
+        autoUpdater.activate();
+    },
+
+    parseParams : function(paramNames, paramValues) {
+        var params = '';
+        if (paramNames != null && paramNames != '' && paramValues != null && paramValues != '') {
+            var paramNamesArray = paramNames.split(',');
+            var paramValuesArray = paramValues.split(',');
+            for (var i = 0; i < paramNamesArray.length; i++) {
+                if (i > 0) {
+                    params += "&";
+                }
+                params += paramNamesArray[i] + "=" + paramValuesArray[i];
+            }
+        }
+        return params;
+    },
+
+    updateParams : function(autoUpdater, paramNames, paramValues) {
+        autoUpdater.options.defaultParams = ListPickerUtils.parseParams(paramNames, paramValues);
+    },
+
+    // paramNames and paramValues are comma-delimited lists
+    createAutoUpdater : function(baseId, url, listLabel, filterFieldName, listFieldName, multiple, paramNames, paramValues) {
+        var params = ListPickerUtils.parseParams(paramNames, paramValues);
         autoUpdater =  new Ajax.Autocompleter(baseId + "SearchInput", baseId +"AutocompleteDiv", url,
-            {paramName: "currentTerm.value", minChars: '0', indicator: baseId + 'ProgressMsg', frequency: 0.75,
-             updateElement: function(selectedItem) {TermPickerUtils.processSelection(selectedItem, baseId, termLabel, termFieldName, multiple);},
+            {paramName: filterFieldName, minChars: '0', indicator: baseId + 'ProgressMsg', frequency: 0.75,
+             updateElement: function(selectedItem) {ListPickerUtils.processSelection(selectedItem, baseId, listLabel, listFieldName, multiple);},
              onHide: function() {}, onShow: function() {},
-             parameters: 'category=' + category});
+             parameters: params});
         Element.show(autoUpdater.update);
         autoUpdater.activate();
         return autoUpdater;

@@ -94,6 +94,8 @@ import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
@@ -183,6 +185,18 @@ public class ProjectHybridizationsActionTest {
         List<LabeledExtract> removeList = new ArrayList<LabeledExtract>();
         removeList.add(toRemove);
         action.setItemsToRemove(removeList);
+
+        ProtocolApplication pa = new ProtocolApplication();
+        Protocol p = new Protocol();
+        p.setName("protocol1");
+        pa.setProtocol(p);
+        DUMMY_HYBRIDIZATION.addProtocolApplication(pa);
+
+        Protocol p2 = new Protocol();
+        p2.setName("protocol2");
+        List<Protocol> protocols = new ArrayList<Protocol>();
+        protocols.add(p2);
+        action.setSelectedProtocols(protocols);
 
         action.setCurrentHybridization(DUMMY_HYBRIDIZATION);
         assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());

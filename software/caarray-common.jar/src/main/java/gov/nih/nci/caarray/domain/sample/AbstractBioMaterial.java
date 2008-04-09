@@ -94,8 +94,10 @@ import gov.nih.nci.caarray.security.AttributeMutator;
 import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.SecurityPolicy;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.DiscriminatorColumn;
@@ -104,6 +106,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -114,6 +118,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.IndexColumn;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
@@ -135,7 +140,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity implemen
     private String name;
     private String description;
     private Set<AbstractCharacteristic> characteristics = new HashSet<AbstractCharacteristic>();
-    private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
+    private List<ProtocolApplication> protocolApplications = new ArrayList<ProtocolApplication>();
     private Organism organism;
 
     /**
@@ -274,13 +279,20 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity implemen
     }
 
     /**
-     * Gets the protocolApplications.
-     *
-     * @return the protocolApplications
+     * {@inheritDoc}
      */
-    @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.LAZY)
-    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
-    public Set<ProtocolApplication> getProtocolApplications() {
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "biomaterial_protocol_application",
+            joinColumns = @JoinColumn(name = "bio_material"),
+            inverseJoinColumns = @JoinColumn(name = "protocol_application")
+    )
+    @IndexColumn(name = "protocol_order")
+    @ForeignKey(name = "biomaterial_protocol_application_bio_material_fk",
+            inverseName = "biomaterial_protocol_application_protocol_application_fk")
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public List<ProtocolApplication> getProtocolApplications() {
         return this.protocolApplications;
     }
 
@@ -290,7 +302,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity implemen
      * @param protocolApplicationsVal the protocolApplications
      */
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setProtocolApplications(final Set<ProtocolApplication> protocolApplicationsVal) {
+    private void setProtocolApplications(final List<ProtocolApplication> protocolApplicationsVal) {
         this.protocolApplications = protocolApplicationsVal;
     }
 
@@ -300,7 +312,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity implemen
     public void addProtocolApplication(ProtocolApplication protocolApplication) {
         this.protocolApplications.add(protocolApplication);
     }
-    
+
     /**
      * {@inheritDoc}
      */

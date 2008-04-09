@@ -19,6 +19,7 @@
             tabIndex="5" termFieldName="currentSource.cellType" returnInitialTab1="annotations" returnInitialTab2="sources" returnInitialTab2Url="${thisUrl}" />
         <caarray:termSelector baseId="diseaseState" category="<%= ExperimentOntologyCategory.DISEASE_STATE %>" termField="${currentSource.diseaseState}"
             tabIndex="6" termFieldName="currentSource.diseaseState" returnInitialTab1="annotations" returnInitialTab2="sources" returnInitialTab2Url="${thisUrl}" />
+        <caarray:protocolSelector returnInitialTab1="annotations" returnInitialTab2="sources" returnInitialTab2Url="${thisUrl}" tabIndex1="7" tabIndex2="8" multiple="true" />
         <caarray:annotationCharacteristics item="${currentSource}"/>
         <s:hidden name="currentSource.id" />
         <s:hidden name="project.id" />

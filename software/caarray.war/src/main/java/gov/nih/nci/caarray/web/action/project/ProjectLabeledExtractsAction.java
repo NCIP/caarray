@@ -110,7 +110,7 @@ import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
  * @author Dan Kokotov
  */
 @Validation
-public class ProjectLabeledExtractsAction extends AbstractProjectProtocolAnnotationListTabAction<Extract> {
+public class ProjectLabeledExtractsAction extends AbstractProjectAssociatedAnnotationsListTabAction<Extract> {
     private static final long serialVersionUID = 1L;
 
     private LabeledExtract currentLabeledExtract = new LabeledExtract();

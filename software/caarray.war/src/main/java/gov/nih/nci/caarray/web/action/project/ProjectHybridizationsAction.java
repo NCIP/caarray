@@ -123,7 +123,7 @@ import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
  * @author Dan Kokotov
  */
 @Validation
-public class ProjectHybridizationsAction extends AbstractProjectProtocolAnnotationListTabAction<LabeledExtract> {
+public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnotationsListTabAction<LabeledExtract> {
     private static final long serialVersionUID = 1L;
 
     private Hybridization currentHybridization = new Hybridization();
@@ -147,7 +147,7 @@ public class ProjectHybridizationsAction extends AbstractProjectProtocolAnnotati
     @Override
     public void prepare() throws VocabularyServiceException {
         super.prepare();
-        
+
         Set<ArrayDesign> arrayDesigns = getProject().getExperiment().getArrayDesigns();
         if (arrayDesigns != null && arrayDesigns.size() == 1) {
             if (currentHybridization.getArray() == null) {
@@ -223,7 +223,7 @@ public class ProjectHybridizationsAction extends AbstractProjectProtocolAnnotati
         // needed to added additional validation
         return super.save();
     };
-    
+
     /**
      * {@inheritDoc}
      */

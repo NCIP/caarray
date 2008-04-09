@@ -99,14 +99,17 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -119,6 +122,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.IndexColumn;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
@@ -141,7 +145,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     private Array array;
     private Set<Image> images = new HashSet<Image>();
     private Set<DerivedArrayData> derivedDataCollection = new HashSet<DerivedArrayData>();
-    private ProtocolApplication protocolApplication;
+    private List<ProtocolApplication> protocolApplications = new ArrayList<ProtocolApplication>();
     private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
 
@@ -290,51 +294,47 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     }
 
     /**
-     * Gets the protocolApplication.
-     *
-     * @return the protocolApplication
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
-    @ForeignKey(name = "hybridization_protocolapp_fk")
-    public ProtocolApplication getProtocolApplication() {
-        return this.protocolApplication;
-    }
-
-    /**
-     * Sets the protocolApplication.
-     *
-     * @param protocolApplicationVal
-     *            the protocolApplication
-     */
-    public void setProtocolApplication(final ProtocolApplication protocolApplicationVal) {
-        this.protocolApplication = protocolApplicationVal;
-    }
-
-    /**
      * {@inheritDoc}
      */
-    @Transient
-    public Set<ProtocolApplication> getProtocolApplications() {
-        return Collections.singleton(this.protocolApplication);
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "hybridization_protocol_application",
+            joinColumns = @JoinColumn(name = "hybridization"),
+            inverseJoinColumns = @JoinColumn(name = "protocol_application")
+    )
+    @IndexColumn(name = "protocol_order")
+    @ForeignKey(name = "hybridization_protocol_application_hybridization_fk",
+            inverseName = "hybridization_protocol_application_protocol_application_fk")
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public List<ProtocolApplication> getProtocolApplications() {
+        return this.protocolApplications;
+    }
+
+    /**
+     * Sets the protocolApplications.
+     *
+     * @param protocolApplicationsList the protocolApplications to set
+     */
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setProtocolApplications(final List<ProtocolApplication> protocolApplicationsList) {
+        this.protocolApplications = protocolApplicationsList;
     }
 
     /**
      * {@inheritDoc}
      */
     public void addProtocolApplication(ProtocolApplication pa) {
-        if (this.protocolApplication == null) {
-            this.protocolApplication = pa;
-        }
+        this.protocolApplications.add(pa);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void clearProtocolApplications() {
-        this.protocolApplication = null;
+        this.protocolApplications.clear();
     }
-    
+
     /**
      * Gets the labeledExtract.
      *

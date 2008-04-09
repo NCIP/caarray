@@ -194,13 +194,17 @@ public class ProjectSamplesActionTest {
         // protocols
         ProtocolApplication pa = new ProtocolApplication();
         Protocol p = new Protocol();
+        p.setId(1L);
         p.setName("protocol1");
         pa.setProtocol(p);
-        DUMMY_SAMPLE.getProtocolApplications().add(pa);
+        DUMMY_SAMPLE.addProtocolApplication(pa);
 
         Protocol p2 = new Protocol();
+        p2.setId(2L);
         p2.setName("protocol2");
-        action.setProtocol(p2);
+        List<Protocol> protocols = new ArrayList<Protocol>();
+        protocols.add(p2);
+        action.setSelectedProtocols(protocols);
 
         // update existing sample
         action.setCurrentSample(DUMMY_SAMPLE);
@@ -208,7 +212,27 @@ public class ProjectSamplesActionTest {
         assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
         assertTrue(toAdd.getSamples().contains(DUMMY_SAMPLE));
         assertFalse(toRemove.getSamples().contains(DUMMY_SAMPLE));
-        assertEquals(p2, DUMMY_SAMPLE.getProtocolApplications().iterator().next().getProtocol());
+        assertEquals(p2, DUMMY_SAMPLE.getProtocolApplications().get(0).getProtocol());
+
+        // add another protocol application
+        Protocol p3 = new Protocol();
+        p3.setId(3L);
+        p3.setName("protocol3");
+        action.getSelectedProtocols().add(p3);
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
+        assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
+        assertEquals(2, DUMMY_SAMPLE.getProtocolApplications().size());
+        assertTrue(DUMMY_SAMPLE.getProtocolApplications().get(0).getProtocol().equals(p2)
+                || DUMMY_SAMPLE.getProtocolApplications().get(0).getProtocol().equals(p3));
+        assertTrue(DUMMY_SAMPLE.getProtocolApplications().get(1).getProtocol().equals(p2)
+                || DUMMY_SAMPLE.getProtocolApplications().get(1).getProtocol().equals(p3));
+
+        // take away a PA
+        action.getSelectedProtocols().remove(p2);
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
+        assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
+        assertEquals(1, DUMMY_SAMPLE.getProtocolApplications().size());
+        assertEquals(p3, DUMMY_SAMPLE.getProtocolApplications().get(0).getProtocol());
     }
 
     @Test
@@ -217,10 +241,22 @@ public class ProjectSamplesActionTest {
         Protocol p = new Protocol();
         p.setName("protocol1");
         pa.setProtocol(p);
+        DUMMY_SAMPLE.getProtocolApplications().clear();
         DUMMY_SAMPLE.getProtocolApplications().add(pa);
         action.setCurrentSample(DUMMY_SAMPLE);
         assertEquals(Action.INPUT, action.edit());
-        assertEquals(p, action.getProtocol());
+        assertEquals(1, action.getSelectedProtocols().size());
+        assertEquals(p, action.getSelectedProtocols().get(0));
+
+        ProtocolApplication pa2 = new ProtocolApplication();
+        Protocol p2 = new Protocol();
+        p2.setName("protocol2");
+        pa2.setProtocol(p2);
+        DUMMY_SAMPLE.getProtocolApplications().add(pa2);
+        action.setCurrentSample(DUMMY_SAMPLE);
+        assertEquals(Action.INPUT, action.edit());
+        assertEquals(2, action.getSelectedProtocols().size());
+        assertEquals(p2, action.getSelectedProtocols().get(1));
     }
 
 

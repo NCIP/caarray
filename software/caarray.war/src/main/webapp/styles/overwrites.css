@@ -139,6 +139,8 @@ UL.selectedItemList
 { background-attachment:scroll }
 UL.selectedItemList li
 { border-bottom:1px solid #eee; background: transparent url("../images/ico_cancel.gif") no-repeat scroll 0%; padding: 2px 2px 2px 20px; cursor: pointer; }
+UL.selectedItemList li.selected
+{ background: transparent url("../images/ico_add.gif") no-repeat scroll 0%;}
 UL.selectedItemList LI:hover
 { background: #e5e5e5 url("../images/ico_cancel.gif") no-repeat scroll 0%; }
 

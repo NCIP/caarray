@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.cagrid.caarray.client;
 
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.cagrid.common.Utils;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
@@ -134,6 +135,7 @@ public class CaArray2xGrid extends TestCase {
         suite.addTest(new CaArray2xGrid("testFindAllExperiments"));
         suite.addTest(new CaArray2xGrid("testFindAllProjects"));
         suite.addTest(new CaArray2xGrid("testFindAllAbstractBioMaterials"));
+        suite.addTest(new CaArray2xGrid("testFindAllHybridizations"));
         return suite;
     }
 
@@ -167,6 +169,10 @@ public class CaArray2xGrid extends TestCase {
 
     public void testFindAllAbstractBioMaterials() throws Exception {
         findAllHelper("gov.nih.nci.caarray.domain.sample.AbstractBioMaterial");
+    }
+
+    public void testFindAllHybridizations() throws Exception {
+        findAllHelper(Hybridization.class.getName());
     }
 
     private void findAllHelper(String target) throws Exception {

@@ -111,7 +111,7 @@ public class ProtocolTest extends AbstractSeleniumTest {
         addExtract();
         addLabeledExtract();
         addHybridizations();
-        
+
         // validate the sample count is correct on the My Experiment Workspace page
         selenium.click("link=My Experiment Workspace");
         waitForText("Permissions");
@@ -134,7 +134,7 @@ public class ProtocolTest extends AbstractSeleniumTest {
         selenium.keyPress("id=materialTypeSearchInput", TAB_KEY);
         selenium.select("projectForm_protocolType", "label=acclimatization");
         waitForDiv("progressMsg", 3000);
-        selenium.select("projectForm_protocol", "label=" + protocolName);
+        selenium.keyPress("id=protocolSearchInput", TAB_KEY);
         doSave(name);
     }
 
@@ -145,7 +145,7 @@ public class ProtocolTest extends AbstractSeleniumTest {
         selenium.keyPress("id=materialTypeSearchInput", TAB_KEY);
         selenium.select("projectForm_protocolType", "label=acclimatization");
         waitForDiv("progressMsg", 3000);
-        selenium.select("projectForm_protocol", "label=" + protocolName);
+        selenium.keyPress("id=protocolSearchInput", TAB_KEY);
         doSave(name);
     }
 
@@ -156,9 +156,8 @@ public class ProtocolTest extends AbstractSeleniumTest {
         selenium.keyPress("id=sourcePickerAssociatedValueName", TAB_KEY);
         selenium.keyPress("id=materialTypeSearchInput", TAB_KEY);
         selenium.select("projectForm_protocolType", "label=acclimatization");
-        //String[] values = selenium.getSelectOptions("projectForm_protocol");
         waitForDiv("progressMsg", 3000);
-        selenium.select("projectForm_protocol", "label=" + protocolName);
+        selenium.keyPress("id=protocolSearchInput", TAB_KEY);
         doSave(name);
     }
 

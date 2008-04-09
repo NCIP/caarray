@@ -234,7 +234,7 @@ public class VocabularyServiceStub implements VocabularyService {
     /**
      * {@inheritDoc}
      */
-    public List<Protocol> getProtocolByProtocolType(Term type) {
+    public List<Protocol> getProtocolsByProtocolType(Term type, String name) {
         return null;
     }
 

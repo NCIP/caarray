@@ -225,6 +225,4 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         verifyEquals("Updated", selenium.getText("link=Updated"));
     }
 
-
-
 }

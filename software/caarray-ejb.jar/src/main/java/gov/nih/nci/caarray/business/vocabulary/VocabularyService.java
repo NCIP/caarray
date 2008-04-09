@@ -109,7 +109,7 @@ public interface VocabularyService {
     /**
      * Returns all terms that belong to the given category (including all subcategories).
      *
-     * @param category the category for which to return terms 
+     * @param category the category for which to return terms
      * @return the Set of Terms belonging to the given categories or any of its subcategories
      * (where its set of subcategories is the transitive closure of the children property of Category)
      */
@@ -119,7 +119,7 @@ public interface VocabularyService {
      * Returns all terms that belong to the given category  (including all
      * subcategories) and whose value starts with the given value.
      *
-     * @param category the category for which to return terms 
+     * @param category the category for which to return terms
      * @param value the value to search on
      * @return the Set of Terms belonging to the given categories or any of its subcategories
      * (where its set of subcategories is the transitive closure of the children property of Category),
@@ -142,14 +142,14 @@ public interface VocabularyService {
      * @return the matching source, or null if no matching source exists.
      */
     TermSource getSource(String name, String version);
-    
+
     /**
      * Returns the term sources with given name.
      *
      * @param name name of the sources to return
      * @return the matching sources, or empty set if no matching sources exists.
      */
-    Set<TermSource> getSources(String name);    
+    Set<TermSource> getSources(String name);
 
     /**
      * Returns the requested term source, if it exists.
@@ -166,7 +166,7 @@ public interface VocabularyService {
      * @param url url of the sources to return
      * @return the matching sources, or empty set if no matching sources exists.
      */
-    Set<TermSource> getSourcesByUrl(String url);    
+    Set<TermSource> getSourcesByUrl(String url);
 
     /**
      * Returns the category with the matching name for the given source.
@@ -203,7 +203,7 @@ public interface VocabularyService {
     Organism getOrganism(Long id);
 
     /**
-     * Get the organism with given name in the given term source. 
+     * Get the organism with given name in the given term source.
      * @param source the source the organism must have.
      * @param scientificName the scientific name the organism must have (case insensitive)
      * @return the organism matching the above, or null if no matches
@@ -223,11 +223,12 @@ public interface VocabularyService {
     List<TermSource> getAllSources();
 
     /**
-     * Get the list of protocols with the given type.
+     * Get the list of protocols with the given type with names matching the given name (case-insensitive).
      * @param type the type.
+     * @param name name  to match (case-insensitive)
      * @return the list of protocols.
      */
-    List<Protocol> getProtocolByProtocolType(Term type);
+    List<Protocol> getProtocolsByProtocolType(Term type, String name);
 
     /**
      * Get a protocol based off of the fields in its unique constraint.
@@ -236,17 +237,17 @@ public interface VocabularyService {
      * @return the protocol, or null if none found.
      */
     Protocol getProtocol(String name, TermSource source);
-    
+
     /**
      * Given a term value and a term source, searches for a term with that value in
      * all term sources in the database which are considered
      * to be other versions of the same term source. Two TermSources are considered
      * to be versions of the same term source if they have the same name or the same url.
      * @param termSource the term source whose other versions to retrieve. If any matches exist,
-     * returns the match from the term source with the latest (using alphabetical ordering) version 
+     * returns the match from the term source with the latest (using alphabetical ordering) version
      * @param value value of the term to find (case insensitive)
      * @return a Term with given value from the Term Source with latest version from among all term sources
      * with the same version as the given source; null if no matching terms are found
-     */ 
+     */
     Term findTermInAllTermSourceVersions(TermSource termSource, String value);
 }

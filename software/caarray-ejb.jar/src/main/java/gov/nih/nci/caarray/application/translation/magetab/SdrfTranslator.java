@@ -127,11 +127,11 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfNodeType;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.log4j.Logger;
@@ -329,15 +329,12 @@ final class SdrfTranslator extends AbstractTranslator {
                 hybridization.getFactorValues().add(factorValue);
                 factorValue.setHybridization(hybridization);
             }
-            // DEVELOPER NOTE: the data modeling of Hybridization is wrong, and as a result
-            // we can only capture one ProtocolApplication per hyb. A GForge issue is tracking
-            // addressing this.
-            if (!sdrfHybridization.getProtocolApplications().isEmpty()) {
-                gov.nih.nci.caarray.magetab.ProtocolApplication sdrfProtocolApp = sdrfHybridization
-                        .getProtocolApplications().get(0);
+
+            for (gov.nih.nci.caarray.magetab.ProtocolApplication sdrfProtocolApp
+                    : sdrfHybridization.getProtocolApplications()) {
                 ProtocolApplication protocolApplication =
                     getProtocolApplicationFromMageTabProtocolApplication(sdrfProtocolApp);
-                hybridization.setProtocolApplication(protocolApplication);
+                hybridization.addProtocolApplication(protocolApplication);
             }
 
             this.allHybridizations.add(hybridization);
@@ -382,8 +379,7 @@ final class SdrfTranslator extends AbstractTranslator {
                 : sdrfBiomaterial.getProtocolApplications()) {
             ProtocolApplication protocolApplication =
                 getProtocolApplicationFromMageTabProtocolApplication(mageTabProtocolApplication);
-            protocolApplication.setBioMaterial(bioMaterial);
-            bioMaterial.getProtocolApplications().add(protocolApplication);
+            bioMaterial.addProtocolApplication(protocolApplication);
         }
     }
 
@@ -665,7 +661,7 @@ final class SdrfTranslator extends AbstractTranslator {
         if (isBioMaterial(leftNodeType)) {
             // Use the left node's name as part of any generated biomaterial names.
             String baseGeneratedNodeName = ((AbstractBioMaterial) leftCaArrayNode).getName();
-            Set<ProtocolApplication> pas = ((AbstractBioMaterial) leftCaArrayNode).getProtocolApplications();
+            List<ProtocolApplication> pas = ((AbstractBioMaterial) leftCaArrayNode).getProtocolApplications();
             linkBioMaterial(leftCaArrayNode, rightCaArrayNode, leftNodeType, rightNodeType, baseGeneratedNodeName, pas);
         } else if (SdrfNodeType.HYBRIDIZATION.equals(leftNodeType)) {
             linkHybridizationToArrays((gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode,
@@ -738,7 +734,7 @@ final class SdrfTranslator extends AbstractTranslator {
     @SuppressWarnings("PMD")
     private void linkBioMaterial(AbstractCaArrayObject leftCaArrayNode, AbstractCaArrayObject rightCaArrayNode,
             SdrfNodeType leftNodeType, SdrfNodeType rightNodeType, String baseGeneratedNodeName,
-            Set<ProtocolApplication> protocolApplications) {
+            Collection<ProtocolApplication> protocolApplications) {
         // TODO Handle case where Extract goes to Extract, as shown in ChIP-chip example in MAGE-TAB spec.
         if (leftNodeType.equals(SdrfNodeType.SOURCE)) {
             if (rightNodeType.equals(SdrfNodeType.SAMPLE)) {
@@ -775,7 +771,7 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private void reassociateProtocolApplications(AbstractBioMaterial bioMaterial,
-            Set<ProtocolApplication> protocolApplications) {
+            Collection<ProtocolApplication> protocolApplications) {
         for (Iterator<ProtocolApplication> i = protocolApplications.iterator(); i.hasNext();) {
             ProtocolApplication pa = i.next();
             Term protocolType = pa.getProtocol().getType();
@@ -783,8 +779,7 @@ final class SdrfTranslator extends AbstractTranslator {
                 if (protocolType.getValue().equals(typeAssoc.getValue())
                         && protocolType.getSource().getName().equals(typeAssoc.getSource())
                         && bioMaterial.getClass().equals(typeAssoc.getNodeClass())) {
-                    pa.setBioMaterial(bioMaterial);
-                    bioMaterial.getProtocolApplications().add(pa);
+                    bioMaterial.addProtocolApplication(pa);
                     i.remove();
                 }
             }

@@ -86,50 +86,39 @@ import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
-import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.ajaxtags.xml.AjaxXmlBuilder;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
-import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
-import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * @author Scott Miller
- * @param <T> type of objects managed by this class
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
-public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends AbstractBioMaterial> extends
-        AbstractProjectAnnotationsListTabAction<T> {
+public abstract class AbstractProjectProtocolAnnotationListTabAction extends AbstractProjectListTabAction {
 
     private Term protocolType;
     private Set<Term> protocolTypes;
-    private Protocol protocol;
+    private List<Protocol> selectedProtocols = new ArrayList<Protocol>();
     private List<Protocol> protocols = new ArrayList<Protocol>();
-
+    private String protocolName;
 
     /**
      * default constructor.
      *
      * @param resourceKey the base resource key.
-     * @param associatedResourceKey the resource key for the associated annotation
      * @param pagedItems the paged list to use for this tab's item list
      */
-    public AbstractProjectProtocolAnnotationListTabAction(String resourceKey, String associatedResourceKey,
+    public AbstractProjectProtocolAnnotationListTabAction(String resourceKey,
             PaginatedListImpl<? extends PersistentObject, ?> pagedItems) {
-        super(resourceKey, associatedResourceKey, pagedItems);
+        super(resourceKey, pagedItems);
     }
 
     private void initForm() {
@@ -142,11 +131,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
     @Override
     @SkipValidation
     public String edit() {
-        Protocol p = getCurrentProtocol();
-        if (p != null) {
-            setProtocolType(p.getType());
-            setProtocol(p);
-        }
+        setSelectedProtocols(getCurrentProtocols());
         initForm();
         return super.edit();
     }
@@ -155,28 +140,28 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      * {@inheritDoc}
      */
     @Override
-    @Validations(fieldExpressions = @FieldExpressionValidator(message = "",
-            fieldName = "protocolType", key = "protocolType.protocol.mismatch",
-            expression = "(protocolType == null && protocol == null) || (protocolType == protocol.type)"))
     @SuppressWarnings("PMD.CyclomaticComplexity")
     public String save() {
         ProtocolApplicable protApplicable = (ProtocolApplicable) getItem();
-        if (getProtocol() != null && !getProtocol().equals(getCurrentProtocol())) {
-            ProtocolApplication protocolApplication = new ProtocolApplication();
-            if (getCurrentProtocol() != null) {
-                protocolApplication = protApplicable.getProtocolApplications().iterator().next();
-            }
-            if (protApplicable instanceof AbstractBioMaterial) {
-                protocolApplication.setBioMaterial((AbstractBioMaterial) protApplicable);
-            }
-            protocolApplication.setProtocol(getProtocol());
-            if (getCurrentProtocol() == null) {
+        List<ProtocolApplication> currentProtocolApplications = new ArrayList<ProtocolApplication>(
+                getCurrentProtocolApplications());
+        List<Protocol> currentProtocols = new ArrayList<Protocol>(getCurrentProtocols());
+        protApplicable.clearProtocolApplications();
+        for (Protocol selectedProtocol : getSelectedProtocols()) {
+            if (currentProtocols.contains(selectedProtocol)) {
+                for (ProtocolApplication currProtocolApplication : currentProtocolApplications) {
+                    if (currProtocolApplication.getProtocol().equals(selectedProtocol)) {
+                        protApplicable.addProtocolApplication(currProtocolApplication);
+                        break;
+                    }
+                }
+            } else {
+                ProtocolApplication protocolApplication = new ProtocolApplication();
+                protocolApplication.setProtocol(selectedProtocol);
                 protApplicable.addProtocolApplication(protocolApplication);
             }
-        } else if (getProtocol() == null && getCurrentProtocol() != null) {
-            addOrphan(protApplicable.getProtocolApplications().iterator().next());
-            protApplicable.clearProtocolApplications();
         }
+
         return super.save();
     }
 
@@ -186,22 +171,9 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      */
     @SkipValidation
     public String retrieveXmlProtocolList() {
-        setProtocols(CaArrayActionHelper.getVocabularyService().getProtocolByProtocolType(getProtocolType()));
-        return "xmlProtocolList";
-    }
-
-    /**
-     * get the list of protocols in an xml stream.
-     * @return the input stream.
-     * @throws IllegalAccessException on error
-     * @throws NoSuchMethodException on error
-     * @throws InvocationTargetException on error
-     * @throws UnsupportedEncodingException on error
-     */
-    public InputStream getXmlProtocolList() throws IllegalAccessException, NoSuchMethodException,
-        InvocationTargetException, UnsupportedEncodingException {
-        AjaxXmlBuilder xmlBuilder = new AjaxXmlBuilder().addItems(this.protocols, "name", "id");
-        return new ByteArrayInputStream(xmlBuilder.toString().getBytes("UTF-8"));
+        setProtocols(CaArrayActionHelper.getVocabularyService().getProtocolsByProtocolType(getProtocolType(),
+                getProtocolName()));
+        return "protocolAutoCompleterValues";
     }
 
     /**
@@ -230,17 +202,17 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
     }
 
     /**
-     * @return the protocol
+     * @return the selectedProtocols
      */
-    public Protocol getProtocol() {
-        return this.protocol;
+    public List<Protocol> getSelectedProtocols() {
+        return this.selectedProtocols;
     }
 
     /**
-     * @param protocol the protocol to set
+     * @param selectedProtocols the selectedProtocols to set
      */
-    public void setProtocol(Protocol protocol) {
-        this.protocol = protocol;
+    public void setSelectedProtocols(List<Protocol> selectedProtocols) {
+        this.selectedProtocols = selectedProtocols;
     }
 
     /**
@@ -272,38 +244,54 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
     }
 
     /**
-     * The current protocol on the selected item.
-     * @return the protocol
+     * The current protocols on the selected item.
+     * @return the protocols
      */
-    public Protocol getCurrentProtocol() {
-        return (getCurrentProtocolApplication() == null) ? null : getCurrentProtocolApplication().getProtocol();
-    }
-
-    /**
-     * does nothing, only here so it can be referenced in the jsp as a bean property.
-     * @param p ignored
-     */
-    public void setCurrentProtocol(Protocol p) {
-        // does nothing, only here so it can be referenced in the jsp as a bean property
-    }
-
-    /**
-     * The current protocol application on the selected item.
-     * @return the protocol
-     */
-    public ProtocolApplication getCurrentProtocolApplication() {
-        ProtocolApplicable protApplicable = (ProtocolApplicable) getItem();
-        for (ProtocolApplication protocolApplication : protApplicable.getProtocolApplications()) {
-            return protocolApplication;
+    public List<Protocol> getCurrentProtocols() {
+        List<Protocol> currentProtocols = new ArrayList<Protocol>();
+        for (ProtocolApplication pa : getCurrentProtocolApplications()) {
+            currentProtocols.add(pa.getProtocol());
         }
-        return null;
+        return currentProtocols;
     }
 
     /**
      * does nothing, only here so it can be referenced in the jsp as a bean property.
      * @param p ignored
      */
-    public void setCurrentProtocolApplication(ProtocolApplication p) {
+    public void setCurrentProtocols(List<Protocol> p) {
         // does nothing, only here so it can be referenced in the jsp as a bean property
     }
+
+    /**
+     * The current protocol applications on the selected item.
+     * @return the protocol applications
+     */
+    public List<ProtocolApplication> getCurrentProtocolApplications() {
+        ProtocolApplicable protApplicable = (ProtocolApplicable) getItem();
+        return protApplicable.getProtocolApplications();
+    }
+
+    /**
+     * does nothing, only here so it can be referenced in the jsp as a bean property.
+     * @param p ignored
+     */
+    public void setCurrentProtocolApplications(List<ProtocolApplication> p) {
+        // does nothing, only here so it can be referenced in the jsp as a bean property
+    }
+
+    /**
+     * @return the protocolName
+     */
+    public String getProtocolName() {
+        return protocolName;
+    }
+
+    /**
+     * @param protocolName the protocolName to set
+     */
+    public void setProtocolName(String protocolName) {
+        this.protocolName = protocolName;
+    }
+
 }

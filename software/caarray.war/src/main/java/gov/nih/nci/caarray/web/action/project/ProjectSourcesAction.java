@@ -115,7 +115,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
     requiredFields = @RequiredFieldValidator(fieldName = "currentSource.tissueSite",
             key = "struts.validator.requiredString", message = "")
 )
-public class ProjectSourcesAction extends AbstractProjectListTabAction {
+public class ProjectSourcesAction extends AbstractProjectProtocolAnnotationListTabAction {
     private static final long serialVersionUID = 1L;
 
     private Source currentSource = new Source();

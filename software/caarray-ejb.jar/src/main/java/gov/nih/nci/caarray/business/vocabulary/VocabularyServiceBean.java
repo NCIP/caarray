@@ -119,7 +119,7 @@ public class VocabularyServiceBean implements VocabularyService {
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
-     * 
+     *
      * {@inheritDoc}
      */
     public Set<Term> getTerms(final Category category) {
@@ -149,7 +149,7 @@ public class VocabularyServiceBean implements VocabularyService {
     public Organism getOrganism(TermSource source, String scientificName) {
         return getVocabularyDao().getOrganism(source, scientificName);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -200,7 +200,7 @@ public class VocabularyServiceBean implements VocabularyService {
     }
 
     /**
-     * 
+     *
      * {@inheritDoc}
      */
     public List<TermSource> getAllSources() {
@@ -225,13 +225,11 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     @SuppressWarnings("deprecation")
-    public List<Protocol> getProtocolByProtocolType(Term type) {
+    public List<Protocol> getProtocolsByProtocolType(Term type, String name) {
         if (type == null) {
             return new ArrayList<Protocol>();
         }
-        Protocol p = new Protocol();
-        p.setType(type);
-        return getVocabularyDao().queryEntityAndAssociationsByExample(p);
+        return this.daoFactory.getProtocolDao().getProtocols(type, name);
     }
 
     /**
@@ -264,7 +262,7 @@ public class VocabularyServiceBean implements VocabularyService {
     }
 
     /**
-     * 
+     *
      * @return VocabularyDao
      */
     protected VocabularyDao getVocabularyDao() {

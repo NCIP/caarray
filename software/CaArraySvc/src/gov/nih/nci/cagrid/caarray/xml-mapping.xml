@@ -439,6 +439,9 @@
     <field name="derivedDataCollection" type="gov.nih.nci.caarray.domain.data.DerivedArrayData" collection="collection">
       <bind-xml name="DerivedArrayData" type="gov.nih.nci.caarray.domain.data.DerivedArrayData" location="derivedDataCollection" node="element" />
     </field>
+    <field name="protocolApplications" type="gov.nih.nci.caarray.domain.protocol.ProtocolApplication" collection="collection">
+      <bind-xml name="ProtocolApplication" type="gov.nih.nci.caarray.domain.protocol.ProtocolApplication" location="protocolApplications" node="element" />
+    </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.project.Factor" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
     <map-to xml="Factor" ns-uri="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" />

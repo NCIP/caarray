@@ -26,11 +26,10 @@
         <s:else>
             <s:hidden key="currentHybridization.array.design"/>
         </s:else>
-        <caarray:protocolSelector returnInitialTab1="annotations" returnInitialTab2="hybridizations" returnInitialTab2Url="${thisUrl}" tabIndex1="5" tabIndex2="6" />        
+        <caarray:protocolSelector returnInitialTab1="annotations" returnInitialTab2="hybridizations" returnInitialTab2Url="${thisUrl}" tabIndex1="5" tabIndex2="6" multiple="true"/>
         <s:hidden name="currentHybridization.id" />
         <s:hidden name="project.id" />
         <s:hidden name="editMode" />
         <input type="submit" class="enableEnterSubmit"/>
     </caarray:projectListTabItemForm>
-    <caarray:protocolSelectorAjaxInit />
 </caarray:tabPane>
