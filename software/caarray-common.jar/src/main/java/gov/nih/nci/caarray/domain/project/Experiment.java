@@ -254,7 +254,6 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Term> replicateTypes = new HashSet<Term>();
     private Set<Term> normalizationTypes = new HashSet<Term>();
     private Set<Publication> publications = new HashSet<Publication>();
-    private Set<Array> arrays = new HashSet<Array>();
     private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
     private Set<Source> sources = new HashSet<Source>();
     private Set<Sample> samples = new HashSet<Sample>();
@@ -923,24 +922,13 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the arrays
      */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "experimentarray",
-            joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
-            inverseJoinColumns = {@JoinColumn(name = "array_id") })
-    @ForeignKey(name = "exprarray_invest_fk", inverseName = "exprarray_array_fk")
-    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE })
+    @Transient
     public Set<Array> getArrays() {
-        return this.arrays;
-    }
-
-    /**
-     * Sets the arrays.
-     *
-     * @param arraysVal the arrays
-     */
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setArrays(final Set<Array> arraysVal) {
-        this.arrays = arraysVal;
+        Set<Array> arrays = new HashSet<Array>();
+        for (Hybridization hyb : getHybridizations()) {
+            arrays.add(hyb.getArray());
+        }
+        return arrays;
     }
 
     /**

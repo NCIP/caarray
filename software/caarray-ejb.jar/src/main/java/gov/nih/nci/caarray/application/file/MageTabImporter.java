@@ -261,7 +261,6 @@ class MageTabImporter {
 
     private void mergeTranslatedData(Experiment originalExperiment, Experiment translatedExperiment) {
         originalExperiment.getArrayDesigns().addAll(translatedExperiment.getArrayDesigns());
-        originalExperiment.getArrays().addAll(translatedExperiment.getArrays());
         originalExperiment.setDateOfExperiment(translatedExperiment.getDateOfExperiment());
         originalExperiment.setDescription(translatedExperiment.getDescription());
         originalExperiment.getExtracts().addAll(translatedExperiment.getExtracts());
