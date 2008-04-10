@@ -108,6 +108,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -281,7 +282,9 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity implemen
     /**
      * {@inheritDoc}
      */
-    @OneToMany(fetch = FetchType.LAZY)
+    // should really be one-to-many, but hibernate bug HHH-3160/HHH-1296 prevents reordering or deleting from the list
+    // with a unique constraint on protocol_application
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "biomaterial_protocol_application",
             joinColumns = @JoinColumn(name = "bio_material"),

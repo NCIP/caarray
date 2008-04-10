@@ -789,7 +789,7 @@ var AssociationPickerUtils = {
 }
 
 var ListPickerUtils = {
-    processSelection : function(selectedItem, baseId, listLabel, listFieldName, multiple) {
+    processSelection : function(selectedItem, baseId, listLabel, listFieldName, multiple, allowReordering, autoUpdater) {
         var id = selectedItem.firstChild.value;
         if (id == null || id == '') {
             return;
@@ -806,17 +806,26 @@ var ListPickerUtils = {
         }
 
         var newItem = document.createElement("li");
+        newItem.id = baseId + '_' + id;
         var newInput = selectedItem.childNodes[0].cloneNode(false);
         newInput.name = listFieldName;
         newItem.appendChild(newInput);
         var newText = selectedItem.childNodes[1].cloneNode(false);
         newItem.appendChild(newText);
-        newItem.onclick = function() { ListPickerUtils.removeSelection(this); };
+        newItem.onclick = function() { ListPickerUtils.removeSelection(this, autoUpdater); };
         $(baseId + 'SelectedItemDiv').appendChild(newItem);
+
+        if (allowReordering) {
+            Sortable.create(baseId + 'SelectedItemDiv', {onUpdate: function() { autoUpdater.sortableReordered = true; } });
+        }
     },
 
-    removeSelection : function(selectedItem) {
-        Element.remove(selectedItem);
+    removeSelection : function(selectedItem, autoUpdater) {
+        if (!autoUpdater.sortableReordered) {
+            Element.remove(selectedItem);
+        } else {
+            autoUpdater.sortableReordered = false;
+        }
     },
 
     forceUpdate : function(autoUpdater) {
@@ -844,11 +853,11 @@ var ListPickerUtils = {
     },
 
     // paramNames and paramValues are comma-delimited lists
-    createAutoUpdater : function(baseId, url, listLabel, filterFieldName, listFieldName, multiple, paramNames, paramValues) {
+    createAutoUpdater : function(baseId, url, listLabel, filterFieldName, listFieldName, multiple, paramNames, paramValues, allowReordering) {
         var params = ListPickerUtils.parseParams(paramNames, paramValues);
         autoUpdater =  new Ajax.Autocompleter(baseId + "SearchInput", baseId +"AutocompleteDiv", url,
             {paramName: filterFieldName, minChars: '0', indicator: baseId + 'ProgressMsg', frequency: 0.75,
-             updateElement: function(selectedItem) {ListPickerUtils.processSelection(selectedItem, baseId, listLabel, listFieldName, multiple);},
+             updateElement: function(selectedItem) {ListPickerUtils.processSelection(selectedItem, baseId, listLabel, listFieldName, multiple, allowReordering, this);},
              onHide: function() {}, onShow: function() {},
              parameters: params});
         Element.show(autoUpdater.update);

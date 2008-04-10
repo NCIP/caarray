@@ -42,7 +42,7 @@
     listFieldName="selectedProtocols" tabIndex="${tabIndex2}" required="${required}" multiple="${multiple}"
     returnInitialTab1="${returnInitialTab1}" returnInitialTab2="${returnInitialTab2}"
     returnInitialTab2Url="${returnInitialTab2Url}" hideAddButton="${hideAddButton}" addButtonUrl="${addButtonUrl}"
-    showFilter="true" filterFieldName="protocolName"
+    showFilter="true" filterFieldName="protocolName" allowReordering="true"
     autocompleteUrl="${autocompleteUrl}" autocompleteParamNames="protocolType" autocompleteParamValues="${protocolType.id}"/>
 
 <c:if test="${!editMode}">

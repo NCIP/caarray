@@ -1,8 +1,8 @@
 -- defects 11716/12440
-create table biomaterial_protocol_application (bio_material bigint not null, protocol_application bigint not null, protocol_order integer not null, primary key (bio_material, protocol_order), unique (protocol_application)) type=InnoDB;
+create table biomaterial_protocol_application (bio_material bigint not null, protocol_application bigint not null, protocol_order integer not null, primary key (bio_material, protocol_order)) type=InnoDB;
 alter table biomaterial_protocol_application add index biomaterial_protocol_application_protocol_application_fk (protocol_application), add constraint biomaterial_protocol_application_protocol_application_fk foreign key (protocol_application) references protocol_application (id);
 alter table biomaterial_protocol_application add index biomaterial_protocol_application_bio_material_fk (bio_material), add constraint biomaterial_protocol_application_bio_material_fk foreign key (bio_material) references biomaterial (id);
-create table hybridization_protocol_application (hybridization bigint not null, protocol_application bigint not null, protocol_order integer not null, primary key (hybridization, protocol_order), unique (protocol_application)) type=InnoDB;
+create table hybridization_protocol_application (hybridization bigint not null, protocol_application bigint not null, protocol_order integer not null, primary key (hybridization, protocol_order)) type=InnoDB;
 alter table hybridization_protocol_application add index hybridization_protocol_application_protocol_application_fk (protocol_application), add constraint hybridization_protocol_application_protocol_application_fk foreign key (protocol_application) references protocol_application (id);
 alter table hybridization_protocol_application add index hybridization_protocol_application_hybridization_fk (hybridization), add constraint hybridization_protocol_application_hybridization_fk foreign key (hybridization) references hybridization (id);
 insert into hybridization_protocol_application (hybridization, protocol_application, protocol_order) select id, protocol_application, 0 from hybridization where protocol_application is not null;

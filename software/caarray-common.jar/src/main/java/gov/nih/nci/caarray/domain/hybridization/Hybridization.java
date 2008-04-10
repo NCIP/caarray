@@ -296,7 +296,9 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     /**
      * {@inheritDoc}
      */
-    @OneToMany(fetch = FetchType.LAZY)
+    // should really be one-to-many, but hibernate bug HHH-3160/HHH-1296 prevents reordering or deleting from the list
+    // with a unique constraint on protocol_application
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "hybridization_protocol_application",
             joinColumns = @JoinColumn(name = "hybridization"),

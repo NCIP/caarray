@@ -75,20 +75,27 @@
                         <ul id="${baseId}SelectedItemDiv" class="selectedItemList">
                             <c:choose>
                                 <c:when test="${multiple != 'true' && !empty listField}">
-                                    <li onclick="ListPickerUtils.removeSelection(this); "><input name="${listFieldName}" type="hidden" value="<s:property value='#attr.listField.${objectValue}'/>"/><s:property value="#attr.listField.${objectLabel}"/></li>
+                                    <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker); "><input name="${listFieldName}" type="hidden" value="<s:property value='#attr.listField.${objectValue}'/>"/><s:property value="#attr.listField.${objectLabel}"/></li>
                                 </c:when>
                                 <c:otherwise>
                                     <c:forEach items="${listField}" var="currentItem">
-                                        <li onclick="ListPickerUtils.removeSelection(this); "><input name="${listFieldName}" type="hidden" value="<s:property value='#attr.currentItem.${objectValue}'/>"/><s:property value="#attr.currentItem.${objectLabel}"/></li>
+                                        <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker);" id="${baseId}_<s:property value='#attr.currentItem.${objectValue}'/>"><input name="${listFieldName}" type="hidden" value="<s:property value='#attr.currentItem.${objectValue}'/>"/><s:property value="#attr.currentItem.${objectLabel}"/></li>
                                     </c:forEach>
                                 </c:otherwise>
                             </c:choose>
                         </ul>
+                        <s:if test="${allowReordering == 'true'}">
+                            <fmt:message key="listSelector.reorderList"/>
+                        </s:if>
                     </div>
                 </div>
             </div>
             <script type="text/javascript">
-                ${baseId}Picker = ListPickerUtils.createAutoUpdater('${baseId}', '${autocompleteUrl}', '${listLabel}', '${filterFieldName}', '${listFieldName}', '${multiple}', '${autocompleteParamNames}', '${autocompleteParamValues}');
+                ${baseId}Picker = ListPickerUtils.createAutoUpdater('${baseId}', '${autocompleteUrl}', '${listLabel}', '${filterFieldName}', '${listFieldName}', '${multiple}', '${autocompleteParamNames}', '${autocompleteParamValues}', '${allowReordering}');
+                <s:if test="${allowReordering == 'true'}">
+                    ${baseId}Picker.sortableReordered = false;
+                    Sortable.create('${baseId}SelectedItemDiv', {onUpdate: function() { ${baseId}Picker.sortableReordered = true; } });
+                </s:if>
             </script>
         </s:if>
         <s:else>
