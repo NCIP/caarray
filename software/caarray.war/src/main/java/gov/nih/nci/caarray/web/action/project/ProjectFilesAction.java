@@ -415,7 +415,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction
 	@SuppressWarnings( { "PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
 	// validation checks can't be easily refactored to smaller methods.
 	public String validateFiles () {
-		LOG.info("validateFiles");
+		LOG.info("carplafix");
+		;
 		int validatedFiles = 0;
 		int skippedFiles = 0;
 		int arrayDesignFiles = 0;
@@ -429,9 +430,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction
 
 		CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
 
-		
-		//!!!!!!!!!
-		// carplafix
+		// should put my stuff in different method instead of this...
+		// think of a better way to distinguish these sets...
 		if (includesSradf) {
 			for (CaArrayFile file : getSelectedFiles()) {
 				if (file.getFileType() == null) {
@@ -443,18 +443,18 @@ public class ProjectFilesAction extends AbstractBaseProjectAction
 					fileSet.add(file);
 					validatedFiles++;
 				} else {
-					LOG.info("skipping " +  file.getName());
+					LOG.info("skipping " + file.getName());
 					skippedFiles++;
 				}
 			}
-			
+
 			if (!fileSet.getFiles().isEmpty()) {
 				getFileManagementService().validateFiles(getProject(), fileSet);
 			}
 
 			ActionHelper.saveMessage(getText(	"project.fileValidate.success",
 												new String[] { String.valueOf(validatedFiles) }));
-		
+
 			if (skippedFiles > 0) {
 				ActionHelper.saveMessage(getText(	"project.fileValidate.error.invalidStatus",
 													new String[] { String.valueOf(skippedFiles) }));
@@ -467,9 +467,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction
 				ActionHelper.saveMessage(getText(	"project.fileValidate.error.unknownType",
 													new String[] { String.valueOf(unknownFiles) }));
 			}
-
-			
-			
 
 		}
 
@@ -532,6 +529,49 @@ public class ProjectFilesAction extends AbstractBaseProjectAction
 		return false;
 	}
 
+	// ########################################################################
+	private String importRplaFiles () {
+		LOG.info("carplafix");
+		int importedFiles = 0;
+		int skippedFiles = 0;
+		int arrayDesignFiles = 0;
+		int unknownFiles = 0;
+
+		CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
+		for (CaArrayFile file : getSelectedFiles()) {
+			if (file.getFileType() == null) {
+				unknownFiles++;
+				LOG.info("file, name=" + file.getName() + " is unknown");
+			} else if (file.getFileStatus().isImportable()) {
+				fileSet.add(file);
+				importedFiles++;
+				LOG.info("adding file, name=" + file.getName()
+							+ " to fileset as importable");
+			} else {
+				LOG.info("skipping " + file.getName());
+				skippedFiles++;
+			}
+		}
+		if (!fileSet.getFiles().isEmpty()) {
+			getFileManagementService().importFiles(getProject(), fileSet);
+		}
+		ActionHelper.saveMessage(getText(	"project.fileImport.success",
+											new String[] { String.valueOf(importedFiles) }));
+		
+		if (skippedFiles > 0) {
+			ActionHelper.saveMessage(getText(	"project.fileImport.error.invalidStatus",
+												new String[] { String.valueOf(skippedFiles) }));
+		}
+		if (unknownFiles > 0) {
+			ActionHelper.saveMessage(getText(	"project.fileImport.error.unknownType",
+												new String[] { String.valueOf(unknownFiles) }));
+		}
+		refreshProject();
+		return prepListUnimportedPage();
+
+		
+	}
+
 	/**
 	 * Method to import the files.
 	 * 
@@ -542,11 +582,22 @@ public class ProjectFilesAction extends AbstractBaseProjectAction
 	// be easily refactored to
 	// smaller methods.
 	public String importFiles () {
-		LOG.info("importFiles");
+		LOG.info("carplafix");
+
+		// think of a better way to distinguish these sets...
+		boolean includesSradf = includesType(	getSelectedFiles(),
+												FileType.RPLA_TAB_SRADF);
+		if (includesSradf) {
+
+			return importRplaFiles();
+
+		}
+
 		int importedFiles = 0;
 		int skippedFiles = 0;
 		int arrayDesignFiles = 0;
 		int unknownFiles = 0;
+
 		CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
 		for (CaArrayFile file : getSelectedFiles()) {
 			if (file.getFileType() == null) {
@@ -581,17 +632,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction
 		return prepListUnimportedPage();
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	/**
 	 * Adds supplemental data files to the system.
 	 * 

@@ -82,58 +82,109 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import java.util.Iterator;
+import java.util.Set;
+
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
+import gov.nih.nci.carpla.rplatab.RplaTabParsingException;
 
 import org.apache.log4j.Logger;
 
 /**
- * Encapsulates the functionality necessary for importing a set of files into a project.
+ * Encapsulates the functionality necessary for importing a set of files into a
+ * project.
  */
 final class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
-    private static final long serialVersionUID = 1L;
-    private static final Logger LOG = Logger.getLogger(ProjectFilesImportJob.class);
+	private static final long	serialVersionUID	= 1L;
+	private static final Logger	LOG					= Logger.getLogger(ProjectFilesImportJob.class);
 
-    ProjectFilesImportJob(String username, Project targetProject, CaArrayFileSet fileSet) {
-        super(username, targetProject, fileSet);
-    }
+	ProjectFilesImportJob(	String username,
+							Project targetProject,
+							CaArrayFileSet fileSet) {
+		super(username, targetProject, fileSet);
+	}
 
-    @Override
-    void execute() {
-        CaArrayFileSet fileSet = getFileSet(getProject());
-        try {
-            doValidate(fileSet);
-            if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
-                importAnnotation(fileSet);
-                importArrayData(fileSet);
-            }
-        } finally {
-            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
-        }
-    }
+	@Override
+	void execute () {
+		CaArrayFileSet fileSet = getFileSet(getProject());
+		try {
+			doValidate(fileSet);
+			if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
+				LOG.info("execute : fileset is validated");
 
-    private void importAnnotation(CaArrayFileSet fileSet) {
-        try {
-            getMageTabImporter().importFiles(getProject(), fileSet);
-        } catch (MageTabParsingException e) {
-            LOG.error(e.getMessage(), e);
-        }
-        getDaoFactory().getProjectDao().flushSession();
-        getDaoFactory().getProjectDao().clearSession();
-    }
+				if (containsRplaIDF(fileSet)) {
+					importRplaAnnotation(fileSet);
 
-    private void importArrayData(CaArrayFileSet fileSet) {
-        ArrayDataImporter arrayDataImporter = getArrayDataImporter();
-        arrayDataImporter.importFiles(fileSet);
-    }
+				} else {
 
-    @Override
-    FileStatus getInProgressStatus() {
-        return FileStatus.IMPORTING;
-    }
+					importAnnotation(fileSet);
+					importArrayData(fileSet);
+				}
+			}
+		} finally {
+			TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
+		}
+	}
+
+	private void importRplaAnnotation ( CaArrayFileSet fileSet) {
+		try {
+			getRplaTabImporter().importFiles(getProject(), fileSet);
+		} catch (RplaTabParsingException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		getDaoFactory().getProjectDao().flushSession();
+		getDaoFactory().getProjectDao().clearSession();
+	}
+
+	
+	
+	
+	private void importAnnotation ( CaArrayFileSet fileSet) {
+		try {
+			getMageTabImporter().importFiles(getProject(), fileSet);
+		} catch (MageTabParsingException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		getDaoFactory().getProjectDao().flushSession();
+		getDaoFactory().getProjectDao().clearSession();
+	}
+
+	RplaTabImporter getRplaTabImporter () {
+		return new RplaTabImporter(getRplaTabTranslator(), getDaoFactory());
+	}
+
+	
+	private void importArrayData ( CaArrayFileSet fileSet) {
+		ArrayDataImporter arrayDataImporter = getArrayDataImporter();
+		arrayDataImporter.importFiles(fileSet);
+	}
+
+	@Override
+	FileStatus getInProgressStatus () {
+		return FileStatus.IMPORTING;
+	}
+
+	// carplafix
+	// *****************************************************************
+	private boolean containsRplaIDF ( CaArrayFileSet fileSet) {
+		Set<CaArrayFile> files = fileSet.getFiles();
+		Iterator itie = files.iterator();
+		boolean found_rplaidf = false;
+		while (itie.hasNext()) {
+			CaArrayFile file = (CaArrayFile) itie.next();
+			if (file.getFileType() == FileType.RPLA_TAB_RPLAIDF) {
+				found_rplaidf = true;
+			}
+
+		}
+		return found_rplaidf;
+	}
 
 }

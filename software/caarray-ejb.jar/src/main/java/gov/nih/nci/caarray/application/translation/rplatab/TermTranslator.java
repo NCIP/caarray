@@ -122,12 +122,17 @@ final class TermTranslator extends AbstractTranslator {
 
 	@Override
 	void translate () {
+		
+		
+		LOG.info("rpladocumentset had number of terms:" + getDocumentSet().getTerms().size());
 		for (OntologyTerm ontologyTerm : getDocumentSet().getTerms()) {
+			
 			translateTerm(ontologyTerm);
 		}
 	}
 
 	private void translateTerm ( OntologyTerm ontologyTerm) {
+		LOG.info(ontologyTerm.getValue());
 		TermSource source = getSource(ontologyTerm.getTermSource());
 		Category category = getOrCreateCategory(ontologyTerm.getCategory());
 		Term term = getOrCreateTerm(source, category, ontologyTerm.getValue());

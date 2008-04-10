@@ -137,7 +137,7 @@ public class RplaTabTranslatorBean implements RplaTabTranslator {
 										CaArrayFileSet fileSet)
 	{
 
-		LOG.info("");
+		LOG.info("carplafix: validate:  ");
 		// validateSdrfs(documentSet, fileSet);
 
 		return documentSet.getValidationResult();

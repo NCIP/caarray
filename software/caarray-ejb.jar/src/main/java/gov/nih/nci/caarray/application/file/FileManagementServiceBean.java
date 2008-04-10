@@ -149,7 +149,7 @@ public class FileManagementServiceBean implements FileManagementService {
      * {@inheritDoc}
      */
     public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-    	LOG.info("");
+    	LOG.info("importFiles");
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForImport(fileSet);
         clearValidationMessages(fileSet);
@@ -166,7 +166,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet) {
-    	LOG.info("");
+    	LOG.info("sendImportJobMessage");
         ProjectFilesImportJob job = new ProjectFilesImportJob(UsernameHolder.getUser(), targetProject, fileSet);
         getSubmitter().submitJob(job);
     }

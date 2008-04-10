@@ -24,11 +24,6 @@ import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
-
-
-
-
-
 import gov.nih.nci.carpla.rplatab.model.Antibody;
 import gov.nih.nci.carpla.rplatab.model.ArrayDataSectionPrincipal;
 import gov.nih.nci.carpla.rplatab.model.ArraySectionPrincipal;
@@ -61,9 +56,7 @@ import gov.nih.nci.carpla.rplatab.sradf.SradfHeaders;
 
 public class RplaTabDocumentSet {
 
-	
-	
-	//###############################################################
+	// ###############################################################
 	private RplaTabInputFileSet	_rinputfileset;
 
 	public void setRplaTabInputFileSet ( RplaTabInputFileSet rplaTabInputFileSet)
@@ -71,15 +64,15 @@ public class RplaTabDocumentSet {
 		_rinputfileset = rplaTabInputFileSet;
 
 	}
-	//###############################################################
+
+	// ###############################################################
 	private ValidationResult	_validationResult	= new ValidationResult();
 
 	public ValidationResult getValidationResult () {
 		return _validationResult;
 	}
 
-	
-	//###############################################################
+	// ###############################################################
 	private RplaIdfFile	_rplaidffile;
 
 	public RplaIdfFile getRplaIdfFile () {
@@ -91,7 +84,7 @@ public class RplaTabDocumentSet {
 
 	}
 
-	//###############################################################
+	// ###############################################################
 	private SradfFile	_sradfFile;
 
 	public SradfFile getSradfFile () {
@@ -103,8 +96,7 @@ public class RplaTabDocumentSet {
 
 	}
 
-
-	//###############################################################
+	// ###############################################################
 	private SradfHeaders	_sradfHeaders;
 
 	public SradfHeaders getSradfHeaders () {
@@ -115,8 +107,7 @@ public class RplaTabDocumentSet {
 		_sradfHeaders = sradfHeaders;
 	}
 
-	
-	//###############################################################
+	// ###############################################################
 	private SortedMap<Integer, List<SectionPrincipal>>	_samplessection_principal_objects_per_row	= new TreeMap<Integer, List<SectionPrincipal>>();
 	private SortedMap<Integer, List<SectionPrincipal>>	_arraysection_principal_objects_per_row		= new TreeMap<Integer, List<SectionPrincipal>>();
 	private SortedMap<Integer, List<SectionPrincipal>>	_arraydatasection_principal_objects_per_row	= new TreeMap<Integer, List<SectionPrincipal>>();
@@ -141,7 +132,8 @@ public class RplaTabDocumentSet {
 		}
 
 	}
-	//###############################################################
+
+	// ###############################################################
 	public List<SectionPrincipal> getPrincipalObjectsBySectionAndRow (	SradfSectionType sectionType,
 																		int rowNumber)
 	{
@@ -185,8 +177,7 @@ public class RplaTabDocumentSet {
 
 	}
 
-	
-	//###############################################################
+	// ###############################################################
 	private String	_investigationTitle;
 
 	public void setInvestigationTitle ( String title) {
@@ -202,15 +193,14 @@ public class RplaTabDocumentSet {
 	// Experimental Design
 	// ---------------------------
 
-	
-	//###############################################################
+	// ###############################################################
 	private Map<String, ExperimentalFactor>	_experimentalFactors	= new Hashtable<String, ExperimentalFactor>();
 
 	public Map<String, ExperimentalFactor> getExperimentalFactors () {
 		return _experimentalFactors;
 	}
 
-	//should flag warning if already declared
+	// should flag warning if already declared
 	public ExperimentalFactor createExperimentalFactor ( String name) {
 
 		ExperimentalFactor factor = new ExperimentalFactor();
@@ -219,8 +209,7 @@ public class RplaTabDocumentSet {
 		return factor;
 	}
 
-	
-	//###############################################################
+	// ###############################################################
 	private SortedMap<String, Antibody>	_antibodies	= new TreeMap<String, Antibody>();
 
 	public Antibody createAntibody ( String name) {
@@ -237,7 +226,6 @@ public class RplaTabDocumentSet {
 		return _antibodies.get(name);
 	}
 
-	
 	// ---------------------------------------------------------------------------
 	// ---------------------------
 	// People
@@ -253,8 +241,7 @@ public class RplaTabDocumentSet {
 	// Dates
 	// ---------------------------
 
-	
-	//###############################################################
+	// ###############################################################
 	private Map<String, ImageFile>	_imageFiles	= new Hashtable<String, ImageFile>();
 
 	public ImageFile getOrCreateImageFile ( String name) {
@@ -277,18 +264,18 @@ public class RplaTabDocumentSet {
 
 				if (found == false) {
 					this.getValidationResult()
-							.addMessage(this.getSradfFile().getFile(),
-										Type.ERROR,
-										"Image file for name=" + name
-												+ " cannot be found");
-				}
-
-			} catch (Exception e) {
-				this.getValidationResult()
 						.addMessage(this.getSradfFile().getFile(),
 									Type.ERROR,
 									"Image file for name=" + name
 											+ " cannot be found");
+				}
+
+			} catch (Exception e) {
+				this.getValidationResult()
+					.addMessage(this.getSradfFile().getFile(),
+								Type.ERROR,
+								"Image file for name=" + name
+										+ " cannot be found");
 
 				e.printStackTrace();
 
@@ -298,8 +285,7 @@ public class RplaTabDocumentSet {
 		return _imageFiles.get(name);
 	}
 
-	
-	//###############################################################
+	// ###############################################################
 	private Map<String, ArrayDataFile>	_arrayDataFiles	= new Hashtable<String, ArrayDataFile>();
 
 	public ArrayDataFile getOrCreateArrayDataFile ( String name) {
@@ -322,18 +308,18 @@ public class RplaTabDocumentSet {
 
 				if (found == false) {
 					this.getValidationResult()
-							.addMessage(this.getSradfFile().getFile(),
-										Type.ERROR,
-										"Array data file for name=" + name
-												+ " cannot be found");
-				}
-
-			} catch (Exception e) {
-				this.getValidationResult()
 						.addMessage(this.getSradfFile().getFile(),
 									Type.ERROR,
 									"Array data file for name=" + name
 											+ " cannot be found");
+				}
+
+			} catch (Exception e) {
+				this.getValidationResult()
+					.addMessage(this.getSradfFile().getFile(),
+								Type.ERROR,
+								"Array data file for name=" + name
+										+ " cannot be found");
 
 				e.printStackTrace();
 
@@ -344,8 +330,7 @@ public class RplaTabDocumentSet {
 
 	}
 
-	
-	//###############################################################
+	// ###############################################################
 	private Map<String, DerivedArrayDataFile>	_derivedArrayDataFiles	= new Hashtable<String, DerivedArrayDataFile>();
 
 	// carplafix
@@ -364,8 +349,7 @@ public class RplaTabDocumentSet {
 	// Experiment Description
 	// ---------------------------
 
-	
-	//###############################################################
+	// ###############################################################
 	private Map<String, Protocol>	_protocols	= new Hashtable<String, Protocol>();
 
 	public void addProtocol ( Protocol protocol) {
@@ -394,25 +378,16 @@ public class RplaTabDocumentSet {
 		return _protocols.get(name);
 
 	}
-	
-	
-	
-	
-	//carplafix
-	//###############################################################
+
+	// carplafix
+	// ###############################################################
 	private final Map<String, TermSource>	termSourceCache	= new HashMap<String, TermSource>();
 
 	public Collection<TermSource> getTermSources () {
 		return termSourceCache.values();
 	}
 
-	private final Set<OntologyTerm>	termCache	= new HashSet<OntologyTerm>();
-
-	// carplafix
-	public Collection<OntologyTerm> getTerms () {
-		return termCache;
-	}
-	
+	// ###############################################################
 
 	private final Hashtable<String, TermSource>	_termSources	= new Hashtable<String, TermSource>();
 
@@ -428,8 +403,25 @@ public class RplaTabDocumentSet {
 
 	}
 
-	
-	//###############################################################
+	private final Set<OntologyTerm>	termCache	= new HashSet<OntologyTerm>();
+
+	// carplafix
+	public Collection<OntologyTerm> getTerms () {
+		return termCache;
+	}
+
+	public OntologyTerm createOntologyTerm ( String qualifier_term, String value)
+	{
+		OntologyTerm term = new OntologyTerm();
+
+		term.setCategory(qualifier_term);
+		term.setValue(value);
+		termCache.add(term);
+		return term;
+
+	}
+
+	// ###############################################################
 	private final Map<String, Source>	_sources	= new Hashtable<String, Source>();
 
 	public Source getOrCreateSource ( String bioSourceName) {
@@ -448,8 +440,7 @@ public class RplaTabDocumentSet {
 
 	}
 
-	
-	//###############################################################
+	// ###############################################################
 	private final SortedMap<String, Sample>	_samples	= new TreeMap<String, Sample>();
 
 	public SortedMap<String, Sample> getSamples () {
@@ -476,8 +467,7 @@ public class RplaTabDocumentSet {
 		return (_samples.containsKey(name));
 	}
 
-	
-	//###############################################################
+	// ###############################################################
 	private final Map<String, RPLArray>	_rplarrays	= new Hashtable<String, RPLArray>();
 
 	public RPLArray createRPLArray ( String arrayName) {
@@ -493,13 +483,15 @@ public class RplaTabDocumentSet {
 	public RPLArray getRPLArray ( String arrayName) {
 		return _rplarrays.get(arrayName);
 	}
-	//###############################################################
+
+	// ###############################################################
 	public void verifyRplArrayLocationUniqueness ( RplArrayLocation rplArrayLocation)
 	{
 	// TODO Auto-generated method stub
 
 	}
-	//###############################################################
+
+	// ###############################################################
 	public RplArrayFeature createRplArrayFeature (	RPLArrayGroup rplArray,
 													Sample sample,
 													RplArrayLocation rplArrayLocation)
@@ -508,12 +500,6 @@ public class RplaTabDocumentSet {
 		return null;
 	}
 
-	
-
-	
-	
-
-	
 	// #############################################################################
 	private Hashtable<String, Provider>	_providers	= new Hashtable<String, Provider>();
 
@@ -529,14 +515,10 @@ public class RplaTabDocumentSet {
 
 	}
 
-	// #############################################################################
-
-	public Characteristic createCharacteristic ( String name) {
-
+	public Characteristic createCharacteristic(){
 		Characteristic characteristic = new Characteristic();
-		characteristic.setValue(name);
-		return characteristic;
-
+		return characteristic ;
+		
 	}
 
 	// #############################################################################
@@ -581,17 +563,6 @@ public class RplaTabDocumentSet {
 
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	// ###############################################################
 	// ###############################################################
 	// ###############################################################
@@ -646,9 +617,9 @@ public class RplaTabDocumentSet {
 
 		System.out.println("*******debugPrintSectionPrincipals for " + sectionType.name());
 
-		Iterator it = rdataset.getSectionRowsPrincipalObjects(sectionType)
-				.keySet()
-				.iterator();
+		Iterator it = rdataset	.getSectionRowsPrincipalObjects(sectionType)
+								.keySet()
+								.iterator();
 
 		while (it.hasNext()) {
 
@@ -659,9 +630,9 @@ public class RplaTabDocumentSet {
 			System.out.print("srownum=" + intI + "\t");
 			for (int ii = 0; ii < principals_in_row.size(); ii++) {
 
-				System.out.print(principals_in_row.get(ii)
-						.getClass()
-						.getSimpleName()
+				System.out.print(principals_in_row	.get(ii)
+													.getClass()
+													.getSimpleName()
 
 									+ ":"
 									+ ((HasName) principals_in_row.get(ii)).getName()
@@ -690,18 +661,16 @@ public class RplaTabDocumentSet {
 	private static void debugPrintExperimentalFactors ( RplaTabDocumentSet rdataset,
 														PrintStream out)
 	{
-//		Map<String, ExperimentalFactor> factors = rdataset.getExperimentalFactors();
-//
-//		for (Enumeration e = factors.keySet().; e.hasMoreElements();) {
-//			ExperimentalFactor factor = factors.get(e.nextElement());
-//			out.println(factor.getName());
-//			out.println(factor.getType());
-//			// want to see term source ref too...
-//		}
+	// Map<String, ExperimentalFactor> factors =
+	// rdataset.getExperimentalFactors();
+	//
+	// for (Enumeration e = factors.keySet().; e.hasMoreElements();) {
+	// ExperimentalFactor factor = factors.get(e.nextElement());
+	// out.println(factor.getName());
+	// out.println(factor.getType());
+	// // want to see term source ref too...
+	// }
 
 	}
-
-	
-	
 
 }

@@ -122,6 +122,9 @@ final class TermSourceTranslator extends AbstractTranslator {
 
 	@Override
 	void translate () {
+		
+		
+		
 		for (gov.nih.nci.caarray.magetab.TermSource termSource : getDocumentSet()	.getTermSources()) {
 			translate(termSource);
 		}

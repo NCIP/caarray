@@ -84,6 +84,8 @@ package gov.nih.nci.carpla.rplatab.model;
 
 
 
+import gov.nih.nci.caarray.magetab.OntologyTerm;
+
 import java.io.Serializable;
 
 /**
@@ -106,10 +108,10 @@ public final class Characteristic implements Serializable,HasAttribute {
     }
 
     /**
-     * @param term the term to set
+     * @param ot the term to set
      */
-    public void setTerm(OntologyTerm term) {
-        this.term = term;
+    public void setTerm(OntologyTerm ot) {
+        this.term = ot;
     }
 
     /**

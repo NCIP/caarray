@@ -1,5 +1,6 @@
 package gov.nih.nci.carpla.rplatab;
 
+import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
@@ -126,6 +127,14 @@ public class RplaTabDocumentSetParserImplementation
 			return;
 		}
 
+		
+		
+		
+		
+		
+		
+		
+		
 		SradfFile sradfFile = RplaTabDocumentSet.getSradfFile();
 
 		processSectionRows(	sradfHeaders.getSamplesSectionHeaders(),
@@ -807,21 +816,29 @@ public class RplaTabDocumentSetParserImplementation
 											String[] rowValues,
 											RplaConstants.SradfSectionType sectionType,
 											int row_number_in_section,
-											RplaTabDocumentSet RplaTabDocumentSet)
+											RplaTabDocumentSet rplaTabDocumentSet)
 	{
 
+		LOG.info("remember to fix Characteristic and address case where characteristic is measurement (???) ");
+		
+		
 		String name = rowValues[header.getCol() - 1];
-
+		
+		
 		if (checkEmpty(	name,
 						header,
 						rowValues,
 						sectionType,
 						row_number_in_section,
-						RplaTabDocumentSet)) {
+						rplaTabDocumentSet)) {
 			return;
 		}
-		Characteristic characteristic = RplaTabDocumentSet.createCharacteristic(name);
-
+		Characteristic characteristic = rplaTabDocumentSet.createCharacteristic();
+		String qualifier = header.getTerm();
+		
+		OntologyTerm ot = rplaTabDocumentSet.createOntologyTerm(qualifier, name);
+		characteristic.setTerm(ot);
+		
 		hasCharacteristics.getCharacteristics().add(characteristic);
 
 		List<SradfHeader> subheaders = header.getSubHeaders();
@@ -835,7 +852,7 @@ public class RplaTabDocumentSetParserImplementation
 							rowValues,
 							sectionType,
 							row_number_in_section,
-							RplaTabDocumentSet);
+							rplaTabDocumentSet);
 
 		}
 
@@ -847,7 +864,7 @@ public class RplaTabDocumentSetParserImplementation
 									String[] rowValues,
 									int row_number_in_section,
 
-									RplaTabDocumentSet RplaTabDocumentSet)
+									RplaTabDocumentSet rplaTabDocumentSet)
 	{
 
 		String name = rowValues[header.getCol() - 1];
@@ -857,11 +874,11 @@ public class RplaTabDocumentSetParserImplementation
 					rowValues,
 					sectionType,
 					row_number_in_section,
-					RplaTabDocumentSet);
+					rplaTabDocumentSet);
 
-		Assay assay = RplaTabDocumentSet.getOrCreateAssay(name);
+		Assay assay = rplaTabDocumentSet.getOrCreateAssay(name);
 
-		RplaTabDocumentSet	.getPrincipalObjectsBySectionAndRow(sectionType,
+		rplaTabDocumentSet	.getPrincipalObjectsBySectionAndRow(sectionType,
 																row_number_in_section)
 							.add(assay);
 
@@ -876,7 +893,7 @@ public class RplaTabDocumentSetParserImplementation
 							rowValues,
 							sectionType,
 							row_number_in_section,
-							RplaTabDocumentSet);
+							rplaTabDocumentSet);
 
 		}
 

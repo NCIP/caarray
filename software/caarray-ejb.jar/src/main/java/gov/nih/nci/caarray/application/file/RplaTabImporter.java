@@ -116,8 +116,8 @@ public class RplaTabImporter {
 	}
 
 	// #######################################################################
-	void importFiles ( Project targetProject, CaArrayFileSet fileSet)
-																		throws RplaTabParsingException
+	void importFiles ( Project targetProject, CaArrayFileSet fileSet) throws RplaTabParsingException
+																		
 	{
 		LOG.info("Importing RPLA-TAB document set");
 		updateFileStatus(fileSet, FileStatus.IMPORTING);
@@ -131,6 +131,11 @@ public class RplaTabImporter {
 			updateFileStatus(fileSet, FileStatus.IMPORTED);
 		} catch (InvalidDataException e) {
 			handleInvalidRplaTab(fileSet, e);
+		}
+		catch ( RplaTabParsingException rexc){
+			//bad or good?
+			throw rexc;
+			
 		}
 	}
 
@@ -152,6 +157,8 @@ public class RplaTabImporter {
 	private void handleInvalidRplaTab ( CaArrayFileSet fileSet,
 										InvalidDataException e)
 	{
+		
+		LOG.info("handleInvalidRplaTab");
 		ValidationResult validationResult = e.getValidationResult();
 		for (CaArrayFile caArrayFile : fileSet.getFiles()) {
 			File file = getFile(caArrayFile);
@@ -281,25 +288,28 @@ public class RplaTabImporter {
 	private void save ( Project targetProject,
 						CaArrayTranslationResult translationResult)
 	{
+		LOG.info("save !!!!!!!");
 		saveTerms(translationResult);
-		saveArrayDesigns(translationResult);
+	//	saveArrayDesigns(translationResult);
 		saveInvestigations(targetProject, translationResult);
 	}
 
 	private void saveTerms ( CaArrayTranslationResult translationResult) {
+		
+		LOG.info("saveTerms: translationResult has " + translationResult.getTerms().size() +" (number) of terms");
+		
 		for (Term term : translationResult.getTerms()) {
+			LOG.info(term.getValue());
 			getCaArrayDao().save(term);
 		}
 	}
 
-	private void saveArrayDesigns ( CaArrayTranslationResult translationResult)
-	{
-		getCaArrayDao().save(translationResult.getArrayDesigns());
-	}
-
+	
 	private void saveInvestigations (	Project targetProject,
 										CaArrayTranslationResult translationResult)
 	{
+		LOG.info("saveInvestigations");
+		
 		// DEVELOPER NOTE: currently, importing multiple IDFs in a single import
 		// is not supported, and will
 		// be flagged as a validation error. hence we can assume that only a

@@ -107,9 +107,8 @@ import org.hibernate.LockMode;
  * Encapsulates the data necessary for a project file management job.
  */
 abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
-	
-	
-	private static final Logger LOG = Logger.getLogger(AbstractProjectFilesJob.class);
+
+	private static final Logger	LOG					= Logger.getLogger(AbstractProjectFilesJob.class);
 
 	private static final long	serialVersionUID	= 1L;
 
@@ -163,25 +162,37 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 														this.projectId);
 	}
 
+	// *****************************************************************
 	void doValidate ( CaArrayFileSet fileSet) {
-		validateAnnotation(fileSet);
-		validateArrayData(fileSet);
-	}
-	//*****************************************************************
-	private void validateAnnotation ( CaArrayFileSet fileSet) {
-
+		LOG.info("want to do this in subclass....but the validation subclass just calls this method...");
+		LOG.info("carplafix;;another kluge, this time looking at whether the rplaidf is there");
 		if (containsRplaIDF(fileSet)) {
 			LOG.info("rplaidf found");
-			getRplaTabImporter().validateFiles(fileSet);
+			validateRplaAnnotation(fileSet);
+			// what will i be validating here?
+
 		} else {
-			LOG.info("rplaidf not found");
-			getMageTabImporter().validateFiles(fileSet);
+			validateAnnotation(fileSet);
+			validateArrayData(fileSet);
 		}
+	}
+
+	// *****************************************************************
+	private void validateRplaAnnotation ( CaArrayFileSet fileSet) {
+		LOG.info("validateRplaAnnotation");
+		getRplaTabImporter().validateFiles(fileSet);
+
+	}
+
+	// *****************************************************************
+	private void validateAnnotation ( CaArrayFileSet fileSet) {
+
+		getMageTabImporter().validateFiles(fileSet);
 
 	}
 
 	// carplafix
-	//*****************************************************************
+	// *****************************************************************
 	private boolean containsRplaIDF ( CaArrayFileSet fileSet) {
 		Set<CaArrayFile> files = fileSet.getFiles();
 		Iterator itie = files.iterator();
@@ -196,22 +207,15 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 		return found_rplaidf;
 	}
 
-	
-	 private boolean includesType(List<CaArrayFile> fileList, FileType type) {
-	        for (CaArrayFile file : fileList) {
-	            if (type.equals(file.getFileType())) {
-	                return true;
-	            }
-	        }
-	        return false;
-	    }
-	
-	
-	
-	
-	
-	
-	
+	private boolean includesType ( List<CaArrayFile> fileList, FileType type) {
+		for (CaArrayFile file : fileList) {
+			if (type.equals(file.getFileType())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void validateArrayData ( CaArrayFileSet fileSet) {
 		getArrayDataImporter().validateFiles(fileSet);
 	}
