@@ -1,4 +1,4 @@
-package gov.nih.nci.carpla.domain;
+package gov.nih.nci.carpla.domain.antibody;
 
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.data.Image;

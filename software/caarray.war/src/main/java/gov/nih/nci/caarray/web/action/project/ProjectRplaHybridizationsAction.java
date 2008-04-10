@@ -124,7 +124,7 @@ import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
  * @author Dan Kokotov
  */
 @Validation
-public class ProjectHybridizationsAction
+public class ProjectRplaHybridizationsAction
 										extends
 										AbstractProjectProtocolAnnotationListTabAction<LabeledExtract> {
 	private static final long		serialVersionUID		= 1L;
@@ -138,7 +138,7 @@ public class ProjectHybridizationsAction
 	/**
 	 * Default constructor.
 	 */
-	public ProjectHybridizationsAction() {
+	public ProjectRplaHybridizationsAction() {
 		super(	"hybridization",
 				"labeledExtract",
 				new PaginatedListImpl<Hybridization, HybridizationSortCriterion>(	PAGE_SIZE,

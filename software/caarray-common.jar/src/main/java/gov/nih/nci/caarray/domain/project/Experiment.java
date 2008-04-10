@@ -101,9 +101,9 @@ import gov.nih.nci.caarray.security.SecurityPolicy;
 import gov.nih.nci.caarray.util.CaarrayInnoDBDialect;
 import gov.nih.nci.caarray.validation.UniqueConstraint;
 import gov.nih.nci.caarray.validation.UniqueConstraintField;
-import gov.nih.nci.carpla.domain.Antibody;
-import gov.nih.nci.carpla.domain.RPLAHybridization;
-import gov.nih.nci.carpla.domain.RPLArray;
+import gov.nih.nci.carpla.domain.antibody.Antibody;
+import gov.nih.nci.carpla.domain.rplahybridization.RplaHybridization;
+
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -270,9 +270,9 @@ public class Experiment extends AbstractCaArrayEntity {
     
     
     //--carpla
-    private Set<RPLArray> _rplArrays = new HashSet<RPLArray>();
+    private Set<gov.nih.nci.carpla.domain.rplarray.RplArray> _rplArrays = new HashSet<gov.nih.nci.carpla.domain.rplarray.RplArray>();
     private Set<Antibody> _antibodies = new HashSet<Antibody>();
-    private Set<RPLAHybridization> _rplaHybridization = new HashSet<RPLAHybridization>();
+    private Set<RplaHybridization> _rplaHybridization = new HashSet<RplaHybridization>();
     
     
     

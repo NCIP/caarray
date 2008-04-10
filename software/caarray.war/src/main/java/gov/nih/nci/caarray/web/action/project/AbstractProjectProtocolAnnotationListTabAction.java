@@ -108,202 +108,237 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * @author Scott Miller
- * @param <T> type of objects managed by this class
+ * @param <T>
+ *            type of objects managed by this class
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
-public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends AbstractBioMaterial> extends
-        AbstractProjectAnnotationsListTabAction<T> {
+public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends AbstractBioMaterial>
+																									extends
+																									AbstractProjectAnnotationsListTabAction<T> {
 
-    private Term protocolType;
-    private Set<Term> protocolTypes;
-    private Protocol protocol;
-    private List<Protocol> protocols = new ArrayList<Protocol>();
+	private Term			protocolType;
+	private Set<Term>		protocolTypes;
+	private Protocol		protocol;
+	private List<Protocol>	protocols	= new ArrayList<Protocol>();
 
+	/**
+	 * default constructor.
+	 * 
+	 * @param resourceKey
+	 *            the base resouce key.
+	 * @param associatedResourceKey
+	 *            the resource key for the associated annotation
+	 * @param pagedItems
+	 *            the paged list to use for this tab's item list
+	 */
+	public AbstractProjectProtocolAnnotationListTabAction(	String resourceKey,
+															String associatedResourceKey,
+															PaginatedListImpl<? extends PersistentObject, ?> pagedItems) {
+		super(resourceKey, associatedResourceKey, pagedItems);
+	}
 
-    /**
-     * default constructor.
-     *
-     * @param resourceKey the base resouce key.
-     * @param associatedResourceKey the resource key for the associated annotation
-     * @param pagedItems the paged list to use for this tab's item list
-     */
-    public AbstractProjectProtocolAnnotationListTabAction(String resourceKey, String associatedResourceKey,
-            PaginatedListImpl<? extends PersistentObject, ?> pagedItems) {
-        super(resourceKey, associatedResourceKey, pagedItems);
-    }
+	private void initForm () {
+		setProtocolTypes(CaArrayActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PROTOCOL_TYPE));
+	}
 
-    private void initForm() {
-        setProtocolTypes(CaArrayActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PROTOCOL_TYPE));
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@SkipValidation
+	public String edit () {
+		Protocol p = getCurrentProtocol();
+		if (p != null) {
+			setProtocolType(p.getType());
+			setProtocol(p);
+		}
+		initForm();
+		return super.edit();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @SkipValidation
-    public String edit() {
-        Protocol p = getCurrentProtocol();
-        if (p != null) {
-            setProtocolType(p.getType());
-            setProtocol(p);
-        }
-        initForm();
-        return super.edit();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@Validations(fieldExpressions = @FieldExpressionValidator(message = "", fieldName = "protocolType", key = "protocolType.protocol.mismatch", expression = "(protocolType == null && protocol == null) || (protocolType == protocol.type)"))
+	@SuppressWarnings("PMD.CyclomaticComplexity")
+	public String save () {
+		ProtocolApplicable protApplicable = (ProtocolApplicable) getItem();
+		if (getProtocol() != null && !getProtocol()	.equals(getCurrentProtocol())) {
+			ProtocolApplication protocolApplication = new ProtocolApplication();
+			if (getCurrentProtocol() != null) {
+				protocolApplication = protApplicable.getProtocolApplications()
+													.iterator()
+													.next();
+			}
+			if (protApplicable instanceof AbstractBioMaterial) {
+				protocolApplication.setBioMaterial((AbstractBioMaterial) protApplicable);
+			}
+			protocolApplication.setProtocol(getProtocol());
+			if (getCurrentProtocol() == null) {
+				protApplicable.addProtocolApplication(protocolApplication);
+			}
+		} else if (getProtocol() == null && getCurrentProtocol() != null) {
+			addOrphan(protApplicable.getProtocolApplications()
+									.iterator()
+									.next());
+			protApplicable.clearProtocolApplications();
+		}
+		return super.save();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Validations(fieldExpressions = @FieldExpressionValidator(message = "",
-            fieldName = "protocolType", key = "protocolType.protocol.mismatch",
-            expression = "(protocolType == null && protocol == null) || (protocolType == protocol.type)"))
-    @SuppressWarnings("PMD.CyclomaticComplexity")
-    public String save() {
-        ProtocolApplicable protApplicable = (ProtocolApplicable) getItem();
-        if (getProtocol() != null && !getProtocol().equals(getCurrentProtocol())) {
-            ProtocolApplication protocolApplication = new ProtocolApplication();
-            if (getCurrentProtocol() != null) {
-                protocolApplication = protApplicable.getProtocolApplications().iterator().next();
-            }
-            if (protApplicable instanceof AbstractBioMaterial) {
-                protocolApplication.setBioMaterial((AbstractBioMaterial) protApplicable);                
-            }
-            protocolApplication.setProtocol(getProtocol());
-            if (getCurrentProtocol() == null) {
-                protApplicable.addProtocolApplication(protocolApplication);                
-            }
-        } else if (getProtocol() == null && getCurrentProtocol() != null) {
-            addOrphan(protApplicable.getProtocolApplications().iterator().next());
-            protApplicable.clearProtocolApplications();
-        }
-        return super.save();
-    }
+	/**
+	 * Retrieve the XML protocol list.
+	 * 
+	 * @return the string
+	 */
+	@SkipValidation
+	public String retrieveXmlProtocolList () {
+		setProtocols(CaArrayActionHelper.getVocabularyService()
+										.getProtocolByProtocolType(getProtocolType()));
+		return "xmlProtocolList";
+	}
 
-    /**
-     * Retrieve the XML protocol list.
-     * @return the string
-     */
-    @SkipValidation
-    public String retrieveXmlProtocolList() {
-        setProtocols(CaArrayActionHelper.getVocabularyService().getProtocolByProtocolType(getProtocolType()));
-        return "xmlProtocolList";
-    }
+	/**
+	 * get the list of protocols in an xml stream.
+	 * 
+	 * @return the input stream.
+	 * @throws IllegalAccessException
+	 *             on error
+	 * @throws NoSuchMethodException
+	 *             on error
+	 * @throws InvocationTargetException
+	 *             on error
+	 * @throws UnsupportedEncodingException
+	 *             on error
+	 */
+	public InputStream getXmlProtocolList ()
+											throws IllegalAccessException,
+												NoSuchMethodException,
+												InvocationTargetException,
+												UnsupportedEncodingException
+	{
+		AjaxXmlBuilder xmlBuilder = new AjaxXmlBuilder().addItems(	this.protocols,
+																	"name",
+																	"id");
+		return new ByteArrayInputStream(xmlBuilder.toString().getBytes("UTF-8"));
+	}
 
-    /**
-     * get the list of protocols in an xml stream.
-     * @return the input stream.
-     * @throws IllegalAccessException on error
-     * @throws NoSuchMethodException on error
-     * @throws InvocationTargetException on error
-     * @throws UnsupportedEncodingException on error
-     */
-    public InputStream getXmlProtocolList() throws IllegalAccessException, NoSuchMethodException,
-        InvocationTargetException, UnsupportedEncodingException {
-        AjaxXmlBuilder xmlBuilder = new AjaxXmlBuilder().addItems(this.protocols, "name", "id");
-        return new ByteArrayInputStream(xmlBuilder.toString().getBytes("UTF-8"));
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void validate () {
+		super.validate();
+		if (hasErrors()) {
+			initForm();
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void validate() {
-        super.validate();
-        if (hasErrors()) {
-            initForm();
-        }
-    }
+	/**
+	 * @return the protocolType
+	 */
+	public Term getProtocolType () {
+		return this.protocolType;
+	}
 
-    /**
-     * @return the protocolType
-     */
-    public Term getProtocolType() {
-        return this.protocolType;
-    }
+	/**
+	 * @param protocolType
+	 *            the protocolType to set
+	 */
+	public void setProtocolType ( Term protocolType) {
+		this.protocolType = protocolType;
+	}
 
-    /**
-     * @param protocolType the protocolType to set
-     */
-    public void setProtocolType(Term protocolType) {
-        this.protocolType = protocolType;
-    }
+	/**
+	 * @return the protocol
+	 */
+	public Protocol getProtocol () {
+		return this.protocol;
+	}
 
-    /**
-     * @return the protocol
-     */
-    public Protocol getProtocol() {
-        return this.protocol;
-    }
+	/**
+	 * @param protocol
+	 *            the protocol to set
+	 */
+	public void setProtocol ( Protocol protocol) {
+		this.protocol = protocol;
+	}
 
-    /**
-     * @param protocol the protocol to set
-     */
-    public void setProtocol(Protocol protocol) {
-        this.protocol = protocol;
-    }
+	/**
+	 * @return the protocolTypes
+	 */
+	public Set<Term> getProtocolTypes () {
+		return this.protocolTypes;
+	}
 
-    /**
-     * @return the protocolTypes
-     */
-    public Set<Term> getProtocolTypes() {
-        return this.protocolTypes;
-    }
+	/**
+	 * @param protocolTypes
+	 *            the protocolTypes to set
+	 */
+	public void setProtocolTypes ( Set<Term> protocolTypes) {
+		this.protocolTypes = protocolTypes;
+	}
 
-    /**
-     * @param protocolTypes the protocolTypes to set
-     */
-    public void setProtocolTypes(Set<Term> protocolTypes) {
-        this.protocolTypes = protocolTypes;
-    }
+	/**
+	 * @return the protocols
+	 */
+	public List<Protocol> getProtocols () {
+		return this.protocols;
+	}
 
-    /**
-     * @return the protocols
-     */
-    public List<Protocol> getProtocols() {
-        return this.protocols;
-    }
+	/**
+	 * @param protocols
+	 *            the protocols to set
+	 */
+	public void setProtocols ( List<Protocol> protocols) {
+		this.protocols = protocols;
+	}
 
-    /**
-     * @param protocols the protocols to set
-     */
-    public void setProtocols(List<Protocol> protocols) {
-        this.protocols = protocols;
-    }
+	/**
+	 * The current protocol on the selected item.
+	 * 
+	 * @return the protocol
+	 */
+	public Protocol getCurrentProtocol () {
+		return (getCurrentProtocolApplication() == null) ? null
+														: getCurrentProtocolApplication()	.getProtocol();
+	}
 
-    /**
-     * The current protocol on the selected item.
-     * @return the protocol
-     */
-    public Protocol getCurrentProtocol() {
-        return (getCurrentProtocolApplication() == null) ? null : getCurrentProtocolApplication().getProtocol();
-    }
+	/**
+	 * does nothing, only here so it can be referenced in the jsp as a bean
+	 * property.
+	 * 
+	 * @param p
+	 *            ignored
+	 */
+	public void setCurrentProtocol ( Protocol p) {
+	// does nothing, only here so it can be referenced in the jsp as a bean
+	// property
+	}
 
-    /**
-     * does nothing, only here so it can be referenced in the jsp as a bean property.
-     * @param p ignored
-     */
-    public void setCurrentProtocol(Protocol p) {
-        // does nothing, only here so it can be referenced in the jsp as a bean property
-    }
+	/**
+	 * The current protocol application on the selected item.
+	 * 
+	 * @return the protocol
+	 */
+	public ProtocolApplication getCurrentProtocolApplication () {
+		ProtocolApplicable protApplicable = (ProtocolApplicable) getItem();
+		for (ProtocolApplication protocolApplication : protApplicable.getProtocolApplications()) {
+			return protocolApplication;
+		}
+		return null;
+	}
 
-    /**
-     * The current protocol application on the selected item.
-     * @return the protocol
-     */
-    public ProtocolApplication getCurrentProtocolApplication() {
-        ProtocolApplicable protApplicable = (ProtocolApplicable) getItem();
-        for (ProtocolApplication protocolApplication : protApplicable.getProtocolApplications()) {
-            return protocolApplication;
-        }
-        return null;
-    }
-
-    /**
-     * does nothing, only here so it can be referenced in the jsp as a bean property.
-     * @param p ignored
-     */
-    public void setCurrentProtocolApplication(ProtocolApplication p) {
-        // does nothing, only here so it can be referenced in the jsp as a bean property
-    }    
+	/**
+	 * does nothing, only here so it can be referenced in the jsp as a bean
+	 * property.
+	 * 
+	 * @param p
+	 *            ignored
+	 */
+	public void setCurrentProtocolApplication ( ProtocolApplication p) {
+	// does nothing, only here so it can be referenced in the jsp as a bean
+	// property
+	}
 }
