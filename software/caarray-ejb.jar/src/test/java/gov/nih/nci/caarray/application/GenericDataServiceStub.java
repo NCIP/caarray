@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application;
 
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -112,6 +113,11 @@ public class GenericDataServiceStub implements GenericDataService {
      */
     public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
         return null;
+    }
+    
+    public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids)
+            throws IllegalAccessException, InstantiationException {
+        return new ArrayList<T>();
     }
 
     /**

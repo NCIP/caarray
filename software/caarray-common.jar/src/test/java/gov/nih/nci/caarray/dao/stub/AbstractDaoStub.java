@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.CaArrayDao;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -127,13 +126,6 @@ public class AbstractDaoStub implements CaArrayDao {
     public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, boolean excludeNulls,
             String[] excludeProperties, Order... order) {
         return new ArrayList<T>();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public <T extends PersistentObject> AbstractCaArrayObject queryEntityById(AbstractCaArrayObject entityToMatch) {
-        return null;
     }
 
     /**

@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -126,6 +127,16 @@ public class GenericDataServiceBean implements GenericDataService {
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids)
+            throws IllegalAccessException, InstantiationException {
+        LogUtil.logSubsystemEntry(LOG, entityClass, ids);
+        List<T> result = this.daoFactory.getSearchDao().retrieveByIds(entityClass, ids);
+        LogUtil.logSubsystemExit(LOG);
+        return result;
+    }
     /**
      * {@inheritDoc}
      */

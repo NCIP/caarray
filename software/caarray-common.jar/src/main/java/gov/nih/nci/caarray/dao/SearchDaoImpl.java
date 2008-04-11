@@ -90,10 +90,14 @@ import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.data.QueryProcessingException;
 import gov.nih.nci.cagrid.data.sdk32query.CQL2HQL;
 
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -109,6 +113,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * 
  * @author Rashmi Srinivasa
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     private static final Logger LOG = Logger.getLogger(SearchDaoImpl.class);
     private static final String UNCHECKED = "unchecked";
@@ -164,6 +169,35 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         return (T) q.uniqueResult();
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
+        // degenerate case:
+        if (ids == null || ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // need to break this up into blocks of 500 to get around bug 
+        // http://opensource.atlassian.com/projects/hibernate/browse/HHH-2166
+        StringBuilder queryStr = new StringBuilder("from " + entityClass.getName() + " o where (1=0) ");
+        Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
+        for (int i = 0; i < ids.size(); i += HibernateUtil.MAX_IN_CLAUSE_LENGTH) {
+            List<? extends Serializable> idBlock = ids.subList(i, Math.min(ids.size(), i
+                    + HibernateUtil.MAX_IN_CLAUSE_LENGTH));
+            String paramName = "ids" + (i / HibernateUtil.MAX_IN_CLAUSE_LENGTH);
+            queryStr.append(" or o.id in (:" + paramName + ")");
+            idBlocks.put(paramName, idBlock);
+        }
+
+        Query q = HibernateUtil.getCurrentSession().createQuery(queryStr.toString());
+        for (Map.Entry<String, List<? extends Serializable>> idBlock : idBlocks.entrySet()) {
+            q.setParameterList(idBlock.getKey(), idBlock.getValue());            
+        }
+        return q.list();
+    }
+        
     /**
      * {@inheritDoc}
      */

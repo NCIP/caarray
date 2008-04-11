@@ -11,7 +11,7 @@
         requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id">
         <caarray:displayTagProperties/>
         <display:column title="${addAll}">
-          <a href="#" name="todownload" onclick="downloadMgr.addDownloadRow('${row.name}', '${row.id}', this, ${row.compressedSize}); return false;">
+          <a href="#" id="fileRow${row.id}" onclick="downloadMgr.addDownloadRow('${row.id}'); return false;">
             <img src="<c:url value="/images/ico_add.gif"/>" alt="Add ${row.name}"/>
           </a>
         </display:column>
@@ -29,3 +29,9 @@
         <display:setProperty name="paging.banner.placement" value="bottom"/>
     </display:table>
 </ajax:displayTag>
+
+<script type="text/javascript">
+<c:forEach items="${files}" var="file"> 
+    downloadMgr.addFile('${file.name}', '${file.id}', ${file.compressedSize});
+</c:forEach>
+</script>

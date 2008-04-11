@@ -33,7 +33,7 @@ these files in groups. Please click the download link for each file group below 
                 <c:param name="project.id" value="${project.id}" />
                 <c:param name="downloadSequenceNumber" value="${row_rowNum}" />
                 <c:forEach items="${row.fileIds}" var="fileId">
-                    <c:param name="selectedFiles" value="${fileId}"/>
+                    <c:param name="selectedFileIds" value="${fileId}"/>
                 </c:forEach>
     	    </c:url>
             <div>

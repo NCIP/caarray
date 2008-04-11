@@ -35,7 +35,7 @@
     downloadMgr.resetDownloadInfo();
 
     showDownloadInProgress = function() {
-        if (downloadMgr.downloadIds.length > 0) {
+        if (downloadMgr.downloadFiles.length > 0) {
             $('downloadInProgressMsg').show();
         }
     }
