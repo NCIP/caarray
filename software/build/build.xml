@@ -1077,6 +1077,7 @@
                 <pathelement location="${csmapi.jar}" />
                 <pathelement location="${commons-configuration.jar}" />
                 <pathelement location="${commons-lang.jar}" />
+                <pathelement location="${commons-beanutils.jar}" />
                 <pathelement location="${displaytag.jar}" />
                 <pathelement location="${hibernate.jar}" />
                 <pathelement location="${urlrewrite.jar}" />
