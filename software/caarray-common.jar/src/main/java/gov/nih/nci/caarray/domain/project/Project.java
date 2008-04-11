@@ -158,7 +158,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private SortedSet<CaArrayFile> importedFiles = new TreeSet<CaArrayFile>();
     private SortedSet<CaArrayFile> supplementalFiles = new TreeSet<CaArrayFile>();
     private SortedSet<CaArrayFile> unImportedFiles = new TreeSet<CaArrayFile>();
-    private AccessProfile publicProfile = new AccessProfile(SecurityLevel.VISIBLE);
+    private AccessProfile publicProfile = new AccessProfile(SecurityLevel.NO_VISIBILITY);
     private AccessProfile hostProfile = new AccessProfile(SecurityLevel.READ_WRITE_SELECTIVE);
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
     private boolean useTcgaPolicy = false;
