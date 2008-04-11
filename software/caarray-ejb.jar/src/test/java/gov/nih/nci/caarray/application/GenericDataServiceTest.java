@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.ProposalStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -127,7 +128,16 @@ public class GenericDataServiceTest {
         assertEquals(null, obj);
 
         obj = this.service.getPersistentObject(Project.class, 1l);
-        assertEquals(SecurityLevel.VISIBLE, ((Project) obj).getPublicProfile().getSecurityLevel());
+
+        if(((Project)obj).getStatus().equals(ProposalStatus.DRAFT))
+        {
+            assertEquals(SecurityLevel.NO_VISIBILITY, ((Project) obj).getPublicProfile().getSecurityLevel());
+        }
+        else
+        {
+            assertEquals(SecurityLevel.VISIBLE, ((Project) obj).getPublicProfile().getSecurityLevel());
+        }
+
     }
 
     @Test
