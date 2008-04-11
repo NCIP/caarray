@@ -45,6 +45,8 @@ insert into term (value, source) select 'In Preparation', term_source.id from te
 insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'In Preparation' and category.name = 'PublicationStatus';
 insert into term (value, source) select 'Published', term_source.id from term_source where term_source.name='caArray';
 insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Published' and category.name = 'PublicationStatus';
+insert into term (value, source) select 'In Print', term_source.id from term_source where term_source.name='caArray';
+insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'In Print' and category.name = 'PublicationStatus';
 
 insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank, term_source) select 9606, 'human', 'Homo sapiens', 'species', id from term_source where term_source.name='ncbitax';
 insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank, term_source) select 10090, 'house mouse', 'Mus musculus', 'species', id from term_source where term_source.name='ncbitax';

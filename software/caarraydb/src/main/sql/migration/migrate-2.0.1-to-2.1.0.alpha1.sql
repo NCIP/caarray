@@ -11,3 +11,10 @@ alter table hybridization drop foreign key hybridization_protocolapp_fk;
 alter table hybridization drop column protocol_application;
 alter table protocol_application drop foreign key protocolapp_biomaterial;
 alter table protocol_application drop column bio_material;
+
+-- defect 10653
+insert into term (value, source) select 'In Print', term_source.id from term_source where term_source.name='caArray';
+insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'In Print' and category.name = 'PublicationStatus';
+
+-- defect 13332
+update access_profile set security_level = 'NO_VISIBLE' where id in (select public_profile from project where status = 'DRAFT');
