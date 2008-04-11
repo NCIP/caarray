@@ -13,7 +13,8 @@
         <migrator-class>gov.nih.nci.caarray.web.upgrade.IlluminaExpressionDesignFixer</migrator-class>
     </migration>
     <migration fromVersion="2.0.1.rc2" toVersion="2.0.1.rc3" />
-    <migration fromVersion="2.0.1.rc3" toVersion="2.1.0.alpha1">
+    <migration fromVersion="2.0.1.rc3" toVersion="2.0.1.rc4" />
+    <migration fromVersion="2.0.1.rc4" toVersion="2.1.0.alpha1">
         <sql-script>migrate-2.0.1-to-2.1.0.alpha1.sql</sql-script>
     </migration>
 </migrations>

@@ -270,6 +270,8 @@ public class SecurityInterceptor extends EmptyInterceptor {
                     o, SecurityUtils.WRITE_PRIVILEGE, user.getLoginName()));
         }
     }
+    
+    
 
     /**
      * {@inheritDoc}
@@ -282,44 +284,54 @@ public class SecurityInterceptor extends EmptyInterceptor {
             return;
         }
 
-        // punt any access profiles who belong to deleted projects
-        if (PROFILES.get() != null && DELETEDOBJS.get() != null) {
-            for (Iterator<AccessProfile> it = PROFILES.get().iterator(); it.hasNext();) {
-                AccessProfile ap = it.next();
-                if (DELETEDOBJS.get().contains(ap.getProject()) || DELETEDOBJS.get().contains(ap.getGroup())) {
-                    it.remove();
-                }
-            }
-        }
-
-        if (FILES.get() != null) {
-            for (CaArrayFile caArrayFile : FILES.get()) {
-                if (caArrayFile.getInputStreamToClose() != null) {
-                    IOUtils.closeQuietly(caArrayFile.getInputStreamToClose());
-                }
-
-                if (caArrayFile.getFileToDelete() != null) {
-                    caArrayFile.getFileToDelete().delete();
-                }
-            }
-        }
-
         try {
+            // punt any access profiles who belong to deleted projects
+            if (PROFILES.get() != null && DELETEDOBJS.get() != null) {
+                for (Iterator<AccessProfile> it = PROFILES.get().iterator(); it.hasNext();) {
+                    AccessProfile ap = it.next();
+                    if (DELETEDOBJS.get().contains(ap.getProject()) || DELETEDOBJS.get().contains(ap.getGroup())) {
+                        it.remove();
+                    }
+                }
+            }
+            if (FILES.get() != null) {
+                for (CaArrayFile caArrayFile : FILES.get()) {
+                    cleanupFile(caArrayFile);
+                }
+            }
+
             SecurityUtils.handleNewProtectables(NEWOBJS.get());
             SecurityUtils.handleBiomaterialChanges(BIOMATERIAL_CHANGES.get());
             SecurityUtils.handleDeleted(DELETEDOBJS.get());
             SecurityUtils.handleAccessProfiles(PROFILES.get());
         } finally {
-            NEWOBJS.set(null);
-            BIOMATERIAL_CHANGES.set(null);
-            DELETEDOBJS.set(null);
-            PROFILES.set(null);
+            clear();
         }
     }
+    
+    private void cleanupFile(CaArrayFile caArrayFile) {
+        if (caArrayFile.getInputStreamToClose() != null) {
+            IOUtils.closeQuietly(caArrayFile.getInputStreamToClose());
+        }
 
+        if (caArrayFile.getFileToDelete() != null) {
+            caArrayFile.getFileToDelete().delete();
+        }        
+    }
+    
+    /**
+     * Clear the current thread's lists of entities awaiting processing. 
+     * To be called when a session is first opened, to prevent any stale entities from sticking around.
+     */
+    public static void clear() {
+        MARKER.set(null);
+        NEWOBJS.set(null);
+        BIOMATERIAL_CHANGES.set(null);
+        DELETEDOBJS.set(null);
+        PROFILES.set(null);        
+    }
+       
     private boolean isEnabled() {
         return !SecurityUtils.isPrivilegedMode();
     }
-
-
 }

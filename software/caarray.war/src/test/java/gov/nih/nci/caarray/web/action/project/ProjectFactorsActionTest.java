@@ -93,7 +93,9 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
+import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
@@ -168,6 +170,22 @@ public class ProjectFactorsActionTest {
         action.setCurrentFactor(DUMMY_FACTOR);
         assertEquals("list", action.copy());
     }
+    
+    @Test
+    public void testDelete() throws Exception {
+        Factor f = new Factor();
+        Hybridization h = new Hybridization();
+        FactorValue fv = new FactorValue();
+        fv.setFactor(f);
+        fv.setHybridization(h);
+        fv.setValue("Foo");
+        f.getFactorValues().add(fv);
+        h.getFactorValues().add(fv);
+        action.setCurrentFactor(f);
+        String result = action.delete();
+        assertTrue(h.getFactorValues().isEmpty());
+        assertEquals("list", result);
+    }    
 
     private static class LocalGenericDataService extends GenericDataServiceStub {
         @Override
