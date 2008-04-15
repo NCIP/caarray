@@ -470,6 +470,36 @@ public class ProjectFilesActionTest {
     }
 
     @Test
+    public void testChangeFileTypes() throws Exception {
+        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        this.action.setSelectedFiles(selectedFiles);
+        assertEquals(LIST_UNIMPORTED, this.action.saveFiles());
+        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
+        assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
+
+        CaArrayFile file = new CaArrayFile();
+
+        for (int i=0; i < 3; i++) {
+            file = new CaArrayFile();
+            file.setProject(this.action.getProject());
+            file.setFileStatus(FileStatus.UPLOADED);
+            file.setFileType(null);
+            selectedFiles.add(file);
+        }
+
+        this.action.setChangeToFileType("AFFYMETRIX_CDF");
+        assertEquals(LIST_UNIMPORTED, this.action.changeFileType());
+        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
+        assertEquals(3, fileAccessServiceStub.getSavedFileCount());
+
+        assertEquals(FileStatus.UPLOADED, selectedFiles.get(0).getFileStatus());
+        this.action.prepare();
+        for (CaArrayFile caf: this.action.getProject().getFiles()) {
+            assertEquals(FileType.AFFYMETRIX_CDF,caf.getFileType());
+        }
+    }
+
+    @Test
     public void testEdit() {
         assertEquals(Action.SUCCESS, this.action.editFiles());
     }

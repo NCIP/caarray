@@ -188,6 +188,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private String extensionFilter;
     private Set<String> allExtensions = new TreeSet<String>();
     private String fileType;
+    private String changeToFileType;
     private List<String> fileTypes = new ArrayList<String>();
     private static final String UNKNOWN_FILE_TYPE = "(Unknown File Types)";
     private static final String KNOWN_FILE_TYPE = "(Supported File Types)";
@@ -401,6 +402,21 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         }
         return prepListUnimportedPage();
     }
+
+    /**
+     * Save the selected files with a new file type.
+     * @return the string matching the result to follow
+     */
+    public String changeFileType() {
+        if (!getSelectedFiles().isEmpty()) {
+            for (CaArrayFile caArrayFile : getSelectedFiles()) {
+                caArrayFile.setFileType(FileType.valueOf(this.getChangeToFileType()));
+            }
+        }
+        return saveFiles();
+    }
+
+
 
     /**
      * Method to validate the files.
@@ -774,6 +790,20 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public void setFileType(String fileType) {
         this.fileType = fileType;
+    }
+
+    /**
+     * @return the changeToFileType
+     */
+    public String getChangeToFileType() {
+        return this.changeToFileType;
+    }
+
+    /**
+     * @param changeToFileType new file type to set
+     */
+    public void setChangeToFileType(String changeToFileType) {
+        this.changeToFileType = changeToFileType;
     }
 
     /**
