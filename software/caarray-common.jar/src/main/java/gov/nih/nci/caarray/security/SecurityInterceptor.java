@@ -105,8 +105,8 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Hibernate interceptor that keeps track of object changes and queues up lists of interesting objects that will require
- * appropriate synchronization with CSM. on post-flush, the appopriate CSM operations are then performed. The actual CSM
- * logic is in SecurityUtils
+ * appropriate synchronization with CSM. on post-flush, the appropriate CSM operations are then performed. The actual
+ * CSM logic is in SecurityUtils
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class SecurityInterceptor extends EmptyInterceptor {
@@ -270,8 +270,8 @@ public class SecurityInterceptor extends EmptyInterceptor {
                     o, SecurityUtils.WRITE_PRIVILEGE, user.getLoginName()));
         }
     }
-    
-    
+
+
 
     /**
      * {@inheritDoc}
@@ -308,7 +308,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
             clear();
         }
     }
-    
+
     private void cleanupFile(CaArrayFile caArrayFile) {
         if (caArrayFile.getInputStreamToClose() != null) {
             IOUtils.closeQuietly(caArrayFile.getInputStreamToClose());
@@ -316,11 +316,11 @@ public class SecurityInterceptor extends EmptyInterceptor {
 
         if (caArrayFile.getFileToDelete() != null) {
             caArrayFile.getFileToDelete().delete();
-        }        
+        }
     }
-    
+
     /**
-     * Clear the current thread's lists of entities awaiting processing. 
+     * Clear the current thread's lists of entities awaiting processing.
      * To be called when a session is first opened, to prevent any stale entities from sticking around.
      */
     public static void clear() {
@@ -328,9 +328,9 @@ public class SecurityInterceptor extends EmptyInterceptor {
         NEWOBJS.set(null);
         BIOMATERIAL_CHANGES.set(null);
         DELETEDOBJS.set(null);
-        PROFILES.set(null);        
+        PROFILES.set(null);
     }
-       
+
     private boolean isEnabled() {
         return !SecurityUtils.isPrivilegedMode();
     }

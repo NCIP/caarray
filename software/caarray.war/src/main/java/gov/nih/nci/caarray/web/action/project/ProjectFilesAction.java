@@ -154,7 +154,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         }
     };
 
-    private List<File> uploads;
+    private List<File> uploads = new ArrayList<File>();
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
     private List<Long> selectedFileIds = new ArrayList<Long>();    
@@ -553,7 +553,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Prepares for download by zipping selected files and setting the internal InputStream.
-     * 
+     *
      * @return SUCCESS
      * @throws IOException if
      */
@@ -569,12 +569,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             return "downloadGroups";
         }
     }
-    
+
     private String determineDownloadFileName() {
         return "caArray_" + getProject().getExperiment().getPublicIdentifier() + "_files"
-                + (this.downloadSequenceNumber > 0 ? this.downloadSequenceNumber : "") + ".zip";        
+                + (this.downloadSequenceNumber > 0 ? this.downloadSequenceNumber : "") + ".zip";
     }
-    
+
     private void computeDownloadGroups() {
         this.downloadFileGroups.clear();
         for (CaArrayFile file : getSelectedFiles()) {
@@ -596,13 +596,13 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             if (newGroupSize < MAX_DOWNLOAD_SIZE && newGroupSize > maxNewSize) {
                 maxNewSize = newGroupSize;
                 bestGroup = group;
-            }            
+            }
         }
         if (bestGroup == null) {
             bestGroup = new DownloadGroup();
             this.downloadFileGroups.add(bestGroup);
         }
-        bestGroup.addFile(file);        
+        bestGroup.addFile(file);
     }
 
     /**

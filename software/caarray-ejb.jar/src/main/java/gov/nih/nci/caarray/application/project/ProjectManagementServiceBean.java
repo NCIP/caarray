@@ -285,7 +285,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private void addCaArrayFileToProject(Project project, CaArrayFile caArrayFile) {
         project.getFiles().add(caArrayFile);
         caArrayFile.setProject(project);
-        getProjectDao().save(caArrayFile);
         getProjectDao().save(project);
         HibernateUtil.getCurrentSession().flush();
         caArrayFile.clearAndEvictContents();
@@ -343,11 +342,11 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     /**
-     * Checks whether the project has files that are currently importing. if not, does nothing, 
+     * Checks whether the project has files that are currently importing. if not, does nothing,
      * otherwise throws an exception because you cannot edit a project while it has
      * files being imported
-     * 
-     * @param project project to check 
+     *
+     * @param project project to check
      * @throws InconsistentProjectStateException if the project state is not consistent
      */
     private void checkImportInProgress(Project project) throws InconsistentProjectStateException {
@@ -355,14 +354,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             throw new InconsistentProjectStateException(Reason.IMPORTING_FILES);
         }
     }
-    
+
     /**
      * Checks whether the user-specified array designs in the given project are consistent with ones
      * inferred from actual hybridization data. if they are, does nothing, otherwise throws an exception.
-     * 
-     * @param project project to check 
+     *
+     * @param project project to check
      * @throws InconsistentProjectStateException if the project state is not consistent
-     */    
+     */
     private void checkArrayDesignsConsistent(Project project) throws InconsistentProjectStateException {
         Set<ArrayDesign> declaredDesigns = project.getExperiment().getArrayDesigns();
         Set<ArrayDesign> usedDesigns = project.getExperiment().getArrayDesignsFromHybs();
@@ -373,7 +372,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             }
         }
         if (!missingDesignNames.isEmpty()) {
-            throw new InconsistentProjectStateException(Reason.INCONSISTENT_ARRAY_DESIGNS, 
+            throw new InconsistentProjectStateException(Reason.INCONSISTENT_ARRAY_DESIGNS,
                     missingDesignNames.toArray());
         }
     }
