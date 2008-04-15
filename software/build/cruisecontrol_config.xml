@@ -142,7 +142,7 @@
 					usedebug="false">
 				  <property name="notest" value="true"/>
 				  <property name="nocheck" value="true"/>
-				  <property name="buildNumber" value="CRUISE"/>				  
+				  <property name="buildNumber" value="CRUISE"/>
 				  <property name="build.tag_built" value="trunk-remoteDeployfromCC"/>
 				  <property name="envpropertyfile" value="C:/dev/scm-private/trunk/caarray2/properties/DEV.properties"/>
 				</ant>
@@ -164,6 +164,41 @@
 
 	-->
 
+    <project name="caarray2-2.0.x" buildafterfailed="false">
+
+        <labelincrementer separator="_" defaultLabel="CAARRAY_2_0_x_BL_1" />
+
+        <bootstrappers>
+            <currentbuildstatusbootstrapper file="logs/${project.name}/buildstatus.txt" />
+            <svnbootstrapper localworkingcopy="projects/${project.name}" file="software\build\delegating-build.xml" />
+        </bootstrappers>
+
+        <modificationset quietperiod="0" ignoreFiles="*/docs/*/*.*, /trunk/qa/*/*.*">
+            <svn localworkingcopy="projects/${project.name}" />
+        </modificationset>
+
+        <schedule interval="60">
+            <ant anthome="C:\dev\tools\apache-ant-1.7.0"
+                buildfile="projects\${project.name}\software\build\delegating-build.xml" target="build" uselogger="true"
+                usedebug="false">
+            </ant>
+        </schedule>
+
+        <log dir="logs\${project.name}">
+            <merge dir="projects\${project.name}\software\build\site\junit" />
+            <gzip every="1" unit="MONTH"/>
+            <delete every="3" unit="MONTH" ignoreSuffix="true"/>
+        </log>
+
+        <publishers>
+            <artifactspublisher dir="projects\${project.name}\software\build\site" dest="artifacts\${project.name}" />
+            <currentbuildstatuspublisher file="logs/${project.name}/buildstatus.txt" />
+            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}">
+                <always address="teamcaarray@5amsolutions.com" />
+            </htmlemail>
+        </publishers>
+
+    </project>
 
 
 </cruisecontrol>
