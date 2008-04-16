@@ -140,7 +140,7 @@ final class IdfTranslator extends AbstractTranslator {
         investigation.setTitle(idfInvestigation.getTitle());
         // WC: temporary fix.  this should be constrained on the db.
         String desc = idfInvestigation.getDescription();
-        if (desc.length() > LARGE_TEXT_FIELD_LENGTH) {
+        if (desc != null && desc.length() > LARGE_TEXT_FIELD_LENGTH) {
             desc = desc.substring(0, LARGE_TEXT_FIELD_LENGTH);
         }
         investigation.setDescription(desc);
