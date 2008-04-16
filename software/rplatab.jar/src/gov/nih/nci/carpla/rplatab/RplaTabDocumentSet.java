@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,8 +19,13 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.magetab.TermSource;
+import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
+import gov.nih.nci.caarray.magetab.idf.Person;
+import gov.nih.nci.caarray.magetab.idf.Publication;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
@@ -31,7 +37,8 @@ import gov.nih.nci.carpla.rplatab.model.Assay;
 import gov.nih.nci.carpla.rplatab.model.Characteristic;
 import gov.nih.nci.carpla.rplatab.model.Comment;
 import gov.nih.nci.carpla.rplatab.model.Dilution;
-import gov.nih.nci.carpla.rplatab.model.ExperimentalFactor;
+
+import gov.nih.nci.carpla.rplatab.model.FactorValue;
 import gov.nih.nci.carpla.rplatab.model.HasName;
 import gov.nih.nci.carpla.rplatab.model.Protocol;
 import gov.nih.nci.carpla.rplatab.model.Provider;
@@ -55,6 +62,8 @@ import gov.nih.nci.carpla.rplatab.files.SradfFile;
 import gov.nih.nci.carpla.rplatab.sradf.SradfHeaders;
 
 public class RplaTabDocumentSet {
+
+	private static final Logger	LOG	= Logger.getLogger(RplaTabDocumentSet.class);
 
 	// ###############################################################
 	private RplaTabInputFileSet	_rinputfileset;
@@ -207,6 +216,10 @@ public class RplaTabDocumentSet {
 		factor.setName(name);
 		_experimentalFactors.put(name, factor);
 		return factor;
+	}
+
+	public FactorValue createFactorValue () {
+		return new FactorValue();
 	}
 
 	// ###############################################################
@@ -387,22 +400,18 @@ public class RplaTabDocumentSet {
 		return termSourceCache.values();
 	}
 
-	// ###############################################################
-
-	private final Hashtable<String, TermSource>	_termSources	= new Hashtable<String, TermSource>();
-
 	public TermSource getTermSource ( String value) {
-		return _termSources.get(value);
+		return termSourceCache.get(value);
 	}
 
 	public TermSource createTermSource ( String value) {
 		TermSource termSource = new TermSource(value);
-
-		_termSources.put(value, termSource);
+		termSourceCache.put(value, termSource);
 		return termSource;
 
 	}
 
+	// ###############################################################
 	private final Set<OntologyTerm>	termCache	= new HashSet<OntologyTerm>();
 
 	// carplafix
@@ -422,11 +431,11 @@ public class RplaTabDocumentSet {
 	}
 
 	// ###############################################################
-	private final Map<String, Source>	_sources	= new Hashtable<String, Source>();
+	private final SortedMap<String,Source>	_sources	= new TreeMap<String, Source>();
 
 	public Source getOrCreateSource ( String bioSourceName) {
 
-		if (_sources.get(bioSourceName) == null) {
+		if (_sources.get(bioSourceName) == null ){
 			Source source = new Source();
 			source.setName(bioSourceName);
 			_sources.put(bioSourceName, source);
@@ -439,11 +448,22 @@ public class RplaTabDocumentSet {
 		return _sources.get(bioSourceName);
 
 	}
+	
+	public Collection<Source> getSources () {
+		return _sources.values();
+	}
+	
+	
+	
+	
+	
+	
 
 	// ###############################################################
 	private final SortedMap<String, Sample>	_samples	= new TreeMap<String, Sample>();
 
 	public SortedMap<String, Sample> getSamples () {
+		LOG.info("retrieving # samples: " + _samples.size());
 		return _samples;
 	}
 
@@ -463,6 +483,11 @@ public class RplaTabDocumentSet {
 
 	}
 
+	
+	
+	
+	
+	
 	public boolean sampleExists ( String name) {
 		return (_samples.containsKey(name));
 	}
@@ -515,10 +540,10 @@ public class RplaTabDocumentSet {
 
 	}
 
-	public Characteristic createCharacteristic(){
+	public Characteristic createCharacteristic () {
 		Characteristic characteristic = new Characteristic();
-		return characteristic ;
-		
+		return characteristic;
+
 	}
 
 	// #############################################################################
@@ -672,5 +697,76 @@ public class RplaTabDocumentSet {
 	// }
 
 	}
+
+	// #############################################################################
+	String	_experimentDescription;
+
+	public void setExperimentDescription ( String experimentDescription) {
+		_experimentDescription = experimentDescription;
+	}
+
+	public String getDescription () {
+		return _experimentDescription;
+	}
+
+	// #############################################################################
+	public Date getDateOfExperiment () {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	// #############################################################################
+	public Date getPublicReleaseDate () {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	// #############################################################################
+	List<OntologyTerm>	_experimentalDesignTypes	= new ArrayList<OntologyTerm>();
+
+	public List<OntologyTerm> getExperimentalDesigns () {
+		return _experimentalDesignTypes;
+
+	}
+
+	public void addExperimentalDesign ( OntologyTerm designTerm) {
+
+		_experimentalDesignTypes.add(designTerm);
+	}
+
+	// #############################################################################
+	public List<OntologyTerm> getNormalizationTypes () {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<OntologyTerm> getReplicateTypes () {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<OntologyTerm> getQualityControlTypes () {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	// #############################################################################
+	List<Publication>	_publications	= new ArrayList<Publication>();
+
+	public List<Publication> getPublications () {
+		return _publications;
+	}
+
+	public void addPublication ( Publication pub) {
+		_publications.add(pub);
+	}
+
+	// #############################################################################
+	public List<Person> getPersons () {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 
 }

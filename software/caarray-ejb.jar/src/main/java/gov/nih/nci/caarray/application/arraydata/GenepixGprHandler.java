@@ -153,16 +153,16 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         tmpMap.put("Ratio of Means", GenepixQuantitationType.RATIO_OF_MEANS_635_532);
         tmpMap.put("Ratio of Medians", GenepixQuantitationType.RATIO_OF_MEDIANS_635_532);
         tmpMap.put("Ratios SD", GenepixQuantitationType.RATIOS_SD_635_532);
-        tmpMap.put("Rgn R²", GenepixQuantitationType.RGN_R2_635_532);
-        tmpMap.put("Rgn R² (635/532)", GenepixQuantitationType.RGN_R2_635_532);
+        tmpMap.put("Rgn Rï¿½", GenepixQuantitationType.RGN_R2_635_532);
+        tmpMap.put("Rgn Rï¿½ (635/532)", GenepixQuantitationType.RGN_R2_635_532);
         tmpMap.put("Rgn R\uFFFD", GenepixQuantitationType.RGN_R2_635_532);
         tmpMap.put("Rgn R\uFFFD (635/532)", GenepixQuantitationType.RGN_R2_635_532);
         tmpMap.put("Rgn Ratio", GenepixQuantitationType.RGN_RATIO_635_532);
         tmpMap.put("Sum of Means", GenepixQuantitationType.SUM_OF_MEANS_635_532);
         tmpMap.put("Sum of Medians", GenepixQuantitationType.SUM_OF_MEDIANS_635_532);
-        tmpMap.put("Rgn R² (Ratio/2)", GenepixQuantitationType.RGN_R2_RATIO_2);
+        tmpMap.put("Rgn Rï¿½ (Ratio/2)", GenepixQuantitationType.RGN_R2_RATIO_2);
         tmpMap.put("Rgn R\uFFFD (Ratio/2)", GenepixQuantitationType.RGN_R2_RATIO_2);
-        tmpMap.put("Rgn R² (Ratio/3)", GenepixQuantitationType.RGN_R2_RATIO_3);
+        tmpMap.put("Rgn R,(Ratio/3)", GenepixQuantitationType.RGN_R2_RATIO_3);
         tmpMap.put("Rgn R\uFFFD (Ratio/3)", GenepixQuantitationType.RGN_R2_RATIO_3);
         NAME_TO_TYPE_MAP = Collections.unmodifiableMap(tmpMap);
 

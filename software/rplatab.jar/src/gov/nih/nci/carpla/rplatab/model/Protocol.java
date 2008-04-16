@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.carpla.rplatab.model;
 
+import gov.nih.nci.caarray.magetab.OntologyTerm;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

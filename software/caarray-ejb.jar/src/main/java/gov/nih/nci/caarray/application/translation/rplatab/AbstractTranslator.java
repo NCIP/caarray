@@ -114,6 +114,14 @@ abstract class AbstractTranslator {
     private final CaArrayDaoFactory daoFactory;
     private final Map<String, Organization> importedOrganizations = new HashMap<String, Organization>();
 
+    
+    private static final Logger	LOG						= Logger.getLogger(AbstractTranslator.class);
+    
+    
+    
+    
+    
+    
     AbstractTranslator(RplaTabDocumentSet documentSet, CaArrayFileSet fileSet,
             RplaTabTranslationResult translationResult, CaArrayDaoFactory daoFactory) {
         this.documentSet = documentSet;
@@ -171,6 +179,7 @@ abstract class AbstractTranslator {
 
     Term getTerm(OntologyTerm ontologyTerm) {
         if (ontologyTerm == null) {
+        	LOG.info("the ontology term was null");
             return null;
         }
         return translationResult.getTerm(ontologyTerm);

@@ -1,6 +1,7 @@
 package gov.nih.nci.carpla.rplatab;
 
 import gov.nih.nci.caarray.magetab.OntologyTerm;
+import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
@@ -16,7 +17,8 @@ import gov.nih.nci.carpla.rplatab.model.Assay;
 import gov.nih.nci.carpla.rplatab.model.Characteristic;
 import gov.nih.nci.carpla.rplatab.model.Comment;
 import gov.nih.nci.carpla.rplatab.model.Dilution;
-import gov.nih.nci.carpla.rplatab.model.ExperimentalFactor;
+
+import gov.nih.nci.carpla.rplatab.model.FactorValue;
 import gov.nih.nci.carpla.rplatab.model.HasAttribute;
 import gov.nih.nci.carpla.rplatab.model.HasCharacteristics;
 import gov.nih.nci.carpla.rplatab.model.HasComment;
@@ -48,9 +50,8 @@ import org.apache.log4j.Logger;
 public class RplaTabDocumentSetParserImplementation
 													implements
 													RplaTabDocumentSetParser {
-	
-	
-	private static final Logger		LOG	= Logger.getLogger(RplaTabDocumentSetParserImplementation.class);
+
+	private static final Logger	LOG	= Logger.getLogger(RplaTabDocumentSetParserImplementation.class);
 
 	// ####################################################################
 	// ####################################################################
@@ -61,7 +62,7 @@ public class RplaTabDocumentSetParserImplementation
 	// ####################################################################
 	// ####################################################################
 	public ValidationResult validate ( RplaTabInputFileSet inputSet) {
-		return parse(inputSet).getValidationResult(); 
+		return parse(inputSet).getValidationResult();
 	}
 
 	// ####################################################################
@@ -127,14 +128,6 @@ public class RplaTabDocumentSetParserImplementation
 			return;
 		}
 
-		
-		
-		
-		
-		
-		
-		
-		
 		SradfFile sradfFile = RplaTabDocumentSet.getSradfFile();
 
 		processSectionRows(	sradfHeaders.getSamplesSectionHeaders(),
@@ -171,12 +164,9 @@ public class RplaTabDocumentSetParserImplementation
 		while ((values = rowReader.nextRow()) != null) {
 			// checkNumberOfColumns(values.length, correctNumberOfColumns);
 
-		
-			
-			
-			if ( values[0].startsWith("#" ))
+			if (values[0].startsWith("#"))
 				break;
-			
+
 			for (int current_index_in_principal_headers = 0; current_index_in_principal_headers < principalNodeSize; current_index_in_principal_headers++) {
 
 				SradfHeader header = sectionPrincipalHeaders.getHeaders()
@@ -820,11 +810,9 @@ public class RplaTabDocumentSetParserImplementation
 	{
 
 		LOG.info("remember to fix Characteristic and address case where characteristic is measurement (???) ");
-		
-		
+
 		String name = rowValues[header.getCol() - 1];
-		
-		
+
 		if (checkEmpty(	name,
 						header,
 						rowValues,
@@ -835,10 +823,10 @@ public class RplaTabDocumentSetParserImplementation
 		}
 		Characteristic characteristic = rplaTabDocumentSet.createCharacteristic();
 		String qualifier = header.getTerm();
-		
+
 		OntologyTerm ot = rplaTabDocumentSet.createOntologyTerm(qualifier, name);
 		characteristic.setTerm(ot);
-		
+
 		hasCharacteristics.getCharacteristics().add(characteristic);
 
 		List<SradfHeader> subheaders = header.getSubHeaders();
@@ -919,9 +907,12 @@ public class RplaTabDocumentSetParserImplementation
 
 		}
 
+		FactorValue factorValue = rplaTabDocumentSet.createFactorValue();
+		factorValue.setFactor(ef);
+
 		rplaTabDocumentSet	.getPrincipalObjectsBySectionAndRow(sectionType,
 																row_number_in_section)
-							.add(ef);
+							.add(factorValue);
 
 		List<SradfHeader> subheaders = header.getSubHeaders();
 
@@ -929,7 +920,7 @@ public class RplaTabDocumentSetParserImplementation
 
 			SradfHeader subheader = subheaders.get(ii);
 
-			handleAttribute((HasAttribute) ef,
+			handleAttribute((HasAttribute) factorValue,
 							subheader,
 							rowValues,
 							sectionType,

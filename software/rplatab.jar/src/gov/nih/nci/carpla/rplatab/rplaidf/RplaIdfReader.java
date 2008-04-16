@@ -1,16 +1,17 @@
 package gov.nih.nci.carpla.rplatab.rplaidf;
 
-
-
+import gov.nih.nci.caarray.magetab.MageTabOntologyCategory;
+import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.magetab.TermSource;
+import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
+import gov.nih.nci.caarray.magetab.idf.Publication;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 import gov.nih.nci.carpla.rplatab.RplaTabDocumentSet;
 import gov.nih.nci.carpla.rplatab.RplaTabInputFileSet;
 
-
 import gov.nih.nci.carpla.rplatab.model.Antibody;
 import gov.nih.nci.carpla.rplatab.model.Dilution;
-import gov.nih.nci.carpla.rplatab.model.ExperimentalFactor;
-import gov.nih.nci.carpla.rplatab.model.OntologyTerm;
+
 import gov.nih.nci.carpla.rplatab.model.Protocol;
 import gov.nih.nci.carpla.rplatab.model.RPLArray;
 
@@ -31,8 +32,7 @@ import java.util.Vector;
 public class RplaIdfReader {
 
 	public static void readRplaIdfFile (	RplaTabDocumentSet RplaTabDocumentSet,
-	                                    	RplaTabInputFileSet inputFileSet
-											)
+											RplaTabInputFileSet inputFileSet)
 
 	{
 
@@ -69,47 +69,27 @@ public class RplaIdfReader {
 		handlePublications(helper, RplaTabDocumentSet);
 		handleExperimentDescription(helper, RplaTabDocumentSet);
 		handleProtocols(helper, RplaTabDocumentSet);
-		handleSradfFile(helper,
-		                inputFileSet,
-						RplaTabDocumentSet);
+		handleSradfFile(helper, inputFileSet, RplaTabDocumentSet);
 
-		
-		
-		
-		
 	}
 
 	private static void handleDilutions (	RplaIdfHelper helper,
 											RplaTabDocumentSet RplaTabDocumentSet)
 	{
 		Vector<String> dilutionNames = helper.getColumnStrings("Dilution");
-		Vector<String> dilutionValues = helper
-				.getColumnStrings("Dilution Value");
+		Vector<String> dilutionValues = helper.getColumnStrings("Dilution Value");
 
 		Vector<String> dilutionUnits = helper.getColumnStrings("Dilution Unit");
 
-		Vector<String> dilutionUnitTermSourceRefs = helper
-				.getColumnStrings("Dilution Unit Term Source Ref");
-		
-		
+		Vector<String> dilutionUnitTermSourceRefs = helper.getColumnStrings("Dilution Unit Term Source Ref");
+
 		for (int ii = 0; ii < dilutionNames.size(); ii++) {
 
 			String dilutionName = dilutionNames.get(ii);
-			//verifyRPLArrayNameIsValid(Name);
-		Dilution dil= 	RplaTabDocumentSet.createDilution(dilutionName);
+			// verifyRPLArrayNameIsValid(Name);
+			Dilution dil = RplaTabDocumentSet.createDilution(dilutionName);
 
 		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 
 	}
 
@@ -138,22 +118,19 @@ public class RplaIdfReader {
 
 	// ###############################################################
 	private static void handleTermSources ( RplaIdfHelper helper,
-											RplaTabDocumentSet RplaTabDocumentSet)
+											RplaTabDocumentSet rplaTabDocumentSet)
 
 	{
 
-		Vector<String> termSourceNames = helper
-				.getColumnStrings("Term Source Name");
-		Vector<String> termSourceFiles = helper
-				.getColumnStrings("Term Source File");
-		Vector<String> termSourceVersions = helper
-				.getColumnStrings("Term Source Version");
+		Vector<String> termSourceNames = helper.getColumnStrings("Term Source Name");
+		Vector<String> termSourceFiles = helper.getColumnStrings("Term Source File");
+		Vector<String> termSourceVersions = helper.getColumnStrings("Term Source Version");
 
 		// Term Sources are only referenced by name in the SRADF document,
 		// so names need to be unique.
 		verifyNoDuplicates(termSourceNames);
 
-		verifySameNumberOfColumnsIfRowIsNotEmpty(	RplaTabDocumentSet,
+		verifySameNumberOfColumnsIfRowIsNotEmpty(	rplaTabDocumentSet,
 													"Term Source",
 													termSourceNames,
 													termSourceFiles,
@@ -163,14 +140,13 @@ public class RplaIdfReader {
 
 			String termSourceName = termSourceNames.get(ii);
 			verifyTermSourceNameIsValid(termSourceName);
-			TermSource termSource = RplaTabDocumentSet
-					.createTermSource(termSourceName);
+			TermSource termSource = rplaTabDocumentSet.createTermSource(termSourceName);
 
 			String termSourceFile = termSourceFiles.get(ii);
 
 			verifyTermSourceFileNameIsValid(termSourceFile);
 
-			//termSource.setFileName(termSourceFile);
+			// termSource.setFileName(termSourceFile);
 			termSource.setFile(termSourceFile);
 		}
 
@@ -178,43 +154,80 @@ public class RplaIdfReader {
 
 	// ###############################################################
 	private static void handleInvestigationTitle (	RplaIdfHelper helper,
-													RplaTabDocumentSet RplaTabDocumentSet)
+													RplaTabDocumentSet rplaTabDocumentSet)
 
 	{
 
 		Vector<String> strings = helper.getColumnStrings("Investigation Title");
 		String title = strings.get(0);
 		verifyInvestigationTitleIsValid(title);
-		RplaTabDocumentSet.setInvestigationTitle(title);
+		rplaTabDocumentSet.setInvestigationTitle(title);
 
 	}
 
 	// ###############################################################
 	private static void handleExperimentalDesigns ( RplaIdfHelper helper,
-													RplaTabDocumentSet RplaTabDocumentSet)
+													RplaTabDocumentSet rplaTabDocumentSet)
 
 	{
 
-	// todo
+		Vector<String> expDesigns = helper.getColumnStrings("Experimental Design");
+
+		Vector<String> expDesignTermSourceRefs = helper.getColumnStrings("Experimental Design Term Source REF");
+
+		verifyNoDuplicates(expDesigns);
+		verifySameNumberOfColumnsIfRowIsNotEmpty(	rplaTabDocumentSet,
+													"Experimental Design",
+													expDesigns,
+													expDesignTermSourceRefs);
+
+		for (int ii = 0; ii < expDesigns.size(); ii++) {
+			String designName = expDesigns.get(ii);
+			String designNameTermSourceRef = expDesignTermSourceRefs.get(ii);
+			verifyExperimentalDesignNameIsValid(designName);
+
+			OntologyTerm designTerm = rplaTabDocumentSet.createOntologyTerm(MageTabOntologyCategory.EXPERIMENTAL_DESIGN_TYPE.getCategoryName(),
+																			designName);
+			designTerm.setValue(designName);
+
+			TermSource termSource = rplaTabDocumentSet.getTermSource(designNameTermSourceRef);
+
+			if (termSource == null) {
+
+				rplaTabDocumentSet	.getValidationResult()
+									.addMessage(rplaTabDocumentSet	.getSradfFile()
+																	.getFile(),
+												Type.ERROR,
+												"Cannot find term source ref with name=" + designNameTermSourceRef);
+			}
+
+			designTerm.setTermSource(termSource);
+
+			rplaTabDocumentSet.addExperimentalDesign(designTerm);
+
+		}
+
+	}
+
+	private static void verifyExperimentalDesignNameIsValid ( String designName)
+	{
+	// TODO Auto-generated method stub
 
 	}
 
 	// ###############################################################
 	private static void handleExperimentalFactors ( RplaIdfHelper helper,
-													RplaTabDocumentSet RplaTabDocumentSet)
+													RplaTabDocumentSet rplaTabDocumentSet)
 
 	{
 
-		Vector<String> factorNames = helper
-				.getColumnStrings("Experimental Factor Name");
-		Vector<String> factorTypes = helper
-				.getColumnStrings("Experimental Factor Type");
-		Vector<String> factorTermSourceRefs = helper
-				.getColumnStrings("Experimental Factor Term Source REF");
+		Vector<String> factorNames = helper.getColumnStrings("Experimental Factor Name");
+		Vector<String> factorTypes = helper.getColumnStrings("Experimental Factor Type");
+		Vector<String> factorTermSourceRefs = helper.getColumnStrings("Experimental Factor Term Source REF");
 
 		verifyNoDuplicates(factorNames);
 
-		verifySameNumberOfColumnsIfRowIsNotEmpty(	RplaTabDocumentSet,
+		verifySameNumberOfColumnsIfRowIsNotEmpty(	rplaTabDocumentSet,
 													"Experimental Factor",
 													factorNames,
 													factorTypes,
@@ -225,16 +238,21 @@ public class RplaIdfReader {
 			String name = factorNames.get(ii);
 			verifyFactorNameIsValid(name);
 
-			ExperimentalFactor factor = RplaTabDocumentSet
-					.createExperimentalFactor(name);
+			ExperimentalFactor factor = rplaTabDocumentSet.createExperimentalFactor(name);
 
 			String type = factorTypes.get(ii);
 			String termsourceref = factorTermSourceRefs.get(ii);
 
-			TermSource termSource = RplaTabDocumentSet.getTermSource(termsourceref);
+			TermSource termSource = rplaTabDocumentSet.getTermSource(termsourceref);
+			OntologyTerm factorTypeOntologyTerm = rplaTabDocumentSet.createOntologyTerm(MageTabOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY.getCategoryName(),
+																						type);
 
-			OntologyTerm factorTypeOntologyTerm = new OntologyTerm();
 			factorTypeOntologyTerm.setValue(type);
+
+			
+			factorTypeOntologyTerm.setCategory(MageTabOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY.name());
+
+			factorTypeOntologyTerm.setTermSource(termSource);
 
 			verifyFactorTypeIsValid(factorTypeOntologyTerm, termSource);
 
@@ -266,18 +284,12 @@ public class RplaIdfReader {
 
 		Vector<String> protocolNames = helper.getColumnStrings("Protocol Name");
 		Vector<String> protocolTypes = helper.getColumnStrings("Protocol Type");
-		Vector<String> protocolDescriptions = helper
-				.getColumnStrings("Protocol Description");
-		Vector<String> protocolParameters = helper
-				.getColumnStrings("Protocol Parameters");
-		Vector<String> protocolHardware = helper
-				.getColumnStrings("Protocol Hardware");
-		Vector<String> protocolSoftware = helper
-				.getColumnStrings("Protocol Software");
-		Vector<String> protocolContact = helper
-				.getColumnStrings("Protocol Contact");
-		Vector<String> protocolTermSourceRefs = helper
-				.getColumnStrings("Protocol Term Source REF");
+		Vector<String> protocolDescriptions = helper.getColumnStrings("Protocol Description");
+		Vector<String> protocolParameters = helper.getColumnStrings("Protocol Parameters");
+		Vector<String> protocolHardware = helper.getColumnStrings("Protocol Hardware");
+		Vector<String> protocolSoftware = helper.getColumnStrings("Protocol Software");
+		Vector<String> protocolContact = helper.getColumnStrings("Protocol Contact");
+		Vector<String> protocolTermSourceRefs = helper.getColumnStrings("Protocol Term Source REF");
 
 		verifyNoDuplicates(protocolNames);
 
@@ -299,8 +311,8 @@ public class RplaIdfReader {
 			String name = protocolNames.get(ii);
 			if (RplaTabDocumentSet.protocolExists(name)) {
 
-//				RplaTabDocumentSet.getMessages().add(new ValidationMessage(
-//						" protocol already declared"));
+				// RplaTabDocumentSet.getMessages().add(new ValidationMessage(
+				// " protocol already declared"));
 				// shoudl stop here?
 
 			}
@@ -361,27 +373,18 @@ public class RplaIdfReader {
 	{
 
 		Vector<String> antibodyNames = helper.getColumnStrings("Antibody Name");
-		Vector<String> targetGeneNames = helper
-				.getColumnStrings("Target Gene Name");
-		Vector<String> targetGeneNameTermSourceRefs = helper
-				.getColumnStrings("Target Gene Name Term Source REF");
-		Vector<String> antibodySpecificities = helper
-				.getColumnStrings("Antibody Specificity");
+		Vector<String> targetGeneNames = helper.getColumnStrings("Target Gene Name");
+		Vector<String> targetGeneNameTermSourceRefs = helper.getColumnStrings("Target Gene Name Term Source REF");
+		Vector<String> antibodySpecificities = helper.getColumnStrings("Antibody Specificity");
 
-		Vector<String> antibodyEpitopes = helper
-				.getColumnStrings("Antibody Epitope");
+		Vector<String> antibodyEpitopes = helper.getColumnStrings("Antibody Epitope");
 
-		Vector<String> antibodyImmunogens = helper
-				.getColumnStrings("Antibody Immunogen");
+		Vector<String> antibodyImmunogens = helper.getColumnStrings("Antibody Immunogen");
 
-		Vector<String> antibodyProviders = helper
-				.getColumnStrings("Antibody Provider");
-		Vector<String> antibodyCatalogIDs = helper
-				.getColumnStrings("Antibody Catalog ID");
-		Vector<String> antibodyLotIDs = helper
-				.getColumnStrings("Antibody Lot ID");
-		Vector<String> antibodyComments = helper
-				.getColumnStrings("Antibody Comment");
+		Vector<String> antibodyProviders = helper.getColumnStrings("Antibody Provider");
+		Vector<String> antibodyCatalogIDs = helper.getColumnStrings("Antibody Catalog ID");
+		Vector<String> antibodyLotIDs = helper.getColumnStrings("Antibody Lot ID");
+		Vector<String> antibodyComments = helper.getColumnStrings("Antibody Comment");
 
 		verifyNoDuplicates(antibodyNames);
 
@@ -468,27 +471,85 @@ public class RplaIdfReader {
 
 	// ###############################################################
 	private static void handlePublications (	RplaIdfHelper helper,
-												RplaTabDocumentSet RplaTabDocumentSet)
+												RplaTabDocumentSet rplaTabDocumentSet)
 
 	{
-	// TODO Auto-generated method stub
+
+		Vector<String> pubMedIds = helper.getColumnStrings("PubMed ID");
+		Vector<String> pubDOIs = helper.getColumnStrings("Publication DOI");
+
+		Vector<String> pubAuthors = helper.getColumnStrings("Publication Author List");
+
+		Vector<String> pubTitles = helper.getColumnStrings("Publication Title");
+
+		Vector<String> pubStatuses = helper.getColumnStrings("Publication Status");
+
+		Vector<String> pubStatusTermSourceRefs = helper.getColumnStrings("Publication Status Term Source REF");
+
+		verifyNoDuplicates(pubMedIds);
+
+		verifySameNumberOfColumnsIfRowIsNotEmpty(	rplaTabDocumentSet,
+													"Publication",
+													pubMedIds,
+													pubDOIs,
+													pubAuthors,
+													pubTitles,
+													pubStatuses,
+													pubStatusTermSourceRefs);
+
+		for (int ii = 0; ii < pubMedIds.size(); ii++) {
+
+			String pubMedId = pubMedIds.get(ii);
+			String pubDOI = pubDOIs.get(ii);
+			String pubAuthor = pubAuthors.get(ii);
+			String pubTitle = pubTitles.get(ii);
+			String pubStatus = pubStatuses.get(ii);
+			String pubStatusTermSourceRef = pubStatusTermSourceRefs.get(ii);
+
+			gov.nih.nci.caarray.magetab.idf.Publication pub = new Publication();
+
+			pub.setPubMedId(pubMedId);
+			pub.setDoi(pubDOI);
+			// need to parse author list
+			pub.setAuthorList(pubAuthor);
+			pub.setTitle(pubTitle);
+			OntologyTerm pubStatus_ot = new OntologyTerm();
+			pubStatus_ot.setValue(pubStatus);
+
+			TermSource termSource = rplaTabDocumentSet.getTermSource(pubStatusTermSourceRef);
+
+			if (termSource == null) {
+
+				rplaTabDocumentSet	.getValidationResult()
+									.addMessage(rplaTabDocumentSet	.getSradfFile()
+																	.getFile(),
+												Type.ERROR,
+												"Cannot find term source ref with name=" + pubStatusTermSourceRef);
+			}
+
+			pubStatus_ot.setTermSource(termSource);
+
+			rplaTabDocumentSet.addPublication(pub);
+
+		}
 
 	}
 
 	// ###############################################################
 	private static void handleExperimentDescription (	RplaIdfHelper helper,
-														RplaTabDocumentSet RplaTabDocumentSet)
+														RplaTabDocumentSet rplaTabDocumentSet)
 
 	{
-	// TODO Auto-generated method stub
+		rplaTabDocumentSet.setExperimentDescription(helper	.getColumnStrings("Experiment Description")
+															.get(0));
 
 	}
 
 	// ###############################################################
 	// only look for it in current directory...
 	private static void handleSradfFile (	RplaIdfHelper helper,
-	                                     	RplaTabInputFileSet inputFileSet,
-											RplaTabDocumentSet RplaTabDocumentSet)
+											RplaTabInputFileSet inputFileSet,
+											RplaTabDocumentSet rplaTabDocumentSet)
 
 	{
 
@@ -502,11 +563,10 @@ public class RplaIdfReader {
 			// File file = new File(rplaIdffileDirectory.getAbsolutePath() + "/"
 			// + filename);
 
-		
-		//	sradfFile.setFile(file);
+			// sradfFile.setFile(file);
 
-			
-			RplaTabDocumentSet.setSradfFile(inputFileSet.getSradfFile());
+			// huh?
+			rplaTabDocumentSet.setSradfFile(inputFileSet.getSradfFile());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -567,10 +627,11 @@ public class RplaIdfReader {
 		for (List<String> list : listOfStrings) {
 
 			if (list.size() != 0 && firstrowsize != list.size()) {
-//				rdataset
-//						.getMessages()
-//						.add(new ValidationMessage(
-//								"Parsing rplaidf:  not same number of columns for : " + sectionName));
+				// rdataset
+				// .getMessages()
+				// .add(new ValidationMessage(
+				// "Parsing rplaidf: not same number of columns for : " +
+				// sectionName));
 			}
 
 		}
@@ -635,8 +696,7 @@ public class RplaIdfReader {
 		try {
 
 			String str = null;
-			BufferedReader in = new BufferedReader(new FileReader(rplaidffile
-					.getAbsolutePath()));
+			BufferedReader in = new BufferedReader(new FileReader(rplaidffile.getAbsolutePath()));
 
 			return in;
 

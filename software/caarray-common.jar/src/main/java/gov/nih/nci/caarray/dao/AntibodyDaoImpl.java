@@ -18,7 +18,7 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UnfilteredCallback;
-import gov.nih.nci.carpla.domain.Antibody;
+import gov.nih.nci.carpla.domain.antibody.Antibody;
 
 import java.util.List;
 

@@ -13,7 +13,7 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AssayType;
-import gov.nih.nci.carpla.domain.Antibody;
+import gov.nih.nci.carpla.domain.antibody.Antibody;
 
 import java.util.List;
 

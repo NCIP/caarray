@@ -101,12 +101,14 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.log4j.Logger;
 
 /**
  * Result of MAGE-TAB translation. Also used to pass-around and look up shared objects.
  */
 final class RplaTabTranslationResult implements CaArrayTranslationResult {
-
+	private static final Logger	LOG						= Logger.getLogger(RplaTabTranslationResult.class);
+    
     private static final long serialVersionUID = -1084448170352002555L;
 
     private final Map<OntologyTerm, Term> termMap = new HashMap<OntologyTerm, Term>();
@@ -139,6 +141,9 @@ final class RplaTabTranslationResult implements CaArrayTranslationResult {
     }
 
     Term getTerm(OntologyTerm term) {
+    	LOG.info("looking for this in termMap:" + term.getValue() + "\t" + term.toString());
+    	LOG.info(" it's in there: " + termMap.containsKey(term));
+    	
         return termMap.get(term);
     }
 

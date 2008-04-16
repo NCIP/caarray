@@ -89,7 +89,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
-import gov.nih.nci.carpla.domain.Antibody;
+import gov.nih.nci.carpla.domain.antibody.Antibody;
 
 import java.util.List;
 

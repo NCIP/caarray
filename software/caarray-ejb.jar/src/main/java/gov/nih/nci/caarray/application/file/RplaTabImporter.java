@@ -114,7 +114,7 @@ public class RplaTabImporter {
 			caArrayFile.setValidationResult(fileValidationResult);
 		}
 	}
-
+	// #######################################################################
 	// #######################################################################
 	void importFiles ( Project targetProject, CaArrayFileSet fileSet) throws RplaTabParsingException
 																		
@@ -158,7 +158,7 @@ public class RplaTabImporter {
 										InvalidDataException e)
 	{
 		
-		LOG.info("handleInvalidRplaTab");
+		LOG.info("carplafix: handleInvalidRplaTab");
 		ValidationResult validationResult = e.getValidationResult();
 		for (CaArrayFile caArrayFile : fileSet.getFiles()) {
 			File file = getFile(caArrayFile);
@@ -355,6 +355,9 @@ public class RplaTabImporter {
 							.addAll(translatedExperiment.getReplicateTypes());
 		originalExperiment	.getSamples()
 							.addAll(translatedExperiment.getSamples());
+		
+		LOG.info("adding in mergeTranslatedData , number of samples="+ translatedExperiment.getSamples().size());
+		
 		originalExperiment	.getSources()
 							.addAll(translatedExperiment.getSources());
 		originalExperiment	.getExperimentContacts()

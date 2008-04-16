@@ -106,7 +106,7 @@ public abstract class AbstractBioMaterial implements HasName, HasCharacteristics
 	}
 
 	private final List<Characteristic>	_characteristics	= new ArrayList<Characteristic>();
-	private OntologyTerm				_materialType;
+	private gov.nih.nci.caarray.magetab.OntologyTerm				_materialType;
 	private String						_description;
 	private final List<Comment>			_comments			= new ArrayList<Comment>();
 
@@ -128,7 +128,7 @@ public abstract class AbstractBioMaterial implements HasName, HasCharacteristics
 	/**
 	 * @return the materialType
 	 */
-	public OntologyTerm getMaterialType () {
+	public gov.nih.nci.caarray.magetab.OntologyTerm getMaterialType () {
 		return _materialType;
 	}
 
@@ -136,7 +136,12 @@ public abstract class AbstractBioMaterial implements HasName, HasCharacteristics
 	 * @param materialType
 	 *            the materialType to set
 	 */
-	public void setMaterialType ( OntologyTerm materialType) {
+	public void setMaterialType ( gov.nih.nci.caarray.magetab.OntologyTerm materialType) {
 		this._materialType = materialType;
+	}
+
+	public String getDescription () {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

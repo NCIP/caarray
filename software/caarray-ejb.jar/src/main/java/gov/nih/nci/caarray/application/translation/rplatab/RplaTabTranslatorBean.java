@@ -123,8 +123,8 @@ public class RplaTabTranslatorBean implements RplaTabTranslator {
 		translateTermSources(documentSet, translationResult);
 		translateTerms(documentSet, translationResult, getVocabularyService());
 
-		// translateIdfs(documentSet, translationResult);
-		// translateSdrfs(documentSet, fileSet, translationResult);
+		translateRplaIdfs(documentSet, translationResult);
+		translateSradfs(documentSet, fileSet, translationResult);
 		LogUtil.logSubsystemExit(LOG);
 		return translationResult;
 	}
@@ -164,19 +164,24 @@ public class RplaTabTranslatorBean implements RplaTabTranslator {
 	}
 
 	//
-	// private void translateIdfs(RplaTabDocumentSet documentSet,
-	// RplaTabTranslationResult translationResult) {
-	// new IdfTranslator(documentSet, translationResult,
-	// this.daoFactory).translate();
-	// }
+	private void translateRplaIdfs (	RplaTabDocumentSet documentSet,
+										RplaTabTranslationResult translationResult)
+	{
+		new RplaIdfTranslator(documentSet, translationResult, this.daoFactory).translate();
+	}
+
 	//
-	// private void translateSdrfs(RplaTabDocumentSet documentSet,
-	// CaArrayFileSet fileSet,
-	// RplaTabTranslationResult translationResult) {
-	// new SdrfTranslator(documentSet, fileSet, translationResult,
-	// this.daoFactory, getVocabularyService()).
-	// translate();
-	// }
+	private void translateSradfs (	RplaTabDocumentSet documentSet,
+									CaArrayFileSet fileSet,
+									RplaTabTranslationResult translationResult)
+	{
+		new SradfTranslator(documentSet,
+							fileSet,
+							translationResult,
+							this.daoFactory,
+							getVocabularyService()).translate();
+	}
+
 	//
 	// private void validateSdrfs(MageTabDocumentSet documentSet, CaArrayFileSet
 	// fileSet) {

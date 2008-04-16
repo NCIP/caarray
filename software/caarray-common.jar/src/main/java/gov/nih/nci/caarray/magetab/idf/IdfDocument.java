@@ -107,7 +107,7 @@ import org.apache.log4j.Logger;
 
 /**
  * Represents an Investigation Description Format (IDF) file - a tab-delimited file providing general information about
- * the investigation, including its name, a brief description, the investigator’s contact details, bibliographic
+ * the investigation, including its name, a brief description, the investigator's contact details, bibliographic
  * references, and free text descriptions of the protocols used in the investigation.
  */
 @SuppressWarnings("PMD")

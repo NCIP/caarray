@@ -105,7 +105,7 @@ import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.ValidationMessage;
-import gov.nih.nci.carpla.domain.Antibody;
+import gov.nih.nci.carpla.domain.antibody.Antibody;
 
 import java.io.File;
 import java.util.List;
