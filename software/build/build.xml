@@ -10,6 +10,7 @@
 
     <!-- Main -->
     <property name="root.dir" value="${basedir}/.." />
+    <property name="docs.dir" value="${root.dir}/docs" />
     <property name="build.dir" value="${basedir}/build" />
     <property name="lib.dir" value="${basedir}/lib" />
     <property name="resource.dir" value="${build.dir}/resources" />
@@ -616,8 +617,10 @@
             <fileset dir="${caarray-client.dir}/src/distribution/resources" />
             <zipfileset prefix="lib" refid="caarray-client.dependencies.fileset" />
             <zipfileset dir="${caarray-client.target.dir}" includes="docs/**" />
+            <zipfileset prefix="docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_client_model.eap" />
             <zipfileset prefix="example/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/*.java" />
             <zipfileset prefix="grid/etc" dir="${caaray-svc.dir}/src/gov/nih/nci/cagrid/caarray/client" includes="client-config.wsdd" />
+            <zipfileset prefix="grid/etc" dir="${caaray-svc.dir}/etc" includes="domainModel.xml" />
             <zipfileset prefix="grid/lib" refid="grid.dependencies.lib.fileset" />
             <zipfileset prefix="grid/lib" refid="grid.dependencies.caarray-svc.lib.fileset" />
             <zipfileset prefix="grid/lib" refid="grid.dependencies.caarray-svc.build.fileset" />
@@ -631,8 +634,10 @@
             <fileset dir="${caarray-client.dir}/src/distribution/resources" />
             <tarfileset prefix="lib" refid="caarray-client.dependencies.fileset" />
             <tarfileset dir="${caarray-client.target.dir}" includes="docs/**" />
+            <tarfileset prefix="docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_client_model.eap" />
             <tarfileset prefix="example/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/*.java" />
             <tarfileset prefix="grid/etc" dir="${caaray-svc.dir}/src/gov/nih/nci/cagrid/caarray/client" includes="client-config.wsdd" />
+            <tarfileset prefix="grid/etc" dir="${caaray-svc.dir}/etc" includes="domainModel.xml" />
             <tarfileset prefix="grid/lib" refid="grid.dependencies.lib.fileset" />
             <tarfileset prefix="grid/lib" refid="grid.dependencies.caarray-svc.lib.fileset" />
             <tarfileset prefix="grid/lib" refid="grid.dependencies.caarray-svc.build.fileset" />
