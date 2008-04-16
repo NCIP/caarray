@@ -115,6 +115,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 
 
@@ -171,6 +172,9 @@ public class ProjectFilesActionTest {
 
     @Test
     public void testZipUpload() throws Exception {
+        assertEquals(UPLOAD, this.action.upload());
+        assertTrue(ActionHelper.getMessages().get(0).contains("fileRequired"));
+
         File file = File.createTempFile("tmp", ".zip");
 
         List<File> files = new ArrayList<File>();

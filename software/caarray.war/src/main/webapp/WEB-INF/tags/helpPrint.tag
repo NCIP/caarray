@@ -6,7 +6,7 @@
 <%@ attribute name="extraContent" required="false" fragment="true"%>
 
 <div class="pagehelp">
-    <a href="javascript:printpage()" class="print">Print</a>
+    <a href="javascript:window.print()" class="print">Print</a>
     <a href="javascript:openHelpWindow('')" class="help">Help</a>
     <c:if test="${!empty extraContent}">
         <jsp:invoke fragment="extraContent"/>

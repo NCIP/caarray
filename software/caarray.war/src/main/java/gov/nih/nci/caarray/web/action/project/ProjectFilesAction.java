@@ -573,6 +573,11 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     @SkipValidation
     public String upload() throws IOException {
+        List<String> fileNames = getUploadFileName();
+        if (fileNames == null || fileNames.isEmpty()) {
+            ActionHelper.saveMessage(getText("fileRequired"));
+            return UPLOAD_INPUT;
+        }
         List<String> conflictingFiles = new ArrayList<String>();
         int count = 0;
         try {
