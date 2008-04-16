@@ -2,8 +2,8 @@ Release Notes
 =============
 
   #Product:#	caArray Client
-  #Version:#	2.0.1
-  #Date:#	March 2008
+  #Version:#	2.1.0
+  #Date:#       June 2008
 
 Contents
 --------
@@ -39,13 +39,17 @@ The caArray client distribution includes the following contents:
 
 /docs/api             Contains the Javadoc for all the caArray client classes
 
+/docs/model           Contains Enterprise Architect UML model of the client API
+                      (both Java and caGrid)
+
 /example/src          Contains Java examples for connecting to the Java and
                       grid APIs
 
 /grid/etc             Contains the grid client mapping configuration file
                       (client-config.wsdd). This directory must be on the
                       classpath for any grid clients using the caArray Java
-                      classes.
+                      classes. This directory also contains the domainModel.xml
+                      file for reference.
 
 /grid/lib             Contains JARs required at runtime for any caArray grid
                       service clients written in Java. These JARs are required
