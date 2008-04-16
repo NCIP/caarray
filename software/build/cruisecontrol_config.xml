@@ -3,6 +3,7 @@
 <!-- *********************************************************************** -->
 <cruisecontrol>
 
+	<property name="env.CCDIR" value="C:/dev/tools/cruisecontrol-bin-2.7/"/>
     <property environment="env" toupper="true" />
     <property name="svn.users.file" value="svn.users.properties"/>
     <property name="email.buildresultsurl.prefix" value="http://${env.CCNAME}:${env.CCWEBPORT}/buildresults/"/>
