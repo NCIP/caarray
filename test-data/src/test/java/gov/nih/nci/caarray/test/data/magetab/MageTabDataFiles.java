@@ -95,6 +95,9 @@ public class MageTabDataFiles {
     public static final File SPECIFICATION_EXAMPLE_IDF =
         new File(MageTabDataFiles.class.getResource("/magetab/specification/e-mexp-428_v1.0.idf").getFile());
 
+    public static final File SPECIFICATION_EXAMPLE_NO_EXP_DESC_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/specification_no_exp_desc/e-mexp-428_v1.0.idf").getFile());
+
     public static final File SPECIFICATION_EXAMPLE_SDRF =
         new File(MageTabDataFiles.class.getResource("/magetab/specification/e-mexp-428_v1.0.sdrf").getFile());
 
@@ -217,7 +220,7 @@ public class MageTabDataFiles {
 
     public static final File CAARRAY1X_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/caarray1x").getFile());
-    
+
     public static final File DEFECT_12537_ERROR_DATA_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537-error").getFile());
 

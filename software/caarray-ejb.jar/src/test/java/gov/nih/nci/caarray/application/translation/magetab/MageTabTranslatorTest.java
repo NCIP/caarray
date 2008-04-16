@@ -152,6 +152,7 @@ public class MageTabTranslatorTest {
     public void testTranslate() {
         testSpecificationDocuments();
         testSpecificationDocumentsNoArrayDesignRef();
+        testSpecificationDocumentsNoExpDesc();
         testTcgaBroadDocuments();
         testGskTestDocuments();
     }
@@ -171,7 +172,25 @@ public class MageTabTranslatorTest {
         assertEquals(6, experiment.getLabeledExtracts().size());
         assertEquals(6, experiment.getHybridizations().size());
         for (Hybridization hyb : experiment.getHybridizations()) {
-            assertNotNull(hyb.getArray().getDesign());            
+            assertNotNull(hyb.getArray().getDesign());
+        }
+    }
+
+    private void testSpecificationDocumentsNoExpDesc() {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_SET);
+        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_SET, fileSet);
+        Experiment experiment = result.getInvestigations().iterator().next();
+        assertNull(experiment.getDescription());
+        assertEquals(8, experiment.getExperimentContacts().size());
+        assertEquals(1, experiment.getExperimentDesignTypes().size());
+        assertEquals("genetic_modification_design", experiment.getExperimentDesignTypes().iterator().next().getValue());
+        assertEquals(6, experiment.getSources().size());
+        assertEquals(6, experiment.getSamples().size());
+        assertEquals(6, experiment.getExtracts().size());
+        assertEquals(6, experiment.getLabeledExtracts().size());
+        assertEquals(6, experiment.getHybridizations().size());
+        for (Hybridization hyb : experiment.getHybridizations()) {
+            assertNotNull(hyb.getArray().getDesign());
         }
     }
 
@@ -191,7 +210,7 @@ public class MageTabTranslatorTest {
         assertEquals(6, experiment.getLabeledExtracts().size());
         assertEquals(6, experiment.getHybridizations().size());
         for (Hybridization hyb : experiment.getHybridizations()) {
-            assertNull(hyb.getArray().getDesign());            
+            assertNull(hyb.getArray().getDesign());
         }
     }
 
@@ -316,7 +335,7 @@ public class MageTabTranslatorTest {
         public VocabularyDao getVocabularyDao() {
             return new LocalVocabularyDaoStub();
         }
-        
+
         /**
          * {@inheritDoc}
          */
