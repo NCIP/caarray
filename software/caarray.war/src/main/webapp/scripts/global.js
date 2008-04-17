@@ -129,6 +129,14 @@ var TabUtils = {
         return TabUtils.savedFormData != null && $('projectForm') && TabUtils.savedFormData != Form.serialize('projectForm');
     },
 
+    updateSavedFormData : function() {
+        if ($('projectForm')) {
+            TabUtils.savedFormData = Form.serialize('projectForm');
+        } else {
+            TabUtils.savedFormData = null;
+        }
+    },
+
     setSelectedTab : function() {
         tabMenuItems = $('tabbed').getElementsByTagName('li');
         for(var i = 0; i < tabMenuItems.length; i++) {
