@@ -157,7 +157,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private List<File> uploads = new ArrayList<File>();
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
-    private List<Long> selectedFileIds = new ArrayList<Long>();    
+    private List<Long> selectedFileIds = new ArrayList<Long>();
     private int downloadSequenceNumber;
     private final List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
     private String downloadFileName;
