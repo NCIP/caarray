@@ -587,9 +587,10 @@ AjaxJspTag.TabPanel.prototype = Object.extend(new AjaxJspTag.Base(), {
     var params = buildParameterString(this.options.parameters);
 
     var obj = this; // required because 'this' conflict with Ajax.Request
+    var method = params.length < 255 ? 'get' : 'post';
     var aj = new Ajax.Updater(this.options.target, this.url, {
       asynchronous: true,
-      method: 'get',
+      method: method,
       evalScripts: true,
       parameters: params,
       onSuccess: function(request) {

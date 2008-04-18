@@ -290,7 +290,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private void addCaArrayFileToProject(Project project, CaArrayFile caArrayFile) {
         project.getFiles().add(caArrayFile);
         caArrayFile.setProject(project);
-        getProjectDao().save(caArrayFile);
         getProjectDao().save(project);
         HibernateUtil.getCurrentSession().flush();
         caArrayFile.clearAndEvictContents();

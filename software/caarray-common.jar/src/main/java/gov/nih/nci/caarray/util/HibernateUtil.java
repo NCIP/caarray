@@ -103,7 +103,12 @@ import com.fiveamsolutions.nci.commons.util.HibernateHelper;
  */
 @SuppressWarnings("unchecked")
 public final class HibernateUtil {
-
+    /**
+     * The maximum number of elements that can be in a single in clause. This is due to bug
+     * http://opensource.atlassian.com/projects/hibernate/browse/HHH-2166
+     */
+    public static final int MAX_IN_CLAUSE_LENGTH = 500;
+    
     private static final HibernateHelper HIBERNATE_HELPER = new HibernateHelper(SecurityUtils.getAuthorizationManager(),
             new NamingStrategy(), new SecurityInterceptor());
 

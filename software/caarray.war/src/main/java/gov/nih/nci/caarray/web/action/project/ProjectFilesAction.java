@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileAccessService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.application.file.InvalidFileException;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -176,9 +177,10 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         }
     };
 
-    private List<File> uploads;
+    private List<File> uploads = new ArrayList<File>();
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+    private List<Long> selectedFileIds = new ArrayList<Long>();
     private int downloadSequenceNumber;
     private final List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
     private String downloadFileName;
@@ -725,6 +727,27 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public void setSelectedFiles(List<CaArrayFile> selectedFiles) {
         this.selectedFiles = selectedFiles;
+    }
+
+    /**
+     * @return the selected file ids
+     */
+    public List<Long> getSelectedFileIds() {
+        return selectedFileIds;
+    }
+
+    /**
+     * @param selectedFileIds the ids of the selected files
+     */
+    public void setSelectedFileIds(List<Long> selectedFileIds) {
+        this.selectedFileIds = selectedFileIds;
+        try {
+            this.selectedFiles = getGenericDataService().retrieveByIds(CaArrayFile.class, selectedFileIds);
+        } catch (IllegalAccessException e) {
+            LOG.error("Could not retrieve files for selected ids", e);
+        } catch (InstantiationException e) {
+            LOG.error("Could not retrieve files for selected ids", e);
+        }
     }
 
     /**

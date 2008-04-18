@@ -108,6 +108,9 @@ import gov.nih.nci.cagrid.cqlquery.Group;
 import gov.nih.nci.cagrid.cqlquery.LogicalOperator;
 import gov.nih.nci.cagrid.cqlquery.Predicate;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -220,6 +223,61 @@ public class SearchDaoTest {
             } else {
                 fail(FAIL_NO_MATCH);
             }
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during search by example: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Tests searching for an entity by example.
+     */
+    @Test
+    public void testRetrieveByByIds() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.beginTransaction();
+            List<Long> paramIds = Arrays.asList(new Long[] { DUMMY_PARAMETER_1.getId(), DUMMY_PARAMETER_2.getId() });
+            Long protocolId = DUMMY_PROTOCOL_1.getId();
+            List<Long> combinedIds = new ArrayList<Long>(paramIds);
+            combinedIds.add(-1L);
+            List<Long> emptyIds = Collections.emptyList();
+            
+            List<Parameter> params = SEARCH_DAO.retrieveByIds(Parameter.class, paramIds);
+            assertEquals(2, params.size());
+            assertTrue(params.contains(DUMMY_PARAMETER_1));
+            assertTrue(params.contains(DUMMY_PARAMETER_2));
+
+            params = SEARCH_DAO.retrieveByIds(Parameter.class, combinedIds);
+            assertEquals(2, params.size());
+            assertTrue(params.contains(DUMMY_PARAMETER_1));
+            assertTrue(params.contains(DUMMY_PARAMETER_2));
+
+            List<Protocol> protocols = SEARCH_DAO.retrieveByIds(Protocol.class, Collections.singletonList(protocolId));
+            assertEquals(1, protocols.size());
+            assertEquals(DUMMY_PROTOCOL_1, protocols.get(0));
+
+            protocols = SEARCH_DAO.retrieveByIds(Protocol.class, Collections.singletonList(-1L));
+            assertEquals(0, protocols.size());
+            
+            protocols = SEARCH_DAO.retrieveByIds(Protocol.class, emptyIds);
+            assertEquals(0, protocols.size());
+            
+            for (int i = 0; i < HibernateUtil.MAX_IN_CLAUSE_LENGTH + 50; i++) {
+                combinedIds.add(DUMMY_PARAMETER_1.getId());
+            }
+            for (int i = 0; i < HibernateUtil.MAX_IN_CLAUSE_LENGTH + 50; i++) {
+                combinedIds.add(DUMMY_PARAMETER_2.getId());
+            }
+            for (int i = 0; i < HibernateUtil.MAX_IN_CLAUSE_LENGTH + 50; i++) {
+                combinedIds.add(-1L);
+            }
+            params = SEARCH_DAO.retrieveByIds(Parameter.class, combinedIds);
+            assertEquals(2, params.size());
+            assertTrue(params.contains(DUMMY_PARAMETER_1));
+            assertTrue(params.contains(DUMMY_PARAMETER_2));
+
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);

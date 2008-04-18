@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -131,6 +132,10 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
         return null;
     }
 
+    public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
+        return new ArrayList<T>();
+    }
+    
     /**
      * {@inheritDoc}
      */

@@ -93,7 +93,6 @@ import javax.persistence.Transient;
  */
 @MappedSuperclass
 public abstract class AbstractCaArrayEntity extends AbstractCaArrayObject {
-
     private static final long serialVersionUID = 2732929116326299995L;
 
     /**

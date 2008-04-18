@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application;
 
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -113,6 +114,18 @@ public interface GenericDataService extends com.fiveamsolutions.nci.commons.serv
      */
     <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders)
         throws IllegalAccessException, InstantiationException;
+
+    /**
+     * Retrieves all instances of the given class with given ids.
+     * @param <T> the type of the entity to retrieve
+     * @param entityClass the class of the entity to retrieve
+     * @param ids the ids of entities to retrieve
+     * @return the list of entities with given ids
+     * @throws IllegalAccessException if entityClass.newInstance fails
+     * @throws InstantiationException if entityClass.newInstance fails
+     */
+    <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids)
+            throws IllegalAccessException, InstantiationException;
 
     /**
      * Deletes an object from the database.  May throw exceptions if the object is referenced

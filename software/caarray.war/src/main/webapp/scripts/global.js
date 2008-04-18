@@ -348,90 +348,101 @@ function DownloadMgr(dUrl, dgUrl, removeImageUrl, maxDownloadSize) {
   this.downloadUrl = dUrl;
   this.downloadGroupsUrl = dgUrl;
   this.removeImageUrl = removeImageUrl;
-  this.downloadIds = new Array();
-  this.downloadSizeArray = new Array();
-  this.count = 0;
+  this.files = new Object();
+  this.downloadFiles = new Object();
   this.totalDownloadSize = 0;
   this.maxDownloadSize = maxDownloadSize;
 }
 
-DownloadMgr.prototype.addDownloadRow = function(name, id, addLink, size) {
-  this.addDownloadRow(name, id, addLink, size, null);
-}
+DownloadMgr.prototype.addFile = function(name, id, size) {
+    this.files[id] = { name: name, id: id, size: size };
+  }
 
-DownloadMgr.prototype.addDownloadRow = function(name, id, addLink, size, doAlert) {
-    for (i = 0; i < this.downloadIds.length; ++i) {
-      if (this.downloadIds[i] == id) {
+DownloadMgr.prototype.addDownloadRow = function(id) {
+    if (this.downloadFiles[id]) {
         if (doAlert == null) {
           alert('File ' + name + ' already in queue.');
         }
         return;
-      }
     }
-    this.downloadIds.push(id);
-    this.downloadSizeArray.push(size);
-    this.totalDownloadSize += size;
-    ++this.count;
-
-  var tbl = document.getElementById('downloadTbl');
-  var lastRow = tbl.rows.length;
-  var row = tbl.insertRow(lastRow - 1);
-  row.id = 'downloadRow' + this.count;
-
-  var cell = row.insertCell(0);
-  cell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + this.count + ', ' + size + '); return false;"/>&nbsp;&nbsp;' + name;
-
+    
+  this.deleteTotalRow();
+  this.doAddDownloadRow(id, true);
   this.addTotalRow();
-  new Effect.Highlight($(addLink).up('tr'));
 }
 
-DownloadMgr.prototype.removeRow = function(toRemove, size) {
-  var tbl = document.getElementById('downloadTbl');
-  var row = document.getElementById('downloadRow' + toRemove);
+DownloadMgr.prototype.doAddDownloadRow = function(id, highlightRow) {
+    
+    var file = this.files[id];
+    this.downloadFiles[id] = file;
+    this.totalDownloadSize += file.size;
+
+  var tbl = $('downloadTbl');
+  var row = tbl.insertRow(-1);
+  row.id = 'downloadRow' + id;
+
+  var cell = row.insertCell(0);
+  cell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>&nbsp;&nbsp;' + file.name;
+
+  if (highlightRow) {      
+      new Effect.Highlight($('fileRow' + file.id).up('tr'));
+  }
+}
+
+DownloadMgr.prototype.removeRow = function(id) {
+  var tbl = $('downloadTbl');
+  var row = $('downloadRow' + id);
+  var file = this.downloadFiles[id];
+  delete this.downloadFiles[id];
+  this.totalDownloadSize -= file.size;
   for (i = 0; i < tbl.rows.length; ++i) {
     if (tbl.rows[i] == row) {
-      tbl.deleteRow(i);
-      this.downloadSizeArray.splice(i - 1, 1);
-      this.downloadIds.splice(i - 1, 1);
-      this.totalDownloadSize -= size;
+      tbl.deleteRow(i);      
     }
   }
+  this.deleteTotalRow();
   this.addTotalRow();
 }
 
 DownloadMgr.prototype.resetDownloadInfo = function() {
-  this.downloadIds = new Array();
-  this.downloadSizeArray = new Array();
+  for (id in this.downloadFiles) {
+      delete this.downloadFiles[id];
+  }
   this.totalDownloadSize = 0;
-  var tbl = document.getElementById('downloadTbl');
+  var tbl = $('downloadTbl');
   while (tbl.rows.length > 1) {
     tbl.deleteRow(1);
   }
+  this.deleteTotalRow();
   this.addTotalRow();
 }
 
-DownloadMgr.prototype.addTotalRow = function() {
-  var tbl = document.getElementById('downloadTbl');
-  var lastRow = tbl.rows.length;
-  if (lastRow > 1) {
-    tbl.deleteRow(lastRow - 1);
+DownloadMgr.prototype.deleteTotalRow = function() {
+    var tbl = $('downloadTbl');
+    var lastRow = tbl.rows.length;
+    if (lastRow > 1) {
+      tbl.deleteRow(lastRow - 1);
+    }
   }
-  lastRow = tbl.rows.length;
-  var row = tbl.insertRow(lastRow);
+
+DownloadMgr.prototype.addTotalRow = function() {
+  var tbl = $('downloadTbl');
+  var row = tbl.insertRow(-1);
   var cell = row.insertCell(0);
   var textNode = document.createTextNode(" Job Size: " + (this.totalDownloadSize / 1024 | 0) + " KB");
   cell.appendChild(textNode);
 }
 
 DownloadMgr.prototype.doDownloadFiles = function() {
-  if (this.downloadIds.length == 0) {
+  var files = Object.values(this.downloadFiles); 
+  if (files.length == 0) {
     alert("Select file(s) first.");
     return;
   }
   var curLoc = window.location;
   var params = '';
-  for (i = 0; i < this.downloadIds.length; ++i) {
-    params = params + '&selectedFiles=' + this.downloadIds[i];
+  for (i = 0; i < files.length; ++i) {
+    params = params + '&selectedFileIds=' + files[i].id;
   }
 
   if (this.totalDownloadSize < this.maxDownloadSize) {
@@ -447,14 +458,11 @@ DownloadMgr.prototype.doDownloadFiles = function() {
 }
 
 DownloadMgr.prototype.addAll = function() {
-    var x = document.getElementsByName("todownload");
-    for (var ii = 0; ii < x.length; ++ii) {
-        if (/MSIE/.test(navigator.userAgent)) {
-            x[ii].click();
-        } else {
-            x[ii].onclick();
-        }
+    this.deleteTotalRow();
+    for (id in this.files) {
+        this.doAddDownloadRow(id, false);
     }
+    this.addTotalRow();
 }
 
 

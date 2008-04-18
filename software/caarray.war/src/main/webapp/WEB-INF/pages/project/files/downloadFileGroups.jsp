@@ -14,26 +14,25 @@ launchDownload = function(downloadUrl, downloadLink) {
 
 <p>
 The total size of the files you have selected is too large to download at once. This page allows you to download
-these files in groups. Please click the download link for each file group below to download it. 
+these files in groups. Please click the download link for each file group below to download it.
 </p>
-
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${downloadFileGroups}"
-        sort="list" id="row" pagesize="20" excludedParams="project.id">
+                   sort="list" id="row">
         <caarray:displayTagProperties/>
         <display:column title="Files" property="fileNames"/>
         <display:column titleKey="experiment.files.compressedSize">
-          <fmt:formatNumber value="${row.totalCompressedSize / 1024}" maxFractionDigits="0"/>
+            <fmt:formatNumber value="${row.totalCompressedSize / 1024}" maxFractionDigits="0"/>
         </display:column>
         <display:column titleKey="experiment.files.uncompressedSize">
-          <fmt:formatNumber value="${row.totalUncompressedSize / 1024}" maxFractionDigits="0"/>
+            <fmt:formatNumber value="${row.totalUncompressedSize / 1024}" maxFractionDigits="0"/>
         </display:column>
         <display:column title="Download" >
 	        <c:url value="/project/files/download.action" var="actionUrl">
                 <c:param name="project.id" value="${project.id}" />
                 <c:param name="downloadSequenceNumber" value="${row_rowNum}" />
                 <c:forEach items="${row.fileIds}" var="fileId">
-                    <c:param name="selectedFiles" value="${fileId}"/>
+                    <c:param name="selectedFileIds" value="${fileId}"/>
                 </c:forEach>
     	    </c:url>
             <div>

@@ -54,6 +54,7 @@
     </project>
 
 <!--
+<!--
     <project name="caarray2-nightly" buildafterfailed="false">
 
         <labelincrementer separator="_" defaultLabel="CAARRAY-NIGHTLY_BL_1" />
