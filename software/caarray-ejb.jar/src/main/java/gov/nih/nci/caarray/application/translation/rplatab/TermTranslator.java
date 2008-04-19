@@ -100,12 +100,19 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 
-/**
- * Translates MAGE-TAB <code>OntologyTerms</code> to caArray
- * <code>Terms</code>.
- */
+
+
+//carplanotes
+//Changed superclass. and ctor to accommodate an RplaTabDocumentSet and RplaTabTranslationResult.
+//I use gov.nih.nci.caarray.magetab.OntologyTerm in the rplatab code, so no need for other changes.
+
+
+
+
+
+
 @SuppressWarnings("PMD")
-final class TermTranslator extends AbstractTranslator {
+final class TermTranslator extends RplaTabAbstractTranslator {
 
 	private static final Logger			LOG			= Logger.getLogger(TermTranslator.class);
 

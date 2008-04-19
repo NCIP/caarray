@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.magetab;
 
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -91,62 +90,68 @@ import java.util.List;
 /**
  * The use of a protocol with the requisite parameters.
  */
-public final class ProtocolApplication implements Serializable {
 
-    private static final long serialVersionUID = -3273047341277478014L;
+// bye-bye final
+// public final class ProtocolApplication implements Serializable {
+public class ProtocolApplication implements Serializable {
 
-    private Protocol protocol;
-    private final List<ParameterValue> parameterValues = new ArrayList<ParameterValue>();
-    private String performer;
-    private Date date;
+	private static final long			serialVersionUID	= -3273047341277478014L;
 
-    /**
-     * @return the date
-     */
-    public Date getDate() {
-        return date;
-    }
+	private Protocol					protocol;
+	private final List<ParameterValue>	parameterValues		= new ArrayList<ParameterValue>();
+	private String						performer;
+	private Date						date;
 
-    /**
-     * @param date the date to set
-     */
-    public void setDate(Date date) {
-        this.date = date;
-    }
+	/**
+	 * @return the date
+	 */
+	public Date getDate () {
+		return date;
+	}
 
-    /**
-     * @return the performer
-     */
-    public String getPerformer() {
-        return performer;
-    }
+	/**
+	 * @param date
+	 *            the date to set
+	 */
+	public void setDate ( Date date) {
+		this.date = date;
+	}
 
-    /**
-     * @param performer the performer to set
-     */
-    public void setPerformer(String performer) {
-        this.performer = performer;
-    }
+	/**
+	 * @return the performer
+	 */
+	public String getPerformer () {
+		return performer;
+	}
 
-    /**
-     * @return the protocol
-     */
-    public Protocol getProtocol() {
-        return protocol;
-    }
+	/**
+	 * @param performer
+	 *            the performer to set
+	 */
+	public void setPerformer ( String performer) {
+		this.performer = performer;
+	}
 
-    /**
-     * @param protocol the protocol to set
-     */
-    public void setProtocol(Protocol protocol) {
-        this.protocol = protocol;
-    }
+	/**
+	 * @return the protocol
+	 */
+	public Protocol getProtocol () {
+		return protocol;
+	}
 
-    /**
-     * @return the parameterValues
-     */
-    public List<ParameterValue> getParameterValues() {
-        return parameterValues;
-    }
+	/**
+	 * @param protocol
+	 *            the protocol to set
+	 */
+	public void setProtocol ( Protocol protocol) {
+		this.protocol = protocol;
+	}
+
+	/**
+	 * @return the parameterValues
+	 */
+	public List<ParameterValue> getParameterValues () {
+		return parameterValues;
+	}
 
 }

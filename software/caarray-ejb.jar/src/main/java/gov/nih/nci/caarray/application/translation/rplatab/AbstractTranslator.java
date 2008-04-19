@@ -103,120 +103,121 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-/**
- * Base class for translators.
- */
-abstract class AbstractTranslator {
+// carplanotes
+// I can't use AbstractTranslator as it uses MageTabDocumentSet, and
+// MageTabTranslationResult
+// No changes to code except for replacing those classes named above.
 
-    private final RplaTabDocumentSet documentSet;
-    private final CaArrayFileSet fileSet;
-    private final RplaTabTranslationResult translationResult;
-    private final CaArrayDaoFactory daoFactory;
-    private final Map<String, Organization> importedOrganizations = new HashMap<String, Organization>();
+abstract class RplaTabAbstractTranslator {
 
-    
-    private static final Logger	LOG						= Logger.getLogger(AbstractTranslator.class);
-    
-    
-    
-    
-    
-    
-    AbstractTranslator(RplaTabDocumentSet documentSet, CaArrayFileSet fileSet,
-            RplaTabTranslationResult translationResult, CaArrayDaoFactory daoFactory) {
-        this.documentSet = documentSet;
-        this.fileSet = fileSet;
-        this.translationResult = translationResult;
-        this.daoFactory = daoFactory;
-    }
+	private final RplaTabDocumentSet		documentSet;
+	private final CaArrayFileSet			fileSet;
+	private final RplaTabTranslationResult	translationResult;
+	private final CaArrayDaoFactory			daoFactory;
+	private final Map<String, Organization>	importedOrganizations	= new HashMap<String, Organization>();
 
-    AbstractTranslator(RplaTabDocumentSet documentSet, RplaTabTranslationResult translationResult,
-            CaArrayDaoFactory daoFactory) {
-        this.documentSet = documentSet;
-        this.fileSet = null;
-        this.translationResult = translationResult;
-        this.daoFactory = daoFactory;
-    }
+	private static final Logger				LOG						= Logger.getLogger(RplaTabAbstractTranslator.class);
 
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
+	RplaTabAbstractTranslator(	RplaTabDocumentSet documentSet,
+								CaArrayFileSet fileSet,
+								RplaTabTranslationResult translationResult,
+								CaArrayDaoFactory daoFactory) {
+		this.documentSet = documentSet;
+		this.fileSet = fileSet;
+		this.translationResult = translationResult;
+		this.daoFactory = daoFactory;
+	}
 
-    RplaTabDocumentSet getDocumentSet() {
-        return documentSet;
-    }
+	RplaTabAbstractTranslator(	RplaTabDocumentSet documentSet,
+								RplaTabTranslationResult translationResult,
+								CaArrayDaoFactory daoFactory) {
+		this.documentSet = documentSet;
+		this.fileSet = null;
+		this.translationResult = translationResult;
+		this.daoFactory = daoFactory;
+	}
 
-    CaArrayFileSet getFileSet() {
-        return fileSet;
-    }
+	CaArrayDaoFactory getDaoFactory () {
+		return daoFactory;
+	}
 
-    CaArrayFile getFile(String name) {
-        if (fileSet == null) {
-            return null;
-        }
-        Set<CaArrayFile> files = fileSet.getFiles();
-        Iterator<CaArrayFile> i = files.iterator();
-        while (i.hasNext()) {
-            CaArrayFile caArrayFile = i.next();
-            if (name.equals(caArrayFile.getName())) {
-                return caArrayFile;
-            }
-        }
-        return null;
-    }
+	RplaTabDocumentSet getDocumentSet () {
+		return documentSet;
+	}
 
-    RplaTabTranslationResult getTranslationResult() {
-        return translationResult;
-    }
+	CaArrayFileSet getFileSet () {
+		return fileSet;
+	}
 
-    Collection<Term> getTerms(List<OntologyTerm> ontologyTerms) {
-        HashSet<Term> terms = new HashSet<Term>(ontologyTerms.size());
-        for (OntologyTerm ontologyTerm : ontologyTerms) {
-            terms.add(getTerm(ontologyTerm));
-        }
-        return terms;
-    }
+	CaArrayFile getFile ( String name) {
+		if (fileSet == null) {
+			return null;
+		}
+		Set<CaArrayFile> files = fileSet.getFiles();
+		Iterator<CaArrayFile> i = files.iterator();
+		while (i.hasNext()) {
+			CaArrayFile caArrayFile = i.next();
+			if (name.equals(caArrayFile.getName())) {
+				return caArrayFile;
+			}
+		}
+		return null;
+	}
 
-    Term getTerm(OntologyTerm ontologyTerm) {
-        if (ontologyTerm == null) {
-        	LOG.info("the ontology term was null");
-            return null;
-        }
-        return translationResult.getTerm(ontologyTerm);
-    }
+	RplaTabTranslationResult getTranslationResult () {
+		return translationResult;
+	}
 
-    abstract void translate();
+	Collection<Term> getTerms ( List<OntologyTerm> ontologyTerms) {
+		HashSet<Term> terms = new HashSet<Term>(ontologyTerms.size());
+		for (OntologyTerm ontologyTerm : ontologyTerms) {
+			terms.add(getTerm(ontologyTerm));
+		}
+		return terms;
+	}
 
-    abstract Logger getLog();
+	Term getTerm ( OntologyTerm ontologyTerm) {
+		if (ontologyTerm == null) {
+			LOG.info("the ontology term was null");
+			return null;
+		}
+		return translationResult.getTerm(ontologyTerm);
+	}
 
-    /**
-     * Creates or retrieves the org witht he given name.
-     * @param name the name.
-     * @return the org.
-     */
-    protected Organization getOrCreateOrganization(String name) {
+	abstract void translate ();
 
-        Organization org = importedOrganizations.get(name);
+	abstract Logger getLog ();
 
-        if (org == null && StringUtils.isNotBlank(name)) {
-            Organization entityToMatch = new Organization();
-            entityToMatch.setName(name);
+	/**
+	 * Creates or retrieves the org witht he given name.
+	 * 
+	 * @param name
+	 *            the name.
+	 * @return the org.
+	 */
+	protected Organization getOrCreateOrganization ( String name) {
 
-            List<Organization> matchingEntities = getProjectDao().queryEntityAndAssociationsByExample(entityToMatch);
-            if (matchingEntities.isEmpty()) {
-                importedOrganizations.put(name, entityToMatch);
-                org = entityToMatch;
-            } else {
-                // use existing object in database.
-                org = matchingEntities.get(0);
-            }
-        }
+		Organization org = importedOrganizations.get(name);
 
-        return org;
-    }
+		if (org == null && StringUtils.isNotBlank(name)) {
+			Organization entityToMatch = new Organization();
+			entityToMatch.setName(name);
 
-    ProjectDao getProjectDao() {
-        return getDaoFactory().getProjectDao();
-    }
+			List<Organization> matchingEntities = getProjectDao()	.queryEntityAndAssociationsByExample(entityToMatch);
+			if (matchingEntities.isEmpty()) {
+				importedOrganizations.put(name, entityToMatch);
+				org = entityToMatch;
+			} else {
+				// use existing object in database.
+				org = matchingEntities.get(0);
+			}
+		}
+
+		return org;
+	}
+
+	ProjectDao getProjectDao () {
+		return getDaoFactory().getProjectDao();
+	}
 
 }

@@ -16,7 +16,7 @@ import java.util.List;
 //import org.biomage.Interface.HasImmobilizedCharacteristics;
 //import org.biomage.Interface.HasWarningType;
 import org.xml.sax.Attributes;
-public class RPLAReporter implements
+public class RplaReporter implements
 		Serializable {
 	
 	

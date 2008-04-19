@@ -42,9 +42,10 @@ import gov.nih.nci.carpla.rplatab.model.FactorValue;
 import gov.nih.nci.carpla.rplatab.model.HasName;
 import gov.nih.nci.carpla.rplatab.model.Protocol;
 import gov.nih.nci.carpla.rplatab.model.Provider;
-import gov.nih.nci.carpla.rplatab.model.RPLArray;
-import gov.nih.nci.carpla.rplatab.model.RPLArrayGroup;
+
+import gov.nih.nci.carpla.rplatab.model.RplArray;
 import gov.nih.nci.carpla.rplatab.model.RplArrayFeature;
+import gov.nih.nci.carpla.rplatab.model.RplArrayGroup;
 import gov.nih.nci.carpla.rplatab.model.RplArrayLocation;
 import gov.nih.nci.carpla.rplatab.model.Sample;
 import gov.nih.nci.carpla.rplatab.model.SamplesSectionPrincipal;
@@ -231,8 +232,8 @@ public class RplaTabDocumentSet {
 		return antibody;
 	}
 
-	public SortedMap<String, Antibody> getAntibodies () {
-		return _antibodies;
+	public Collection<Antibody> getAntibodies () {
+		return _antibodies.values();
 	}
 
 	public Antibody getAntibody ( String name) {
@@ -256,6 +257,10 @@ public class RplaTabDocumentSet {
 
 	// ###############################################################
 	private Map<String, ImageFile>	_imageFiles	= new Hashtable<String, ImageFile>();
+
+	public Collection<ImageFile> getImageFiles () {
+		return _imageFiles.values();
+	}
 
 	public ImageFile getOrCreateImageFile ( String name) {
 
@@ -300,6 +305,10 @@ public class RplaTabDocumentSet {
 
 	// ###############################################################
 	private Map<String, ArrayDataFile>	_arrayDataFiles	= new Hashtable<String, ArrayDataFile>();
+
+	public Collection<ArrayDataFile> getArrayDataFiles () {
+		return _arrayDataFiles.values();
+	}
 
 	public ArrayDataFile getOrCreateArrayDataFile ( String name) {
 
@@ -351,6 +360,18 @@ public class RplaTabDocumentSet {
 		return _derivedArrayDataFiles.get(name);
 
 	}
+	
+	public Collection<DerivedArrayDataFile> getDerivedArrayDataFiles () {
+		
+		return _derivedArrayDataFiles.values();
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	// ---------------------------------------------------------------------------
 	// ---------------------------
@@ -431,11 +452,11 @@ public class RplaTabDocumentSet {
 	}
 
 	// ###############################################################
-	private final SortedMap<String,Source>	_sources	= new TreeMap<String, Source>();
+	private final SortedMap<String, Source>	_sources	= new TreeMap<String, Source>();
 
 	public Source getOrCreateSource ( String bioSourceName) {
 
-		if (_sources.get(bioSourceName) == null ){
+		if (_sources.get(bioSourceName) == null) {
 			Source source = new Source();
 			source.setName(bioSourceName);
 			_sources.put(bioSourceName, source);
@@ -448,16 +469,10 @@ public class RplaTabDocumentSet {
 		return _sources.get(bioSourceName);
 
 	}
-	
+
 	public Collection<Source> getSources () {
 		return _sources.values();
 	}
-	
-	
-	
-	
-	
-	
 
 	// ###############################################################
 	private final SortedMap<String, Sample>	_samples	= new TreeMap<String, Sample>();
@@ -483,21 +498,16 @@ public class RplaTabDocumentSet {
 
 	}
 
-	
-	
-	
-	
-	
 	public boolean sampleExists ( String name) {
 		return (_samples.containsKey(name));
 	}
 
 	// ###############################################################
-	private final Map<String, RPLArray>	_rplarrays	= new Hashtable<String, RPLArray>();
+	private final Map<String, RplArray>	_rplarrays	= new Hashtable<String, RplArray>();
 
-	public RPLArray createRPLArray ( String arrayName) {
+	public RplArray createRplArray ( String arrayName) {
 
-		RPLArray rarray = new RPLArray();
+		RplArray rarray = new RplArray();
 		rarray.setName(arrayName);
 		_rplarrays.put(arrayName, rarray);
 
@@ -505,8 +515,13 @@ public class RplaTabDocumentSet {
 
 	}
 
-	public RPLArray getRPLArray ( String arrayName) {
+	public RplArray getRplArray ( String arrayName) {
 		return _rplarrays.get(arrayName);
+	}
+
+	public Collection<RplArray> getRplArrays () {
+		// TODO Auto-generated method stub
+		return _rplarrays.values();
 	}
 
 	// ###############################################################
@@ -517,7 +532,7 @@ public class RplaTabDocumentSet {
 	}
 
 	// ###############################################################
-	public RplArrayFeature createRplArrayFeature (	RPLArrayGroup rplArray,
+	public RplArrayFeature createRplArrayFeature (	RplArrayGroup rplArray,
 													Sample sample,
 													RplArrayLocation rplArrayLocation)
 	{

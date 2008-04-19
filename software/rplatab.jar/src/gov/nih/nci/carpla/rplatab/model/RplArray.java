@@ -13,18 +13,18 @@ import java.io.Writer;
 //import org.biomage.Interface.HasInformation;
 import org.xml.sax.Attributes;
 
-public class RPLArray  implements HasName,Serializable,ArraySectionPrincipal
+public class RplArray  implements HasName,Serializable,ArraySectionPrincipal
 		
 // need serial id
 		{
 
-	public RPLArray() {
+	public RplArray() {
 		super();
 		
 	}
 
 	
-	RPLArrayGroup arrayGroup;
+	RplArrayGroup arrayGroup;
 	
 	
 	private String _name ;

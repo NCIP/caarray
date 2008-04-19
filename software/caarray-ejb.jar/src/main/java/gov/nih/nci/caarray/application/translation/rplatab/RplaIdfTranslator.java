@@ -107,10 +107,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-/**
- * Translates entities found in and IDF document.
- */
-public class RplaIdfTranslator extends AbstractTranslator {
+
+public class RplaIdfTranslator extends RplaTabAbstractTranslator {
 
 	private static final int	LARGE_TEXT_FIELD_LENGTH	= 2000;
 	private static final Logger	LOG						= Logger.getLogger(RplaIdfTranslator.class);

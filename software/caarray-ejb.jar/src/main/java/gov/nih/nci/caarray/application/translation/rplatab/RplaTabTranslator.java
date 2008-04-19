@@ -89,18 +89,13 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.carpla.rplatab.RplaTabDocumentSet;
 
 
-/**
- * Interface to component used to translate MAGE-TAB files to the caArray domain model.
- */
+
 public interface RplaTabTranslator {
 
-    /**
-     * The default JNDI name to use to lookup <code>MageTabTranslator</code>.
-     */
     String JNDI_NAME = "caarray/RplaTabTranslatorBean/local";
 
     
-    CaArrayTranslationResult translate(RplaTabDocumentSet documentSet, CaArrayFileSet fileSet);
+    RplaTabTranslationResult translate(RplaTabDocumentSet documentSet, CaArrayFileSet fileSet);
 
    
     ValidationResult validate(RplaTabDocumentSet documentSet, CaArrayFileSet fileSet);

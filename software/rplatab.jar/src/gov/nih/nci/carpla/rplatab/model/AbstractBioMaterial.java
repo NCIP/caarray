@@ -82,39 +82,42 @@
  */
 package gov.nih.nci.carpla.rplatab.model;
 
+import gov.nih.nci.caarray.magetab.OntologyTerm;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-/**
- * A biomaterial defined in a MAGE-TAB SDRF.
- */
-public abstract class AbstractBioMaterial implements HasName, HasCharacteristics{// extends
-	// AbstractSampleDataRelationshipNode
-	// {
 
-	// need serialid ?
+//carplanotes
+//I would have liked to used AbstractBioMaterial from magetab.sdrf, but it extends 
+// the AbstractSampleDataRelationshipNode class which seems in bed with SdrfDocument 
+//I just copied the code over...
 
-	private String	_name;
 
-	public void setName ( String name) {
-		_name = name;
-	}
 
-	public String getName () {
-		return _name;
-	}
+public abstract class AbstractBioMaterial
 
-	private final List<Characteristic>	_characteristics	= new ArrayList<Characteristic>();
-	private gov.nih.nci.caarray.magetab.OntologyTerm				_materialType;
-	private String						_description;
-	private final List<Comment>			_comments			= new ArrayList<Comment>();
+implements HasName, HasCharacteristics {
+
+	private static final long			serialVersionUID	= 690334748116662920L;
+
+	private final List<Characteristic>	characteristics		= new ArrayList<Characteristic>();
+	private OntologyTerm				materialType;
+	private String						description;
 
 	/**
 	 * @return the characteristics
 	 */
-	public List<Characteristic> getCharacteristics () {
-		return _characteristics;
+	public List<Characteristic> getCharacteristics () { 
+		return characteristics;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription () {
+		return description;
 	}
 
 	/**
@@ -122,26 +125,27 @@ public abstract class AbstractBioMaterial implements HasName, HasCharacteristics
 	 *            the description to set
 	 */
 	public void setDescription ( String description) {
-		this._description = description;
+		this.description = description;
 	}
 
 	/**
 	 * @return the materialType
 	 */
-	public gov.nih.nci.caarray.magetab.OntologyTerm getMaterialType () {
-		return _materialType;
+	public OntologyTerm getMaterialType () {
+		return materialType;
 	}
 
 	/**
 	 * @param materialType
 	 *            the materialType to set
 	 */
-	public void setMaterialType ( gov.nih.nci.caarray.magetab.OntologyTerm materialType) {
-		this._materialType = materialType;
+	public void setMaterialType ( OntologyTerm materialType) {
+		this.materialType = materialType;
 	}
 
-	public String getDescription () {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	public  getProtocolApplications () {
+//		
+//		return null;
+//	}
+
 }

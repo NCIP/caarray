@@ -11,9 +11,10 @@ import gov.nih.nci.carpla.rplatab.RplaTabInputFileSet;
 
 import gov.nih.nci.carpla.rplatab.model.Antibody;
 import gov.nih.nci.carpla.rplatab.model.Dilution;
+import gov.nih.nci.carpla.rplatab.model.RplArray;
 
 import gov.nih.nci.carpla.rplatab.model.Protocol;
-import gov.nih.nci.carpla.rplatab.model.RPLArray;
+
 
 import gov.nih.nci.carpla.rplatab.files.RplaIdfFile;
 import gov.nih.nci.carpla.rplatab.files.SradfFile;
@@ -94,7 +95,7 @@ public class RplaIdfReader {
 	}
 
 	private static void handleRPLArrayNames (	RplaIdfHelper helper,
-												RplaTabDocumentSet RplaTabDocumentSet)
+												RplaTabDocumentSet rplaTabDocumentSet)
 	{
 
 		Vector<String> arrayNames = helper.getColumnStrings("RPLArray Name");
@@ -105,7 +106,7 @@ public class RplaIdfReader {
 
 			String arrayName = arrayNames.get(ii);
 			verifyRPLArrayNameIsValid(arrayName);
-			RPLArray rarray = RplaTabDocumentSet.createRPLArray(arrayName);
+			RplArray rarray = rplaTabDocumentSet.createRplArray(arrayName); 
 
 		}
 

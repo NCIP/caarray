@@ -114,7 +114,7 @@ public class RplaTabTranslatorBean implements RplaTabTranslator {
 	 * {@inheritDoc}
 	 */
 	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-	public CaArrayTranslationResult translate ( RplaTabDocumentSet documentSet,
+	public RplaTabTranslationResult  translate ( RplaTabDocumentSet documentSet,
 												CaArrayFileSet fileSet)
 	{
 		LogUtil.logSubsystemEntry(LOG, documentSet);

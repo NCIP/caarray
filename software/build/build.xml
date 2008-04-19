@@ -348,7 +348,7 @@
 
 	<target name="carpla-current" depends="build-tags">
 		<antcall target="clean" />
-		
+		<antcall target="database:reinitialize" />
 		<antcall target="build" />
 
 	</target>
@@ -1467,6 +1467,7 @@
 		<dependset>
 			<srcfileset dir="${caarray-common.src.dir}">
 				<include name="gov/nih/nci/caarray/domain/**/*.java" />
+				<!-- carpla --> <include name="gov/nih/nci/carpla/domain/**/*.java" />
 			</srcfileset>
 			<srcfileset dir="${caarray-common.resources.dir}">
 				<include name="*.hbm.xml" />

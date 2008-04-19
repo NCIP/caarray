@@ -90,70 +90,85 @@ import java.io.Serializable;
 /**
  * A characteristic of a bio-material.
  */
-public final class Characteristic implements Serializable, Unitable {
 
-    private static final long serialVersionUID = 2872802845635671179L;
+// carplanotes
+// Took away the final...
+// Why not? I want to extend it to implement some interfaces I use in my
+// parsing...
+// See Characteristic in rplatab.model
 
-    private String category;
-    private String value;
-    private OntologyTerm term;
-    private OntologyTerm unit;
+public class Characteristic implements Serializable, Unitable {
 
-    /**
-     * @return the term containing the value of this characteristic
-     */
-    public OntologyTerm getTerm() {
-        return term;
-    }
+	// public final class Characteristic implements Serializable, Unitable {
 
-    /**
-     * @param term the term to set
-     */
-    public void setTerm(OntologyTerm term) {
-        this.term = term;
-    }
+	private static final long	serialVersionUID	= 2872802845635671179L;
 
-    /**
-     * @return the unit of this characteristic (optional, for measurement characteristics only)
-     */
-    public OntologyTerm getUnit() {
-        return unit;
-    }
+	private String				category;
+	private String				value;
+	private OntologyTerm		term;
+	private OntologyTerm		unit;
 
-    /**
-     * @param unit the unit to set
-     */
-    public void setUnit(OntologyTerm unit) {
-        this.unit = unit;
-    }
+	/**
+	 * @return the term containing the value of this characteristic
+	 */
+	public OntologyTerm getTerm () {
+		return term;
+	}
 
-    /**
-     * @return the explicit value of this characteristic. this is used if no term source is specified for
-     * a characteristic, or if it has a unit. otherwise, the value will be contained in the term property
-     */
-    public String getValue() {
-        return value;
-    }
+	/**
+	 * @param term
+	 *            the term to set
+	 */
+	public void setTerm ( OntologyTerm term) {
+		this.term = term;
+	}
 
-    /**
-     * @param value the value to set
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
+	/**
+	 * @return the unit of this characteristic (optional, for measurement
+	 *         characteristics only)
+	 */
+	public OntologyTerm getUnit () {
+		return unit;
+	}
 
-    /**
-     * @return the category of this characteristic
-     */
-    public String getCategory() {
-        return category;
-    }
+	/**
+	 * @param unit
+	 *            the unit to set
+	 */
+	public void setUnit ( OntologyTerm unit) {
+		this.unit = unit;
+	}
 
-    /**
-     * @param category The category to set
-     */
-    public void setCategory(String category) {
-        this.category = category;
-    }
+	/**
+	 * @return the explicit value of this characteristic. this is used if no
+	 *         term source is specified for a characteristic, or if it has a
+	 *         unit. otherwise, the value will be contained in the term property
+	 */
+	public String getValue () {
+		return value;
+	}
+
+	/**
+	 * @param value
+	 *            the value to set
+	 */
+	public void setValue ( String value) {
+		this.value = value;
+	}
+
+	/**
+	 * @return the category of this characteristic
+	 */
+	public String getCategory () {
+		return category;
+	}
+
+	/**
+	 * @param category
+	 *            The category to set
+	 */
+	public void setCategory ( String category) {
+		this.category = category;
+	}
 
 }

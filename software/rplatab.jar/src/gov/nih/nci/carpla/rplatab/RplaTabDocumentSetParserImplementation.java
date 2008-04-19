@@ -25,7 +25,8 @@ import gov.nih.nci.carpla.rplatab.model.HasComment;
 import gov.nih.nci.carpla.rplatab.model.HasProvider;
 import gov.nih.nci.carpla.rplatab.model.Protocol;
 import gov.nih.nci.carpla.rplatab.model.Provider;
-import gov.nih.nci.carpla.rplatab.model.RPLArray;
+
+import gov.nih.nci.carpla.rplatab.model.RplArray;
 import gov.nih.nci.carpla.rplatab.model.Sample;
 import gov.nih.nci.carpla.rplatab.model.Source;
 import gov.nih.nci.carpla.rplatab.rplaidf.RplaIdfReader;
@@ -561,7 +562,7 @@ public class RplaTabDocumentSetParserImplementation
 
 		}
 
-		RPLArray rplarray = RplaTabDocumentSet.getRPLArray(name);
+		RplArray rplarray = RplaTabDocumentSet.getRplArray(name);
 
 		if (rplarray == null) {
 

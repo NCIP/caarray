@@ -95,11 +95,27 @@ SamplesSectionPrincipal, HasCharacteristics, HasComment, HasAttribute {
 	
 	private List<Comment> _comments = new ArrayList<Comment>();
 	
-	
+	private String _name ;
 	
 	
 	public void addComment ( Comment comment) {
 		_comments.add(comment);
+	}
+
+
+
+
+	public String getName () {
+		
+		return _name ;
+	}
+
+
+
+
+	public void setName ( String bioSampleName) {
+		_name = bioSampleName ;
+		
 	}
 
 }

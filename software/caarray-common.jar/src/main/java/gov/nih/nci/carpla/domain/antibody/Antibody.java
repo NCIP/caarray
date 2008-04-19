@@ -25,6 +25,12 @@ public class Antibody
 	
 	private MeasurementCharacteristic _targetProteinMolecularWeight ;
 
+
+	public void setName ( String name) {
+		_name = name;
+		
+	}
+
 	// support in future -Vector of Antibody Data Sheet Files
 
 }

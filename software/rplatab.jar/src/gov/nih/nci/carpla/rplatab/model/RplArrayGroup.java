@@ -17,10 +17,10 @@ import java.util.List;
 //import org.biomage.Measurement.DistanceUnit;
 import org.xml.sax.Attributes;
 
-public class RPLArrayGroup implements Serializable
+public class RplArrayGroup implements Serializable
 		 {
 
-	public RPLArrayGroup() {
+	public RplArrayGroup() {
 		
 	}
 

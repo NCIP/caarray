@@ -3,6 +3,8 @@ package gov.nih.nci.caarray.application.file;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
+
+import gov.nih.nci.caarray.application.translation.rplatab.RplaTabTranslationResult;
 import gov.nih.nci.caarray.application.translation.rplatab.RplaTabTranslator;
 import gov.nih.nci.caarray.dao.CaArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
@@ -125,7 +127,7 @@ public class RplaTabImporter {
 		RplaTabDocumentSet documentSet;
 		try {
 			documentSet = RplaTabDocumentSetParser.INSTANCE.parse(inputSet);
-			CaArrayTranslationResult translationResult = translator.translate(	documentSet,
+			RplaTabTranslationResult translationResult = translator.translate(	documentSet, 
 																				fileSet);
 			save(targetProject, translationResult);
 			updateFileStatus(fileSet, FileStatus.IMPORTED);
@@ -286,7 +288,7 @@ public class RplaTabImporter {
 	}
 
 	private void save ( Project targetProject,
-						CaArrayTranslationResult translationResult)
+						RplaTabTranslationResult translationResult)
 	{
 		LOG.info("save !!!!!!!");
 		saveTerms(translationResult);
@@ -294,7 +296,7 @@ public class RplaTabImporter {
 		saveInvestigations(targetProject, translationResult);
 	}
 
-	private void saveTerms ( CaArrayTranslationResult translationResult) {
+	private void saveTerms ( RplaTabTranslationResult translationResult) {
 		
 		LOG.info("saveTerms: translationResult has " + translationResult.getTerms().size() +" (number) of terms");
 		
@@ -306,7 +308,7 @@ public class RplaTabImporter {
 
 	
 	private void saveInvestigations (	Project targetProject,
-										CaArrayTranslationResult translationResult)
+										RplaTabTranslationResult translationResult)
 	{
 		LOG.info("saveInvestigations");
 		

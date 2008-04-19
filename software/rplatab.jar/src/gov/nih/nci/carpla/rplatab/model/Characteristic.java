@@ -82,79 +82,18 @@
  */
 package gov.nih.nci.carpla.rplatab.model;
 
-
-
 import gov.nih.nci.caarray.magetab.OntologyTerm;
 
 import java.io.Serializable;
 
-/**
- * A characteristic of a bio-material.
- */
-public final class Characteristic implements Serializable,HasAttribute {
+// I wouldn't mind extending Charcteristic from the magetab package but it's
+// marked final. I think I will change that!
 
-    private static final long serialVersionUID = 2872802845635671179L;
-
-    private String category;
-    private String value;
-    private OntologyTerm term;
-    private OntologyTerm unit;
-
-    /**
-     * @return the term containing the value of this characteristic
-     */
-    public OntologyTerm getTerm() {
-        return term;
-    }
-
-    /**
-     * @param ot the term to set
-     */
-    public void setTerm(OntologyTerm ot) {
-        this.term = ot;
-    }
-
-    /**
-     * @return the unit of this characteristic (optional, for measurement characteristics only)
-     */
-    public OntologyTerm getUnit() {
-        return unit;
-    }
-
-    /**
-     * @param unit the unit to set
-     */
-    public void setUnit(OntologyTerm unit) {
-        this.unit = unit;
-    }
-
-    /**
-     * @return the explicit value of this characteristic. this is used if no term source is specified for
-     * a characteristic, or if it has a unit. otherwise, the value will be contained in the term property
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * @param value the value to set
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    /**
-     * @return the category of this characteristic
-     */
-    public String getCategory() {
-        return category;
-    }
-
-    /**
-     * @param category The category to set
-     */
-    public void setCategory(String category) {
-        this.category = category;
-    }
+public final class Characteristic
+									extends
+									gov.nih.nci.caarray.magetab.sdrf.Characteristic
+																					implements
+																					Serializable,
+																					HasAttribute {
 
 }

@@ -96,13 +96,13 @@ public final class Source extends AbstractBioMaterial
 														HasAttribute,
 														HasProvider,
 														HasName,
-														HasCharacteristics{
+														HasCharacteristics {
 
 	// need serial id
+	private String		_name;
 
-	
-	//provider
-	
+	// provider
+
 	private Provider	_provider;
 
 	public Provider getProvider () {
@@ -113,6 +113,13 @@ public final class Source extends AbstractBioMaterial
 		_provider = provider;
 	}
 
-	
-	
+	public String getName () {
+		// TODO Auto-generated method stub
+		return _name;
+	}
+
+	public void setName ( String name) {
+		_name = name;
+	}
+
 }

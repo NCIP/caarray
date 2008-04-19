@@ -89,7 +89,15 @@ import java.util.List;
 /**
  * A Protocol is a parameterizable description of a method.
  */
-public final class Protocol implements Serializable, TermSourceable {
+
+//carplanotes...losing the final, gonna use this class.
+
+
+//public final class Protocol implements Serializable, TermSourceable 
+
+public  class Protocol implements Serializable, TermSourceable
+
+{
 
     private static final long serialVersionUID = 3130057952908619310L;
 

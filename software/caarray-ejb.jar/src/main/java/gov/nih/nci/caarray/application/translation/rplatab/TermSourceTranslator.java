@@ -99,12 +99,12 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 
-/**
- * Translates MAGE-TAB <code>TermSources</code> to caArray
- * <code>TermSources</code>.
- */
+//carplanotes
+//Changed superclass. and ctor to accommodate an RplaTabDocumentSet and RplaTabTranslationResult.
+//I use gov.nih.nci.caarray.magetab.TermSource in the rplatab code, so no need for other changes.
+
 @SuppressWarnings("PMD.CyclomaticComplexity")
-final class TermSourceTranslator extends AbstractTranslator {
+final class TermSourceTranslator extends RplaTabAbstractTranslator {
 
 	private static final Logger						LOG					= Logger.getLogger(TermSourceTranslator.class);
 
@@ -122,9 +122,7 @@ final class TermSourceTranslator extends AbstractTranslator {
 
 	@Override
 	void translate () {
-		
-		
-		
+
 		for (gov.nih.nci.caarray.magetab.TermSource termSource : getDocumentSet()	.getTermSources()) {
 			translate(termSource);
 		}
@@ -133,7 +131,7 @@ final class TermSourceTranslator extends AbstractTranslator {
 	private void translate ( gov.nih.nci.caarray.magetab.TermSource termSource)
 	{
 		// first, check that we haven
-		
+
 		LOG.info(termSource.getName());
 		TermSource source = lookupSource(termSource);
 		// check that this does not match (via unique constraints) one of the
