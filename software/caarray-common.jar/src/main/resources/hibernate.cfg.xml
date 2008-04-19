@@ -65,6 +65,15 @@
         <mapping class="gov.nih.nci.caarray.domain.permissions.AccessProfile"/>
         <mapping class="gov.nih.nci.caarray.domain.project.Factor"/>
         <mapping class="gov.nih.nci.caarray.domain.project.FactorValue"/>
+        
+        <mapping class="gov.nih.nci.carpla.domain.rplarray.RplArray"/>
+        
+        
+        
+        
+        
+        
+        
         <mapping class="gov.nih.nci.caarray.domain.project.Experiment"/>
         <mapping class="gov.nih.nci.caarray.domain.project.ExperimentContact"/>
         <mapping class="gov.nih.nci.caarray.domain.project.Project"/>
@@ -100,7 +109,7 @@
         <mapping class="gov.nih.nci.cabio.domain.TranscriptArrayReporter"/>
 
 
- 		<mapping class="gov.nih.nci.carpla.domain.rplarray.RplArray"/>
+ 		
 
 
 

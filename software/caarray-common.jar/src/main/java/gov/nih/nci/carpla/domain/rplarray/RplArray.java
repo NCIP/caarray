@@ -3,8 +3,11 @@ package gov.nih.nci.carpla.domain.rplarray;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Table;
+
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Entity;
+
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
@@ -20,6 +23,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 
 @Entity
+@Table(name = "rplarray")
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 public class RplArray extends AbstractCaArrayEntity {
 	private String				_name;
