@@ -613,14 +613,12 @@ var PermissionUtils = {
 // Download stuff here
 //
 
-function DownloadMgr(dUrl, dgUrl, removeImageUrl, maxDownloadSize) {
+function DownloadMgr(dUrl, removeImageUrl) {
   this.downloadUrl = dUrl;
-  this.downloadGroupsUrl = dgUrl;
   this.removeImageUrl = removeImageUrl;
   this.files = new Object();
   this.downloadFiles = new Object();
   this.totalDownloadSize = 0;
-  this.maxDownloadSize = maxDownloadSize;
 }
 
 DownloadMgr.prototype.addFile = function(name, id, size) {
@@ -708,21 +706,22 @@ DownloadMgr.prototype.doDownloadFiles = function() {
     alert("Select file(s) first.");
     return;
   }
-  var curLoc = window.location;
-  var params = '';
+
+  var form = document.createElement("form");
+  form.method="post";
+  form.style.display="none";
+  form.action=this.downloadUrl;
   for (i = 0; i < files.length; ++i) {
-    params = params + '&selectedFileIds=' + files[i].id;
-  }
-
-  if (this.totalDownloadSize < this.maxDownloadSize) {
-      var iframe = document.createElement("iframe"); 
-      iframe.src = this.downloadUrl + params;
-      iframe.style.display="none";
-      document.body.appendChild(iframe);       
-  } else {
-      TabUtils.loadLinkInSubTab('Download Data', this.downloadGroupsUrl + params);
-  }
-
+      var elt = document.createElement("input");
+      elt.type="hidden";
+      elt.name="selectedFileIds";
+      elt.value=files[i].id;
+      form.appendChild(elt);
+  }  
+  document.body.appendChild(form);
+  form.submit();
+  $(form).remove();
+  
   this.resetDownloadInfo();
 }
 

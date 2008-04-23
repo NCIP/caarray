@@ -85,10 +85,10 @@ package gov.nih.nci.caarray.web.action.project;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
-import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
@@ -96,14 +96,9 @@ import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.util.io.FileClosingInputStream;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -124,7 +119,6 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
     private static final long serialVersionUID = 1L;
 
     private Sample currentSample = new Sample();
-    private InputStream downloadStream;
     private List<Source> itemsToAssociate = new ArrayList<Source>();
     private List<Source> itemsToRemove = new ArrayList<Source>();
 
@@ -161,22 +155,13 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
      */
     @SkipValidation
     public String download() throws IOException {
-        ProjectManagementService pms = (ProjectManagementService)
-            ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
-        File zipFile = pms.prepareHybsForDownload(getProject(), getCurrentSample().getRelatedHybs());
-        if (zipFile == null) {
+        Collection<CaArrayFile> files = getCurrentSample().getAllDataFiles();
+        if (files.isEmpty()) {
             ActionHelper.saveMessage(getText("experiment.samples.noDataToDownload"));
             return "noSampleData";
         }
-        this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
-        return "download";
-    }
-
-    /**
-     * @return the stream containing the zip file download
-     */
-    public InputStream getDownloadStream() {
-        return this.downloadStream;
+        ProjectFilesAction.downloadFiles(getProject(), files);
+        return null;
     }
 
     /**

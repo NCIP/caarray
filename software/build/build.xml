@@ -1056,7 +1056,7 @@
         <run-junit-tests test.src.dir="${caarray-war.test.src.dir}"
                          xml.output.dir="${caarray-war.target.dir}/junit"
                          instrumented.classes="${caarray-war.instrumented.classes.dir}"
-                         classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-beanutils.jar};${commons-logging.jar};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar};${cglib.jar};${commons-io.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${mysql-connector.jar};${c3p0.jar};${cglib.jar};${clm.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${nci-commons-struts2.jar};${nci-commons-core.jar};${commons-fileupload.jar};${ezmorph.jar};${json-lib.jar};${affxfusion.jar}" />
+                         classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-beanutils.jar};${commons-logging.jar};${commons-io.jar};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar};${cglib.jar};${commons-io.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${mysql-connector.jar};${c3p0.jar};${cglib.jar};${clm.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${nci-commons-struts2.jar};${nci-commons-core.jar};${commons-fileupload.jar};${ezmorph.jar};${json-lib.jar};${affxfusion.jar}" />
     </target>
 
     <target name="test:junit-report">
@@ -1090,7 +1090,7 @@
     </target>
 
     <target name="test:cobertura-check">
-        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="66" totallinerate="73" />
+        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="68" totallinerate="77" />
     </target>
 
     <!-- Functional (Selenium) Test Targets -->

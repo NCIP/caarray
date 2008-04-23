@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.project;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.GenericDataService;
@@ -104,7 +103,6 @@ import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -125,23 +123,14 @@ import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.hibernate.Transaction;
 import org.junit.After;
@@ -455,89 +444,6 @@ public class ProjectManagementServiceTest {
         }
         project = this.projectManagementService.getProject(123L);
         assertTrue(project.isUseTcgaPolicy());
-    }
-
-    @Test
-    public void testDownload() throws IOException, ProposalWorkflowException, InconsistentProjectStateException {
-        try {
-            this.projectManagementService.prepareForDownload(null);
-            fail();
-        } catch (IllegalArgumentException iae) {
-            // expected
-        }
-
-        try {
-            this.projectManagementService.prepareForDownload(new ArrayList<CaArrayFile>());
-            fail();
-        } catch (IllegalArgumentException iae) {
-            // expected
-        }
-
-        Project project = this.projectManagementService.getProject(123L);
-        CaArrayFile file = null;
-        try {
-            file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        } catch (ProposalWorkflowException e) {
-            fail("Should not have gotten a workflow exception adding files");
-        } catch (InconsistentProjectStateException e) {
-            fail("Unexpected inconstient state exception: " + e);
-        }
-
-        File f = this.projectManagementService.prepareForDownload(Collections.singleton(file));
-        checkFile(file, f);
-
-        try {
-            f = this.projectManagementService.prepareHybsForDownload(null, null);
-            assertNull(f);
-        } catch (IllegalArgumentException e) {
-            fail();
-        }
-
-        try {
-            this.projectManagementService.prepareHybsForDownload(null, new ArrayList<Hybridization>());
-            assertNull(f);
-        } catch (IllegalArgumentException e) {
-            fail();
-        }
-
-        Hybridization h = new Hybridization();
-        h.setArrayData(new RawArrayData());
-        h.getArrayData().setDataFile(file);
-        f = this.projectManagementService.prepareHybsForDownload(null, Collections.singleton(h));
-        checkFile(file, f);
-
-        f = this.projectManagementService.prepareHybsForDownload(project, Collections.singleton(h));
-        checkFile(file, f);
-
-        Hybridization h2 = new Hybridization();
-        h2.setArrayData(new RawArrayData());
-        CaArrayFile file2 = this.projectManagementService.addFile(new Project(), MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
-        h2.getArrayData().setDataFile(file2);
-        f = this.projectManagementService.prepareHybsForDownload(project, Arrays.asList(h, h2));
-        checkFile(file, f);
-    }
-
-    private void checkFile(CaArrayFile file, File f) throws FileNotFoundException, IOException {
-        assertNotNull(f);
-
-        // make sure it's a zip file
-        ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(f)));
-        ZipEntry ze = zis.getNextEntry();
-        assertNotNull(ze);
-        assertEquals(file.getName(), ze.getName());
-        int size = 0;
-        int curRead = 0;
-        InputStream is = new FileInputStream(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        while ((curRead = is.read(new byte[is.available()])) > 0) {
-            size += curRead;
-        }
-
-        while ((curRead = zis.read(new byte[zis.available()])) > 0) {
-            size -= curRead;
-        }
-        assertEquals(0, size);
-        is.close();
-        zis.close();
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {

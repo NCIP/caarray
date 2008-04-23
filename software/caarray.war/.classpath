@@ -107,5 +107,6 @@
 	<classpathentry kind="lib" path="/lib/json-lib-2.0-jdk15.jar"/>
 	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.1.jar"/>
 	<classpathentry kind="lib" path="/lib/nci-commons-struts2-1.0.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/test-data"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>
