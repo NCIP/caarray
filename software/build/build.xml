@@ -1015,6 +1015,7 @@
         <mkdir dir="${caarray-war.test.classes.dir}" />
         <javac srcdir="${caarray-war.test.src.dir}" destdir="${caarray-war.test.classes.dir}" debug="true">
             <classpath>
+                <pathelement location="${test.data.classes.dir}" />
                 <pathelement location="${caarray-war.classes.dir}" />
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${caarray-ejb.classes.dir}" />
@@ -1035,6 +1036,7 @@
                 <pathelement location="${commons-configuration.jar}" />
                 <pathelement location="${commons-lang.jar}" />
                 <pathelement location="${commons-beanutils.jar}" />
+                <pathelement location="${commons-io.jar}" />
                 <pathelement location="${displaytag.jar}" />
                 <pathelement location="${hibernate.jar}" />
                 <pathelement location="${urlrewrite.jar}" />
