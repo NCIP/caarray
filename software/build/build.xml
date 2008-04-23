@@ -1467,7 +1467,7 @@
 		<dependset>
 			<srcfileset dir="${caarray-common.src.dir}">
 				<include name="gov/nih/nci/caarray/domain/**/*.java" />
-				<!-- carpla --> <include name="gov/nih/nci/carpla/domain/**/*.java" />
+			 <include name="gov/nih/nci/carpla/domain/**/*.java" />
 			</srcfileset>
 			<srcfileset dir="${caarray-common.resources.dir}">
 				<include name="*.hbm.xml" />
@@ -1491,7 +1491,19 @@
 		<antcall target="database:init-sql" />
 
 		<hibernatetool destdir="${caarraydb.sql.dir}">
-			<annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
+			
+			<annotationconfiguration 
+					configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" 
+				propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" 
+				namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" /> 
+			
+			
+			
+			
+			
+			
+			
+			
 			<hbm2ddl drop="true" create="false" export="false" outputfilename="drop_schema.sql" />
 			<classpath>
 				<pathelement location="${caarray-common.classes.dir}" />
@@ -1508,7 +1520,9 @@
 		<antcall target="database:init-sql" />
 
 		<hibernatetool destdir="${caarraydb.sql.dir}">
-			<annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
+			<annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" 
+				propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" 
+				namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
 			<hbm2ddl drop="false" create="true" export="false" outputfilename="create_schema.sql" />
 			<classpath>
 				<pathelement location="${caarray-common.classes.dir}" />
@@ -1571,6 +1585,8 @@
     <antcall target="database:env-specific-sql" />
   </target>
   -->
+	
+	
 	<target name="database:reinitialize" depends="database:init-sql" unless="nodbintegration" description="Completely reset caarraydb by dropping database, recreating, and creating schema, and populating with initial data">
 		<antcall target="database:execute-sql" />
 	</target>
@@ -1579,8 +1595,11 @@
 		<antcall target="database:recreate-database" />
 		<run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/assign-permissions.sql" />
 		<run-sql-script onerror="continue" sql.file="${caarraydb.sql.dir}/premigrate.sql" />
-		<antcall target="database:drop-schema" />
+		
+		 <antcall target="database:drop-schema" />
+		
 		<antcall target="database:create-schema" />
+		
 		<antcall target="database:populate" />
 		<antcall target="database:env-specific-sql" />
 		<run-sql-script onerror="continue" sql.file="${caarraydb.sql.dir}/postmigrate.sql" />

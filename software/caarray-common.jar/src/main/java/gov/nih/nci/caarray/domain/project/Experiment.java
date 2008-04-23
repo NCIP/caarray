@@ -160,174 +160,178 @@ import org.hibernate.validator.NotNull;
 public class Experiment extends AbstractCaArrayEntity {
 	// Experiment is central object -- can't reduce set of linked entities
 
-	private static final String									FK_COLUMN_NAME					= "experiment_id";
-	private static final String									TERM_FK_NAME					= "term_id";
-	private static final String									EXPERIMENT_REF					= "experiment";
+	private static final String		FK_COLUMN_NAME					= "experiment_id";
+	private static final String		TERM_FK_NAME					= "term_id";
+	private static final String		EXPERIMENT_REF					= "experiment";
 
-	private static final String									READABLE_PROJECT_CLAUSE			= "(select pe.attribute_value from csm_protection_group pg, " + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
-																									+ "csm_role r, csm_privilege p, csm_group g, csm_user_group ug where "
-																									+ "pe.object_id= 'gov.nih.nci.caarray.domain.project.Project' and pe.attribute='id' and "
-																									+ "u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id=r.role_id "
-																									+ "and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and "
-																									+ "ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id "
-																									+ "and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = "
-																									+ "p.privilege_id and p.privilege_name='READ')";
+	private static final String		READABLE_PROJECT_CLAUSE			= "(select pe.attribute_value from csm_protection_group pg, " + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
+																		+ "csm_role r, csm_privilege p, csm_group g, csm_user_group ug where "
+																		+ "pe.object_id= 'gov.nih.nci.caarray.domain.project.Project' and pe.attribute='id' and "
+																		+ "u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id=r.role_id "
+																		+ "and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and "
+																		+ "ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id "
+																		+ "and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = "
+																		+ "p.privilege_id and p.privilege_name='READ')";
 
-	private static final String									PROJECT_OWNER_CLAUSE			= "(select " + CaarrayInnoDBDialect.FILTER_ALIAS
-																									+ ".attribute_value from (select pe.attribute_value from csm_user_pe upe, "
-																									+ "csm_protection_element pe, csm_user u "
-																									+ "where pe.object_id= 'gov.nih.nci.caarray.domain.project.Project' and "
-																									+ "pe.attribute='id' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and "
-																									+ "upe.protection_element_id = pe.protection_element_id and upe.user_id = u.user_id) "
-																									+ CaarrayInnoDBDialect.FILTER_ALIAS
-																									+ ")";
+	private static final String		PROJECT_OWNER_CLAUSE			= "(select " + CaarrayInnoDBDialect.FILTER_ALIAS
+																		+ ".attribute_value from (select pe.attribute_value from csm_user_pe upe, "
+																		+ "csm_protection_element pe, csm_user u "
+																		+ "where pe.object_id= 'gov.nih.nci.caarray.domain.project.Project' and "
+																		+ "pe.attribute='id' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and "
+																		+ "upe.protection_element_id = pe.protection_element_id and upe.user_id = u.user_id) "
+																		+ CaarrayInnoDBDialect.FILTER_ALIAS
+																		+ ")";
 
-	private static final String									READABLE_SAMPLE_CLAUSE			= "(select pe.attribute_value from csm_protection_group pg, " + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
-																									+ "csm_role r, csm_privilege p, csm_group g, csm_user_group ug where "
-																									+ "pe.object_id= 'gov.nih.nci.caarray.domain.sample.Sample' and pe.attribute='id' and "
-																									+ "u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id=r.role_id "
-																									+ "and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and "
-																									+ "ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id "
-																									+ "and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = "
-																									+ "p.privilege_id and p.privilege_name='READ')";
+	private static final String		READABLE_SAMPLE_CLAUSE			= "(select pe.attribute_value from csm_protection_group pg, " + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
+																		+ "csm_role r, csm_privilege p, csm_group g, csm_user_group ug where "
+																		+ "pe.object_id= 'gov.nih.nci.caarray.domain.sample.Sample' and pe.attribute='id' and "
+																		+ "u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id=r.role_id "
+																		+ "and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and "
+																		+ "ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id "
+																		+ "and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = "
+																		+ "p.privilege_id and p.privilege_name='READ')";
 
-	private static final String									READABLE_SAMPLE_ALIAS_CLAUSE	= "(select " + CaarrayInnoDBDialect.FILTER_ALIAS
-																									+ ".attribute_value from "
-																									+ READABLE_SAMPLE_CLAUSE
-																									+ " "
-																									+ CaarrayInnoDBDialect.FILTER_ALIAS
-																									+ ")";
+	private static final String		READABLE_SAMPLE_ALIAS_CLAUSE	= "(select " + CaarrayInnoDBDialect.FILTER_ALIAS
+																		+ ".attribute_value from "
+																		+ READABLE_SAMPLE_CLAUSE
+																		+ " "
+																		+ CaarrayInnoDBDialect.FILTER_ALIAS
+																		+ ")";
 
 	/** @Where filter for samples */
-	public static final String									SAMPLES_FILTER					= "id in (select s.ID from biomaterial s where s.discriminator = 'SA' " + "and s.ID in "
-																									+ READABLE_SAMPLE_CLAUSE
-																									+ ")";
+	public static final String		SAMPLES_FILTER					= "id in (select s.ID from biomaterial s where s.discriminator = 'SA' " + "and s.ID in "
+																		+ READABLE_SAMPLE_CLAUSE
+																		+ ")";
 	/** @Where filter for samples - with mysql wrapping table for subselect */
-	public static final String									SAMPLES_ALIAS_FILTER			= "id in (select s.ID from biomaterial s " + "where s.discriminator = 'SA' and s.ID in "
-																									+ READABLE_SAMPLE_ALIAS_CLAUSE
-																									+ ")";
+	public static final String		SAMPLES_ALIAS_FILTER			= "id in (select s.ID from biomaterial s " + "where s.discriminator = 'SA' and s.ID in "
+																		+ READABLE_SAMPLE_ALIAS_CLAUSE
+																		+ ")";
 	/** @Where filter for extracts */
-	public static final String									EXTRACTS_FILTER					= "id in (select e.ID from biomaterial e inner join sampleextract se " + " on e.id = se.extract_id inner join biomaterial s on se.sample_id = s.id where e.discriminator = 'EX' and "
-																									+ "s.ID in "
-																									+ READABLE_SAMPLE_CLAUSE
-																									+ ")";
+	public static final String		EXTRACTS_FILTER					= "id in (select e.ID from biomaterial e inner join sampleextract se " + " on e.id = se.extract_id inner join biomaterial s on se.sample_id = s.id where e.discriminator = 'EX' and "
+																		+ "s.ID in "
+																		+ READABLE_SAMPLE_CLAUSE
+																		+ ")";
 	/** @Where filter for extracts - with mysql wrapping table for subselect */
-	public static final String									EXTRACTS_ALIAS_FILTER			= "id in (select e.ID from biomaterial e " + "inner join sampleextract se on e.id = se.extract_id inner join biomaterial s on se.sample_id = s.id where "
-																									+ "e.discriminator = 'EX' and s.ID in "
-																									+ READABLE_SAMPLE_ALIAS_CLAUSE
-																									+ ")";
+	public static final String		EXTRACTS_ALIAS_FILTER			= "id in (select e.ID from biomaterial e " + "inner join sampleextract se on e.id = se.extract_id inner join biomaterial s on se.sample_id = s.id where "
+																		+ "e.discriminator = 'EX' and s.ID in "
+																		+ READABLE_SAMPLE_ALIAS_CLAUSE
+																		+ ")";
 	/** @Where filter for labeled extracts */
-	public static final String									LABELED_EXTRACTS_FILTER			= "id in (select le.ID from biomaterial le inner join " + "extractlabeledextract ele on le.id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = "
-																									+ "se.extract_id inner join biomaterial s on se.sample_id = s.id where le.discriminator = 'LA' and s.ID in "
-																									+ READABLE_SAMPLE_CLAUSE
-																									+ ")";
+	public static final String		LABELED_EXTRACTS_FILTER			= "id in (select le.ID from biomaterial le inner join " + "extractlabeledextract ele on le.id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = "
+																		+ "se.extract_id inner join biomaterial s on se.sample_id = s.id where le.discriminator = 'LA' and s.ID in "
+																		+ READABLE_SAMPLE_CLAUSE
+																		+ ")";
 	/**
 	 * @Where filter for labeled extracts - with mysql wrapping table for
 	 *        subselect
 	 */
-	public static final String									LABELED_EXTRACTS_ALIAS_FILTER	= "id in (select le.ID from biomaterial le inner join " + "extractlabeledextract ele on le.id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = "
-																									+ "se.extract_id inner join biomaterial s on se.sample_id = s.id where le.discriminator = 'LA' and s.ID in "
-																									+ READABLE_SAMPLE_ALIAS_CLAUSE
-																									+ ")";
+	public static final String		LABELED_EXTRACTS_ALIAS_FILTER	= "id in (select le.ID from biomaterial le inner join " + "extractlabeledextract ele on le.id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = "
+																		+ "se.extract_id inner join biomaterial s on se.sample_id = s.id where le.discriminator = 'LA' and s.ID in "
+																		+ READABLE_SAMPLE_ALIAS_CLAUSE
+																		+ ")";
 	/** @Where filter for hybs */
-	public static final String									HYBRIDIZATIONS_FILTER			= "ID in (select h.ID from hybridization h inner join " + "labeledextracthybridization leh on h.id = leh.hybridization_id inner join extractlabeledextract ele on "
-																									+ "leh.labeledextract_id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = se.extract_id "
-																									+ "inner join biomaterial s on se.sample_id = s.id where s.ID in "
-																									+ READABLE_SAMPLE_CLAUSE
-																									+ ")";
+	public static final String		HYBRIDIZATIONS_FILTER			= "ID in (select h.ID from hybridization h inner join " + "labeledextracthybridization leh on h.id = leh.hybridization_id inner join extractlabeledextract ele on "
+																		+ "leh.labeledextract_id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = se.extract_id "
+																		+ "inner join biomaterial s on se.sample_id = s.id where s.ID in "
+																		+ READABLE_SAMPLE_CLAUSE
+																		+ ")";
 	/** @Where filter for hybs - with mysql wrapping table for subselect */
-	public static final String									HYBRIDIZATIONS_ALIAS_FILTER		= "ID in (select h.ID from hybridization h inner join " + "labeledextracthybridization leh on h.id = leh.hybridization_id inner join extractlabeledextract ele on "
-																									+ "leh.labeledextract_id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = se.extract_id "
-																									+ "inner join biomaterial s on se.sample_id = s.id where s.ID in "
-																									+ READABLE_SAMPLE_ALIAS_CLAUSE
-																									+ ")";
+	public static final String		HYBRIDIZATIONS_ALIAS_FILTER		= "ID in (select h.ID from hybridization h inner join " + "labeledextracthybridization leh on h.id = leh.hybridization_id inner join extractlabeledextract ele on "
+																		+ "leh.labeledextract_id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = se.extract_id "
+																		+ "inner join biomaterial s on se.sample_id = s.id where s.ID in "
+																		+ READABLE_SAMPLE_ALIAS_CLAUSE
+																		+ ")";
 	/** @Where filter for files */
-	public static final String									FILES_FILTER					= "ID in (select f.id from caarrayfile f left join arraydata ad on f.id = " + "ad.data_file left join project p on f.project = p.id left join hybridization h on ad.hybridization = h.id "
-																									+ "left join derivedarraydata_hybridizations dadh on ad.id = dadh.hybridization_id left join hybridization h2 "
-																									+ "on dadh.derivedarraydata_id = h2.id left join labeledextracthybridization leh on h.id = "
-																									+ "leh.hybridization_id left join extractlabeledextract ele on leh.labeledextract_id = ele.labeledextract_id "
-																									+ "left join sampleextract se on ele.extract_id = se.extract_id left join biomaterial s on se.sample_id = s.id "
-																									+ "left join labeledextracthybridization leh2 on h2.id = leh2.hybridization_id left join extractlabeledextract "
-																									+ "ele2 on leh2.labeledextract_id = ele2.labeledextract_id left join sampleextract se2 on ele2.extract_id = "
-																									+ "se2.extract_id left join biomaterial s2 on se2.sample_id = s2.id where s.id is not null and s.id in "
-																									+ READABLE_SAMPLE_CLAUSE
-																									+ " or s2.id is not null and s2.id in "
-																									+ READABLE_SAMPLE_CLAUSE
-																									+ " or (f.status = "
-																									+ "'SUPPLEMENTAL' or f.status = 'IMPORTED') and s.id is null and s2.id is null and p.id in "
-																									+ READABLE_PROJECT_CLAUSE
-																									+ " or p.id in "
-																									+ PROJECT_OWNER_CLAUSE
-																									+ ")";
-	private static final long									serialVersionUID				= 1234567890L;
-	private static final int									PAYMENT_NUMBER_FIELD_LENGTH		= 100;
+	public static final String		FILES_FILTER					= "ID in (select f.id from caarrayfile f left join arraydata ad on f.id = " + "ad.data_file left join project p on f.project = p.id left join hybridization h on ad.hybridization = h.id "
+																		+ "left join derivedarraydata_hybridizations dadh on ad.id = dadh.hybridization_id left join hybridization h2 "
+																		+ "on dadh.derivedarraydata_id = h2.id left join labeledextracthybridization leh on h.id = "
+																		+ "leh.hybridization_id left join extractlabeledextract ele on leh.labeledextract_id = ele.labeledextract_id "
+																		+ "left join sampleextract se on ele.extract_id = se.extract_id left join biomaterial s on se.sample_id = s.id "
+																		+ "left join labeledextracthybridization leh2 on h2.id = leh2.hybridization_id left join extractlabeledextract "
+																		+ "ele2 on leh2.labeledextract_id = ele2.labeledextract_id left join sampleextract se2 on ele2.extract_id = "
+																		+ "se2.extract_id left join biomaterial s2 on se2.sample_id = s2.id where s.id is not null and s.id in "
+																		+ READABLE_SAMPLE_CLAUSE
+																		+ " or s2.id is not null and s2.id in "
+																		+ READABLE_SAMPLE_CLAUSE
+																		+ " or (f.status = "
+																		+ "'SUPPLEMENTAL' or f.status = 'IMPORTED') and s.id is null and s2.id is null and p.id in "
+																		+ READABLE_PROJECT_CLAUSE
+																		+ " or p.id in "
+																		+ PROJECT_OWNER_CLAUSE
+																		+ ")";
+	private static final long		serialVersionUID				= 1234567890L;
+	private static final int		PAYMENT_NUMBER_FIELD_LENGTH		= 100;
 
-	private String												title;
-	private String												description;
-	private Date												dateOfExperiment;
-	private Date												publicReleaseDate;
-	private PaymentMechanism									paymentMechanism;
-	private String												paymentNumber;
-	private ServiceType											serviceType						= ServiceType.FULL;
-	private String												assayType;
-	private Organization										manufacturer;
-	private Organism											organism;
-	private Set<Factor>											factors							= new HashSet<Factor>();
-	private List<ExperimentContact>								experimentContacts				= new ArrayList<ExperimentContact>();
-	private Set<Term>											experimentDesignTypes			= new HashSet<Term>();
-	private String												experimentDesignDescription;
-	private String												qualityControlDescription;
-	private Set<Term>											qualityControlTypes				= new HashSet<Term>();
-	private String												replicateDescription;
-	private Set<Term>											replicateTypes					= new HashSet<Term>();
-	private Set<Term>											normalizationTypes				= new HashSet<Term>();
-	private Set<Publication>									publications					= new HashSet<Publication>();
-	private Set<Array>											arrays							= new HashSet<Array>();
-	private Set<ArrayDesign>									arrayDesigns					= new HashSet<ArrayDesign>();
-	private Set<Source>											sources							= new HashSet<Source>();
-	private Set<Sample>											samples							= new HashSet<Sample>();
-	private Set<Extract>										extracts						= new HashSet<Extract>();
-	private Set<LabeledExtract>									labeledExtracts					= new HashSet<LabeledExtract>();
-	private Set<Hybridization>									hybridizations					= new HashSet<Hybridization>();
-	private String												publicIdentifier;
-	private Project												project;
+	private String					title;
+	private String					description;
+	private Date					dateOfExperiment;
+	private Date					publicReleaseDate;
+	private PaymentMechanism		paymentMechanism;
+	private String					paymentNumber;
+	private ServiceType				serviceType						= ServiceType.FULL;
+	private String					assayType;
+	private Organization			manufacturer;
+	private Organism				organism;
+	private Set<Factor>				factors							= new HashSet<Factor>();
+	private List<ExperimentContact>	experimentContacts				= new ArrayList<ExperimentContact>();
+	private Set<Term>				experimentDesignTypes			= new HashSet<Term>();
+	private String					experimentDesignDescription;
+	private String					qualityControlDescription;
+	private Set<Term>				qualityControlTypes				= new HashSet<Term>();
+	private String					replicateDescription;
+	private Set<Term>				replicateTypes					= new HashSet<Term>();
+	private Set<Term>				normalizationTypes				= new HashSet<Term>();
+	private Set<Publication>		publications					= new HashSet<Publication>();
+	private Set<Array>				arrays							= new HashSet<Array>();
+	private Set<ArrayDesign>		arrayDesigns					= new HashSet<ArrayDesign>();
+	private Set<Source>				sources							= new HashSet<Source>();
+	private Set<Sample>				samples							= new HashSet<Sample>();
+	private Set<Extract>			extracts						= new HashSet<Extract>();
+	private Set<LabeledExtract>		labeledExtracts					= new HashSet<LabeledExtract>();
+	private Set<Hybridization>		hybridizations					= new HashSet<Hybridization>();
+	private String					publicIdentifier;
+	private Project					project;
 
 	// --carpla
-	private Set<gov.nih.nci.carpla.domain.rplarray.RplArray>	_rplArrays						= new HashSet<gov.nih.nci.carpla.domain.rplarray.RplArray>();
-	private Set<Antibody>										_antibodies						= new HashSet<Antibody>();
-	private Set<RplaHybridization>								_rplaHybridizations				= new HashSet<RplaHybridization>();
+	// private Set<gov.nih.nci.carpla.domain.rplarray.RplArray> rplArrays = new
+	// HashSet<gov.nih.nci.carpla.domain.rplarray.RplArray>();
+	private RplArray				rpl;
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = EXPERIMENT_REF)
-	@ForeignKey(name = "rplarray_expr_fk")
-	@Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-			org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-	public Set<RplArray> getRplArrays () {
-		return _rplArrays;
+	// private Set<Antibody> _antibodies = new HashSet<Antibody>();
+	// private Set<RplaHybridization> _rplaHybridizations = new
+	// HashSet<RplaHybridization>();
 
+	@OneToOne
+	@ForeignKey(name = "experiment_rplarray_fk")
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@NotNull
+	@AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
+	public RplArray getRplArray () {
+		return rpl;
 	}
+//
+//	public void setRplArrays ( Set<RplArray> rplArrays) {
+//		rplArrays = rplArrays;
+//	}
 
-	public void setRplArrays ( Set<RplArray> rplArrays) {
-		_rplArrays = rplArrays;
-	}
-
-	public Set<Antibody> getAntibodies () {
-		return _antibodies;
-
-	}
-
-	public void setAntibodies ( Set<Antibody> antibodies) {
-		_antibodies = antibodies;
-	}
-
-	public Set<RplaHybridization> getRplaHybridizations () {
-		return _rplaHybridizations;
-	}
-
-	public void setRplaHybridizations ( Set<RplaHybridization> rplaHybridizations)
-	{
-		_rplaHybridizations = rplaHybridizations;
-	}
+	// public Set<Antibody> getAntibodies () {
+	// return _antibodies;
+	//
+	// }
+	//
+	// public void setAntibodies ( Set<Antibody> antibodies) {
+	// _antibodies = antibodies;
+	// }
+	//
+	// public Set<RplaHybridization> getRplaHybridizations () {
+	// return _rplaHybridizations;
+	// }
+	//
+	// public void setRplaHybridizations ( Set<RplaHybridization>
+	// rplaHybridizations)
+	// {
+	// _rplaHybridizations = rplaHybridizations;
+	// }
 
 	// change nothing below here
 	// change nothing below here

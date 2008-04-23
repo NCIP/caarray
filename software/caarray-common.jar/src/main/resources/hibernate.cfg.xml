@@ -22,8 +22,13 @@
         @HIBERNATE_CONFIG_END@ -->
 
         <!-- mapping files -->
+        
+        
+        <mapping class="gov.nih.nci.carpla.domain.rplarray.RplArray"/>
+        
+        <mapping class="gov.nih.nci.caarray.domain.project.TestGvf"/>
         <mapping class="edu.georgetown.pir.AdditionalOrganismName" />
-        <mapping class="edu.georgetown.pir.Organism" />
+       <mapping class="edu.georgetown.pir.Organism" /> 
         <mapping class="edu.wustl.catissuecore.domain.MolecularSpecimen" />
         <mapping class="edu.wustl.catissuecore.domain.Specimen" />
         <mapping class="gov.nih.nci.caarray.domain.BlobHolder" />
@@ -66,15 +71,8 @@
         <mapping class="gov.nih.nci.caarray.domain.project.Factor"/>
         <mapping class="gov.nih.nci.caarray.domain.project.FactorValue"/>
         
-        <mapping class="gov.nih.nci.carpla.domain.rplarray.RplArray"/>
-        
-        
-        
-        
-        
-        
-        
-        <mapping class="gov.nih.nci.caarray.domain.project.Experiment"/>
+                  
+     	<mapping class="gov.nih.nci.caarray.domain.project.Experiment"/>
         <mapping class="gov.nih.nci.caarray.domain.project.ExperimentContact"/>
         <mapping class="gov.nih.nci.caarray.domain.project.Project"/>
         <mapping class="gov.nih.nci.caarray.domain.project.PaymentMechanism"/>

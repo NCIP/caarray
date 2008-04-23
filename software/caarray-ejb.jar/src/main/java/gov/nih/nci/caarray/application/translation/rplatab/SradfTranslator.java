@@ -227,7 +227,7 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 			investigation.getSamples().addAll(this.allSamples);
 			
 			
-			investigation.getRplaHybridizations().addAll( this._rplaHybridizations) ;
+		//	investigation.getRplaHybridizations().addAll( this._rplaHybridizations) ;
 		
 			// investigation .getHybridizations()
 			// .addAll(this.allHybridizations);
@@ -259,12 +259,12 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 
 		for (gov.nih.nci.carpla.rplatab.model.RplArray rplArray : rset.getRplArrays()) {
 			RplArray domain_rplArray = new RplArray();
-			domain_rplArray.setName(rplArray.getName());
-			getTranslationResult()	.getInvestigations()
-									.iterator()
-									.next()
-									.getRplArrays()
-									.add(domain_rplArray);
+			//domain_rplArray.setName(rplArray.getName());
+			//getTranslationResult()	.getInvestigations()
+				//					.iterator()
+					//				.next()
+						//			.getRplArrays()
+							//		.add(domain_rplArray);
 		}
 	}
 
@@ -273,11 +273,11 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 		for (gov.nih.nci.carpla.rplatab.model.Antibody antibody : rset.getAntibodies()) {
 			Antibody domain_antibody = new Antibody();
 			domain_antibody.setName(antibody.getName());
-			getTranslationResult()	.getInvestigations()
-									.iterator()
-									.next()
-									.getAntibodies()
-									.add(domain_antibody);
+		//	getTranslationResult()	.getInvestigations()
+			//						.iterator()
+				//					.next()
+					//				.getAntibodies()
+						//			.add(domain_antibody);
 		}
 	}
 
