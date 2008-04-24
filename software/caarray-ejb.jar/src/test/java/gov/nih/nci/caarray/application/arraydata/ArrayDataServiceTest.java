@@ -257,11 +257,11 @@ public class ArrayDataServiceTest {
         Experiment exp = focusCel.getProject().getExperiment();
         assertEquals(2, exp.getHybridizations().size());
         for (Hybridization h : exp.getHybridizations()) {
-            assertNotNull(h.getArrayData());
+            assertEquals(1, h.getRawDataCollection().size());
             assertEquals(1, h.getDerivedDataCollection().size());
-            if (h.getArrayData().getDataFile().equals(focusCel)) {
+            if (h.getRawDataCollection().iterator().next().getDataFile().equals(focusCel)) {
                 assertEquals(focusChp, h.getDerivedDataCollection().iterator().next().getDataFile());
-            } else if (h.getArrayData().getDataFile().equals(focusCalvinCel)) {
+            } else if (h.getRawDataCollection().iterator().next().getDataFile().equals(focusCalvinCel)) {
                 assertEquals(focusCalvinChp, h.getDerivedDataCollection().iterator().next().getDataFile());
             } else {
                 fail("Expected hybridization to be linked to either focus or calvin focus CEL");
@@ -281,15 +281,15 @@ public class ArrayDataServiceTest {
         CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, AFFY_TEST3_LSID_OBJECT_ID);
         RawArrayData celData = new RawArrayData();
         Hybridization hybridization = new Hybridization();
-        celData.setHybridization(hybridization);
-        hybridization.setArrayData(celData);
+        celData.addHybridization(hybridization);
+        hybridization.addRawArrayData(celData);
         celData.setDataFile(celFile);
         assertNull(celData.getType());
         this.daoFactoryStub.getArrayDao().save(celData);
         this.arrayDataService.importData(celFile, true);
         assertNotNull(celData.getType());
         assertEquals(celData, this.daoFactoryStub.getArrayDao().getRawArrayData(celFile));
-        assertEquals(hybridization, celData.getHybridization());
+        assertEquals(hybridization, celData.getHybridizations().iterator().next());
     }
 
     private void testCreateAnnotationIllumina() throws InvalidDataFileException {
@@ -432,11 +432,9 @@ public class ArrayDataServiceTest {
         assertNotNull(dataSet.getHybridizationDataList());
         assertEquals(1, dataSet.getHybridizationDataList().size());
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
-        assertEquals(celData.getHybridization(), hybridizationData.getHybridization());
-        assertEquals(AffymetrixCelQuantitationType.values().length,
-                hybridizationData.getColumns().size());
-        assertEquals(AffymetrixCelQuantitationType.values().length,
-                dataSet.getQuantitationTypes().size());
+        assertEquals(celData.getHybridizations().iterator().next(), hybridizationData.getHybridization());
+        assertEquals(AffymetrixCelQuantitationType.values().length, hybridizationData.getColumns().size());
+        assertEquals(AffymetrixCelQuantitationType.values().length, dataSet.getQuantitationTypes().size());
         checkCelColumnTypes(dataSet);
     }
 
@@ -655,9 +653,9 @@ public class ArrayDataServiceTest {
         RawArrayData celData = new RawArrayData();
         celData.setType(this.daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_CEL));
         celData.setDataFile(getCelCaArrayFile(cel, getCdfObjectId(cdf)));
-        celData.setHybridization(hybridization);
+        celData.addHybridization(hybridization);
         this.daoFactoryStub.addData(celData);
-        hybridization.setArrayData(celData);
+        hybridization.addRawArrayData(celData);
         return celData;
     }
 

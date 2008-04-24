@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -97,6 +98,8 @@ import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -113,6 +116,7 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -155,6 +159,7 @@ public class MageTabTranslatorTest {
         testSpecificationDocumentsNoExpDesc();
         testTcgaBroadDocuments();
         testGskTestDocuments();
+        testSpecificationDocumentsWithDerivedData();
     }
 
     private void testSpecificationDocuments() {
@@ -173,6 +178,7 @@ public class MageTabTranslatorTest {
         assertEquals(6, experiment.getHybridizations().size());
         for (Hybridization hyb : experiment.getHybridizations()) {
             assertNotNull(hyb.getArray().getDesign());
+            assertEquals(6, hyb.getDerivedDataCollection().iterator().next().getDerivedFromArrayDataCollection().size());
         }
     }
 
@@ -214,6 +220,44 @@ public class MageTabTranslatorTest {
         }
     }
 
+    private void testSpecificationDocumentsWithDerivedData() {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.DERIVED_DATA_SET);
+        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.DERIVED_DATA_SET, fileSet);
+        Experiment experiment = result.getInvestigations().iterator().next();
+        assertNotNull(experiment.getDescription());
+        assertTrue(experiment.getDescription().startsWith("Gene expression of TK6"));
+        assertEquals(8, experiment.getExperimentContacts().size());
+        assertEquals(1, experiment.getExperimentDesignTypes().size());
+        assertEquals("genetic_modification_design", experiment.getExperimentDesignTypes().iterator().next().getValue());
+        assertEquals(1, experiment.getSources().size());
+        assertEquals(1, experiment.getSamples().size());
+        assertEquals(1, experiment.getExtracts().size());
+        assertEquals(1, experiment.getLabeledExtracts().size());
+        assertEquals(1, experiment.getHybridizations().size());
+        Hybridization hyb = experiment.getHybridizations().iterator().next();
+        assertNotNull(hyb.getArray().getDesign());
+        assertEquals(2, hyb.getDerivedDataCollection().size());
+        Iterator<DerivedArrayData> derivedArrayDataIterator = hyb.getDerivedDataCollection().iterator();
+        DerivedArrayData derivedData = derivedArrayDataIterator.next();
+        DerivedArrayData derivedData2 = derivedArrayDataIterator.next();
+        assertEquals(1, derivedData.getDerivedFromArrayDataCollection().size());
+        assertEquals(1, derivedData2.getDerivedFromArrayDataCollection().size());
+        AbstractArrayData derivedFrom = derivedData.getDerivedFromArrayDataCollection().iterator().next();
+        AbstractArrayData derivedFrom2 = derivedData2.getDerivedFromArrayDataCollection().iterator().next();
+
+        // not sure which order the derived from objects are returned - one derived data is derived from
+        // raw data and the other is derived from the other derived data, but we don't know which derived data
+        // is first
+        if (derivedFrom instanceof RawArrayData) {
+            assertEquals(hyb.getRawDataCollection().iterator().next(), derivedFrom);
+            assertEquals(derivedData, derivedFrom2);
+        } else {
+            assertEquals(hyb.getRawDataCollection().iterator().next(), derivedFrom2);
+            assertEquals(derivedData2, derivedFrom);
+        }
+
+    }
+
     private void testTcgaBroadDocuments() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET);
         CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.TCGA_BROAD_SET, fileSet);
@@ -238,7 +282,7 @@ public class MageTabTranslatorTest {
         for (LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
             Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
             assertEquals(arrayDesign, hybridization.getArray().getDesign());
-            RawArrayData celData = hybridization.getArrayData();
+            RawArrayData celData = hybridization.getRawDataCollection().iterator().next();
             assertEquals(celData.getDataFile().getName(), celData.getName());
         }
         Set<Hybridization> hybridizations = investigation.getHybridizations();
@@ -324,8 +368,8 @@ public class MageTabTranslatorTest {
 
     private void checkHybridizationsHaveRawDataAndFiles(Set<Hybridization> hybridizations) {
         for (Hybridization hybridization : hybridizations) {
-            assertNotNull(hybridization.getArrayData());
-            assertNotNull(hybridization.getArrayData().getDataFile());
+            assertFalse(hybridization.getRawDataCollection().isEmpty());
+            assertNotNull(hybridization.getRawDataCollection().iterator().next().getDataFile());
         }
     }
 

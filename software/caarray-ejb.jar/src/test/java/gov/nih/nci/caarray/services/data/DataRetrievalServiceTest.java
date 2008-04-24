@@ -153,7 +153,7 @@ public class DataRetrievalServiceTest {
         dataSet.getDesignElementList().getDesignElements().add(probe1);
         dataSet.getDesignElementList().getDesignElements().add(probe2);
         arrayData.setDataSet(dataSet);
-        hybridization.setArrayData(arrayData);
+        hybridization.addRawArrayData(arrayData);
     }
 
     private void setUpService() {

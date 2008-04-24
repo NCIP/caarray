@@ -247,15 +247,17 @@ public class ApiOneFileDataSetDownload extends AbstractApiTest {
     private DataSet getDataSet(CaArraySearchService service, Hybridization hybridization) {
         DataSet dataSet = null;
         // Try to find raw data
-        RawArrayData rawArrayData = hybridization.getArrayData();
+        Set<RawArrayData> rawArrayDataSet = hybridization.getRawDataCollection();
         logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Hybridization.getArrayData().");
-        if (rawArrayData != null) {
-            // Return the data set associated with the first raw data.
-            RawArrayData populatedArrayData = service.search(rawArrayData).get(0);
-            logForSilverCompatibility(API_CALL, "CaArraySearchService.search(RawArrayData)");
-            dataSet = populatedArrayData.getDataSet();
-            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "RawArrayData.getDataSet().");
-        } else {
+            for (RawArrayData rawArrayData : rawArrayDataSet) {
+                // Return the data set associated with the first raw data.
+                RawArrayData populatedArrayData = service.search(rawArrayData).get(0);
+                logForSilverCompatibility(API_CALL, "CaArraySearchService.search(RawArrayData)");
+                dataSet = populatedArrayData.getDataSet();
+                logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "RawArrayData.getDataSet().");
+                break;
+            }
+        if (dataSet == null) {
             // If raw data doesn't exist, try to find derived data
             Set<DerivedArrayData> derivedArrayDataSet = hybridization.getDerivedDataCollection();
             for (DerivedArrayData derivedArrayData : derivedArrayDataSet) {

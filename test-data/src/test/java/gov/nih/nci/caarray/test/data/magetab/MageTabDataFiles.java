@@ -250,4 +250,29 @@ public class MageTabDataFiles {
 
     public static final File DEFECT_12537_ABSOLUTE_DATA_MATRIX =
         new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537/broad.mit.edu_GBM.HT_HG-U133A.1.absolute.data.txt").getFile());
+
+    public static final File SPECIFICATION_DERIVED_DATA_EXAMPLE_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/specification_derived_data/part1_e-mexp-428_v1.0.idf").getFile());
+
+    public static final File SPECIFICATION_DERIVED_DATA_EXAMPLE_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/specification_derived_data/part1_e-mexp-428_v1.0.sdrf").getFile());
+
+    public static final File SPECIFICATION_DERIVED_DATA_EXAMPLE_ADF =
+        new File(MageTabDataFiles.class.getResource("/magetab/specification_derived_data/a-mexp-58f_excerpt_v1.0.adf").getFile());
+
+    public static final File SPECIFICATION_DERIVED_DATA_EXAMPLE_DATA_FILE =
+        new File(MageTabDataFiles.class.getResource("/magetab/specification_derived_data/Test3.CEL").getFile());
+
+    public static final File SPECIFICATION_DERIVED_DATA_EXAMPLE_DERIVED_DATA_FILE =
+        new File(MageTabDataFiles.class.getResource("/magetab/specification_derived_data/Test3.CHP").getFile());
+
+    public static final File SPECIFICATION_DERIVED_DATA_EXAMPLE_DERIVED_DATA_2_FILE =
+        new File(MageTabDataFiles.class.getResource("/magetab/specification_derived_data/Test3-2.CHP").getFile());
+
+    public static final File SPECIFICATION_DERIVED_DATA_EXAMPLE_ZIP =
+        new File(MageTabDataFiles.class.getResource("/magetab/specification_derived_data/specifications_derived_data.zip").getFile());
+
+    public static final File SPECIFICATION_DERIVED_DATA_EXAMPLE_DIRECTORY =
+        new File(MageTabDataFiles.class.getResource("/magetab/specification_derived_data").getFile());
+
 }

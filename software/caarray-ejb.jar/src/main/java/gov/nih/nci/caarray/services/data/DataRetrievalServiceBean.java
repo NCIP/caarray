@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
@@ -230,10 +231,10 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
 
     private void addArrayDatas(List<AbstractArrayData> arrayDatas, Hybridization hybridization,
             List<QuantitationType> quantitationTypes) {
-        // hyb.getArrayData is allowed to be null.  For instance, Illuminia only has derived,
-        // not raw, array data.
-        if (shouldAddData(arrayDatas, hybridization.getArrayData(), quantitationTypes)) {
-            arrayDatas.add(hybridization.getArrayData());
+        for (RawArrayData rawArrayData : hybridization.getRawDataCollection()) {
+            if (shouldAddData(arrayDatas, rawArrayData, quantitationTypes)) {
+                arrayDatas.add(rawArrayData);
+            }
         }
         for (DerivedArrayData derivedArrayData : hybridization.getDerivedDataCollection()) {
             if (shouldAddData(arrayDatas, derivedArrayData, quantitationTypes)) {

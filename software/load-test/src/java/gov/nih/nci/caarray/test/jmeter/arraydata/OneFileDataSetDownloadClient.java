@@ -262,12 +262,14 @@ public class OneFileDataSetDownloadClient extends CaArrayJmeterSampler implement
     private DataSet getDataSet(CaArraySearchService service, Hybridization hybridization) {
         DataSet dataSet = null;
         // Try to find raw data
-        RawArrayData rawArrayData = hybridization.getArrayData();
-        if (rawArrayData != null) {
+        Set<RawArrayData> rawArrayDataSet = hybridization.getRawDataCollection();
+        for (RawArrayData rawArrayData : rawArrayDataSet) {
             // Return the data set associated with the first raw data.
             RawArrayData populatedArrayData = service.search(rawArrayData).get(0);
             dataSet = populatedArrayData.getDataSet();
-        } else {
+            break;
+        }
+        if (dataSet == null) {
             // If raw data doesn't exist, try to find derived data
             Set<DerivedArrayData> derivedArrayDataSet = hybridization.getDerivedDataCollection();
             for (DerivedArrayData derivedArrayData : derivedArrayDataSet) {

@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
@@ -210,7 +211,7 @@ final class SdrfTranslator extends AbstractTranslator {
         translateNodesToEntities(document);
         linkNodes(document);
         /**
-         * added following if statement b/c sdrf doesnt have idf document.  i could be wrong.
+         * added following if statement b/c sdrf doesn't have idf document.  i could be wrong.
          * this was causing error on imports of sdrf.  JH 10/4/07
          *
          */
@@ -488,7 +489,7 @@ final class SdrfTranslator extends AbstractTranslator {
         }
     }
 
-    // Translates arraydesigns to a linked array-arraydesign pair in the caArray domain.
+    // Translates array designs to a linked array-array design pair in the caArray domain.
     private void translateArrayDesigns(SdrfDocument document) {
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign : document.getAllArrayDesigns()) {
             ArrayDesign arrayDesign = getArrayDesign(sdrfArrayDesign);
@@ -596,6 +597,10 @@ final class SdrfTranslator extends AbstractTranslator {
             for (Normalization normalization : sdrfData.getPredecessorNormalizations()) {
                 associateNormalizationWithData(caArrayData, normalization);
             }
+
+            // Associate array data from which this data was derived
+            setDerivedFromData(sdrfData, caArrayData);
+
             this.nodeTranslations.put(sdrfData, caArrayData);
         }
         // Translate MAGE-TAB derived data matrix files.
@@ -610,7 +615,21 @@ final class SdrfTranslator extends AbstractTranslator {
             for (Normalization normalization : sdrfData.getPredecessorNormalizations()) {
                 associateNormalizationWithData(caArrayData, normalization);
             }
+
+            // Associate array data from which this data was derived
+            setDerivedFromData(sdrfData, caArrayData);
             this.nodeTranslations.put(sdrfData, caArrayData);
+        }
+    }
+
+    private void setDerivedFromData(gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode sdrfData,
+            DerivedArrayData caArrayData) {
+        List<AbstractSampleDataRelationshipNode> allArrayData =
+            new ArrayList<AbstractSampleDataRelationshipNode>(sdrfData.getPredecessorArrayDataFiles());
+        allArrayData.addAll(sdrfData.getPredecessorDerivedArrayDataFiles());
+        for (AbstractSampleDataRelationshipNode sdrfArrayData : allArrayData) {
+            AbstractArrayData arrayData = (AbstractArrayData) this.nodeTranslations.get(sdrfArrayData);
+            caArrayData.getDerivedFromArrayDataCollection().add(arrayData);
         }
     }
 
@@ -627,7 +646,6 @@ final class SdrfTranslator extends AbstractTranslator {
         for (AbstractSampleDataRelationshipNode currNode : document.getLeftmostNodes()) {
             linkNode(currNode);
         }
-
     }
 
     // Recursively link this node to its successors.
@@ -699,14 +717,14 @@ final class SdrfTranslator extends AbstractTranslator {
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile sdrfArrayData
                 : sdrfHybridization.getSuccessorArrayDataFiles()) {
             RawArrayData arrayData = (RawArrayData) this.nodeTranslations.get(sdrfArrayData);
-            arrayData.setHybridization(hybridization);
-            hybridization.setArrayData(arrayData);
+            arrayData.addHybridization(hybridization);
+            hybridization.addRawArrayData(arrayData);
         }
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile sdrfArrayData
                 : sdrfHybridization.getSuccessorArrayDataMatrixFiles()) {
             RawArrayData arrayData = (RawArrayData) this.nodeTranslations.get(sdrfArrayData);
-            arrayData.setHybridization(hybridization);
-            hybridization.setArrayData(arrayData);
+            arrayData.addHybridization(hybridization);
+            hybridization.addRawArrayData(arrayData);
         }
         // Link derived array data
         for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile sdrfArrayData

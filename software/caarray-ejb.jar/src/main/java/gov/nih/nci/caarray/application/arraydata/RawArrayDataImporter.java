@@ -109,7 +109,9 @@ class RawArrayDataImporter extends AbstractDataSetImporter {
 
     @Override
     void addHybridizationDatas() {
-        getDataSet().addHybridizationData(getRawArrayData().getHybridization());
+        for (Hybridization hybridization : getRawArrayData().getHybridizations()) {
+            getDataSet().addHybridizationData(hybridization);
+        }
     }
 
     private RawArrayData getRawArrayData() {
@@ -124,12 +126,11 @@ class RawArrayDataImporter extends AbstractDataSetImporter {
         File dataFile = getFile();
         rawArrayData.setType(getArrayDataType(fileHandler.getArrayDataTypeDescriptor(dataFile)));
         List<String> hybridizationNames = fileHandler.getHybridizationNames(dataFile);
-        if (hybridizationNames.size() != 1) {
-            throw new IllegalStateException("RawArrayData files must specify data for exactly one hybridization");
+        for (String hybridizationName : hybridizationNames) {
+            Hybridization hybridization = lookupOrCreateHybridization(hybridizationName, createAnnnotation);
+            hybridization.addRawArrayData(rawArrayData);
+            rawArrayData.addHybridization(hybridization);
         }
-        Hybridization hybridization = lookupOrCreateHybridization(hybridizationNames.get(0), createAnnnotation);
-        hybridization.setArrayData(rawArrayData);
-        rawArrayData.setHybridization(hybridization);
         getArrayDao().save(rawArrayData);
     }
 
@@ -137,6 +138,5 @@ class RawArrayDataImporter extends AbstractDataSetImporter {
     void lookupArrayData() {
         rawArrayData = getArrayDao().getRawArrayData(getCaArrayFile());
     }
-
 
 }

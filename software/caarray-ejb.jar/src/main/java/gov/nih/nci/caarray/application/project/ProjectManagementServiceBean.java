@@ -246,7 +246,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return count;
     }
 
-
     /**
      * {@inheritDoc}
      */

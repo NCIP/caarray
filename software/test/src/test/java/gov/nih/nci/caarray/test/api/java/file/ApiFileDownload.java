@@ -201,9 +201,9 @@ public class ApiFileDownload extends AbstractApiTest {
 
     private CaArrayFile getDataFile(CaArraySearchService service, Hybridization hybridization) {
         // Try to find raw data
-        RawArrayData rawArrayData = hybridization.getArrayData();
-        logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Hybridization.getArrayData().");
-        if (rawArrayData != null) {
+        Set<RawArrayData> rawArrayDataSet = hybridization.getRawDataCollection();
+        logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Hybridization.getRawDataCollection().");
+        for (RawArrayData rawArrayData : rawArrayDataSet) {
             // Return the file associated with the first raw data.
             RawArrayData populatedArrayData = service.search(rawArrayData).get(0);
             logForSilverCompatibility(API_CALL, "CaArraySearchService.search(RawArrayData)");

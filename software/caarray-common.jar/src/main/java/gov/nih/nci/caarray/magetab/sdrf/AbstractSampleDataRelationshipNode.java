@@ -142,6 +142,10 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
         return predecessors;
     }
 
+    /**
+     * Link the given node as a predecessor of <code>this</code>.
+     * @param predecessorNode node preceding <code>this</code>
+     */
     void link(AbstractSampleDataRelationshipNode predecessorNode) {
         predecessors.add(predecessorNode);
         predecessorNode.getSuccessors().add(this);
@@ -154,24 +158,28 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      */
     public abstract SdrfNodeType getNodeType();
 
-    private Set<AbstractSampleDataRelationshipNode> getSuccessorsOfType(SdrfNodeType type) {
+    private Set<AbstractSampleDataRelationshipNode> getSuccessorsOfType(SdrfNodeType type, boolean recursive) {
         HashSet<AbstractSampleDataRelationshipNode> result = new HashSet<AbstractSampleDataRelationshipNode>();
         for (AbstractSampleDataRelationshipNode node : getSuccessors()) {
             if (node.getNodeType().equals(type)) {
                 result.add(node);
             }
-            result.addAll(node.getSuccessorsOfType(type));
+            if (recursive) {
+                result.addAll(node.getSuccessorsOfType(type, recursive));
+            }
         }
         return result;
     }
 
-    private Set<AbstractSampleDataRelationshipNode> getPredecessorsOfType(SdrfNodeType type) {
+    private Set<AbstractSampleDataRelationshipNode> getPredecessorsOfType(SdrfNodeType type, boolean recursive) {
         HashSet<AbstractSampleDataRelationshipNode> result = new HashSet<AbstractSampleDataRelationshipNode>();
         for (AbstractSampleDataRelationshipNode node : getPredecessors()) {
             if (node.getNodeType().equals(type)) {
                 result.add(node);
             }
-            result.addAll(node.getPredecessorsOfType(type));
+            if (recursive) {
+                result.addAll(node.getPredecessorsOfType(type, recursive));
+            }
         }
         return result;
     }
@@ -182,7 +190,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>Sources</code>.
      */
     public Set<Source> getSuccessorSources() {
-        Set<AbstractSampleDataRelationshipNode> sourceNodes = getSuccessorsOfType(SdrfNodeType.SOURCE);
+        Set<AbstractSampleDataRelationshipNode> sourceNodes = getSuccessorsOfType(SdrfNodeType.SOURCE, true);
         HashSet<Source> sources = new HashSet<Source>(sourceNodes.size());
         for (AbstractSampleDataRelationshipNode sourceNode : sourceNodes) {
             sources.add((Source) sourceNode);
@@ -196,7 +204,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>Samples</code>.
      */
     public Set<Sample> getSuccessorSamples() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.SAMPLE);
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.SAMPLE, true);
         HashSet<Sample> result = new HashSet<Sample>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((Sample) node);
@@ -210,7 +218,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>Extracts</code>.
      */
     public Set<Extract> getSuccessorExtracts() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.EXTRACT);
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.EXTRACT, true);
         HashSet<Extract> result = new HashSet<Extract>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((Extract) node);
@@ -224,7 +232,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>LabeledExtracts</code>.
      */
     public Set<LabeledExtract> getSuccessorLabeledExtracts() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.LABELED_EXTRACT);
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.LABELED_EXTRACT, true);
         HashSet<LabeledExtract> result = new HashSet<LabeledExtract>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((LabeledExtract) node);
@@ -238,7 +246,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>Hybridizations</code>.
      */
     public Set<Hybridization> getSuccessorHybridizations() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.HYBRIDIZATION);
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.HYBRIDIZATION, true);
         HashSet<Hybridization> result = new HashSet<Hybridization>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((Hybridization) node);
@@ -252,7 +260,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>Scans</code>.
      */
     public Set<ArrayDesign> getSuccessorArrayDesigns() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.ARRAY_DESIGN);
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.ARRAY_DESIGN, true);
         HashSet<ArrayDesign> result = new HashSet<ArrayDesign>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((ArrayDesign) node);
@@ -266,7 +274,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>Scans</code>.
      */
     public Set<Scan> getSuccessorScans() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.SCAN);
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.SCAN, true);
         HashSet<Scan> result = new HashSet<Scan>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((Scan) node);
@@ -280,7 +288,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>Scans</code>.
      */
     public Set<Scan> getPredecessorScans() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getPredecessorsOfType(SdrfNodeType.SCAN);
+        Set<AbstractSampleDataRelationshipNode> nodes = getPredecessorsOfType(SdrfNodeType.SCAN, true);
         HashSet<Scan> result = new HashSet<Scan>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((Scan) node);
@@ -294,7 +302,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>Normalizations</code>.
      */
     public Set<Normalization> getSuccessorNormalizations() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.NORMALIZATION);
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.NORMALIZATION, true);
         HashSet<Normalization> result = new HashSet<Normalization>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((Normalization) node);
@@ -308,7 +316,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>Normalizations</code>.
      */
     public Set<Normalization> getPredecessorNormalizations() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getPredecessorsOfType(SdrfNodeType.NORMALIZATION);
+        Set<AbstractSampleDataRelationshipNode> nodes = getPredecessorsOfType(SdrfNodeType.NORMALIZATION, true);
         HashSet<Normalization> result = new HashSet<Normalization>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((Normalization) node);
@@ -322,7 +330,22 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>ArrayDataFiles</code>.
      */
     public Set<ArrayDataFile> getSuccessorArrayDataFiles() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.ARRAY_DATA_FILE);
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.ARRAY_DATA_FILE, true);
+        HashSet<ArrayDataFile> result = new HashSet<ArrayDataFile>(nodes.size());
+        for (AbstractSampleDataRelationshipNode node : nodes) {
+            result.add((ArrayDataFile) node);
+        }
+        return result;
+    }
+
+    /**
+     * Returns all <code>ArrayDataFiles</code> that this node originated from (only immediate predecessors,
+     * not searched recursively).
+     *
+     * @return the originating <code>ArrayDataFiles</code>.
+     */
+    public Set<ArrayDataFile> getPredecessorArrayDataFiles() {
+        Set<AbstractSampleDataRelationshipNode> nodes = getPredecessorsOfType(SdrfNodeType.ARRAY_DATA_FILE, false);
         HashSet<ArrayDataFile> result = new HashSet<ArrayDataFile>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((ArrayDataFile) node);
@@ -336,7 +359,23 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>DerivedArrayDataFiles</code>.
      */
     public Set<DerivedArrayDataFile> getSuccessorDerivedArrayDataFiles() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.DERIVED_ARRAY_DATA_FILE);
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.DERIVED_ARRAY_DATA_FILE, true);
+        HashSet<DerivedArrayDataFile> result = new HashSet<DerivedArrayDataFile>(nodes.size());
+        for (AbstractSampleDataRelationshipNode node : nodes) {
+            result.add((DerivedArrayDataFile) node);
+        }
+        return result;
+    }
+
+    /**
+     * Returns all <code>DerivedArrayDataFiles</code> that this node originated from (only immediate predecessors,
+     * not searched recursively).
+     *
+     * @return the originating <code>DerivedArrayDataFiles</code>.
+     */
+    public Set<DerivedArrayDataFile> getPredecessorDerivedArrayDataFiles() {
+        Set<AbstractSampleDataRelationshipNode> nodes = getPredecessorsOfType(SdrfNodeType.DERIVED_ARRAY_DATA_FILE,
+                false);
         HashSet<DerivedArrayDataFile> result = new HashSet<DerivedArrayDataFile>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((DerivedArrayDataFile) node);
@@ -350,7 +389,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>ArrayDataMatrixFiles</code>.
      */
     public Set<ArrayDataMatrixFile> getSuccessorArrayDataMatrixFiles() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.ARRAY_DATA_MATRIX);
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.ARRAY_DATA_MATRIX, true);
         HashSet<ArrayDataMatrixFile> result = new HashSet<ArrayDataMatrixFile>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((ArrayDataMatrixFile) node);
@@ -364,7 +403,8 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>DerivedArrayDataMatrixFiles</code>.
      */
     public Set<DerivedArrayDataMatrixFile> getSuccessorDerivedArrayDataMatrixFiles() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.DERIVED_ARRAY_DATA_MATRIX);
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.DERIVED_ARRAY_DATA_MATRIX,
+                true);
         HashSet<DerivedArrayDataMatrixFile> result = new HashSet<DerivedArrayDataMatrixFile>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((DerivedArrayDataMatrixFile) node);
@@ -378,7 +418,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
      * @return the originating <code>Images</code>.
      */
     public Set<Image> getSuccessorImages() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.IMAGE);
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.IMAGE, true);
         HashSet<Image> result = new HashSet<Image>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((Image) node);

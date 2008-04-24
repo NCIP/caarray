@@ -18,3 +18,17 @@ insert into term_categories (term_id, category_id) select term.id, category.id f
 
 -- defect 13332
 update access_profile set security_level = 'NO_VISIBLE' where id in (select public_profile from project where status = 'DRAFT');
+
+-- defect 13010
+create table rawarraydata_hybridizations (rawarraydata_id bigint not null, hybridization_id bigint not null, primary key (rawarraydata_id, hybridization_id)) type=InnoDB;
+alter table derivedarraydata_derivedfrom drop foreign key derivedfrom_arraydata_fk;
+alter table derivedarraydata_derivedfrom drop index derivedfrom_arraydata_fk;
+alter table derivedarraydata_derivedfrom drop foreign key derivedfrom_derivedarraydata_fk;
+alter table derivedarraydata_derivedfrom drop index derivedfrom_derivedarraydata_fk;
+alter table derivedarraydata_derivedfrom add index derivedfrom_arraydata_fk (derivedarraydata_id), add constraint derivedfrom_arraydata_fk foreign key (derivedarraydata_id) references arraydata (id);
+alter table derivedarraydata_derivedfrom add index derivedfrom_derivedarraydata_fk (derivedfrom_arraydata_id), add constraint derivedfrom_derivedarraydata_fk foreign key (derivedfrom_arraydata_id) references arraydata (id);
+alter table rawarraydata_hybridizations add index rawarraydata_hybridizations_rawarraydata_fk (hybridization_id), add constraint rawarraydata_hybridizations_rawarraydata_fk foreign key (hybridization_id) references hybridization (id);
+alter table rawarraydata_hybridizations add index rawarraydata_hybridizations_hybridization_fk (rawarraydata_id), add constraint rawarraydata_hybridizations_hybridization_fk foreign key (rawarraydata_id) references arraydata (id);
+insert into rawarraydata_hybridizations (rawarraydata_id, hybridization_id) select id, hybridization from arraydata where hybridization is not null;
+alter table arraydata drop foreign key rawdata_hybridization_fk;
+alter table arraydata drop column hybridization;

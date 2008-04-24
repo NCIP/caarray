@@ -298,9 +298,9 @@ public class ProjectDaoTest extends AbstractDaoTest {
     private static void setHybridizations() {
         DUMMY_LABELED_EXTRACT.getHybridizations().add(DUMMY_HYBRIDIZATION);
         DUMMY_HYBRIDIZATION.getLabeledExtracts().add(DUMMY_LABELED_EXTRACT);
-        DUMMY_HYBRIDIZATION.setArrayData(DUMMY_RAW_ARRAY_DATA);
+        DUMMY_HYBRIDIZATION.addRawArrayData(DUMMY_RAW_ARRAY_DATA);
         DUMMY_HYBRIDIZATION.setName("Dummy Hyb");
-        DUMMY_RAW_ARRAY_DATA.setHybridization(DUMMY_HYBRIDIZATION);
+        DUMMY_RAW_ARRAY_DATA.addHybridization(DUMMY_HYBRIDIZATION);
         DUMMY_RAW_ARRAY_DATA.setDataFile(DUMMY_DATA_FILE);
     }
 
@@ -448,21 +448,14 @@ public class ProjectDaoTest extends AbstractDaoTest {
         VOCABULARY_DAO.save(DUMMY_FACTOR_TYPE_2);
     }
 
-    private static void checkVisible(Project p)
-    {
+    private static void checkVisible(Project p) {
         // per Change Request 13332, when projects are created in Draft status
         // they are by default NO_VISIBILITY
-
-        if(p.getStatus().equals(ProposalStatus.DRAFT))
-        {
+        if (p.getStatus().equals(ProposalStatus.DRAFT)) {
             assertEquals(SecurityLevel.NO_VISIBILITY, p.getPublicProfile().getSecurityLevel());
-        }
-        else
-        {
+        } else {
             assertEquals(SecurityLevel.VISIBLE, p.getPublicProfile().getSecurityLevel());
         }
-
-
     }
 
 
@@ -675,9 +668,9 @@ public class ProjectDaoTest extends AbstractDaoTest {
         LabeledExtract labeledExtract = retrievedInv.getLabeledExtracts().iterator().next();
         Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
         assertEquals(labeledExtract, hybridization.getLabeledExtracts().iterator().next());
-        RawArrayData arrayData = hybridization.getArrayData();
+        RawArrayData arrayData = hybridization.getRawDataCollection().iterator().next();
         assertNotNull(arrayData);
-        assertEquals(hybridization, arrayData.getHybridization());
+        assertEquals(hybridization, arrayData.getHybridizations().iterator().next());
     }
 
     private void checkBioMaterials(Experiment dummyInv, Experiment retrievedInv) {

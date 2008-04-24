@@ -498,8 +498,9 @@ public class ProjectManagementServiceTest {
         assertNull(f);
 
         Hybridization h = new Hybridization();
-        h.setArrayData(new RawArrayData());
-        h.getArrayData().setDataFile(file);
+        RawArrayData rawArrayData = new RawArrayData();
+        rawArrayData.setDataFile(file);
+        h.addRawArrayData(rawArrayData);
         f = this.projectManagementService.prepareHybsForDownload(null, Collections.singleton(h));
         checkFile(file, f);
 
@@ -507,9 +508,10 @@ public class ProjectManagementServiceTest {
         checkFile(file, f);
 
         Hybridization h2 = new Hybridization();
-        h2.setArrayData(new RawArrayData());
         CaArrayFile file2 = this.projectManagementService.addFile(new Project(), MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
-        h2.getArrayData().setDataFile(file2);
+        rawArrayData = new RawArrayData();
+        rawArrayData.setDataFile(file2);
+        h2.addRawArrayData(rawArrayData);
         f = this.projectManagementService.prepareHybsForDownload(project, Arrays.asList(h, h2));
         checkFile(file, f);
     }

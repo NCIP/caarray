@@ -133,14 +133,15 @@ public class DerivedArrayData extends AbstractArrayData {
     private void setHybridizations(final Set<Hybridization> hybridizationsVal) {
         this.hybridizations = hybridizationsVal;
     }
+
     /**
      * @return the hybridizations
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "derivedarraydata_derivedfrom",
-            joinColumns = { @javax.persistence.JoinColumn(name = "derivedfrom_arraydata_id") },
-            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "derivedarraydata_id") }
+            joinColumns = { @javax.persistence.JoinColumn(name = "derivedarraydata_id") },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "derivedfrom_arraydata_id") }
     )
     @ForeignKey(name = "derivedfrom_arraydata_fk", inverseName = "derivedfrom_derivedarraydata_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)

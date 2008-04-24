@@ -215,6 +215,17 @@ public final class TestMageTabSets {
      */
     public static final MageTabDocumentSet GSK_TEST_SET = getSet(getGskTestSet());
 
+    /**
+     * MAGE-TAB data set containing data derived from other derived data.
+     */
+    public static final MageTabInputFileSet DERIVED_DATA_INPUT_SET = getDerivedDataInputSet();
+
+    /**
+     * MAGE-TAB data set containing data derived from other derived data.
+     */
+    public static final MageTabDocumentSet DERIVED_DATA_SET = getSet(DERIVED_DATA_INPUT_SET);
+
+
     private static MageTabDocumentSet getSet(MageTabInputFileSet inputSet) {
         try {
             return MageTabParser.INSTANCE.parse(inputSet);
@@ -251,13 +262,16 @@ public final class TestMageTabSets {
         return fileSet;
     }
 
-
     private static void addCelFiles(MageTabInputFileSet fileSet, File dataFileDirectory) {
         addDataFiles(fileSet, dataFileDirectory, "cel");
     }
 
     private static void addExpFiles(MageTabInputFileSet fileSet, File dataFileDirectory) {
         addDataFiles(fileSet, dataFileDirectory, "exp");
+    }
+
+    private static void addChpFiles(MageTabInputFileSet fileSet, File dataFileDirectory) {
+        addDataFiles(fileSet, dataFileDirectory, "chp");
     }
 
     private static void addDataFiles(MageTabInputFileSet fileSet, File dataFileDirectory, String extension) {
@@ -378,6 +392,16 @@ public final class TestMageTabSets {
         return fileSet;
     }
 
+    private static MageTabInputFileSet getDerivedDataInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_IDF);
+        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_SDRF);
+        fileSet.addAdf(MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_ADF);
+        addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_DIRECTORY);
+        addChpFiles(fileSet, MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_DIRECTORY);
+        return fileSet;
+    }
+
     private static FilenameFilter createExtensionFilter(final String extension) {
         return new FilenameFilter() {
             public boolean accept(File dir, String name) {
@@ -417,6 +441,8 @@ public final class TestMageTabSets {
             caArrayFile.setFileType(FileType.AFFYMETRIX_CEL);
         } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".exp")) {
             caArrayFile.setFileType(FileType.AFFYMETRIX_EXP);
+        } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".chp")) {
+            caArrayFile.setFileType(FileType.AFFYMETRIX_CHP);
         } else {
             throw new IllegalArgumentException("Unrecognized document file " + mageTabDocument.getFile());
         }

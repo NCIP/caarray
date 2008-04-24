@@ -117,7 +117,7 @@ import org.apache.commons.lang.StringUtils;
  * in this format.
  */
 @SuppressWarnings("PMD")
-// Exception to PMD checking due to cycolmetric complexity and number of fields
+// Exception to PMD checking due to cyclometric complexity and number of fields
 public final class SdrfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 1116542609494378874L;
@@ -139,6 +139,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private Scan currentScan;
     private Normalization currentNormalization;
     private ArrayDesign currentArrayDesign;
+    private AbstractSampleDataRelationshipNode currentFile;
     private int currentLineNumber;
     private int currentColumnNumber;
 
@@ -279,6 +280,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             currentHybridization = null;
             currentScan = null;
             currentNormalization = null;
+            currentFile = null;
             lineNodeCache.clear();
         }
     }
@@ -416,7 +418,6 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         ArrayDesign arrayDesign = arrayDesignHelper(column, value);
         arrayDesign.setFile(getDocumentSet().getAdfDocument(value).getFile());
         arrayDesign.setArrayDesignRef(false);
-
     }
 
     private void handleArrayDesignRef(SdrfColumn column, String value) {
@@ -467,6 +468,10 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             addErrorMessage("Referenced " + (derived ? "Derived " : "") + " Array Data File " + value
                     + " was not found in the document set");
         }
+        if (derived && currentFile != null) {
+            adf.link(currentFile);
+        }
+        currentFile = adf;
     }
 
     private void handleArrayDataMatrixFile(SdrfColumn column, String value, boolean derived) {
@@ -477,6 +482,10 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             addErrorMessage("Referenced " + (derived ? "Derived " : "") + "Array Data Matrix File " + value
                     + " was not found in the document set");
         }
+        if (derived && currentFile != null) {
+            admf.link(currentFile);
+        }
+        currentFile = admf;
     }
 
     private void handleLabel(SdrfColumn column, String value) {

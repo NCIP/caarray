@@ -91,8 +91,9 @@ import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -110,7 +111,7 @@ public class RawArrayData extends AbstractArrayData {
 
     private static final long serialVersionUID = 1234567890L;
 
-    private Hybridization hybridization;
+    private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
     private Set<Image> sourceImages = new HashSet<Image>();
 
     /**
@@ -122,20 +123,37 @@ public class RawArrayData extends AbstractArrayData {
     }
 
     /**
-     * @return the hybridization
+     * @return the hybridizations
      */
-    @OneToOne(fetch = FetchType.LAZY)
-    @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "rawdata_hybridization_fk")
-    public Hybridization getHybridization() {
-        return hybridization;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "rawarraydata_hybridizations",
+            joinColumns = { @javax.persistence.JoinColumn(name = "rawarraydata_id") },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "hybridization_id") }
+    )
+    @ForeignKey(name = "rawarraydata_hybridizations_hybridization_fk",
+            inverseName = "rawarraydata_hybridizations_rawarraydata_fk")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    public Set<Hybridization> getHybridizations() {
+        return hybridizations;
     }
 
     /**
-     * @param hybridization the hybridization to set
+     * Add a new hybridization to the collection of associated hybridizations.
+     * @param hybridization hybridization to add
      */
-    public void setHybridization(Hybridization hybridization) {
-        this.hybridization = hybridization;
+    public void addHybridization(Hybridization hybridization) {
+        hybridizations.add(hybridization);
+    }
+
+    /**
+     * Sets the hybridizations.
+     *
+     * @param hybridizationsVal the hybridizations
+     */
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setHybridizations(final Set<Hybridization> hybridizationsVal) {
+        this.hybridizations = hybridizationsVal;
     }
 
     /**

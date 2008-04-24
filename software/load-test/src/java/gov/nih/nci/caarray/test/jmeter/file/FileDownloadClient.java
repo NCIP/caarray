@@ -221,8 +221,8 @@ public class FileDownloadClient extends CaArrayJmeterSampler implements JavaSamp
 
     private CaArrayFile getDataFile(CaArraySearchService service, Hybridization hybridization) {
         // Try to find raw data
-        RawArrayData rawArrayData = hybridization.getArrayData();
-        if (rawArrayData != null) {
+        Set<RawArrayData> rawArrayDataSet = hybridization.getRawDataCollection();
+        for (RawArrayData rawArrayData : rawArrayDataSet) {
             // Return the file associated with the first raw data.
             RawArrayData populatedArrayData = service.search(rawArrayData).get(0);
             return populatedArrayData.getDataFile();

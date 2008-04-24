@@ -198,7 +198,7 @@ public class FileAccessServiceTest {
 
         assertEquals(1, uploadFiles.size());
         this.fileAccessService.unzipFiles(uploadFiles, uploadFileNames);
-        assertEquals(10, uploadFiles.size());
+        assertEquals(16, uploadFiles.size());
     }
 
     /**
@@ -218,6 +218,6 @@ public class FileAccessServiceTest {
 
         assertEquals(2, uploadFiles.size());
         this.fileAccessService.unzipFiles(uploadFiles, uploadFileNames);
-        assertEquals(11, uploadFiles.size());
+        assertEquals(17, uploadFiles.size());
     }
 }

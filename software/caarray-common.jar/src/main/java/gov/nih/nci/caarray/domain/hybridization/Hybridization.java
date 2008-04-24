@@ -113,7 +113,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -141,7 +140,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     private String description;
     private float amountOfMaterial;
     private Term amountOfMaterialUnit;
-    private RawArrayData arrayData;
+    private Set<RawArrayData> rawDataCollection = new HashSet<RawArrayData>();
     private Array array;
     private Set<Image> images = new HashSet<Image>();
     private Set<DerivedArrayData> derivedDataCollection = new HashSet<DerivedArrayData>();
@@ -251,24 +250,30 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     }
 
     /**
-     * Gets the arrayData.
-     *
-     * @return the arrayData
+     * Gets the rawArrayDatas.
+     * @return the rawArrayData
      */
-    @OneToOne(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.LAZY)
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
-    public RawArrayData getArrayData() {
-        return this.arrayData;
+    public Set<RawArrayData> getRawDataCollection() {
+        return this.rawDataCollection;
     }
 
     /**
-     * Sets the arrayData.
-     *
-     * @param arrayDataVal
-     *            the arrayData
+     * Sets the rawArrayDatas.
+     * @param rawDataVals the rawArrayDatas to set
      */
-    public void setArrayData(final RawArrayData arrayDataVal) {
-        this.arrayData = arrayDataVal;
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setRawDataCollection(final Set<RawArrayData> rawDataVals) {
+        this.rawDataCollection = rawDataVals;
+    }
+
+    /**
+     * Add a new raw array data to this hybridization.
+     * @param rawArrayData the raw array data to add
+     */
+    public void addRawArrayData(RawArrayData rawArrayData) {
+        this.rawDataCollection.add(rawArrayData);
     }
 
     /**
@@ -405,8 +410,8 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     @Transient
     public Set<CaArrayFile> getAllDataFiles() {
         Set<CaArrayFile> files = new HashSet<CaArrayFile>();
-        if (getArrayData() != null) {
-            files.add(getArrayData().getDataFile());
+        for (RawArrayData rad : getRawDataCollection()) {
+            files.add(rad.getDataFile());
         }
         for (DerivedArrayData dad : getDerivedDataCollection()) {
             files.add(dad.getDataFile());

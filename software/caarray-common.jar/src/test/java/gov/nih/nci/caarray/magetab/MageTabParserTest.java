@@ -108,8 +108,10 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -413,7 +415,7 @@ public class MageTabParserTest {
         checkArrayDesigns(documentSet);
         assertTrue(documentSet.getValidationResult().isValid());
     }
-    
+
     @Test
     public void testDefect12537() throws MageTabParsingException, InvalidDataException {
         MageTabInputFileSet fileSet = TestMageTabSets.DEFECT_12537_ERROR_INPUT_SET;
@@ -435,13 +437,13 @@ public class MageTabParserTest {
         assertEquals(3, documentSet.getNativeDataFiles().size());
         assertEquals(1, documentSet.getIdfDocuments().size());
         assertEquals(1, documentSet.getSdrfDocuments().size());
-        
+
         SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
         assertEquals(2, sdrfDocument.getAllDerivedArrayDataMatrixFiles().size());
         assertEquals(3, sdrfDocument.getAllHybridizations().size());
         for (Hybridization hyb : sdrfDocument.getAllHybridizations()) {
             assertEquals(2, hyb.getSuccessorDerivedArrayDataMatrixFiles().size());
-            assertEquals(1, hyb.getSuccessorArrayDataFiles().size());            
+            assertEquals(1, hyb.getSuccessorArrayDataFiles().size());
         }
     }
 
@@ -686,11 +688,47 @@ public class MageTabParserTest {
         assertEquals(SIX, sdrfDocument.getAllExtracts().size());
         assertEquals(SIX, sdrfDocument.getAllHybridizations().size());
         assertEquals(SIX, sdrfDocument.getAllLabeledExtracts().size());
-        assertEquals(1, sdrfDocument.getAllHybridizations().get(0).getSuccessorArrayDataFiles().size());
-        ArrayDataFile arrayDataFile = sdrfDocument.getAllHybridizations().get(0).getSuccessorArrayDataFiles()
-                .iterator().next();
+        Hybridization firstHybridization = sdrfDocument.getAllHybridizations().get(0);
+        Set<ArrayDataFile> rawDataFiles = firstHybridization.getSuccessorArrayDataFiles();
+        assertEquals(2, rawDataFiles.size());
+        Iterator<ArrayDataFile> rawDataIterator = rawDataFiles.iterator();
+        ArrayDataFile arrayDataFile = rawDataIterator.next();
         assertNotNull(arrayDataFile);
+        assertEquals("H_TK6 replicate 3.CEL", arrayDataFile.getName());
+        assertEquals(1, arrayDataFile.getSuccessorDerivedArrayDataMatrixFiles().size());
+        arrayDataFile = rawDataIterator.next();
         assertEquals("H_TK6 replicate 1.CEL", arrayDataFile.getName());
+        assertEquals(0, arrayDataFile.getSuccessorDerivedArrayDataMatrixFiles().size());
+    }
+
+    /**
+     * Tests to make sure derived data is properly associated with the source of that data (defect 13010).
+     */
+    @Test
+    public void testParseDerivedData() throws Exception {
+        MageTabInputFileSet fileSet = TestMageTabSets.DERIVED_DATA_INPUT_SET;
+        MageTabDocumentSet documentSet = parser.parse(fileSet);
+        assertNotNull(documentSet);
+        SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
+        assertEquals(1, sdrfDocument.getAllArrayDataFiles().size());
+        ArrayDataFile arrayDataFile = sdrfDocument.getAllArrayDataFiles().get(0);
+        List<DerivedArrayDataFile> derivedDataFiles = sdrfDocument.getAllDerivedArrayDataFiles();
+        assertEquals(2, derivedDataFiles.size());
+
+        // make sure the first derived data file is derived from the raw data
+        DerivedArrayDataFile derivedArrayDataFile = derivedDataFiles.get(0);
+        Set<ArrayDataFile> predecessorArrayDataFiles = derivedArrayDataFile.getPredecessorArrayDataFiles();
+        assertEquals(1, predecessorArrayDataFiles.size());
+        assertTrue(predecessorArrayDataFiles.contains(arrayDataFile));
+        assertEquals(0, derivedArrayDataFile.getPredecessorDerivedArrayDataFiles().size());
+
+        // make sure the second derived data file is derived from the first derived data
+        DerivedArrayDataFile derivedArrayDataFile2 = derivedDataFiles.get(1);
+        Set<DerivedArrayDataFile> predecessorDerivedArrayDataFiles =
+            derivedArrayDataFile2.getPredecessorDerivedArrayDataFiles();
+        assertEquals(0, derivedArrayDataFile2.getPredecessorArrayDataFiles().size());
+        assertEquals(1, predecessorDerivedArrayDataFiles.size());
+        assertTrue(predecessorDerivedArrayDataFiles.contains(derivedArrayDataFile));
     }
 
     private void checkTerms(MageTabDocumentSet documentSet) {
