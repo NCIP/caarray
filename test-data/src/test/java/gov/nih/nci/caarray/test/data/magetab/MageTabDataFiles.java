@@ -270,7 +270,7 @@ public class MageTabDataFiles {
         new File(MageTabDataFiles.class.getResource("/magetab/specification_derived_data/Test3-2.CHP").getFile());
 
     public static final File SPECIFICATION_DERIVED_DATA_EXAMPLE_ZIP =
-        new File(MageTabDataFiles.class.getResource("/magetab/specification_derived_data/specifications_derived_data.zip").getFile());
+        new File(MageTabDataFiles.class.getResource("/magetab/specification_derived_data/specification_derived_data.zip").getFile());
 
     public static final File SPECIFICATION_DERIVED_DATA_EXAMPLE_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/specification_derived_data").getFile());
