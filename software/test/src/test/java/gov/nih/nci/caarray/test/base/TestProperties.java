@@ -94,7 +94,7 @@ public final class TestProperties {
     public static final String GRID_SERVER_PORT_KEY = "globoss.server.http.port";
 
     public static final String SERVER_HOSTNAME_DEFAULT = "localhost";
-    public static final String SERVER_PORT_DEFAULT = "8181";
+    public static final String SERVER_PORT_DEFAULT = "8080";
     public static final String SERVER_JNDI_PORT_DEFAULT = "11299";
     public static final String GRID_SERVER_PORT_DEFAULT = "80";
 

@@ -132,7 +132,7 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         checkFileStatus("Uploaded", THIRD_COLUMN);
 
         // change the file type to "Illumina CSV Data File".
-        selenium.click("selectFilesForm_selectedFiles");
+        selenium.click("selectFilesForm_selectedFileIds");
         selenium.click("link=Change File Type");
         waitForText("Required fields are marked");
         selenium.select("projectForm_selectedFiles_0__fileType", "label=Illumina Data CSV");
