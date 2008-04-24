@@ -329,6 +329,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
         BIOMATERIAL_CHANGES.set(null);
         DELETEDOBJS.set(null);
         PROFILES.set(null);
+        FILES.set(null);
     }
 
     private boolean isEnabled() {

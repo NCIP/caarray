@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.application.file.InvalidFileException;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -101,7 +100,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -278,26 +276,6 @@ public interface ProjectManagementService {
      * @throws ProposalWorkflowException if the project permissions cannot be modified in the project's current state
      */
     AccessProfile addGroupProfile(Project project, CollaboratorGroup group) throws ProposalWorkflowException;
-
-    /**
-     * Prepares files for download.
-     *
-     * @param files the files to download
-     * @return the single zip archive with all files
-     * @throws IOException on I/O error
-     */
-    File prepareForDownload(Collection<CaArrayFile> files) throws IOException;
-
-    /**
-     * Prepares a collection of hybridizations for file download.
-     *
-     * @param p the project to restrict files to
-     * @param hybridizations the hybridizations to download files for
-     * @return the single zip archive with all files related to these hybridizations, or null if there are no data files
-     *         associated with any of the hybridizations
-     * @throws IOException on I/O error
-     */
-    File prepareHybsForDownload(Project p, Collection<Hybridization> hybridizations) throws IOException;
 
     /**
      * Make a copy of a sample belonging to given project, and add it to the new project. The new sample's name will be

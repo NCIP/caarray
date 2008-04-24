@@ -231,15 +231,13 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     }
 
     /**
-     * @return the set of hybridizations related to this sample (via extract-labeled extract linkages)
+     * {@inheritDoc}
      */
     @Transient
-    public Set<Hybridization> getRelatedHybs() {
+    public Set<Hybridization> getRelatedHybridizations() {
         Set<Hybridization> hybs = new HashSet<Hybridization>();
         for (Extract e : getExtracts()) {
-            for (LabeledExtract le : e.getLabeledExtracts()) {
-                hybs.addAll(le.getHybridizations());
-            }
+            hybs.addAll(e.getRelatedHybridizations());
         }
         return hybs;
     }

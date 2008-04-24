@@ -407,3 +407,4 @@ insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL
 insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_HTML_CONTENT', '<p>Dear {0}</p><p>Thank you for submitting experiment {1} to caArray. You may access this experiment at <a href="{2}">{2}</a>.');
 
 insert into config_parameter (param, raw_value) values ('BACKGROUND_THREAD_TRANSACTION_TIMEOUT', '28800');
+insert into config_parameter (param, raw_value) values ('STRUTS_MULTIPART_SAVEDIR', '');

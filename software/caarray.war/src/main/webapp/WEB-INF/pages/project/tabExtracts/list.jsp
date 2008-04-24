@@ -29,6 +29,7 @@
             </display:column>
             <caarray:projectListTabActionColumns entityName="Extract" item="${row}" actions="!edit,!copy,!delete" 
                 isSubtab="true" canWriteProject="${canWriteProject}"/>
+            <caarray:projectListTabDownloadColumn entityName="Extract" itemId="${row.id}"/>
         </display:table>
     </ajax:displayTag>
 

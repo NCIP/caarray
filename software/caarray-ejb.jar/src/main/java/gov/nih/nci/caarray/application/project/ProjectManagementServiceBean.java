@@ -115,21 +115,16 @@ import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
 import javax.ejb.Local;
@@ -140,7 +135,6 @@ import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.TransactionTimeout;
@@ -553,41 +547,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public File prepareForDownload(Collection<CaArrayFile> files) throws IOException {
-        LogUtil.logSubsystemEntry(LOG, files);
-        File result = prepareForDownload(null, files);
-        LogUtil.logSubsystemExit(LOG);
-
-        return result;
-    }
-
-    private File prepareForDownload(Project p, Collection<CaArrayFile> files) throws IOException {
-        if (files == null || files.isEmpty()) {
-            throw new IllegalArgumentException("Files cannot be null or empty!");
-        }
-        File result = File.createTempFile("data", ".zip");
-        result.deleteOnExit();
-
-        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(result));
-        for (CaArrayFile caf : files) {
-            if (p == null || p.equals(caf.getProject())) {
-                File f = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caf);
-                InputStream is = new BufferedInputStream(new FileInputStream(f));
-
-                ZipEntry ze = new ZipEntry(f.getName());
-                zos.putNextEntry(ze);
-                IOUtils.copy(is, zos);
-                zos.closeEntry();
-                is.close();
-            }
-        }
-        zos.close();
-        return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Sample copySample(Project project, long sampleId) throws ProposalWorkflowException,
             InconsistentProjectStateException {
@@ -736,28 +695,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     public int searchCount(String keyword, SearchCategory... categories) {
         return getProjectDao().searchCount(keyword, categories);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public File prepareHybsForDownload(Project p, Collection<Hybridization> hybridizations) throws IOException {
-        LogUtil.logSubsystemEntry(LOG, p, hybridizations);
-        Collection<CaArrayFile> files = new HashSet<CaArrayFile>();
-        if (hybridizations != null && !hybridizations.isEmpty()) {
-            for (Hybridization h : hybridizations) {
-                files.addAll(h.getAllDataFiles());
-            }
-        }
-
-        if (files.isEmpty()) {
-            LogUtil.logSubsystemExit(LOG);
-            return null;
-        }
-
-        File result = prepareForDownload(p, files);
-        LogUtil.logSubsystemExit(LOG);
-        return result;
     }
 
     /**

@@ -29,16 +29,7 @@
             </display:column>
             <caarray:projectListTabActionColumns entityName="Sample" item="${row}" actions="!edit,!copy,!delete" 
                 isSubtab="true" canWriteProject="${canWriteProject}"/>
-            <display:column titleKey="button.download">
-        <c:url value="/ajax/project/listTab/Samples/download.action" var="actionUrl">
-            <c:param name="project.id" value="${project.id}" />
-            <c:param name="currentSample.id" value="${row.id}" />
-            <c:param name="editMode" value="${editMode}" />
-        </c:url>
-            <a href="${actionUrl}">
-                <img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>">
-            </a>
-            </display:column>
+            <caarray:projectListTabDownloadColumn entityName="Sample" itemId="${row.id}"/>
         </display:table>
     </ajax:displayTag>
 

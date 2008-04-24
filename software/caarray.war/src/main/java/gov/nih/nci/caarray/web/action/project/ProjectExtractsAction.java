@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.application.project.InconsistentProjectStateException
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.search.ExtractSortCriterion;
@@ -96,9 +97,12 @@ import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
@@ -256,5 +260,21 @@ public class ProjectExtractsAction extends AbstractProjectAssociatedAnnotationsL
             s.getExtracts().remove(getCurrentExtract());
         }
         return true;
+    }
+    
+    /**
+     * download the data for this sample.
+     * @return download
+     * @throws IOException on file error
+     */
+    @SkipValidation
+    public String download() throws IOException {
+        Collection<CaArrayFile> files = getCurrentExtract().getAllDataFiles();
+        if (files.isEmpty()) {
+            ActionHelper.saveMessage(getText("experiment.extracts.noDataToDownload"));
+            return "noExtractData";
+        }
+        ProjectFilesAction.downloadFiles(getProject(), files);
+        return null;
     }
 }

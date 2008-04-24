@@ -104,7 +104,6 @@ import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -126,23 +125,14 @@ import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.hibernate.Transaction;
 import org.junit.After;
@@ -540,77 +530,6 @@ public class ProjectManagementServiceTest {
         this.projectManagementService.setUseTcgaPolicy(123L, true);
         project = this.projectManagementService.getProject(123L);
         assertTrue(project.isUseTcgaPolicy());
-    }
-
-    @Test
-    public void testDownload() throws IOException, ProposalWorkflowException, InconsistentProjectStateException {
-        try {
-            this.projectManagementService.prepareForDownload(null);
-            fail();
-        } catch (IllegalArgumentException iae) {
-            // expected
-        }
-
-        try {
-            this.projectManagementService.prepareForDownload(new ArrayList<CaArrayFile>());
-            fail();
-        } catch (IllegalArgumentException iae) {
-            // expected
-        }
-
-        Project project = this.projectManagementService.getProject(123L);
-        CaArrayFile file = null;
-        file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-
-        File f = this.projectManagementService.prepareForDownload(Collections.singleton(file));
-        checkFile(file, f);
-
-        f = this.projectManagementService.prepareHybsForDownload(null, null);
-        assertNull(f);
-
-        this.projectManagementService.prepareHybsForDownload(null, new ArrayList<Hybridization>());
-        assertNull(f);
-
-        Hybridization h = new Hybridization();
-        RawArrayData rawArrayData = new RawArrayData();
-        rawArrayData.setDataFile(file);
-        h.addRawArrayData(rawArrayData);
-        f = this.projectManagementService.prepareHybsForDownload(null, Collections.singleton(h));
-        checkFile(file, f);
-
-        f = this.projectManagementService.prepareHybsForDownload(project, Collections.singleton(h));
-        checkFile(file, f);
-
-        Hybridization h2 = new Hybridization();
-        CaArrayFile file2 = this.projectManagementService.addFile(new Project(), MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
-        rawArrayData = new RawArrayData();
-        rawArrayData.setDataFile(file2);
-        h2.addRawArrayData(rawArrayData);
-        f = this.projectManagementService.prepareHybsForDownload(project, Arrays.asList(h, h2));
-        checkFile(file, f);
-    }
-
-    private void checkFile(CaArrayFile file, File f) throws FileNotFoundException, IOException {
-        assertNotNull(f);
-
-        // make sure it's a zip file
-        ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(f)));
-        ZipEntry ze = zis.getNextEntry();
-        assertNotNull(ze);
-        assertEquals(file.getName(), ze.getName());
-        int size = 0;
-        int curRead = 0;
-        InputStream is = new FileInputStream(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        while ((curRead = is.read(new byte[is.available()])) > 0) {
-            size += curRead;
-        }
-
-        while ((curRead = zis.read(new byte[zis.available()])) > 0) {
-            size -= curRead;
-        }
-        assertEquals(0, size);
-        is.close();
-        zis.close();
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {

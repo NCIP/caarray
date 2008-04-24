@@ -30,6 +30,14 @@
     </display:table>
 </ajax:displayTag>
 
+<c:url var="downloadUrl" value="/project/files/download.action">
+    <c:param name="project.id" value="${project.id}"/>
+</c:url>
+
+<form id="downloadForm" style="display: none" method="post" action="${downloadUrl}">
+
+</form>
+
 <script type="text/javascript">
 <c:forEach items="${files}" var="file"> 
     downloadMgr.addFile('${file.name}', '${file.id}', ${file.compressedSize});

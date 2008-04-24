@@ -86,6 +86,8 @@ package gov.nih.nci.caarray.domain.sample;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
@@ -95,6 +97,7 @@ import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.SecurityPolicy;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -112,6 +115,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.collections.Closure;
 import org.apache.commons.lang.ArrayUtils;
@@ -339,6 +343,29 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity implemen
      */
     public void setOrganism(Organism organism) {
         this.organism = organism;
+    }
+
+    /**
+     * @return the set of hybridizations related to this biomaterial (via the biomaterial chain)
+     */
+    @Transient
+    public abstract Set<Hybridization> getRelatedHybridizations();
+
+    /**
+     * @return all the data files related to this biomaterial. This is the set of files
+     * that is related to at least one hybridization that is related to this biomaterial
+     * (@see getRelatedHybs()).
+     */
+    @Transient
+    public Collection<CaArrayFile> getAllDataFiles() {
+        Collection<CaArrayFile> files = new HashSet<CaArrayFile>();
+        Collection<Hybridization> hybridizations = getRelatedHybridizations();
+        if (hybridizations != null && !hybridizations.isEmpty()) {
+            for (Hybridization h : hybridizations) {
+                files.addAll(h.getAllDataFiles());
+            }
+        }
+        return files;
     }
 
     /**

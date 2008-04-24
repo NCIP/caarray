@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.sample;
 
 import gov.nih.nci.caarray.domain.contact.AbstractContact;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 
 import java.util.HashSet;
@@ -96,6 +97,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -196,5 +198,17 @@ public class Source extends AbstractBioMaterial {
         return new ToStringBuilder(this)
             .append("providers", providers)
             .toString();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Transient
+    public Set<Hybridization> getRelatedHybridizations() {
+        Set<Hybridization> hybs = new HashSet<Hybridization>();
+        for (Sample s : getSamples()) {
+            hybs.addAll(s.getRelatedHybridizations());
+        }
+        return hybs;
     }
 }

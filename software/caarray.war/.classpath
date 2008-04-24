@@ -493,5 +493,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/test-data"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/test-data"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>

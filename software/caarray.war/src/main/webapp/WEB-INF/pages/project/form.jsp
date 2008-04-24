@@ -11,13 +11,10 @@
 <c:url var="downloadUrl" value="/project/files/download.action">
     <c:param name="project.id" value="${project.id}"/>
 </c:url>
-<c:url var="downloadGroupsUrl" value="/ajax/project/files/download.action">
-    <c:param name="project.id" value="${project.id}"/>
-</c:url>
 <c:url var="removeUrl" value="/images/ico_remove.gif"/>
 
 <script type="text/javascript">
-  downloadMgr = new DownloadMgr('${downloadUrl}', '${downloadGroupsUrl}','${removeUrl}', <s:property value="@gov.nih.nci.caarray.web.action.project.ProjectFilesAction@MAX_DOWNLOAD_SIZE"/>);
+  downloadMgr = new DownloadMgr('${downloadUrl}', '${removeUrl}');
   setExperimentTitleHeader = function(value) {
     $('experimentTitleHeader').innerHTML = value || 'New Experiment';
   }

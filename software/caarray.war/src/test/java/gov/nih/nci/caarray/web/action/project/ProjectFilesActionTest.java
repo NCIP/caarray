@@ -83,31 +83,47 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -510,35 +526,38 @@ public class ProjectFilesActionTest {
 
     @Test
     public void testDownload() throws Exception {
-        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
-        this.action.setSelectedFiles(selectedFiles);
-        LocalCaArrayFile file = new LocalCaArrayFile();
-        file.setCompressedSize(6);
-        selectedFiles.add(file);
+        FileAccessServiceStub fas = new FileAccessServiceStub();
+        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
+        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
+        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
 
-        this.action.setDownloadSequenceNumber(1);
-        assertEquals("download",action.download());
-        assertEquals("caArray_publicId_files1.zip", this.action.getDownloadFileName());
+        Project p = new Project();
+        p.getExperiment().setPublicIdentifier("test");
+        CaArrayFile f1 = new CaArrayFile();
+        f1.setName("missing_term_source.idf");
+        CaArrayFile f2 = new CaArrayFile();
+        f2.setName("missing_term_source.sdrf");
+        this.action.setProject(p);
+        this.action.setSelectedFiles(Arrays.asList(f1, f2));
+        
+        MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+        ServletActionContext.setResponse(mockResponse);
 
-        selectedFiles = new ArrayList<CaArrayFile>();
-        this.action.setSelectedFiles(selectedFiles);
-        file = new LocalCaArrayFile();
-        file.setCompressedSize(6);
-        selectedFiles.add(file);
-        file = new LocalCaArrayFile();
-        file.setCompressedSize((int)ProjectFilesAction.MAX_DOWNLOAD_SIZE-5);
-        selectedFiles.add(file);
-        file = new LocalCaArrayFile();
-        file.setCompressedSize(6);
-        selectedFiles.add(file);
-        file = new LocalCaArrayFile();
-        file.setCompressedSize((int)ProjectFilesAction.MAX_DOWNLOAD_SIZE-5);
-        selectedFiles.add(file);
-        file = new LocalCaArrayFile();
-        file.setCompressedSize(6);
-        selectedFiles.add(file);
-        assertEquals("downloadGroups",action.download());
-        assertEquals(3,this.action.getDownloadFileGroups().size());
+        assertEquals(null, action.download());
+        assertEquals("application/zip", mockResponse.getContentType());
+        assertEquals("filename=\"caArray_test_files.zip\"", mockResponse.getHeader("Content-disposition"));
+        
+        ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
+        ZipEntry ze = zis.getNextEntry();
+        assertNotNull(ze);
+        assertEquals("missing_term_source.idf", ze.getName());
+        ze = zis.getNextEntry();
+        assertNotNull(ze);
+        assertEquals("missing_term_source.sdrf", ze.getName());
+        assertNull(zis.getNextEntry());
+        IOUtils.closeQuietly(zis);
+
+        assertEquals(null, action.download());
     }
 
     @Test

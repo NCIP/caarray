@@ -100,6 +100,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -217,6 +218,14 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
             protectables.addAll(e.relatedProtectables());
         }
         return protectables;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transient
+    public Set<Hybridization> getRelatedHybridizations() {
+        return getHybridizations();
     }
 
     /**

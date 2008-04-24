@@ -87,19 +87,24 @@ import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManageme
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.application.file.InvalidFileException;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -107,13 +112,19 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.set.TransformedSet;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -153,10 +164,11 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     /**
-     * Maximum total uncompressed size (in bytes) of files that can be downloaded in a single ZIP. If files selected
-     * for download have a greater combined size, then the user will be presented with a group download page.
+     * an instance of a Comparator that compares CaArrayFile instances by name.
      */
-    public static final long MAX_DOWNLOAD_SIZE = 1024 * 1024 * 150;
+    public static final Comparator<CaArrayFile> CAARRAYFILE_NAME_COMPARATOR_INSTANCE = new CaArrayFileNameComparator();
+
+    private static final String DOWNLOAD_CONTENT_TYPE = "application/zip";
     private static final String UPLOAD_INPUT = "upload";
     private static final long serialVersionUID = 1L;
     private static final String ACTION_UNIMPORTED = "listUnimported";
@@ -182,10 +194,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
     private List<Long> selectedFileIds = new ArrayList<Long>();
-    private int downloadSequenceNumber;
-    private final List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
-    private String downloadFileName;
-    private InputStream downloadStream;
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
     private String listAction;
     private String extensionFilter;
@@ -642,57 +650,49 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     /**
-     * Prepares for download by zipping selected files and setting the internal InputStream.
+     * Implements file download. Writes a zip of the selected files to the servlet output stream
      *
-     * @return SUCCESS
-     * @throws IOException if
+     * @return null - the result is written to the servlet output stream
+     * @throws IOException if there is an error writing to the stream
      */
     @SkipValidation
     public String download() throws IOException {
-        computeDownloadGroups();
-        if (downloadFileGroups.size() == 1) {
-            File zipFile = getProjectManagementService().prepareForDownload(getSelectedFiles());
-            this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
-            this.downloadFileName = determineDownloadFileName();
-            return "download";
-        } else {
-            return "downloadGroups";
-        }
-    }
-
-    private String determineDownloadFileName() {
-        return "caArray_" + getProject().getExperiment().getPublicIdentifier() + "_files"
-                + (this.downloadSequenceNumber > 0 ? this.downloadSequenceNumber : "") + ".zip";
-    }
-
-    private void computeDownloadGroups() {
-        this.downloadFileGroups.clear();
-        for (CaArrayFile file : getSelectedFiles()) {
-            addToDownloadGroups(file);
-        }
+        downloadFiles(getProject(), getSelectedFiles());
+        return null;
     }
 
     /**
-     * Add given file to the download groups. The goal is to find the best possible group to put it, such that the total
-     * number of groups will be minimized. the algorithm is to put it in the group which will then have the closest
-     * to max allowable size without going over
-     * @param file the file to add
+     * Zips the selected files and writes the result to the servlet output stream. Also sets content
+     * type and disposition appropriately.
+     * 
+     * @param project the project to whicb the files belong
+     * @param files the files to zip and send
+     * @throws IOException if there is an error writing to the stream
      */
-    private void addToDownloadGroups(CaArrayFile file) {
-        DownloadGroup bestGroup = null;
-        long maxNewSize = 0;
-        for (DownloadGroup group : this.downloadFileGroups) {
-            long newGroupSize = group.getTotalCompressedSize() + file.getCompressedSize();
-            if (newGroupSize < MAX_DOWNLOAD_SIZE && newGroupSize > maxNewSize) {
-                maxNewSize = newGroupSize;
-                bestGroup = group;
-            }
+    public static void downloadFiles(Project project, Collection<CaArrayFile> files) throws IOException {
+        HttpServletResponse response = ServletActionContext.getResponse();
+        response.setContentType(DOWNLOAD_CONTENT_TYPE);
+        response.setHeader("Content-disposition", "filename=\"" + determineDownloadFileName(project) + "\"");
+        
+        List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);        
+        Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
+        OutputStream sos = response.getOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(sos);
+        for (CaArrayFile caf : sortedFiles) {
+            File f = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caf);
+            InputStream is = new FileInputStream(f);
+            ZipEntry ze = new ZipEntry(f.getName());
+            zos.putNextEntry(ze);
+            IOUtils.copy(is, zos);
+            zos.closeEntry();
+            is.close();
+            zos.flush();
         }
-        if (bestGroup == null) {
-            bestGroup = new DownloadGroup();
-            this.downloadFileGroups.add(bestGroup);
-        }
-        bestGroup.addFile(file);
+        zos.finish();
+    }    
+
+    private static String determineDownloadFileName(Project project) {
+        return "caArray_" + project.getExperiment().getPublicIdentifier() + "_files.zip";
     }
 
     /**
@@ -703,13 +703,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     @SkipValidation
     public String uploadInBackground() {
         return "uploadInBackground";
-    }
-
-    /**
-     * @return the stream containing the zip file download
-     */
-    public InputStream getDownloadStream() {
-        return this.downloadStream;
     }
 
     /**
@@ -899,31 +892,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     /**
-     * @return the download groups
+     * Comparator class that compares CaArrayFile instances by name, alphabetically.
      */
-    public List<DownloadGroup> getDownloadFileGroups() {
-        return downloadFileGroups;
-    }
-
-    /**
-     * @return the downloadFileName
-     */
-    public String getDownloadFileName() {
-        return downloadFileName;
-    }
-
-    /**
-     * @return the downloadSequenceNumber
-     */
-    public int getDownloadSequenceNumber() {
-        return downloadSequenceNumber;
-    }
-
-    /**
-     * @param downloadSequenceNumber the downloadSequenceNumber to set
-     */
-    public void setDownloadSequenceNumber(int downloadSequenceNumber) {
-        this.downloadSequenceNumber = downloadSequenceNumber;
+    private static class CaArrayFileNameComparator implements Comparator<CaArrayFile> {
+        public int compare(CaArrayFile f1, CaArrayFile f2) {
+            return new CompareToBuilder().append(f1.getName(), f2.getName()).toComparison();
+        }
     }
 
     /**

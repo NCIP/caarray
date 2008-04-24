@@ -155,24 +155,15 @@
             <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result>
             <result name="reload-project">/WEB-INF/pages/project/reloadProject.jsp</result>
             <result name="associationValues">/WEB-INF/pages/project/annotationAssociatedValues.jsp</result>
-            <result name="download" type="stream">
-                <param name="contentType">application/zip</param>
-                <param name="inputName">downloadStream</param>
-                <param name="contentDisposition">filename="caArrayFiles.zip"</param>
-                <param name="bufferSize">4096</param>
-            </result>
+            <result name="noSourceData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=sources</result>
             <result name="noSampleData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=samples</result>
+            <result name="noExtractData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=extracts</result>
+            <result name="noLabeledExtractData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=labeledExtracts</result>
             <result name="noHybData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=hybridizations</result>
         </action>
 
         <action name="project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
             <result name="upload">/WEB-INF/pages/project/files/uploadComplete.jsp</result>
-            <result name="download" type="stream">
-                <param name="contentType">application/zip</param>
-                <param name="inputName">downloadStream</param>
-                <param name="contentDisposition">filename="${downloadFileName}"</param>
-                <param name="bufferSize">4096</param>
-            </result>
             <result name="input">/error.jsp</result>
             <result name="downloadGroups">/WEB-INF/pages/project/files/downloadFileGroups.jsp</result>
         </action>
