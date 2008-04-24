@@ -48,6 +48,8 @@
         <caarray:actions divclass="actionsthin">
             <c:url value="/protected/ajax/project/files/deleteFiles.action" var="deleteUrl" />
             <caarray:linkButton actionClass="delete" text="Delete" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${deleteUrl}', 'tabboxlevel2wrapper');" />
+            <c:url value="/protected/ajax/project/files/unpackFiles.action" var="unpackUrl" />
+            <caarray:linkButton actionClass="import" text="Unpack Archive" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${unpackUrl}', 'tabboxlevel2wrapper');" />
             <c:url value="/protected/ajax/project/files/editFiles.action" var="editUrl" />
             <caarray:linkButton actionClass="edit" text="Change File Type" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${editUrl}', 'tabboxlevel2wrapper');" />
             <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />

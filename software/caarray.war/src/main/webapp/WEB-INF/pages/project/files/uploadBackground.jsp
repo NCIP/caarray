@@ -6,13 +6,13 @@
             <title>Experiment Data Upload</title>
         </head>
         <body>
-        
+
     <h1>Experiment Data Upload</h1>
 
     <jsp:useBean id="currentTime" class="java.util.Date"/>
     <c:set var="uploadId" value="${currentTime.time}"/>
-    
-    <c:url value="/project/files/upload.action/${uploadId}" var="uploadActionUrl"/>    
+
+    <c:url value="/project/files/upload.action/${uploadId}" var="uploadActionUrl"/>
     <c:url value="/ajax/uploadProgress.action" var="uploadProgressUrl">
         <c:param name="__multipart_upload_id" value="${uploadId}"/>
     </c:url>
@@ -20,14 +20,20 @@
         <c:param name="project.id" value="${project.id}"/>
         <c:param name="initialTab" value="data" />
     </c:url>
- 
+
     <iframe id='target_upload' name='target_upload' src='' style='display: none'> </iframe>
     <div id="uploadFileDiv">
         <div class="boxpad2extend">
             <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
                 <s:form action="project/files/upload" id="uploadForm" namespace="" enctype="multipart/form-data" method="post"  target="target_upload">
                     <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
-                    <s:file id="upload" name="upload" label="File" />
+                    <input type=hidden name="selectedFilesToUnpack" value="-1" />
+                    <s:file id="upload" name="upload" label="File">
+                         <s:param name="after">
+                             <s:checkbox name="selectedFilesToUnpack" fieldValue="0" value="false" theme="simple"/>
+                             <s:label for="uploadForm_selectedFilesToUnpack" value="Unpack Compressed Archive" theme="simple"/>
+                         </s:param>
+                    </s:file>
                 </s:form>
 
                 <caarray:actions>
@@ -43,20 +49,20 @@
         <div id="tabboxwrapper_notabs">
             <div class="boxpad2">
                 <h3>
-                    <span class="dark">Experiment:</span> ${project.experiment.title}    
+                    <span class="dark">Experiment:</span> ${project.experiment.title}
                 </h3>
             </div>
 
-            <div class="boxpad">   
+            <div class="boxpad">
                <div id="uploadingMessage">
                   <fmt:message key="data.file.upload.inProgress"/>
                </div>
-   
+
                <table id="uploadProgressFileList" class="searchresults">
                   <tbody>
                       <tr>
                           <td><span class="dark">Overall progress</span></td>
-                          <td><div style="float: right"><span id="uploadPercent">0</span>%</div><div id="uploadProgressBar"></div></td>            
+                          <td><div style="float: right"><span id="uploadPercent">0</span>%</div><div id="uploadProgressBar"></div></td>
                       </tr>
                   </tbody>
                </table>
@@ -66,16 +72,17 @@
                         <caarray:action actionClass="cancel" text="Close Window" onclick="window.close()" />
                         <caarray:action actionClass="import" text="Close Window and go to Experiment Data" onclick="closeAndGoToProjectData()" />
                     </caarray:actions>
-               </div> 
+               </div>
            </div>
        </div>
    </div>
-  
+
 <script type="text/javascript">
     var progressBar;
     var pbPoller;
     var currentItemNumber = 1;
     var processingFinished = false;
+    var fileCount =1;
 
    function moreUploads() {
         formTable = $('uploadFileDiv').getElementsByTagName('table')[0];
@@ -83,10 +90,13 @@
         newFile = newRow.down('input');
         newFile.value = '';
         newFile.id = '';
-
+        newCheckbox = newFile.next('input');
+        newCheckbox.value = fileCount;
+        newCheckbox.checked=false;
         formTable.tBodies[0].appendChild(newRow);
+        fileCount++;
     }
-    
+
     function closeAndGoToProjectData() {
         window.opener.location = '${projectDetailsUrl}';
         window.close();
@@ -97,7 +107,7 @@
             return "Your files are currently uploading. Closing this window now could result in the upload being aborted.";
         }
     }
-    
+
     function updateProgress(itemNumber, percentComplete) {
         if (itemNumber < 2) { return; }
         progressBar.setProgress(percentComplete);
@@ -121,7 +131,7 @@
         $("uploadingMessage").innerHTML = messages;
         $("uploadProgressFileList").style.display = "none";
         $("closeWindow").style.display = "";
-        alert('Your file upload is complete');  
+        alert('Your file upload is complete');
     }
 
     function beginUpload() {
@@ -131,8 +141,8 @@
         $('uploadForm').submit();
         window.onbeforeunload = confirmCloseWindow;
     }
-    
-            
+
+
     function initializeProgressDisplay() {
         var myForm = $('uploadForm');
         var formFiles = myForm.getElementsBySelector('input[type=file]');
@@ -141,15 +151,15 @@
 
         for (var i = 0; i < formFiles.length; i++) {
             if (formFiles[i].value.length > 0) {
-                var fileRow = progressTable.tBodies[0].insertRow(progressTable.tBodies[0].rows.length-1);          
-                fileRow.insertCell(0).innerHTML = formFiles[i].value.match(fnameRegexp)[0];          
-                fileRow.insertCell(1);                    
+                var fileRow = progressTable.tBodies[0].insertRow(progressTable.tBodies[0].rows.length-1);
+                fileRow.insertCell(0).innerHTML = formFiles[i].value.match(fnameRegexp)[0];
+                fileRow.insertCell(1);
             } else {
                 formFiles[i].disabled=true;
             }
         }
 
-        $('uploadProgress').show();        
+        $('uploadProgress').show();
 
         progressBar = new Control.ProgressBar('uploadProgressBar', { afterChange: function(progress, active) { $('uploadPercent').innerHTML = progress; } })
         pbPoller = new PeriodicalExecuter(function() {
@@ -165,4 +175,3 @@
     </body>
 </html>
 </page:applyDecorator>
-    

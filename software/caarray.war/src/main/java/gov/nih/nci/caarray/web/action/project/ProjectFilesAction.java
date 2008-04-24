@@ -129,7 +129,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
  * @author Scott Miller
  *
  */
-@SuppressWarnings({"unchecked", "PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity" })
+@SuppressWarnings({"unchecked", "PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity", "PMD.TooManyFields" })
 @Validation
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
                                                 expression = "selectedFiles.size() > 0"))
@@ -177,6 +177,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         }
     };
 
+    private List<Long> selectedFilesToUnpack =  new ArrayList<Long>();
     private List<File> uploads = new ArrayList<File>();
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
@@ -353,6 +354,15 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     /**
+     * Method to unpack files.
+     * @return the string representing the UI to display.
+     */
+    public String unpackFiles() {
+        doFileUnpacking();
+        return prepListUnimportedPage();
+    }
+
+    /**
      * Method to delete supplemental files.
      * @return the string representing the UI to display.
      */
@@ -376,6 +386,29 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " file(s) were not in a status that allows for deletion.");
         }
+    }
+
+    private boolean doFileUnpacking() {
+        boolean returnVal = false;
+
+        int count = 0;
+        try {
+            count = getProjectManagementService().unpackFiles(getProject(), this.getSelectedFiles());
+
+            ActionHelper.saveMessage(count + " file(s) extracted.");
+
+            returnVal = true;
+        } catch (ZipException e) {
+            ActionHelper.saveMessage(getText("errorUnpackingZip"));
+        } catch (InvalidFileException ue) {
+            ActionHelper.saveMessage(getText(ue.getMessage()));
+        } catch (Exception e) {
+            String msg = "Unable to unpack file: " + e.getMessage();
+            LOG.error(msg, e);
+            ActionHelper.saveMessage(getText("errorUploading"));
+        }
+
+        return returnVal;
     }
 
     /**
@@ -584,7 +617,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         int count = 0;
         try {
             count = getProjectManagementService().uploadFiles(getProject(), getUpload(), getUploadFileName(),
-                    conflictingFiles);
+                    fileNamesToUnpack(), conflictingFiles);
         } catch (ZipException e) {
             ActionHelper.saveMessage(getText("errorUploadingZip"));
             return UPLOAD_INPUT;
@@ -891,5 +924,39 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public void setDownloadSequenceNumber(int downloadSequenceNumber) {
         this.downloadSequenceNumber = downloadSequenceNumber;
+    }
+
+    /**
+     * Returns the names of the files selected to be unpacked.
+     * @return fileNamesToUnpack
+     *
+     */
+    private List<String> fileNamesToUnpack() {
+        List<String> fileNamesToUnpack = null;
+
+        if (this.getSelectedFilesToUnpack() != null && this.getSelectedFilesToUnpack().size() > 1) {
+            fileNamesToUnpack = new ArrayList();
+            for (Long unpackIndex : this.getSelectedFilesToUnpack()) {
+                if (unpackIndex.intValue() == -1) {
+                    continue;
+                }
+                fileNamesToUnpack.add(this.uploadFileNames.get(unpackIndex.intValue()));
+            }
+        }
+        return fileNamesToUnpack;
+    }
+
+    /**
+     * @return the selectedFilesToUnpack
+     */
+    public List<Long> getSelectedFilesToUnpack() {
+        return selectedFilesToUnpack;
+    }
+
+    /**
+     * @param selectedFilesToUnpack the selectedFilesToUnpack to set
+     */
+    public void setSelectedFilesToUnpack(List<Long> selectedFilesToUnpack) {
+        this.selectedFilesToUnpack = selectedFilesToUnpack;
     }
 }
