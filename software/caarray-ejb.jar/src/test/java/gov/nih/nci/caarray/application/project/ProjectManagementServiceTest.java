@@ -273,8 +273,8 @@ public class ProjectManagementServiceTest {
         List<String> filesToUnpack = new ArrayList<String>();
         filesToUnpack.add("specification.zip");
         int count = this.projectManagementService.uploadFiles(project, files, fileNames, filesToUnpack, conflicts);
-        assertEquals(11, count);
-        assertEquals(11, project.getFiles().size());
+        assertEquals(17, count);
+        assertEquals(17, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
         assertContains(project.getFiles(), "Test1.txt");
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
@@ -302,8 +302,8 @@ public class ProjectManagementServiceTest {
 
         int count = this.projectManagementService.unpackFiles(project, cFileList);
         // the unpack should have added 10 files and removed the zip archive
-        assertEquals(10, count);
-        assertEquals(9, project.getFiles().size() - this.fileAccessService.getRemovedFileCount());
+        assertEquals(16, count);
+        assertEquals(15, project.getFiles().size() - this.fileAccessService.getRemovedFileCount());
         assertNotNull(project.getFiles().iterator().next().getProject());
         assertNotContains(project.getFiles(), "specification.zip");
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());

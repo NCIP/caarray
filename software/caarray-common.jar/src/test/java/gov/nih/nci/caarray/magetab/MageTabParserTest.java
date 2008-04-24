@@ -694,11 +694,17 @@ public class MageTabParserTest {
         Iterator<ArrayDataFile> rawDataIterator = rawDataFiles.iterator();
         ArrayDataFile arrayDataFile = rawDataIterator.next();
         assertNotNull(arrayDataFile);
-        assertEquals("H_TK6 replicate 3.CEL", arrayDataFile.getName());
-        assertEquals(1, arrayDataFile.getSuccessorDerivedArrayDataMatrixFiles().size());
-        arrayDataFile = rawDataIterator.next();
-        assertEquals("H_TK6 replicate 1.CEL", arrayDataFile.getName());
-        assertEquals(0, arrayDataFile.getSuccessorDerivedArrayDataMatrixFiles().size());
+        if ("H_TK6 replicate 3.CEL".equals(arrayDataFile.getName())) {
+            assertEquals(1, arrayDataFile.getSuccessorDerivedArrayDataMatrixFiles().size());
+            arrayDataFile = rawDataIterator.next();
+            assertEquals("H_TK6 replicate 1.CEL", arrayDataFile.getName());
+            assertEquals(0, arrayDataFile.getSuccessorDerivedArrayDataMatrixFiles().size());
+        } else {
+            assertEquals(0, arrayDataFile.getSuccessorDerivedArrayDataMatrixFiles().size());
+            arrayDataFile = rawDataIterator.next();
+            assertEquals("H_TK6 replicate 3.CEL", arrayDataFile.getName());
+            assertEquals(1, arrayDataFile.getSuccessorDerivedArrayDataMatrixFiles().size());
+        }
     }
 
     /**
