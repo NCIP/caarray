@@ -164,16 +164,8 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 	private final VocabularyService													vocabularyService;
 	private final MultiKeyMap														paramMap							= new MultiKeyMap();
 
-	
-	private List<RplaHybridization> _rplaHybridizations;
-	
-	
-	
-	
-	
-	
-	
-	
+	private List<RplaHybridization>													_rplaHybridizations;
+
 	SradfTranslator(RplaTabDocumentSet rset,
 					CaArrayFileSet fileSet,
 					RplaTabTranslationResult translationResult,
@@ -207,7 +199,7 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 		translateNodesToEntities(rset);
 
 		// linkNodes(document);
-	
+
 		// if (document.getIdfDocument() != null) {
 		// String investigationTitle = document.getIdfDocument()
 		// .getInvestigation()
@@ -225,10 +217,10 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 
 			investigation.getSources().addAll(this.allSources);
 			investigation.getSamples().addAll(this.allSamples);
-			
-			
-		//	investigation.getRplaHybridizations().addAll( this._rplaHybridizations) ;
-		
+
+			// investigation.getRplaHybridizations().addAll(
+			// this._rplaHybridizations) ;
+
 			// investigation .getHybridizations()
 			// .addAll(this.allHybridizations);
 			// }
@@ -257,15 +249,20 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 
 	private void translateRplArrays ( RplaTabDocumentSet rset) {
 
+		LOG.info("Number of RplArrays:"+ rset.getRplArrays().size());
+		
 		for (gov.nih.nci.carpla.rplatab.model.RplArray rplArray : rset.getRplArrays()) {
 			RplArray domain_rplArray = new RplArray();
-			//domain_rplArray.setName(rplArray.getName());
-			//getTranslationResult()	.getInvestigations()
-				//					.iterator()
-					//				.next()
-						//			.getRplArrays()
-							//		.add(domain_rplArray);
+			domain_rplArray.setName(rplArray.getName());
+			getTranslationResult()	.getInvestigations()
+									.iterator()
+									.next()
+									.getRplArrays()
+									.add(domain_rplArray);
 		}
+		
+		
+		
 	}
 
 	private void translateAntibodies ( RplaTabDocumentSet rset) {
@@ -273,11 +270,11 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 		for (gov.nih.nci.carpla.rplatab.model.Antibody antibody : rset.getAntibodies()) {
 			Antibody domain_antibody = new Antibody();
 			domain_antibody.setName(antibody.getName());
-		//	getTranslationResult()	.getInvestigations()
-			//						.iterator()
-				//					.next()
-					//				.getAntibodies()
-						//			.add(domain_antibody);
+			// getTranslationResult() .getInvestigations()
+			// .iterator()
+			// .next()
+			// .getAntibodies()
+			// .add(domain_antibody);
 		}
 	}
 
@@ -541,6 +538,12 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 
 	private AbstractCharacteristic translateCharacteristic ( Characteristic sdrfCharacteristic)
 	{
+		
+		
+		LOG.info(sdrfCharacteristic.toString());
+		LOG.info(sdrfCharacteristic.getValue());
+		LOG.info(sdrfCharacteristic.getTerm());
+		
 		Category category = TermTranslator.getOrCreateCategory(	this.vocabularyService,
 																this.getTranslationResult(),
 																sdrfCharacteristic.getCategory());
@@ -604,8 +607,9 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 							baseGeneratedNodeName,
 							pas);
 		} else if (SdrfNodeType.HYBRIDIZATION.equals(leftNodeType)) {
-			//linkHybridizationToArrays(	(gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode,
-				//						(Hybridization) leftCaArrayNode);
+			// linkHybridizationToArrays(
+			// (gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode,
+			// (Hybridization) leftCaArrayNode);
 			linkHybridizationToImages(	(gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode,
 										(Hybridization) leftCaArrayNode);
 			linkHybridizationToArrayData(	(gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode,
@@ -704,32 +708,34 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 				linkSampleAndExtract(	(Sample) leftCaArrayNode,
 										(Extract) rightCaArrayNode);
 			} else {
-				//Extract generatedExtract = generateExtractAndLink(	baseGeneratedNodeName,
-					//												(Sample) leftCaArrayNode);
-			//	reassociateProtocolApplications(generatedExtract,
-				//								protocolApplications);
-				//linkBioMaterial(generatedExtract,
-				//				rightCaArrayNode,
-					//			SdrfNodeType.EXTRACT,
-					//			rightNodeType,
-					//			baseGeneratedNodeName,
-						//		protocolApplications);
+				// Extract generatedExtract = generateExtractAndLink(
+				// baseGeneratedNodeName,
+				// (Sample) leftCaArrayNode);
+				// reassociateProtocolApplications(generatedExtract,
+				// protocolApplications);
+				// linkBioMaterial(generatedExtract,
+				// rightCaArrayNode,
+				// SdrfNodeType.EXTRACT,
+				// rightNodeType,
+				// baseGeneratedNodeName,
+				// protocolApplications);
 			}
 		} else if (leftNodeType.equals(SdrfNodeType.EXTRACT)) {
 			if (rightNodeType.equals(SdrfNodeType.LABELED_EXTRACT)) {
 				linkExtractAndLabeledExtract(	(Extract) leftCaArrayNode,
 												(LabeledExtract) rightCaArrayNode);
 			} else {
-				//LabeledExtract generatedLabeledExtract = generateLabeledExtractAndLink(	baseGeneratedNodeName,
-														//								(Extract) leftCaArrayNode);
-				//reassociateProtocolApplications(generatedLabeledExtract,
-				//								protocolApplications);
-				//linkBioMaterial(generatedLabeledExtract,
-						//		rightCaArrayNode,
-						//		SdrfNodeType.LABELED_EXTRACT,
-						//		rightNodeType,
-							//	baseGeneratedNodeName,
-							//	protocolApplications);
+				// LabeledExtract generatedLabeledExtract =
+				// generateLabeledExtractAndLink( baseGeneratedNodeName,
+				// (Extract) leftCaArrayNode);
+				// reassociateProtocolApplications(generatedLabeledExtract,
+				// protocolApplications);
+				// linkBioMaterial(generatedLabeledExtract,
+				// rightCaArrayNode,
+				// SdrfNodeType.LABELED_EXTRACT,
+				// rightNodeType,
+				// baseGeneratedNodeName,
+				// protocolApplications);
 			}
 		} else if ((leftNodeType.equals(SdrfNodeType.LABELED_EXTRACT)) && (rightNodeType.equals(SdrfNodeType.HYBRIDIZATION))) {
 			linkLabeledExtractAndHybridization(	(LabeledExtract) leftCaArrayNode,

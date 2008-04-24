@@ -11,7 +11,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
 
-
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
@@ -25,58 +24,27 @@ import gov.nih.nci.caarray.security.SecurityPolicy;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 @Entity
-@Table ( name = "try")
-
+@Table(name = "rplarray")
 public class RplArray extends AbstractCaArrayEntity {
 
-//	private String				_name;
+	private String				_name;
 
-	private String name;
-	private Long				id;
-	
-	
-	
-	@NotNull
-    @Length(min = 1, max = 123)
-    public String getName() {
-        return this.name;
-    }
-	
-	
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	public Long getId () {
-		return id;
-	}
-	
-	
-	
-	
-	
-//	private Long				id;
-	
-	/*
 	private ProtocolApplication	_creationProtocolApplication;
-
 	private RplArrayGroup		_rplArrayGroup;
-
 	private Person				_provider;
-
 	private Set<RplaFeature>	_features	= new HashSet<RplaFeature>();
 	private Set<RplaReporter>	_reporters	= new HashSet<RplaReporter>();
-*/
-	//public void setName ( String name) {
-	//	_name = name;
 
-	//}
+	@NotNull
+	@Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
+	public String getName () {
+		return this._name;
+	}
 
-	//@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
-	//public Long getId () {
-		//return id;
-	//}
 
-	
+
+	public void setName ( String name) {
+		_name = name;
+	}
 
 }

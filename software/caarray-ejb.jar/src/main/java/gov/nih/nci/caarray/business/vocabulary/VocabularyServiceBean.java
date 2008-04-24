@@ -104,6 +104,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 
@@ -115,174 +116,192 @@ import org.hibernate.criterion.Order;
 @Interceptors(ExceptionLoggingInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class VocabularyServiceBean implements VocabularyService {
-    private static final String VERSION_FIELD = "version";
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+	private static final String	VERSION_FIELD	= "version";
+	private CaArrayDaoFactory	daoFactory		= CaArrayDaoFactory.INSTANCE;
 
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public Set<Term> getTerms(final Category category) {
-        return getTerms(category, null);
-    }
+	private static final Logger	LOG				= Logger.getLogger(VocabularyServiceBean.class);
 
-    /**
-     * {@inheritDoc}
-     */
-    public Set<Term> getTerms(final Category category, String value) {
-        if (category == null) {
-            throw new IllegalArgumentException("Category is null");
-        }
-        return getVocabularyDao().getTermsRecursive(category, value);
-    }
+	/**
+	 * 
+	 * {@inheritDoc}
+	 */
+	public Set<Term> getTerms ( final Category category) {
+		return getTerms(category, null);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Term getTerm(TermSource source, String value) {
-        return getVocabularyDao().getTerm(source, value);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public Set<Term> getTerms ( final Category category, String value) {
+		if (category == null) {
+			throw new IllegalArgumentException("Category is null");
+		}
+		return getVocabularyDao().getTermsRecursive(category, value);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Organism getOrganism(TermSource source, String scientificName) {
-        return getVocabularyDao().getOrganism(source, scientificName);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public List<Organism> getOrganisms() {
-        return getOrganismDao().getAllOrganisms();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public Term getTerm ( TermSource source, String value) {
+		return getVocabularyDao().getTerm(source, value);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public TermSource getSource(String name, String version) {
-        TermSource querySource = new TermSource();
-        querySource.setName(name);
-        querySource.setVersion(version);
-        return CaArrayUtils.uniqueResult(getVocabularyDao().queryEntityByExample(querySource, MatchMode.EXACT, false,
-                new String[] {"url" }, Order.desc(VERSION_FIELD)));
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public Organism getOrganism ( TermSource source, String scientificName) {
+		return getVocabularyDao().getOrganism(source, scientificName);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Set<TermSource> getSources(String name) {
-        TermSource querySource = new TermSource();
-        querySource.setName(name);
-        return new LinkedHashSet<TermSource>(getVocabularyDao().queryEntityByExample(querySource,
-                Order.desc(VERSION_FIELD)));
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<Organism> getOrganisms () {
+		return getOrganismDao().getAllOrganisms();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public TermSource getSourceByUrl(String url, String version) {
-        TermSource querySource = new TermSource();
-        querySource.setUrl(url);
-        querySource.setVersion(version);
-        return CaArrayUtils.uniqueResult(getVocabularyDao().queryEntityByExample(querySource, MatchMode.EXACT, false,
-                new String[] {"name" }, Order.desc(VERSION_FIELD)));
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public TermSource getSource ( String name, String version) {
+		TermSource querySource = new TermSource();
+		querySource.setName(name);
+		querySource.setVersion(version);
+		return CaArrayUtils.uniqueResult(getVocabularyDao()	.queryEntityByExample(	querySource,
+																					MatchMode.EXACT,
+																					false,
+																					new String[] { "url" },
+																					Order.desc(VERSION_FIELD)));
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Set<TermSource> getSourcesByUrl(String url) {
-        TermSource querySource = new TermSource();
-        querySource.setUrl(url);
-        return new LinkedHashSet<TermSource>(getVocabularyDao().queryEntityByExample(querySource,
-                Order.desc(VERSION_FIELD)));
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public Set<TermSource> getSources ( String name) {
+		TermSource querySource = new TermSource();
+		querySource.setName(name);
+		return new LinkedHashSet<TermSource>(getVocabularyDao()	.queryEntityByExample(	querySource,
+																						Order.desc(VERSION_FIELD)));
+	}
 
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public List<TermSource> getAllSources() {
-        return getVocabularyDao().queryEntityByExample(new TermSource(), Order.asc("name"));
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public TermSource getSourceByUrl ( String url, String version) {
+		TermSource querySource = new TermSource();
+		querySource.setUrl(url);
+		querySource.setVersion(version);
+		return CaArrayUtils.uniqueResult(getVocabularyDao()	.queryEntityByExample(	querySource,
+																					MatchMode.EXACT,
+																					false,
+																					new String[] { "name" },
+																					Order.desc(VERSION_FIELD)));
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Category getCategory(TermSource source, String categoryName) {
-        return getVocabularyDao().getCategory(source, categoryName);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public Set<TermSource> getSourcesByUrl ( String url) {
+		TermSource querySource = new TermSource();
+		querySource.setUrl(url);
+		return new LinkedHashSet<TermSource>(getVocabularyDao()	.queryEntityByExample(	querySource,
+																						Order.desc(VERSION_FIELD)));
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Term getTerm(Long id) {
-        return getVocabularyDao().getTermById(id);
-    }
+	/**
+	 * 
+	 * {@inheritDoc}
+	 */
+	public List<TermSource> getAllSources () {
+		return getVocabularyDao().queryEntityByExample(	new TermSource(),
+														Order.asc("name"));
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("deprecation")
-    public List<Protocol> getProtocolByProtocolType(Term type) {
-        if (type == null) {
-            return new ArrayList<Protocol>();
-        }
-        Protocol p = new Protocol();
-        p.setType(type);
-        return getVocabularyDao().queryEntityAndAssociationsByExample(p);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public Category getCategory ( TermSource source, String categoryName) {
+		LOG.info(source.toString());
+		LOG.info(source.getNameAndVersion());
+		LOG.info(categoryName);
+		
+		
+		
+		return getVocabularyDao().getCategory(source, categoryName);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Protocol getProtocol(String name, TermSource source) {
-        return this.daoFactory.getProtocolDao().getProtocol(name, source);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public Term getTerm ( Long id) {
+		return getVocabularyDao().getTermById(id);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Organism getOrganism(Long id) {
-        return getOrganismDao().getOrganism(id);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@SuppressWarnings("deprecation")
+	public List<Protocol> getProtocolByProtocolType ( Term type) {
+		if (type == null) {
+			return new ArrayList<Protocol>();
+		}
+		Protocol p = new Protocol();
+		p.setType(type);
+		return getVocabularyDao().queryEntityAndAssociationsByExample(p);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void saveTerm(Term term) {
-        getVocabularyDao().save(term);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public Protocol getProtocol ( String name, TermSource source) {
+		return this.daoFactory.getProtocolDao().getProtocol(name, source);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Term findTermInAllTermSourceVersions(TermSource termSource, String value) {
-        return getVocabularyDao().findTermInAllTermSourceVersions(termSource, value);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public Organism getOrganism ( Long id) {
+		return getOrganismDao().getOrganism(id);
+	}
 
-    /**
-     * 
-     * @return VocabularyDao
-     */
-    protected VocabularyDao getVocabularyDao() {
-        return this.daoFactory.getVocabularyDao();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public void saveTerm ( Term term) {
+		getVocabularyDao().save(term);
+	}
 
-    /**
-     * @return OrganismDao
-     */
-    private OrganismDao getOrganismDao() {
-        return this.daoFactory.getOrganismDao();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public Term findTermInAllTermSourceVersions (	TermSource termSource,
+													String value)
+	{
+		return getVocabularyDao().findTermInAllTermSourceVersions(	termSource,
+																	value);
+	}
 
-    final CaArrayDaoFactory getDaoFactory() {
-        return this.daoFactory;
-    }
+	/**
+	 * 
+	 * @return VocabularyDao
+	 */
+	protected VocabularyDao getVocabularyDao () {
+		return this.daoFactory.getVocabularyDao();
+	}
 
-    final void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
+	/**
+	 * @return OrganismDao
+	 */
+	private OrganismDao getOrganismDao () {
+		return this.daoFactory.getOrganismDao();
+	}
+
+	final CaArrayDaoFactory getDaoFactory () {
+		return this.daoFactory;
+	}
+
+	final void setDaoFactory ( CaArrayDaoFactory daoFactory) {
+		this.daoFactory = daoFactory;
+	}
 }

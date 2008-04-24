@@ -364,6 +364,13 @@ public class RplaTabImporter {
 							.addAll(translatedExperiment.getSources());
 		originalExperiment	.getExperimentContacts()
 							.addAll(translatedExperiment.getExperimentContacts());
+		
+		originalExperiment.getRplArrays().addAll(translatedExperiment.getRplArrays());
+		
+		originalExperiment.getRplaHybridizations().addAll (translatedExperiment.getRplaHybridizations());
+		
+		
+		
 		for (ExperimentContact ec : translatedExperiment.getExperimentContacts()) {
 			ec.setExperiment(originalExperiment);
 		}

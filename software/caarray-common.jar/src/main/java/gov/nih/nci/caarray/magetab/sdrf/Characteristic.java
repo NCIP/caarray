@@ -93,7 +93,7 @@ import java.io.Serializable;
 
 // carplanotes
 // Took away the final...
-// Why not? I want to extend it to implement some interfaces I use in my
+// Why not? I want to extend it in order to implement some interfaces I use in my
 // parsing...
 // See Characteristic in rplatab.model
 

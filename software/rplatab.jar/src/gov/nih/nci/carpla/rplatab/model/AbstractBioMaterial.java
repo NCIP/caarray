@@ -90,7 +90,7 @@ import java.util.Vector;
 
 
 //carplanotes
-//I would have liked to used AbstractBioMaterial from magetab.sdrf, but it extends 
+//I would have liked to used AbstractBioMaterial from magetab.sdrf., but it extends 
 // the AbstractSampleDataRelationshipNode class which seems in bed with SdrfDocument 
 //I just copied the code over...
 

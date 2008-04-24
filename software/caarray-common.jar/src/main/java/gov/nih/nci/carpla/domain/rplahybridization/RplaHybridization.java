@@ -1,5 +1,6 @@
 package gov.nih.nci.carpla.domain.rplahybridization;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.carpla.domain.rplarray.RplArray;
@@ -8,20 +9,102 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-public class RplaHybridization {
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-	private Date				_date;
-	private String				_name;
-	private Antibody			_antibody;
-	private ProtocolApplication	_protocolApplication;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.Length;
+
+@Entity
+@Table(name = "rplahybridization")
+public class RplaHybridization extends AbstractCaArrayEntity {
+
 	
-	//not sure if there is any reason to have this here, except possibly to explicitly call out some factor value(s)
+	// #################################################################
+	// not sure if there is any reason to have this here, except possibly to
+	// explicitly call out some factor value(s)
 	// that relate to something other than the samples on the array
-	//such as a protocol parameter in array creation, or in array hybridization
-	private Set<FactorValue>	_factorValues	= new HashSet<FactorValue>();
+	// such as a protocol parameter in array creation or in array hybridization
+	// @OneToMany(fetch = FetchType.LAZY)
+	// private Set<FactorValue> _factorValues = new HashSet<FactorValue>();
+	// #################################################################
+
+	private Date	_date;
+
+	public Date getDate () {
+		return _date;
+	}
+
+	public void setDate ( Date date) {
+		_date = date;
+	}
+
+	// #################################################################
+	private RplArray	_rplArray;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@Cascade(CascadeType.SAVE_UPDATE)
+	// Could eventually add DELETE cascade, but Arrays are shared...is this
+	// relevant here?
+	@ForeignKey(name = "rplahybridization_rplarray_fk")
+	public RplArray getRplArray () {
+		return _rplArray;
+
+	}
+
+	public void setRplArray ( RplArray rarray) {
+		_rplArray = rarray;
+	}
+
+	// #################################################################
+
+	private ProtocolApplication	_protocolApplication;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.DELETE })
+	@ForeignKey(name = "rplahybridization_protocolapp_fk")
+	public ProtocolApplication getProtocolApplication () {
+		return this._protocolApplication;
+	}
+
+	public void setProtocolApplication ( ProtocolApplication protocolApplication)
+	{
+		_protocolApplication = protocolApplication;
+	}
+
+	// #################################################################
+	private Antibody	_antibody;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.DELETE })
+	@ForeignKey(name = "rplahybridization_antibody_fk")
+	public Antibody getAntibody () {
+		return _antibody;
+	}
+
+	public void setAntibody(Antibody antibody){
+		_antibody = antibody ;
+		
+	}
 	
 	
-	
-	private RplArray			_rplArray;
+	// #################################################################
+	private String	_name;
+
+	@Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
+	public String getName () {
+		return _name;
+	}
+
+	public void setName ( String name) {
+		_name = name;
+
+	}
+	// #################################################################
 
 }

@@ -25,8 +25,14 @@
         
         
         <mapping class="gov.nih.nci.carpla.domain.rplarray.RplArray"/>
-        
-        <mapping class="gov.nih.nci.caarray.domain.project.TestGvf"/>
+         <mapping class="gov.nih.nci.carpla.domain.rplahybridization.RplaHybridization"/>
+       <mapping class="gov.nih.nci.carpla.domain.antibody.Antibody"/>
+      
+      
+      
+      
+      
+      
         <mapping class="edu.georgetown.pir.AdditionalOrganismName" />
        <mapping class="edu.georgetown.pir.Organism" /> 
         <mapping class="edu.wustl.catissuecore.domain.MolecularSpecimen" />

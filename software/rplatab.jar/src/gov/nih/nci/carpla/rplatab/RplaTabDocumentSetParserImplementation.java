@@ -828,6 +828,13 @@ public class RplaTabDocumentSetParserImplementation
 		OntologyTerm ot = rplaTabDocumentSet.createOntologyTerm(qualifier, name);
 		characteristic.setTerm(ot);
 
+		//not sure I understand why the category is in both Characteristics and in the OntologyTerm
+		characteristic.setCategory(qualifier);
+		
+		
+		
+		
+		
 		hasCharacteristics.getCharacteristics().add(characteristic);
 
 		List<SradfHeader> subheaders = header.getSubHeaders();
