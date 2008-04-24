@@ -209,24 +209,32 @@ public class ProjectManagementServiceTest {
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
     }
 
+
     @Test
     public void testUploadFiles() throws Exception {
         Project project = this.projectManagementService.getProject(123L);
         List<String> conflicts = new ArrayList<String>();
         List<String> fileNames = new ArrayList<String>();
         List<File> files = new ArrayList<File>();
+        List<String> filesToUnpack = new ArrayList<String>();
+
+        // add a zip file which contains some non-zip files and 1 zip file (11 in total)
         files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP);
         fileNames.add("specification.zip");
-
+        // the top layer zip will be unpacked
+        filesToUnpack.add("specification.zip");
+        // also attempt to add a file with a blank file name
         files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         fileNames.add("  ");
-
+        // attempt to add a file that is already inside nested zip
+        // this should be fine (this file plus contents of zip will make the total 12)
         files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE);
         fileNames.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
-
+        // attempt to add file that is already part of the zip
+        // this should cause a conflict
         files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         fileNames.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        int count = this.projectManagementService.uploadFiles(project, files, fileNames, conflicts);
+        int count = this.projectManagementService.uploadFiles(project, files, fileNames, filesToUnpack, conflicts);
         assertEquals(12, count);
         assertEquals(12, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
@@ -235,7 +243,9 @@ public class ProjectManagementServiceTest {
         assertEquals(1, conflicts.size());
         assertTrue(conflicts.contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
         conflicts = new ArrayList<String>();
-        count = this.projectManagementService.uploadFiles(project, files, fileNames, conflicts);
+        // attempt to re-upload a bunch of the files that were just uploaded to get
+        // to get back nothing, showing that if a file has the same name, we do not add it.
+        count = this.projectManagementService.uploadFiles(project, files, fileNames, filesToUnpack, conflicts);
         assertEquals(0, count);
         assertEquals(12, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
@@ -245,6 +255,61 @@ public class ProjectManagementServiceTest {
         assertTrue(conflicts.contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
     }
 
+    @Test
+    public void testUploadFilesDefect13744() throws Exception {
+        // testing upload of a zip file and a txt file in that order
+        // the zip file does not contain the txt file.
+        // the txt file should be unknown.
+        Project project = this.projectManagementService.getProject(123L);
+        List<String> conflicts = new ArrayList<String>();
+        List<String> fileNames = new ArrayList<String>();
+        List<File> files = new ArrayList<File>();
+        files.add(MageTabDataFiles.SPECIFICATION_ZIP);
+        fileNames.add("specification.zip");
+
+        files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE);
+        fileNames.add("Test1.txt");
+
+        List<String> filesToUnpack = new ArrayList<String>();
+        filesToUnpack.add("specification.zip");
+        int count = this.projectManagementService.uploadFiles(project, files, fileNames, filesToUnpack, conflicts);
+        assertEquals(11, count);
+        assertEquals(11, project.getFiles().size());
+        assertNotNull(project.getFiles().iterator().next().getProject());
+        assertContains(project.getFiles(), "Test1.txt");
+        assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
+
+    }
+
+
+    @Test
+    public void testUnpackFiles() throws Exception {
+        // testing unpacking of a file already in the project
+        // add a file
+        Project project = this.projectManagementService.getProject(123L);
+        CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_ZIP);
+        assertEquals(MageTabDataFiles.SPECIFICATION_ZIP.getName(), file.getName());
+        assertEquals(1, project.getFiles().size());
+        assertNotNull(project.getFiles().iterator().next().getProject());
+        assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_ZIP.getName());
+        // unpack zip file
+
+        CaArrayFile myFile = project.getFiles().first();
+
+        // now do the unpack
+        List<CaArrayFile> cFileList = new ArrayList<CaArrayFile>();
+        cFileList.add(myFile);
+
+        int count = this.projectManagementService.unpackFiles(project, cFileList);
+        // the unpack should have added 10 files and removed the zip archive
+        assertEquals(10, count);
+        assertEquals(9, project.getFiles().size() - this.fileAccessService.getRemovedFileCount());
+        assertNotNull(project.getFiles().iterator().next().getProject());
+        assertNotContains(project.getFiles(), "specification.zip");
+        assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
+    }
+
+
     private void assertContains(Set<CaArrayFile> caArrayFiles, String file) {
         for (CaArrayFile caArrayFile : caArrayFiles) {
             if (file.equals(caArrayFile.getName())) {
@@ -252,6 +317,15 @@ public class ProjectManagementServiceTest {
             }
         }
         fail("CaArrayFileSet did not contain " + file);
+    }
+
+    private void assertNotContains(Set<CaArrayFile> caArrayFiles, String file) {
+        for (CaArrayFile caArrayFile : caArrayFiles) {
+            if (file.equals(caArrayFile.getName())) {
+                fail("CaArrayFileSet contains " + file);
+            }
+        }
+        return;
     }
 
     /**

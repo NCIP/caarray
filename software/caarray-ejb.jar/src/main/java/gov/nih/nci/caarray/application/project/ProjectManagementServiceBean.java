@@ -121,13 +121,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -140,6 +139,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -192,59 +192,115 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @TransactionTimeout(UPLOAD_TIMEOUT)
-    public int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> conflictingFiles)
+    public int unpackFiles(Project project, List<CaArrayFile> caFiles)
+        throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException {
+
+        int count = 0;
+        List<String> conflictingFiles = new ArrayList<String>();
+        // create set of existing files
+        Set<String> existingFileNameSet = existingFileNames(project);
+
+        for (CaArrayFile caArrayFile : caFiles) {
+            project.getFiles().remove(caArrayFile);
+
+            File f = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
+            count += unpackUploadedFile(project, f, existingFileNameSet, conflictingFiles);
+            TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(caArrayFile);
+
+            if (caArrayFile.getFileStatus().isDeletable()) {
+                    getFileAccessService().remove(caArrayFile);
+            }
+        }
+
+        return count;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    @TransactionTimeout(UPLOAD_TIMEOUT)
+    public int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> fileNamesToUnpack,
+            List<String> conflictingFiles)
         throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException {
         // create set of existing files
-        Set<String> existingFileNameSet = new HashSet<String>();
-        for (CaArrayFile file : project.getFiles()) {
-            existingFileNameSet.add(file.getName());
-        }
+        Set<String> existingFileNameSet = existingFileNames(project);
 
         int count = 0;
         int index = 0;
+
         for (File currentFile : files) {
-            count += processUploadedFile(project, currentFile, fileNames.get(index),
+
+            if (fileNamesToUnpack != null && fileNamesToUnpack.contains(fileNames.get(index))) {
+                count += unpackUploadedFile(project, currentFile, existingFileNameSet, conflictingFiles);
+            } else {
+                count += processUploadedFile(project, currentFile, fileNames.get(index),
                     existingFileNameSet, conflictingFiles);
+            }
             index++;
+
         }
         return count;
     }
 
-    private int processUploadedFile(Project project, File file, String fileName, Set<String> existingFileNameSet,
-            List<String> conflictingFiles) throws ProposalWorkflowException, IOException,
-            InconsistentProjectStateException, InvalidFileException {
-        Pattern p = Pattern.compile(".zip$");
-        Matcher m = p.matcher(fileName.toLowerCase()); // NOPMD
+    private int processUploadedFile(Project project, File file, String fileName,
+            Set<String> existingFileNameSet, List<String> conflictingFiles)
+            throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException {
         int count = 0;
-        if (m.find()) {
-            ZipFile zipFile = new ZipFile(file);
-            Enumeration<? extends ZipEntry> entries = zipFile.entries();
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                String entryName = entry.getName();
-                if (entryName.indexOf('/') >= 0 || entryName.indexOf('\\') >= 0) {
-                    throw new InvalidFileException("Directories not supported", "directoriesNotSupported");
-                }
-                if (existingFileNameSet.contains(entryName)) {
-                    conflictingFiles.add(entryName);
-                } else {
-                    doAddStream(project, zipFile.getInputStream(entry), entryName);
-                    existingFileNameSet.add(entryName);
-                    count++;
-                }
-            }
-            zipFile.close();
-        } else if (StringUtils.isNotBlank(fileName)) {
+
+        if (StringUtils.isNotBlank(fileName)) {
             if (existingFileNameSet.contains(fileName)) {
                 conflictingFiles.add(fileName);
             } else {
-                addFile(project, file, fileName);
+                InputStream in =  FileUtils.openInputStream(file);
+                doAddStream(project, in, fileName);
+                in.close();
                 existingFileNameSet.add(fileName);
                 count++;
             }
         }
         return count;
     }
+
+    private Set<String> existingFileNames(Project project) {
+        // create set of existing files
+        Set<String> existingFileNameSet = new HashSet<String>();
+        for (CaArrayFile file : project.getFiles()) {
+            existingFileNameSet.add(file.getName());
+        }
+
+        return existingFileNameSet;
+    }
+
+
+    private int unpackUploadedFile(Project project, File file,
+            Set<String> existingFileNameSet, List<String> conflictingFiles)
+            throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException {
+        int count = 0;
+
+        ZipFile zipFile = new ZipFile(file);
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        while (entries.hasMoreElements()) {
+             ZipEntry entry = entries.nextElement();
+             String entryName = entry.getName();
+             if (entryName.indexOf('/') >= 0 || entryName.indexOf('\\') >= 0) {
+                 throw new InvalidFileException("Directories not supported", "directoriesNotSupported");
+             }
+             if (existingFileNameSet.contains(entryName)) {
+                 conflictingFiles.add(entryName);
+             } else {
+                 InputStream in = zipFile.getInputStream(entry);
+                 doAddStream(project, in, entryName);
+                 in.close();
+                 existingFileNameSet.add(entryName);
+                 count++;
+             }
+        }
+        zipFile.close();
+        return count;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -273,7 +329,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     private CaArrayFile doAddStream(Project project, InputStream stream, String filename)
-            throws ProposalWorkflowException, InconsistentProjectStateException  {
+            throws ProposalWorkflowException, InconsistentProjectStateException, IOException  {
         checkIfProjectSaveAllowed(project);
         CaArrayFile caArrayFile = getFileAccessService().add(stream, filename);
         addCaArrayFileToProject(project, caArrayFile);
@@ -289,7 +345,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private void addCaArrayFileToProject(Project project, CaArrayFile caArrayFile) {
         project.getFiles().add(caArrayFile);
         caArrayFile.setProject(project);
-        getProjectDao().save(project);
+        getFileAccessService().save(caArrayFile);
         HibernateUtil.getCurrentSession().flush();
         caArrayFile.clearAndEvictContents();
     }

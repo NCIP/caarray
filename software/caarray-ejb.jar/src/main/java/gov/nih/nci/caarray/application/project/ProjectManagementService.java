@@ -139,6 +139,7 @@ public interface ProjectManagementService {
      * @param project the project the files are being uploaded in to.
      * @param files the files being uploaded.
      * @param fileNames the file names to use.
+     * @param filesToUnpack the file names to unpack.
      * @param conflictingFiles out param for files that conflict with existing files in the project.
      * @return the count of imported files.
      * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status
@@ -147,8 +148,25 @@ public interface ProjectManagementService {
      * internally consistent
      * @throws InvalidFileException if the file is invalid
      */
-    int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> conflictingFiles)
+    int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> filesToUnpack,
+            List<String> conflictingFiles)
             throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException;
+
+    /**
+     * Handle uploaded files.
+     *
+     * @param project the project the files are being uploaded in to.
+     * @param files the files being uploaded.
+     * @return the count of imported files.
+     * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status
+     * @throws IOException if there is an error handling the files.
+     * @throws InconsistentProjectStateException if the project cannot currently be modified because its state is not
+     * internally consistent
+     * @throws InvalidFileException if the file is invalid
+     */
+    int unpackFiles(Project project, List<CaArrayFile> files)
+            throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException;
+
 
     /**
      * Associates a single file with a project. After calling this method, clients can expect a new

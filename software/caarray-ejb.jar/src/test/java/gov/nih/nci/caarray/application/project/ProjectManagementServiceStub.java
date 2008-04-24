@@ -345,7 +345,16 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> conflictingFiles)
+    public int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> filesToUnpack, List<String> conflictingFiles)
+            throws ProposalWorkflowException, IOException {
+        this.filesAddedCount += files.size();
+        return files.size();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int unpackFiles(Project project, List<CaArrayFile> files)
             throws ProposalWorkflowException, IOException {
         this.filesAddedCount += files.size();
         return files.size();

@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -235,11 +234,8 @@ public class FileAccessServiceBean implements FileAccessService {
 
                         InputStream fileInputStream = zipFile.getInputStream(entry);
                         FileOutputStream fileOutputStream = new FileOutputStream(entryFile);
-                        BufferedOutputStream bufferedOutput = new BufferedOutputStream(fileOutputStream);
-                        IOUtils.copy(fileInputStream, bufferedOutput);
-
-                        bufferedOutput.flush();
-                        IOUtils.closeQuietly(bufferedOutput);
+                        IOUtils.copy(fileInputStream, fileOutputStream);
+                        IOUtils.closeQuietly(fileOutputStream);
 
                         uploads.add(entryFile);
                         uploadFileNames.add(entry.getName());
