@@ -148,7 +148,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 @SuppressWarnings("PMD.ExcessiveClassLength")
 public class ProjectManagementServiceBean implements ProjectManagementService {
     private static final Logger LOG = Logger.getLogger(ProjectManagementServiceBean.class);
-    private static final int UPLOAD_TIMEOUT = 1800;
+    private static final int UPLOAD_TIMEOUT = 7200;
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     @Resource

@@ -86,6 +86,7 @@ import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileAccessSe
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManagementService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -98,7 +99,6 @@ import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -120,6 +120,7 @@ import org.apache.commons.collections.set.TransformedSet;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -140,6 +141,8 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
                                                 expression = "selectedFiles.size() > 0"))
 public class ProjectFilesAction extends AbstractBaseProjectAction implements Preparable {
+    private static final Logger LOG = Logger.getLogger(ProjectFilesAction.class);
+
     /**
      * an instance of a Comparator that compares CaArrayFile instances by name.
      */
@@ -581,24 +584,35 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public static void downloadFiles(Project project, Collection<CaArrayFile> files) throws IOException {
         HttpServletResponse response = ServletActionContext.getResponse();
-        response.setContentType(DOWNLOAD_CONTENT_TYPE);
-        response.addHeader("Content-disposition", "filename=\"" + determineDownloadFileName(project) + "\"");
-        
-        List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);        
-        Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
-        OutputStream sos = response.getOutputStream();
-        ZipOutputStream zos = new ZipOutputStream(sos);
-        for (CaArrayFile caf : sortedFiles) {
-            File f = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caf);
-            InputStream is = new FileInputStream(f);
-            ZipEntry ze = new ZipEntry(f.getName());
-            zos.putNextEntry(ze);
-            IOUtils.copy(is, zos);
-            zos.closeEntry();
-            is.close();
-            zos.flush();
+        FileInputStream fis = null;        
+        try {
+            response.setContentType(DOWNLOAD_CONTENT_TYPE);
+            response.addHeader("Content-disposition", "filename=\"" + determineDownloadFileName(project) + "\"");
+            
+            List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);        
+            Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
+            OutputStream sos = response.getOutputStream();
+            ZipOutputStream zos = new ZipOutputStream(sos);
+            TemporaryFileCache tempCache = TemporaryFileCacheLocator.getTemporaryFileCache();        
+            for (CaArrayFile caf : sortedFiles) {
+                File f = tempCache.getFile(caf);
+                fis = new FileInputStream(f);
+                ZipEntry ze = new ZipEntry(f.getName());
+                zos.putNextEntry(ze);
+                IOUtils.copy(fis, zos);
+                zos.closeEntry();
+                fis.close();
+                tempCache.closeFile(caf);
+                zos.flush();
+            }
+            zos.finish();
+        } catch (Exception e) {
+            LOG.error("Error streaming download", e);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            if (fis != null) {
+                IOUtils.closeQuietly(fis);
+            }
         }
-        zos.finish();
     }    
 
     private static String determineDownloadFileName(Project project) {
