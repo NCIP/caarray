@@ -147,9 +147,10 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         // - hit the refresh button until files are imported
         waitForImport("Nothing found to display");
 
-        // - click on the Imported data tab
-        selenium.click("link=Imported Data");
-        waitForText("29 items found");
+        // - click on the Imported data tab and re-click until data
+        // - can be found
+        reClickForText("29 items found", "link=Imported Data", 4, 60000);
+
 
         // make experiment public
         submitExperiment();

@@ -90,7 +90,7 @@ import org.junit.Test;
 
 /**
  * Test case #7959.
- * 
+ *
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
 public class ImportGenePixSetTest extends AbstractSeleniumTest {
@@ -129,25 +129,21 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         // - hit the refresh button until files are imported
         waitForImport("Nothing found to display");
 
-        // - click on the Imported data tab
-        selenium.click("link=Imported Data");
-
         // TBD - sometimes the Import button is pressed but the app stays on the Upload page - test will time out when that occurs
         // ** this tab consistently fails.  Selenium will press the tab but not switch the page from
         //      the Upload page.
-        Thread.sleep(1000);  
-        selenium.click("link=Imported Data");
-        Thread.sleep(1000);  
-        waitForText("displaying all items");
+        // - click on the Imported data tab and re-click until data
+        // - can be found
+        reClickForText("displaying all items", "link=Imported Data", 4, 60000);
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);
-        
+
         // make experiment public
         submitExperiment();
         makeExperimentPublic(experimentId);
     }
-    
+
 
     private void checkFileStatus(String status, int column) {
         for (int i = 1; i < NUMBER_OF_FILES; i++) {

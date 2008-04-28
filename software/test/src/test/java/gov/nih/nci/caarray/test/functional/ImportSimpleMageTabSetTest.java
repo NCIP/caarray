@@ -128,7 +128,6 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
         // - MAGE-TAB Derived Data Matrix
         // - CEL files referenced in SDRF
-
         upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
         upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
@@ -151,10 +150,9 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         // - hit the refresh button until files are imported
         waitForImport("Nothing found to display");
 
-        // - click on the Imported data tab
-        selenium.click("link=Imported Data");
-        pause(3000);
-        waitForText("9 items found, displaying all items");
+        // - click on the Imported data tab and re-click until data
+        // - can be found
+        reClickForText("15 items found", "link=Imported Data", 4, 60000);
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);

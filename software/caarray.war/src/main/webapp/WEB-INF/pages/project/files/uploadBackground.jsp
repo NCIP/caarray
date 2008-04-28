@@ -28,9 +28,9 @@
                 <s:form action="project/files/upload" id="uploadForm" namespace="" enctype="multipart/form-data" method="post"  target="target_upload">
                     <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
                     <input type=hidden name="selectedFilesToUnpack" value="-1" />
-                    <s:file id="upload" name="upload" label="File">
+                    <s:file id="upload0" name="upload" label="File" onchange="setCheckboxVal(this.value)">
                          <s:param name="after">
-                             <s:checkbox name="selectedFilesToUnpack" fieldValue="0" value="false" theme="simple"/>
+                             <s:checkbox id="checkbox0" name="selectedFilesToUnpack" fieldValue="0" value="false" theme="simple"/>
                              <s:label for="uploadForm_selectedFilesToUnpack" value="Unpack Compressed Archive" theme="simple"/>
                          </s:param>
                     </s:file>
@@ -89,12 +89,22 @@
         newRow = $(formTable.rows[0].cloneNode(true));
         newFile = newRow.down('input');
         newFile.value = '';
-        newFile.id = '';
+        newFile.id = 'upload'+fileCount;
         newCheckbox = newFile.next('input');
         newCheckbox.value = fileCount;
         newCheckbox.checked=false;
+        newCheckbox.id = 'checkbox'+fileCount;
         formTable.tBodies[0].appendChild(newRow);
         fileCount++;
+    }
+
+    function setCheckboxVal(name) {
+        if (name.match('\.zip$')) {
+            $('checkbox' + (fileCount - 1)).disabled = false;
+            $('checkbox' + (fileCount - 1)).checked = true;
+        } else {
+            $('checkbox' + (fileCount - 1)).disabled = true;
+        }
     }
 
     function closeAndGoToProjectData() {

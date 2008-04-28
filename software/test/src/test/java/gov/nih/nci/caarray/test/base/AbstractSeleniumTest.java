@@ -91,7 +91,7 @@ import com.thoughtworks.selenium.SeleneseTestCase;
 /**
  * Base class for all functional tests that use Selenium Remote Control. Provides proper set up in order to be called by
  * caArray's ant script.
- * 
+ *
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
@@ -102,7 +102,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected static int RECORD_TIMEOUT_SECONDS = 240;
     protected static int FIFTEEN_MINUTES = 900;
     protected static final int PAGE_SIZE = 20;
-    protected static final String REFRESH_BUTTON = "//a[6]/span/span";
+    protected static final String REFRESH_BUTTON = "//a[7]/span/span";
     private static final String UPLOAD_BUTTON = "//ul/a[3]/span/span";
     protected static final String ZERO_COLUMN = "0";
     protected static final String FIRST_COLUMN = "1";
@@ -259,10 +259,25 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         waitForText(id, Integer.valueOf(RECORD_TIMEOUT_SECONDS));
     }
 
+    protected void reClickForText(String id, String link, int times, int waitTime) {
+        selenium.click(link);
+        pause(1000);
+        if (!selenium.isTextPresent(id)) {
+            for (int clicked = 0; clicked < times; clicked++) {
+                selenium.click(link);
+                pause(waitTime);
+                if (selenium.isTextPresent(id)) {
+                    return;
+                }
+            }
+            fail("timeout waiting for text " + id + ". Exceeded wait time (sec): " + (times*waitTime)/1000);
+        }
+    }
+
     protected void waitForText(String id, int waitTime) {
         for (int second = 0;; second++) {
             if (second >= Integer.valueOf(waitTime))
-                fail("timeout waiting for text " + id + ". Exceeded wait time: " + waitTime);
+                fail("timeout waiting for text " + id + ". Exceeded wait time (sec): " + waitTime);
             try {
                 if (selenium.isTextPresent(id))
                     break;
@@ -382,7 +397,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         }
     }
 
-   
+
     /**
      * Import array design with default provider and organism
      * @param arrayDesignFile
@@ -391,15 +406,15 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
      */
     protected void importArrayDesign(File arrayDesignFile, String arrayDesignName) throws Exception {
         importArrayDesign(arrayDesignFile, arrayDesignName, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
-    }    
-    
+    }
+
     /**
      * Import the array design
      * @param arrayDesignFile - file to be imported
      * @param arrayDesignName - name of array design
      * @param provider - array design provider
      * @param Organism - array design organism
-     * @throws Exception 
+     * @throws Exception
      */
     protected void importArrayDesign(File arrayDesignFile, String arrayDesignName, String provider, String Organism) throws Exception  {
         selenium.click("link=Manage Array Designs");
@@ -488,7 +503,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     /**
-     * 
+     *
      * @param seconds
      * @param row
      * @return
@@ -513,11 +528,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     /**
-     * 
+     *
      * @param text - value to seach for
      * @param column - Table column which contains the search text
      * @return int the row number
-     * 
+     *
      * Returns the row where the data resides in a particular column For example - find title "Exp 1" in column 1
      * (column 1 holds the experiment names)
      */

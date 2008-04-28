@@ -132,7 +132,7 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         selenium.click("selectFilesForm_selectedFileIds");
         selenium.click("link=Change File Type");
         waitForText("Required fields are marked");
-        selenium.select("projectForm_selectedFiles_0__fileType", "label=Illumina Data CSV");
+        selenium.select("projectForm_changeToFileType", "label=Illumina Data CSV");
         selenium.click("link=Save");
         waitForText("1 file(s) updated", FIFTEEN_MINUTES);
         // - Check if they are uploaded
@@ -147,12 +147,9 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         // - hit the refresh button until files are imported
         waitForImport("Nothing found to display");
 
-        // - click on the Imported data tab
-        selenium.click("link=Imported Data");
-        Thread.sleep(1000);
-        selenium.click("link=Imported Data");
-        Thread.sleep(1000);
-        waitForText("One item found");
+        // - click on the Imported data tab and re-click until data
+        // - can be found
+        reClickForText("One item found", "link=Imported Data", 4, 60000);
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);
