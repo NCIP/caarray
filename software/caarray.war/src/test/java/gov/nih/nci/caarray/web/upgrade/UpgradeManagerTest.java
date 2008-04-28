@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,85 +82,55 @@
  */
 package gov.nih.nci.caarray.web.upgrade;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.GenericDataServiceStub;
+import gov.nih.nci.caarray.application.UserTransactionStub;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
+import gov.nih.nci.caarray.domain.ConfigParamEnum;
+import gov.nih.nci.caarray.util.ConfigurationHelper;
+import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
-import org.apache.log4j.Logger;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.apache.commons.configuration.DataConfiguration;
+import org.hibernate.cfg.Configuration;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 /**
- * Responsible for upgrading a current version of the application schema to a target version.
+ * @author Winston Cheng
+ *
  */
-public final class Migration {
+public class UpgradeManagerTest {
 
-    private static final Logger LOG = Logger.getLogger(Migration.class);
-
-    private final List<AbstractMigrationStep> steps = new ArrayList<AbstractMigrationStep>();
-    private final String fromVersion;
-    private final String toVersion;
-    private MigrationStatus status;
-
-    Migration(Element element) {
-        fromVersion = element.getAttribute("fromVersion");
-        toVersion = element.getAttribute("toVersion");
-        loadSteps(element);
-        status = MigrationStatus.PENDING;
+    @Before
+    public void setUp() throws Exception {
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, new ArrayDesignServiceStub());
+        locatorStub.addLookup(GenericDataService.JNDI_NAME, new GenericDataServiceStub());
+        MysqlDataSource ds = new MysqlDataSource();
+        Configuration config = HibernateUtil.getConfiguration();
+        ds.setUrl(config.getProperty("hibernate.connection.url"));
+        ds.setUser(config.getProperty("hibernate.connection.username"));
+        ds.setPassword(config.getProperty("hibernate.connection.password"));
+        locatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
+        locatorStub.addLookup("java:comp/UserTransaction", new UserTransactionStub());
     }
 
-    private void loadSteps(Element element) {
-        NodeList stepNodes = element.getElementsByTagName("*");
-        for (int i = 0; i < stepNodes.getLength(); i++) {
-            steps.add(createMigrationStep((Element) stepNodes.item(i)));
-        }
+    @Test
+    public void testPerformUpgrades() {
+        DataConfiguration config = ConfigurationHelper.getConfiguration();
+        String currentVersion = config.getString(ConfigParamEnum.SCHEMA_VERSION.name());
+        config.setProperty(ConfigParamEnum.SCHEMA_VERSION.name(), "test1");
+
+        // perform upgrades (test1->test2->test3)
+        UpgradeManager.getInstance().performUpgrades();
+        assertEquals("test3", config.getString(ConfigParamEnum.SCHEMA_VERSION.name()));
+
+        // revert version back
+        config.setProperty(ConfigParamEnum.SCHEMA_VERSION.name(), currentVersion);
     }
-
-    private AbstractMigrationStep createMigrationStep(Element element) {
-        String elementName = element.getNodeName();
-        if ("sql-script".equals(elementName)) {
-            return new SqlScriptMigrationStep(element);
-        } else if ("migrator-class".equals(elementName)) {
-            return new ClassBasedMigrationStep(element);
-        } else {
-            throw new IllegalArgumentException("Invalid migration step element name: " + elementName);
-        }
-    }
-
-    void execute() throws MigrationStepFailedException {
-        LOG.info("Executing data migration from version " + fromVersion + " to version " + toVersion);
-        for (AbstractMigrationStep step : steps) {
-            LOG.info("Executing " + step.toString());
-            step.execute();
-        }
-    }
-
-    /**
-     * @return the version to migrate from
-     */
-    public String getFromVersion() {
-        return fromVersion;
-    }
-
-    /**
-     * @return the version to migrate to
-     */
-    public String getToVersion() {
-        return toVersion;
-    }
-
-    /**
-     * @return the status
-     */
-    public MigrationStatus getStatus() {
-        return status;
-    }
-
-    /**
-     * @param status the status to set
-     */
-    public void setStatus(MigrationStatus status) {
-        this.status = status;
-    }
-
-
 }

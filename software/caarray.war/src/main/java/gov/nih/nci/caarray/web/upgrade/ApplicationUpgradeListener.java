@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.web.upgrade;
 
-import gov.nih.nci.caarray.util.HibernateUtil;
-
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -104,11 +102,11 @@ public class ApplicationUpgradeListener implements ServletContextListener {
      * {@inheritDoc}
      */
     public void contextInitialized(ServletContextEvent arg0) {
-        if (UpgradeManager.getInstance().isUpgradeRequired()) {
-            HibernateUtil.openAndBindSession();
-            UpgradeManager.getInstance().performUpgrades();
-            HibernateUtil.unbindAndCleanupSession();
-        }
+        (new Thread() {
+            public void run() {
+                UpgradeManager.getInstance().performUpgrades();
+            }
+        }).start();
     }
 
 }

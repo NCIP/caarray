@@ -45,7 +45,10 @@
         <param-value>@ldap.install@</param-value>
     </context-param>
 
-
+    <filter>
+        <filter-name>upgradeFilter</filter-name>
+        <filter-class>gov.nih.nci.caarray.web.filter.UpgradeFilter</filter-class>
+    </filter>
     <filter>
         <filter-name>temporaryFilesFilter</filter-name>
         <filter-class>gov.nih.nci.caarray.web.filter.TemporaryFilesCleanupFilter</filter-class>
@@ -83,6 +86,10 @@
         </init-param>
     </filter>
 
+    <filter-mapping>
+        <filter-name>upgradeFilter</filter-name>
+        <url-pattern>*.action</url-pattern>
+    </filter-mapping>
     <filter-mapping>
            <filter-name>urlrewrite</filter-name>
            <url-pattern>/*</url-pattern>

@@ -88,7 +88,9 @@ import gov.nih.nci.caarray.util.ConfigurationHelper;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.transaction.UserTransaction;
@@ -112,7 +114,8 @@ public final class UpgradeManager {
 
     private static UpgradeManager instance = new UpgradeManager();
 
-    private final Map<String, Migration> migrations = new HashMap<String, Migration>();
+    private final Map<String, Migration> allMigrations = new HashMap<String, Migration>();
+    private final List<Migration> upgradeList = new ArrayList<Migration>();
 
     private UserTransaction transaction;
     private String currentVersion;
@@ -135,7 +138,14 @@ public final class UpgradeManager {
             for (int i = 0; i < nl.getLength(); i++) {
                 Element element = (Element) nl.item(i);
                 Migration migration = new Migration(element);
-                migrations.put(migration.getFromVersion(), migration);
+                allMigrations.put(migration.getFromVersion(), migration);
+            }
+
+            String version = getCurrentVersion();
+            Migration migration;
+            while ((migration = allMigrations.get(version)) != null) {
+                upgradeList.add(migration);
+                version = migration.getToVersion();
             }
         } catch (Exception e) {
             LOG.info("error loading migration file", e);
@@ -157,7 +167,7 @@ public final class UpgradeManager {
      * @return true if an upgrade is required, false otherwise.
      */
     public boolean isUpgradeRequired() {
-        return migrations.containsKey(getCurrentVersion());
+        return allMigrations.containsKey(getCurrentVersion());
     }
 
     private String getCurrentVersion() {
@@ -170,36 +180,44 @@ public final class UpgradeManager {
 
     /**
      * Performs any necessary upgrades.
-     *
-     * @return true if successful, false otherwise.
      */
-    public boolean performUpgrades() {
+    public void performUpgrades() {
+        if (!isUpgradeRequired()) {
+            return;
+        }
         LOG.info("Starting upgrade");
+        HibernateUtil.openAndBindSession();
         bindSessionWithSecurity(false);
+        Migration m = null;
+
+        try {
+            while (isUpgradeRequired()) {
+                startTransaction();
+                m = allMigrations.get(getCurrentVersion());
+                m.setStatus(MigrationStatus.UPDATING);
+                m.execute();
+                setCurrentVersion(m.getToVersion());
+                commit();
+                m.setStatus(MigrationStatus.COMPLETE);
+            }
+            LOG.info("Upgrade completed successfully");
+        } catch (MigrationStepFailedException e) {
+            m.setStatus(MigrationStatus.ERROR);
+            LOG.error("Failed migration from version " + m.getFromVersion() + " to " + m.getToVersion(), e);
+            rollback();
+        } finally {
+            bindSessionWithSecurity(true);
+        }
+        HibernateUtil.unbindAndCleanupSession();
+    }
+
+    private void startTransaction() {
         transaction = (UserTransaction) ServiceLocatorFactory.getLocator().lookup("java:comp/UserTransaction");
         try {
             transaction.setTransactionTimeout(TIMEOUT_SECONDS);
             transaction.begin();
         } catch (Exception e) {
             LOG.error("Upgrade failed, couldn't start transaction", e);
-            bindSessionWithSecurity(true);
-            return false;
-        }
-        try {
-            while (isUpgradeRequired()) {
-                Migration migration = migrations.get(getCurrentVersion());
-                migration.execute();
-                setCurrentVersion(migration.getToVersion());
-            }
-            commit();
-            LOG.info("Upgrade completed successfully");
-            return true;
-        } catch (MigrationStepFailedException e) {
-            LOG.error("Migration failed", e);
-            rollback();
-            return false;
-        } finally {
-            bindSessionWithSecurity(true);
         }
     }
 
@@ -230,6 +248,13 @@ public final class UpgradeManager {
         currentVersion = toVersion;
         DataConfiguration config = ConfigurationHelper.getConfiguration();
         config.setProperty(ConfigParamEnum.SCHEMA_VERSION.name(), toVersion);
+    }
+
+    /**
+     * @return the upgradeList
+     */
+    public List<Migration> getUpgradeList() {
+        return upgradeList;
     }
 
 }
