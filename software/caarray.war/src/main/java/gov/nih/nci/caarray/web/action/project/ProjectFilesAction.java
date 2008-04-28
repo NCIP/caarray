@@ -93,7 +93,9 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 
 import java.io.File;
@@ -616,9 +618,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     @SkipValidation
     public String upload() throws IOException {
-        List<String> fileNames = getUploadFileName();
-        if (fileNames == null || fileNames.isEmpty()) {
-            ActionHelper.saveMessage(getText("fileRequired"));
+        if (!validateUpload()) {
             return UPLOAD_INPUT;
         }
         List<String> conflictingFiles = new ArrayList<String>();
@@ -664,7 +664,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     /**
      * Zips the selected files and writes the result to the servlet output stream. Also sets content
      * type and disposition appropriately.
-     * 
+     *
      * @param project the project to whicb the files belong
      * @param files the files to zip and send
      * @throws IOException if there is an error writing to the stream
@@ -673,8 +673,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         HttpServletResponse response = ServletActionContext.getResponse();
         response.setContentType(DOWNLOAD_CONTENT_TYPE);
         response.setHeader("Content-disposition", "filename=\"" + determineDownloadFileName(project) + "\"");
-        
-        List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);        
+
+        List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);
         Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
         OutputStream sos = response.getOutputStream();
         ZipOutputStream zos = new ZipOutputStream(sos);
@@ -689,10 +689,31 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             zos.flush();
         }
         zos.finish();
-    }    
+    }
 
     private static String determineDownloadFileName(Project project) {
         return "caArray_" + project.getExperiment().getPublicIdentifier() + "_files.zip";
+    }
+
+    /**
+     * validates user permissions and required file for upload.
+     * @return true if validation passes
+     */
+    private boolean validateUpload() {
+        if (UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
+            ActionHelper.saveMessage(getText("upload.session.expired"));
+            return false;
+        }
+        if (!getProject().hasWritePermission(getCsmUser())) {
+            ActionHelper.saveMessage(getText("project.permissionDenied", new String[]{getText("role.write")}));
+            return false;
+        }
+        List<String> fileNames = getUploadFileName();
+        if (fileNames == null || fileNames.isEmpty()) {
+            ActionHelper.saveMessage(getText("fileRequired"));
+            return false;
+        }
+        return true;
     }
 
     /**
