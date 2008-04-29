@@ -234,7 +234,7 @@ public class SearchDaoTest {
      * Tests searching for an entity by example.
      */
     @Test
-    public void testRetrieveByByIds() {
+    public void testRetrieveByIds() {
         Transaction tx = null;
         try {
             tx = HibernateUtil.beginTransaction();
@@ -243,7 +243,7 @@ public class SearchDaoTest {
             List<Long> combinedIds = new ArrayList<Long>(paramIds);
             combinedIds.add(-1L);
             List<Long> emptyIds = Collections.emptyList();
-            
+
             List<Parameter> params = SEARCH_DAO.retrieveByIds(Parameter.class, paramIds);
             assertEquals(2, params.size());
             assertTrue(params.contains(DUMMY_PARAMETER_1));
@@ -260,10 +260,10 @@ public class SearchDaoTest {
 
             protocols = SEARCH_DAO.retrieveByIds(Protocol.class, Collections.singletonList(-1L));
             assertEquals(0, protocols.size());
-            
+
             protocols = SEARCH_DAO.retrieveByIds(Protocol.class, emptyIds);
             assertEquals(0, protocols.size());
-            
+
             for (int i = 0; i < HibernateUtil.MAX_IN_CLAUSE_LENGTH + 50; i++) {
                 combinedIds.add(DUMMY_PARAMETER_1.getId());
             }

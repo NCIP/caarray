@@ -83,6 +83,9 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.FileDao;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 
 
 /**
@@ -90,5 +93,13 @@ import gov.nih.nci.caarray.dao.FileDao;
  */
 public class FileDaoStub extends AbstractDaoStub implements FileDao {
 
- 
+    /**
+     * {@inheritDoc}
+     */
+    public void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {
+        for (CaArrayFile file : fileSet.getFiles()) {
+            file.setFileStatus(status);
+        }
+    }
+
 }
