@@ -25,6 +25,8 @@ import gov.nih.nci.carpla.rplatab.model.HasComment;
 import gov.nih.nci.carpla.rplatab.model.HasProvider;
 import gov.nih.nci.carpla.rplatab.model.Protocol;
 import gov.nih.nci.carpla.rplatab.model.Provider;
+import gov.nih.nci.carpla.rplatab.model.RplArrayLocation;
+import gov.nih.nci.carpla.rplatab.model.SectionPrincipal;
 
 import gov.nih.nci.carpla.rplatab.model.RplArray;
 import gov.nih.nci.carpla.rplatab.model.Sample;
@@ -44,6 +46,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -52,7 +55,9 @@ public class RplaTabDocumentSetParserImplementation
 													implements
 													RplaTabDocumentSetParser {
 
-	private static final Logger	LOG	= Logger.getLogger(RplaTabDocumentSetParserImplementation.class);
+	private static final Logger						LOG			= Logger.getLogger(RplaTabDocumentSetParserImplementation.class);
+
+	private SortedMap<Integer, RplArrayLocation>	_locations	= new TreeMap<Integer, RplArrayLocation>();
 
 	// ####################################################################
 	// ####################################################################
@@ -618,7 +623,7 @@ public class RplaTabDocumentSetParserImplementation
 									SradfHeader header,
 									String[] rowValues,
 									int row_number_in_section,
-									RplaTabDocumentSet RplaTabDocumentSet)
+									RplaTabDocumentSet rplaTabDocumentSet)
 	{
 
 		String name = rowValues[header.getCol() - 1];
@@ -627,23 +632,41 @@ public class RplaTabDocumentSetParserImplementation
 			return;
 		}
 
-		Sample sample = RplaTabDocumentSet.getSample(name);
+		Sample sample = rplaTabDocumentSet.getSample(name);
 
 		if (sample == null) {
 
-			RplaTabDocumentSet	.getValidationResult()
-								.addMessage(RplaTabDocumentSet	.getSradfFile()
+			rplaTabDocumentSet	.getValidationResult()
+								.addMessage(rplaTabDocumentSet	.getSradfFile()
 																.getFile(),
 											Type.ERROR,
 											"Cannot find sample with name=" + name);
 
 		}
 
-		RplaTabDocumentSet	.getPrincipalObjectsBySectionAndRow(sectionType,
+		rplaTabDocumentSet	.getPrincipalObjectsBySectionAndRow(sectionType,
 																row_number_in_section)
 							.add(sample);
 
+		// now create RplArrayFeature
+
+		// get correct RplArray for this line
+
+		// have RplArrayLocation
+
+		// am assuming sample ref is at end
+		// have sample ref
+
+		// get dilution
+
+		// Populate RplArrayFeature with sample, dliution, and RplArrayLocation
+
+		// add feature to rplarray
+
 	}
+
+	// #############################################################################
+	// #############################################################################
 
 	// #############################################################################
 	// #############################################################################
@@ -654,6 +677,13 @@ public class RplaTabDocumentSetParserImplementation
 								int row_number_in_section,
 								RplaTabDocumentSet RplaTabDocumentSet)
 	{
+
+		RplArrayLocation rloc;
+		if ((rloc = _locations.get(row_number_in_section)) == null) {
+			rloc = new RplArrayLocation();
+			_locations.put(row_number_in_section, rloc);
+		}
+		rloc.setColumn(header.getCol() - 1);
 
 	}
 
@@ -666,7 +696,12 @@ public class RplaTabDocumentSetParserImplementation
 								int row_number_in_section,
 								RplaTabDocumentSet RplaTabDocumentSet)
 	{
-
+		RplArrayLocation rloc;
+		if ((rloc = _locations.get(row_number_in_section)) == null) {
+			rloc = new RplArrayLocation();
+			_locations.put(row_number_in_section, rloc);
+		}
+		rloc.setRow(header.getCol() - 1);
 	}
 
 	// #############################################################################
@@ -678,7 +713,12 @@ public class RplaTabDocumentSetParserImplementation
 										int row_number_in_section,
 										RplaTabDocumentSet RplaTabDocumentSet)
 	{
-
+		RplArrayLocation rloc;
+		if ((rloc = _locations.get(row_number_in_section)) == null) {
+			rloc = new RplArrayLocation();
+			_locations.put(row_number_in_section, rloc);
+		}
+		rloc.setBlockColumn(header.getCol() - 1);
 	}
 
 	// #############################################################################
@@ -690,7 +730,12 @@ public class RplaTabDocumentSetParserImplementation
 									int row_number_in_section,
 									RplaTabDocumentSet RplaTabDocumentSet)
 	{
-
+		RplArrayLocation rloc;
+		if ((rloc = _locations.get(row_number_in_section)) == null) {
+			rloc = new RplArrayLocation();
+			_locations.put(row_number_in_section, rloc);
+		}
+		rloc.setBlockRow(header.getCol() - 1);
 	}
 
 	// ####################################################################
@@ -828,13 +873,10 @@ public class RplaTabDocumentSetParserImplementation
 		OntologyTerm ot = rplaTabDocumentSet.createOntologyTerm(qualifier, name);
 		characteristic.setTerm(ot);
 
-		//not sure I understand why the category is in both Characteristics and in the OntologyTerm
+		// not sure I understand why the category is in both Characteristics and
+		// in the OntologyTerm
 		characteristic.setCategory(qualifier);
-		
-		
-		
-		
-		
+
 		hasCharacteristics.getCharacteristics().add(characteristic);
 
 		List<SradfHeader> subheaders = header.getSubHeaders();

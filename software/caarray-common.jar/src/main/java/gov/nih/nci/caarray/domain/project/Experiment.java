@@ -330,9 +330,8 @@ public class Experiment extends AbstractCaArrayEntity {
 
 	private Set<Antibody>	_antibodies	= new HashSet<Antibody>();
 
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	
-	
-	@ManyToMany
 	public Set<Antibody> getAntibodies () {
 		return _antibodies;
 
@@ -342,6 +341,72 @@ public class Experiment extends AbstractCaArrayEntity {
 		_antibodies = antibodies;
 	}
 
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
+	// change nothing below here
 	// change nothing below here
 	// change nothing below here
 	// change nothing below here

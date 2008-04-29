@@ -131,15 +131,23 @@ import gov.nih.nci.carpla.domain.rplahybridization.RplaHybridization;
 import gov.nih.nci.carpla.domain.rplarray.RplArray;
 import gov.nih.nci.carpla.rplatab.RplaTabDocumentSet;
 import gov.nih.nci.carpla.rplatab.files.ImageFile;
+import gov.nih.nci.carpla.rplatab.model.SectionPrincipal;
+import gov.nih.nci.carpla.rplatab.sradf.HEADERTYPE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.log4j.Logger;
+
+import gov.nih.nci.carpla.rplatab.RplaConstants.SradfSectionType;
 
 /**
  * Translates entities in SDRF documents into caArray entities.
@@ -147,24 +155,24 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("PMD")
 final class SradfTranslator extends RplaTabAbstractTranslator {
 
-	private static final Logger														LOG									= Logger.getLogger(SradfTranslator.class);
+	private static final Logger								LOG								= Logger.getLogger(SradfTranslator.class);
 
-	private static final String														GENERATED_SAMPLE_PREFIX				= "GeneratedSample.";
-	private static final String														GENERATED_EXTRACT_PREFIX			= "GeneratedExtract.";
-	private static final String														GENERATED_LABELED_EXTRACT_PREFIX	= "GeneratedLabeledExtract.";
+	private final VocabularyService							vocabularyService;
 
-	private final Map<AbstractSampleDataRelationshipNode, AbstractCaArrayEntity>	nodeTranslations					= new HashMap<AbstractSampleDataRelationshipNode, AbstractCaArrayEntity>();
-	private final Map<AbstractSampleDataRelationshipNode, Boolean>					isNodeLinked						= new HashMap<AbstractSampleDataRelationshipNode, Boolean>();
-	private final List<Source>														allSources							= new ArrayList<Source>();
-	private final List<Sample>														allSamples							= new ArrayList<Sample>();
+	private final SortedMap<String, Source>					_sources						= new TreeMap<String, Source>();
+	private final SortedMap<String, Sample>					_samples						= new TreeMap<String, Sample>();
+	private final SortedMap<String, RplArray>				_rplArrays						= new TreeMap<String, RplArray>();
+	private final SortedMap<String, Antibody>				_antibodies						= new TreeMap<String, Antibody>();
 
-	private final Map<String, AbstractCaArrayEntity>								generatedNodes						= new HashMap<String, AbstractCaArrayEntity>();
-	private final Map<ProtocolKey, Protocol>										importedProtocolMap					= new HashMap<ProtocolKey, Protocol>();
-	private final Map<Term, Organism>												termToOrganism						= new HashMap<Term, Organism>();
-	private final VocabularyService													vocabularyService;
-	private final MultiKeyMap														paramMap							= new MultiKeyMap();
+	private SortedMap<Integer, List<AbstractCaArrayEntity>>	_domain_samplessection_rows		= new TreeMap<Integer, List<AbstractCaArrayEntity>>();
+	private SortedMap<Integer, List<AbstractCaArrayEntity>>	_domain_arraysection_rows		= new TreeMap<Integer, List<AbstractCaArrayEntity>>();
+	private SortedMap<Integer, List<AbstractCaArrayEntity>>	_domain_arraydatasection_rows	= new TreeMap<Integer, List<AbstractCaArrayEntity>>();
 
-	private List<RplaHybridization>													_rplaHybridizations;
+	
+	//misc
+	private final Map<Term, Organism>						termToOrganism					= new HashMap<Term, Organism>();
+
+	// #########################################################################################################
 
 	SradfTranslator(RplaTabDocumentSet rset,
 					CaArrayFileSet fileSet,
@@ -177,195 +185,300 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 
 	@Override
 	void translate () {
-		// for (SdrfDocument document : getDocumentSet().getSdrfDocuments()) {
+
 		translateSradf(super.getDocumentSet());
-		// }
-		// // cleanup the organism terms
-		// getTranslationResult().removeOrganismTerms();
-	}
 
-	void validate () {
-	// for (SdrfDocument document : getDocumentSet().getSdrfDocuments()) {
-	// validateSdrf(document);
-	// }
-	}
-
-	private void validateSdrf ( SdrfDocument document) {
-	// validateArrayDesigns(document);
 	}
 
 	private void translateSradf ( RplaTabDocumentSet rset) {
-		// translateNodesToEntities(document);
-		translateNodesToEntities(rset);
 
-		// linkNodes(document);
-
-		// if (document.getIdfDocument() != null) {
-		// String investigationTitle = document.getIdfDocument()
-		// .getInvestigation()
-		// .getTitle();
+		translatePrincipals(rset);
+		
 		for (Experiment investigation : getTranslationResult()	.getInvestigations()) {
-			// if (investigationTitle.equals(investigation.getTitle())) {
-			// addImplicitExtracts();
-			// addImplicitSamples();
-			// ??
-			// any reason to add implicit sources, or implicit anything?
-			// addImplicitSources();
-			// ??
-
-			LOG.info("adding to trans.result.investigation : number of samples" + this.allSamples.size());
-
-			investigation.getSources().addAll(this.allSources);
-			investigation.getSamples().addAll(this.allSamples);
-
-			// investigation.getRplaHybridizations().addAll(
-			// this._rplaHybridizations) ;
-
-			// investigation .getHybridizations()
-			// .addAll(this.allHybridizations);
-			// }
-		}
-		// }
-	}
-
-	private void translateNodesToEntities ( RplaTabDocumentSet rset) {
-		translateSources(rset);
-		translateSamples(rset);
-		// above "done"
-		translateRplArrays(rset);
-		translateAntibodies(rset);
-		translateImages(rset);
-		translateArrayData(rset);
-		translateDerivedArrayData(rset);
-
-		// translateExtracts(rset);
-		// translateLabeledExtracts(rset);
-		// translateHybridizations(rset);
-		// translateArrayDesigns(rset);
-		// translateImages(rset);
-		// translateRawArrayData(rset);
-		// translateDerivedArrayData(rset);
-	}
-
-	private void translateRplArrays ( RplaTabDocumentSet rset) {
-
-		LOG.info("Number of RplArrays:"+ rset.getRplArrays().size());
-		
-		for (gov.nih.nci.carpla.rplatab.model.RplArray rplArray : rset.getRplArrays()) {
-			RplArray domain_rplArray = new RplArray();
-			domain_rplArray.setName(rplArray.getName());
-			getTranslationResult()	.getInvestigations()
-									.iterator()
-									.next()
-									.getRplArrays()
-									.add(domain_rplArray);
-		}
 		
 		
+
+			investigation.getSources().addAll(this._sources.values());
+			investigation.getSamples().addAll(this._samples.values());
+			investigation.getAntibodies().addAll(this._antibodies.values());
+			investigation.getRplArrays().addAll(this._rplArrays.values());
+		}
 		
+
 	}
 
-	private void translateAntibodies ( RplaTabDocumentSet rset) {
+	// ############################################################################
+	// ############################################################################
+	// ############################################################################
+	private void translatePrincipals ( RplaTabDocumentSet rset) {
 
-		for (gov.nih.nci.carpla.rplatab.model.Antibody antibody : rset.getAntibodies()) {
-			Antibody domain_antibody = new Antibody();
-			domain_antibody.setName(antibody.getName());
-			// getTranslationResult() .getInvestigations()
-			// .iterator()
-			// .next()
-			// .getAntibodies()
-			// .add(domain_antibody);
-		}
+		translateSamplesSectionPrincipals(rset, _domain_samplessection_rows);
+		translateArraySectionPrincipals(rset, _domain_arraysection_rows);
+		translateArrayDataSectionPrincipals(rset, _domain_arraydatasection_rows);
+
 	}
 
-	private void translateImages ( RplaTabDocumentSet rset) {
-		for (ImageFile ifile : rset.getImageFiles()) {
-			Image image = new Image();
-			String imageName = ifile.getName();
+	// ############################################################################
+	// ############################################################################
+	// ############################################################################
 
-			CaArrayFile imageFile = getFile(imageName);
+	public void translateSamplesSectionPrincipals ( RplaTabDocumentSet rset,
+													SortedMap<Integer, List<AbstractCaArrayEntity>> domain_samplessection_rows)
+	{
 
-			image.setImageFile(imageFile);
-			// this.nodeTranslations.put(sdrfImage, image);
+		SortedMap<Integer, List<SectionPrincipal>> section_rows = rset.getSectionRowsPrincipalObjects(SradfSectionType.Samples);
+		Iterator<Entry<Integer, List<SectionPrincipal>>> sectionRowIterator = section_rows	.entrySet()
+																							.iterator();
+		while (sectionRowIterator.hasNext()) {
+			Entry<Integer, List<SectionPrincipal>> entry = sectionRowIterator.next();
+			Integer rowInteger = entry.getKey();
+			List<SectionPrincipal> principals = entry.getValue();
+
+			Iterator<SectionPrincipal> spIterator = principals.iterator();
+			
+			if ( domain_samplessection_rows	.get(rowInteger) == null ){
+				domain_samplessection_rows.put(rowInteger, new ArrayList<AbstractCaArrayEntity>());
+			}
+			
+			
+			
+			while (spIterator.hasNext()) {
+				SectionPrincipal sp = spIterator.next();
+				// carplatofix replace ugly if-elseifs
+				
+				LOG.info(sp	.getClass()
+							.getName());
+				
+				if (sp	.getClass()
+						.getName()
+						.compareTo("gov.nih.nci.carpla.rplatab.model.Source") == 0) {
+					gov.nih.nci.carpla.rplatab.model.Source rplatabSource = (gov.nih.nci.carpla.rplatab.model.Source) sp;
+					Source domainSource = getOrCreateSource(rplatabSource.getName());
+					translateBioMaterial(domainSource, rplatabSource);
+				
+					domain_samplessection_rows	.get(rowInteger)
+												.add(domainSource);
+
+				} else if (sp	.getClass()
+								.getName()
+								.compareTo("gov.nih.nci.carpla.rplatab.model.Sample") == 0) {
+
+					gov.nih.nci.carpla.rplatab.model.Sample rplatabSample = (gov.nih.nci.carpla.rplatab.model.Sample) sp;
+					Sample domainSample = getOrCreateSample(rplatabSample.getName());
+					translateBioMaterial(domainSample, rplatabSample);
+					domain_samplessection_rows	.get(rowInteger)
+												.add(domainSample);
+				}
+
+				else if (sp	.getClass()
+							.getName()
+							.compareTo("ProtocolApplication") == 0) {
+
+					// carplatodo
+
+				}
+
+				else if (sp	.getClass()
+							.getName()
+							.compareTo("FactorValue") == 0) {
+
+					// todo
+
+				}
+
+			}
+
 		}
+
 	}
 
-	private void translateArrayData ( RplaTabDocumentSet rset) {
-		// Translate native raw data files.
-		for (gov.nih.nci.carpla.rplatab.files.ArrayDataFile adf : rset.getArrayDataFiles()) {
-			RawArrayData caArrayData = new RawArrayData();
-			String fileName = adf.getName();
-			caArrayData.setName(fileName);
-			CaArrayFile dataFile = getFile(fileName);
-			caArrayData.setDataFile(dataFile);
-			// Associate Scan with the raw data.
-			// for (Scan scan : sdrfData.getPredecessorScans()) {
-			// associateScanWithData(caArrayData, scan);
-			// }
-			// this.nodeTranslations.put(sdrfData, caArrayData);
+	// ############################################################################
+	// ############################################################################
+	// ############################################################################
+
+	public void translateArraySectionPrincipals (	RplaTabDocumentSet rset,
+													SortedMap<Integer, List<AbstractCaArrayEntity>> domain_arraysection_rows)
+	{
+
+		SortedMap<Integer, List<SectionPrincipal>> section_rows = rset.getSectionRowsPrincipalObjects(SradfSectionType.Array);
+		Iterator<Entry<Integer, List<SectionPrincipal>>> sectionRowIterator = section_rows	.entrySet()
+																							.iterator();
+		while (sectionRowIterator.hasNext()) {
+			Entry<Integer, List<SectionPrincipal>> entry = sectionRowIterator.next();
+			Integer rowInteger = entry.getKey();
+			List<SectionPrincipal> principals = entry.getValue();
+
+			Iterator<SectionPrincipal> spIterator = principals.iterator();
+			
+			if ( domain_arraysection_rows	.get(rowInteger) == null ){
+				domain_arraysection_rows.put(rowInteger, new ArrayList<AbstractCaArrayEntity>());
+			}
+			
+			
+			
+			
+			while (spIterator.hasNext()) {
+				SectionPrincipal sp = spIterator.next();
+				// carplatofix replace ugly if-elseifs
+				
+				
+				LOG.info(sp	.getClass()
+							.getName());
+				
+				
+				
+				
+				
+				
+				if (sp	.getClass()
+						.getName()
+						.compareTo("gov.nih.nci.carpla.rplatab.model.RplArray") == 0) {
+					gov.nih.nci.carpla.rplatab.model.RplArray rplatabRplArray = (gov.nih.nci.carpla.rplatab.model.RplArray) sp;
+					RplArray domainRplArray = getOrCreateRplArray(rplatabRplArray.getName());
+					translateRplArray(domainRplArray, rplatabRplArray);
+					
+					
+				
+					
+					domain_arraysection_rows.get(rowInteger)
+											.add(domainRplArray);
+
+				} else if (sp	.getClass()
+								.getName()
+								.compareTo("gov.nih.nci.carpla.model.RplArrayLocation") == 0) {
+
+				} else if (sp	.getClass()
+								.getName()
+								.compareTo("gov.nih.nci.carpla.model.Dilution") == 0) {
+
+				}
+
+				else if (sp	.getClass()
+							.getName()
+							.compareTo("gov.nih.nci.carpla.model.Sample") == 0) {
+
+				}
+
+			}
+
 		}
-		// Translate MAGE-TAB raw data matrix files.
-		// for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile sdrfData :
-		// document.getAllArrayDataMatrixFiles()) {
-		// RawArrayData caArrayData = new RawArrayData();
-		// String fileName = sdrfData.getName();
-		// caArrayData.setName(fileName);
-		// CaArrayFile dataFile = getFile(fileName);
-		// caArrayData.setDataFile(dataFile);
-		// // Associate Scan with the raw data.
-		// for (Scan scan : sdrfData.getPredecessorScans()) {
-		// associateScanWithData(caArrayData, scan);
-		// }
-		// this.nodeTranslations.put(sdrfData, caArrayData);
-		// }
+
 	}
 
-	private void translateDerivedArrayData ( RplaTabDocumentSet rset) {
-		// Translate native derived data files.
-		for (gov.nih.nci.carpla.rplatab.files.DerivedArrayDataFile dadf : rset.getDerivedArrayDataFiles()) {
-			DerivedArrayData caArrayData = new DerivedArrayData();
-			String fileName = dadf.getName();
-			caArrayData.setName(fileName);
-			CaArrayFile dataFile = getFile(fileName);
-			caArrayData.setDataFile(dataFile);
-			// Associate Normalization with the derived data.
+	// ############################################################################
+	// ############################################################################
+	// ############################################################################
 
-			// for (Normalization normalization :
-			// sdrfData.getPredecessorNormalizations()) {
-			// associateNormalizationWithData(caArrayData, normalization);
-			// }
-			// this.nodeTranslations.put(sdrfData, caArrayData);
+	public void translateArrayDataSectionPrincipals (	RplaTabDocumentSet rset,
+														SortedMap<Integer, List<AbstractCaArrayEntity>> domain_arraydatasection_rows)
+	{
+
+		SortedMap<Integer, List<SectionPrincipal>> section_rows = rset.getSectionRowsPrincipalObjects(SradfSectionType.ArrayData);
+		Iterator<Entry<Integer, List<SectionPrincipal>>> sectionRowIterator = section_rows	.entrySet()
+																							.iterator();
+		while (sectionRowIterator.hasNext()) {
+			Entry<Integer, List<SectionPrincipal>> entry = sectionRowIterator.next();
+			Integer rowInteger = entry.getKey();
+			List<SectionPrincipal> principals = entry.getValue();
+
+			Iterator<SectionPrincipal> spIterator = principals.iterator();
+			
+			if ( domain_arraydatasection_rows	.get(rowInteger) == null ){
+				domain_arraydatasection_rows.put(rowInteger, new ArrayList<AbstractCaArrayEntity>());
+			}
+			
+			
+			
+			
+			while (spIterator.hasNext()) {
+				SectionPrincipal sp = spIterator.next();
+				
+				LOG.info(sp	.getClass()
+							.getName());
+				
+			
+				
+				
+				// carplatofix replace ugly if-elseifs
+				if (sp	.getClass()
+						.getName()
+						.compareTo("gov.nih.nci.carpla.rplatab.model.RplArray") == 0) {
+					gov.nih.nci.carpla.rplatab.model.RplArray rplatabRplArray = (gov.nih.nci.carpla.rplatab.model.RplArray) sp;
+					RplArray domainRplArray = getOrCreateRplArray(rplatabRplArray.getName());
+					domain_arraydatasection_rows.get(rowInteger)
+												.add(domainRplArray);
+
+				} else if (sp	.getClass()
+								.getName()
+								.compareTo("gov.nih.nci.carpla.rplatab.model.Antibody") == 0) {
+
+					gov.nih.nci.carpla.rplatab.model.Antibody rplatabAntibody = (gov.nih.nci.carpla.rplatab.model.Antibody) sp;
+
+					Antibody domainAntibody = getOrCreateAntibody(rplatabAntibody.getName());
+					
+					
+					
+					domain_arraydatasection_rows.get(rowInteger)
+												.add(domainAntibody);
+
+				} else if (sp	.getClass()
+								.getName()
+								.compareTo("gov.nih.nci.carpla.rplatab.model.Assay") == 0) {
+
+				}
+
+				else if (sp	.getClass()
+							.getName()
+							.compareTo("gov.nih.nci.carpla.rplatab.files.ImageFile") == 0) {
+
+				}
+
+			}
+
 		}
-		// // Translate MAGE-TAB derived data matrix files.
-		// for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile
-		// sdrfData : document.getAllDerivedArrayDataMatrixFiles()) {
-		// DerivedArrayData caArrayData = new DerivedArrayData();
-		// String fileName = sdrfData.getName();
-		// caArrayData.setName(fileName);
-		// CaArrayFile dataFile = getFile(fileName);
-		// caArrayData.setDataFile(dataFile);
-		// // Associate Normalization with the derived data.
-		// for (Normalization normalization :
-		// sdrfData.getPredecessorNormalizations()) {
-		// associateNormalizationWithData(caArrayData, normalization);
-		// }
-		// this.nodeTranslations.put(sdrfData, caArrayData);
-		// }
+
 	}
 
-	private void translateSources ( RplaTabDocumentSet rset) {
-		for (gov.nih.nci.carpla.rplatab.model.Source sradfSource : rset.getSources()) {
-			Source source = new Source();
-			translateBioMaterial(source, sradfSource);
-			// for ( gov.nih.nci.carpla.rplatab.model.Provider sdrfProvider :
-			// sradfSource.getProvider()) {
-			// Organization organization =
-			// getOrCreateOrganization(sdrfProvider.getName());
-			// source.getProviders().add(organization);
-			// }
-			// this.nodeTranslations.put(sradfSource, source);
-			this.allSources.add(source);
+	// i fully know only distinct sources are recorded in the dataset, but
+	// maybe i don't want to depend on it, depends how braindead the parser
+	// is/will ever be...
+	// Also in the future, i want to look for resolved referenced
+	// entities...that will go here...
+
+	public Source getOrCreateSource ( String name) {
+
+		if (_sources.containsKey(name)) {
+			return _sources.get(name);
 		}
+		Source source = new Source();
+		source.setName(name);
+		_sources.put(name, source);
+		return source;
+
+	}
+
+	public Sample getOrCreateSample ( String name) {
+
+		if (_samples.containsKey(name)) {
+			return _samples.get(name);
+		}
+		Sample sample = new Sample();
+		sample.setName(name);
+		_samples.put(name, sample);
+		return sample;
+
+	}
+
+	private Antibody getOrCreateAntibody ( String name) {
+
+		if (_antibodies.containsKey(name)) {
+			return _antibodies.get(name);
+		}
+		Antibody antibody = new Antibody();
+		antibody.setName(name);
+		_antibodies.put(name, antibody);
+		return antibody;
+
 	}
 
 	private void translateBioMaterial ( AbstractBioMaterial bioMaterial,
@@ -406,22 +519,35 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 		// }
 	}
 
-	private void translateSamples ( RplaTabDocumentSet rset) {
-
-		LOG.info("translating number of samples:" + rset.getSamples()
-														.values()
-														.size());
-
-		for (gov.nih.nci.carpla.rplatab.model.Sample sradfSample : rset	.getSamples()
-																		.values()) {
-			Sample sample = new Sample();
-			translateBioMaterial(sample, sradfSample);
-
-			// ???
-			// this.nodeTranslations.put(sradfSample, sample);
-
-			this.allSamples.add(sample);
+	private Organism getOrganism ( Term term) {
+		Organism o = termToOrganism.get(term);
+		if (o == null && term.getSource().getId() != null) {
+			o = vocabularyService.getOrganism(term.getSource(), term.getValue());
 		}
+		if (o == null) {
+			o = new Organism();
+			o.setScientificName(term.getValue());
+			o.setTermSource(term.getSource());
+			termToOrganism.put(term, o);
+		}
+		return o;
+	}
+
+	private void translateRplArray (	RplArray domainRplArray,
+										gov.nih.nci.carpla.rplatab.model.RplArray rplatabRplArray)
+	{
+
+	}
+
+	public RplArray getOrCreateRplArray ( String name) {
+		if (_rplArrays.containsKey(name)) {
+			return _rplArrays.get(name);
+		}
+		RplArray rplArray = new RplArray();
+		rplArray.setName(name);
+		_rplArrays.put(name, rplArray);
+		return rplArray;
+
 	}
 
 	private FactorValue translateFactor ( gov.nih.nci.caarray.magetab.sdrf.FactorValue sdrfFactorVal)
@@ -442,108 +568,13 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 												VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME);
 	}
 
-	private Protocol replaceProtocolIfExists ( Protocol p) {
-		ProtocolKey key = new ProtocolKey(p.getName(), p.getSource());
-
-		// check in our map of imported protocols
-		Protocol returnProtocol = this.importedProtocolMap.get(key);
-		if (returnProtocol == null) {
-			// not in the map, check in the db
-			returnProtocol = getDaoFactory().getProtocolDao()
-											.getProtocol(	p.getName(),
-															p.getSource());
-		}
-		if (returnProtocol == null) {
-			// protocol not in the map of imported protocols or in the db, add
-			// to map as it will be new
-			this.importedProtocolMap.put(key, p);
-			returnProtocol = p;
-		}
-		return returnProtocol;
-	}
-
-	/**
-	 * @param term
-	 * @return
-	 */
-	private Organism getOrganism ( Term term) {
-		Organism o = termToOrganism.get(term);
-		if (o == null && term.getSource().getId() != null) {
-			o = vocabularyService.getOrganism(term.getSource(), term.getValue());
-		}
-		if (o == null) {
-			o = new Organism();
-			o.setScientificName(term.getValue());
-			o.setTermSource(term.getSource());
-			termToOrganism.put(term, o);
-		}
-		return o;
-	}
-
-	private Protocol getProtocolFromMageTabProtocol ( gov.nih.nci.caarray.magetab.Protocol mageTabProtocol)
-	{
-		Term type = getTerm(mageTabProtocol.getType());
-		if (type == null) {
-			type = getUnknownProtocolType();
-		}
-		TermSource termSource = null;
-		if (mageTabProtocol.getTermSource() != null) {
-			termSource = getTranslationResult()	.getSource(mageTabProtocol.getTermSource());
-		} else {
-			termSource = this.vocabularyService.getSource(	ExperimentOntology.CAARRAY.getOntologyName(),
-															ExperimentOntology.CAARRAY.getVersion());
-		}
-		Protocol p = new Protocol(mageTabProtocol.getName(), type, termSource);
-		p.setContact(mageTabProtocol.getContact());
-		p.setDescription(mageTabProtocol.getDescription());
-		p.setHardware(mageTabProtocol.getHardware());
-		p.setSoftware(mageTabProtocol.getSoftware());
-		p = replaceProtocolIfExists(p);
-		return p;
-	}
-
-	private ProtocolApplication getProtocolApplicationFromMageTabProtocolApplication ( gov.nih.nci.caarray.magetab.ProtocolApplication mageTabProtocolApplication)
-	{
-		Protocol protocol = getProtocolFromMageTabProtocol(mageTabProtocolApplication.getProtocol());
-		ProtocolApplication protocolApplication = new ProtocolApplication();
-		protocolApplication.setProtocol(protocol);
-		for (gov.nih.nci.caarray.magetab.ParameterValue mageTabValue : mageTabProtocolApplication.getParameterValues()) {
-			ParameterValue value = new ParameterValue();
-			if (mageTabValue.getParameter() != null) {
-				Parameter param = getOrCreateParameter(	mageTabValue.getParameter()
-																	.getName(),
-														protocol);
-				value.setParameter(param);
-			}
-			value.setValue(mageTabValue.getValue());
-			value.setProtocolApplication(protocolApplication);
-			protocolApplication.getValues().add(value);
-		}
-		return protocolApplication;
-	}
-
-	private Parameter getOrCreateParameter ( String name, Protocol protocol) {
-		Parameter param = (Parameter) paramMap.get(name, protocol);
-		if (param == null) {
-			param = this.getDaoFactory()
-						.getProtocolDao()
-						.getParameter(name, protocol);
-		}
-		if (param == null) {
-			param = new Parameter(name, protocol);
-			paramMap.put(name, protocol, param);
-		}
-		return param;
-	}
-
 	private AbstractCharacteristic translateCharacteristic ( Characteristic sdrfCharacteristic)
 	{
-		
-		
+
 		LOG.info(sdrfCharacteristic.toString());
 		LOG.info(sdrfCharacteristic.getValue());
 		LOG.info(sdrfCharacteristic.getTerm());
-		
+
 		Category category = TermTranslator.getOrCreateCategory(	this.vocabularyService,
 																this.getTranslationResult(),
 																sdrfCharacteristic.getCategory());
@@ -557,293 +588,12 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 		}
 	}
 
-	private void linkNodes ( SdrfDocument document) {
-		for (AbstractSampleDataRelationshipNode currNode : document.getLeftmostNodes()) {
-			linkNode(currNode);
-		}
+	void validate () {
 
 	}
 
-	// Recursively link this node to its successors.
-	// Does not handle <code>Comment</code> entities.
-	// Assumes that nodes occur in the order: Source, Sample, Extract,
-	// LabeledExtract, Hybridization,
-	// Scan, Raw Data, Normalization, Derived Data. Any of these nodes are
-	// optional, and Image
-	// can occur anywhere after Hybridization.
-	private void linkNode ( AbstractSampleDataRelationshipNode node) {
-		// Check if we already linked this node before.
-		Boolean isLinked = this.isNodeLinked.get(node);
-		if ((isLinked != null) && (isLinked.booleanValue())) {
-			return;
-		}
-		for (AbstractSampleDataRelationshipNode successor : node.getSuccessors()) {
-			// Recursively link all successors of this node.
-			linkNode(successor);
-			// Link this node to its successor.
-			linkTwoNodes(node, successor);
-		}
-		// Finished linking node. Mark it so that we don't do it again.
-		this.isNodeLinked.put(node, Boolean.TRUE);
-	}
+	private void validateSdrf ( SdrfDocument document) {
 
-	// Link a node with one successor.
-	private void linkTwoNodes ( AbstractSampleDataRelationshipNode leftNode,
-								AbstractSampleDataRelationshipNode rightNode)
-	{
-		AbstractCaArrayObject leftCaArrayNode = this.nodeTranslations.get(leftNode);
-		AbstractCaArrayObject rightCaArrayNode = this.nodeTranslations.get(rightNode);
-		SdrfNodeType leftNodeType = leftNode.getNodeType();
-		SdrfNodeType rightNodeType = rightNode.getNodeType();
-		if (isBioMaterial(leftNodeType)) {
-			// Use the left node's name as part of any generated biomaterial
-			// names.
-			String baseGeneratedNodeName = ((AbstractBioMaterial) leftCaArrayNode).getName();
-			Set<ProtocolApplication> pas = ((AbstractBioMaterial) leftCaArrayNode).getProtocolApplications();
-			linkBioMaterial(leftCaArrayNode,
-							rightCaArrayNode,
-							leftNodeType,
-							rightNodeType,
-							baseGeneratedNodeName,
-							pas);
-		} else if (SdrfNodeType.HYBRIDIZATION.equals(leftNodeType)) {
-			// linkHybridizationToArrays(
-			// (gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode,
-			// (Hybridization) leftCaArrayNode);
-			linkHybridizationToImages(	(gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode,
-										(Hybridization) leftCaArrayNode);
-			linkHybridizationToArrayData(	(gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode,
-											(Hybridization) leftCaArrayNode);
-		} else {
-			// Ignore other nodes - Image, Scan, Raw/Derived Data,
-			// Normalization; they've already been linked.
-			return;
-		}
-	}
-
-	// private void linkHybridizationToArrays (
-	// gov.nih.nci.caarray.magetab.sdrf.Hybridization sdrfHybridization,
-	// Hybridization hybridization)
-	// {
-	// Array array = new Array();
-	// if (sdrfHybridization.getArrayDesign() != null) {
-	// array.setDesign(getArrayDesign(sdrfHybridization.getArrayDesign()));
-	// }
-	// hybridization.setArray(array);
-	// }
-
-	private void linkHybridizationToImages (	gov.nih.nci.caarray.magetab.sdrf.Hybridization sdrfHybridization,
-												Hybridization hybridization)
-	{
-		for (gov.nih.nci.caarray.magetab.sdrf.Image sdrfImage : sdrfHybridization.getSuccessorImages()) {
-			Image image = (Image) this.nodeTranslations.get(sdrfImage);
-			hybridization.getImages().add(image);
-		}
-	}
-
-	private void linkHybridizationToArrayData ( gov.nih.nci.caarray.magetab.sdrf.Hybridization sdrfHybridization,
-												Hybridization hybridization)
-	{
-		// Link raw array data
-		for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile sdrfArrayData : sdrfHybridization.getSuccessorArrayDataFiles()) {
-			RawArrayData arrayData = (RawArrayData) this.nodeTranslations.get(sdrfArrayData);
-			arrayData.setHybridization(hybridization);
-			hybridization.setArrayData(arrayData);
-		}
-		for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile sdrfArrayData : sdrfHybridization.getSuccessorArrayDataMatrixFiles()) {
-			RawArrayData arrayData = (RawArrayData) this.nodeTranslations.get(sdrfArrayData);
-			arrayData.setHybridization(hybridization);
-			hybridization.setArrayData(arrayData);
-		}
-		// Link derived array data
-		for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile sdrfArrayData : sdrfHybridization.getSuccessorDerivedArrayDataFiles()) {
-			DerivedArrayData arrayData = (DerivedArrayData) this.nodeTranslations.get(sdrfArrayData);
-			arrayData.getHybridizations().add(hybridization);
-			hybridization.getDerivedDataCollection().add(arrayData);
-		}
-		for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile sdrfArrayData : sdrfHybridization.getSuccessorDerivedArrayDataMatrixFiles()) {
-			DerivedArrayData arrayData = (DerivedArrayData) this.nodeTranslations.get(sdrfArrayData);
-			arrayData.getHybridizations().add(hybridization);
-			hybridization.getDerivedDataCollection().add(arrayData);
-		}
-	}
-
-	/**
-	 * Links a BioMaterial node with one successor. If a node is missing in the
-	 * chain Source -> Sample -> Extract -> LabeledExtract -> Hybridization,
-	 * appropriate intermediate nodes will be generated to complete the chain.
-	 * The number of nodes generated depends on the left side of the graph.
-	 * E.g., 1 Source going to 3 Extracts will result in 1 Sample being
-	 * generated. On the other hand, 3 Sources going to 1 Extract will result in
-	 * 3 Samples being generated.
-	 */
-	@SuppressWarnings("PMD")
-	private void linkBioMaterial (	AbstractCaArrayObject leftCaArrayNode,
-									AbstractCaArrayObject rightCaArrayNode,
-									SdrfNodeType leftNodeType,
-									SdrfNodeType rightNodeType,
-									String baseGeneratedNodeName,
-									Set<ProtocolApplication> protocolApplications)
-	{
-		// TODO Handle case where Extract goes to Extract, as shown in ChIP-chip
-		// example in MAGE-TAB spec.
-		if (leftNodeType.equals(SdrfNodeType.SOURCE)) {
-			if (rightNodeType.equals(SdrfNodeType.SAMPLE)) {
-				linkSourceAndSample((Source) leftCaArrayNode,
-									(Sample) rightCaArrayNode);
-			} else {
-				Sample generatedSample = generateSampleAndLink(	baseGeneratedNodeName,
-																(Source) leftCaArrayNode);
-				reassociateProtocolApplications(generatedSample,
-												protocolApplications);
-				linkBioMaterial(generatedSample,
-								rightCaArrayNode,
-								SdrfNodeType.SAMPLE,
-								rightNodeType,
-								baseGeneratedNodeName,
-								protocolApplications);
-			}
-		} else if (leftNodeType.equals(SdrfNodeType.SAMPLE)) {
-			if (rightNodeType.equals(SdrfNodeType.EXTRACT)) {
-				linkSampleAndExtract(	(Sample) leftCaArrayNode,
-										(Extract) rightCaArrayNode);
-			} else {
-				// Extract generatedExtract = generateExtractAndLink(
-				// baseGeneratedNodeName,
-				// (Sample) leftCaArrayNode);
-				// reassociateProtocolApplications(generatedExtract,
-				// protocolApplications);
-				// linkBioMaterial(generatedExtract,
-				// rightCaArrayNode,
-				// SdrfNodeType.EXTRACT,
-				// rightNodeType,
-				// baseGeneratedNodeName,
-				// protocolApplications);
-			}
-		} else if (leftNodeType.equals(SdrfNodeType.EXTRACT)) {
-			if (rightNodeType.equals(SdrfNodeType.LABELED_EXTRACT)) {
-				linkExtractAndLabeledExtract(	(Extract) leftCaArrayNode,
-												(LabeledExtract) rightCaArrayNode);
-			} else {
-				// LabeledExtract generatedLabeledExtract =
-				// generateLabeledExtractAndLink( baseGeneratedNodeName,
-				// (Extract) leftCaArrayNode);
-				// reassociateProtocolApplications(generatedLabeledExtract,
-				// protocolApplications);
-				// linkBioMaterial(generatedLabeledExtract,
-				// rightCaArrayNode,
-				// SdrfNodeType.LABELED_EXTRACT,
-				// rightNodeType,
-				// baseGeneratedNodeName,
-				// protocolApplications);
-			}
-		} else if ((leftNodeType.equals(SdrfNodeType.LABELED_EXTRACT)) && (rightNodeType.equals(SdrfNodeType.HYBRIDIZATION))) {
-			linkLabeledExtractAndHybridization(	(LabeledExtract) leftCaArrayNode,
-												(Hybridization) rightCaArrayNode);
-		}
-	}
-
-	private void reassociateProtocolApplications (	AbstractBioMaterial bioMaterial,
-													Set<ProtocolApplication> protocolApplications)
-	{
-		for (ProtocolApplication pa : protocolApplications) {
-			Term protocolType = pa.getProtocol().getType();
-			for (ProtocolTypeAssociation typeAssoc : ProtocolTypeAssociation.values()) {
-				if (protocolType.getValue().equals(typeAssoc.getValue()) && protocolType.getSource()
-																						.getName()
-																						.equals(typeAssoc.getSource())
-					&& bioMaterial.getClass().equals(typeAssoc.getNodeClass())) {
-					pa.setBioMaterial(bioMaterial);
-					bioMaterial.getProtocolApplications().add(pa);
-					protocolApplications.remove(pa);
-				}
-			}
-		}
-	}
-
-	private Sample generateSampleAndLink (	String baseGeneratedNodeName,
-											Source source)
-	{
-		// Generate sample if not already generated.
-		String sampleName = GENERATED_SAMPLE_PREFIX + baseGeneratedNodeName;
-		Sample generatedSample = (Sample) this.generatedNodes.get(sampleName);
-		if (generatedSample == null) {
-			generatedSample = new Sample();
-			generatedSample.setName(sampleName);
-			this.generatedNodes.put(sampleName, generatedSample);
-			this.allSamples.add(generatedSample);
-		}
-		linkSourceAndSample(source, generatedSample);
-		return generatedSample;
-	}
-
-	// private Extract generateExtractAndLink ( String baseGeneratedNodeName,
-	// Sample generatedSample)
-	// {
-	// // Generate extract if not already generated.
-	// String extractName = GENERATED_EXTRACT_PREFIX + baseGeneratedNodeName;
-	// Extract generatedExtract = (Extract)
-	// this.generatedNodes.get(extractName);
-	// if (generatedExtract == null) {
-	// generatedExtract = new Extract();
-	// generatedExtract.setName(extractName);
-	// this.generatedNodes.put(extractName, generatedExtract);
-	// this.allExtracts.add(generatedExtract);
-	// }
-	// linkSampleAndExtract(generatedSample, generatedExtract);
-	// return generatedExtract;
-	// }
-
-	// private LabeledExtract generateLabeledExtractAndLink ( String
-	// baseGeneratedNodeName,
-	// Extract generatedExtract)
-	// {
-	// // Generate labeled extract if not already generated.
-	// String labeledExtractName = GENERATED_LABELED_EXTRACT_PREFIX +
-	// baseGeneratedNodeName;
-	// LabeledExtract generatedLabeledExtract = (LabeledExtract)
-	// this.generatedNodes.get(labeledExtractName);
-	// if (generatedLabeledExtract == null) {
-	// generatedLabeledExtract = new LabeledExtract();
-	// generatedLabeledExtract.setName(labeledExtractName);
-	// this.generatedNodes.put(labeledExtractName, generatedLabeledExtract);
-	// this.allLabeledExtracts.add(generatedLabeledExtract);
-	// }
-	// linkExtractAndLabeledExtract(generatedExtract, generatedLabeledExtract);
-	// return generatedLabeledExtract;
-	// }
-
-	private void linkSourceAndSample ( Source source, Sample sample) {
-		source.getSamples().add(sample);
-		sample.getSources().add(source);
-	}
-
-	private void linkSampleAndExtract ( Sample sample, Extract extract) {
-		sample.getExtracts().add(extract);
-		extract.getSamples().add(sample);
-	}
-
-	private void linkExtractAndLabeledExtract ( Extract extract,
-												LabeledExtract labeledExtract)
-	{
-		extract.getLabeledExtracts().add(labeledExtract);
-		labeledExtract.getExtracts().add(extract);
-	}
-
-	private void linkLabeledExtractAndHybridization (	LabeledExtract labeledExtract,
-														Hybridization hybridization)
-	{
-		hybridization.getLabeledExtracts().add(labeledExtract);
-		labeledExtract.getHybridizations().add(hybridization);
-	}
-
-	private boolean isBioMaterial ( SdrfNodeType nodeType) {
-		if (nodeType.equals(SdrfNodeType.SOURCE) || nodeType.equals(SdrfNodeType.SAMPLE)
-			|| nodeType.equals(SdrfNodeType.EXTRACT)
-			|| nodeType.equals(SdrfNodeType.LABELED_EXTRACT)) {
-			return true;
-		}
-		return false;
 	}
 
 	@Override

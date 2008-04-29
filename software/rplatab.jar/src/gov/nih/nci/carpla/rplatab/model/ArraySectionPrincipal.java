@@ -1,5 +1,7 @@
 package gov.nih.nci.carpla.rplatab.model;
 
-public interface ArraySectionPrincipal extends SectionPrincipal{
+import gov.nih.nci.carpla.rplatab.sradf.HEADERTYPE;
 
+public interface ArraySectionPrincipal extends SectionPrincipal{
+	
 }

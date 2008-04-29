@@ -1,5 +1,7 @@
 package gov.nih.nci.carpla.rplatab.model;
 
+import gov.nih.nci.carpla.rplatab.sradf.HEADERTYPE;
+
 public class Assay implements ArrayDataSectionPrincipal, HasName,HasAttribute {
 	private String	_name;
 
@@ -11,5 +13,7 @@ public class Assay implements ArrayDataSectionPrincipal, HasName,HasAttribute {
 		// TODO Auto-generated method stub
 		_name = name ; 
 	}
+
+	
 
 }

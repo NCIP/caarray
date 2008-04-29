@@ -355,6 +355,10 @@ public class RplaTabImporter {
 							.addAll(translatedExperiment.getQualityControlTypes());
 		originalExperiment	.getReplicateTypes()
 							.addAll(translatedExperiment.getReplicateTypes());
+		
+		
+		
+		
 		originalExperiment	.getSamples()
 							.addAll(translatedExperiment.getSamples());
 		
@@ -368,6 +372,10 @@ public class RplaTabImporter {
 		originalExperiment.getRplArrays().addAll(translatedExperiment.getRplArrays());
 		
 		originalExperiment.getRplaHybridizations().addAll (translatedExperiment.getRplaHybridizations());
+		
+		originalExperiment.getAntibodies().addAll (translatedExperiment.getAntibodies());
+		
+		
 		
 		
 		

@@ -1,10 +1,11 @@
 package gov.nih.nci.carpla.rplatab.model;
 
+import gov.nih.nci.carpla.rplatab.sradf.HEADERTYPE;
+
 import java.util.Vector;
+import gov.nih.nci.carpla.rplatab.sradf.HEADERTYPE;
 
-
-
-public class Antibody implements ArrayDataSectionPrincipal,HasName{
+public class Antibody implements ArrayDataSectionPrincipal, HasName {
 
 	private String			_name;
 	private Vector<Gene>	_targetGenes;
@@ -30,5 +31,7 @@ public class Antibody implements ArrayDataSectionPrincipal,HasName{
 		_name = name;
 
 	}
+
+	
 
 }

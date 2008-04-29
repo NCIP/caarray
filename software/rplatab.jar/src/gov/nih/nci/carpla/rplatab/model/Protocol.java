@@ -83,6 +83,7 @@
 package gov.nih.nci.carpla.rplatab.model;
 
 import gov.nih.nci.caarray.magetab.OntologyTerm;
+import gov.nih.nci.carpla.rplatab.sradf.HEADERTYPE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -96,5 +97,7 @@ import java.util.List;
 public final class Protocol extends gov.nih.nci.caarray.magetab.Protocol
 
 implements Serializable, SamplesSectionPrincipal, HasAttribute, HasName {
+
+	
 
 }

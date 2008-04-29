@@ -360,18 +360,11 @@ public class RplaTabDocumentSet {
 		return _derivedArrayDataFiles.get(name);
 
 	}
-	
+
 	public Collection<DerivedArrayDataFile> getDerivedArrayDataFiles () {
-		
+
 		return _derivedArrayDataFiles.values();
 	}
-	
-	
-	
-	
-	
-	
-	
 
 	// ---------------------------------------------------------------------------
 	// ---------------------------
@@ -523,6 +516,23 @@ public class RplaTabDocumentSet {
 		// TODO Auto-generated method stub
 		return _rplarrays.values();
 	}
+	
+	// ###############################################################
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	// ###############################################################
 	public void verifyRplArrayLocationUniqueness ( RplArrayLocation rplArrayLocation)
@@ -601,6 +611,11 @@ public class RplaTabDocumentSet {
 		}
 		return _assays.get(name);
 
+	}
+
+	public Collection<Assay> getAssays () {
+
+		return _assays.values();
 	}
 
 	// ###############################################################
@@ -781,7 +796,5 @@ public class RplaTabDocumentSet {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	
 
 }

@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.carpla.rplatab.model;
 
+import gov.nih.nci.carpla.rplatab.sradf.HEADERTYPE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,30 +94,22 @@ public final class Sample extends AbstractBioMaterial implements
 
 SamplesSectionPrincipal, HasCharacteristics, HasComment, HasAttribute {
 
-	
-	private List<Comment> _comments = new ArrayList<Comment>();
-	
-	private String _name ;
-	
-	
+	private List<Comment>	_comments	= new ArrayList<Comment>();
+
+	private String			_name;
+
 	public void addComment ( Comment comment) {
 		_comments.add(comment);
 	}
 
-
-
-
 	public String getName () {
-		
-		return _name ;
+
+		return _name;
 	}
 
-
-
-
 	public void setName ( String bioSampleName) {
-		_name = bioSampleName ;
-		
+		_name = bioSampleName;
+
 	}
 
 }
