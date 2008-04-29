@@ -28,7 +28,7 @@
                 <s:form action="project/files/upload" id="uploadForm" namespace="" enctype="multipart/form-data" method="post"  target="target_upload">
                     <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
                     <input type=hidden name="selectedFilesToUnpack" value="-1" />
-                    <s:file id="upload0" name="upload" label="File" onchange="setCheckboxVal(this.value)">
+                    <s:file id="upload0" name="upload" label="File" onchange="setCheckboxVal(this.value, this.id)">
                          <s:param name="after">
                              <s:checkbox id="checkbox0" name="selectedFilesToUnpack" fieldValue="0" value="false" theme="simple"/>
                              <s:label for="uploadForm_selectedFilesToUnpack" value="Unpack Compressed Archive" theme="simple"/>
@@ -83,6 +83,8 @@
     var currentItemNumber = 1;
     var processingFinished = false;
     var fileCount =1;
+    var lastItemNumber = 0;
+    var lastCalcItemNumber = 0;
 
    function moreUploads() {
         formTable = $('uploadFileDiv').getElementsByTagName('table')[0];
@@ -98,13 +100,12 @@
         fileCount++;
     }
 
-    function setCheckboxVal(name) {
-        if (name.match('\.zip$')) {
-            $('checkbox' + (fileCount - 1)).disabled = false;
-            $('checkbox' + (fileCount - 1)).checked = true;
-        } else {
-            $('checkbox' + (fileCount - 1)).disabled = true;
-        }
+    function setCheckboxVal(name, id_name) {
+        var index = id_name.substring(6);
+        var match = name.match('\.zip$');
+        $('checkbox' + index).disabled = !match;
+        $('checkbox' + index).checked = match;
+
     }
 
     function closeAndGoToProjectData() {
@@ -119,13 +120,72 @@
     }
 
     function updateProgress(itemNumber, percentComplete) {
+        // itemNumber - is the input item being processed at the time by
+        // struts. only those uploads that take an extended period of
+        // time to process will be sent to this method. the total
+        // itemNumber reflects both file inputs and other inputs from the
+        // page, including hidden fields and checkboxes.
+
+        // if itemNumber is less than 2 it means that no files were selected to upload
         if (itemNumber < 2) { return; }
+
+        // lastItemNumber - is the itemNumber param sent into this
+        // method when executed last. set to 0 by page default
+
+        // this will be the determined row number of the
+        // upload progress table. while itemNumber reflects the
+        // items position in the overall list of input fields
+        // on the page, the calcItemNumber reflects the position
+        // within the ordered list of files being uploaded.
+        var calcItemNumber = 0;
+
+        // lastCalcItemNumber - is the calcItemNumber determined the
+        // last time this method ran. set to 0 by page default
+
         progressBar.setProgress(percentComplete);
-        while (itemNumber - 1 != currentItemNumber) {
+
+        // steps to calculate the calcItemNumber:
+        if (itemNumber == lastItemNumber) {
+            // if the itemNumber passed in, is identicall to that
+            // which was passed in the last time this method ran,
+            // it means that the same file is still being uploaded by struts.
+            calcItemNumber = lastCalcItemNumber;
+        } else {
+            // we must determine the relative position in the list of uploads
+            // and prune out the checkbox inputs associated with each file.
+            // we determine the relative row of items by subtracting the previous
+            // item number from the current item number. since the items are arranged
+            // as checkbox array item, file input item, and checkbox input item we must
+            // divide by half and round up to the nearest integer to determine the
+            // position of the file input item.
+            // if this is the first path through this method then this is
+            // the absolute position in the list of upload file progress.
+            calcItemNumber = Math.round((itemNumber - lastItemNumber)/2);
+
+            // if this is NOT the first time we enter this method
+            // we need to find the absolute position in the list of uploads
+            // by adding the relative position to the previous absolute position.
+            // we must also subtract 1 so that we do not count the same position twice.
+            if(lastItemNumber > 0) {
+                 calcItemNumber += lastCalcItemNumber - 1;
+            }
+        }
+
+        // record for future iterations
+        lastItemNumber = itemNumber;
+        lastCalcItemNumber = calcItemNumber;
+
+        // since we are processing these files in order, we can assume that all files previous
+        // to this iteration have finished uploading.
+        while (calcItemNumber - 1!= currentItemNumber) {
             $('uploadProgressFileList').tBodies[0].rows[currentItemNumber - 1].cells[1].innerHTML = "Done";
             currentItemNumber++;
         }
+
+        // automatically set status ot In Progress
         $('uploadProgressFileList').tBodies[0].rows[currentItemNumber - 1].cells[1].innerHTML = "In Progress";
+
+        // if the upload is completed, set to Done
         if (percentComplete == 100) {
           $('uploadProgressFileList').tBodies[0].rows[currentItemNumber - 1].cells[1].innerHTML = "Done";
           if (!processingFinished) {
@@ -134,6 +194,7 @@
           }
           pbPoller.stop();
         }
+
     }
 
     function uploadFinished(messages) {
