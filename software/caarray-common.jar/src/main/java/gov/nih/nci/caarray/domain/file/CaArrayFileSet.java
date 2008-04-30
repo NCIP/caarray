@@ -114,6 +114,15 @@ public final class CaArrayFileSet implements Serializable {
     }
 
     /**
+     * Construct a new file set, with the same files and associated project.
+     * @param baseFileSet file set on which to base the new file set
+     */
+    public CaArrayFileSet(CaArrayFileSet baseFileSet) {
+        projectId = baseFileSet.projectId;
+        files.addAll(baseFileSet.getFiles());
+    }
+
+    /**
      * File set.  Only files <em>not</em> associated with a project can be added.
      */
     public CaArrayFileSet() {
