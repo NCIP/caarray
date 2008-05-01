@@ -117,6 +117,7 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         List<Long> fileIds = new ArrayList<Long>();
         for (CaArrayFile file : fileSet.getFiles()) {
             fileIds.add(file.getId());
+            file.setFileStatus(status);
         }
         StringBuilder queryStr = new StringBuilder("update " + CaArrayFile.class.getName()
                 + " f set f.status = :status where ");
