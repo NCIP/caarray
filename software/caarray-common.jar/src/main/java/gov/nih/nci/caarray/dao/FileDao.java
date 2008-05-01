@@ -82,11 +82,20 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.file</code> package.
  *
  */
 public interface FileDao extends CaArrayDao {
+
+    /**
+     * Set the status of all the files in the given file set to the given status.
+     * @param fileSet files to update
+     * @param status status to set
+     */
+    void updateFileStatus(CaArrayFileSet fileSet, FileStatus status);
 
 }

@@ -86,8 +86,12 @@ import gov.nih.nci.caarray.security.SecurityInterceptor;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHelper;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -108,7 +112,7 @@ public final class HibernateUtil {
      * http://opensource.atlassian.com/projects/hibernate/browse/HHH-2166
      */
     public static final int MAX_IN_CLAUSE_LENGTH = 500;
-    
+
     private static final HibernateHelper HIBERNATE_HELPER = new HibernateHelper(SecurityUtils.getAuthorizationManager(),
             new NamingStrategy(), new SecurityInterceptor());
 
@@ -216,7 +220,7 @@ public final class HibernateUtil {
     public static SessionFactory getSessionFactory() {
         return getHibernateHelper().getSessionFactory();
     }
-    
+
     /**
      * Do something in an unfiltered session.
      * @param uc callback class
@@ -231,16 +235,55 @@ public final class HibernateUtil {
             enableFilters(session);
         }
     }
+
     private static void disableFilters(Session session) {
         Set<String> filters = session.getSessionFactory().getDefinedFilterNames();
         for (String filterName : filters) {
             session.disableFilter(filterName);
         }
     }
+
     private static void enableFilters(Session session) {
         if (filtersEnabled) {
             InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), session, SecurityUtils
                     .getAuthorizationManager());
         }
+    }
+
+    /**
+     * Break up a list of items into separate in clauses, to avoid limits imposed by databases or by Hibernate bug
+     * http://opensource.atlassian.com/projects/hibernate/browse/HHH-2166.
+     * @param items list of items to include in the in clause
+     * @param columnName name of column to match against the list
+     * @param blocks empty Map of HQL param name to param list of values to be set in the HQL query - it will be
+     *               populated by the method
+     * @return full HQL "in" clause, of the form: " or columnName in (:block1) or ... or columnName in (:blockN)"
+     */
+    public static String buildInClause(List<? extends Serializable> items, String columnName,
+            Map<String, List<? extends Serializable>> blocks) {
+        StringBuffer inClause = new StringBuffer();
+        for (int i = 0; i < items.size(); i += MAX_IN_CLAUSE_LENGTH) {
+            List<? extends Serializable> block = items.subList(i, Math.min(items.size(), i
+                    + HibernateUtil.MAX_IN_CLAUSE_LENGTH));
+            String paramName = "block" + (i / HibernateUtil.MAX_IN_CLAUSE_LENGTH);
+            if (inClause.length() > 0) {
+                inClause.append(" or");
+            }
+            inClause.append(" " + columnName + " in (:" + paramName + ")");
+            blocks.put(paramName, block);
+        }
+        return inClause.toString();
+    }
+
+    /**
+     * Bind the parameters returned by {@link HibernateUtil#buildInClause(List, String, Map)} to a hibernate Query.
+     * @param query hibernate query to bind to
+     * @param blocks blocks to be bound to query
+     */
+    public static void bindInClauseParameters(Query query, Map<String, List<? extends Serializable>> blocks) {
+        for (Map.Entry<String, List<? extends Serializable>> block : blocks.entrySet()) {
+            query.setParameterList(block.getKey(), block.getValue());
+        }
+
     }
 }

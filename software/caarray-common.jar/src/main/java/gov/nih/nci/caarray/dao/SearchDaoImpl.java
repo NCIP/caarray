@@ -110,7 +110,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 /**
  * DAO to search for entities using various types of criteria. Supports searching by example, CQL, HQL (Hibernate Query
  * Language) string and Hibernate Detached Criteria.
- * 
+ *
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
@@ -155,7 +155,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         q.setLong("id", entityId);
         return (T) q.uniqueResult();
     }
-        
+
     /**
      * {@inheritDoc}
      */
@@ -168,7 +168,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         q.setLockMode("o", lockMode);
         return (T) q.uniqueResult();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -178,31 +178,22 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         if (ids == null || ids.isEmpty()) {
             return Collections.emptyList();
         }
-        
-        // need to break this up into blocks of 500 to get around bug 
-        // http://opensource.atlassian.com/projects/hibernate/browse/HHH-2166
-        StringBuilder queryStr = new StringBuilder("from " + entityClass.getName() + " o where (1=0) ");
-        Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
-        for (int i = 0; i < ids.size(); i += HibernateUtil.MAX_IN_CLAUSE_LENGTH) {
-            List<? extends Serializable> idBlock = ids.subList(i, Math.min(ids.size(), i
-                    + HibernateUtil.MAX_IN_CLAUSE_LENGTH));
-            String paramName = "ids" + (i / HibernateUtil.MAX_IN_CLAUSE_LENGTH);
-            queryStr.append(" or o.id in (:" + paramName + ")");
-            idBlocks.put(paramName, idBlock);
-        }
 
+        // need to break this up into blocks of 500 to get around bug
+        // http://opensource.atlassian.com/projects/hibernate/browse/HHH-2166
+        StringBuilder queryStr = new StringBuilder("from " + entityClass.getName() + " o where ");
+        Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
+        queryStr.append(HibernateUtil.buildInClause(ids, "o.id", idBlocks));
         Query q = HibernateUtil.getCurrentSession().createQuery(queryStr.toString());
-        for (Map.Entry<String, List<? extends Serializable>> idBlock : idBlocks.entrySet()) {
-            q.setParameterList(idBlock.getKey(), idBlock.getValue());            
-        }
+        HibernateUtil.bindInClauseParameters(q, idBlocks);
         return q.list();
     }
-        
+
     /**
      * {@inheritDoc}
      */
     public void refresh(PersistentObject o) {
-        HibernateUtil.getCurrentSession().refresh(o);        
+        HibernateUtil.getCurrentSession().refresh(o);
     }
 
     /**
@@ -228,12 +219,12 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         q.setParameter("value", value.toLowerCase(Locale.ENGLISH) + "%");
         return q.list();
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings(UNCHECKED)
-    public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection, 
+    public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection,
             PageSortParams<T> pageSortParams) {
         StringBuilder filterQueryStr = new StringBuilder();
         SortCriterion<T> sortCrit = pageSortParams.getSortCriterion();
@@ -248,7 +239,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         q.setMaxResults(pageSortParams.getPageSize());
         return q.list();
     }
-        
+
     /**
      * {@inheritDoc}
      */

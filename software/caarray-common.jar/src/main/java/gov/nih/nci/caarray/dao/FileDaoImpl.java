@@ -82,18 +82,49 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.util.HibernateUtil;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
+import org.hibernate.Query;
 
 /**
  * DAO to manipulate file objects.
- *
  */
 class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
     private static final Logger LOG = Logger.getLogger(FileDaoImpl.class);
 
-
     @Override
     Logger getLog() {
         return LOG;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {
+        if (fileSet == null || fileSet.getFiles().isEmpty()) {
+            return;
+        }
+        List<Long> fileIds = new ArrayList<Long>();
+        for (CaArrayFile file : fileSet.getFiles()) {
+            fileIds.add(file.getId());
+        }
+        StringBuilder queryStr = new StringBuilder("update " + CaArrayFile.class.getName()
+                + " f set f.status = :status where ");
+        Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
+        queryStr.append(HibernateUtil.buildInClause(fileIds, "f.id", idBlocks));
+        Query query = HibernateUtil.getCurrentSession().createQuery(queryStr.toString());
+        query.setString("status", status.name());
+        HibernateUtil.bindInClauseParameters(query, idBlocks);
+        query.executeUpdate();
     }
 }

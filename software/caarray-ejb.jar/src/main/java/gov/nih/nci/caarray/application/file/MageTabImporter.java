@@ -190,12 +190,13 @@ class MageTabImporter {
     }
 
     private void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {
+        CaArrayFileSet mageTabFileSet = new CaArrayFileSet(fileSet);
         for (CaArrayFile file : fileSet.getFiles()) {
-            if (isMageTabFile(file)) {
-                file.setFileStatus(status);
-                getProjectDao().save(file);
+            if (!isMageTabFile(file)) {
+                mageTabFileSet.getFiles().remove(file);
             }
         }
+        daoFactory.getFileDao().updateFileStatus(mageTabFileSet, status);
     }
 
     private boolean isMageTabFile(CaArrayFile file) {

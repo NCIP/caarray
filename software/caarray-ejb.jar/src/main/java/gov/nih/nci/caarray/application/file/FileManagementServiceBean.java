@@ -102,7 +102,6 @@ import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 import org.apache.log4j.Logger;
-import org.hibernate.LockMode;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
 /**
@@ -145,7 +144,7 @@ public class FileManagementServiceBean implements FileManagementService {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForImport(fileSet);
         clearValidationMessages(fileSet);
-        updateFileStatus(fileSet, FileStatus.IN_QUEUE);
+        getDaoFactory().getFileDao().updateFileStatus(fileSet, FileStatus.IN_QUEUE);
         sendImportJobMessage(targetProject, fileSet);
         LogUtil.logSubsystemExit(LOG);
     }
@@ -168,7 +167,7 @@ public class FileManagementServiceBean implements FileManagementService {
     public void validateFiles(Project project, CaArrayFileSet fileSet) {
         checkForValidation(fileSet);
         clearValidationMessages(fileSet);
-        updateFileStatus(fileSet, FileStatus.IN_QUEUE);
+        getDaoFactory().getFileDao().updateFileStatus(fileSet, FileStatus.IN_QUEUE);
         sendValidationJobMessage(project, fileSet);
     }
 
@@ -210,14 +209,6 @@ public class FileManagementServiceBean implements FileManagementService {
         getDaoFactory().getProjectDao().save(arrayDesign.getDesignFile());
         ArrayDesignFileImportJob job = new ArrayDesignFileImportJob(UsernameHolder.getUser(), arrayDesign);
         getSubmitter().submitJob(job);
-    }
-
-    private void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            file = getDaoFactory().getSearchDao().retrieve(CaArrayFile.class, file.getId(), LockMode.UPGRADE);
-            file.setFileStatus(status);
-            getDaoFactory().getProjectDao().save(file);
-        }
     }
 
     CaArrayDaoFactory getDaoFactory() {
