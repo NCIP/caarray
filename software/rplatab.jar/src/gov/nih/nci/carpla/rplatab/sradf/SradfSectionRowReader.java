@@ -108,7 +108,7 @@ public class SradfSectionRowReader {
 		try {
 
 			if (((str = _in.readLine()) != null) && str.compareTo(_endLine) != 0) {
-
+				//below will take care of extra fluff tabs at end of lines
 				return (str.split("\t"));
 
 			} else
@@ -130,7 +130,13 @@ public class SradfSectionRowReader {
 				String str = null;
 				_in = new BufferedReader(new FileReader(file.getAbsolutePath()));
 
-				while ((str = _in.readLine()).startsWith("#")) {
+				boolean flag = true;
+				while (flag) {
+					str = _in.readLine();
+
+					if (str.startsWith("#") == false) {
+						flag = false;
+					}
 				}
 
 			}
@@ -143,7 +149,13 @@ public class SradfSectionRowReader {
 
 				}
 
-				while ((str = _in.readLine()).startsWith("#")) {
+				boolean flag = true;
+				while (flag) {
+					str = _in.readLine();
+
+					if (str.startsWith("#") == false) {
+						flag = false;
+					}
 				}
 
 			} else if (sectionType == SradfSectionType.ArrayData) {
@@ -155,9 +167,16 @@ public class SradfSectionRowReader {
 				while ((str = _in.readLine()).compareTo(RplaConstants.SradfArraySectionEnd) != 0) {
 
 				}
-
-				while ((str = _in.readLine()).startsWith("#")) {
+				
+				boolean flag = true;
+				while (flag) {
+					str = _in.readLine();
+					
+					if (str.startsWith("#") == false) {
+						flag = false;
+					}
 				}
+
 			}
 
 		} catch (Exception e) {

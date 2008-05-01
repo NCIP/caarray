@@ -2,7 +2,7 @@ package gov.nih.nci.carpla.rplatab.model;
 
 ;
 
-public class RplArrayLocation {
+public class RplArrayLocation  implements ArraySectionPrincipal{
 
 	private int	_blockColumn	= -1;
 
@@ -44,4 +44,21 @@ public class RplArrayLocation {
 		this._row = _row;
 	}
 
-}
+	
+	
+		public String toString(){
+			StringBuffer ret = new StringBuffer();
+			ret.append("RplArrayLocation (bc=");
+			ret.append(getBlockColumn()+",");
+			ret.append("br=" + getBlockRow()+",");
+			ret.append("c=" + getColumn()+",");
+			ret.append("r=" + getRow()+",");
+			ret.append(")");
+			return ret.toString();
+			
+		}
+		
+	}
+	
+	
+

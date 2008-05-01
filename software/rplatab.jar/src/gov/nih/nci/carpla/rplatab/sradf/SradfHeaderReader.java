@@ -40,7 +40,9 @@ public class SradfHeaderReader {
 
 			samplessectionheaders.setSectionType(RplaConstants.SradfSectionType.Samples);
 			// checkForMultipleTabs(samplessectionheaders);
-
+			
+			
+			
 			r.close();
 
 			r = getHeaderReader(sradfFile, RplaConstants.SradfSectionType.Array);
@@ -52,6 +54,11 @@ public class SradfHeaderReader {
 
 			arraylocationssectionheaders.setSectionType(RplaConstants.SradfSectionType.Array);
 
+			
+			
+			
+			
+			
 			r.close();
 
 			// --
@@ -72,6 +79,13 @@ public class SradfHeaderReader {
 			// =====================================================================
 			SradfHeaders sfi = new SradfHeaders();
 
+			
+			
+			
+			
+			
+			
+			
 			sfi.setSectionHeaders(	samplessectionheaders,
 									arraylocationssectionheaders,
 									arraydatasectionheaders);

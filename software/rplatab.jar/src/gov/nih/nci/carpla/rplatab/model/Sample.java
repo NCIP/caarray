@@ -112,4 +112,12 @@ SamplesSectionPrincipal, HasCharacteristics, HasComment, HasAttribute {
 
 	}
 
+	public String toString () {
+		StringBuffer ret = new StringBuffer();
+		ret.append("Sample (name=");
+		ret.append(getName() + ")");
+		return ret.toString();
+
+	}
+
 }

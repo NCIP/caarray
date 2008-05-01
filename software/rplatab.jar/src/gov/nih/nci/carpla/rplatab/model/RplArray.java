@@ -48,7 +48,14 @@ public class RplArray implements HasName, Serializable, ArraySectionPrincipal
 	public String getName () {
 		return _name;
 	}
-
+	public String toString(){
+		StringBuffer ret = new StringBuffer();
+		ret.append("RplArray (name=");
+		ret.append(getName());
+		ret.append(")");
+		return ret.toString();
+		
+	}
 	
 
 }

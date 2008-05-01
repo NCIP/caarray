@@ -31,7 +31,14 @@ public class Antibody implements ArrayDataSectionPrincipal, HasName {
 		_name = name;
 
 	}
-
+	public String toString(){
+		StringBuffer ret = new StringBuffer();
+		ret.append("Antibody (name=");
+		ret.append(getName());
+		ret.append(")");
+		return ret.toString();
+		
+	}
 	
 
 }

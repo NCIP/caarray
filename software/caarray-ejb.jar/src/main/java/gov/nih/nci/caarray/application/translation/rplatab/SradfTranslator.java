@@ -129,6 +129,9 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfNodeType;
 import gov.nih.nci.carpla.domain.antibody.Antibody;
 import gov.nih.nci.carpla.domain.rplahybridization.RplaHybridization;
 import gov.nih.nci.carpla.domain.rplarray.RplArray;
+import gov.nih.nci.carpla.domain.rplarray.RplaFeature;
+import gov.nih.nci.carpla.domain.rplarray.RplaReporter;
+import gov.nih.nci.carpla.domain.sample.RplaSample;
 import gov.nih.nci.carpla.rplatab.RplaTabDocumentSet;
 import gov.nih.nci.carpla.rplatab.files.ImageFile;
 import gov.nih.nci.carpla.rplatab.model.SectionPrincipal;
@@ -160,16 +163,17 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 	private final VocabularyService							vocabularyService;
 
 	private final SortedMap<String, Source>					_sources						= new TreeMap<String, Source>();
-	private final SortedMap<String, Sample>					_samples						= new TreeMap<String, Sample>();
+	private final SortedMap<String, RplaSample>				_samples						= new TreeMap<String, RplaSample>();
+	private final SortedMap<RplaSample, RplaReporter>		_rplaReporters					= new TreeMap<RplaSample, RplaReporter>();
+
 	private final SortedMap<String, RplArray>				_rplArrays						= new TreeMap<String, RplArray>();
 	private final SortedMap<String, Antibody>				_antibodies						= new TreeMap<String, Antibody>();
 
-	private SortedMap<Integer, List<AbstractCaArrayEntity>>	_domain_samplessection_rows		= new TreeMap<Integer, List<AbstractCaArrayEntity>>();
-	private SortedMap<Integer, List<AbstractCaArrayEntity>>	_domain_arraysection_rows		= new TreeMap<Integer, List<AbstractCaArrayEntity>>();
-	private SortedMap<Integer, List<AbstractCaArrayEntity>>	_domain_arraydatasection_rows	= new TreeMap<Integer, List<AbstractCaArrayEntity>>();
+	private SortedMap<Integer, List<AbstractCaArrayObject>>	_domain_samplessection_rows		= new TreeMap<Integer, List<AbstractCaArrayObject>>();
+	private SortedMap<Integer, List<AbstractCaArrayObject>>	_domain_arraysection_rows		= new TreeMap<Integer, List<AbstractCaArrayObject>>();
+	private SortedMap<Integer, List<AbstractCaArrayObject>>	_domain_arraydatasection_rows	= new TreeMap<Integer, List<AbstractCaArrayObject>>();
 
-	
-	//misc
+	// misc
 	private final Map<Term, Organism>						termToOrganism					= new HashMap<Term, Organism>();
 
 	// #########################################################################################################
@@ -183,6 +187,7 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 		this.vocabularyService = vocabularyService;
 	}
 
+	// #########################################################################################################
 	@Override
 	void translate () {
 
@@ -190,26 +195,35 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 
 	}
 
+	// ############################################################################
+
 	private void translateSradf ( RplaTabDocumentSet rset) {
 
 		translatePrincipals(rset);
+
+		
+		for ( RplArray rplArray : this._rplArrays.values()){
+			LOG.info(rplArray.getName());
+			LOG.info("features:"+ rplArray.getRplaFeatures().size());
+			LOG.info("reporters:" + rplArray.getRplaReporters().size());
+		}
+		
+		
+		
+		
 		
 		for (Experiment investigation : getTranslationResult()	.getInvestigations()) {
-		
-		
 
 			investigation.getSources().addAll(this._sources.values());
 			investigation.getSamples().addAll(this._samples.values());
 			investigation.getAntibodies().addAll(this._antibodies.values());
 			investigation.getRplArrays().addAll(this._rplArrays.values());
 		}
-		
 
 	}
 
 	// ############################################################################
-	// ############################################################################
-	// ############################################################################
+
 	private void translatePrincipals ( RplaTabDocumentSet rset) {
 
 		translateSamplesSectionPrincipals(rset, _domain_samplessection_rows);
@@ -219,12 +233,11 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 	}
 
 	// ############################################################################
-	// ############################################################################
-	// ############################################################################
 
 	public void translateSamplesSectionPrincipals ( RplaTabDocumentSet rset,
-													SortedMap<Integer, List<AbstractCaArrayEntity>> domain_samplessection_rows)
+													SortedMap<Integer, List<AbstractCaArrayObject>> domain_samplessection_rows)
 	{
+		LOG.info("translateSamplesSectionPrincipals  1" );
 
 		SortedMap<Integer, List<SectionPrincipal>> section_rows = rset.getSectionRowsPrincipalObjects(SradfSectionType.Samples);
 		Iterator<Entry<Integer, List<SectionPrincipal>>> sectionRowIterator = section_rows	.entrySet()
@@ -235,27 +248,25 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 			List<SectionPrincipal> principals = entry.getValue();
 
 			Iterator<SectionPrincipal> spIterator = principals.iterator();
-			
-			if ( domain_samplessection_rows	.get(rowInteger) == null ){
-				domain_samplessection_rows.put(rowInteger, new ArrayList<AbstractCaArrayEntity>());
+
+			if (domain_samplessection_rows.get(rowInteger) == null) {
+				domain_samplessection_rows.put(	rowInteger,
+												new ArrayList<AbstractCaArrayObject>());
 			}
-			
-			
-			
+
 			while (spIterator.hasNext()) {
 				SectionPrincipal sp = spIterator.next();
 				// carplatofix replace ugly if-elseifs
-				
-				LOG.info(sp	.getClass()
-							.getName());
-				
+
+				LOG.info(sp.getClass().getName());
+
 				if (sp	.getClass()
 						.getName()
 						.compareTo("gov.nih.nci.carpla.rplatab.model.Source") == 0) {
 					gov.nih.nci.carpla.rplatab.model.Source rplatabSource = (gov.nih.nci.carpla.rplatab.model.Source) sp;
 					Source domainSource = getOrCreateSource(rplatabSource.getName());
 					translateBioMaterial(domainSource, rplatabSource);
-				
+
 					domain_samplessection_rows	.get(rowInteger)
 												.add(domainSource);
 
@@ -264,8 +275,9 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 								.compareTo("gov.nih.nci.carpla.rplatab.model.Sample") == 0) {
 
 					gov.nih.nci.carpla.rplatab.model.Sample rplatabSample = (gov.nih.nci.carpla.rplatab.model.Sample) sp;
-					Sample domainSample = getOrCreateSample(rplatabSample.getName());
+					RplaSample domainSample = getOrCreateRplaSample(rplatabSample.getName());
 					translateBioMaterial(domainSample, rplatabSample);
+
 					domain_samplessection_rows	.get(rowInteger)
 												.add(domainSample);
 				}
@@ -278,101 +290,255 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 
 				}
 
-				else if (sp	.getClass()
-							.getName()
-							.compareTo("FactorValue") == 0) {
+				else if (sp.getClass().getName().compareTo("FactorValue") == 0) {
 
 					// todo
 
 				}
 
-			}
+			} // end while
+			LOG.info("translateSamplesSectionPrincipals  2" );
+			// source-sample
+			// source-protocol
+			// protocol-sample
+			// sample-sample
+			// sample-factorvalue
+			// fv-fv
+			// protocol-protocol
 
+			applyBioMaterialAssociations(domain_samplessection_rows.get(rowInteger));
+			// applyFactorValueAssociations(domain_samplessection_rows.get(rowInteger));
+			// applyProtocolAssociations(domain_samplessection_rows.get(rowInteger));
+			LOG.info("translateSamplesSectionPrincipals  3" );
 		}
 
 	}
 
-	// ############################################################################
-	// ############################################################################
-	// ############################################################################
-
-	public void translateArraySectionPrincipals (	RplaTabDocumentSet rset,
-													SortedMap<Integer, List<AbstractCaArrayEntity>> domain_arraysection_rows)
+	private void applyFactorValueAssociations ( List<AbstractCaArrayObject> list)
 	{
+	// TODO Auto-generated method stub
+
+	}
+
+	// ############################################################################
+	public void translateArraySectionPrincipals (	RplaTabDocumentSet rset,
+													SortedMap<Integer, List<AbstractCaArrayObject>> domain_arraysection_rows)
+	{
+		
+		
 
 		SortedMap<Integer, List<SectionPrincipal>> section_rows = rset.getSectionRowsPrincipalObjects(SradfSectionType.Array);
+		
+		
+		LOG.info("translateArraySectionPrincipals: num of rows = " + section_rows.size());
+		
+		
+		
 		Iterator<Entry<Integer, List<SectionPrincipal>>> sectionRowIterator = section_rows	.entrySet()
 																							.iterator();
+
+		int arrayIndexInList = -1;
+		int featureIndexInList = -1;
+		int dilutionIndexInList = -1;
+		int sampleIndexInList = -1;
+
+		int count = 0;
+		boolean first = true;
+
 		while (sectionRowIterator.hasNext()) {
+			LOG.info("translateArraySectionPrincipals 1");
 			Entry<Integer, List<SectionPrincipal>> entry = sectionRowIterator.next();
 			Integer rowInteger = entry.getKey();
 			List<SectionPrincipal> principals = entry.getValue();
 
 			Iterator<SectionPrincipal> spIterator = principals.iterator();
-			
-			if ( domain_arraysection_rows	.get(rowInteger) == null ){
-				domain_arraysection_rows.put(rowInteger, new ArrayList<AbstractCaArrayEntity>());
+
+			if (domain_arraysection_rows.get(rowInteger) == null) {
+				domain_arraysection_rows.put(	rowInteger,
+												new ArrayList<AbstractCaArrayObject>());
 			}
-			
-			
-			
-			
+
 			while (spIterator.hasNext()) {
 				SectionPrincipal sp = spIterator.next();
 				// carplatofix replace ugly if-elseifs
-				
-				
-				LOG.info(sp	.getClass()
-							.getName());
-				
-				
-				
-				
-				
-				
+
+				LOG.info(sp.getClass().getName());
+
 				if (sp	.getClass()
 						.getName()
 						.compareTo("gov.nih.nci.carpla.rplatab.model.RplArray") == 0) {
 					gov.nih.nci.carpla.rplatab.model.RplArray rplatabRplArray = (gov.nih.nci.carpla.rplatab.model.RplArray) sp;
 					RplArray domainRplArray = getOrCreateRplArray(rplatabRplArray.getName());
 					translateRplArray(domainRplArray, rplatabRplArray);
-					
-					
-				
-					
+
 					domain_arraysection_rows.get(rowInteger)
 											.add(domainRplArray);
+					if (first) {
+						arrayIndexInList = count;
+						count++;
+					}
 
 				} else if (sp	.getClass()
 								.getName()
-								.compareTo("gov.nih.nci.carpla.model.RplArrayLocation") == 0) {
+								.compareTo("gov.nih.nci.carpla.rplatab.model.RplArrayLocation") == 0) {
+					// i know from the rplatab parser that each line necessarily
+					// has a unique location
+					gov.nih.nci.carpla.rplatab.model.RplArrayLocation rloc = (gov.nih.nci.carpla.rplatab.model.RplArrayLocation) sp;
+
+					RplaFeature rfeat = new RplaFeature();
+
+					rfeat.setBlockColumn(rloc.getBlockColumn());
+					rfeat.setBlockRow(rloc.getBlockRow());
+					rfeat.setCol(rloc.getColumn());
+					rfeat.setRow(rloc.getRow());
+					domain_arraysection_rows.get(rowInteger).add(rfeat);
+
+					if (first) {
+						featureIndexInList = count;
+						count++;
+					}
 
 				} else if (sp	.getClass()
 								.getName()
-								.compareTo("gov.nih.nci.carpla.model.Dilution") == 0) {
+								.compareTo("gov.nih.nci.carpla.rplatab.model.Dilution") == 0) {
+					gov.nih.nci.carpla.rplatab.model.Dilution dil = (gov.nih.nci.carpla.rplatab.model.Dilution) sp;
+					MeasurementCharacteristic mc = new MeasurementCharacteristic();
+					mc.setValue(dil.getValue());
+					Term term = new Term();
+					term.setValue(dil.getUnit());
+					TermSource ts = new TermSource();
+					ts.setName("MO");
+					term.setSource(ts);
+					mc.setUnit(term);
+
+					domain_arraysection_rows.get(rowInteger).add(mc);
+
+					if (first) {
+						dilutionIndexInList = count;
+						count++;
+					}
 
 				}
 
 				else if (sp	.getClass()
 							.getName()
-							.compareTo("gov.nih.nci.carpla.model.Sample") == 0) {
+							.compareTo("gov.nih.nci.carpla.rplatab.model.Sample") == 0) {
+
+					gov.nih.nci.carpla.rplatab.model.Sample rplatabSample = (gov.nih.nci.carpla.rplatab.model.Sample) sp;
+					RplaSample domainSample = getRplaSample(rplatabSample.getName());
+					domain_arraysection_rows.get(rowInteger).add(domainSample);
+
+					if (first) {
+						sampleIndexInList = count;
+						count++;
+					}
+
+				}
+
+			
+
+			} // end while
+			LOG.info("translateArraySectionPrincipals 2");
+			applyRplArrayDetailAssociations(domain_arraysection_rows.get(rowInteger),
+											arrayIndexInList,
+											featureIndexInList,
+											dilutionIndexInList,
+											sampleIndexInList
+
+			);
+			LOG.info("translateArraySectionPrincipals 3");
+			first = false;
+		}
+
+	}
+
+	// ############################################################################
+	private void applyBioMaterialAssociations ( List<AbstractCaArrayObject> rowDomainPrincipals)
+	{
+		LOG.info(" applyBioMaterialAssociations 3" );
+		for (int ii = 0; ii < rowDomainPrincipals.size(); ii++) {
+
+			AbstractCaArrayObject domainPrincipal = rowDomainPrincipals.get(ii);
+
+			if (domainPrincipal instanceof Source) {
+				Source source = (Source) domainPrincipal;
+
+				for (int jj = ii + 1; jj < rowDomainPrincipals.size(); jj++) {
+					AbstractCaArrayObject nextDomainPrincipal = rowDomainPrincipals.get(jj);
+
+					if (nextDomainPrincipal instanceof RplaSample) {
+						RplaSample sample = (RplaSample) nextDomainPrincipal;
+						source.getSamples().add(sample);
+						sample.getSources().add(source);
+
+						// jj = rowDomainPrincipals.size() + 1;
+
+					}
+
+				}
+
+			} else if (domainPrincipal instanceof RplaSample) {
+
+				RplaSample rplaSample = (RplaSample) domainPrincipal;
+
+				for (int jj = ii + 1; jj < rowDomainPrincipals.size(); jj++) {
+					AbstractCaArrayObject nextDomainPrincipal = rowDomainPrincipals.get(jj);
+
+					if (nextDomainPrincipal instanceof RplaSample) {
+
+						RplaSample nextRplaSample = (RplaSample) nextDomainPrincipal;
+						((RplaSample) domainPrincipal)	.getDescendantRplaSamples()
+														.add(nextRplaSample);
+						if (nextRplaSample.getSourceRplaSample() == null) {
+							((RplaSample) nextDomainPrincipal).setSourceRplaSample(rplaSample);
+						}
+
+						// jj = rowDomainPrincipals.size() + 1;
+
+					}
 
 				}
 
 			}
 
 		}
+		LOG.info(" applyBioMaterialAssociations 4" );
+	}
+
+	// ############################################################################
+
+	private void applyRplArrayDetailAssociations (	List<AbstractCaArrayObject> rowDomainPrincipals,
+													int arrayIndexInList,
+													int featureIndexInList,
+													int dilutionIndexInList,
+													int sampleIndexInList)
+	{
+
+		RplArray rplArray = (RplArray) rowDomainPrincipals.get(arrayIndexInList);
+		RplaFeature rplaFeature = (RplaFeature) rowDomainPrincipals.get(featureIndexInList);
+		MeasurementCharacteristic dilution = (MeasurementCharacteristic) rowDomainPrincipals.get(dilutionIndexInList);
+		RplaSample rplaSample = (RplaSample) rowDomainPrincipals.get(sampleIndexInList);
+
+		rplArray.getRplaFeatures().add(rplaFeature);
+		LOG.info("applyRplArrayDetailAssociations: feature size=" + rplArray.getRplaFeatures().size());
+		rplaFeature.setDilution(dilution);
+		RplaReporter reporter = getRplaReporter(rplaSample) ;
+		rplaFeature.setRplaReporter(reporter);
+		
+		
 
 	}
 
 	// ############################################################################
-	// ############################################################################
-	// ############################################################################
+	private RplaReporter getRplaReporter ( RplaSample rplaSample) {
+		return _rplaReporters.get(rplaSample);
+	}
 
+	// ############################################################################
 	public void translateArrayDataSectionPrincipals (	RplaTabDocumentSet rset,
-														SortedMap<Integer, List<AbstractCaArrayEntity>> domain_arraydatasection_rows)
+														SortedMap<Integer, List<AbstractCaArrayObject>> domain_arraydatasection_rows)
 	{
-
+		LOG.info("translateArrayDataSectionPrincipals");
 		SortedMap<Integer, List<SectionPrincipal>> section_rows = rset.getSectionRowsPrincipalObjects(SradfSectionType.ArrayData);
 		Iterator<Entry<Integer, List<SectionPrincipal>>> sectionRowIterator = section_rows	.entrySet()
 																							.iterator();
@@ -382,23 +548,17 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 			List<SectionPrincipal> principals = entry.getValue();
 
 			Iterator<SectionPrincipal> spIterator = principals.iterator();
-			
-			if ( domain_arraydatasection_rows	.get(rowInteger) == null ){
-				domain_arraydatasection_rows.put(rowInteger, new ArrayList<AbstractCaArrayEntity>());
+
+			if (domain_arraydatasection_rows.get(rowInteger) == null) {
+				domain_arraydatasection_rows.put(	rowInteger,
+													new ArrayList<AbstractCaArrayObject>());
 			}
-			
-			
-			
-			
+
 			while (spIterator.hasNext()) {
 				SectionPrincipal sp = spIterator.next();
-				
-				LOG.info(sp	.getClass()
-							.getName());
-				
-			
-				
-				
+
+				LOG.info(sp.getClass().getName());
+
 				// carplatofix replace ugly if-elseifs
 				if (sp	.getClass()
 						.getName()
@@ -415,9 +575,7 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 					gov.nih.nci.carpla.rplatab.model.Antibody rplatabAntibody = (gov.nih.nci.carpla.rplatab.model.Antibody) sp;
 
 					Antibody domainAntibody = getOrCreateAntibody(rplatabAntibody.getName());
-					
-					
-					
+
 					domain_arraydatasection_rows.get(rowInteger)
 												.add(domainAntibody);
 
@@ -442,7 +600,7 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 	// i fully know only distinct sources are recorded in the dataset, but
 	// maybe i don't want to depend on it, depends how braindead the parser
 	// is/will ever be...
-	// Also in the future, i want to look for resolved referenced
+	// Also in the future, i want to look for referenced
 	// entities...that will go here...
 
 	public Source getOrCreateSource ( String name) {
@@ -457,15 +615,26 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 
 	}
 
-	public Sample getOrCreateSample ( String name) {
+	public RplaSample getOrCreateRplaSample ( String name) {
 
 		if (_samples.containsKey(name)) {
 			return _samples.get(name);
 		}
-		Sample sample = new Sample();
+		RplaSample sample = new RplaSample();
 		sample.setName(name);
 		_samples.put(name, sample);
+
+		_rplaReporters.put(sample, new RplaReporter());
+
 		return sample;
+
+	}
+
+	public RplaSample getRplaSample ( String name) {
+
+		return _samples.get(name);
+
+		// carplatodo
 
 	}
 

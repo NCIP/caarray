@@ -104,6 +104,7 @@ import gov.nih.nci.caarray.validation.UniqueConstraintField;
 import gov.nih.nci.carpla.domain.antibody.Antibody;
 import gov.nih.nci.carpla.domain.rplahybridization.RplaHybridization;
 import gov.nih.nci.carpla.domain.rplarray.RplArray;
+import gov.nih.nci.carpla.domain.sample.RplaSample;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -331,7 +332,6 @@ public class Experiment extends AbstractCaArrayEntity {
 	private Set<Antibody>	_antibodies	= new HashSet<Antibody>();
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	
 	public Set<Antibody> getAntibodies () {
 		return _antibodies;
 
@@ -341,6 +341,27 @@ public class Experiment extends AbstractCaArrayEntity {
 		_antibodies = antibodies;
 	}
 
+	
+	
+	// ---------------------------------------------------------------------------------------
+	private Set<RplaSample> _rplaSamples = new HashSet<RplaSample>();
+	
+	
+	
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public Set<RplaSample> getRplaSamples () {
+		return _rplaSamples;
+	}
+
+	public void setRplaSamples ( Set<RplaSample> samples) {
+		_rplaSamples = samples;
+	}
+	
+	
+	
+	
+	
+	
 	// change nothing below here
 	// change nothing below here
 	// change nothing below here
@@ -1208,4 +1229,6 @@ public class Experiment extends AbstractCaArrayEntity {
 														}
 													});
 	}
+
+	
 }

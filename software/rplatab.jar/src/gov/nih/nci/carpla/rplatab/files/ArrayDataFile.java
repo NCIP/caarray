@@ -14,5 +14,19 @@ public class ArrayDataFile extends RplaTabDatasetFile  implements HasName,ArrayD
 	public String getName () {
 		return super.getFile().getName();
 	}
+	
+	
+	public String toString(){
+		StringBuffer ret = new StringBuffer();
+		ret.append("ArrayDataFile(name=");
+		ret.append(getName());
+		ret.append(")");
+		return ret.toString();
+	}
+	
+	
+	
+	
+	
 
 }

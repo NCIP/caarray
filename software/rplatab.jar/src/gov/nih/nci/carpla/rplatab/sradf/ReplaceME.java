@@ -63,6 +63,8 @@ public class ReplaceME {
 		}
 		else if (columnHeaderString.compareTo("Comment") == 0) {
 			return HEADERTYPE.COMMENT;
+		}else if (columnHeaderString.compareTo("Unit") == 0) {
+			return HEADERTYPE.UNIT;
 		}
 
 		else {

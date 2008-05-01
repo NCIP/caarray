@@ -14,6 +14,13 @@ public class Assay implements ArrayDataSectionPrincipal, HasName,HasAttribute {
 		_name = name ; 
 	}
 
-	
+	public String toString(){
+		StringBuffer ret = new StringBuffer();
+		ret.append("Assay (name=");
+		ret.append(getName());
+		ret.append(")");
+		return ret.toString();
+		
+	}
 
 }

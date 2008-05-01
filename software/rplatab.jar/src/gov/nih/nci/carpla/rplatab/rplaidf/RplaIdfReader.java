@@ -1,5 +1,6 @@
 package gov.nih.nci.carpla.rplatab.rplaidf;
 
+
 import gov.nih.nci.caarray.magetab.MageTabOntologyCategory;
 import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.magetab.TermSource;
@@ -11,10 +12,10 @@ import gov.nih.nci.carpla.rplatab.RplaTabInputFileSet;
 
 import gov.nih.nci.carpla.rplatab.model.Antibody;
 import gov.nih.nci.carpla.rplatab.model.Dilution;
+import gov.nih.nci.carpla.rplatab.model.Parameter;
 import gov.nih.nci.carpla.rplatab.model.RplArray;
 
 import gov.nih.nci.carpla.rplatab.model.Protocol;
-
 
 import gov.nih.nci.carpla.rplatab.files.RplaIdfFile;
 import gov.nih.nci.carpla.rplatab.files.SradfFile;
@@ -28,7 +29,7 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
+import java.util.List;
 
 public class RplaIdfReader {
 
@@ -77,18 +78,31 @@ public class RplaIdfReader {
 	private static void handleDilutions (	RplaIdfHelper helper,
 											RplaTabDocumentSet RplaTabDocumentSet)
 	{
-		Vector<String> dilutionNames = helper.getColumnStrings("Dilution");
-		Vector<String> dilutionValues = helper.getColumnStrings("Dilution Value");
+		List<String> dilutionNames = helper.getColumnStrings("Dilution");
+		List<String> dilutionValues = helper.getColumnStrings("Dilution Value");
 
-		Vector<String> dilutionUnits = helper.getColumnStrings("Dilution Unit");
+		List<String> dilutionUnits = helper.getColumnStrings("Dilution Unit");
 
-		Vector<String> dilutionUnitTermSourceRefs = helper.getColumnStrings("Dilution Unit Term Source Ref");
+		List<String> dilutionUnitTermSourceRefs = helper.getColumnStrings("Dilution Unit Term Source Ref");
 
 		for (int ii = 0; ii < dilutionNames.size(); ii++) {
 
 			String dilutionName = dilutionNames.get(ii);
 			// verifyRPLArrayNameIsValid(Name);
+			
 			Dilution dil = RplaTabDocumentSet.createDilution(dilutionName);
+			
+			dil.setValue(Float.valueOf(dilutionValues.get(ii)));
+			//OntologyTerm term = new OntologyTerm();
+			//term.setValue("x_times");
+			//TermSource ts = new TermSource("MO");
+		
+			//term.setTermSource(ts);
+			dil.setUnit("x_times");
+			
+			
+			
+			
 
 		}
 
@@ -98,7 +112,7 @@ public class RplaIdfReader {
 												RplaTabDocumentSet rplaTabDocumentSet)
 	{
 
-		Vector<String> arrayNames = helper.getColumnStrings("RPLArray Name");
+		List<String> arrayNames = helper.getColumnStrings("RPLArray Name");
 
 		verifyNoDuplicates(arrayNames);
 
@@ -106,7 +120,7 @@ public class RplaIdfReader {
 
 			String arrayName = arrayNames.get(ii);
 			verifyRPLArrayNameIsValid(arrayName);
-			RplArray rarray = rplaTabDocumentSet.createRplArray(arrayName); 
+			RplArray rarray = rplaTabDocumentSet.createRplArray(arrayName);
 
 		}
 
@@ -123,9 +137,9 @@ public class RplaIdfReader {
 
 	{
 
-		Vector<String> termSourceNames = helper.getColumnStrings("Term Source Name");
-		Vector<String> termSourceFiles = helper.getColumnStrings("Term Source File");
-		Vector<String> termSourceVersions = helper.getColumnStrings("Term Source Version");
+		List<String> termSourceNames = helper.getColumnStrings("Term Source Name");
+		List<String> termSourceFiles = helper.getColumnStrings("Term Source File");
+		List<String> termSourceVersions = helper.getColumnStrings("Term Source Version");
 
 		// Term Sources are only referenced by name in the SRADF document,
 		// so names need to be unique.
@@ -159,7 +173,7 @@ public class RplaIdfReader {
 
 	{
 
-		Vector<String> strings = helper.getColumnStrings("Investigation Title");
+		List<String> strings = helper.getColumnStrings("Investigation Title");
 		String title = strings.get(0);
 		verifyInvestigationTitleIsValid(title);
 		rplaTabDocumentSet.setInvestigationTitle(title);
@@ -172,9 +186,9 @@ public class RplaIdfReader {
 
 	{
 
-		Vector<String> expDesigns = helper.getColumnStrings("Experimental Design");
+		List<String> expDesigns = helper.getColumnStrings("Experimental Design");
 
-		Vector<String> expDesignTermSourceRefs = helper.getColumnStrings("Experimental Design Term Source REF");
+		List<String> expDesignTermSourceRefs = helper.getColumnStrings("Experimental Design Term Source REF");
 
 		verifyNoDuplicates(expDesigns);
 		verifySameNumberOfColumnsIfRowIsNotEmpty(	rplaTabDocumentSet,
@@ -222,9 +236,9 @@ public class RplaIdfReader {
 
 	{
 
-		Vector<String> factorNames = helper.getColumnStrings("Experimental Factor Name");
-		Vector<String> factorTypes = helper.getColumnStrings("Experimental Factor Type");
-		Vector<String> factorTermSourceRefs = helper.getColumnStrings("Experimental Factor Term Source REF");
+		List<String> factorNames = helper.getColumnStrings("Experimental Factor Name");
+		List<String> factorTypes = helper.getColumnStrings("Experimental Factor Type");
+		List<String> factorTermSourceRefs = helper.getColumnStrings("Experimental Factor Term Source REF");
 
 		verifyNoDuplicates(factorNames);
 
@@ -250,7 +264,6 @@ public class RplaIdfReader {
 
 			factorTypeOntologyTerm.setValue(type);
 
-			
 			factorTypeOntologyTerm.setCategory(MageTabOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY.name());
 
 			factorTypeOntologyTerm.setTermSource(termSource);
@@ -283,14 +296,14 @@ public class RplaIdfReader {
 
 	{
 
-		Vector<String> protocolNames = helper.getColumnStrings("Protocol Name");
-		Vector<String> protocolTypes = helper.getColumnStrings("Protocol Type");
-		Vector<String> protocolDescriptions = helper.getColumnStrings("Protocol Description");
-		Vector<String> protocolParameters = helper.getColumnStrings("Protocol Parameters");
-		Vector<String> protocolHardware = helper.getColumnStrings("Protocol Hardware");
-		Vector<String> protocolSoftware = helper.getColumnStrings("Protocol Software");
-		Vector<String> protocolContact = helper.getColumnStrings("Protocol Contact");
-		Vector<String> protocolTermSourceRefs = helper.getColumnStrings("Protocol Term Source REF");
+		List<String> protocolNames = helper.getColumnStrings("Protocol Name");
+		List<String> protocolTypes = helper.getColumnStrings("Protocol Type");
+		List<String> protocolDescriptions = helper.getColumnStrings("Protocol Description");
+		List<String> protocolParameters = helper.getColumnStrings("Protocol Parameters");
+		List<String> protocolHardware = helper.getColumnStrings("Protocol Hardware");
+		List<String> protocolSoftware = helper.getColumnStrings("Protocol Software");
+		List<String> protocolContact = helper.getColumnStrings("Protocol Contact");
+		List<String> protocolTermSourceRefs = helper.getColumnStrings("Protocol Term Source REF");
 
 		verifyNoDuplicates(protocolNames);
 
@@ -343,7 +356,12 @@ public class RplaIdfReader {
 
 			String parameters = protocolParameters.get(ii);
 			// parse parameters
-			// protocol.addParameter
+			String[] parameterNames = parameters.split(";");
+			for (String element : parameterNames) {
+				Parameter parameter = new Parameter();
+				parameter.setName(element);
+				protocol.getParameters().add(parameter);
+			}
 
 			String hardware = protocolHardware.get(ii);
 			verifyProtocolHardwareIsValid(hardware);
@@ -373,19 +391,19 @@ public class RplaIdfReader {
 
 	{
 
-		Vector<String> antibodyNames = helper.getColumnStrings("Antibody Name");
-		Vector<String> targetGeneNames = helper.getColumnStrings("Target Gene Name");
-		Vector<String> targetGeneNameTermSourceRefs = helper.getColumnStrings("Target Gene Name Term Source REF");
-		Vector<String> antibodySpecificities = helper.getColumnStrings("Antibody Specificity");
+		List<String> antibodyNames = helper.getColumnStrings("Antibody Name");
+		List<String> targetGeneNames = helper.getColumnStrings("Target Gene Name");
+		List<String> targetGeneNameTermSourceRefs = helper.getColumnStrings("Target Gene Name Term Source REF");
+		List<String> antibodySpecificities = helper.getColumnStrings("Antibody Specificity");
 
-		Vector<String> antibodyEpitopes = helper.getColumnStrings("Antibody Epitope");
+		List<String> antibodyEpitopes = helper.getColumnStrings("Antibody Epitope");
 
-		Vector<String> antibodyImmunogens = helper.getColumnStrings("Antibody Immunogen");
+		List<String> antibodyImmunogens = helper.getColumnStrings("Antibody Immunogen");
 
-		Vector<String> antibodyProviders = helper.getColumnStrings("Antibody Provider");
-		Vector<String> antibodyCatalogIDs = helper.getColumnStrings("Antibody Catalog ID");
-		Vector<String> antibodyLotIDs = helper.getColumnStrings("Antibody Lot ID");
-		Vector<String> antibodyComments = helper.getColumnStrings("Antibody Comment");
+		List<String> antibodyProviders = helper.getColumnStrings("Antibody Provider");
+		List<String> antibodyCatalogIDs = helper.getColumnStrings("Antibody Catalog ID");
+		List<String> antibodyLotIDs = helper.getColumnStrings("Antibody Lot ID");
+		List<String> antibodyComments = helper.getColumnStrings("Antibody Comment");
 
 		verifyNoDuplicates(antibodyNames);
 
@@ -476,16 +494,16 @@ public class RplaIdfReader {
 
 	{
 
-		Vector<String> pubMedIds = helper.getColumnStrings("PubMed ID");
-		Vector<String> pubDOIs = helper.getColumnStrings("Publication DOI");
+		List<String> pubMedIds = helper.getColumnStrings("PubMed ID");
+		List<String> pubDOIs = helper.getColumnStrings("Publication DOI");
 
-		Vector<String> pubAuthors = helper.getColumnStrings("Publication Author List");
+		List<String> pubAuthors = helper.getColumnStrings("Publication Author List");
 
-		Vector<String> pubTitles = helper.getColumnStrings("Publication Title");
+		List<String> pubTitles = helper.getColumnStrings("Publication Title");
 
-		Vector<String> pubStatuses = helper.getColumnStrings("Publication Status");
+		List<String> pubStatuses = helper.getColumnStrings("Publication Status");
 
-		Vector<String> pubStatusTermSourceRefs = helper.getColumnStrings("Publication Status Term Source REF");
+		List<String> pubStatusTermSourceRefs = helper.getColumnStrings("Publication Status Term Source REF");
 
 		verifyNoDuplicates(pubMedIds);
 
@@ -556,7 +574,7 @@ public class RplaIdfReader {
 
 		// filehandling todo do for windows.
 		try {
-			Vector<String> sradfFiles = helper.getColumnStrings("SRADF File");
+			List<String> sradfFiles = helper.getColumnStrings("SRADF File");
 
 			// SradfFile sradfFile = new SradfFile();
 			// String filename = sradfFiles.get(0);
@@ -592,8 +610,8 @@ public class RplaIdfReader {
 	}
 
 	// ###############################################################
-	private static void verifyNoDuplicates (	Vector<String> termSourceNames,
-												Vector<String> termSourceVersions)
+	private static void verifyNoDuplicates (	List<String> termSourceNames,
+												List<String> termSourceVersions)
 
 	{
 	// TODO Auto-generated method stub
@@ -640,7 +658,7 @@ public class RplaIdfReader {
 	}
 
 	// ###############################################################
-	private static void verifyNoDuplicates ( Vector<String> strings)
+	private static void verifyNoDuplicates ( List<String> strings)
 
 	{
 

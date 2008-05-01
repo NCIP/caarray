@@ -1,7 +1,9 @@
 package gov.nih.nci.carpla.rplatab.rplaidf;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 public class RplaIdfHelper {
@@ -23,9 +25,9 @@ public class RplaIdfHelper {
 		strings.add(value);
 	}
 
-	public Vector<String> getColumnStrings ( String key) {
+	public List<String> getColumnStrings ( String key) {
 		if (_map.get(key) == null) {
-			return new Vector<String>();
+			return new ArrayList<String>();
 		}
 		return _map.get(key);
 

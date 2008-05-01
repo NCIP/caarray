@@ -14,6 +14,13 @@ public class ImageFile extends ArrayDataFile {
 
 	}
 
-	
+	public String toString(){
+		StringBuffer ret = new StringBuffer();
+		ret.append("ImageFile (name=");
+		ret.append(getName());
+		ret.append(")");
+		return ret.toString();
+		
+	}
 
 }

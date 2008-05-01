@@ -87,7 +87,9 @@ import java.io.Serializable;
 /**
  * The value supplied for a parameter to a protocol.
  */
-public final class ParameterValue implements Serializable, Unitable {
+
+//carpla changed:  took away final
+public  class ParameterValue implements Serializable, Unitable {
 
     private static final long serialVersionUID = -7063719478977989712L;
 

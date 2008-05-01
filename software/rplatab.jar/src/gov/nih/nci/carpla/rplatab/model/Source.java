@@ -121,5 +121,18 @@ public final class Source extends AbstractBioMaterial
 	public void setName ( String name) {
 		_name = name;
 	}
+	
+	
+	public String toString(){
+		StringBuffer ret = new StringBuffer();
+		ret.append("Source (name=");
+		ret.append(getName()+")");
+		return ret.toString();
+		
+	}
+	
+	
+	
+	
 
 }

@@ -10,6 +10,13 @@ public class FactorValue  implements SectionPrincipal{
 		
 	}
 
+	public String toString(){
+		StringBuffer ret = new StringBuffer();
+		ret.append("FactorValue (todo)");
+		
+		return ret.toString();
+		
+	}
 	
 
 }

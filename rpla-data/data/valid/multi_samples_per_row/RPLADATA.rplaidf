@@ -1,0 +1,68 @@
+Investigation Title	ICBP/ MDA RPPA1
+Experimental Design	strain_or_line_design	compound_treatment_design
+Experimental Design Term Source REF	MGED Ontology	MGED Ontology
+Experimental Factor Name	CellLine	Compound
+Experimental Factor Type	cellline	Compound
+Experimental Factor Term Source REF	MGED Ontology	MGED Ontology
+
+Antibody Name	4EBP1	Akt	AMPK	b3-int	b-actin aut	b-act man	b-cat	Bcl2	BRCA1	b-tub	c-Abl aut	c-Abl man	c-Cbl	CDK2 man	c-Jun	c-Kit	c-Myc aut	c-Myc man	coll Au	cyclinA	cyclinB1 aut	cyclinB1 man	cyclinD1	E-cad	EGFR	ERalpha	ERK2	FKHRL	GAPDH	GSK3	HER2	HER3	IRS1	JNK	LKB1	MEK1	N-cad	p27	p38	p53	P-AcCoA 79	P-Akt 308	P-Akt 473	P-AMPK 172	PARP man	PARP	P-c-Jun 73	P-c-Myc 58 aut	P-c-Myc 58 man	PCNA	P-EGFR 1068	P-EGFR 992	P-Elk1 383 aut	P-Elk1 383 man	P-FKHRL 318	P-GSK3 21	P-HER2 1248 aut	P-HER2 1248 man	PKCa	P-MAPK 202	P-MEK 217	P-p38 180	P-PKCa 567	P-pRb 807	pRb	PR	P-S6 235	P-S6 240	P-Src 416	P-Src 527 aut	P-Src 527 man	P-STAT1 701	P-STAT3 705	P-STAT3 727	P-STAT6 641	PTEN	S6 man	Sirt1	Src aut	Src man	STAT3	survivin
+Antibody Target Gene Name
+Antibody Target Gene Name Term Source REF
+Antibody Specificity
+Antibody Epitope
+Antibody Immunogen
+Antibody Provider
+Antibody Catalog ID
+Antibody Lot ID
+Antibody Comment
+
+RPLArray Name	ICBP_MDA_RPPA
+
+Dilution	dil1	dil2	dil3	dil4	dil5
+Dilution Value	->	->	->	->	->
+Dilution Unit	->	->	->	->	->
+Dilution Unit Term Source REF	->	->	->	->	->
+
+
+Person Last Name	Siwak	Feiler
+Person First Name	Doris	Heidi
+Person Mid Initials	->	->
+Person Email	dsiwak@mdanderson.org	HSFeiler@lbl.gov
+Person Phone	->	->
+Person Fax	->	->
+Person Address	->	->
+Person Affiliation	M.D. Anderson	LBNL
+Person Roles	array_manufacturer;data_analyst	biomaterial_provider
+Person Roles Term Source REF	MGED Ontology; MGED Ontology	MGED Ontology
+
+Quality Control Type
+Quality Control Term Source REF
+Replicate Type
+Replicate Term Source REF
+Normalization Type
+Normalization Term Source REF
+Date of Experiment	Date(2007-05-11)
+Public Release Date	Date(2007-05-11)
+
+PubMed ID
+Publication DOI
+Publication Author List
+Publication Title
+Publication Status
+Publication Status Term Source REF
+
+Experiment Description	description
+Protocol Name	CompoundTreatment	CellCulture
+Protocol Type	compound_based_treatment	->
+Protocol Description	->	->
+Protocol Parameters	compound;harvestTime	cultureType
+Protocol Hardware	->	->
+Protocol Software	->	->
+Protocol Contact	->	->
+Protocol Term Source REF	MGED Ontology	->
+
+SRADF File	RPLADATA.sradf
+
+Term Source Name	MGED Ontology
+Term Source File	http://mged.sourceforge.net/ontologies/MGEDontology.php
+Term Source Version	1.3.1.

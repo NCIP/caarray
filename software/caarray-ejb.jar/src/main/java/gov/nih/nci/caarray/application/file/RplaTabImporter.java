@@ -371,11 +371,17 @@ public class RplaTabImporter {
 		
 		originalExperiment.getRplArrays().addAll(translatedExperiment.getRplArrays());
 		
+		LOG.info("rplafeature size =" + translatedExperiment.getRplArrays().iterator().next().getRplaFeatures().size());
+		
+		LOG.info("rplareporter size =" + translatedExperiment.getRplArrays().iterator().next().getRplaReporters().size());
+		
+		
+		
 		originalExperiment.getRplaHybridizations().addAll (translatedExperiment.getRplaHybridizations());
 		
 		originalExperiment.getAntibodies().addAll (translatedExperiment.getAntibodies());
 		
-		
+		originalExperiment.getRplaSamples().addAll(translatedExperiment.getRplaSamples());
 		
 		
 		

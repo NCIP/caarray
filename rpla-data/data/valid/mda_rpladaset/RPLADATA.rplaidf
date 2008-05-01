@@ -22,10 +22,10 @@ Antibody Comment
 RPLArray Name	ICBP_MDA_RPPA
 #
 
-Dilution	dil1	dil2	dil3	dil4	dil5
-Dilution Value	->	->	->	->	->
-Dilution Unit	->	->	->	->	->
-Dilution Unit Term Source REF	->	->	->	->	->
+Dilution	dil1	dil2	dil3	dil4	dil5	unknowndil
+Dilution Value	->	->	->	->	->	->
+Dilution Unit	->	->	->	->	->	->
+Dilution Unit Term Source REF	->	->	->	->	->	->
 
 
 Person Last Name	Siwak	Feiler
@@ -59,7 +59,7 @@ Experiment Description	description
 Protocol Name	CompoundTreatment	CellCulture
 Protocol Type	compound_based_treatment	->
 Protocol Description	->	->
-Protocol Parameters	compound ; harvest time	->
+Protocol Parameters	compound;harvestTime	cultureType
 Protocol Hardware	->	->
 Protocol Software	->	->
 Protocol Contact	->	->

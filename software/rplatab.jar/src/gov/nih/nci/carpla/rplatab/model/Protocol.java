@@ -93,11 +93,23 @@ import java.util.List;
  * A Protocol is a parameterizable description of a method.
  */
 
-// was another code copy...Protocol looks good, except it's final...not anymore!
+
 public final class Protocol extends gov.nih.nci.caarray.magetab.Protocol
 
-implements Serializable, SamplesSectionPrincipal, HasAttribute, HasName {
+implements SamplesSectionPrincipal, HasAttribute, HasName {
 
-	
+	public String toString () {
+		StringBuffer ret = new StringBuffer();
+		ret.append("Protocol (name=");
+		ret.append(getName());
+		ret.append(" ;params=");
+		for (gov.nih.nci.caarray.magetab.Parameter param : getParameters()) {
+			ret.append(param.getName() + " ");
+
+		}
+		ret.append(")");
+		return ret.toString();
+
+	}
 
 }

@@ -1,6 +1,7 @@
 package gov.nih.nci.carpla.rplatab;
 
 import gov.nih.nci.caarray.magetab.OntologyTerm;
+
 import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
@@ -17,12 +18,17 @@ import gov.nih.nci.carpla.rplatab.model.Assay;
 import gov.nih.nci.carpla.rplatab.model.Characteristic;
 import gov.nih.nci.carpla.rplatab.model.Comment;
 import gov.nih.nci.carpla.rplatab.model.Dilution;
+import gov.nih.nci.carpla.rplatab.model.Parameter;
+import gov.nih.nci.carpla.rplatab.model.ParameterValue;
+import gov.nih.nci.carpla.rplatab.model.ProtocolApplication;
 
 import gov.nih.nci.carpla.rplatab.model.FactorValue;
 import gov.nih.nci.carpla.rplatab.model.HasAttribute;
 import gov.nih.nci.carpla.rplatab.model.HasCharacteristics;
 import gov.nih.nci.carpla.rplatab.model.HasComment;
+
 import gov.nih.nci.carpla.rplatab.model.HasProvider;
+
 import gov.nih.nci.carpla.rplatab.model.Protocol;
 import gov.nih.nci.carpla.rplatab.model.Provider;
 import gov.nih.nci.carpla.rplatab.model.RplArrayLocation;
@@ -153,7 +159,7 @@ public class RplaTabDocumentSetParserImplementation
 	// ####################################################################
 	private void processSectionRows (	SradfSectionHeaders sectionPrincipalHeaders,
 										SradfFile sradfFileHolder,
-										RplaTabDocumentSet RplaTabDocumentSet)
+										RplaTabDocumentSet rplaTabDocumentSet)
 
 	{
 
@@ -168,10 +174,18 @@ public class RplaTabDocumentSetParserImplementation
 
 		int row_number_in_section = 1;
 		while ((values = rowReader.nextRow()) != null) {
-			// checkNumberOfColumns(values.length, correctNumberOfColumns);
 
 			if (values[0].startsWith("#"))
-				break;
+				continue;
+
+			if (!checkNumberOfColumns(	sectionPrincipalHeaders.getSectionType(),
+										values.length,
+										correctNumberOfColumns,
+										row_number_in_section,
+										rplaTabDocumentSet)) {
+				// why go on?
+				return;
+			}
 
 			for (int current_index_in_principal_headers = 0; current_index_in_principal_headers < principalNodeSize; current_index_in_principal_headers++) {
 
@@ -182,15 +196,44 @@ public class RplaTabDocumentSetParserImplementation
 								header,
 								values,
 								row_number_in_section,
-								RplaTabDocumentSet);
+								rplaTabDocumentSet);
 
 			}
+			if (sectionPrincipalHeaders.getSectionType() == SradfSectionType.Array) {
 
+				rplaTabDocumentSet	.getPrincipalObjectsBySectionAndRow(SradfSectionType.Array,
+																		row_number_in_section)
+									.add(_locations.get(row_number_in_section));
+			}
 			row_number_in_section++;
 
 			// establishLinks(RplaTabDocumentSet.getSamplesSectionPrincipalObjects());
 
 		}
+	}
+
+	private boolean checkNumberOfColumns (	RplaConstants.SradfSectionType sectionType,
+											int length,
+											int correctNumberOfColumns,
+											int row_number_in_section,
+											RplaTabDocumentSet rplaTabDocumentSet)
+	{
+		if (length != correctNumberOfColumns) {
+			rplaTabDocumentSet	.getValidationResult()
+								.addMessage(rplaTabDocumentSet	.getSradfFile()
+																.getFile(),
+											Type.ERROR,
+											sectionType.name() + ";row number="
+													+ row_number_in_section
+													+ ": Incorrect number of columns. Is:"
+													+ length
+													+ "   Should be: "
+													+ correctNumberOfColumns
+													+ " May be critical error.");
+			return false;
+		}
+		return true;
+
 	}
 
 	// ####################################################################
@@ -199,16 +242,8 @@ public class RplaTabDocumentSetParserImplementation
 									SradfHeader header,
 									String[] rowValues,
 									int row_number_in_section,
-									RplaTabDocumentSet RplaTabDocumentSet)
+									RplaTabDocumentSet rplaTabDocumentSet)
 	{
-
-		if (rowValues.length < (header.getCol())) {
-
-			// RplaTabDocumentSet.getMessages().add(new ValidationMessage(
-			// "sectionrow=" + row_number_in_section
-			// + "\t incorrect number of columns"));
-
-		}
 
 		switch (ReplaceME.getType(header.getValue())) {
 
@@ -218,7 +253,7 @@ public class RplaTabDocumentSetParserImplementation
 								header,
 								rowValues,
 								row_number_in_section,
-								RplaTabDocumentSet);
+								rplaTabDocumentSet);
 			break;
 
 		case SAMPLENAME:
@@ -227,7 +262,7 @@ public class RplaTabDocumentSetParserImplementation
 								header,
 								rowValues,
 								row_number_in_section,
-								RplaTabDocumentSet);
+								rplaTabDocumentSet);
 			break;
 
 		case PROTOCOLREF:
@@ -236,7 +271,7 @@ public class RplaTabDocumentSetParserImplementation
 								header,
 								rowValues,
 								row_number_in_section,
-								RplaTabDocumentSet);
+								rplaTabDocumentSet);
 
 			break;
 
@@ -246,7 +281,7 @@ public class RplaTabDocumentSetParserImplementation
 								header,
 								rowValues,
 								row_number_in_section,
-								RplaTabDocumentSet);
+								rplaTabDocumentSet);
 			break;
 
 		case BLOCKROW:
@@ -254,7 +289,7 @@ public class RplaTabDocumentSetParserImplementation
 							header,
 							rowValues,
 							row_number_in_section,
-							RplaTabDocumentSet);
+							rplaTabDocumentSet);
 
 			break;
 
@@ -264,7 +299,7 @@ public class RplaTabDocumentSetParserImplementation
 								header,
 								rowValues,
 								row_number_in_section,
-								RplaTabDocumentSet);
+								rplaTabDocumentSet);
 
 			break;
 		case ROW:
@@ -272,7 +307,7 @@ public class RplaTabDocumentSetParserImplementation
 						header,
 						rowValues,
 						row_number_in_section,
-						RplaTabDocumentSet);
+						rplaTabDocumentSet);
 
 			break;
 		case COLUMN:
@@ -281,7 +316,7 @@ public class RplaTabDocumentSetParserImplementation
 							header,
 							rowValues,
 							row_number_in_section,
-							RplaTabDocumentSet);
+							rplaTabDocumentSet);
 
 			break;
 
@@ -291,7 +326,7 @@ public class RplaTabDocumentSetParserImplementation
 							header,
 							rowValues,
 							row_number_in_section,
-							RplaTabDocumentSet);
+							rplaTabDocumentSet);
 
 			break;
 
@@ -301,7 +336,7 @@ public class RplaTabDocumentSetParserImplementation
 								header,
 								rowValues,
 								row_number_in_section,
-								RplaTabDocumentSet);
+								rplaTabDocumentSet);
 
 			break;
 
@@ -310,7 +345,7 @@ public class RplaTabDocumentSetParserImplementation
 							header,
 							rowValues,
 							row_number_in_section,
-							RplaTabDocumentSet);
+							rplaTabDocumentSet);
 
 			break;
 		case ANTIBODYREF:
@@ -318,7 +353,7 @@ public class RplaTabDocumentSetParserImplementation
 								header,
 								rowValues,
 								row_number_in_section,
-								RplaTabDocumentSet);
+								rplaTabDocumentSet);
 
 			break;
 
@@ -328,7 +363,7 @@ public class RplaTabDocumentSetParserImplementation
 							header,
 							rowValues,
 							row_number_in_section,
-							RplaTabDocumentSet);
+							rplaTabDocumentSet);
 			break;
 
 		case IMAGEFILE:
@@ -336,7 +371,7 @@ public class RplaTabDocumentSetParserImplementation
 							header,
 							rowValues,
 							row_number_in_section,
-							RplaTabDocumentSet);
+							rplaTabDocumentSet);
 
 			break;
 		case ARRAYDATAFILE:
@@ -345,7 +380,7 @@ public class RplaTabDocumentSetParserImplementation
 								header,
 								rowValues,
 								row_number_in_section,
-								RplaTabDocumentSet);
+								rplaTabDocumentSet);
 
 			break;
 		case DERIVEDARRAYDATAFILE:
@@ -354,7 +389,7 @@ public class RplaTabDocumentSetParserImplementation
 										header,
 										rowValues,
 										row_number_in_section,
-										RplaTabDocumentSet);
+										rplaTabDocumentSet);
 
 			break;
 
@@ -408,6 +443,16 @@ public class RplaTabDocumentSetParserImplementation
 							RplaTabDocumentSet);
 			break;
 
+		case PARAMETERVALUE:
+
+			handleParameterValue(	(ProtocolApplication) obj,
+									header,
+									rowValues,
+									sectionType,
+									row_number_in_section,
+									RplaTabDocumentSet);
+			break;
+
 		default:
 
 			break;
@@ -415,9 +460,6 @@ public class RplaTabDocumentSetParserImplementation
 		}
 
 	}
-
-	// #############################################################################
-	// #############################################################################
 
 	private void handleDerivedArrayDataFile (	SradfSectionType sectionType,
 												SradfHeader header,
@@ -551,8 +593,10 @@ public class RplaTabDocumentSetParserImplementation
 									SradfHeader header,
 									String[] rowValues,
 									int row_number_in_section,
-									RplaTabDocumentSet RplaTabDocumentSet)
+									RplaTabDocumentSet rplaTabDocumentSet)
 	{
+
+		LOG.info("handleArrayRef");
 		String name = rowValues[header.getCol() - 1];
 
 		// this doesn;t have attributes here....
@@ -561,13 +605,13 @@ public class RplaTabDocumentSetParserImplementation
 						rowValues,
 						sectionType,
 						row_number_in_section,
-						RplaTabDocumentSet)) {
+						rplaTabDocumentSet)) {
 
 			return;
 
 		}
 
-		RplArray rplarray = RplaTabDocumentSet.getRplArray(name);
+		RplArray rplarray = rplaTabDocumentSet.getRplArray(name);
 
 		if (rplarray == null) {
 
@@ -578,7 +622,7 @@ public class RplaTabDocumentSetParserImplementation
 			// + "dne"));
 		}
 
-		RplaTabDocumentSet	.getPrincipalObjectsBySectionAndRow(sectionType,
+		rplaTabDocumentSet	.getPrincipalObjectsBySectionAndRow(sectionType,
 																row_number_in_section)
 							.add(rplarray);
 	}
@@ -590,27 +634,37 @@ public class RplaTabDocumentSetParserImplementation
 										SradfHeader header,
 										String[] rowValues,
 										int row_number_in_section,
-										RplaTabDocumentSet RplaTabDocumentSet)
+										RplaTabDocumentSet rplaTabDocumentSet)
 	{
 
 		String name = rowValues[header.getCol() - 1];
 
 		if (name.compareTo(RplaConstants.EMPTYFIELDSTRING) == 0) {
+			rplaTabDocumentSet	.getValidationResult()
+								.addMessage(rplaTabDocumentSet	.getSradfFile()
+																.getFile(),
+											Type.ERROR,
+											"Array section;row number=" + row_number_in_section
+													+ ": Cannot have empty dilution REF in the Array Section: you could create "
+													+ "an \"unknown\"  dilution and use that.");
 			return;
 		}
 
-		Dilution dilution = RplaTabDocumentSet.getDilution(name);
+		Dilution dilution = rplaTabDocumentSet.getDilution(name);
 
 		if (dilution == null) {
 
-			// RplaTabDocumentSet.getMessages().add(new ValidationMessage(
-			// "sectionrow=" + row_number_in_section
-			// + "\tdilutionref with name="
-			// + name
-			// + "dne"));
+			rplaTabDocumentSet	.getValidationResult()
+								.addMessage(rplaTabDocumentSet	.getSradfFile()
+																.getFile(),
+											Type.ERROR,
+											"Array section;row number=" + row_number_in_section
+													+ ": Dilution REF in the Array Section is not in rplaidf.");
+
+			return;
 		}
 
-		RplaTabDocumentSet	.getPrincipalObjectsBySectionAndRow(sectionType,
+		rplaTabDocumentSet	.getPrincipalObjectsBySectionAndRow(sectionType,
 																row_number_in_section)
 							.add(dilution);
 
@@ -629,6 +683,13 @@ public class RplaTabDocumentSetParserImplementation
 		String name = rowValues[header.getCol() - 1];
 
 		if (name.compareTo(RplaConstants.EMPTYFIELDSTRING) == 0) {
+			rplaTabDocumentSet	.getValidationResult()
+								.addMessage(rplaTabDocumentSet	.getSradfFile()
+																.getFile(),
+											Type.ERROR,
+											"Array section;row number=" + row_number_in_section
+													+ ": Cannot have empty Sample REF in the Array Section: you could create "
+													+ "an \"unknown\"  sample and use that.");
 			return;
 		}
 
@@ -640,7 +701,9 @@ public class RplaTabDocumentSetParserImplementation
 								.addMessage(rplaTabDocumentSet	.getSradfFile()
 																.getFile(),
 											Type.ERROR,
-											"Cannot find sample with name=" + name);
+											"Cannot find sample with name=" + name + " in Array section row number="+
+											row_number_in_section);
+			return;
 
 		}
 
@@ -683,7 +746,7 @@ public class RplaTabDocumentSetParserImplementation
 			rloc = new RplArrayLocation();
 			_locations.put(row_number_in_section, rloc);
 		}
-		rloc.setColumn(header.getCol() - 1);
+		rloc.setColumn(Integer.parseInt(rowValues[header.getCol() - 1]));
 
 	}
 
@@ -701,7 +764,7 @@ public class RplaTabDocumentSetParserImplementation
 			rloc = new RplArrayLocation();
 			_locations.put(row_number_in_section, rloc);
 		}
-		rloc.setRow(header.getCol() - 1);
+		rloc.setRow(Integer.parseInt(rowValues[header.getCol() - 1]));
 	}
 
 	// #############################################################################
@@ -718,7 +781,7 @@ public class RplaTabDocumentSetParserImplementation
 			rloc = new RplArrayLocation();
 			_locations.put(row_number_in_section, rloc);
 		}
-		rloc.setBlockColumn(header.getCol() - 1);
+		rloc.setBlockColumn(Integer.parseInt(rowValues[header.getCol() - 1]));
 	}
 
 	// #############################################################################
@@ -735,7 +798,15 @@ public class RplaTabDocumentSetParserImplementation
 			rloc = new RplArrayLocation();
 			_locations.put(row_number_in_section, rloc);
 		}
-		rloc.setBlockRow(header.getCol() - 1);
+
+		/*
+		 * System.out.println("handleBlockRow: rowValues length=" +
+		 * rowValues.length + "\ttarget value =" // + Integer.parseInt( +
+		 * (rowValues[header.getCol() - 1]) + "\tcurrent row number = " +
+		 * row_number_in_section);
+		 */
+
+		rloc.setBlockRow(Integer.parseInt((rowValues[header.getCol() - 1])));
 	}
 
 	// ####################################################################
@@ -755,6 +826,66 @@ public class RplaTabDocumentSetParserImplementation
 
 	}
 
+	// #############################################################################
+	// #############################################################################
+
+	private void handleParameterValue ( ProtocolApplication protocolApp,
+										SradfHeader header,
+										String[] rowValues,
+										SradfSectionType sectionType,
+										int row_number_in_section,
+										RplaTabDocumentSet rplaTabDocumentSet)
+	{
+
+		String name = rowValues[header.getCol() - 1];
+
+		if (checkEmpty(	name,
+						header,
+						rowValues,
+						sectionType,
+						row_number_in_section,
+						rplaTabDocumentSet)) {
+
+			return;
+
+		}
+
+		ParameterValue pv = new ParameterValue();
+
+		pv.setValue(rowValues[header.getCol() - 1]);
+		protocolApp.getParameterValues().add(pv);
+		String bracketedterm = header.getTerm();
+		boolean exists = false;
+		for (gov.nih.nci.caarray.magetab.Parameter param : ((Protocol) (protocolApp.getProtocol())).getParameters()) {
+			if (param.getName().compareTo(bracketedterm) == 0) {
+				exists = true;
+			}
+		}
+		if (!exists) {
+			rplaTabDocumentSet	.getValidationResult()
+								.addMessage(rplaTabDocumentSet	.getSradfFile()
+																.getFile(),
+											Type.ERROR,
+											"Cannot find protocol parameter with name=" + bracketedterm);
+
+		}
+
+		List<SradfHeader> subheaders = header.getSubHeaders();
+
+		for (int ii = 0; ii < subheaders.size(); ii++) {
+
+			SradfHeader subheader = subheaders.get(ii);
+
+			handleAttribute((HasAttribute) pv,
+							subheader,
+							rowValues,
+							sectionType,
+							row_number_in_section,
+							rplaTabDocumentSet);
+
+		}
+	}
+
 	// ####################################################################
 	// #############################################################################
 	private void handleSourceName ( SradfSectionType sectionType,
@@ -762,7 +893,7 @@ public class RplaTabDocumentSetParserImplementation
 									String[] rowValues,
 
 									int row_number_in_section,
-									RplaTabDocumentSet RplaTabDocumentSet)
+									RplaTabDocumentSet rplaTabDocumentSet)
 
 	{
 
@@ -773,18 +904,19 @@ public class RplaTabDocumentSetParserImplementation
 						rowValues,
 						sectionType,
 						row_number_in_section,
-						RplaTabDocumentSet)) {
+						rplaTabDocumentSet)) {
 
 			return;
 
 		}
 
-		Source source = RplaTabDocumentSet.getOrCreateSource(name);
+		Source source = rplaTabDocumentSet.getOrCreateSource(name);
 
-		RplaTabDocumentSet	.getPrincipalObjectsBySectionAndRow(sectionType,
+		rplaTabDocumentSet	.getPrincipalObjectsBySectionAndRow(sectionType,
 																row_number_in_section)
 							.add(source);
 
+		// carplatodo factor out this block into a function
 		List<SradfHeader> subheaders = header.getSubHeaders();
 
 		for (int ii = 0; ii < subheaders.size(); ii++) {
@@ -796,10 +928,10 @@ public class RplaTabDocumentSetParserImplementation
 							rowValues,
 							sectionType,
 							row_number_in_section,
-							RplaTabDocumentSet);
+							rplaTabDocumentSet);
 
 		}
-
+		//
 	}
 
 	// ####################################################################
@@ -1002,7 +1134,6 @@ public class RplaTabDocumentSetParserImplementation
 		}
 
 		Protocol protocol = rplaTabDocumentSet.getProtocol(name);
-
 		if (protocol == null) {
 
 			rplaTabDocumentSet	.getValidationResult()
@@ -1015,9 +1146,12 @@ public class RplaTabDocumentSetParserImplementation
 
 		}
 
+		ProtocolApplication protocolApp = new ProtocolApplication();
+		protocolApp.setProtocol(protocol);
+
 		rplaTabDocumentSet	.getPrincipalObjectsBySectionAndRow(sectionType,
 																row_number_in_section)
-							.add(protocol);
+							.add(protocolApp);
 
 		List<SradfHeader> subheaders = header.getSubHeaders();
 
@@ -1025,7 +1159,7 @@ public class RplaTabDocumentSetParserImplementation
 
 			SradfHeader subheader = subheaders.get(ii);
 
-			handleAttribute((HasAttribute) protocol,
+			handleAttribute((HasAttribute) protocolApp,
 							subheader,
 							rowValues,
 							sectionType,
