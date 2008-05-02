@@ -203,14 +203,15 @@ public interface ArrayDesignService {
      * Saves an array design.
      *
      * @param arrayDesign the array design to save
-     * @throws IllegalAccessException if trying to modify locked fields on an array design
+     * @throws IllegalAccessException if trying to modify locked fields on an array design or if the array design file
+     *         is currently being imported
      * @throws InvalidDataFileException if array is duplicate
      */
     void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException, InvalidDataFileException;
 
     /**
      * Retrieves an existing <code>DesignElementList</code> for an array design by LSID.
-     * 
+     *
      * @param lsidAuthority the LSID authority
      * @param lsidNamespace the LSID namespace
      * @param lsidObjectId the LSID object ID

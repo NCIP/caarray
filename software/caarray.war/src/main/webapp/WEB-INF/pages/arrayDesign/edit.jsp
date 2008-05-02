@@ -1,4 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+<%@page import="gov.nih.nci.caarray.domain.file.FileStatus"%>
+
 <s:if test="${!editMode}">
     <c:set var="theme" value="readonly" scope="request"/>
 </s:if>
@@ -85,15 +87,16 @@
                     <caarray:actions>
                         <c:url value="/protected/arrayDesign/list.action" var="listUrl"/>
                         <caarray:action url="${listUrl}" actionClass="cancel" text="Cancel" tabindex="11" />
+                        <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
                         <s:if test="${editMode}">
                             <caarray:action onclick="TabUtils.showSubmittingText(); document.getElementById('arrayDesignForm').submit();" actionClass="save" text="Save" tabindex="12"/>
                         </s:if>
-                        <s:else>
+                        <s:elseif test="${arrayDesign.designFile.status != importingStatus}">
                             <c:url value="/protected/arrayDesign/edit.action" var="editUrl">
                                 <c:param name="arrayDesign.id" value="${arrayDesign.id}"/>
                             </c:url>
                             <caarray:action url="${editUrl}" actionClass="edit" text="Edit" tabindex="13"/>
-                        </s:else>
+                        </s:elseif>
                     </caarray:actions>
                 </div>
             </div>

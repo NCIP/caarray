@@ -363,6 +363,9 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException, InvalidDataFileException {
+        if (arrayDesign.getDesignFile().getFileStatus() == FileStatus.IMPORTING) {
+            throw new IllegalAccessException("Cannot modify an array design while the design file is being imported");
+        }
         LogUtil.logSubsystemEntry(LOG, arrayDesign);
         if (!validateDuplicate(arrayDesign).isValid()) {
             throw new InvalidDataFileException(arrayDesign.getDesignFile().getValidationResult());

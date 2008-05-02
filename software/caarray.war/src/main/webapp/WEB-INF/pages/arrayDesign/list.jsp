@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+<%@page import="gov.nih.nci.caarray.domain.file.FileStatus"%>
 <html>
 <head>
     <title>Manage Array Designs</title>
@@ -29,10 +30,13 @@
                         <display:column property="technologyType.value" titleKey="arrayDesign.technologyType" sortable="true"/>
                         <display:column property="organism.scientificName" titleKey="arrayDesign.organism" sortable="true"/>
                         <display:column titleKey="button.edit" class="centered" headerClass="centered">
-                            <c:url value="/protected/arrayDesign/edit.action" var="editDesignUrl">
-                                <c:param name="arrayDesign.id" value="${row.id}" />
-                            </c:url>
-                            <a href="${editDesignUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                            <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
+                            <c:if test="${row.designFile.status != importingStatus}">
+                                <c:url value="/protected/arrayDesign/edit.action" var="editDesignUrl">
+                                    <c:param name="arrayDesign.id" value="${row.id}" />
+                                </c:url>
+                                <a href="${editDesignUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                            </c:if>
                         </display:column>
                         <display:column sortProperty="designFile.status" titleKey="experiment.files.status" sortable="true" >
                             <c:if test="${not empty row.designFile.status}">

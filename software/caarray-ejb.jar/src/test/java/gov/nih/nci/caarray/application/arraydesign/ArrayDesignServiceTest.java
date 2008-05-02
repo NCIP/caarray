@@ -233,6 +233,22 @@ public class ArrayDesignServiceTest {
     }
 
     @Test(expected=IllegalAccessException.class)
+    public void testSaveArrayDesignWhileImporting() throws Exception {
+        ArrayDesign design = createDesign(null, null, null,
+                getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
+        this.arrayDesignService.importDesign(design);
+        assertEquals("Test3", design.getName());
+        assertEquals("Affymetrix.com", design.getLsidAuthority());
+        assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
+        assertEquals("Test3", design.getLsidObjectId());
+        assertNull(design.getDescription());
+
+        design.getDesignFile().setFileStatus(FileStatus.IMPORTING);
+        design.setName("new name");
+        this.arrayDesignService.saveArrayDesign(design);
+    }
+
+    @Test(expected=IllegalAccessException.class)
     public void testSaveArrayDesignLockedProviderChangeOrganization() throws Exception {
         ArrayDesign design = createDesign(null, null, null,
                 getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
@@ -353,7 +369,7 @@ public class ArrayDesignServiceTest {
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
         assertEquals("Mapping10K_Xba131-xda", arrayDesign.getLsidObjectId());
     }
-    
+
     @Test
     public void testImportDesign_IlluminaHumanWG6() {
         CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
@@ -622,7 +638,7 @@ public class ArrayDesignServiceTest {
 
         @Override
         public ArrayDao getArrayDao() {
-            return new ArrayDaoStub() {                
+            return new ArrayDaoStub() {
                 @Override
                 public Map<String, Long> getLogicalProbeNamesToIds(ArrayDesign design, List<String> names) {
                     Map<String, Long> map = new HashMap<String, Long>();
@@ -633,7 +649,7 @@ public class ArrayDesignServiceTest {
                     }
                     return map;
                 }
-                
+
                 @SuppressWarnings("deprecation")
                 @Override
                 public void save(PersistentObject object) {
