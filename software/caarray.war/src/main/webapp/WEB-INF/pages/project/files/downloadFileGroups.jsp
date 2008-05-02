@@ -2,11 +2,32 @@
 
 
 <script type="text/javascript">
-launchDownload = function(downloadUrl, downloadLink) {
+groupDownloadAllFiles = new Array();
+
+<c:forEach items="${selectedFiles}" var="file"> 
+groupDownloadAllFiles.push('${file.id}');
+</c:forEach>
+
+launchGroupDownload = function(downloadUrl, downloadLink) {
     var downloadLinkDiv = $(downloadLink).up("div");
     downloadLinkDiv.innerHTML = "This download is being assembled and will begin shortly";
     new Effect.Highlight(downloadLinkDiv);
-    window.location = downloadUrl;
+
+    var form = document.createElement("form");
+    form.method="post";
+    form.style.display="none";
+    form.action=downloadUrl;
+    for (i = 0; i < groupDownloadAllFiles.length; ++i) {
+        var elt = document.createElement("input");
+        elt.type="hidden";
+        elt.name="selectedFileIds";
+        elt.value=groupDownloadAllFiles[i];
+        form.appendChild(elt);
+    }  
+    
+    document.body.appendChild(form);
+    form.submit();
+    $(form).remove();      
 }
 </script>
 
@@ -18,8 +39,7 @@ these files in groups. Please click the download link for each file group below 
 
 </p>
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
-    <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${downloadFileGroups}"
-                   sort="list" id="row">
+    <display:table class="searchresults" cellspacing="0" list="${downloadFileGroups}" id="row">
         <caarray:displayTagProperties/>
         <display:column title="Group">
             ${row_rowNum} of ${fn:length(downloadFileGroups)}
@@ -35,12 +55,9 @@ these files in groups. Please click the download link for each file group below 
 	        <c:url value="/project/files/download.action" var="actionUrl">
                 <c:param name="project.id" value="${project.id}" />
                 <c:param name="downloadGroupNumber" value="${row_rowNum}" />
-                <c:forEach items="${selectedFileIds}" var="fileId">
-                    <c:param name="selectedFileIds" value="${fileId}"/>
-                </c:forEach>
     	    </c:url>
             <div>
-                <a href="#" onclick="launchDownload('${actionUrl}', this)">
+                <a href="#" onclick="launchGroupDownload('${actionUrl}', this)">
                     <img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>">
                 </a>
             </div>
