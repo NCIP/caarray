@@ -202,7 +202,8 @@ public class ProjectSourcesAction extends AbstractProjectListTabAction {
             ActionHelper.saveMessage(getText("experiment.sources.noDataToDownload"));
             return "noSourceData";
         }
-        ProjectFilesAction.downloadFiles(getProject(), files);
+        ProjectFilesAction.downloadFiles(getProject(), files, ProjectFilesAction
+                .determineDownloadFileName(getProject()));
         return null;
     }
 

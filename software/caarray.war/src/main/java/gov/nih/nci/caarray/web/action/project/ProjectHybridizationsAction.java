@@ -181,7 +181,8 @@ public class ProjectHybridizationsAction extends AbstractProjectProtocolAnnotati
             ActionHelper.saveMessage(getText("experiment.hybridizations.noDataToDownload"));
             return "noHybData";
         }
-        ProjectFilesAction.downloadFiles(getProject(), files);
+        ProjectFilesAction.downloadFiles(getProject(), files, ProjectFilesAction
+                .determineDownloadFileName(getProject()));
         return null;
     }
 

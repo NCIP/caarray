@@ -148,6 +148,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public static final Comparator<CaArrayFile> CAARRAYFILE_NAME_COMPARATOR_INSTANCE = new CaArrayFileNameComparator();
 
+    /**
+     * Maximum total uncompressed size (in bytes) of files that can be downloaded in a single ZIP. If files selected
+     * for download have a greater combined size, then the user will be presented with a group download page.
+     */
+    public static final long MAX_DOWNLOAD_SIZE = 1024 * 1024 * 1536;
+
     private static final String DOWNLOAD_CONTENT_TYPE = "application/zip";
     private static final String UPLOAD_INPUT = "upload";
     private static final long serialVersionUID = 1L;
@@ -173,6 +179,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
     private List<Long> selectedFileIds = new ArrayList<Long>();
+    private final List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
+    private int downloadGroupNumber = -1;
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
     private String listAction;
     private String extensionFilter;
@@ -570,24 +578,80 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     @SkipValidation
     public String download() throws IOException {
-        downloadFiles(getProject(), getSelectedFiles());
-        return null;
+        computeDownloadGroups();
+        if (downloadFileGroups.size() == 1) {
+            downloadFiles(getProject(), getSelectedFiles(), determineDownloadFileName(this.getProject()));
+            return null;
+        } else if (downloadGroupNumber > 0) { 
+            downloadFiles(getProject(), getDownloadGroupFiles(downloadFileGroups.get(downloadGroupNumber - 1)),
+                    determineDownloadFileName(this.getProject(), this.downloadGroupNumber, this.downloadFileGroups
+                            .size()));
+            return null;            
+        } else {
+            return "downloadGroups";
+        }
     }
 
+    private List<CaArrayFile> getDownloadGroupFiles(DownloadGroup group) {
+        List<CaArrayFile> groupFiles = new ArrayList<CaArrayFile>();
+        for (CaArrayFile file : getSelectedFiles()) {
+            if (group.getFileIds().contains(file.getId())) {
+                groupFiles.add(file);
+            }
+        }
+        return groupFiles;
+    }
+
+    private void computeDownloadGroups() {
+        this.downloadFileGroups.clear();
+        List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(getSelectedFiles());        
+        Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
+        for (CaArrayFile file : sortedFiles) {
+            addToDownloadGroups(file);
+        }
+    }
+
+    /**
+     * Add given file to the download groups. The goal is to find the best possible group to put it, such that the total
+     * number of groups will be minimized. the algorithm is to put it in the group which will then have the closest to
+     * max allowable size without going over
+     * 
+     * @param file the file to add
+     */
+    private void addToDownloadGroups(CaArrayFile file) {
+        DownloadGroup bestGroup = null;
+        long maxNewSize = 0;
+        for (DownloadGroup group : this.downloadFileGroups) {
+            long newGroupSize = group.getTotalCompressedSize() + file.getCompressedSize();
+            if (newGroupSize < MAX_DOWNLOAD_SIZE && newGroupSize > maxNewSize) {
+                maxNewSize = newGroupSize;
+                bestGroup = group;
+            }
+        }
+        if (bestGroup == null) {
+            bestGroup = new DownloadGroup();
+            this.downloadFileGroups.add(bestGroup);
+        }
+        bestGroup.addFile(file);
+    }
+    
     /**
      * Zips the selected files and writes the result to the servlet output stream. Also sets content
      * type and disposition appropriately.
      * 
      * @param project the project to whicb the files belong
      * @param files the files to zip and send
+     * @param filename the filename to use for the zip file. This filename will be set as the Content-disposition
+     * header
      * @throws IOException if there is an error writing to the stream
      */
-    public static void downloadFiles(Project project, Collection<CaArrayFile> files) throws IOException {
+    public static void downloadFiles(Project project, Collection<CaArrayFile> files, String filename)
+            throws IOException {
         HttpServletResponse response = ServletActionContext.getResponse();
         FileInputStream fis = null;        
         try {
             response.setContentType(DOWNLOAD_CONTENT_TYPE);
-            response.addHeader("Content-disposition", "filename=\"" + determineDownloadFileName(project) + "\"");
+            response.addHeader("Content-disposition", "filename=\"" + filename + "\"");
             
             List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);        
             Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
@@ -615,8 +679,28 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         }
     }    
 
-    private static String determineDownloadFileName(Project project) {
-        return "caArray_" + project.getExperiment().getPublicIdentifier() + "_files.zip";
+    /**
+     * Returns the filename for a zip of files for the given project, assuming that the download will not be grouped.
+     * @param project the project whose files are downloaded
+     * @return the filename
+     */
+    public static String determineDownloadFileName(Project project) {
+        StringBuilder name = new StringBuilder("caArray_").append(project.getExperiment().getPublicIdentifier()).append(
+                "_files.zip");
+        return name.toString();
+    }
+
+    /**
+     * Returns the filename for a zip of files for the given project, when the download is grouped.
+     * @param project the project whose files are downloaded
+     * @param groupNumber the number of the group whose files are downloaded
+     * @param numberOfGroups the total number of groups
+     * @return the filename
+     */
+    public static String determineDownloadFileName(Project project, int groupNumber, int numberOfGroups) {
+        StringBuilder name = new StringBuilder("caArray_").append(project.getExperiment().getPublicIdentifier());
+        name.append("_").append(groupNumber).append("_of_").append(numberOfGroups).append("_files.zip");
+        return name.toString();
     }
 
     /**
@@ -782,6 +866,27 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public void setFileTypes(List<String> fileTypes) {
         this.fileTypes = fileTypes;
+    }
+
+    /**
+     * @return the downloadFileGroups
+     */
+    public List<DownloadGroup> getDownloadFileGroups() {
+        return downloadFileGroups;
+    }
+
+    /**
+     * @return the downloadGroupNumber
+     */
+    public int getDownloadGroupNumber() {
+        return downloadGroupNumber;
+    }
+
+    /**
+     * @param downloadGroupNumber the downloadGroupNumber to set
+     */
+    public void setDownloadGroupNumber(int downloadGroupNumber) {
+        this.downloadGroupNumber = downloadGroupNumber;
     }
 
     /**
