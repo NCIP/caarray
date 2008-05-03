@@ -27,10 +27,10 @@ public class RplaTabDocumentSetParserImplementation_Test {
 	static public void main ( String[] args) {
 
 		ArrayList<String> list = new ArrayList<String>();
-		 list.add("../rpla-test-data/data/valid/mda_rpladaset");
-		 //list.add("../rpla-test-data/data/valid/valid_with_expfactors");
-		//list.add("../rpla-test-data/data/valid/multi_samples_per_row");
-		// list.add("../rpla-test-data/data/invalid/invalid_headers/bad_sradf_samples_section_headers/bad_1");
+		// list.add("../rpla-test-data/data/valid/mda_rpladaset");
+		//list.add("../rpla-test-data/data/valid/valid_with_expfactors");
+		// list.add("../rpla-test-data/data/valid/multi_samples_per_row");
+		list.add("../rpla-test-data/data/invalid/invalid_headers/bad_sradf_samples_section_headers/bad_1");
 		// list.add("../rpla-test-data/data/invalid/invalid_headers/bad_sradf_samples_section_headers/bad_2");
 		// list.add("../rpla-test-data/data/invalid/invalid_data/nonemptyattributesforemptyfield");
 		// list.add("../rpla-test-data/data/invalid/invalid_headers/incorrectly_referenced_factor_values");
@@ -62,15 +62,15 @@ public class RplaTabDocumentSetParserImplementation_Test {
 
 		}
 
-		try {
+		
 			rdataset = RplaTabDocumentSetParser.INSTANCE.parse(rfset);
-		} catch (RplaTabParsingException pe) {
-			pe.printStackTrace();
-
-		} catch (InvalidDataException ide) {
-			ide.printStackTrace();
-
+		
+		
+		if (rdataset.getValidationResult().getMessages(Type.ERROR).size() != 0  ){
+			printValidationMessages(rdataset, out);
+			return;
 		}
+		
 		out.println("\n###################START#################################################");
 		out.println(dirpath);
 		out.println("\n");
@@ -86,7 +86,6 @@ public class RplaTabDocumentSetParserImplementation_Test {
 		printRows(rdataset, SradfSectionType.ArrayData, out);
 		out.println("\n**********************************************************************");
 		printValidationMessages(rdataset, out);
-
 		out.println("\n#####################END###############################################");
 	}
 
@@ -155,7 +154,11 @@ public class RplaTabDocumentSetParserImplementation_Test {
 	private static void printValidationMessages (	RplaTabDocumentSet rdataset,
 													PrintStream out)
 	{
-		// TODO Auto-generated method stub
+		out.println("\n\nVALIDATION MESSAGES:");
+		if (rdataset == null) {
+			out.println("VALIDATION MESSAGES END");
+			return;
+		}
 		List<ValidationMessage> lm = rdataset	.getValidationResult()
 												.getMessages();
 
@@ -164,11 +167,12 @@ public class RplaTabDocumentSetParserImplementation_Test {
 														.listIterator();
 
 		boolean hasError = false;
-		out.println("\n FILES: ");
+		
 
-		out.println(rdataset.getRplaIdfFile().getFile().getAbsolutePath());
-		out.println(rdataset.getSradfFile().getFile().getAbsolutePath());
-		out.println("\n\nVALIDATION MESSAGES");
+		
+
+	
+
 		out.println("Number of validation messages:" + lm.size());
 		while (li.hasNext()) {
 			ValidationMessage mess = li.next();
@@ -180,7 +184,6 @@ public class RplaTabDocumentSetParserImplementation_Test {
 		out.println("Set has ERROR messages:" + hasError);
 		out.println("VALIDATION MESSAGES END");
 
-	
 		out.println("\n");
 
 	}

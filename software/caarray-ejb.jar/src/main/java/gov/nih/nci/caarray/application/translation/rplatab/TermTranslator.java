@@ -100,16 +100,11 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 
-
-
-//carplanotes
-//Changed superclass. and ctor to accommodate an RplaTabDocumentSet and RplaTabTranslationResult.
-//I use gov.nih.nci.caarray.magetab.OntologyTerm in the rplatab code, so no need for other changes.
-
-
-
-
-
+// carplanotes
+// Changed superclass. and ctor to accommodate an RplaTabDocumentSet and
+// RplaTabTranslationResult.
+// I use gov.nih.nci.caarray.magetab.OntologyTerm in the rplatab code, so no
+// need for other changes.
 
 @SuppressWarnings("PMD")
 final class TermTranslator extends RplaTabAbstractTranslator {
@@ -129,11 +124,12 @@ final class TermTranslator extends RplaTabAbstractTranslator {
 
 	@Override
 	void translate () {
-		
-		
-		LOG.info("rpladocumentset had number of terms:" + getDocumentSet().getTerms().size());
+
+		LOG.info("rpladocumentset had number of terms:" + getDocumentSet()	.getTerms()
+																			.size());
+
 		for (OntologyTerm ontologyTerm : getDocumentSet().getTerms()) {
-			
+
 			translateTerm(ontologyTerm);
 		}
 	}

@@ -93,11 +93,9 @@ public class RplaTabImporter {
 				}
 
 			}
-
-		} catch (RplaTabParsingException e) {
+			// carplatodo
+		} catch (Exception e) {
 			updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
-		} catch (InvalidDataException e) {
-			handleInvalidRplaTab(fileSet, e);
 		}
 	}
 
@@ -116,29 +114,24 @@ public class RplaTabImporter {
 			caArrayFile.setValidationResult(fileValidationResult);
 		}
 	}
+
 	// #######################################################################
 	// #######################################################################
-	void importFiles ( Project targetProject, CaArrayFileSet fileSet) throws RplaTabParsingException
-																		
+	void importFiles ( Project targetProject, CaArrayFileSet fileSet)
+																		throws RplaTabParsingException
+
 	{
 		LOG.info("Importing RPLA-TAB document set");
 		updateFileStatus(fileSet, FileStatus.IMPORTING);
 		RplaTabInputFileSet inputSet = getInputFileSet(fileSet);
 		RplaTabDocumentSet documentSet;
-		try {
-			documentSet = RplaTabDocumentSetParser.INSTANCE.parse(inputSet);
-			RplaTabTranslationResult translationResult = translator.translate(	documentSet, 
-																				fileSet);
-			save(targetProject, translationResult);
-			updateFileStatus(fileSet, FileStatus.IMPORTED);
-		} catch (InvalidDataException e) {
-			handleInvalidRplaTab(fileSet, e);
-		}
-		catch ( RplaTabParsingException rexc){
-			//bad or good?
-			throw rexc;
-			
-		}
+
+		documentSet = RplaTabDocumentSetParser.INSTANCE.parse(inputSet);
+		RplaTabTranslationResult translationResult = translator.translate(	documentSet,
+																			fileSet);
+		save(targetProject, translationResult);
+		updateFileStatus(fileSet, FileStatus.IMPORTED);
+
 	}
 
 	// private void handleInvalidMageTab ( CaArrayFileSet fileSet,
@@ -159,7 +152,7 @@ public class RplaTabImporter {
 	private void handleInvalidRplaTab ( CaArrayFileSet fileSet,
 										InvalidDataException e)
 	{
-		
+
 		LOG.info("carplafix: handleInvalidRplaTab");
 		ValidationResult validationResult = e.getValidationResult();
 		for (CaArrayFile caArrayFile : fileSet.getFiles()) {
@@ -292,26 +285,27 @@ public class RplaTabImporter {
 	{
 		LOG.info("save !!!!!!!");
 		saveTerms(translationResult);
-	//	saveArrayDesigns(translationResult);
+		// saveArrayDesigns(translationResult);
 		saveInvestigations(targetProject, translationResult);
 	}
 
 	private void saveTerms ( RplaTabTranslationResult translationResult) {
-		
-		LOG.info("saveTerms: translationResult has " + translationResult.getTerms().size() +" (number) of terms");
-		
+
+		LOG.info("saveTerms: translationResult has " + translationResult.getTerms()
+																		.size()
+					+ " (number) of terms");
+
 		for (Term term : translationResult.getTerms()) {
 			LOG.info(term.getValue());
 			getCaArrayDao().save(term);
 		}
 	}
 
-	
 	private void saveInvestigations (	Project targetProject,
 										RplaTabTranslationResult translationResult)
 	{
 		LOG.info("saveInvestigations");
-		
+
 		// DEVELOPER NOTE: currently, importing multiple IDFs in a single import
 		// is not supported, and will
 		// be flagged as a validation error. hence we can assume that only a
@@ -355,36 +349,44 @@ public class RplaTabImporter {
 							.addAll(translatedExperiment.getQualityControlTypes());
 		originalExperiment	.getReplicateTypes()
 							.addAll(translatedExperiment.getReplicateTypes());
-		
-		
-		
-		
+
 		originalExperiment	.getSamples()
 							.addAll(translatedExperiment.getSamples());
-		
-		LOG.info("adding in mergeTranslatedData , number of samples="+ translatedExperiment.getSamples().size());
-		
+
+		LOG.info("adding in mergeTranslatedData , number of samples=" + translatedExperiment.getSamples()
+																							.size());
+
 		originalExperiment	.getSources()
 							.addAll(translatedExperiment.getSources());
 		originalExperiment	.getExperimentContacts()
 							.addAll(translatedExperiment.getExperimentContacts());
-		
-		originalExperiment.getRplArrays().addAll(translatedExperiment.getRplArrays());
-		
-		LOG.info("rplafeature size =" + translatedExperiment.getRplArrays().iterator().next().getRplaFeatures().size());
-		
-		LOG.info("rplareporter size =" + translatedExperiment.getRplArrays().iterator().next().getRplaReporters().size());
-		
-		
-		
-		originalExperiment.getRplaHybridizations().addAll (translatedExperiment.getRplaHybridizations());
-		
-		originalExperiment.getAntibodies().addAll (translatedExperiment.getAntibodies());
-		
-		originalExperiment.getRplaSamples().addAll(translatedExperiment.getRplaSamples());
-		
-		
-		
+
+		originalExperiment	.getRplArrays()
+							.addAll(translatedExperiment.getRplArrays());
+
+		LOG.info("rplafeature size =" + translatedExperiment.getRplArrays()
+															.iterator()
+															.next()
+															.getRplaFeatures()
+															.size());
+
+		LOG.info("rplareporter size =" + translatedExperiment	.getRplArrays()
+																.iterator()
+																.next()
+																.getRplaReporters()
+																.size());
+
+		LOG.info("rplahybridization size =" + translatedExperiment	.getRplaHybridizations()
+																	.size());
+		originalExperiment	.getRplaHybridizations()
+							.addAll(translatedExperiment.getRplaHybridizations());
+
+		originalExperiment	.getAntibodies()
+							.addAll(translatedExperiment.getAntibodies());
+
+		originalExperiment	.getRplaSamples()
+							.addAll(translatedExperiment.getRplaSamples());
+
 		for (ExperimentContact ec : translatedExperiment.getExperimentContacts()) {
 			ec.setExperiment(originalExperiment);
 		}

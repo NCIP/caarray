@@ -128,10 +128,12 @@ public class TermBasedCharacteristic extends AbstractCharacteristic {
      *
      * @return the term
      */
-    @ManyToOne(optional = false)
+   // @ManyToOne(optional = false)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "characteristic_term_fk")
-    @NotNull
+   
+    
     public Term getTerm() {
         return term;
     }

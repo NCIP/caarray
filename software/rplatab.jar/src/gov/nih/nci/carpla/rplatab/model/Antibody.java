@@ -12,8 +12,8 @@ public class Antibody implements ArrayDataSectionPrincipal, HasName {
 	private String			_specificity;
 	private String			_epitope;
 	private String			_immunogen;
-	private Provider		_provider;
-
+	private String		_provider;
+	private String _comment;
 	private String			_catalogId;
 	private String			_lotId;
 
@@ -38,6 +38,70 @@ public class Antibody implements ArrayDataSectionPrincipal, HasName {
 		ret.append(")");
 		return ret.toString();
 		
+	}
+
+	public Vector<Gene> get_targetGenes () {
+		return _targetGenes;
+	}
+
+	public void setTargetGenes ( Vector<Gene> genes) {
+		_targetGenes = genes;
+	}
+
+	public String getSpecificity () {
+		return _specificity;
+	}
+
+	public void setSpecificity ( String _specificity) {
+		this._specificity = _specificity;
+	}
+
+	public String getEpitope () {
+		return _epitope;
+	}
+
+	public void setEpitope ( String _epitope) {
+		this._epitope = _epitope;
+	}
+
+	public String getImmunogen () {
+		return _immunogen;
+	}
+
+	public void setImmunogen ( String _immunogen) {
+		this._immunogen = _immunogen;
+	}
+
+	public String getProvider () {
+		return _provider;
+	}
+
+	public void setProvider ( String _provider) {
+		this._provider = _provider;
+	}
+
+	public String getCatalogId () {
+		return _catalogId;
+	}
+
+	public void setCatalogId ( String id) {
+		_catalogId = id;
+	}
+
+	public String getLotId () {
+		return _lotId;
+	}
+
+	public void setLotId ( String id) {
+		_lotId = id;
+	}
+
+	public String getComment () {
+		return _comment;
+	}
+
+	public void setComment ( String comment) {
+		this._comment = comment;
 	}
 	
 

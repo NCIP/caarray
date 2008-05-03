@@ -5,5 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common.jar"/>
 	<classpathentry kind="lib" path="/lib/commons-io-1.3.2.jar"/>
 	<classpathentry kind="lib" path="/lib/log4j-1.2.13.jar" sourcepath="/lib/src/log4j-1.2.13-src.jar"/>
+	<classpathentry kind="lib" path="/lib/commons-lang-2.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

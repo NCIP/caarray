@@ -1,25 +1,20 @@
 package gov.nih.nci.carpla.rplatab.rplaidf;
 
-
 import gov.nih.nci.caarray.magetab.MageTabOntologyCategory;
 import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.magetab.TermSource;
 import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.magetab.idf.Publication;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
+import gov.nih.nci.carpla.rplatab.RplaConstants;
 import gov.nih.nci.carpla.rplatab.RplaTabDocumentSet;
 import gov.nih.nci.carpla.rplatab.RplaTabInputFileSet;
-
+import gov.nih.nci.carpla.rplatab.RplaTabParsingException;
 import gov.nih.nci.carpla.rplatab.model.Antibody;
 import gov.nih.nci.carpla.rplatab.model.Dilution;
 import gov.nih.nci.carpla.rplatab.model.Parameter;
-import gov.nih.nci.carpla.rplatab.model.RplArray;
-
 import gov.nih.nci.carpla.rplatab.model.Protocol;
-
-import gov.nih.nci.carpla.rplatab.files.RplaIdfFile;
-import gov.nih.nci.carpla.rplatab.files.SradfFile;
-
+import gov.nih.nci.carpla.rplatab.model.RplArray;
 import gov.nih.nci.carpla.rplatab.rplaidf.javacc.generated.ParseException;
 import gov.nih.nci.carpla.rplatab.rplaidf.javacc.generated.RplaDatasetRplaIdfGrammar;
 
@@ -27,16 +22,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
-import java.util.Hashtable;
-import java.util.List;
 import java.util.List;
 
 public class RplaIdfReader {
 
-	public static void readRplaIdfFile (	RplaTabDocumentSet RplaTabDocumentSet,
+	public static void readRplaIdfFile (	RplaTabDocumentSet rplaTabDocumentSet,
 											RplaTabInputFileSet inputFileSet)
 
 	{
+
+		rplaTabDocumentSet.setRplaIdfFile(inputFileSet.getRplaIdfFile());
 
 		java.io.Reader r = getReader(inputFileSet.getRplaIdfFile().getFile());
 		RplaDatasetRplaIdfGrammar parser = new RplaDatasetRplaIdfGrammar(r);
@@ -45,64 +40,102 @@ public class RplaIdfReader {
 		try {
 			helper = parser.parse();
 		} catch (ParseException pe) {
-
 			pe.printStackTrace();
 
-			// throw new InvalidRplaTabException(new ValidationResult());
+			rplaTabDocumentSet	.getValidationResult()
+								.addMessage(rplaTabDocumentSet	.getRplaIdfFile()
+																.getFile(),
+											Type.ERROR,
+
+											org.apache.commons.lang.StringEscapeUtils.escapeXml(pe.getMessage()));
+			return;
+
 		}
+		try {
+			// Load Term Sources first since they get referred to...
+			handleTermSources(helper, rplaTabDocumentSet);
 
-		RplaTabDocumentSet.setRplaIdfFile(inputFileSet.getRplaIdfFile());
+			handleInvestigationTitle(helper, rplaTabDocumentSet);
+			handleExperimentalDesigns(helper, rplaTabDocumentSet);
+			handleExperimentalFactors(helper, rplaTabDocumentSet);
+			handleAntibodies(helper, rplaTabDocumentSet);
+			handleRPLArrayNames(helper, rplaTabDocumentSet);
+			handleDilutions(helper, rplaTabDocumentSet);
+			handlePeople(helper, rplaTabDocumentSet);
+			handleQualityControls(helper, rplaTabDocumentSet);
+			handleReplicates(helper, rplaTabDocumentSet);
+			handleNormalizations(helper, rplaTabDocumentSet);
+			handleDateOfExperiment(helper, rplaTabDocumentSet);
+			handlePublicReleaseDate(helper, rplaTabDocumentSet);
+			handlePublications(helper, rplaTabDocumentSet);
+			handleExperimentDescription(helper, rplaTabDocumentSet);
+			handleProtocols(helper, rplaTabDocumentSet);
+			handleSradfFile(helper, inputFileSet, rplaTabDocumentSet);
+		} catch (RplaTabParsingException pe) {
 
-		// Load Term Sources first since they get referred to...
-		handleTermSources(helper, RplaTabDocumentSet);
+			rplaTabDocumentSet	.getValidationResult()
+								.addMessage(rplaTabDocumentSet	.getRplaIdfFile()
+																.getFile(),
+											Type.ERROR,
 
-		handleInvestigationTitle(helper, RplaTabDocumentSet);
-		handleExperimentalDesigns(helper, RplaTabDocumentSet);
-		handleExperimentalFactors(helper, RplaTabDocumentSet);
-		handleAntibodies(helper, RplaTabDocumentSet);
-		handleRPLArrayNames(helper, RplaTabDocumentSet);
-		handleDilutions(helper, RplaTabDocumentSet);
-		handlePeople(helper, RplaTabDocumentSet);
-		handleQualityControls(helper, RplaTabDocumentSet);
-		handleReplicates(helper, RplaTabDocumentSet);
-		handleNormalizations(helper, RplaTabDocumentSet);
-		handleDateOfExperiment(helper, RplaTabDocumentSet);
-		handlePublicReleaseDate(helper, RplaTabDocumentSet);
-		handlePublications(helper, RplaTabDocumentSet);
-		handleExperimentDescription(helper, RplaTabDocumentSet);
-		handleProtocols(helper, RplaTabDocumentSet);
-		handleSradfFile(helper, inputFileSet, RplaTabDocumentSet);
+											pe.getMessage());
 
+		}
 	}
 
 	private static void handleDilutions (	RplaIdfHelper helper,
-											RplaTabDocumentSet RplaTabDocumentSet)
+											RplaTabDocumentSet rdataset)
 	{
 		List<String> dilutionNames = helper.getColumnStrings("Dilution");
+
 		List<String> dilutionValues = helper.getColumnStrings("Dilution Value");
 
 		List<String> dilutionUnits = helper.getColumnStrings("Dilution Unit");
 
 		List<String> dilutionUnitTermSourceRefs = helper.getColumnStrings("Dilution Unit Term Source Ref");
 
+		if (!verifySameNumberOfColumnsIfRowIsNotEmpty(	rdataset,
+														"Dilution",
+														true,
+														dilutionNames,
+														dilutionValues,
+														dilutionUnits,
+														dilutionUnitTermSourceRefs)) {
+			return;
+		}
+
 		for (int ii = 0; ii < dilutionNames.size(); ii++) {
 
 			String dilutionName = dilutionNames.get(ii);
 			// verifyRPLArrayNameIsValid(Name);
-			
-			Dilution dil = RplaTabDocumentSet.createDilution(dilutionName);
-			
-			dil.setValue(Float.valueOf(dilutionValues.get(ii)));
-			//OntologyTerm term = new OntologyTerm();
-			//term.setValue("x_times");
-			//TermSource ts = new TermSource("MO");
-		
-			//term.setTermSource(ts);
+
+			Dilution dil = rdataset.createDilution(dilutionName);
+
+			if (dilutionValues	.get(ii)
+								.compareTo(RplaConstants.EMPTYFIELDSTRING) == 0) {
+				// dilution value may be unknown
+				dil.setValue(RplaConstants.UNKNOWNDILUTIONVALUE);
+
+			}
+
+			else {
+				try {
+
+					dil.setValue(Float.valueOf(dilutionValues.get(ii)));
+
+				} catch (NumberFormatException nfe) {
+
+					rdataset.getValidationResult()
+							.addMessage(rdataset.getRplaIdfFile().getFile(),
+										Type.ERROR,
+
+										"RPLAIDF: " + dilutionValues.get(ii)
+												+ " is not valid as a dilution value.");
+					return;
+				}
+
+			}
 			dil.setUnit("x_times");
-			
-			
-			
-			
 
 		}
 
@@ -134,42 +167,50 @@ public class RplaIdfReader {
 	// ###############################################################
 	private static void handleTermSources ( RplaIdfHelper helper,
 											RplaTabDocumentSet rplaTabDocumentSet)
+																					throws RplaTabParsingException
 
 	{
+		try {
 
-		List<String> termSourceNames = helper.getColumnStrings("Term Source Name");
-		List<String> termSourceFiles = helper.getColumnStrings("Term Source File");
-		List<String> termSourceVersions = helper.getColumnStrings("Term Source Version");
+			List<String> termSourceNames = helper.getColumnStrings("Term Source Name");
+			List<String> termSourceFiles = helper.getColumnStrings("Term Source File");
+			List<String> termSourceVersions = helper.getColumnStrings("Term Source Version");
 
-		// Term Sources are only referenced by name in the SRADF document,
-		// so names need to be unique.
-		verifyNoDuplicates(termSourceNames);
+			// Term Sources are only referenced by name in the SRADF document,
+			// so names need to be unique.
+			verifyNoDuplicates(termSourceNames);
 
-		verifySameNumberOfColumnsIfRowIsNotEmpty(	rplaTabDocumentSet,
-													"Term Source",
-													termSourceNames,
-													termSourceFiles,
-													termSourceVersions);
+			if (!verifySameNumberOfColumnsIfRowIsNotEmpty(	rplaTabDocumentSet,
+															"Term Source",
+															false,
+															termSourceNames,
+															termSourceFiles,
+															termSourceVersions)) {
+				return;
+			}
 
-		for (int ii = 0; ii < termSourceNames.size(); ii++) {
+			for (int ii = 0; ii < termSourceNames.size(); ii++) {
 
-			String termSourceName = termSourceNames.get(ii);
-			verifyTermSourceNameIsValid(termSourceName);
-			TermSource termSource = rplaTabDocumentSet.createTermSource(termSourceName);
+				String termSourceName = termSourceNames.get(ii);
+				verifyTermSourceNameIsValid(termSourceName);
+				TermSource termSource = rplaTabDocumentSet.createTermSource(termSourceName);
 
-			String termSourceFile = termSourceFiles.get(ii);
+				String termSourceFile = termSourceFiles.get(ii);
 
-			verifyTermSourceFileNameIsValid(termSourceFile);
+				verifyTermSourceFileNameIsValid(termSourceFile);
 
-			// termSource.setFileName(termSourceFile);
-			termSource.setFile(termSourceFile);
+				// termSource.setFileName(termSourceFile);
+				termSource.setFile(termSourceFile);
+			}
+		} catch (Exception exc) {
+			throw new RplaTabParsingException(exc.getMessage());
 		}
-
 	}
 
 	// ###############################################################
 	private static void handleInvestigationTitle (	RplaIdfHelper helper,
 													RplaTabDocumentSet rplaTabDocumentSet)
+																							throws RplaTabParsingException
 
 	{
 
@@ -191,10 +232,14 @@ public class RplaIdfReader {
 		List<String> expDesignTermSourceRefs = helper.getColumnStrings("Experimental Design Term Source REF");
 
 		verifyNoDuplicates(expDesigns);
-		verifySameNumberOfColumnsIfRowIsNotEmpty(	rplaTabDocumentSet,
-													"Experimental Design",
-													expDesigns,
-													expDesignTermSourceRefs);
+
+		if (!verifySameNumberOfColumnsIfRowIsNotEmpty(	rplaTabDocumentSet,
+														"Experimental Design",
+														false,
+														expDesigns,
+														expDesignTermSourceRefs)) {
+			return;
+		}
 
 		for (int ii = 0; ii < expDesigns.size(); ii++) {
 			String designName = expDesigns.get(ii);
@@ -242,11 +287,14 @@ public class RplaIdfReader {
 
 		verifyNoDuplicates(factorNames);
 
-		verifySameNumberOfColumnsIfRowIsNotEmpty(	rplaTabDocumentSet,
-													"Experimental Factor",
-													factorNames,
-													factorTypes,
-													factorTermSourceRefs);
+		if (!verifySameNumberOfColumnsIfRowIsNotEmpty(	rplaTabDocumentSet,
+														"Experimental Factor",
+														false,
+														factorNames,
+														factorTypes,
+														factorTermSourceRefs)) {
+			return;
+		}
 
 		for (int ii = 0; ii < factorNames.size(); ii++) {
 
@@ -307,16 +355,19 @@ public class RplaIdfReader {
 
 		verifyNoDuplicates(protocolNames);
 
-		verifySameNumberOfColumnsIfRowIsNotEmpty(	RplaTabDocumentSet,
-													"Protocol",
-													protocolNames,
-													protocolTypes,
-													protocolDescriptions,
-													protocolParameters,
-													protocolHardware,
-													protocolSoftware,
-													protocolContact,
-													protocolTermSourceRefs);
+		if (!verifySameNumberOfColumnsIfRowIsNotEmpty(	RplaTabDocumentSet,
+														"Protocol",
+														false,
+														protocolNames,
+														protocolTypes,
+														protocolDescriptions,
+														protocolParameters,
+														protocolHardware,
+														protocolSoftware,
+														protocolContact,
+														protocolTermSourceRefs)) {
+			return;
+		}
 
 		for (int ii = 0; ii < protocolNames.size(); ii++) {
 
@@ -387,11 +438,21 @@ public class RplaIdfReader {
 
 	// ###############################################################
 	private static void handleAntibodies (	RplaIdfHelper helper,
-											RplaTabDocumentSet RplaTabDocumentSet)
+											RplaTabDocumentSet rdataset)
 
 	{
 
 		List<String> antibodyNames = helper.getColumnStrings("Antibody Name");
+
+		if (antibodyNames.size() == 0) {
+			rdataset.getValidationResult()
+					.addMessage(rdataset.getRplaIdfFile().getFile(),
+								Type.ERROR,
+
+								"RPLAIDF: Currently, at least one Antibody is required.");
+			return;
+		}
+
 		List<String> targetGeneNames = helper.getColumnStrings("Target Gene Name");
 		List<String> targetGeneNameTermSourceRefs = helper.getColumnStrings("Target Gene Name Term Source REF");
 		List<String> antibodySpecificities = helper.getColumnStrings("Antibody Specificity");
@@ -407,31 +468,48 @@ public class RplaIdfReader {
 
 		verifyNoDuplicates(antibodyNames);
 
-		verifySameNumberOfColumnsIfRowIsNotEmpty(	RplaTabDocumentSet,
-													"Antibody",
-													antibodyNames,
-													targetGeneNames,
-													targetGeneNameTermSourceRefs,
-													antibodySpecificities,
-													antibodyEpitopes,
-													antibodyImmunogens,
-													antibodyProviders,
-													antibodyCatalogIDs,
-													antibodyLotIDs,
-													antibodyComments);
+		if (!verifySameNumberOfColumnsIfRowIsNotEmpty(	rdataset,
+														"Antibody",
+														true,
+														antibodyNames,
+														targetGeneNames,
+														targetGeneNameTermSourceRefs,
+														antibodySpecificities,
+														antibodyEpitopes,
+														antibodyImmunogens,
+														antibodyProviders,
+														antibodyCatalogIDs,
+														antibodyLotIDs,
+														antibodyComments)) {
+			return;
+		}
 
 		for (int ii = 0; ii < antibodyNames.size(); ii++) {
 			String name = antibodyNames.get(ii);
-			Antibody antibody = RplaTabDocumentSet.createAntibody(name);
+			Antibody antibody = rdataset.createAntibody(name);
 
 			// verifyAntibodyNameIsValid(name);
 			antibody.setName(name);
 
-			// finish loading all antibody data
+			antibody.setLotId(get(antibodyLotIDs, ii));
+			antibody.setCatalogId(get(antibodyCatalogIDs, ii));
+			antibody.setComment(get(antibodyComments, ii));
+			antibody.setEpitope(get(antibodyEpitopes, ii));
+			antibody.setImmunogen(get(antibodyImmunogens, ii));
+			antibody.setSpecificity(get(antibodySpecificities, ii));
+			// carplatodo not setting gene names
+			antibody.setProvider(get(antibodyProviders, ii));
 
 		}
 		// finish loading all antibody data
 
+	}
+
+	private static String get ( List<String> list_strings, int ii) {
+		if (ii >= list_strings.size())
+			return "";
+		else
+			return list_strings.get(ii);
 	}
 
 	// ###############################################################
@@ -495,6 +573,7 @@ public class RplaIdfReader {
 	{
 
 		List<String> pubMedIds = helper.getColumnStrings("PubMed ID");
+
 		List<String> pubDOIs = helper.getColumnStrings("Publication DOI");
 
 		List<String> pubAuthors = helper.getColumnStrings("Publication Author List");
@@ -507,14 +586,19 @@ public class RplaIdfReader {
 
 		verifyNoDuplicates(pubMedIds);
 
-		verifySameNumberOfColumnsIfRowIsNotEmpty(	rplaTabDocumentSet,
-													"Publication",
-													pubMedIds,
-													pubDOIs,
-													pubAuthors,
-													pubTitles,
-													pubStatuses,
-													pubStatusTermSourceRefs);
+		if (!verifySameNumberOfColumnsIfRowIsNotEmpty(	rplaTabDocumentSet,
+														"Publication",
+														false,
+														pubMedIds,
+														pubDOIs,
+														pubAuthors,
+														pubTitles,
+														pubStatuses,
+														pubStatusTermSourceRefs)) {
+
+			return;
+
+		}
 
 		for (int ii = 0; ii < pubMedIds.size(); ii++) {
 
@@ -625,36 +709,47 @@ public class RplaIdfReader {
 	}
 
 	// ###############################################################
-	private static void verifySameNumberOfColumnsIfRowIsNotEmpty (	RplaTabDocumentSet rdataset,
-																	String sectionName,
-																	List<String>... listOfStrings)
+	private static boolean verifySameNumberOfColumnsIfRowIsNotEmpty (	RplaTabDocumentSet rdataset,
+																		String sectionName,
+																		boolean required,
+																		List<String>... listOfStrings)
 
 	{
 
-		// RplaTabDocumentSet.getMessages().add(new ValidationMessage(
-		// "Parsing sradf file: \t" + " Protocol with name =\""
-		// + name
-		// + "\" in section row="
-		// + row_number_in_section
-		// + " and col="
-		// + (header.getCol() - 1)
-		// + " does not exist"));
-		//		
-
 		int firstrowsize = listOfStrings[0].size();
 
-		for (List<String> list : listOfStrings) {
+		if (firstrowsize == 0 && required) {
 
-			if (list.size() != 0 && firstrowsize != list.size()) {
-				// rdataset
-				// .getMessages()
-				// .add(new ValidationMessage(
-				// "Parsing rplaidf: not same number of columns for : " +
-				// sectionName));
-			}
+			rdataset.getValidationResult()
+					.addMessage(rdataset.getRplaIdfFile().getFile(),
+								Type.ERROR,
+
+								"RPLAIDF: Zero columns for " + sectionName
+										+ " is not supported.");
+			return false;
+		}
+
+		else if (firstrowsize == 0) {
+			return false;
 
 		}
 
+		for (List<String> list : listOfStrings) {
+
+			if (firstrowsize != list.size() && list.size() != 0) {
+
+				rdataset.getValidationResult()
+						.addMessage(rdataset.getRplaIdfFile().getFile(),
+									Type.ERROR,
+
+									"RPLAIDF: Inconsistent number of columns in " + sectionName);
+
+				return false;
+
+			}
+
+		}
+		return true;
 	}
 
 	// ###############################################################

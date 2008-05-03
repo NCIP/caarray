@@ -95,18 +95,19 @@ import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.idf.Person;
 import gov.nih.nci.caarray.magetab.idf.Publication;
+import gov.nih.nci.carpla.domain.antibody.Antibody;
 import gov.nih.nci.carpla.rplatab.RplaTabDocumentSet;
 import gov.nih.nci.carpla.rplatab.files.RplaIdfFile;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
-
 
 public class RplaIdfTranslator extends RplaTabAbstractTranslator {
 
@@ -133,9 +134,6 @@ public class RplaIdfTranslator extends RplaTabAbstractTranslator {
 		// translate(idfDocument.getInvestigation());
 		// }
 
-		// not sure why i would want to build up a model only to translate it to
-		// another
-		// nevertheless...bite-size pieces are always better
 		translate(getDocumentSet());
 
 	}
@@ -153,11 +151,19 @@ public class RplaIdfTranslator extends RplaTabAbstractTranslator {
 		Experiment investigation = new Experiment();
 		translateInvestigationSummary(rset, investigation);
 		translateTerms(rset, investigation);
+		translateAntibodies(rset, investigation);
 		translatePublications(rset, investigation);
 		translateFactors(rset, investigation);
 		translateContacts(rset, investigation);
 		getTranslationResult().addInvestigation(investigation);
 
+	}
+
+	private void translateAntibodies (	RplaTabDocumentSet rset,
+										Experiment investigation)
+	{
+
+		investigation.getAntibodies().addAll(getAntibodies(rset));
 	}
 
 	// ###########################################################
@@ -212,15 +218,15 @@ public class RplaIdfTranslator extends RplaTabAbstractTranslator {
 
 		investigation	.getExperimentDesignTypes()
 						.addAll(getTerms(rset.getExperimentalDesigns()));
-		
+
 		LOG.info("carplatodo");
-		
-//		investigation	.getNormalizationTypes()
-//						.addAll(getTerms(rset.getNormalizationTypes()));
-//		investigation	.getReplicateTypes()
-//						.addAll(getTerms(rset.getReplicateTypes()));
-//		investigation	.getQualityControlTypes()
-//						.addAll(getTerms(rset.getQualityControlTypes()));
+
+		// investigation .getNormalizationTypes()
+		// .addAll(getTerms(rset.getNormalizationTypes()));
+		// investigation .getReplicateTypes()
+		// .addAll(getTerms(rset.getReplicateTypes()));
+		// investigation .getQualityControlTypes()
+		// .addAll(getTerms(rset.getQualityControlTypes()));
 
 	}
 
@@ -271,6 +277,24 @@ public class RplaIdfTranslator extends RplaTabAbstractTranslator {
 
 	}
 
+	private Collection<Antibody> getAntibodies ( RplaTabDocumentSet rset)
+
+	{
+		Set<Antibody> abset = new HashSet<Antibody>();
+		for (gov.nih.nci.carpla.rplatab.model.Antibody ab : rset.getAntibodies()) {
+
+			Antibody domain_ab = new Antibody();
+			domain_ab.setName(ab.getName());
+			domain_ab.setCatalogId(ab.getCatalogId());
+			domain_ab.setComment(ab.getComment());
+			domain_ab.setEpitope(ab.getEpitope());
+			domain_ab.setImmunogen(ab.getImmunogen());
+			domain_ab.setLotId(ab.getLotId());
+			abset.add(domain_ab);
+		}
+		return abset;
+	}
+
 	// ###########################################################
 	// private void translateFactors (
 	// gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
@@ -294,40 +318,23 @@ public class RplaIdfTranslator extends RplaTabAbstractTranslator {
 		// }
 		// investigation.getFactors().addAll(factors);
 
-		
-		
-		
 		List<Factor> factors = new ArrayList<Factor>();
 		Map<String, ExperimentalFactor> expFactors = rset.getExperimentalFactors();
-		
+
 		Iterator<ExperimentalFactor> itie = expFactors.values().iterator();
 		while (itie.hasNext()) {
 			ExperimentalFactor idfFactor = itie.next();
 			Factor factor = new Factor();
 			factor.setName(idfFactor.getName());
-			LOG.info("about to set factor with type="+ idfFactor.getType().getValue());
+			LOG.info("about to set factor with type=" + idfFactor	.getType()
+																	.getValue());
 			Term typeTerm = getTerm(idfFactor.getType());
-			LOG.info("typeTerm="+ typeTerm.getValue());
+			LOG.info("typeTerm=" + typeTerm.getValue());
 			factor.setType(typeTerm);
 			factors.add(factor);
 			getTranslationResult().addFactor(idfFactor, factor);
 		}
 		investigation.getFactors().addAll(factors);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 
 	}
 
@@ -371,35 +378,37 @@ public class RplaIdfTranslator extends RplaTabAbstractTranslator {
 		// }
 		// investigation.getExperimentContacts().addAll(contacts);
 
-		
 		LOG.info("carplatodo contacts");
-//		List<ExperimentContact> contacts = new ArrayList<ExperimentContact>();
-//		List<Person> idfPersons = rset.getPersons();
-//		Iterator<Person> iterator = idfPersons.iterator();
-//		while (iterator.hasNext()) {
-//			Person idfPerson = iterator.next();
-//			gov.nih.nci.caarray.domain.contact.Person person = new gov.nih.nci.caarray.domain.contact.Person();
-//			person.setFirstName(idfPerson.getFirstName());
-//			person.setLastName(idfPerson.getLastName());
-//			person.setMiddleInitials(idfPerson.getMidInitials());
-//			Organization affiliatedOrg = getOrCreateOrganization(idfPerson.getAffiliation());
-//			if (affiliatedOrg != null) {
-//				person.getAffiliations().add(affiliatedOrg);
-//			}
-//			person.setEmail(idfPerson.getEmail());
-//			person.setFax(idfPerson.getFax());
-//			person.setPhone(idfPerson.getPhone());
-//			Address address = new Address();
-//			// TODO Parse the address before putting it in the Address object.
-//			address.setStreet1(idfPerson.getAddress());
-//			person.setAddress(address);
-//			ExperimentContact contact = new ExperimentContact();
-//			contact.setContact(person);
-//			Collection<Term> roleTerms = getTerms(idfPerson.getRoles());
-//			contact.getRoles().addAll(roleTerms);
-//			contacts.add(contact);
-//		}
-//		investigation.getExperimentContacts().addAll(contacts);
+		// List<ExperimentContact> contacts = new
+		// ArrayList<ExperimentContact>();
+		// List<Person> idfPersons = rset.getPersons();
+		// Iterator<Person> iterator = idfPersons.iterator();
+		// while (iterator.hasNext()) {
+		// Person idfPerson = iterator.next();
+		// gov.nih.nci.caarray.domain.contact.Person person = new
+		// gov.nih.nci.caarray.domain.contact.Person();
+		// person.setFirstName(idfPerson.getFirstName());
+		// person.setLastName(idfPerson.getLastName());
+		// person.setMiddleInitials(idfPerson.getMidInitials());
+		// Organization affiliatedOrg =
+		// getOrCreateOrganization(idfPerson.getAffiliation());
+		// if (affiliatedOrg != null) {
+		// person.getAffiliations().add(affiliatedOrg);
+		// }
+		// person.setEmail(idfPerson.getEmail());
+		// person.setFax(idfPerson.getFax());
+		// person.setPhone(idfPerson.getPhone());
+		// Address address = new Address();
+		// // TODO Parse the address before putting it in the Address object.
+		// address.setStreet1(idfPerson.getAddress());
+		// person.setAddress(address);
+		// ExperimentContact contact = new ExperimentContact();
+		// contact.setContact(person);
+		// Collection<Term> roleTerms = getTerms(idfPerson.getRoles());
+		// contact.getRoles().addAll(roleTerms);
+		// contacts.add(contact);
+		// }
+		// investigation.getExperimentContacts().addAll(contacts);
 
 	}
 

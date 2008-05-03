@@ -106,11 +106,10 @@ import org.apache.commons.collections.Predicate;
 import org.apache.log4j.Logger; 
 
 // carplanotes
-// This will not implement CaArrayTranslationResult : it will never call
+// This won't implement CaArrayTranslationResult : it will never call
 // getArrayDesigns ()
-// And there is more information to be stored...
-// It could implement some designed extended interface at some point, I suppose, minus
-// getArrayDesigns.
+// And there may be more information to be stored...
+// It could implement some designed extended interface at some point, I suppose.
 
 
 
@@ -155,10 +154,10 @@ final public  class RplaTabTranslationResult // implements CaArrayTranslationRes
 	}
 
 	Term getTerm ( OntologyTerm term) {
-		LOG.info("looking for this in termMap:" + term.getValue()
+		LOG.info("LOOKING FOR THIS IN TERMMAP:" + term.getValue()
 					+ "\t"
 					+ term.toString());
-		LOG.info(" it's in there: " + termMap.containsKey(term));
+		LOG.info(" is it in there? : " + termMap.containsKey(term));
 
 		return termMap.get(term);
 	}

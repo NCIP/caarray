@@ -119,6 +119,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
 import gov.nih.nci.caarray.magetab.sdrf.Characteristic;
 import gov.nih.nci.caarray.magetab.sdrf.Normalization;
@@ -165,6 +166,7 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 	private final SortedMap<String, Source>					_sources						= new TreeMap<String, Source>();
 	private final SortedMap<String, RplaSample>				_samples						= new TreeMap<String, RplaSample>();
 	private final SortedMap<RplaSample, RplaReporter>		_rplaReporters					= new TreeMap<RplaSample, RplaReporter>();
+	private final SortedMap<String, RplaHybridization>		_rplaHybridizations				= new TreeMap<String, RplaHybridization>();
 
 	private final SortedMap<String, RplArray>				_rplArrays						= new TreeMap<String, RplArray>();
 	private final SortedMap<String, Antibody>				_antibodies						= new TreeMap<String, Antibody>();
@@ -201,17 +203,12 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 
 		translatePrincipals(rset);
 
-		
-		for ( RplArray rplArray : this._rplArrays.values()){
+		for (RplArray rplArray : this._rplArrays.values()) {
 			LOG.info(rplArray.getName());
-			LOG.info("features:"+ rplArray.getRplaFeatures().size());
+			LOG.info("features:" + rplArray.getRplaFeatures().size());
 			LOG.info("reporters:" + rplArray.getRplaReporters().size());
 		}
-		
-		
-		
-		
-		
+
 		for (Experiment investigation : getTranslationResult()	.getInvestigations()) {
 
 			investigation.getSources().addAll(this._sources.values());
@@ -237,7 +234,7 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 	public void translateSamplesSectionPrincipals ( RplaTabDocumentSet rset,
 													SortedMap<Integer, List<AbstractCaArrayObject>> domain_samplessection_rows)
 	{
-		LOG.info("translateSamplesSectionPrincipals  1" );
+		LOG.info("translateSamplesSectionPrincipals  1");
 
 		SortedMap<Integer, List<SectionPrincipal>> section_rows = rset.getSectionRowsPrincipalObjects(SradfSectionType.Samples);
 		Iterator<Entry<Integer, List<SectionPrincipal>>> sectionRowIterator = section_rows	.entrySet()
@@ -297,7 +294,7 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 				}
 
 			} // end while
-			LOG.info("translateSamplesSectionPrincipals  2" );
+			LOG.info("translateSamplesSectionPrincipals  2");
 			// source-sample
 			// source-protocol
 			// protocol-sample
@@ -309,7 +306,7 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 			applyBioMaterialAssociations(domain_samplessection_rows.get(rowInteger));
 			// applyFactorValueAssociations(domain_samplessection_rows.get(rowInteger));
 			// applyProtocolAssociations(domain_samplessection_rows.get(rowInteger));
-			LOG.info("translateSamplesSectionPrincipals  3" );
+			LOG.info("translateSamplesSectionPrincipals  3");
 		}
 
 	}
@@ -324,16 +321,11 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 	public void translateArraySectionPrincipals (	RplaTabDocumentSet rset,
 													SortedMap<Integer, List<AbstractCaArrayObject>> domain_arraysection_rows)
 	{
-		
-		
 
 		SortedMap<Integer, List<SectionPrincipal>> section_rows = rset.getSectionRowsPrincipalObjects(SradfSectionType.Array);
-		
-		
+
 		LOG.info("translateArraySectionPrincipals: num of rows = " + section_rows.size());
-		
-		
-		
+
 		Iterator<Entry<Integer, List<SectionPrincipal>>> sectionRowIterator = section_rows	.entrySet()
 																							.iterator();
 
@@ -344,6 +336,14 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 
 		int count = 0;
 		boolean first = true;
+		
+		
+		
+		RplArray currentRplArray;
+		
+		
+		
+		
 
 		while (sectionRowIterator.hasNext()) {
 			LOG.info("translateArraySectionPrincipals 1");
@@ -370,7 +370,7 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 					gov.nih.nci.carpla.rplatab.model.RplArray rplatabRplArray = (gov.nih.nci.carpla.rplatab.model.RplArray) sp;
 					RplArray domainRplArray = getOrCreateRplArray(rplatabRplArray.getName());
 					translateRplArray(domainRplArray, rplatabRplArray);
-
+					currentRplArray = domainRplArray;
 					domain_arraysection_rows.get(rowInteger)
 											.add(domainRplArray);
 					if (first) {
@@ -402,14 +402,33 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 								.getName()
 								.compareTo("gov.nih.nci.carpla.rplatab.model.Dilution") == 0) {
 					gov.nih.nci.carpla.rplatab.model.Dilution dil = (gov.nih.nci.carpla.rplatab.model.Dilution) sp;
-					MeasurementCharacteristic mc = new MeasurementCharacteristic();
-					mc.setValue(dil.getValue());
-					Term term = new Term();
-					term.setValue(dil.getUnit());
-					TermSource ts = new TermSource();
-					ts.setName("MO");
+
+					// --
+
+					Category category = TermTranslator.getOrCreateCategory(	this.vocabularyService,
+																			this.getTranslationResult(),
+																			"Measurement");
+					OntologyTerm ot = new OntologyTerm();
+					ot.setValue(dil.getUnit());
+
+					// Term term = getTerm(ot);
+					// LOG.info("????" + term.getValueAndSource());
+
+					// Term term = new Term();
+					// term.setCategory(category);
+					// term.setValue("x_times");
+					TermSource ts = vocabularyService.getSource("MO", "1.3.1.1");
+					Term term = vocabularyService.getTerm(ts, "x_times");
+					// new TermSource();
+					// ts.setName("MO");
+					// ts.setVersion("1.3.1.1");
+					// ts.setUrl("http://mged.sourceforge.net/ontologies/MGEDontology.php");
+
 					term.setSource(ts);
-					mc.setUnit(term);
+
+					MeasurementCharacteristic mc = new MeasurementCharacteristic(	category,
+																					Float.valueOf(dil.getValue()),
+																					term);
 
 					domain_arraysection_rows.get(rowInteger).add(mc);
 
@@ -435,10 +454,8 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 
 				}
 
-			
-
 			} // end while
-			LOG.info("translateArraySectionPrincipals 2");
+
 			applyRplArrayDetailAssociations(domain_arraysection_rows.get(rowInteger),
 											arrayIndexInList,
 											featureIndexInList,
@@ -446,7 +463,7 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 											sampleIndexInList
 
 			);
-			LOG.info("translateArraySectionPrincipals 3");
+
 			first = false;
 		}
 
@@ -455,7 +472,7 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 	// ############################################################################
 	private void applyBioMaterialAssociations ( List<AbstractCaArrayObject> rowDomainPrincipals)
 	{
-		LOG.info(" applyBioMaterialAssociations 3" );
+
 		for (int ii = 0; ii < rowDomainPrincipals.size(); ii++) {
 
 			AbstractCaArrayObject domainPrincipal = rowDomainPrincipals.get(ii);
@@ -468,11 +485,11 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 
 					if (nextDomainPrincipal instanceof RplaSample) {
 						RplaSample sample = (RplaSample) nextDomainPrincipal;
-						source.getSamples().add(sample);
-						sample.getSources().add(source);
 
-						// jj = rowDomainPrincipals.size() + 1;
-
+						if (!source.getSamples().contains(sample)) {
+							source.getSamples().add(sample);
+							sample.getSources().add(source);
+						}
 					}
 
 				}
@@ -493,8 +510,6 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 							((RplaSample) nextDomainPrincipal).setSourceRplaSample(rplaSample);
 						}
 
-						// jj = rowDomainPrincipals.size() + 1;
-
 					}
 
 				}
@@ -502,7 +517,7 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 			}
 
 		}
-		LOG.info(" applyBioMaterialAssociations 4" );
+
 	}
 
 	// ############################################################################
@@ -520,12 +535,11 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 		RplaSample rplaSample = (RplaSample) rowDomainPrincipals.get(sampleIndexInList);
 
 		rplArray.getRplaFeatures().add(rplaFeature);
-		LOG.info("applyRplArrayDetailAssociations: feature size=" + rplArray.getRplaFeatures().size());
+
 		rplaFeature.setDilution(dilution);
-		RplaReporter reporter = getRplaReporter(rplaSample) ;
+		RplaReporter reporter = getRplaReporter(rplaSample);
 		rplaFeature.setRplaReporter(reporter);
-		
-		
+		reporter.getRplaFeatures().add(rplaFeature);
 
 	}
 
@@ -554,6 +568,11 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 													new ArrayList<AbstractCaArrayObject>());
 			}
 
+			
+			
+			
+			
+			
 			while (spIterator.hasNext()) {
 				SectionPrincipal sp = spIterator.next();
 
@@ -583,6 +602,12 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 								.getName()
 								.compareTo("gov.nih.nci.carpla.rplatab.model.Assay") == 0) {
 
+					gov.nih.nci.carpla.rplatab.model.Assay assay = (gov.nih.nci.carpla.rplatab.model.Assay) sp;
+
+					RplaHybridization rplaHyb = getOrCreateRplaHybridization(assay.getName());
+
+					domain_arraydatasection_rows.get(rowInteger).add(rplaHyb);
+
 				}
 
 				else if (sp	.getClass()
@@ -592,8 +617,16 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 				}
 
 			}
-
-		}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+		} // end while
 
 	}
 
@@ -602,6 +635,18 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 	// is/will ever be...
 	// Also in the future, i want to look for referenced
 	// entities...that will go here...
+
+	private RplaHybridization getOrCreateRplaHybridization ( String name) {
+
+		if (_rplaHybridizations.containsKey(name)) {
+			return _rplaHybridizations.get(name);
+		}
+
+		RplaHybridization rplaHyb = new RplaHybridization();
+		rplaHyb.setName(name);
+		_rplaHybridizations.put(name, rplaHyb);
+		return rplaHyb;
+	}
 
 	public Source getOrCreateSource ( String name) {
 
@@ -623,7 +668,8 @@ final class SradfTranslator extends RplaTabAbstractTranslator {
 		RplaSample sample = new RplaSample();
 		sample.setName(name);
 		_samples.put(name, sample);
-
+		RplaReporter reporter = new RplaReporter();
+		reporter.setRplaSample(sample);
 		_rplaReporters.put(sample, new RplaReporter());
 
 		return sample;

@@ -311,6 +311,10 @@ public class AntibodyAction extends ActionSupport implements Preparable {
 	// }
 	// }
 	public void prepare () {
+		
+		this._antibodies = getAntibodyService().getAntibodies();
+		
+		
 
 	}
 

@@ -23,9 +23,9 @@ RPLArray Name	ICBP_MDA_RPPA
 #
 
 Dilution	dil1	dil2	dil3	dil4	dil5	unknowndil
-Dilution Value	->	->	->	->	->	->
-Dilution Unit	->	->	->	->	->	->
-Dilution Unit Term Source REF	->	->	->	->	->	->
+Dilution Value	1	10	100	1000	10000	->
+Dilution Unit	x_times	x_times	x_times	x_times	x_times	x_times
+Dilution Unit Term Source REF	MGED Ontology	MGED Ontology	MGED Ontology	MGED Ontology	MGED Ontology	MGED Ontology
 
 
 Person Last Name	Siwak	Feiler

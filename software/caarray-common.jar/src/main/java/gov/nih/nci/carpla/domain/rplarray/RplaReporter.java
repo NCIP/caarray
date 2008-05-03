@@ -3,6 +3,7 @@ package gov.nih.nci.carpla.domain.rplarray;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.carpla.domain.sample.RplaSample;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class RplaReporter extends AbstractCaArrayEntity {
 
 	private Set<FactorValue>	_factorValues	= new HashSet<FactorValue>();
 
-	private Sample				_sample;
+	private RplaSample				_sample;
 	
 
 	private Set<RplaFeature>	_rplaFeatures	= new HashSet<RplaFeature>();
@@ -38,11 +39,11 @@ public class RplaReporter extends AbstractCaArrayEntity {
 
 	
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	public Sample getSample () {
+	public RplaSample getRplaSample () {
 		return _sample;
 	}
 
-	public void setSample ( Sample _sample) {
+	public void setRplaSample ( RplaSample _sample) {
 		this._sample = _sample;
 	}
 

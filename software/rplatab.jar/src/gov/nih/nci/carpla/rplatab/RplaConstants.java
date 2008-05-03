@@ -15,6 +15,9 @@ public final class RplaConstants {
 	}
 
 	public static final String	EMPTYFIELDSTRING			= "->";
+	
+	
+	public static final Float UNKNOWNDILUTIONVALUE = 0.0F;
 
 	public static String		SradfSamplesSectionEnd		= "END_SAMPLES_SECTION";
 

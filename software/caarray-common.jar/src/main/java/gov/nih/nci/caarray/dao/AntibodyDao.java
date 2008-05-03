@@ -1,35 +1,13 @@
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.ArrayDataType;
-import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.AssayType;
+
 import gov.nih.nci.carpla.domain.antibody.Antibody;
 
 import java.util.List;
 
 public interface AntibodyDao {
 	
-	
-	
-//	
-//
-//    /**
-//     * Returns the <code>ArrayDesign</code> with the id given.
-//     *
-//     * @param id get <code>ArrayDesign</code> matching this id
-//     * @return the <code>ArrayDesign</code>.
-//     */
-//    ArrayDesign getArrayDesign(long id);
+
 	
 	
 	Antibody getAntibody(long id);

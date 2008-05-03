@@ -19,7 +19,7 @@ import gov.nih.nci.caarray.validation.UniqueConstraintField;
 
 @Entity
 @Table(name = "antibody")
-@UniqueConstraint(fields = @UniqueConstraintField(name = "lotId"))
+
 public class Antibody extends AbstractCaArrayEntity
 
 {

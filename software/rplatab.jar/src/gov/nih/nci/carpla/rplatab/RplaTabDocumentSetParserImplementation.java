@@ -73,7 +73,9 @@ public class RplaTabDocumentSetParserImplementation
 
 	// ####################################################################
 	// ####################################################################
-	public ValidationResult validate ( RplaTabInputFileSet inputSet) {
+	public ValidationResult validate ( RplaTabInputFileSet inputSet)
+
+	{
 		return parse(inputSet).getValidationResult();
 	}
 
@@ -82,47 +84,77 @@ public class RplaTabDocumentSetParserImplementation
 	public RplaTabDocumentSet parse ( RplaTabInputFileSet rplaTabInputFileSet)
 
 	{
-		RplaTabDocumentSet rplaTabDocumentSet = new RplaTabDocumentSet();
+		RplaTabDocumentSet rplaTabDocumentSet = null;
+		try {
+			rplaTabDocumentSet = new RplaTabDocumentSet();
 
-		rplaTabDocumentSet.setRplaTabInputFileSet(rplaTabInputFileSet);
-		readRplaIdf(rplaTabDocumentSet, rplaTabInputFileSet);
+			rplaTabDocumentSet.setRplaTabInputFileSet(rplaTabInputFileSet);
+			readRplaIdf(rplaTabDocumentSet, rplaTabInputFileSet);
 
-		readSradfHeaders(rplaTabDocumentSet, rplaTabInputFileSet);
+			if (rplaTabDocumentSet	.getValidationResult()
+									.getMessages(Type.ERROR)
+									.size() != 0) {
+				// if rplaidf causes error, let's bail.
 
-		parseSradfRows(rplaTabDocumentSet, rplaTabInputFileSet);
+				return rplaTabDocumentSet;
+
+			}
+
+			readSradfHeaders(rplaTabDocumentSet, rplaTabInputFileSet);
+
+			parseSradfRows(rplaTabDocumentSet, rplaTabInputFileSet);
+		} catch (RplaTabParsingException pe) {
+
+			rplaTabDocumentSet	.getValidationResult()
+								.addMessage(rplaTabDocumentSet	.getRplaIdfFile()
+																.getFile(),
+											Type.ERROR,
+											pe.getMessage());
+
+			return rplaTabDocumentSet;
+		}
 
 		return rplaTabDocumentSet;
 	}
 
 	// ####################################################################
 	// ####################################################################
-	private void readRplaIdf (	RplaTabDocumentSet RplaTabDocumentSet,
+	private void readRplaIdf (	RplaTabDocumentSet rplaTabDocumentSet,
 								RplaTabInputFileSet rplaTabInputFileSet)
+																		
 
 	{
+		
+			RplaIdfReader rplaIdfReader = new RplaIdfReader();
 
-		RplaIdfReader rplaIdfReader = new RplaIdfReader();
-
-		RplaIdfReader.readRplaIdfFile(RplaTabDocumentSet, rplaTabInputFileSet);
-
+			RplaIdfReader.readRplaIdfFile(	rplaTabDocumentSet,
+											rplaTabInputFileSet);
+	
 	}
 
 	// ####################################################################
 	// ####################################################################
-	private void readSradfHeaders ( RplaTabDocumentSet RplaTabDocumentSet,
+	private void readSradfHeaders ( RplaTabDocumentSet rplaTabDocumentSet,
 									RplaTabInputFileSet rplaTabInputFileSet)
+																			throws RplaTabParsingException
 
 	{
 
 		// Only one SRADF file is supported, document this upstream
 
 		try {
-			SradfHeaderReader.readSradfHeaders(	RplaTabDocumentSet,
-												RplaTabDocumentSet.getSradfFile());
+			SradfHeaderReader.readSradfHeaders(	rplaTabDocumentSet,
+												rplaTabDocumentSet.getSradfFile());
 
 		} catch (RplaTabParsingException rpe) {
-			// rpe.printStackTrace();
-			return;
+
+			rplaTabDocumentSet	.getValidationResult()
+								.addMessage(rplaTabDocumentSet	.getSradfFile()
+																.getFile(),
+											Type.ERROR,
+											rpe.getMessage());
+
+			throw rpe;
 		}
 
 	}
@@ -701,8 +733,9 @@ public class RplaTabDocumentSetParserImplementation
 								.addMessage(rplaTabDocumentSet	.getSradfFile()
 																.getFile(),
 											Type.ERROR,
-											"Cannot find sample with name=" + name + " in Array section row number="+
-											row_number_in_section);
+											"Cannot find sample with name=" + name
+													+ " in Array section row number="
+													+ row_number_in_section);
 			return;
 
 		}

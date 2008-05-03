@@ -32,17 +32,13 @@ public class SradfHeaderReader {
 			java.io.Reader r = getHeaderReader(	sradfFile,
 												RplaConstants.SradfSectionType.Samples);
 
-			
-			
 			RplaDatasetSradfGrammar parser = new RplaDatasetSradfGrammar(r);
 
 			SradfSectionHeaders samplessectionheaders = parser.parseSamplesSectionheaders();
 
 			samplessectionheaders.setSectionType(RplaConstants.SradfSectionType.Samples);
 			// checkForMultipleTabs(samplessectionheaders);
-			
-			
-			
+
 			r.close();
 
 			r = getHeaderReader(sradfFile, RplaConstants.SradfSectionType.Array);
@@ -54,11 +50,6 @@ public class SradfHeaderReader {
 
 			arraylocationssectionheaders.setSectionType(RplaConstants.SradfSectionType.Array);
 
-			
-			
-			
-			
-			
 			r.close();
 
 			// --
@@ -79,13 +70,6 @@ public class SradfHeaderReader {
 			// =====================================================================
 			SradfHeaders sfi = new SradfHeaders();
 
-			
-			
-			
-			
-			
-			
-			
 			sfi.setSectionHeaders(	samplessectionheaders,
 									arraylocationssectionheaders,
 									arraydatasectionheaders);
@@ -106,10 +90,14 @@ public class SradfHeaderReader {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			// add to ValidationResult
+			dataset.getValidationResult().addMessage(	dataset	.getSradfFile()
+																.getFile(),
+														Type.ERROR,
+														ioe.getMessage());
+			throw new RplaTabParsingException(ioe.getMessage());
+
 		}
 
-		// TODO proper exception handling
-		return null;
 	}
 
 	private static Reader getHeaderReader ( SradfFile sradffile,
@@ -126,7 +114,6 @@ public class SradfHeaderReader {
 					;
 				;// + "\n";
 
-				
 				java.io.StringReader sr = new java.io.StringReader(str);
 				java.io.Reader r = new java.io.BufferedReader(sr);
 				return r;
@@ -142,7 +129,7 @@ public class SradfHeaderReader {
 				while ((str = in.readLine()).startsWith("#"))
 					;
 				// str = in.readLine();// + "\n";
-				
+
 				java.io.StringReader sr = new java.io.StringReader(str);
 				java.io.Reader r = new java.io.BufferedReader(sr);
 				return r;
@@ -156,7 +143,7 @@ public class SradfHeaderReader {
 				while ((str = in.readLine()).startsWith("#"))
 					;
 				// str = in.readLine();// + "\n";
-				
+
 				java.io.StringReader sr = new java.io.StringReader(str);
 				java.io.Reader r = new java.io.BufferedReader(sr);
 				return r;
