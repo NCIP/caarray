@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -102,9 +103,12 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 /**
  *
@@ -117,6 +121,13 @@ public class FileAccessServiceTest {
 
     @Before
     public void setUp() {
+        MysqlDataSource ds = new MysqlDataSource();
+        Configuration config = HibernateUtil.getConfiguration();
+        ds.setUrl(config.getProperty("hibernate.connection.url"));
+        ds.setUser(config.getProperty("hibernate.connection.username"));
+        ds.setPassword(config.getProperty("hibernate.connection.password"));
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
         this.fileAccessService = new FileAccessServiceBean();
         HibernateUtil.enableFilters(false);
         this.transaction = HibernateUtil.beginTransaction();

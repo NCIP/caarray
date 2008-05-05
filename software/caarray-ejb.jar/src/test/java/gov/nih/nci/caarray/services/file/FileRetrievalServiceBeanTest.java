@@ -93,14 +93,18 @@ import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.cfg.Configuration;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 /**
  *
@@ -117,6 +121,12 @@ public class FileRetrievalServiceBeanTest {
     public void setUp() throws Exception {
         ServiceLocatorStub serviceLocatorStub = ServiceLocatorStub.registerEmptyLocator();
         serviceLocatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
+        MysqlDataSource ds = new MysqlDataSource();
+        Configuration config = HibernateUtil.getConfiguration();
+        ds.setUrl(config.getProperty("hibernate.connection.url"));
+        ds.setUser(config.getProperty("hibernate.connection.username"));
+        ds.setPassword(config.getProperty("hibernate.connection.password"));
+        serviceLocatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
         this.bean.setDaoFactory(this.daoFactoryStub);
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessServiceStub));
         TemporaryFileCacheLocator.resetTemporaryFileCache();

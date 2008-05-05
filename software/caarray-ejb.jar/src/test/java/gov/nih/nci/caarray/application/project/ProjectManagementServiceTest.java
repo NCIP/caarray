@@ -135,11 +135,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 @SuppressWarnings("PMD")
 public class ProjectManagementServiceTest {
@@ -159,6 +161,12 @@ public class ProjectManagementServiceTest {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessService);
         locatorStub.addLookup(GenericDataService.JNDI_NAME, this.genericDataService);
+        MysqlDataSource ds = new MysqlDataSource();
+        Configuration config = HibernateUtil.getConfiguration();
+        ds.setUrl(config.getProperty("hibernate.connection.url"));
+        ds.setUser(config.getProperty("hibernate.connection.username"));
+        ds.setPassword(config.getProperty("hibernate.connection.password"));
+        locatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
         projectManagementServiceBean.setSessionContext(this.sessionContextStub);
         this.projectManagementService = projectManagementServiceBean;
         HibernateUtil.enableFilters(false);

@@ -1032,6 +1032,7 @@
                 <pathelement location="${csmapi.jar}" />
                 <pathelement location="${cglib.jar}" />
                 <pathelement location="${nci-commons-core.jar}" />
+                <pathelement location="${mysql-connector.jar}" />
             </classpath>
         </javac>
     </target>

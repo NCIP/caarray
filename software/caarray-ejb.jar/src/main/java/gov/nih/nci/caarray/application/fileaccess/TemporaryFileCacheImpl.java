@@ -82,7 +82,9 @@
  */
 package gov.nih.nci.caarray.application.fileaccess;
 
+import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.util.ConfigurationHelper;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
@@ -96,8 +98,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.configuration.DataConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -142,7 +146,7 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
         try {
             // re-fetch the CaArrayFile instance to ensure that its blob contents are loaded
             HibernateUtil.getCurrentSession().refresh(caArrayFile);
-            
+
             InputStream inputStream = caArrayFile.readContents();
             OutputStream outputStream = FileUtils.openOutputStream(file);
             IOUtils.copy(inputStream, outputStream);
@@ -174,7 +178,11 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
     }
 
     private File getWorkingDirectory() {
-        String tempDir = System.getProperty(TEMP_DIR_PROPERTY_KEY);
+        DataConfiguration config = ConfigurationHelper.getConfiguration();
+        String tempDir = config.getString(ConfigParamEnum.STRUTS_MULTIPART_SAVEDIR.name());
+        if (StringUtils.isBlank(tempDir)) {
+            tempDir = System.getProperty(TEMP_DIR_PROPERTY_KEY);
+        }
         String workingDirectoryPath = System.getProperty(WORKING_DIRECTORY_PROPERTY_KEY, tempDir);
         return new File(workingDirectoryPath);
     }

@@ -128,6 +128,12 @@ public class MultiPartBlob implements Serializable {
     public static final void setBlobSize(int size) {
         blobSize = size;
     }
+    /**
+     * @return blob size
+     */
+    public static final int getBlobSize() {
+        return blobSize;
+    }
 
     private List<BlobHolder> blobParts = new ArrayList<BlobHolder>();
 
@@ -171,6 +177,42 @@ public class MultiPartBlob implements Serializable {
             getBlobParts().add(bh);
             buffer = new byte[blobSize];
         }
+    }
+
+    /**
+     * Writes data to the blob.
+     * If writeAll is false, this method only writes out data that fills the max blob size.
+     * Any remaining unwritten data is returned.
+     * @param data the data to write the blob
+     * @param writeAll whether to write out all the data
+     * @return array of any unwritten data
+     */
+    public byte[] writeData(byte[] data, boolean writeAll) {
+        if (data == null) {
+            return new byte[0];
+        }
+        int index = 0;
+        while (data.length - index >= blobSize) {
+            addBlob(ArrayUtils.subarray(data, index, index + blobSize));
+            index += blobSize;
+        }
+        byte[] unwritten = ArrayUtils.subarray(data, index, data.length);
+        if (writeAll && !ArrayUtils.isEmpty(unwritten)) {
+            addBlob(unwritten);
+            return new byte[0];
+        } else {
+            return unwritten;
+        }
+    }
+
+    /**
+     * Add a blob part.
+     * @param buffer blob data
+     */
+    private void addBlob(byte[] buffer) {
+        BlobHolder bh = new BlobHolder();
+        bh.setContents(Hibernate.createBlob(buffer));
+        getBlobParts().add(bh);
     }
 
     /**
