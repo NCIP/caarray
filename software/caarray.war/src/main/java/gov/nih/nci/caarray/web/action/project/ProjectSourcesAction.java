@@ -202,7 +202,8 @@ public class ProjectSourcesAction extends AbstractProjectProtocolAnnotationListT
             ActionHelper.saveMessage(getText("experiment.sources.noDataToDownload"));
             return "noSourceData";
         }
-        ProjectFilesAction.downloadFiles(getProject(), files);
+        ProjectFilesAction.downloadFiles(getProject(), files, ProjectFilesAction
+                .determineDownloadFileName(getProject()));
         return null;
     }
 

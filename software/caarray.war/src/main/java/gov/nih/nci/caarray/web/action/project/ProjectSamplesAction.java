@@ -160,7 +160,8 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
             ActionHelper.saveMessage(getText("experiment.samples.noDataToDownload"));
             return "noSampleData";
         }
-        ProjectFilesAction.downloadFiles(getProject(), files);
+        ProjectFilesAction.downloadFiles(getProject(), files, ProjectFilesAction
+                .determineDownloadFileName(getProject()));
         return null;
     }
 

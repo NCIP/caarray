@@ -344,11 +344,13 @@ var PermissionUtils = {
 // Download stuff here
 //
 
-function DownloadMgr(dUrl, removeImageUrl) {
+function DownloadMgr(dUrl, dgUrl, removeImageUrl, maxDownloadSize) {
   this.downloadUrl = dUrl;
+  this.downloadGroupsUrl = dgUrl;
   this.removeImageUrl = removeImageUrl;
   this.files = new Object();
   this.downloadFiles = new Object();
+  this.maxDownloadSize = maxDownloadSize;
   this.totalDownloadSize = 0;
 }
 
@@ -358,9 +360,7 @@ DownloadMgr.prototype.addFile = function(name, id, size) {
 
 DownloadMgr.prototype.addDownloadRow = function(id) {
     if (this.downloadFiles[id]) {
-        if (doAlert == null) {
-          alert('File ' + name + ' already in queue.');
-        }
+        alert('File ' + name + ' already in queue.');
         return;
     }
     
@@ -438,28 +438,37 @@ DownloadMgr.prototype.doDownloadFiles = function() {
     return;
   }
 
-  var form = document.createElement("form");
-  form.method="post";
-  form.style.display="none";
-  form.action=this.downloadUrl;
-  for (i = 0; i < files.length; ++i) {
-      var elt = document.createElement("input");
-      elt.type="hidden";
-      elt.name="selectedFileIds";
-      elt.value=files[i].id;
-      form.appendChild(elt);
-  }  
-  document.body.appendChild(form);
-  form.submit();
-  $(form).remove();
-  
-  this.resetDownloadInfo();
+  if (this.totalDownloadSize < this.maxDownloadSize) {
+      var form = document.createElement("form");
+      form.method="post";
+      form.style.display="none";
+      form.action=this.downloadUrl;
+      for (i = 0; i < files.length; ++i) {
+          var elt = document.createElement("input");
+          elt.type="hidden";
+          elt.name="selectedFileIds";
+          elt.value=files[i].id;
+          form.appendChild(elt);
+      }  
+      document.body.appendChild(form);
+      form.submit();
+      $(form).remove();      
+      this.resetDownloadInfo();      
+  } else {
+      var params = '';
+      for (i = 0; i < files.length; ++i) {
+          params = params + '&selectedFileIds=' + files[i].id;
+      }      
+      TabUtils.loadLinkInSubTab('Download Data', this.downloadGroupsUrl + params);
+  }
 }
 
 DownloadMgr.prototype.addAll = function() {
     this.deleteTotalRow();
     for (id in this.files) {
-        this.doAddDownloadRow(id, false);
+        if (!this.downloadFiles[id]) {
+            this.doAddDownloadRow(id, false);
+        }
     }
     this.addTotalRow();
 }

@@ -94,16 +94,10 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.sample.Extract;
-import gov.nih.nci.caarray.domain.sample.LabeledExtract;
-import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -113,9 +107,10 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -150,6 +145,7 @@ public class ProjectFilesActionTest {
     private static final FileManagementServiceStub fileManagementServiceStub = new FileManagementServiceStub();
     private static final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     ProjectFilesAction action = new ProjectFilesAction();
+    private MockHttpServletResponse mockResponse;
 
     @BeforeClass
     public static void beforeClass() {
@@ -184,6 +180,8 @@ public class ProjectFilesActionTest {
         project.getFiles().add(file);
         this.action.setProject(project);
         ServletActionContext.setRequest(new MockHttpServletRequest());
+        mockResponse = new MockHttpServletResponse();
+        ServletActionContext.setResponse(mockResponse);
     }
 
     @Test
@@ -296,6 +294,90 @@ public class ProjectFilesActionTest {
         assertEquals(LIST_UNIMPORTED, this.action.validateFiles());
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
         assertEquals(3, fileManagementServiceStub.getValidatedFileCount());
+    }
+    
+    @Test
+    public void testDownloadGroups() throws Exception {
+        FileAccessServiceStub fas = new FileAccessServiceStub();
+        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
+        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
+        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
+        fas.add(MageTabDataFiles.CAARRAY1X_IDF);
+
+
+        Project p = new Project();
+        p.getExperiment().setPublicIdentifier("test");
+        CaArrayFile f1 = new CaArrayFile();
+        setCompressedSize(f1, 1024 * 1024 * 1024);
+        setId(f1, 1L);
+        f1.setName("missing_term_source.idf");
+        CaArrayFile f2 = new CaArrayFile();
+        setCompressedSize(f2, 1024 * 1024 * 384);
+        setId(f2, 2L);
+        f2.setName("missing_term_source.sdrf");
+        CaArrayFile f3 = new CaArrayFile();
+        setCompressedSize(f3, 1024 * 1024 * 512);
+        setId(f3, 3L);
+        f3.setName("experiment-id-1015897540503881.idf");
+        
+        action.setSelectedFiles(Arrays.asList(f1, f2, f3));
+        action.setProject(p);
+        
+        String result = action.download();
+        assertEquals("downloadGroups", result);
+        assertEquals(2, action.getDownloadFileGroups().size());
+        assertEquals(1, action.getDownloadFileGroups().get(0).getFileNames().size());
+        assertTrue(action.getDownloadFileGroups().get(0).getFileNames().contains("experiment-id-1015897540503881.idf"));        
+               assertEquals(2, action.getDownloadFileGroups().get(1).getFileNames().size());
+        assertTrue(action.getDownloadFileGroups().get(1).getFileNames().contains("missing_term_source.sdrf"));        
+        assertTrue(action.getDownloadFileGroups().get(1).getFileNames().contains("missing_term_source.idf"));        
+        
+        action.setDownloadGroupNumber(2);
+        result = action.download();
+        assertNull(result);
+
+        assertEquals("application/zip", mockResponse.getContentType());
+        assertEquals("filename=\"caArray_test_2_of_2_files.zip\"", mockResponse.getHeader("Content-disposition"));
+        
+        ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
+        ZipEntry ze = zis.getNextEntry();
+        assertNotNull(ze);
+        assertEquals("missing_term_source.idf", ze.getName());
+        ze = zis.getNextEntry();
+        assertNotNull(ze);
+        assertEquals("missing_term_source.sdrf", ze.getName());
+        ze = zis.getNextEntry();
+        assertEquals(null, ze);
+        IOUtils.closeQuietly(zis);
+    }
+
+
+    private void setCompressedSize(CaArrayFile f, int size) {
+        try {
+            Method m = CaArrayFile.class.getDeclaredMethod("setCompressedSize", Integer.TYPE);
+            m.setAccessible(true);
+            m.invoke(f, size);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException(e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    private void setId(CaArrayFile f, Long id) {
+        try {
+            Method m = CaArrayFile.class.getSuperclass().getSuperclass().getDeclaredMethod("setId", Long.class);
+            m.setAccessible(true);
+            m.invoke(f, id);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException(e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Test
@@ -530,20 +612,24 @@ public class ProjectFilesActionTest {
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
         fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
         fas.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
+        fas.add(MageTabDataFiles.CAARRAY1X_IDF);
+
 
         Project p = new Project();
         p.getExperiment().setPublicIdentifier("test");
         CaArrayFile f1 = new CaArrayFile();
+        setCompressedSize(f1, 1024 * 1024 * 1024);
         f1.setName("missing_term_source.idf");
         CaArrayFile f2 = new CaArrayFile();
+        setCompressedSize(f2, 1024 * 1024 * 384);
         f2.setName("missing_term_source.sdrf");
-        this.action.setProject(p);
-        this.action.setSelectedFiles(Arrays.asList(f1, f2));
         
-        MockHttpServletResponse mockResponse = new MockHttpServletResponse();
-        ServletActionContext.setResponse(mockResponse);
+        action.setSelectedFiles(Arrays.asList(f1, f2));
+        action.setProject(p);
+        
+        String result = action.download();
+        assertNull(result);
 
-        assertEquals(null, action.download());
         assertEquals("application/zip", mockResponse.getContentType());
         assertEquals("filename=\"caArray_test_files.zip\"", mockResponse.getHeader("Content-disposition"));
         
@@ -556,8 +642,6 @@ public class ProjectFilesActionTest {
         assertEquals("missing_term_source.sdrf", ze.getName());
         assertNull(zis.getNextEntry());
         IOUtils.closeQuietly(zis);
-
-        assertEquals(null, action.download());
     }
 
     @Test
