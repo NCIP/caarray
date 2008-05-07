@@ -115,10 +115,10 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
      * reload the project in top level frame.
      */
     public static final String RELOAD_PROJECT_RESULT = "reload-project";
-    
+
     /**
      * Width (in characters) to which the experiment title should be truncated to prevent messages from overflowing
-     * the UI.   
+     * the UI.
      */
     public static final int TRUNCATED_TITLE_WIDTH = 80;
 
@@ -150,7 +150,7 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
             }
         }
     }
-    
+
     /**
      * get the csm user.  This method is extracted so it can be overwritten in test cases.
      * @return the csm user.
@@ -158,7 +158,7 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
     protected User getCsmUser() {
         return UsernameHolder.getCsmUser();
     }
-    
+
     /**
      * @return the project
      */

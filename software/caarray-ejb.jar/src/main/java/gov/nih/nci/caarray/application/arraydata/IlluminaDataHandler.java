@@ -344,13 +344,13 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
 
     private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, List<String> headers,
             ArrayDesignService arrayDesignService) {
-        positionAtData(reader);
         int indexOfTargetId = headers.indexOf(TARGET_ID);
         DesignElementList probeList = new DesignElementList();
         probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
         dataSet.setDesignElementList(probeList);
         ArrayDesignDetails designDetails = getArrayDesign(arrayDesignService, reader).getDesignDetails();
         ProbeLookup probeLookup = new ProbeLookup(designDetails.getLogicalProbes());
+        positionAtData(reader);
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
             String probeName = values.get(indexOfTargetId);

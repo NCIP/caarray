@@ -119,7 +119,7 @@ public class ApiOneFileDataSetDownload extends AbstractApiTest {
     private static final String[] EXPERIMENT_NAMES = {
         TestProperties.getAffymetricSpecificationName(),
         TestProperties.getAffymetricChpName(),
-        //TestProperties.getIlluminaRatName(),
+        TestProperties.getIlluminaRatName(),
         TestProperties.getGenepixCowName()
     };
 

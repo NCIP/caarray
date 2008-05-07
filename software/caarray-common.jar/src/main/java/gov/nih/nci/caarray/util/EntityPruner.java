@@ -181,7 +181,7 @@ public final class EntityPruner {
                 // We catch here, rather than re-throwing. This is a violation of our standard
                 // practice, but it's done for good reason. If invoking fails, that means
                 // the value was unchanged. Grid or API users that follow the standard idiom
-                // of requering for child objects will likely never notice that the object
+                // of requerying for child objects will likely never notice that the object
                 // was not null. If we re-throw, clients will get an error. This makes
                 // the system more robust for Java API users.
                 LOG.error("Unable to call a setter: " + e.getMessage(), e);

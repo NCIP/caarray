@@ -97,7 +97,7 @@ import org.apache.log4j.Logger;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
- * Ensures that retrieved entitites are ready for transport, including correct
+ * Ensures that retrieved entities are ready for transport, including correct
  * 'cutting' of object graphs.
  *
  * @see EntityPruner#makeChildrenLeaves(Object)

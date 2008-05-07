@@ -540,6 +540,7 @@ public class ArrayDataServiceTest {
         assertEquals(5.8, signalColumn.getValues()[0]);
         assertEquals(3.6, signalColumn.getValues()[9]);
         assertNotNull(hybridizationData.getHybridization().getArray());
+        assertEquals(10, illuminaData.getDataSet().getDesignElementList().getDesignElements().size());
     }
 
     private void testIlluminaDataFull() throws InvalidDataFileException {
@@ -553,6 +554,7 @@ public class ArrayDataServiceTest {
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(4, hybridizationData.getColumns().size());
         assertNotNull(hybridizationData.getHybridization().getArray());
+        assertEquals(47293, illuminaData.getDataSet().getDesignElementList().getDesignElements().size());
     }
 
     @Test(expected = IllegalArgumentException.class)
