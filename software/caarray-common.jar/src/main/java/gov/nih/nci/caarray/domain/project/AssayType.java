@@ -125,7 +125,7 @@ public enum AssayType implements ResourceBasedEnum {
     //*********************************************************
     // Reverse phase protein lysate array assay type ( caRPLA) 
     //*********************************************************
-    RPLA("RPLA")
+    RPLA("rpla")
     
     
     

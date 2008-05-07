@@ -87,9 +87,7 @@ import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileAccessSe
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManagementService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getVocabularyService;
 
-
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getAntibodyService;
-
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -123,7 +121,6 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
-
 // @Validation
 // @SuppressWarnings("PMD.CyclomaticComplexity")
 public class AntibodyAction extends ActionSupport implements Preparable {
@@ -136,7 +133,7 @@ public class AntibodyAction extends ActionSupport implements Preparable {
 	// private String uploadFormatType;
 	// private List<ArrayDesign> arrayDesigns;
 	// private List<Organization> providers;
-	private List<Antibody>		_antibodies;
+	private List<Antibody>		antibodies;
 	private List<Organization>	_providers;
 
 	// private Set<Term> featureTypes;
@@ -229,7 +226,7 @@ public class AntibodyAction extends ActionSupport implements Preparable {
 
 	public List<Antibody> getAntibodies () {
 		System.out.println("Getting list of antibodies in AntibodyAction");
-		return _antibodies;
+		return antibodies;
 	}
 
 	// /**
@@ -260,34 +257,23 @@ public class AntibodyAction extends ActionSupport implements Preparable {
 	// public boolean isEditMode() {
 	// return editMode;
 	// }
-	
-	
-	 public boolean isEditMode() {
-	 return editMode;
-	 }
-	
-	
-	
-	
-	
-	
-	
+
+	public boolean isEditMode () {
+		return editMode;
+	}
+
 	// /**
 	// * @return the locked
 	// */
 	// public boolean isLocked() {
 	// return locked;
 	// }
-	 
-	 public boolean isLocked() {
-		 System.out.println("in AntibodyAction::islocked");
-		 return locked;
-		 }
-	 
-	 
-	 
-	 
-	 
+
+	public boolean isLocked () {
+		System.out.println("in AntibodyAction::islocked");
+		return locked;
+	}
+
 	//
 	// /**
 	// * {@inheritDoc}
@@ -311,10 +297,8 @@ public class AntibodyAction extends ActionSupport implements Preparable {
 	// }
 	// }
 	public void prepare () {
-		
-		this._antibodies = getAntibodyService().getAntibodies();
-		
-		
+
+		this.antibodies = getAntibodyService().getAntibodies();
 
 	}
 
@@ -324,12 +308,13 @@ public class AntibodyAction extends ActionSupport implements Preparable {
 	// * @return list
 	// */
 	// @SkipValidation
-	 public String list() {
-		 System.out.println("in AntibodyAction::list");
-		 _antibodies = getAntibodyService().getAntibodies();
-	// arrayDesigns = getArrayDesignService().getArrayDesigns();
-	 return "list";
-	 }
+	public String list () {
+		System.out.println("in AntibodyAction::list");
+		antibodies = getAntibodyService().getAntibodies();
+
+		return "list";
+	}
+
 	//
 	// /**
 	// * Edit view of an array design.
@@ -346,9 +331,9 @@ public class AntibodyAction extends ActionSupport implements Preparable {
 	// * @return input
 	// */
 	// @SkipValidation
-	 public String view() {
-	 editMode = false;
-	 return Action.INPUT;
+	public String view () {
+		editMode = false;
+		return Action.INPUT;
 	}
 	//
 	// /**

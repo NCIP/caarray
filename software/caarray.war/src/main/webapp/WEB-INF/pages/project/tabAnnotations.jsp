@@ -31,10 +31,6 @@
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
 </c:url>
-<c:url value="/ajax/project/listTab/RplaHybridizations/load.action" var="rplaHybridizationsUrl">
-    <c:param name="project.id" value="${project.id}" />
-    <c:param name="editMode" value="${editMode}" />
-</c:url>
 
 <fmt:message key="project.tabs.experimentalDesign" var="experimentalDesignTitle" />
 <fmt:message key="project.tabs.factors" var="factorsTitle" />
@@ -43,7 +39,7 @@
 <fmt:message key="project.tabs.extracts" var="extractsTitle" />
 <fmt:message key="project.tabs.labeledExtracts" var="labeledExtractsTitle" />
 <fmt:message key="project.tabs.hybridizations" var="hybridizationsTitle" />
-<fmt:message key="project.tabs.rplahybridizations" var="rplaHybridizationsTitle" />
+
 <c:choose>
     <c:when test="${!empty initialTab2Url}">
         <c:set var="initUrl" value="${initialTab2Url}"/>
@@ -67,9 +63,6 @@
     <c:when test="${initTab == 'hybridizations'}">
         <c:set var="initUrl" value="${hybridizationsUrl}"/>
     </c:when>
-     <c:when test="${initTab == 'rplaHybridizations'}">
-        <c:set var="initUrl" value="${rplaHybridizationsUrl}"/>
-    </c:when>
     <c:otherwise>
         <c:set var="initUrl" value="${experimentalDesignUrl}"/>
     </c:otherwise>
@@ -81,10 +74,9 @@
     <caarray:tab caption="${factorsTitle}" baseUrl="${factorsUrl}" defaultTab="${initTab == 'factors'}" />
     <caarray:tab caption="${sourcesTitle}" baseUrl="${sourcesUrl}" defaultTab="${initTab == 'sources'}" />
     <caarray:tab caption="${samplesTitle}" baseUrl="${samplesUrl}" defaultTab="${initTab == 'samples'}" />
-  <!--  <caarray:tab caption="${extractsTitle}" baseUrl="${extractsUrl}" defaultTab="${initTab == 'extracts'}" />-->
-   <!-- <caarray:tab caption="${labeledExtractsTitle}" baseUrl="${labeledExtractsUrl}" defaultTab="${initTab == 'labeledExtracts'}" />-->
-   <!-- <caarray:tab caption="${hybridizationsTitle}" baseUrl="${hybridizationsUrl}" defaultTab="${initTab == 'hybridizations'}" /> -->
-	<caarray:tab caption="${rplaHybridizationsTitle}" baseUrl="${rplaHybridizationsUrl}" defaultTab="${initTab == 'rplaHybridizations'}" />
+    <caarray:tab caption="${extractsTitle}" baseUrl="${extractsUrl}" defaultTab="${initTab == 'extracts'}" />
+    <caarray:tab caption="${labeledExtractsTitle}" baseUrl="${labeledExtractsUrl}" defaultTab="${initTab == 'labeledExtracts'}" />
+    <caarray:tab caption="${hybridizationsTitle}" baseUrl="${hybridizationsUrl}" defaultTab="${initTab == 'hybridizations'}" />
 </ajax:tabPanel>
 
 <script type="text/javascript">

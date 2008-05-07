@@ -37,7 +37,10 @@ public class AntibodyDaoImpl extends AbstractCaArrayDaoImpl
 
 	public List<Antibody> getAntibodies () {
 		LOG.info("getAntibodies");
-		return getCurrentSession().createCriteria(Antibody.class).list();
+		List<Antibody> antibodies = getCurrentSession()	.createCriteria(Antibody.class)
+														.list();
+		LOG.info("antibodies.size():" + antibodies.size());
+		return antibodies;
 	}
 
 	@Override
@@ -45,5 +48,4 @@ public class AntibodyDaoImpl extends AbstractCaArrayDaoImpl
 		return LOG;
 	}
 
-	
 }

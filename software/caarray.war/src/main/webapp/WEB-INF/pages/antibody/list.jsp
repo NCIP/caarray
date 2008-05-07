@@ -19,19 +19,19 @@
             <div class="tableboxpad">
                 <c:url value="/protected/ajax/antibody/list.action" var="sortUrl"/>
                 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
-                    <display:table class="searchresults" cellspacing="0" defaultsort="2" list="${arrayDesigns}"
+                    <display:table class="searchresults" cellspacing="0" defaultsort="2" list="${antibodies}"
                                    requestURI="${sortUrl}" sort="list" id="row" pagesize="20">
                         <caarray:displayTagProperties/>
                         <display:column property="name" titleKey="antibody.name" sortable="true" url="/protected/antibody/view.action" paramId="antibody.id" paramProperty="id" maxLength="30"/>
-                       <display:column property="geneNames" titleKey="antibody.genenames" sortable="true"/>
+                     
                         <display:column property="epitope" titleKey="antibody.epitope" sortable="true"/>
                         <display:column property="immunogen" titleKey="antibody.immunogen" sortable="true"/>
-                        <display:column property="MW(kDa)" titleKey="antibody.molecularWeight" sortable="true"/>
+                    
                         <display:column property="specificity" titleKey="antibody.specificity" sortable="true"/>
-                        <display:column property="provider" titleKey="antibody.provider" sortable="true"/>
-                        <display:column property="catalogID" titleKey="antibody.catalogId" sortable="true"/>
-                        <display:column property="lotID" titleKey="antibody.lotId" sortable="true"/>
-                         <display:column property="numberValidations" titleKey="antibody.numberValidations"  sortable="true"/>
+                      <display:column property="comment" titleKey="antibody.provider" sortable="true"/>
+                        <display:column property="catalogId" titleKey="antibody.catalogId" sortable="true"/>
+                        <display:column property="lotId" titleKey="antibody.lotId" sortable="true"/>
+                      
                     </display:table>
                 </ajax:displayTag>
             </div>
