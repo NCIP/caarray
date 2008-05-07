@@ -146,7 +146,7 @@ public class ArrayDesignActionTest {
         assertEquals(1, arrayDesignAction.getOrganisms().size());
         assertEquals(1, arrayDesignAction.getProviders().size());
         assertEquals(10, arrayDesignAction.getFeatureTypes().size());
-        
+
         ArrayDesign design = new ArrayDesign();
         design.setId(DESIGN_ID);
         arrayDesignAction.setArrayDesign(design);
@@ -185,18 +185,31 @@ public class ArrayDesignActionTest {
     }
 
     @Test
+    public void testFile() throws Exception {
+        setTargetIdParam();
+        String result = arrayDesignAction.editFile();
+        ArrayDesign target = arrayDesignAction.getArrayDesign();
+        assertNotNull(target);
+        assertTrue(arrayDesignAction.isEditMode());
+        assertEquals("metaValid", result);
+    }
+
+    @Test
     public void testSave() throws Exception {
         ArrayDesign design = new ArrayDesign();
         arrayDesignAction.setArrayDesign(design);
-        String result = arrayDesignAction.save();
-        assertEquals(Action.SUCCESS, result);
-
+        String result = arrayDesignAction.saveMeta();
+        assertEquals("metaValid", result);
+        // giving the brand new array design an id is a
+        // trick to allow for no upload file.
         arrayDesignAction.getArrayDesign().setId(DESIGN_ID);
-        arrayDesignAction.setUploadFileName("uploadFileName");
+        arrayDesignAction.setUploadFileName(null);
         arrayDesignAction.setUpload(null);
         arrayDesignAction.setUploadFormatType(FileType.UCSF_SPOT_SPT.name());
         result = arrayDesignAction.save();
-        assertEquals(Action.INPUT, result);
+        assertEquals("importComplete", result);
+
+
     }
 
     @SuppressWarnings("deprecation")

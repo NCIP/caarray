@@ -1,5 +1,20 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <%@page import="gov.nih.nci.caarray.domain.file.FileStatus"%>
+<c:url value="/protected/ajax/arrayDesign/create.action" var="importInBackgroundUrl">
+    <c:param name="project.id" value="${project.id}"/>
+</c:url>
+
+<script type="text/javascript">
+    openNewImportWindow = function() {
+       uploadWindow = window.open('${importInBackgroundUrl}', '_blank', "width=685,height=480,left=0,top=0,toolbar,scrollbars,resizable,status=yes");
+    }
+
+    openEditFileWindow = function(url) {
+       uploadWindow = window.open(url, '_blank', "width=685,height=480,left=0,top=0,toolbar,scrollbars,resizable,status=yes");
+    }
+
+</script>
+
 <html>
 <head>
     <title>Manage Array Designs</title>
@@ -12,7 +27,7 @@
             <div class="boxpad2">
                 <h3>Array Designs</h3>
                 <div class="addlink">
-                    <caarray:linkButton url="edit.action" actionClass="add" text="Import a New Array Design" />
+                    <caarray:linkButton actionClass="add" text="Import a New Array Design" onclick="openNewImportWindow()" />
                 </div>
             </div>
             <div class="tableboxpad">
@@ -33,9 +48,18 @@
                             <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
                             <c:if test="${row.designFile.status != importingStatus}">
                                 <c:url value="/protected/arrayDesign/edit.action" var="editDesignUrl">
-                                    <c:param name="arrayDesign.id" value="${row.id}" />
+                                     <c:param name="arrayDesign.id" value="${row.id}" />
                                 </c:url>
                                 <a href="${editDesignUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                          </c:if>
+                        </display:column>
+                        <display:column titleKey="button.editFile" class="centered" headerClass="centered">
+                            <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
+                            <c:if test="${row.designFile.status != importingStatus}">
+                                <c:url value="/protected/ajax/arrayDesign/editFile.action" var="editFileDesignUrl">
+                                     <c:param name="arrayDesign.id" value="${row.id}" />
+                                </c:url>
+                                <a href="#" onclick="openEditFileWindow('${editFileDesignUrl}')"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.editFile"/>" /></a>
                             </c:if>
                         </display:column>
                         <display:column sortProperty="designFile.status" titleKey="experiment.files.status" sortable="true" >

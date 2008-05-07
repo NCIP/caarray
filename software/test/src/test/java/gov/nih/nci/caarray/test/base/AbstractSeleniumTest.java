@@ -421,7 +421,13 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.waitForPageToLoad("30000");
         if (!doesArrayDesignExists(arrayDesignName)) {
             addArrayDesign(arrayDesignFile, provider, Organism);
-
+            // the file is uploaded. this may take a while. after it is uploaded
+            // we must click on the OKAY box to close the popup.
+            selenium.selectWindow(null);
+            selenium.waitForPageToLoad("30000");
+            // - click on the array designs list and re-click until data
+            // - can be found
+            reClickForText(arrayDesignName, "link=Manage Array Designs", 10, 60000);
             // get the array design row so we do not find the wrong Imported text
             int column = getExperimentRow(arrayDesignName, ZERO_COLUMN);
             // wait for array design to be imported
@@ -430,9 +436,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
     private void addArrayDesign(File arrayDesign, String arrayDesignProvider, String arrayDesignOrganism) {
         selenium.click("link=Import a New Array Design");
+        waitForPopup("uploadWindow", 3000);
+        selenium.selectWindow("uploadWindow");
         waitForText("Array Design Details");
         // assert the Use Case required fields are present
-        assertArrayDesignRequiredFields();
+        assertArrayDesignMetaRequiredFields();
         selenium.select("arrayDesignForm_arrayDesign_assayType", "label=Gene Expression");
         if (arrayDesignProvider == null) {
             arrayDesignProvider = AFFYMETRIX_PROVIDER; // default to Affy
@@ -446,23 +454,31 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             arrayDesignOrganism = HOMO_SAPIENS_ORGANISM;
         }
         selenium.select("arrayDesignForm_arrayDesign_organism", "label=" + arrayDesignOrganism);
-
+        selenium.click("link=Next");
+        selenium.waitForPageToLoad("3000");
+        assertArrayDesignFileRequiredFields();
         selenium.type("arrayDesignForm_upload", arrayDesign.toString());
         selenium.click("link=Save");
-        waitForText("found");
+        // we should now be at the
+        // all-good page
+        waitForText("has been successfully imported.");
+        selenium.click("link=Close Window and go to Manage Design Array");
     }
 
     /**
      * assert the required field for Array Designs conform to the use case
      *
      */
-    private void assertArrayDesignRequiredFields() {
+    private void assertArrayDesignMetaRequiredFields() {
         assertTrue(selenium.isTextPresent("Provider*"));
         assertTrue(selenium.isTextPresent("Version Number*"));
         assertTrue(selenium.isTextPresent("Feature Type*"));
         assertTrue(selenium.isTextPresent("Organism*"));
-        assertTrue(selenium.isTextPresent("Browse to File*"));
         assertTrue(selenium.isTextPresent("Assay Type*"));
+    }
+
+    private void assertArrayDesignFileRequiredFields() {
+        assertTrue(selenium.isTextPresent("Browse to File*"));
     }
 
     protected void findTitleAcrossMultiPages(String text) {

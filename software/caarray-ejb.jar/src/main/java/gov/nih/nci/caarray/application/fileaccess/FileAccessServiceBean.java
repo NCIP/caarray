@@ -217,7 +217,7 @@ public class FileAccessServiceBean implements FileAccessService {
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     public void unzipFiles(List<File> uploads, List<String> uploadFileNames) {
         try {
-            Pattern p = Pattern.compile(".zip$");
+            Pattern p = Pattern.compile("\\.zip$");
             int index = 0;
             for (int i = 0; i < uploadFileNames.size(); i++) {
                 Matcher m = p.matcher(uploadFileNames.get(i).toLowerCase());

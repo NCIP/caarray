@@ -1,9 +1,18 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <%@page import="gov.nih.nci.caarray.domain.file.FileStatus"%>
-
 <s:if test="${!editMode}">
     <c:set var="theme" value="readonly" scope="request"/>
 </s:if>
+
+<s:if test="${createMode}">
+    <c:set var="actionUrl" value="/protected/ajax/arrayDesign/saveMeta.action" scope="request"/>
+</s:if>
+<s:else>
+     <c:set var="actionUrl" value="/protected/arrayDesign/saveMeta.action" scope="request"/>
+</s:else>
+
+
+
 <s:if test="${locked || !editMode}">
     <c:set var="lockedTheme" value="readonly"/>
 </s:if>
@@ -11,6 +20,7 @@
     <c:set var="lockedTheme" value="xhtml"/>
 </s:else>
 
+<page:applyDecorator name="popup">
 <html>
 <head>
     <title>Manage Array Designs</title>
@@ -22,7 +32,6 @@
         <div id="tabboxwrapper_notabs">
             <div class="boxpad2">
                 <h3>
-                    <a href="list.action">Array Designs</a> &gt;
                     <span class="dark">
                         <s:if test="${empty arrayDesign.id}">
                             New Array Design
@@ -37,8 +46,7 @@
             <div class="boxpad">
                 <div id="submittingText" style="display: none;">
                     <div><img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" />
-                    <fmt:message key="experiment.files.processing" /><br><br>
-                    <fmt:message key="arraydesign.file.upload.inProgress" /></div>
+                    <fmt:message key="experiment.files.processing" /></div>
                 </div>
                 <s:if test="${locked}">
                     <div class="instructions">
@@ -46,7 +54,7 @@
                     </div>
                 </s:if>
                 <div id="theForm">
-                    <s:form action="/protected/arrayDesign/save.action" onsubmit="TabUtils.showSubmittingText(); return true;" cssClass="form" enctype="multipart/form-data" method="post" id="arrayDesignForm">
+                    <s:form action="${actionUrl}" onsubmit="TabUtils.showSubmittingText(); return true;" cssClass="form" enctype="multipart/form-data" method="post" id="arrayDesignForm">
                         <tbody>
                             <tr><th colspan="2">Array Design Details</th></tr>
                             <s:if test="${!empty arrayDesign.id}">
@@ -68,39 +76,35 @@
                                       list="organisms" listKey="id" listValue="nameAndSource" value="arrayDesign.organism.id"
                                       headerKey="" headerValue="--Please select an Organism--"/>
                             <s:hidden name="arrayDesign.id"/>
-                        </tbody>
-                        <tbody>
-                            <tr><th colspan="2">Upload Array Design File</th></tr>
-                            <s:if test="${!empty arrayDesign.designFile}">
-                                <s:textfield theme="readonly" key="arrayDesign.designFile.name" label="Current File"/>
-                            </s:if>
-                            <s:if test="${editMode && !locked}">
-                                <s:file required="${empty arrayDesign.id}" name="upload" label="Browse to File" tabindex="9"/>
-                                <s:select name="uploadFormatType" key="arrayDesign.designFile.fileType" tabindex="10"
-                                          list="@gov.nih.nci.caarray.domain.file.FileType@getArrayDesignFileTypes()"
-                                          listValue="%{getText('experiment.files.filetype.' + name)}"
-                                          listKey="name" headerKey="" headerValue="Automatic"/>
-                            </s:if>
+                            <s:hidden name="createMode"/>
+                            <s:hidden name="editMode"/>
                         </tbody>
                         <input type="submit" class="enableEnterSubmit"/>
                     </s:form>
                     <caarray:actions>
-                        <c:url value="/protected/arrayDesign/list.action" var="listUrl"/>
-                        <caarray:action url="${listUrl}" actionClass="cancel" text="Cancel" tabindex="11" />
-                        <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
-                        <s:if test="${editMode}">
-                            <caarray:action onclick="TabUtils.showSubmittingText(); document.getElementById('arrayDesignForm').submit();" actionClass="save" text="Save" tabindex="12"/>
-                        </s:if>
-                        <s:elseif test="${arrayDesign.designFile.status != importingStatus}">
-                            <c:url value="/protected/arrayDesign/edit.action" var="editUrl">
-                                <c:param name="arrayDesign.id" value="${arrayDesign.id}"/>
-                            </c:url>
-                            <caarray:action url="${editUrl}" actionClass="edit" text="Edit" tabindex="13"/>
-                        </s:elseif>
+                         <s:if test="${createMode}">
+                            <caarray:linkButton actionClass="cancel" text="Cancel" onclick="window.close()"/>
+                            <caarray:action onclick="document.getElementById('arrayDesignForm').submit();" actionClass="import" text="Next" tabindex="12"/>
+                         </s:if>
+                         <s:else>
+                            <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
+                            <c:url value="/protected/arrayDesign/list.action" var="listUrl"/>
+                            <caarray:action url="${listUrl}" actionClass="cancel" text="Cancel" tabindex="11"/>
+                            <s:if test="${editMode}">
+                                <caarray:action onclick="document.getElementById('arrayDesignForm').submit();" actionClass="save" text="Save" tabindex="12"/>
+                            </s:if>
+                            <s:elseif test="${arrayDesign.designFile.status != importingStatus}">
+                                <c:url value="/protected/arrayDesign/edit.action" var="editUrl">
+                                    <c:param name="arrayDesign.id" value="${arrayDesign.id}"/>
+                                </c:url>
+                                <caarray:action url="${editUrl}" actionClass="edit" text="Edit" tabindex="12"/>
+                            </s:elseif>
+                         </s:else>
                     </caarray:actions>
                 </div>
             </div>
         </div>
     </div>
-</body>
+  </body>
 </html>
+</page:applyDecorator>

@@ -185,10 +185,12 @@ public class FileManagementServiceBean implements FileManagementService {
         boolean newArrayDesign = arrayDesign.getId() == null;
         CaArrayFile oldFile = arrayDesign.getDesignFile();
         designFile.setFileStatus(FileStatus.VALIDATING);
+
         arrayDesign.setDesignFile(designFile);
         getDaoFactory().getProjectDao().save(designFile);
         getArrayDesignService().saveArrayDesign(arrayDesign);
         getArrayDesignService().importDesign(arrayDesign);
+
         if (FileStatus.VALIDATION_ERRORS.equals(designFile.getFileStatus())) {
             if (newArrayDesign) {
                 getDaoFactory().getArrayDao().remove(arrayDesign);

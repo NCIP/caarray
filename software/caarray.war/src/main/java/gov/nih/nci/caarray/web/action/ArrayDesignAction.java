@@ -102,6 +102,7 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -137,6 +138,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     private List<Organism> organisms;
     private boolean editMode;
     private boolean locked;
+    private boolean createMode;
 
     /**
      * @return the array design
@@ -270,8 +272,20 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String edit() {
+        createMode = false;
         editMode = true;
         return Action.INPUT;
+    }
+
+    /**
+     * Edit view of an import file.
+     * @return input
+     */
+    @SkipValidation
+    public String editFile() {
+        createMode = false;
+        editMode = true;
+        return "metaValid";
     }
 
     /**
@@ -280,7 +294,19 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String view() {
+        createMode = false;
         editMode = false;
+        return Action.INPUT;
+    }
+
+    /**
+     * Creation of a new array design.
+     * @return input
+     */
+    @SkipValidation
+    public String create() {
+        createMode = true;
+        editMode = true;
         return Action.INPUT;
     }
 
@@ -300,39 +326,46 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             @RequiredFieldValidator(fieldName = "arrayDesign.organism", key = "errors.required", message = "")
         }
     )
+    public String saveMeta() {
+        if (!createMode && editMode) {
+            getFileManagementService().importArrayDesignDetails(arrayDesign);
+            return Action.SUCCESS;
+        }
+        editMode = true;
+        return "metaValid";
+    }
+
+    /**
+     * Save/Update file associated with array design.
+     * @return input
+     */
+    @SkipValidation
     public String save() {
-        Long id = arrayDesign.getId();
-        if (id == null) {
-          arrayDesign.setName(FilenameUtils.getBaseName(uploadFileName));
-        }
-        try {
-            if (uploadFileName == null) {
-                getArrayDesignService().saveArrayDesign(arrayDesign);
+        String returnVal = null;
+        // upload file is required for new array designs
+        if (arrayDesign.getId() == null && uploadFileName == null) {
+            addFieldError("upload", getText("fileRequired"));
+            returnVal =  edit();
+        } else {
+
+            Long id = arrayDesign.getId();
+            if (id == null) {
+              arrayDesign.setName(FilenameUtils.getBaseName(uploadFileName));
+            }
+
+            saveImportFile();
+
+            if (this.hasErrors()) {
+                // addArrayDesign overwrites the id, so reset if there is an error.
+                arrayDesign.setId(id);
+                returnVal = "metaValid";
             } else {
-                CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
-                if (uploadFormatType != null && FileType.valueOf(uploadFormatType) != null) {
-                    designFile.setFileType(FileType.valueOf(uploadFormatType));
-                }
-                getFileManagementService().saveArrayDesign(arrayDesign, designFile);
-                if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
-                    getFileManagementService().importArrayDesignDetails(arrayDesign);
-                }
+                returnVal = "importComplete";
             }
-        } catch (InvalidDataFileException e) {
-            FileValidationResult result = e.getFileValidationResult();
-            for (ValidationMessage message : result.getMessages()) {
-                addFieldError("upload", message.getMessage());
-            }
-        } catch (IllegalAccessException iae) {
-            arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
-            addActionError(iae.getMessage());
+
+
         }
-        if (this.hasErrors()) {
-            // addArrayDesign overwrites the id, so reset if there is an error.
-            arrayDesign.setId(id);
-            return edit();
-        }
-        return Action.SUCCESS;
+        return returnVal;
     }
 
     /**
@@ -342,13 +375,88 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     @SuppressWarnings("unchecked")
     public void validate() {
         super.validate();
-        // upload file is required for new array designs
-        if (!ActionHelper.isSkipValidationSetOnCurrentAction()
-                && arrayDesign.getId() == null && uploadFileName == null) {
-            addFieldError("upload", getText("fileRequired"));
-        }
         if (this.hasErrors()) {
             editMode = true;
+        }
+    }
+    /**
+     * @return the createMode
+     */
+    public boolean isCreateMode() {
+        return createMode;
+    }
+    /**
+     * @param createMode the createMode to set
+     */
+    public void setCreateMode(boolean createMode) {
+        this.createMode = createMode;
+    }
+    /**
+     * @param editMode the editMode to set
+     */
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
+    }
+
+    private int checkForZips() {
+        List<File> uploads = new ArrayList<File>();
+        uploads.add(upload);
+        List<String> uploadFileNames = new ArrayList<String>();
+        uploadFileNames.add(uploadFileName);
+        getFileAccessService().unzipFiles(uploads, uploadFileNames);
+        // if the initial file was not a zip, uploads/uploadFileNames
+        // contain the original file and filename. otherwise
+        // the uploads/uploadFileNames potentially may have multiple files
+        // that were inside the zip.
+        // the assumption is that each zip will only contain one array design file.
+        // if there are more than one, then the first one is processed and a message
+        // is displayed to the user.
+        if (!uploads.get(0).equals(upload)) {
+            upload = uploads.get(0);
+            uploadFileName = uploadFileNames.get(0);
+        }
+        return uploads.size();
+
+    }
+
+    private void saveImportFile() {
+        try {
+            // figure out if we are editing or creating.
+            if (arrayDesign.getId() != null && uploadFileName == null) {
+                getArrayDesignService().saveArrayDesign(arrayDesign);
+            } else {
+
+                // the file may be a zip
+                int fileCount = checkForZips();
+
+                CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
+                if (uploadFormatType != null && FileType.valueOf(uploadFormatType) != null) {
+                    designFile.setFileType(FileType.valueOf(uploadFormatType));
+                }
+                getFileManagementService().saveArrayDesign(arrayDesign, designFile);
+                if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
+                    getFileManagementService().importArrayDesignDetails(arrayDesign);
+                }
+
+                if (fileCount > 1) {
+                    ActionHelper.saveMessage(getText("arrayDesign.warning.zipFile"));
+                }
+            }
+
+        } catch (InvalidDataFileException e) {
+            FileValidationResult result = e.getFileValidationResult();
+            for (ValidationMessage message : result.getMessages()) {
+                addFieldError("upload", message.getMessage());
+            }
+            arrayDesign.setDesignFile(null);
+        } catch (IllegalAccessException iae) {
+            arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
+            addActionError(iae.getMessage());
+        } catch (Exception e) {
+            if (arrayDesign.getId() != null) {
+                arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
+            }
+            addFieldError("upload", getText("arrayDesign.error.importingFile"));
         }
     }
 }
