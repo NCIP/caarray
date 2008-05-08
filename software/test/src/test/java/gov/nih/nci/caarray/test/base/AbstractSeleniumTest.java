@@ -531,7 +531,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             pause(2000);
             waitForText("Edit");
             // done
-            String rowText = selenium.getTable("row." + row + ".7");
+            String rowText = selenium.getTable("row." + row + ".8");
             if (rowText.equalsIgnoreCase(IMPORTED)) {
                 return true;
             } else {

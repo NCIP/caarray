@@ -398,7 +398,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         this.editMode = editMode;
     }
 
-    private int checkForZips() {
+    private List<File> checkForZips() {
         List<File> uploads = new ArrayList<File>();
         uploads.add(upload);
         List<String> uploadFileNames = new ArrayList<String>();
@@ -415,11 +415,12 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             upload = uploads.get(0);
             uploadFileName = uploadFileNames.get(0);
         }
-        return uploads.size();
 
+        return uploads;
     }
 
     private void saveImportFile() {
+        List<File> extractedFiles = null;
         try {
             // figure out if we are editing or creating.
             if (arrayDesign.getId() != null && uploadFileName == null) {
@@ -427,7 +428,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             } else {
 
                 // the file may be a zip
-                int fileCount = checkForZips();
+                extractedFiles = checkForZips();
 
                 CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
                 if (uploadFormatType != null && FileType.valueOf(uploadFormatType) != null) {
@@ -438,7 +439,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
                     getFileManagementService().importArrayDesignDetails(arrayDesign);
                 }
 
-                if (fileCount > 1) {
+                if (extractedFiles.size() > 1) {
                     ActionHelper.saveMessage(getText("arrayDesign.warning.zipFile"));
                 }
             }
@@ -457,6 +458,14 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
                 arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
             }
             addFieldError("upload", getText("arrayDesign.error.importingFile"));
+        } finally {
+            // delete any files created as part of the unzipping process.
+            // if the file uploaded was not a zip it will also be deleted
+            if (extractedFiles != null) {
+                for (File f : extractedFiles) {
+                    f.delete();
+                }
+            }
         }
     }
 }
