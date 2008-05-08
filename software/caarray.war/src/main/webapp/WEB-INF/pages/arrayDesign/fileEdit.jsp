@@ -12,9 +12,32 @@
 <page:applyDecorator name="popup">
 <script type="text/javascript">
     finalize = function() {
-       TabUtils.showSubmittingText();
-       document.getElementById('arrayDesignForm').submit();
+        if (isFilenameSupported()) {
+            TabUtils.showSubmittingText();
+            document.getElementById('arrayDesignForm').submit();
+        } else {
+            alert('<fmt:message key="arrayDesign.error.unsupportedFile"/>');
+        }
     }
+
+    unsupportedFilenames = new Array();
+    <s:iterator id="file" value="@gov.nih.nci.caarray.domain.file.UnsupportedAffymetrixCdfFiles@values()">
+        unsupportedFilenames.push('${file.filename}');
+    </s:iterator>
+
+    isFilenameSupported = function() {
+        var filename = $('arrayDesignForm_upload').value;
+        var indx = filename.lastIndexOf('/');
+        if (indx < 0) {
+            indx = filename.lastIndexOf('\\');
+        }
+        if (indx >= 0 && indx < filename.length - 1) {
+            filename = filename.substring(indx + 1);
+        }
+
+        return unsupportedFilenames.indexOf(filename) == -1;
+    }
+
 </script>
 <html>
 <head>

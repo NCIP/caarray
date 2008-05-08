@@ -99,6 +99,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.UnsupportedAffymetrixCdfFiles;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -200,16 +201,18 @@ public class ArrayDesignActionTest {
         arrayDesignAction.setArrayDesign(design);
         String result = arrayDesignAction.saveMeta();
         assertEquals("metaValid", result);
-        // giving the brand new array design an id is a
-        // trick to allow for no upload file.
-        arrayDesignAction.getArrayDesign().setId(DESIGN_ID);
-        arrayDesignAction.setUploadFileName(null);
+        arrayDesignAction.setUploadFileName(UnsupportedAffymetrixCdfFiles.HUMAN_EXON_1_0_ST.getFilename());
         arrayDesignAction.setUpload(null);
         arrayDesignAction.setUploadFormatType(FileType.UCSF_SPOT_SPT.name());
         result = arrayDesignAction.save();
+        assertEquals("metaValid", result);
+
+        arrayDesignAction.clearErrorsAndMessages();
+        // giving the brand new array design an id is a trick to allow for no upload file.
+        arrayDesignAction.getArrayDesign().setId(DESIGN_ID);
+        arrayDesignAction.setUploadFileName(null);
+        result = arrayDesignAction.save();
         assertEquals("importComplete", result);
-
-
     }
 
     @SuppressWarnings("deprecation")
@@ -223,7 +226,7 @@ public class ArrayDesignActionTest {
         @Override
         public List<ArrayDesign> getArrayDesigns() {
             List<ArrayDesign> designs = new ArrayList<ArrayDesign>();
-            for (int i=0; i<NUM_DESIGNS; i++) {
+            for (int i=0; i < NUM_DESIGNS; i++) {
                 designs.add(new ArrayDesign());
             }
             return designs;

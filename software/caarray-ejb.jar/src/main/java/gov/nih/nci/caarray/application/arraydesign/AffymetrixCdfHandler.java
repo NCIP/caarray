@@ -155,7 +155,9 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     private void closeCdf() {
-        cdfReader.close();
+        if (cdfReader != null) {
+            cdfReader.close();
+        }
     }
 
     @Override

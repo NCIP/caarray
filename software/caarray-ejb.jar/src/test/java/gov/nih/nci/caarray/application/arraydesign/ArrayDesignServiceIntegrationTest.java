@@ -150,7 +150,7 @@ public class ArrayDesignServiceIntegrationTest {
         HibernateUtil.enableFilters(false);
         HibernateUtil.openAndBindSession();
     }
-    
+
     @After
     public void tearDown() {
         try {
@@ -166,7 +166,7 @@ public class ArrayDesignServiceIntegrationTest {
 
     }
 
-    private static ArrayDesignService createArrayDesignService(final FileAccessServiceStub fileAccessServiceStub, 
+    private static ArrayDesignService createArrayDesignService(final FileAccessServiceStub fileAccessServiceStub,
             VocabularyServiceStub vocabularyServiceStub) {
         ArrayDesignServiceBean bean = new ArrayDesignServiceBean();
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
@@ -177,7 +177,7 @@ public class ArrayDesignServiceIntegrationTest {
 
         return bean;
     }
-    
+
     private ArrayDesign setupAndSaveDesign(File designFile) throws IllegalAccessException, InvalidDataFileException {
         HibernateUtil.getCurrentSession().save(DUMMY_ORGANIZATION);
         HibernateUtil.getCurrentSession().save(DUMMY_ORGANISM);
@@ -192,25 +192,25 @@ public class ArrayDesignServiceIntegrationTest {
         design.setDesignFile(getAffymetrixCaArrayFile(designFile));
         design.setTechnologyType(DUMMY_TERM);
         design.setOrganism(DUMMY_ORGANISM);
-        this.arrayDesignService.saveArrayDesign(design);        
+        this.arrayDesignService.saveArrayDesign(design);
         return design;
     }
 
     @Test
     public void testImportDesignDetails_AffymetrixTest3() throws AffymetrixCdfReadException {
-        
+
         Transaction t = null;
-        
+
         try {
             t = HibernateUtil.beginTransaction();
             ArrayDesign design = setupAndSaveDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
             t.commit();
-            
+
             t = HibernateUtil.beginTransaction();
-            this.arrayDesignService.importDesign(design);        
+            this.arrayDesignService.importDesign(design);
             this.arrayDesignService.importDesignDetails(design);
             t.commit();
-            
+
             assertEquals("Test3", design.getName());
             assertEquals("Affymetrix.com", design.getLsidAuthority());
             assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
@@ -230,7 +230,7 @@ public class ArrayDesignServiceIntegrationTest {
             fail("unexpected error: " + e);
         }
     }
-    
+
     private CaArrayFile getAffymetrixCaArrayFile(File file) {
         return getCaArrayFile(file, FileType.AFFYMETRIX_CDF);
     }

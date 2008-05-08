@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.UnsupportedAffymetrixCdfFiles;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -125,6 +126,8 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 @Validation
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class ArrayDesignAction extends ActionSupport implements Preparable {
+    private static final String UPLOAD_FIELD_NAME = "upload";
+
     private static final long serialVersionUID = 1L;
 
     private ArrayDesign arrayDesign;
@@ -344,7 +347,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         String returnVal = null;
         // upload file is required for new array designs
         if (arrayDesign.getId() == null && uploadFileName == null) {
-            addFieldError("upload", getText("fileRequired"));
+            addFieldError(UPLOAD_FIELD_NAME, getText("fileRequired"));
             returnVal =  edit();
         } else {
 
@@ -398,6 +401,11 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         this.editMode = editMode;
     }
 
+    /**
+     * Checks if the uploaded file is a zip file.  If it is, the file is unzipped, and the appropriate properties are
+     * updated so that the first file in the zip is considered to be the uploaded file.
+     * @return the list of files extracted from the zip, or a list containing the original file if it's not a zip
+     */
     private List<File> checkForZips() {
         List<File> uploads = new ArrayList<File>();
         uploads.add(upload);
@@ -426,28 +434,29 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             if (arrayDesign.getId() != null && uploadFileName == null) {
                 getArrayDesignService().saveArrayDesign(arrayDesign);
             } else {
-
-                // the file may be a zip
                 extractedFiles = checkForZips();
 
-                CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
-                if (uploadFormatType != null && FileType.valueOf(uploadFormatType) != null) {
-                    designFile.setFileType(FileType.valueOf(uploadFormatType));
-                }
-                getFileManagementService().saveArrayDesign(arrayDesign, designFile);
-                if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
-                    getFileManagementService().importArrayDesignDetails(arrayDesign);
-                }
+                if (UnsupportedAffymetrixCdfFiles.isUnsupported(uploadFileName)) {
+                    addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.unsupportedFile"));
+                } else {
+                    CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
+                    if (uploadFormatType != null && FileType.valueOf(uploadFormatType) != null) {
+                        designFile.setFileType(FileType.valueOf(uploadFormatType));
+                    }
+                    getFileManagementService().saveArrayDesign(arrayDesign, designFile);
+                    if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
+                        getFileManagementService().importArrayDesignDetails(arrayDesign);
+                    }
 
-                if (extractedFiles.size() > 1) {
-                    ActionHelper.saveMessage(getText("arrayDesign.warning.zipFile"));
+                    if (extractedFiles.size() > 1) {
+                        ActionHelper.saveMessage(getText("arrayDesign.warning.zipFile"));
+                    }
                 }
             }
-
         } catch (InvalidDataFileException e) {
             FileValidationResult result = e.getFileValidationResult();
             for (ValidationMessage message : result.getMessages()) {
-                addFieldError("upload", message.getMessage());
+                addFieldError(UPLOAD_FIELD_NAME, message.getMessage());
             }
             arrayDesign.setDesignFile(null);
         } catch (IllegalAccessException iae) {
@@ -457,7 +466,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             if (arrayDesign.getId() != null) {
                 arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
             }
-            addFieldError("upload", getText("arrayDesign.error.importingFile"));
+            addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.importingFile"));
         } finally {
             // delete any files created as part of the unzipping process.
             // if the file uploaded was not a zip it will also be deleted

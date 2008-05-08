@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- $Header: /cvsroot/pmd/pmd/etc/xslt/pmd-report-per-class.xslt,v 1.1 2005/06/28 13:51:49 tomcopeland Exp $ -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-<xsl:output method="html" encoding="UTF-8" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" 
+<xsl:output method="html" encoding="UTF-8" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"
 	doctype-system="http://www.w3.org/TR/html4/loose.dtd" indent="yes"/>
 
 <xsl:template name="message">
@@ -75,7 +75,7 @@
     <xsl:for-each select="file">
         <xsl:sort data-type="number" order="descending" select="count(violation)"/>
         <xsl:variable name="filename" select="@name"/>
-        <H3><xsl:value-of disable-output-escaping="yes" select="substring-before(translate(@name,'/','.'),'.java')"/></H3>
+        <H3><xsl:value-of disable-output-escaping="yes" select="substring-before(@name,'.java')"/></H3>
         <table border="0" width="100%" class="sortable"><xsl:attribute name="id">sortable_id_<xsl:value-of select="position()"/></xsl:attribute>
             <tr>
 				<th>Prio</th>
@@ -83,7 +83,7 @@
 				<th>Method</th>
                 <th align="left">Description</th>
             </tr>
-	    
+
 	    <xsl:for-each select="violation">
 		    <tr>
 			<td style="padding: 3px" align="right"><div><xsl:attribute name="class"><xsl:call-template name="priorityDiv"/></xsl:attribute><xsl:value-of disable-output-escaping="yes" select="@priority"/></div></td>
@@ -93,7 +93,7 @@
 		    </tr>
 	    </xsl:for-each>
 		</table>
-		
+
 		<table border="0" width="100%" class="classcount">
 			<tr>
 				<th>Total number of violations for this class: <xsl:value-of select="count(violation)"/></th>

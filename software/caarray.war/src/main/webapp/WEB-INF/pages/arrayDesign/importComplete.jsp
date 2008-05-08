@@ -34,7 +34,7 @@
 
 
                     <div class="instructions">
-                       The Array Design ${arrayDesign.name} has been successfully imported.
+                       The Array Design ${arrayDesign.name} has been successfully uploaded.
                     </div>
 
                 <div id="theForm">
