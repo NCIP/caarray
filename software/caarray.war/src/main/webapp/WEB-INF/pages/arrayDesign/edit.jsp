@@ -34,7 +34,7 @@
                 <h3>
                     <span class="dark">
                         <s:if test="${empty arrayDesign.id}">
-                            New Array Design
+                            New Array Design (Step 1)
                         </s:if>
                         <s:else>
                             ${arrayDesign.name}
@@ -54,7 +54,7 @@
                     </div>
                 </s:if>
                 <div id="theForm">
-                    <s:form action="${actionUrl}" onsubmit="TabUtils.showSubmittingText(); return true;" cssClass="form" enctype="multipart/form-data" method="post" id="arrayDesignForm">
+                    <s:form action="${actionUrl}" cssClass="form" enctype="multipart/form-data" method="post" id="arrayDesignForm">
                         <tbody>
                             <tr><th colspan="2">Array Design Details</th></tr>
                             <s:if test="${!empty arrayDesign.id}">

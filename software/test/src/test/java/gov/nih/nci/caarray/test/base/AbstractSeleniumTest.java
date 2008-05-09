@@ -461,7 +461,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.click("link=Save");
         // we should now be at the
         // all-good page
-        waitForText("has been successfully imported.");
+        waitForText("has been successfully uploaded.");
         selenium.click("link=Close Window and go to Manage Design Array");
     }
 

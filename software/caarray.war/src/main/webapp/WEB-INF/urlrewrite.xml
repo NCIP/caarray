@@ -15,6 +15,12 @@
     </rule>
 
     <rule>
+        <from>^/protected/ajax/arrayDesign/save.action/(\d+)$</from>
+        <to type="forward">/protected/ajax/arrayDesign/save.action</to>
+        <set type="request" name="__multipart_upload_id">$1</set>
+    </rule>
+
+    <rule>
         <from>^/j_security_check$</from>
         <to type="redirect">%{context-path}/protected/project/workspace.action</to>
     </rule>
