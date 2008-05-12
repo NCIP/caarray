@@ -17,7 +17,7 @@ insert into term (value, source) select 'In Print', term_source.id from term_sou
 insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'In Print' and category.name = 'PublicationStatus';
 
 -- defect 13332
-update access_profile set security_level = 'NO_VISIBLE' where id in (select public_profile from project where status = 'DRAFT');
+update access_profile set security_level = 'NO_VISIBILITY' where id in (select public_profile from project where status = 'DRAFT');
 
 -- defect 13010
 create table rawarraydata_hybridizations (rawarraydata_id bigint not null, hybridization_id bigint not null, primary key (rawarraydata_id, hybridization_id)) type=InnoDB;
