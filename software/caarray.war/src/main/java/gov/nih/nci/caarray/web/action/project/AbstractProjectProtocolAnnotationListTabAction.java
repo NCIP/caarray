@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,6 +96,7 @@ import java.util.Set;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 
 /**
  * @author Scott Miller
@@ -117,7 +117,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
      * @param pagedItems the paged list to use for this tab's item list
      */
     public AbstractProjectProtocolAnnotationListTabAction(String resourceKey,
-            PaginatedListImpl<? extends PersistentObject, ?> pagedItems) {
+            SortablePaginatedList<? extends PersistentObject, ?> pagedItems) {
         super(resourceKey, pagedItems);
     }
 

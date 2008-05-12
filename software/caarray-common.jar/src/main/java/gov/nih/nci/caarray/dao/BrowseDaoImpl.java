@@ -85,14 +85,15 @@ package gov.nih.nci.caarray.dao;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
-import gov.nih.nci.caarray.domain.search.SortCriterion;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.List;
 
 import org.hibernate.Query;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
 
 /**
  * @author Winston Cheng

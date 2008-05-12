@@ -42,7 +42,7 @@
 	<classpathentry kind="lib" path="/lib/jboss-ejb3x.jar"/>
 	<classpathentry kind="lib" path="/lib/jce-jdk13-125.jar"/>
 	<classpathentry kind="lib" path="/lib/log4j-1.2.13.jar" sourcepath="/lib/src/log4j-1.2.13-src.jar"/>
-	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.1.jar"/>
+	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.8.jar"/>
 	<classpathentry kind="lib" path="/lib/wsrf_core_stubs.jar"/>
 	<classpathentry kind="lib" path="/lib/wsrf_core.jar"/>
 	<classpathentry kind="lib" path="/lib/wss4j.jar"/>

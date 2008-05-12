@@ -87,11 +87,9 @@ import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.application.browse.BrowseServiceStub;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.ui.BrowseTab;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,6 +98,8 @@ import java.util.SortedSet;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.opensymphony.xwork2.Action;
 
 /**
@@ -135,7 +135,7 @@ public class BrowseActionTest {
         this.browseAction.setCategory(BrowseCategory.ORGANISMS);
         this.browseAction.setId(1L);
         String result = this.browseAction.list();
-        PaginatedListImpl<Project, ProjectSortCriterion> asdf = browseAction.getResults();
+        SortablePaginatedList<Project, ProjectSortCriterion> asdf = browseAction.getResults();
         assertEquals(NUM_PROJECTS, asdf.getList().size());
         assertEquals("tab", result);
     }

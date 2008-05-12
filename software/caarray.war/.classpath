@@ -452,12 +452,12 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.1.jar">
+	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.8.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/lib/nci-commons-struts2-1.0.1.jar">
+	<classpathentry kind="lib" path="/lib/nci-commons-struts2-1.0.8.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>

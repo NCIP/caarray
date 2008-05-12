@@ -84,33 +84,20 @@ package gov.nih.nci.caarray.services;
 
 import gov.nih.nci.caarray.util.HibernateUtil;
 
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
+import com.fiveamsolutions.nci.commons.ejb.AbstractHibernateSessionInterceptor;
+import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 
 /**
  * Handles opening and closing of the Hibernate session as necessary for EJB calls.
  */
-public class HibernateSessionInterceptor {
+public class HibernateSessionInterceptor extends AbstractHibernateSessionInterceptor {
 
     /**
-     * Opens and closes a Hibernate session around any remote EJB method invoked.
-     *
-     * @param invContext the method context
-     * @return the method result
-     * @throws Exception if invoking the method throws an exception.
+     * {@inheritDoc}
      */
-    @AroundInvoke
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException") // method invocation wrapper requires throws Exception
-    public Object manageHibernateSession(InvocationContext invContext) throws Exception {
-        try {
-            HibernateUtil.openAndBindSession();
-            Object returnValue = invContext.proceed();
-            HibernateUtil.getCurrentSession().flush();
-            return returnValue;
-        } finally {
-            HibernateUtil.unbindAndCleanupSession();
-        }
+    @Override
+    protected HibernateHelper getHelper() {
+        return HibernateUtil.getHibernateHelper();
     }
-
 
 }

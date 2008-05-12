@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.domain.search;
 
 import gov.nih.nci.caarray.domain.sample.Source;
 
+import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
+
 /**
  * Enum of possible sort criterions for sources.
  * @author dkokotov
@@ -98,7 +100,7 @@ public enum SourceSortCriterion implements SortCriterion<Source> {
      * description.
      */
     DESCRIPTION("description");
-    
+
     private final String orderField;
 
     SourceSortCriterion(String orderField) {

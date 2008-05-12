@@ -87,12 +87,12 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.web.ui.BrowseTab;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -112,8 +112,8 @@ public class BrowseAction extends ActionSupport {
 
     // browse results
     private SortedSet<BrowseTab> tabs;
-    private final PaginatedListImpl<Project, ProjectSortCriterion> results =
-            new PaginatedListImpl<Project, ProjectSortCriterion>(BROWSE_PAGE_SIZE, ProjectSortCriterion.PUBLIC_ID
+    private final SortablePaginatedList<Project, ProjectSortCriterion> results =
+            new SortablePaginatedList<Project, ProjectSortCriterion>(BROWSE_PAGE_SIZE, ProjectSortCriterion.PUBLIC_ID
                     .name(), ProjectSortCriterion.class);
 
     /**
@@ -154,7 +154,7 @@ public class BrowseAction extends ActionSupport {
     /**
      * @return the results
      */
-    public PaginatedListImpl<Project, ProjectSortCriterion> getResults() {
+    public SortablePaginatedList<Project, ProjectSortCriterion> getResults() {
         return this.results;
     }
 

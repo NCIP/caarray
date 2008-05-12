@@ -152,8 +152,8 @@
     <property name="jboss-jmx.jar" value="${lib.dir}/jboss-jmx.jar" />
     <property name="jgroups.jar" value="${lib.dir}/jgroups.jar" />
     <property name="concurrent.jar" value="${lib.dir}/concurrent.jar" />
-    <property name="nci-commons-core.jar" value="${lib.dir}/nci-commons-core-1.0.1.jar" />
-    <property name="nci-commons-struts2.jar" value="${lib.dir}/nci-commons-struts2-1.0.1.jar" />
+    <property name="nci-commons-core.jar" value="${lib.dir}/nci-commons-core-1.0.8.jar" />
+    <property name="nci-commons-struts2.jar" value="${lib.dir}/nci-commons-struts2-1.0.8.jar" />
     <property name="ezmorph.jar" value="${lib.dir}/ezmorph-1.0.4.jar" />
     <property name="json-lib.jar" value="${lib.dir}/json-lib-2.0-jdk15.jar" />
     <property name="cargo-core-uberjar.jar" value="${lib.dir}/cargo-core-uberjar-0.9.jar"/>
@@ -233,7 +233,7 @@
             <include name="jbossall-client.jar" />
             <include name="jboss-aspect-jdk50-client.jar" />
             <include name="jboss-aop-jdk50-client.jar" />
-            <include name="nci-commons-core-1.0.1.jar" />
+            <include name="nci-commons-core-1.0.8.jar" />
         </fileset>
     </path>
 
@@ -768,7 +768,7 @@
                 <include name="jericho-html-2.4.jar" />
                 <include name="json-lib-2.0-jdk15.jar" />
                 <include name="ezmorph-1.0.4.jar" />
-                <include name="nci-commons-struts2-1.0.1.jar" />
+                <include name="nci-commons-struts2-1.0.8.jar" />
             </lib>
             <zipfileset dir="${caarray-war.target.dir}/help/caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help"
         prefix="help"/>
@@ -848,7 +848,7 @@
                     <include name="caGrid-1.1-data-stubs.jar" />
                     <include name="caGrid-1.1-data-common.jar" />
                     <include name="caGrid-1.1-sdkQuery32-core.jar" />
-                    <include name="nci-commons-core-1.0.1.jar" />
+                    <include name="nci-commons-core-1.0.8.jar" />
                 </fileset>
             </ear>
         </sequential>

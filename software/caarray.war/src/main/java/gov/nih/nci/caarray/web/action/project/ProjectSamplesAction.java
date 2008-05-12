@@ -96,7 +96,6 @@ import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,6 +104,7 @@ import java.util.List;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
@@ -126,7 +126,7 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
      * Default constructor.
      */
     public ProjectSamplesAction() {
-        super("sample", "source", new PaginatedListImpl<Sample, SampleSortCriterion>(PAGE_SIZE,
+        super("sample", "source", new SortablePaginatedList<Sample, SampleSortCriterion>(PAGE_SIZE,
                 SampleSortCriterion.NAME.name(), SampleSortCriterion.class));
     }
 
@@ -274,7 +274,7 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
         for (Source s : getCurrentAssociationsCollection()) {
             s.getSamples().remove(getCurrentSample());
         }
-        // clear the sample from any access profiles 
+        // clear the sample from any access profiles
         // this is perhaps not the ideal place for this - would be preferrable in the business layer
         for (AccessProfile ap : getCurrentSample().getExperiment().getProject().getAllAccessProfiles()) {
             ap.getSampleSecurityLevels().remove(getCurrentSample());

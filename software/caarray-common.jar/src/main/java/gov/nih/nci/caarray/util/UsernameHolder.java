@@ -85,43 +85,18 @@ package gov.nih.nci.caarray.util;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
-import java.util.Locale;
-
-import org.apache.commons.lang.StringUtils;
-
-
 /**
  * Holds the name of the currently-logged in user in a ThreadLocal.  If the
  * value is unset, return the username for the 'anonymous' user.
  *
  * @see gov.nih.nci.caarray.security.SecurityInterceptor#ANONYMOUS_USERNAME
  */
-public final class UsernameHolder {
+public final class UsernameHolder extends com.fiveamsolutions.nci.commons.util.UsernameHolder {
 
-    private static ThreadLocal<String> usernameThreadLocal = new ThreadLocal<String>();
     private static ThreadLocal<User> userThreadLocal = new ThreadLocal<User>();
 
     private UsernameHolder() {
         // No constructor for util class
-    }
-
-    /**
-     * @param user the user to set for the current thread
-     */
-    public static void setUser(String user) {
-        usernameThreadLocal.set((user == null) ? null : user.toLowerCase(Locale.US));
-    }
-
-    /**
-     * @return the currently logged in user for this thread, or the anonymous user
-     *         if no user is logged in
-     */
-    public static String getUser() {
-        String val = usernameThreadLocal.get();
-        if (StringUtils.isBlank(val)) {
-            return SecurityUtils.ANONYMOUS_USERNAME;
-        }
-        return val;
     }
 
     /**

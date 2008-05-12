@@ -85,9 +85,10 @@ package gov.nih.nci.caarray.dao.stub;
 import gov.nih.nci.caarray.dao.BrowseDao;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
 
 import java.util.List;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * @author Winston Cheng

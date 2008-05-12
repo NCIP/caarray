@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
@@ -103,6 +102,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.criterion.Order;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * Implementation of the GenericDataService.
@@ -199,7 +199,7 @@ public class GenericDataServiceBean implements GenericDataService {
             String value) {
         return this.daoFactory.getSearchDao().filterCollection(collection, property, value);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -207,7 +207,7 @@ public class GenericDataServiceBean implements GenericDataService {
             PageSortParams<T> pageSortParams) {
         return this.daoFactory.getSearchDao().pageCollection(collection, pageSortParams);
     }
-    
+
     /**
      * {@inheritDoc}
      */

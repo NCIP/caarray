@@ -97,7 +97,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -105,12 +104,13 @@ import java.util.Set;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 
 /**
  * Action implementing the factors tab.
- * 
+ *
  * @author Dan Kokotov
  */
 public class ProjectFactorsAction extends AbstractProjectListTabAction {
@@ -123,13 +123,13 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      * Default constructor.
      */
     public ProjectFactorsAction() {
-        super("factor", new PaginatedListImpl<Factor, FactorSortCriterion>(PAGE_SIZE, FactorSortCriterion.NAME.name(),
-                FactorSortCriterion.class));
+        super("factor", new SortablePaginatedList<Factor, FactorSortCriterion>(PAGE_SIZE, FactorSortCriterion.NAME
+                .name(), FactorSortCriterion.class));
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws VocabularyServiceException
      */
     @Override
@@ -179,14 +179,14 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ProposalWorkflowException
      */
     @Override
     protected void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException {
         getProjectManagementService().copyFactor(getProject(), this.currentFactor.getId());
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -196,7 +196,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
         // clean up factor value associations
         for (FactorValue fv : getCurrentFactor().getFactorValues()) {
             fv.getHybridization().getFactorValues().remove(fv);
-        }        
+        }
         return super.delete();
     }
 
@@ -220,7 +220,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     /**
      * @return the currentFactor
      */
-    @CustomValidator(type = "hibernate", parameters = 
+    @CustomValidator(type = "hibernate", parameters =
         @ValidationParameter(name = "resourceKeyBase", value = "experiment.factors"))
     public Factor getCurrentFactor() {
         return this.currentFactor;
@@ -245,5 +245,5 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      */
     public void setCategories(Set<Term> categories) {
         this.categories = categories;
-    }    
+    }
 }

@@ -96,6 +96,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 
+import com.fiveamsolutions.nci.commons.util.HibernateHelper;
+
 /**
  * DAO to manipulate file objects.
  */
@@ -122,10 +124,10 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         StringBuilder queryStr = new StringBuilder("update " + CaArrayFile.class.getName()
                 + " f set f.status = :status where ");
         Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
-        queryStr.append(HibernateUtil.buildInClause(fileIds, "f.id", idBlocks));
+        queryStr.append(HibernateHelper.buildInClause(fileIds, "f.id", idBlocks));
         Query query = HibernateUtil.getCurrentSession().createQuery(queryStr.toString());
         query.setString("status", status.name());
-        HibernateUtil.bindInClauseParameters(query, idBlocks);
+        HibernateHelper.bindInClauseParameters(query, idBlocks);
         query.executeUpdate();
     }
 }

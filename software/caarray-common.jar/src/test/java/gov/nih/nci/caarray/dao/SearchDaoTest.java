@@ -95,7 +95,6 @@ import gov.nih.nci.caarray.domain.project.ServiceType;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.sample.Source;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SourceSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -118,6 +117,9 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 
 /**
  * Unit tests for the Search DAO.
@@ -264,13 +266,13 @@ public class SearchDaoTest {
             protocols = SEARCH_DAO.retrieveByIds(Protocol.class, emptyIds);
             assertEquals(0, protocols.size());
 
-            for (int i = 0; i < HibernateUtil.MAX_IN_CLAUSE_LENGTH + 50; i++) {
+            for (int i = 0; i < HibernateHelper.MAX_IN_CLAUSE_LENGTH + 50; i++) {
                 combinedIds.add(DUMMY_PARAMETER_1.getId());
             }
-            for (int i = 0; i < HibernateUtil.MAX_IN_CLAUSE_LENGTH + 50; i++) {
+            for (int i = 0; i < HibernateHelper.MAX_IN_CLAUSE_LENGTH + 50; i++) {
                 combinedIds.add(DUMMY_PARAMETER_2.getId());
             }
-            for (int i = 0; i < HibernateUtil.MAX_IN_CLAUSE_LENGTH + 50; i++) {
+            for (int i = 0; i < HibernateHelper.MAX_IN_CLAUSE_LENGTH + 50; i++) {
                 combinedIds.add(-1L);
             }
             params = SEARCH_DAO.retrieveByIds(Parameter.class, combinedIds);
