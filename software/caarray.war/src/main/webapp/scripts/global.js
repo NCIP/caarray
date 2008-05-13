@@ -344,7 +344,7 @@ var PermissionUtils = {
 // Download stuff here
 //
 
-function DownloadMgr(dUrl, dgUrl, removeImageUrl, maxDownloadSize) {
+function DownloadMgr(dUrl, dgUrl, removeImageUrl, addImageUrl, maxDownloadSize) {
   this.downloadUrl = dUrl;
   this.downloadGroupsUrl = dgUrl;
   this.removeImageUrl = removeImageUrl;
@@ -352,38 +352,54 @@ function DownloadMgr(dUrl, dgUrl, removeImageUrl, maxDownloadSize) {
   this.downloadFiles = new Object();
   this.maxDownloadSize = maxDownloadSize;
   this.totalDownloadSize = 0;
+  this.addImageUrl = addImageUrl;
+  this.hideQueue = true;
 }
 
 DownloadMgr.prototype.addFile = function(name, id, size) {
     this.files[id] = { name: name, id: id, size: size };
   }
 
-DownloadMgr.prototype.addDownloadRow = function(id) {
+DownloadMgr.prototype.inQueue = function(id) {
     if (this.downloadFiles[id]) {
+        return true;
+    }
+    return false;
+}
+
+DownloadMgr.prototype.addDownloadRow = function(id) {
+    if (this.inQueue(id)) {
         alert('File ' + name + ' already in queue.');
         return;
     }
-    
+
   this.deleteTotalRow();
   this.doAddDownloadRow(id, true);
   this.addTotalRow();
 }
 
 DownloadMgr.prototype.doAddDownloadRow = function(id, highlightRow) {
-    
-    var file = this.files[id];
-    this.downloadFiles[id] = file;
-    this.totalDownloadSize += file.size;
 
-  var tbl = $('downloadTbl');
-  var row = tbl.insertRow(-1);
-  row.id = 'downloadRow' + id;
+  var file = this.files[id];
+  this.downloadFiles[id] = file;
+  this.totalDownloadSize += file.size;
 
-  var cell = row.insertCell(0);
-  cell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>&nbsp;&nbsp;' + file.name;
+  if (this.hideQueue == false) {
+      var tbl = $('downloadTbl');
+      var row = tbl.insertRow(-1);
+      row.id = 'downloadRow' + id;
 
-  if (highlightRow) {      
+      var cell = row.insertCell(0);
+      cell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>&nbsp;&nbsp;' + file.name;
+  }
+
+  if (highlightRow) {
       new Effect.Highlight($('fileRow' + file.id).up('tr'));
+  }
+
+  var fileCell = $('fileRow' + file.id)
+  if (fileCell) {
+    fileCell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>';
   }
 }
 
@@ -395,25 +411,36 @@ DownloadMgr.prototype.removeRow = function(id) {
   this.totalDownloadSize -= file.size;
   for (i = 0; i < tbl.rows.length; ++i) {
     if (tbl.rows[i] == row) {
-      tbl.deleteRow(i);      
+      tbl.deleteRow(i);
     }
   }
   this.deleteTotalRow();
   this.addTotalRow();
+
+  var fileCell = $('fileRow' + file.id);
+  if (fileCell) {
+    fileCell.innerHTML = '<img src="'+ this.addImageUrl +'" alt="Add '+ file.name + '" onclick="downloadMgr.addDownloadRow(' + id + '); return false;"/>';
+  }
 }
 
 DownloadMgr.prototype.resetDownloadInfo = function() {
   for (id in this.downloadFiles) {
-      delete this.downloadFiles[id];
+      this.removeRow(id);
   }
   this.totalDownloadSize = 0;
+  this.cleanupDownloadQueue();
+}
+
+DownloadMgr.prototype.cleanupDownloadQueue = function() {
   var tbl = $('downloadTbl');
   while (tbl.rows.length > 1) {
     tbl.deleteRow(1);
   }
   this.deleteTotalRow();
   this.addTotalRow();
+  this.hideQueue=true;
 }
+
 
 DownloadMgr.prototype.deleteTotalRow = function() {
     var tbl = $('downloadTbl');
@@ -427,12 +454,31 @@ DownloadMgr.prototype.addTotalRow = function() {
   var tbl = $('downloadTbl');
   var row = tbl.insertRow(-1);
   var cell = row.insertCell(0);
-  var textNode = document.createTextNode(" Job Size: " + (this.totalDownloadSize / 1024 | 0) + " KB");
+  var numFiles = 0;
+  if (Object.values(this.downloadFiles).length != undefined) {
+    numFiles = Object.values(this.downloadFiles).length;
+  }
+  var textNode = document.createTextNode(numFiles + " Files, Job Size: " + (this.totalDownloadSize / 1024 | 0) + " KB");
   cell.appendChild(textNode);
 }
 
+DownloadMgr.prototype.toggleQueue = function() {
+    this.hideQueue = !this.hideQueue;
+
+    if (this.hideQueue == true) {
+        var href = $('toggleQueue');
+        href.innerHTML='Show Files';
+        this.cleanupDownloadQueue();
+    } else {
+        this.reAddFromQueue();
+        var href = $('toggleQueue');
+        href.innerHTML='Hide Files';
+    }
+
+}
+
 DownloadMgr.prototype.doDownloadFiles = function() {
-  var files = Object.values(this.downloadFiles); 
+  var files = Object.values(this.downloadFiles);
   if (files.length == 0) {
     alert("Select file(s) first.");
     return;
@@ -449,16 +495,16 @@ DownloadMgr.prototype.doDownloadFiles = function() {
           elt.name="selectedFileIds";
           elt.value=files[i].id;
           form.appendChild(elt);
-      }  
+      }
       document.body.appendChild(form);
       form.submit();
-      $(form).remove();      
-      this.resetDownloadInfo();      
+      $(form).remove();
+      this.resetDownloadInfo();
   } else {
       var params = '';
       for (i = 0; i < files.length; ++i) {
           params = params + '&selectedFileIds=' + files[i].id;
-      }      
+      }
       TabUtils.loadLinkInSubTab('Download Data', this.downloadGroupsUrl + params);
   }
 }
@@ -467,6 +513,16 @@ DownloadMgr.prototype.addAll = function() {
     this.deleteTotalRow();
     for (id in this.files) {
         if (!this.downloadFiles[id]) {
+            this.doAddDownloadRow(id, false);
+        }
+    }
+    this.addTotalRow();
+}
+
+DownloadMgr.prototype.reAddFromQueue = function() {
+    this.deleteTotalRow();
+    for (id in this.files) {
+        if (this.downloadFiles[id]) {
             this.doAddDownloadRow(id, false);
         }
     }

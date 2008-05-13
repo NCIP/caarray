@@ -15,10 +15,11 @@
     <c:param name="project.id" value="${project.id}"/>
 </c:url>
 <c:url var="removeUrl" value="/images/ico_remove.gif"/>
+<c:url var="addUrl" value="/images/ico_add.gif"/>
 
 <script type="text/javascript">
-  downloadMgr = new DownloadMgr('${downloadUrl}', '${downloadGroupsUrl}','${removeUrl}', <s:property value="@gov.nih.nci.caarray.web.action.project.ProjectFilesAction@MAX_DOWNLOAD_SIZE"/>);
-  
+  downloadMgr = new DownloadMgr('${downloadUrl}', '${downloadGroupsUrl}','${removeUrl}','${addUrl}',<s:property value="@gov.nih.nci.caarray.web.action.project.ProjectFilesAction@MAX_DOWNLOAD_SIZE"/>);
+
   setExperimentTitleHeader = function(value) {
     $('experimentTitleHeader').innerHTML = value || 'New Experiment';
   }

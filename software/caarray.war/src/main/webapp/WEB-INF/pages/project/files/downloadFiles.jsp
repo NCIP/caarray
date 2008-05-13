@@ -1,17 +1,19 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <caarray:tabPane paneTitleKey="project.tabs.downloadData" subtab="true">
-  <div class="tableboxpad">
+  <div class="tableboxpad" style="overflow:auto; height:500px;">
   <table class="searchresults">
     <tr>
         <td>
           <%@ include file="/WEB-INF/pages/project/files/downloadFilesList.jsp" %>
         </td>
         <td width="100%" style="padding-left: 10px;">
+          <br>
+          <br>
           <div id="downloadInProgressMsg" class="confirm_msg" style="display:none"><fmt:message key="experiment.files.download.inProgress"/></div>
           <table class="searchresults" id="downloadTbl">
             <tr>
               <fmt:message key="experiment.files.downloadQueue" var="downloadQueueTitle" />
-              <th>${downloadQueueTitle}</th>
+              <th>${downloadQueueTitle}<br>[<a href="#" id="toggleQueue" onclick="downloadMgr.toggleQueue()" >Show Files</a>]</th>
             </tr>
             <tr>
               <td>
@@ -37,6 +39,11 @@
     showDownloadInProgress = function() {
         if (Object.values(downloadMgr.downloadFiles).length > 0) {
             $('downloadInProgressMsg').show();
+            setTimeout("hideMsg()",5000);
         }
+    }
+
+    hideMsg = function() {
+        $('downloadInProgressMsg').hide();
     }
 </script>
