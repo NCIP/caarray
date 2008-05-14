@@ -22,10 +22,10 @@
           .${fn:split(row.name, ".")[fn:length(fn:split(row.name, ".")) - 1]}
         </display:column>
         <display:column titleKey="experiment.files.compressedSize" sortProperty="compressedSize" sortable="true">
-          <fmt:formatNumber value="${row.compressedSize / 1024}" maxFractionDigits="0"/>
+            <caarray:formatFileSize value="${row.compressedSize}"/>
         </display:column>
         <display:column titleKey="experiment.files.uncompressedSize" sortProperty="uncompressedSize" sortable="true">
-          <fmt:formatNumber value="${row.uncompressedSize / 1024}" maxFractionDigits="0"/>
+          <caarray:formatFileSize value="${row.uncompressedSize}"/>
         </display:column>
         <display:setProperty name="paging.banner.placement" value="bottom"/>
     </display:table>

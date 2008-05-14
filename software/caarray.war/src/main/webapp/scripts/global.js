@@ -465,7 +465,7 @@ DownloadMgr.prototype.addTotalRow = function() {
   if (Object.values(this.downloadFiles).length != undefined) {
     numFiles = Object.values(this.downloadFiles).length;
   }
-  var textNode = document.createTextNode(numFiles + " Files, Job Size: " + (this.totalDownloadSize / 1024 | 0) + " KB");
+  var textNode = document.createTextNode(numFiles + " Files, Job Size: "+formatFileSize(this.totalDownloadSize));
   cell.appendChild(textNode);
 }
 
@@ -731,3 +731,28 @@ function makeHelpURL(contextName, includeNav) {
 
     return fullURL;
 }
+
+function formatFileSize(value) {
+    var returnVal="";
+
+    if (value >= 1099511627776) {
+        value *= 10;
+        returnVal = (Math.round(value / 1099511627776)/10) + " TBs";
+    } else if (value >= 1073741824 ) {
+        value *= 10;
+        returnVal = (Math.round(value / 1073741824)/10) + " GBs";
+    } else if (value >= 1048576) {
+        value *= 10;
+        returnVal = (Math.round(value / 1048576)/10) + " MBs";
+    } else if (value >= 1024) {
+        value *= 10;
+        returnVal = (Math.round(value / 1024)/10) + " KBs";
+    } else {
+        returnVal = value + " Bytes";
+    }
+
+    return returnVal;
+}
+
+
+
