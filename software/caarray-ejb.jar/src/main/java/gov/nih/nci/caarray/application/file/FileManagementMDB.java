@@ -231,7 +231,7 @@ public class FileManagementMDB implements MessageListener {
             rollbackTransaction();
             handleUnexpectedError(job);
             throw e;
-        }
+        }        
         commitTransaction();
     }
 

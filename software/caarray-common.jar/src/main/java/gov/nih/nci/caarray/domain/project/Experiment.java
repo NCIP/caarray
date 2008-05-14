@@ -155,7 +155,7 @@ public class Experiment extends AbstractCaArrayEntity {
 
     private static final String READABLE_PROJECT_CLAUSE = "(select pe.attribute_value from csm_protection_group pg, "
         + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
-        + "csm_role r, csm_privilege p, csm_group g, csm_user_group ug where "
+        + "csm_role r, csm_privilege p, csm_user_group ug where "
         + "pe.object_id= 'gov.nih.nci.caarray.domain.project.Project' and pe.attribute='id' and "
         + "u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id=r.role_id "
         + "and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and "
@@ -173,7 +173,7 @@ public class Experiment extends AbstractCaArrayEntity {
 
     private static final String READABLE_SAMPLE_CLAUSE = "(select pe.attribute_value from csm_protection_group pg, "
         + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
-        + "csm_role r, csm_privilege p, csm_group g, csm_user_group ug where "
+        + "csm_role r, csm_privilege p, csm_user_group ug where "
         + "pe.object_id= 'gov.nih.nci.caarray.domain.sample.Sample' and pe.attribute='id' and "
         + "u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id=r.role_id "
         + "and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and "
