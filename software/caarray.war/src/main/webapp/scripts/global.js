@@ -170,6 +170,13 @@ var TabUtils = {
         }
     },
 
+    hideSubmittingText : function() {
+        if ($('submittingText')) {
+            $('submittingText').hide();
+            $('theForm').show();
+        }
+    },
+
     showLoadingText : function(keepMainContent) {
         var elts = document.getElementsByClassName('loadingText');
         var loadingElt = elts.length > 0 ? elts[0] : null;

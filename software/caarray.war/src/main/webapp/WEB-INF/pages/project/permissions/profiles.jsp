@@ -40,8 +40,7 @@
 
                 <caarray:successMessages />
                 <div class="message" id="ajax_success_messages" style="display: none">
-                </div>                
-                
+                </div>
 
                 <c:if test="${project.permissionsEditingAllowed}">
                     <div style="padding-bottom: 20px; min-height: 500px; margin-top: 10px">
@@ -59,31 +58,31 @@
                                             <div class="bigbold">The Public</div>
                                             <c:url var="loadPublicProfileUrl" value="/protected/ajax/project/permissions/loadPublicProfile.action">
                                                 <c:param name="project.id" value="${project.id}"/>
-                                            </c:url>        
-                                            <caarray:linkButton actionClass="edit" text="Edit Access Control" style="margin-left: 0px" onclick="PermissionUtils.loadProfile('${loadPublicProfileUrl}');"/>                                            
+                                            </c:url>
+                                            <caarray:linkButton actionClass="edit" text="Edit Access Control" style="margin-left: 0px" onclick="PermissionUtils.loadProfile('${loadPublicProfileUrl}');"/>
                                             <p class="nopad" style="clear: both"><br>Edit access to the experiment by anonymous users</p>
                                             <p>
-                                            The following access profiles can be managed to grant visibility into the summary 
+                                            The following access profiles can be managed to grant visibility into the summary
                                             and/or contents of an experiment prior to its publication. The profiles are:
                                             </p>
                                             <ul id="profile_legend">
                                                 <li>
-                                                    <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@VISIBLE.resourceKey"/></fmt:message></span> 
+                                                    <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@VISIBLE.resourceKey"/></fmt:message></span>
                                                     - applied by default to each experiment upon creation, this profile exposes summary information without access to annotation and array data.
                                                  </li>
                                                 <li>
-                                                    <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@READ.resourceKey"/></fmt:message></span> 
+                                                    <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@READ.resourceKey"/></fmt:message></span>
                                                     - grants read access to the experiment as a whole - providing a preview into its content
                                                 </li>
                                                 <li>
-                                                    <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@READ_SELECTIVE.resourceKey"/></fmt:message></span> 
+                                                    <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@READ_SELECTIVE.resourceKey"/></fmt:message></span>
                                                     - grants selective access to specific sample annotation and data
                                                 </li>
                                                 <li>
-                                                    <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@NO_VISIBILITY.resourceKey"/></fmt:message></span> 
+                                                    <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@NO_VISIBILITY.resourceKey"/></fmt:message></span>
                                                     - completely removes the experiment summary information from view
                                                 </li>
-                                            </ul> 
+                                            </ul>
                                             <br/>
                                             <s:form action="project/permissions/setTcgaPolicy" cssClass="form" theme="simple" id="policy_form">
                                                 <s:hidden name="project.id"/>
@@ -116,7 +115,7 @@
                                                         </c:otherwise>
                                                     </c:choose>
                                                     <caarray:linkButton actionClass="add" text="Add New Group" style="margin-left: 0px">
-                                                        <jsp:attribute name="url"><c:url value="/protected/collaborators/edit.action"/></jsp:attribute>      
+                                                        <jsp:attribute name="url"><c:url value="/protected/collaborators/edit.action"/></jsp:attribute>
                                                     </caarray:linkButton>
                                                 </c:when>
                                                 <c:otherwise>
@@ -139,8 +138,8 @@
                                     <img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> Saving access profile
                                 </div>
                                 <div id="access_profile_details">
-                                    <caarray:accessProfileDetails accessProfile="${project.publicProfile}" readOnly="true"/>
-                                </div> 
+                                    <%@ include file="/WEB-INF/pages/project/permissions/summary.jsp" %>
+                                </div>
                             </div>
                         </div>
                     </div>

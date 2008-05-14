@@ -151,6 +151,7 @@ class MageTabImporter {
                 caArrayFile.setFileStatus(FileStatus.VALIDATED);
             }
             caArrayFile.setValidationResult(fileValidationResult);
+            daoFactory.getProjectDao().save(caArrayFile);
         }
     }
 

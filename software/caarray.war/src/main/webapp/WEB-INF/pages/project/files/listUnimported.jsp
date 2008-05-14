@@ -16,11 +16,14 @@
 
     importFiles = function(importUrl) {
         var formData = Form.serialize('selectFilesForm');
+        TabUtils.showSubmittingText();
         new Ajax.Request('<c:url value="/protected/ajax/project/files/validateSelectedImportFiles.action"/>', {
             onSuccess: function(result) {
                 var json = eval('(' + result.responseText + ')');
                 if (json.validated || confirm(json.confirmMessage)) {
                     TabUtils.submitTabFormToUrl('selectFilesForm', importUrl, 'tabboxlevel2wrapper');
+                } else {
+                    TabUtils.hideSubmittingText();
                 }
             },
             parameters: formData

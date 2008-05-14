@@ -35,6 +35,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
 
     private List<CollaboratorGroup> collaboratorGroups = new ArrayList<CollaboratorGroup>();
     private CollaboratorGroup collaboratorGroup = new CollaboratorGroup();
+    private List<AccessProfile> accessProfiles = new ArrayList<AccessProfile>();
     private AccessProfile accessProfile = new AccessProfile(SecurityLevel.NONE);
     private Map<Long, SampleSecurityLevel> sampleSecurityLevels = new HashMap<Long, SampleSecurityLevel>();
     private boolean useTcgaPolicy;
@@ -67,6 +68,9 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
                 this.accessProfile = retrieved;
             }
         }
+        accessProfiles = new ArrayList<AccessProfile>();
+        accessProfiles.add(getProject().getPublicProfile());
+        accessProfiles.addAll(getProject().getGroupProfiles().values());
     }
 
     /**
@@ -202,6 +206,13 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
      */
     public void setAccessProfile(AccessProfile accessProfile) {
         this.accessProfile = accessProfile;
+    }
+
+    /**
+     * @return the accessProfiles
+     */
+    public List<AccessProfile> getAccessProfiles() {
+        return this.accessProfiles;
     }
 
     /**

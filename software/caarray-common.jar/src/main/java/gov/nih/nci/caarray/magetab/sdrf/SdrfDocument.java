@@ -289,7 +289,17 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     // warnings suppressed due to long switch statement
     private void handleValue(SdrfColumn column, String value) {
         if (isBlank(value)) {
-            return;
+            switch (column.getType()) {
+            case SOURCE_NAME:
+            case SAMPLE_NAME:
+            case EXTRACT_NAME:
+            case LABELED_EXTRACT_NAME:
+            case HYBRIDIZATION_NAME:
+                addError(column.getHeading() + " cannot be blank");
+                break;
+            default:
+                return;
+            }
         }
         switch (column.getType()) {
         case SOURCE_NAME:
