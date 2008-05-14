@@ -4,7 +4,7 @@
 
 <%@ attribute name="entityName" required="true"%>
 <%@ attribute name="actions" required="true"%>
-<%@ attribute name="item" required="true" type="gov.nih.nci.caarray.domain.PersistentObject"%>
+<%@ attribute name="item" required="true" type="com.fiveamsolutions.nci.commons.data.persistent.PersistentObject"%>
 <%@ attribute name="isSubtab" required="false"%>
 <%@ attribute name="confirmText" required="false"%>
 <%@ attribute name="canWriteProject" required="true" %>

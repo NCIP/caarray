@@ -17,11 +17,11 @@
             <display:setProperty name="pagination.sortdirection.param" value="pagedItems.sortDirection" />
             <display:setProperty name="pagination.pagenumber.param" value="pagedItems.pageNumber" />
             <display:column titleKey="experiment.publications.title" sortable="true" sortProperty="TITLE">
-                <caarray:projectListTabActionLink linkContent="${!empty row.title ? row.title : 'View'}" entityName="Publication" action="view" itemId="${row.id}"/>
+                <caarray:projectListTabActionLink linkContent="${!empty row.title ? row.title : 'View'}" entityName="Publication" action="view" itemId="${row.id}" maxWidth="30"/>
             </display:column>
-            <display:column property="authors" sortProperty="AUTHORS" titleKey="experiment.publications.authors" sortable="true" />
+            <display:column property="authors" sortProperty="AUTHORS" titleKey="experiment.publications.authors" sortable="true" maxLength="30"/>
             <display:column titleKey="experiment.publications.uri" sortProperty="URI" sortable="true">
-                <a href="${row.uri}" target="_blank">${row.uri}</a>
+                <a href="${row.uri}" target="_blank"><caarray:abbreviate value="${row.uri}" maxWidth="30"/></a>
             </display:column>
             <caarray:projectListTabActionColumns entityName="Publication" item="${row}" actions="!edit,!delete" 
                 canWriteProject="${canWriteProject}"/>

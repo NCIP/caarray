@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.web.filter;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.caarray.web.action.registration.UserRole;
 
 import java.io.IOException;
@@ -151,7 +151,7 @@ public class UserFilter implements Filter {
                 && !request.isUserInRole(SecurityUtils.ANONYMOUS_GROUP)
                 && request.getSession().getAttribute(ADDED_ANON_GROUP) == null) {
             try {
-                PermissionsManagementService pms = ActionHelper.getPermissionsManagementService();
+                PermissionsManagementService pms = CaArrayActionHelper.getPermissionsManagementService();
                 pms.addUsers(SecurityUtils.ANONYMOUS_GROUP, username);
                 request.getSession().setAttribute(ADDED_ANON_GROUP, true);
             } catch (Exception e) {

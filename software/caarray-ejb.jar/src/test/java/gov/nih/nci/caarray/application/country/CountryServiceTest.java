@@ -86,7 +86,6 @@ import static org.junit.Assert.assertNotNull;
 import gov.nih.nci.caarray.dao.CountryDao;
 import gov.nih.nci.caarray.dao.stub.CountryDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.country.Country;
 
 import java.util.HashMap;
@@ -95,6 +94,8 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 
 /**

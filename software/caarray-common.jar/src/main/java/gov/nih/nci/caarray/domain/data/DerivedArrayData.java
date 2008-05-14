@@ -113,12 +113,12 @@ public class DerivedArrayData extends AbstractArrayData {
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "DERIVEDARRAYDATA_HYBRIDIZATIONS",
-            joinColumns = { @javax.persistence.JoinColumn(name = "DERIVEDARRAYDATA_ID") },
-            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "HYBRIDIZATION_ID") }
+            name = "derivedarraydata_hybridizations",
+            joinColumns = { @javax.persistence.JoinColumn(name = "derivedarraydata_id") },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "hybridization_id") }
     )
-    @ForeignKey(name = "DERIVEDARRAYDATA_HYBRIDIZATIONS_HYBRIDIZATION_FK",
-            inverseName = "DERIVEDARRAYDATA_HYBRIDIZATIONS_DERIVEDARRAYDATA_FK")
+    @ForeignKey(name = "derivedarraydata_hybridizations_hybridization_fk",
+            inverseName = "derivedarraydata_hybridizations_derivedarraydata_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Hybridization> getHybridizations() {
         return hybridizations;
@@ -138,11 +138,11 @@ public class DerivedArrayData extends AbstractArrayData {
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "DERIVEDARRAYDATA_DERIVEDFROM",
-            joinColumns = { @javax.persistence.JoinColumn(name = "DERIVEDFROM_ARRAYDATA_ID") },
-            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "DERIVEDARRAYDATA_ID") }
+            name = "derivedarraydata_derivedfrom",
+            joinColumns = { @javax.persistence.JoinColumn(name = "derivedfrom_arraydata_id") },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "derivedarraydata_id") }
     )
-    @ForeignKey(name = "DERIVEDFROM_ARRAYDATA_FK", inverseName = "DERIVEDFROM_DERIVEDARRAYDATA_FK")
+    @ForeignKey(name = "derivedfrom_arraydata_fk", inverseName = "derivedfrom_derivedarraydata_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<AbstractArrayData> getDerivedFromArrayDataCollection() {
         return derivedFromArrayDataCollection;

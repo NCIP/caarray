@@ -99,6 +99,8 @@ import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -110,7 +112,7 @@ import org.apache.commons.lang.StringUtils;
  * Represents a Sample and Data Relationship Format (SDRF) file - a tab-delimited file describing the relationships
  * between samples, arrays, data, and other objects used or produced in the investigation, and providing all MIAME
  * information that is not provided elsewhere. This is often the least trivial part of the experiment description due to
- * the complex relationshipswhich are possible between samples and their respective hybridizations; however, for simple
+ * the complex relationships which are possible between samples and their respective hybridizations; however, for simple
  * experimental designs, constructing the SDRF file is straightforward, and even complex loop designs can be expressed
  * in this format.
  */
@@ -124,6 +126,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final List<SdrfColumn> columns = new ArrayList<SdrfColumn>();
     private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache =
         new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
+    private final Map<NodeKey, AbstractSampleDataRelationshipNode> lineNodeCache =
+        new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
     private AbstractSampleDataRelationshipNode currentNode;
     private Unitable currentUnitable;
     private TermSourceable currentTermSourceable;
@@ -132,6 +136,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         new ArrayList<AbstractSampleDataRelationshipNode>();
     private ProtocolApplication currentProtocolApp;
     private Hybridization currentHybridization;
+    private Scan currentScan;
+    private Normalization currentNormalization;
     private ArrayDesign currentArrayDesign;
     private int currentLineNumber;
     private int currentColumnNumber;
@@ -200,6 +206,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             }
         } catch (IllegalArgumentException e) {
             addErrorMessage("SDRF type not found: " + e.getMessage());
+        } finally {
+            tabDelimitedReader.close();
         }
     }
 
@@ -220,7 +228,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         boolean hybridization = false;
         boolean dataFile = false;
         // file should have
-        // 1. BioMaterial (Souce, Sample, Extract, Labeled Extract)
+        // 1. BioMaterial (Source, Sample, Extract, Labeled Extract)
         // 2. Hybridization
         // 3. data file
         for (SdrfColumn aColumn : columns) {
@@ -258,11 +266,20 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         if (!isComment(values)) {
             for (int i = 0; i < values.size(); i++) {
                 currentColumnNumber = i + 1;
-                handleValue(columns.get(i), StringUtils.trim(values.get(i)));
+                try {
+                    handleValue(columns.get(i), StringUtils.trim(values.get(i)));
+                } catch (Exception e) {
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    addError(e.toString() + ": " + sw.toString());
+                }
             }
             currentNode = null;
             currentArrayDesign = null;
             currentHybridization = null;
+            currentScan = null;
+            currentNormalization = null;
+            lineNodeCache.clear();
         }
     }
 
@@ -280,8 +297,10 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleBioMaterial(column, value);
             break;
         case SCAN_NAME:
+            handleScan(column, value);
+            break;
         case NORMALIZATION_NAME:
-            handleNode(column, value);
+            handleNormalization(column, value);
             break;
         case HYBRIDIZATION_NAME:
             handleHybridization(column, value);
@@ -317,16 +336,16 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleArrayDesignRef(column, value);
             break;
         case DERIVED_ARRAY_DATA_FILE:
-            handleDerivedArrayDataFile(column, value);
+            handleArrayDataFile(column, value, true);
             break;
         case ARRAY_DATA_FILE:
-            handleArrayDataFile(column, value);
+            handleArrayDataFile(column, value, false);
             break;
         case ARRAY_DATA_MATRIX_FILE:
-            handleArrayDataMatrixFile(column, value);
+            handleArrayDataMatrixFile(column, value, false);
             break;
         case DERIVED_ARRAY_DATA_MATRIX_FILE:
-            handleDerivedArrayDataMatrixFile(column, value);
+            handleArrayDataMatrixFile(column, value, true);
             break;
         case IMAGE_FILE:
             handleImageFile(column, value);
@@ -335,16 +354,16 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleFactorValue(column, value);
             break;
         case PERFORMER:
-            // handlePerformer(value);
+            handlePerformer(value);
             break;
         case DATE:
-            // handleDate(value);
+            handleProtocolDate(value);
             break;
         case DESCRIPTION:
             handleDescription(value);
             break;
         case COMMENT:
-            // handleComment(column, value);
+            // DEVELOPER NOTE: we ignore comments
             break;
         default:
             break;
@@ -353,8 +372,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private void handleDescription(String value) {
         if (currentBioMaterial == null) {
-            addErrorMessage(currentLineNumber, currentColumnNumber,
-                    "Description must be preceded by a Source, Sample, Extract, or LabeledExtract");
+            addError("Description must be preceded by a Source, Sample, Extract, or LabeledExtract");
         } else {
             currentBioMaterial.setDescription(value);
         }
@@ -384,6 +402,16 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         currentNode = image;
     }
 
+    private void handleScan(SdrfColumn column, String value) {
+        handleNode(column, value, currentHybridization);
+        currentScan = (Scan) currentNode;
+    }
+
+    private void handleNormalization(SdrfColumn column, String value) {
+        handleNode(column, value, currentHybridization);
+        currentNormalization = (Normalization) currentNode;
+    }
+
     private void handleArrayDesignFile(SdrfColumn column, String value) {
         ArrayDesign arrayDesign = arrayDesignHelper(column, value);
         arrayDesign.setFile(getDocumentSet().getAdfDocument(value).getFile());
@@ -411,46 +439,43 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleFactorValue(SdrfColumn column, String value) {
         FactorValue factorValue = new FactorValue();
         factorValue.setFactor(idfDocument.getFactor(column.getHeading().getQualifier()));
-        factorValue.addToSdrfList(this);
-        factorValue.setValue(value);
-        currentUnitable = factorValue;
-        currentHybridization.getFactorValues().add(factorValue);        
+        if (factorValue.getFactor() != null) {
+            factorValue.addToSdrfList(this);
+            factorValue.setValue(value);
+            currentUnitable = factorValue;
+            if (currentHybridization != null) {
+                currentHybridization.getFactorValues().add(factorValue);                               
+            } else {
+                addError("Factor Value columns must come after (to the right of) a Hybridization column");
+            }
+        } else {
+            addError("Referenced Factor Name "
+                    + column.getHeading().getQualifier() + " was not found in the IDF");
+        }
     }
 
-    private void handleDerivedArrayDataFile(SdrfColumn column, String value) {
-        handleNode(column, value);
-        DerivedArrayDataFile adf = (DerivedArrayDataFile) currentNode;
+    private AbstractSampleDataRelationshipNode getNodeToLinkToForArrayData(boolean derived) {
+        AbstractSampleDataRelationshipNode explicitNode = derived ? currentNormalization : currentScan;
+        return explicitNode != null ? explicitNode : currentHybridization;
+    }
+
+    private void handleArrayDataFile(SdrfColumn column, String value, boolean derived) {
+        handleNode(column, value, getNodeToLinkToForArrayData(derived));
+        AbstractNativeFileReference adf = (AbstractNativeFileReference) currentNode;
         adf.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
         if (adf.getNativeDataFile() == null) {
-            addErrorMessage("Referenced Derived Array Data File " + value + " was not found in the document set");
+            addErrorMessage("Referenced " + (derived ? "Derived " : "") + " Array Data File " + value
+                    + " was not found in the document set");
         }
     }
 
-    private void handleArrayDataFile(SdrfColumn column, String value) {
-        handleNode(column, value);
-        ArrayDataFile adf = (ArrayDataFile) currentNode;
-        adf.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
-        if (adf.getNativeDataFile() == null) {
-            addErrorMessage("Referenced Array Data File " + value + " was not found in the document set");
-        }
-    }
-
-    private void handleDerivedArrayDataMatrixFile(SdrfColumn column, String value) {
-        handleNode(column, value);
-        DerivedArrayDataMatrixFile admf = (DerivedArrayDataMatrixFile) currentNode;
+    private void handleArrayDataMatrixFile(SdrfColumn column, String value, boolean derived) {
+        handleNode(column, value, getNodeToLinkToForArrayData(derived));
+        AbstractDataMatrixReference admf = (AbstractDataMatrixReference) currentNode;
         admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
         if (admf.getDataMatrix() == null) {
-            addErrorMessage("Referenced Derived Array Data Matrix File " 
-                    + value + " was not found in the document set");
-        }
-    }
-
-    private void handleArrayDataMatrixFile(SdrfColumn column, String value) {
-        handleNode(column, value);
-        ArrayDataMatrixFile admf = (ArrayDataMatrixFile) currentNode;
-        admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
-        if (admf.getDataMatrix() == null) {
-            addErrorMessage("Referenced Array Data Matrix File " + value + " was not found in the document set");
+            addErrorMessage("Referenced " + (derived ? "Derived " : "") + "Array Data Matrix File " + value
+                    + " was not found in the document set");
         }
     }
 
@@ -475,7 +500,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         if (currentUnitable != null) {
             currentUnitable.setUnit(unit);
         } else {
-            addErrorMessage("Illegal Unit column: Unit must follow a Characteristic, ParameterValue or FactorValue");
+            addError("Illegal Unit column: Unit must follow a Characteristic, ParameterValue or FactorValue");
         }
         if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
             currentTermSourceable = unit;
@@ -491,8 +516,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleTermSourceRef(String value) {
         TermSource termSource = getTermSource(value);
         if (termSource == null) {
-            addWarningMessage(currentLineNumber, currentColumnNumber,
-                    "Term Source " + value + " is not defined in the IDF document");
+            addWarning("Term Source " + value + " is not defined in the IDF document");
         }
         currentTermSourceable.setTermSource(termSource);
     }
@@ -519,16 +543,32 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         ProtocolApplication protocolApp = new ProtocolApplication();
         protocolApp.setProtocol(getProtocol(value));
         if (!currentNode.isRepeated()) {
-            currentNode.getProtocolApplications().add(protocolApp);            
+            currentNode.getProtocolApplications().add(protocolApp);
         }
         currentProtocolApp = protocolApp;
         if (protocolApp.getProtocol() == null) {
             protocolApp.setProtocol(new Protocol());
             protocolApp.getProtocol().setName(value);
-            addWarningMessage("Protocol " + value + " is not defined in the IDF document");
+            addWarning("Protocol " + value + " is not defined in the IDF document");
         }
         if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
             currentTermSourceable = protocolApp.getProtocol();
+        }
+    }
+
+    private void handlePerformer(String value) {
+        if (currentProtocolApp != null) {
+            currentProtocolApp.setPerformer(value);
+        } else {
+            addWarning("Performer column with value " + value + " does not follow a Protocol REF column");
+        }
+    }
+
+    private void handleProtocolDate(String value) {
+        if (currentProtocolApp != null) {
+            currentProtocolApp.setDate(parseDateValue(value, "Protocol Date"));
+        } else {
+            addWarning("Date column with value " + value + " does not follow a Protocol REF column");
         }
     }
 
@@ -544,16 +584,20 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
     }
 
-    private void handleNode(SdrfColumn column, String value) {
+    private void handleNode(SdrfColumn column, String value, AbstractSampleDataRelationshipNode nodeToLinkTo) {
         AbstractSampleDataRelationshipNode node = getOrCreateNode(column, value);
-        if (currentNode == null) {
+        if (nodeToLinkTo == null) {
             if (!leftmostNodes.contains(node)) {
                 leftmostNodes.add(node);
             }
-        } else if (!node.isRepeated() || !currentNode.isRepeated()) {
-            node.link(currentNode);
+        } else {
+            node.link(nodeToLinkTo);
         }
         currentNode = node;
+    }
+
+    private void handleNode(SdrfColumn column, String value) {
+        handleNode(column, value, currentNode);
     }
 
     private AbstractSampleDataRelationshipNode getOrCreateNode(SdrfColumn column, String value) {
@@ -562,7 +606,14 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         if (node == null) {
             node = createNode(column, value);
             nodeCache.put(nodeKey, node);
+            lineNodeCache.put(nodeKey, node);
         } else {
+            if (!lineNodeCache.containsKey(nodeKey)) {
+                lineNodeCache.put(nodeKey, node);
+            } else if (node.getNodeType().isName()) {
+                addErrorMessage(currentLineNumber, currentColumnNumber, "Duplicate "
+                        + column.getHeading().getTypeName() + " " + value);
+            }
             node.setRepeated(true);
         }
         return node;
@@ -602,7 +653,12 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         for (int i = 0; i < numProviders; i++) {
             Provider provider = new Provider();
             provider.setName(providerNames[i]);
-            ((Source) currentBioMaterial).getProviders().add(provider);
+            if (currentBioMaterial instanceof Source) {
+                ((Source) currentBioMaterial).getProviders().add(provider);
+            } else {
+                addError("Provider must be preceded by a Source");
+                return;
+            }
         }
     }
 
@@ -762,4 +818,18 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         return allComments;
     }
 
+    /**
+     * Adds an error message with the current line and column number.
+     * @param message error message
+     */
+    private void addError(String message) {
+        addErrorMessage(currentLineNumber, currentColumnNumber, message);
+    }
+    /**
+     * Adds a warning message with the current line and column number.
+     * @param message warning message
+     */
+    private void addWarning(String message) {
+        addWarningMessage(currentLineNumber, currentColumnNumber, message);
+    }
 }

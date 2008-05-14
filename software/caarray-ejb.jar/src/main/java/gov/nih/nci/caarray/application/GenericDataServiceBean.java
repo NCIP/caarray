@@ -83,13 +83,13 @@
 package gov.nih.nci.caarray.application;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -101,6 +101,8 @@ import javax.ejb.TransactionAttributeType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Order;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Implementation of the GenericDataService.
@@ -118,13 +120,23 @@ public class GenericDataServiceBean implements GenericDataService {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId) {
+    public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
         LogUtil.logSubsystemEntry(LOG, entityClass, entityId);
         T result = this.daoFactory.getSearchDao().retrieve(entityClass, entityId);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids)
+            throws IllegalAccessException, InstantiationException {
+        LogUtil.logSubsystemEntry(LOG, entityClass, ids);
+        List<T> result = this.daoFactory.getSearchDao().retrieveByIds(entityClass, ids);
+        LogUtil.logSubsystemExit(LOG);
+        return result;
+    }
     /**
      * {@inheritDoc}
      */

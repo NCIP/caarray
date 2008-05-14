@@ -84,13 +84,15 @@ package gov.nih.nci.caarray.web.action.protocol;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
@@ -100,6 +102,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.opensymphony.xwork2.Action;
 
 /**
@@ -124,14 +127,14 @@ public class ProtocolManagementActionTest {
              */
             @Override
             @SuppressWarnings({"unchecked", "deprecation"})
-            public <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId) {
+            public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
                 if (entityClass.equals(Protocol.class) && entityId.equals(new Long(1))) {
                     Protocol p = new Protocol();
                     p.setId(1l);
                     p.setName("test protocol");
                     return (T) p;
                 }
-                return super.retrieveEntity(entityClass, entityId);
+                return super.getPersistentObject(entityClass, entityId);
             }
 
         };
@@ -156,11 +159,25 @@ public class ProtocolManagementActionTest {
         this.action.setProtocol(new Protocol());
         this.action.prepare();
         assertEquals(null, this.action.getProtocol().getId());
+        this.action.setCreateNewSource(true);
+        this.action.setNewSource(new TermSource());
+        this.action.prepare();
+        assertEquals(null, this.action.getProtocol().getId());
+        
+        this.action.setCreateNewSource(false);
         this.action.getProtocol().setId(1l);
         this.action.prepare();
         assertEquals("test protocol", this.action.getProtocol().getName());
-        this.action.getProtocol().setId(2l);
+        assertNull(this.action.getProtocol().getSource());
+
+        this.action.setCreateNewSource(true);
+        this.action.setNewSource(new TermSource());
         this.action.prepare();
+        assertEquals("test protocol", this.action.getProtocol().getName());
+        assertNotNull(this.action.getProtocol().getSource());
+
+        this.action.getProtocol().setId(2l);
+        this.action.prepare();        
     }
 
     @Test

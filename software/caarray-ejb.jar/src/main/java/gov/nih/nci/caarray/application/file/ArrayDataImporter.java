@@ -90,12 +90,18 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 /**
  * Manages import of array data files.
  */
 final class ArrayDataImporter {
+
+    private static final Logger LOG = Logger.getLogger(ArrayDataImporter.class);
 
     private final ArrayDataService arrayDataService;
     private final CaArrayDaoFactory daoFactory;
@@ -107,13 +113,27 @@ final class ArrayDataImporter {
     }
 
     public void importFiles(CaArrayFileSet fileSet) {
+        Set<CaArrayFile> dataFiles = getDataFiles(fileSet);
+        fileSet.getFiles().clear();
+        int fileCount = 0;
+        int totalNumberOfFiles = dataFiles.size();
+        for (Iterator<CaArrayFile> fileIt = dataFiles.iterator(); fileIt.hasNext();) {
+            CaArrayFile file = fileIt.next();
+            LOG.info("Importing data file [" + ++fileCount + "/" + totalNumberOfFiles + "]: " + file.getName());
+            importFile(file);
+            fileIt.remove();
+        }
+    }
+
+    private Set<CaArrayFile> getDataFiles(CaArrayFileSet fileSet) {
+        Set<CaArrayFile> dataFiles = new HashSet<CaArrayFile>();
         for (Iterator<CaArrayFile> fileIt = fileSet.getFiles().iterator(); fileIt.hasNext();) {
             CaArrayFile file = fileIt.next();
             if (isDataFile(file)) {
-                importFile(file);
+                dataFiles.add(file);
             }
-            fileIt.remove();
         }
+        return dataFiles;
     }
 
     private void importFile(CaArrayFile file) {
@@ -135,12 +155,15 @@ final class ArrayDataImporter {
     }
 
     void validateFiles(CaArrayFileSet fileSet) {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (isDataFile(file)) {
-                validateFile(file);
-            }
+        Set<CaArrayFile> dataFiles = getDataFiles(fileSet);
+        int fileCount = 0;
+        int totalNumberOfFiles = dataFiles.size();
+        for (CaArrayFile file : dataFiles) {
+            LOG.info("Validating data file [" + ++fileCount + "/" + totalNumberOfFiles + "]: " + file.getName());
+            validateFile(file);
         }
     }
+
 
     private void validateFile(CaArrayFile file) {
         this.arrayDataService.validate(file);

@@ -82,23 +82,29 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.search.LabeledExtractSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
@@ -132,7 +138,7 @@ public class ProjectLabeledExtractsAction extends AbstractProjectProtocolAnnotat
         super.prepare();
 
         if (this.currentLabeledExtract.getId() != null) {
-            LabeledExtract retrieved = getGenericDataService().retrieveEntity(LabeledExtract.class,
+            LabeledExtract retrieved = getGenericDataService().getPersistentObject(LabeledExtract.class,
                                                                                this.currentLabeledExtract.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentLabeledExtract,
@@ -147,8 +153,8 @@ public class ProjectLabeledExtractsAction extends AbstractProjectProtocolAnnotat
      * {@inheritDoc}
      */
     @Override
-    protected void doCopyItem() throws ProposalWorkflowException {
-        ActionHelper.getProjectManagementService().copyLabeledExtract(getProject(), this.currentLabeledExtract.getId());
+    protected void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException {
+        getProjectManagementService().copyLabeledExtract(getProject(), this.currentLabeledExtract.getId());
     }
 
     /**
@@ -253,5 +259,22 @@ public class ProjectLabeledExtractsAction extends AbstractProjectProtocolAnnotat
             e.getLabeledExtracts().remove(getCurrentLabeledExtract());
         }
         return true;
+    }
+    
+    /**
+     * download the data for this sample.
+     * @return download
+     * @throws IOException on file error
+     */
+    @SkipValidation
+    public String download() throws IOException {
+        Collection<CaArrayFile> files = getCurrentLabeledExtract().getAllDataFiles();
+        if (files.isEmpty()) {
+            ActionHelper.saveMessage(getText("experiment.labeledExtracts.noDataToDownload"));
+            return "noLabeledExtractData";
+        }
+        ProjectFilesAction.downloadFiles(getProject(), files, ProjectFilesAction
+                .determineDownloadFileName(getProject()));
+        return null;
     }
 }

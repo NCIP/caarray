@@ -352,6 +352,12 @@
     <field name="type" type="gov.nih.nci.caarray.domain.data.ArrayDataType">
       <bind-xml name="ArrayDataType" type="gov.nih.nci.caarray.domain.data.ArrayDataType" location="type" node="element" />
     </field>
+    <field name="dataFile" type="gov.nih.nci.caarray.domain.file.CaArrayFile">
+      <bind-xml name="CaArrayFile" type="gov.nih.nci.caarray.domain.file.CaArrayFile" location="dataFile" node="element" />
+    </field>
+    <field name="dataSet" type="gov.nih.nci.caarray.domain.data.DataSet">
+      <bind-xml name="DataSet" type="gov.nih.nci.caarray.domain.data.DataSet" location="dataSet" node="element" />
+    </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.BooleanColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
     <map-to xml="BooleanColumn" ns-uri="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" />
@@ -365,7 +371,7 @@
       <bind-xml name="values" node="attribute" />
     </field>
   </class>
-  <class name="gov.nih.nci.caarray.domain.data.DerivedArrayData" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+  <class name="gov.nih.nci.caarray.domain.data.DerivedArrayData" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractArrayData">
     <map-to xml="DerivedArrayData" ns-uri="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" />
     <field name="hybridizations" type="gov.nih.nci.caarray.domain.hybridization.Hybridization" collection="collection">
       <bind-xml name="Hybridization" type="gov.nih.nci.caarray.domain.hybridization.Hybridization" location="hybridizations" node="element" />
@@ -374,7 +380,7 @@
       <bind-xml name="AbstractArrayData" type="gov.nih.nci.caarray.domain.data.AbstractArrayData" location="derivedFromArrayDataCollection" node="element" />
     </field>
   </class>
-  <class name="gov.nih.nci.caarray.domain.data.RawArrayData" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+  <class name="gov.nih.nci.caarray.domain.data.RawArrayData" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractArrayData">
     <map-to xml="RawArrayData" ns-uri="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" />
     <field name="sourceImages" type="gov.nih.nci.caarray.domain.data.Image" collection="collection">
       <bind-xml name="Image" type="gov.nih.nci.caarray.domain.data.Image" location="sourceImages" node="element" />

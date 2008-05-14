@@ -82,9 +82,7 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -101,8 +99,9 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Provides project access and management functionality to the application. Interface to the ProjectManagement
@@ -117,16 +116,15 @@ public interface ProjectManagementService {
 
     /**
      * Returns the project corresponding to the id given.
-     *
+     * 
      * @param id the project id
      * @return the corresponding project, or null if there is no project corresponding to that id
      */
     Project getProject(long id);
 
-
     /**
      * Returns the project with the given public identifier.
-     *
+     * 
      * @param publicId the project public identifier
      * @return the project with given public identifier, or null if there is no project with that public identifier
      */
@@ -134,6 +132,7 @@ public interface ProjectManagementService {
 
     /**
      * Handle uploaded files.
+     * 
      * @param project the project the files are being uploaded in to.
      * @param files the files being uploaded.
      * @param fileNames the file names to use.
@@ -141,25 +140,29 @@ public interface ProjectManagementService {
      * @return the count of imported files.
      * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status
      * @throws IOException if there is an error handling the files.
+     * @throws InconsistentProjectStateException if the project cannot currently be modified because its state is not
+     * internally consistent
      */
     int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> conflictingFiles)
-        throws ProposalWorkflowException, IOException;
+            throws ProposalWorkflowException, IOException, InconsistentProjectStateException;
 
     /**
      * Associates a single file with a project. After calling this method, clients can expect a new
      * <code>CaArrayFile</code> to be associated with the project.
-     *
+     * 
      * @param project project to add the file to
      * @param file the file to add to the project
      * @return the new <code>CaArrayFile</code>.
      * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status
+     * @throws InconsistentProjectStateException if the project cannot currently be modified because its state is not
+     * internally consistent
      */
-    CaArrayFile addFile(Project project, File file) throws ProposalWorkflowException;
+    CaArrayFile addFile(Project project, File file) throws ProposalWorkflowException, InconsistentProjectStateException;
 
     /**
      * Associates a single file with a project. After calling this method, clients can expect a new
      * <code>CaArrayFile</code> to be associated with the project.
-     *
+     * 
      * @param project project to add the file to
      * @param file the file to add to the project
      * @param filename the filename to use for the file. Allows the created CaArrayFile to have a different name from
@@ -167,27 +170,31 @@ public interface ProjectManagementService {
      *            original file name.
      * @return the new <code>CaArrayFile</code>.
      * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status
+     * @throws InconsistentProjectStateException if the project cannot currently be modified because its state is not
+     * internally consistent
      */
-    CaArrayFile addFile(Project project, File file, String filename) throws ProposalWorkflowException;
+    CaArrayFile addFile(Project project, File file, String filename) throws ProposalWorkflowException,
+            InconsistentProjectStateException;
 
     /**
-     * Saves a project. The project may be new, or be currently in the draft or in progress state,
-     * but it cannot be public.
-     * If the project is new, then it is put into the draft state.
-     *
+     * Saves a project. The project may be new, or be currently in the draft or in progress state, but it cannot be
+     * public. If the project is new, then it is put into the draft state.
+     * 
      * @param project the project to save
      * @param orphansToDelete any objects orphaned by this save that should be deleted
      * @throws ProposalWorkflowException if the project cannot currently be saved because it is public
+     * @throws InconsistentProjectStateException if the project state is inconsistent and therefore it should 
+     * not be saved
      */
-    void saveProject(Project project, PersistentObject... orphansToDelete) throws ProposalWorkflowException;
+    void saveProject(Project project, PersistentObject... orphansToDelete) throws ProposalWorkflowException,
+            InconsistentProjectStateException;
 
     /**
      * Moves a project into a new workflow status.
-     *
+     * 
      * @param projectId the id of the project to move to the given status
      * @param newStatus the new workflow status
-     * @throws ProposalWorkflowException if the project's current status does not allow
-     * a transition to the given status
+     * @throws ProposalWorkflowException if the project's current status does not allow a transition to the given status
      */
     void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException;
 
@@ -196,35 +203,35 @@ public interface ProjectManagementService {
      * related to the current user are returned. A project is directly related to a user if the user is either the data
      * owner or in a collaboration group which has been granted access to the project. The subset to retrieve depends on
      * the page and sort specifications in pageSortParams
-     *
+     * 
      * Note that this method currently only supports SortCriterions that are either simple properties of the target
      * class or required single-valued associations from it. If a non-required association is used in the sort
      * criterion, then any instances for which that association is null will not be included in the results (as an inner
      * join is used)
-     *
+     * 
      * @param showPublic if true, then only projects in the "Public" workflow status are returned; if false, then only
      *            projects in workflow statuses other than "Public" are returned.
      * @param pageSortParams specifies the sorting to apply and which page of the full result set to return
-     *
+     * 
      * @return public or non-public projects directly related to the current user, as described above
      */
     List<Project> getMyProjects(boolean showPublic, PageSortParams<Project> pageSortParams);
 
     /**
      * Gets the count of projects belonging to the current user. The count of either public or non-public projects
-     * directly related to the current user are returned. A project is directly related to a user if the user is
-     * either the data owner or in a collaboration group which has been granted access to the project.
-     *
-     * @param showPublic if true, then only projects in the "Public" workflow status are included; if false,
-     * then only projects in workflow statuses other than "Public" are included in the count.
-     *
+     * directly related to the current user are returned. A project is directly related to a user if the user is either
+     * the data owner or in a collaboration group which has been granted access to the project.
+     * 
+     * @param showPublic if true, then only projects in the "Public" workflow status are included; if false, then only
+     *            projects in workflow statuses other than "Public" are included in the count.
+     * 
      * @return the count of public or non-public projects directly related to the current user, as described above
      */
     int getMyProjectCount(boolean showPublic);
 
     /**
      * sets whether the project with given id uses the tcga policy.
-     *
+     * 
      * @param projectId the id of the project
      * @param useTcgaPolicy whether the tcga policy should be used
      * @return the modified project
@@ -234,7 +241,7 @@ public interface ProjectManagementService {
 
     /**
      * Adds an empty (no access) profile for the given collaborator group to the given project.
-     *
+     * 
      * @param project the project
      * @param group the group for which to add an access profile
      * @return the new access profile
@@ -243,93 +250,88 @@ public interface ProjectManagementService {
     AccessProfile addGroupProfile(Project project, CollaboratorGroup group) throws ProposalWorkflowException;
 
     /**
-     * Prepares files for download.
-     *
-     * @param files the files to download
-     * @return the single zip archive with all files
-     * @throws IOException on I/O error
-     */
-    File prepareForDownload(Collection<CaArrayFile> files) throws IOException;
-
-    /**
-     * Prepares a collection of hybridizations for file download.
-     *
-     * @param p the project to restrict files to
-     * @param hybridizations the hybridizations to download files for
-     * @return the single zip archive with all files related to these hybridizations, or null
-     * if there are no data files associated with any of the hybridizations
-     * @throws IOException on I/O error
-     */
-    File prepareHybsForDownload(Project p, Collection<Hybridization> hybridizations) throws IOException;
-
-    /**
-     * Make a copy of a sample belonging to given project, and add it to the new project.
-     * The new sample's name will be derived from the original sample's name
-     * according to the scheme described in
+     * Make a copy of a sample belonging to given project, and add it to the new project. The new sample's name will be
+     * derived from the original sample's name according to the scheme described in
      * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
+     * 
      * @param project the project to which the sample belongs
      * @param sampleId the id of the sample to copy
      * @return the new sample
      * @throws ProposalWorkflowException if the project cannot currently be modified because it is public
+     * @throws InconsistentProjectStateException if the project cannot currently be modified because its state is not
+     * internally consistent
      */
-    Sample copySample(Project project, long sampleId) throws ProposalWorkflowException;
+    Sample copySample(Project project, long sampleId) throws ProposalWorkflowException,
+            InconsistentProjectStateException;
 
     /**
      * Make a copy of a source belonging to given project, and add it to the new project. The new source's name will be
      * derived from the original source's name according to the scheme described in
      * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
-     *
+     * 
      * @param project the project to which the source belongs
      * @param sourceId the id of the source to copy
      * @return the new source
      * @throws ProposalWorkflowException if the project cannot currently be modified because it is public
+     * @throws InconsistentProjectStateException if the project cannot currently be modified because its state is not
+     * internally consistent
      */
-    Source copySource(Project project, long sourceId) throws ProposalWorkflowException;
+    Source copySource(Project project, long sourceId) throws ProposalWorkflowException,
+            InconsistentProjectStateException;
 
     /**
      * Make a copy of a factor belonging to given project, and add it to the new project. The new factor's name will be
      * derived from the original factor's name according to the scheme described in
      * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
-     *
+     * 
      * @param project the project to which the factor belongs
      * @param factorId the id of the factor to copy
      * @return the new factor
      * @throws ProposalWorkflowException if the project cannot currently be modified because it is public
+     * @throws InconsistentProjectStateException if the project cannot currently be modified because its state is not
+     * internally consistent
      */
-    Factor copyFactor(Project project, long factorId) throws ProposalWorkflowException;
+    Factor copyFactor(Project project, long factorId) throws ProposalWorkflowException,
+            InconsistentProjectStateException;
 
     /**
-     * Make a copy of an extract belonging to given project, and add it to the new project.
-     * The new extract's name will be derived from the original extract's name
-     * according to the scheme described in
+     * Make a copy of an extract belonging to given project, and add it to the new project. The new extract's name will
+     * be derived from the original extract's name according to the scheme described in
      * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
+     * 
      * @param project the project to which the extract belongs
      * @param extractId the id of the extract to copy
      * @return the new extract
      * @throws ProposalWorkflowException if the project cannot currently be modified because it is public
+     * @throws InconsistentProjectStateException if the project cannot currently be modified because its state is not
+     * internally consistent
      */
-    Extract copyExtract(Project project, long extractId) throws ProposalWorkflowException;
+    Extract copyExtract(Project project, long extractId) throws ProposalWorkflowException,
+            InconsistentProjectStateException;
 
     /**
-     * Make a copy of a labeled extract belonging to given project, and add it to the new project.
-     * The new labeled extract's name will be derived from the original labeled extract's name
-     * according to the scheme described in
+     * Make a copy of a labeled extract belonging to given project, and add it to the new project. The new labeled
+     * extract's name will be derived from the original labeled extract's name according to the scheme described in
      * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
+     * 
      * @param project the project to which the labeled extract belongs
      * @param extractId the id of the extract to copy
      * @return the new labeled extract
      * @throws ProposalWorkflowException if the project cannot currently be modified because it is public
+     * @throws InconsistentProjectStateException if the project cannot currently be modified because its state is not
+     * internally consistent
      */
-    LabeledExtract copyLabeledExtract(Project project, long extractId) throws ProposalWorkflowException;
+    LabeledExtract copyLabeledExtract(Project project, long extractId) throws ProposalWorkflowException,
+            InconsistentProjectStateException;
 
     /**
      * Performs a query for experiments by text matching for the given keyword.
-     *
+     * 
      * Note that this method currently only supports SortCriterions that are either simple properties of the target
      * class or required single-valued associations from it. If a non-required association is used in the sort
      * criterion, then any instances for which that association is null will not be included in the results (as an inner
      * join is used)
-     *
+     * 
      * @param params paging and sorting parameters
      * @param keyword text to search for
      * @param categories Indicates which categories to search. Passing null will search all categories.
@@ -339,6 +341,7 @@ public interface ProjectManagementService {
 
     /**
      * Gets the count of search results matching the given keyword.
+     * 
      * @param keyword keyword to search for
      * @param categories categories to search
      * @return number of results
@@ -347,6 +350,7 @@ public interface ProjectManagementService {
 
     /**
      * Get tissue sites for the experiment and category.
+     * 
      * @param experiment the experiment
      * @return the list of terms
      */
@@ -354,6 +358,7 @@ public interface ProjectManagementService {
 
     /**
      * Get material types for the experiment and category.
+     * 
      * @param experiment the experiment
      * @return the list of terms
      */
@@ -361,6 +366,7 @@ public interface ProjectManagementService {
 
     /**
      * Get cell types for the experiment and category.
+     * 
      * @param experiment the experiment
      * @return the list of terms
      */
@@ -368,8 +374,9 @@ public interface ProjectManagementService {
 
     /**
      * Get disease states for the experiment and category.
+     * 
      * @param experiment the experiment
      * @return the list of terms
      */
-    List<Term> getDiseaseStatesForExperiment(Experiment experiment); 
+    List<Term> getDiseaseStatesForExperiment(Experiment experiment);
 }

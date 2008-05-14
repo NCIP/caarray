@@ -167,6 +167,16 @@ public final class MageTabDocumentSet implements Serializable {
         return termSourceCache.values();
     }
 
+
+    /**
+     * Returns all <code>Protocols</code> defined in the document set.
+     *
+     * @return the <code>Protocols</code>.
+     */
+    public Collection<Protocol> getProtocols() {
+        return protocolCache.values();
+    }
+
     /**
      * Returns all <code>OntologyTerms</code> used in the document set.
      *
@@ -216,12 +226,20 @@ public final class MageTabDocumentSet implements Serializable {
     }
 
     void parse() throws MageTabParsingException {
+        // DEVELOPER NOTE: currently multiple IDFs are not supported, so flag this as validation
+        // error and do not attempt further processing. in the future, there is intention
+        // to support this, so the object model will continue to support it
+        if (idfDocuments.size() > 1) {
+            for (IdfDocument idfDocument : idfDocuments) {
+                getValidationResult().addMessage(idfDocument.getFile(), ValidationMessage.Type.ERROR,
+                        "At most one IDF document can be present in an import");
+            }
+            return;
+        }
         parse(idfDocuments);
-        // if the idf does not have a pointer to the sdrf then skip processing the non-existent SDRF file.
-             // parse(adfDocuments);
-            parse(sdrfDocuments);
-            // parse(dataMatrixFiles);
-
+        // DEVELOPER NOTE: ADF documents currently not parsed
+        parse(sdrfDocuments);
+        // DEVELOPER NOTE: DATA MATRIX documents currently not parsed
     }
 
     private void parse(Set<? extends AbstractMageTabDocument> documents) throws MageTabParsingException {

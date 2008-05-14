@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.security;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Indicates that an operation was not allowed due to the current user not having the required permissions.

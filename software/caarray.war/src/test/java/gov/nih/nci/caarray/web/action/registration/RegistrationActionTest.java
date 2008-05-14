@@ -119,6 +119,8 @@ public class RegistrationActionTest {
 
     @Test
     public void testPrepare() throws Exception {
+        MockServletContext context = (MockServletContext) ServletActionContext.getServletContext();
+        context.addInitParameter("some.other.param", "false");
         registrationAction.prepare();
         assertEquals(50,registrationAction.getStateList().size());
         assertEquals(1,registrationAction.getCountryList().size());
@@ -138,5 +140,9 @@ public class RegistrationActionTest {
         ServletActionContext.setServletContext(context);
         registrationAction.prepare();
         registrationAction.validate();
+        
+        registrationAction.setLdapAuthenticate(false);
+        registrationAction.validate();
     }
+
 }

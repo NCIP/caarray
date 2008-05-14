@@ -82,33 +82,30 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
-import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.util.io.FileClosingInputStream;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
-import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
@@ -122,7 +119,6 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
     private static final long serialVersionUID = 1L;
 
     private Sample currentSample = new Sample();
-    private InputStream downloadStream;
     private List<Source> itemsToAssociate = new ArrayList<Source>();
     private List<Source> itemsToRemove = new ArrayList<Source>();
 
@@ -142,7 +138,7 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
     public void prepare() throws VocabularyServiceException {
         super.prepare();
         if (this.currentSample.getId() != null) {
-            Sample retrieved = getGenericDataService().retrieveEntity(Sample.class, this.currentSample.getId());
+            Sample retrieved = getGenericDataService().getPersistentObject(Sample.class, this.currentSample.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentSample,
                         SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
@@ -159,29 +155,21 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
      */
     @SkipValidation
     public String download() throws IOException {
-        ProjectManagementService pms = (ProjectManagementService)
-            ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
-        File zipFile = pms.prepareHybsForDownload(getProject(), getCurrentSample().getRelatedHybs());
-        if (zipFile == null) {
+        Collection<CaArrayFile> files = getCurrentSample().getAllDataFiles();
+        if (files.isEmpty()) {
             ActionHelper.saveMessage(getText("experiment.samples.noDataToDownload"));
             return "noSampleData";
         }
-        this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
-        return "download";
-    }
-
-    /**
-     * @return the stream containing the zip file download
-     */
-    public InputStream getDownloadStream() {
-        return this.downloadStream;
+        ProjectFilesAction.downloadFiles(getProject(), files, ProjectFilesAction
+                .determineDownloadFileName(getProject()));
+        return null;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void doCopyItem() throws ProposalWorkflowException {
+    protected void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException {
         getProjectManagementService().copySample(getProject(), this.currentSample.getId());
     }
 
@@ -285,6 +273,11 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
         }
         for (Source s : getCurrentAssociationsCollection()) {
             s.getSamples().remove(getCurrentSample());
+        }
+        // clear the sample from any access profiles 
+        // this is perhaps not the ideal place for this - would be preferrable in the business layer
+        for (AccessProfile ap : getCurrentSample().getExperiment().getProject().getAllAccessProfiles()) {
+            ap.getSampleSecurityLevels().remove(getCurrentSample());
         }
         return true;
     }

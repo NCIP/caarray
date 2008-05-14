@@ -161,7 +161,7 @@ public class Image extends AbstractCaArrayEntity {
      * @return the imageFile
      */
     @ManyToOne
-    @ForeignKey(name = "IMAGE_FILE_FK")
+    @ForeignKey(name = "image_file_fk")
     public CaArrayFile getImageFile() {
         return imageFile;
     }
@@ -188,7 +188,7 @@ public class Image extends AbstractCaArrayEntity {
      */
     @ManyToOne()
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "IMAGE_HYBRIDIZATION_FK")
+    @ForeignKey(name = "image_hybridization_fk")
     public Hybridization getHybridization() {
         return hybridization;
     }
@@ -204,7 +204,7 @@ public class Image extends AbstractCaArrayEntity {
      * @return the raw array data
      */
     @ManyToOne
-    @ForeignKey(name = "IMAGE_RAWARRAYDATA_FK")
+    @ForeignKey(name = "image_rawarraydata_fk")
     public RawArrayData getRawArrayData() {
         return rawArrayData;
     }

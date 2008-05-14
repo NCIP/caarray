@@ -82,19 +82,21 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getTermsFromCategory;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
+import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.search.FactorSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
@@ -135,7 +137,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
         super.prepare();
 
         if (this.currentFactor.getId() != null) {
-            Factor retrieved = getGenericDataService().retrieveEntity(Factor.class, this.currentFactor.getId());
+            Factor retrieved = getGenericDataService().getPersistentObject(Factor.class, this.currentFactor.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentFactor, SecurityUtils.READ_PRIVILEGE,
                         UsernameHolder.getUser());
@@ -150,7 +152,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      */
     @Override
     public String view() {
-        setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
+        setCategories(getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
         return super.view();
     }
 
@@ -160,7 +162,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     @Override
     @SkipValidation
     public String edit() {
-        setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
+        setCategories(getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
         return super.edit();
     }
 
@@ -171,7 +173,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     public void validate() {
         super.validate();
         if (hasErrors()) {
-            setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
+            setCategories(getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
         }
     }
 
@@ -181,9 +183,23 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      * @throws ProposalWorkflowException
      */
     @Override
-    protected void doCopyItem() throws ProposalWorkflowException {
+    protected void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException {
         getProjectManagementService().copyFactor(getProject(), this.currentFactor.getId());
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SkipValidation
+    @Override
+    public String delete() {
+        // clean up factor value associations
+        for (FactorValue fv : getCurrentFactor().getFactorValues()) {
+            fv.getHybridization().getFactorValues().remove(fv);
+        }        
+        return super.delete();
+    }
+
 
     /**
      * {@inheritDoc}
@@ -229,5 +245,5 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      */
     public void setCategories(Set<Term> categories) {
         this.categories = categories;
-    }
+    }    
 }

@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SortCriterion;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -91,10 +90,14 @@ import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.data.QueryProcessingException;
 import gov.nih.nci.cagrid.data.sdk32query.CQL2HQL;
 
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -102,12 +105,15 @@ import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+
 /**
  * DAO to search for entities using various types of criteria. Supports searching by example, CQL, HQL (Hibernate Query
  * Language) string and Hibernate Detached Criteria.
- * 
+ *
  * @author Rashmi Srinivasa
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     private static final Logger LOG = Logger.getLogger(SearchDaoImpl.class);
     private static final String UNCHECKED = "unchecked";
@@ -149,7 +155,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         q.setLong("id", entityId);
         return (T) q.uniqueResult();
     }
-        
+
     /**
      * {@inheritDoc}
      */
@@ -162,12 +168,32 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         q.setLockMode("o", lockMode);
         return (T) q.uniqueResult();
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
+        // degenerate case:
+        if (ids == null || ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // need to break this up into blocks of 500 to get around bug
+        // http://opensource.atlassian.com/projects/hibernate/browse/HHH-2166
+        StringBuilder queryStr = new StringBuilder("from " + entityClass.getName() + " o where ");
+        Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
+        queryStr.append(HibernateUtil.buildInClause(ids, "o.id", idBlocks));
+        Query q = HibernateUtil.getCurrentSession().createQuery(queryStr.toString());
+        HibernateUtil.bindInClauseParameters(q, idBlocks);
+        return q.list();
+    }
+
     /**
      * {@inheritDoc}
      */
     public void refresh(PersistentObject o) {
-        HibernateUtil.getCurrentSession().refresh(o);        
+        HibernateUtil.getCurrentSession().refresh(o);
     }
 
     /**
@@ -193,12 +219,12 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         q.setParameter("value", value.toLowerCase(Locale.ENGLISH) + "%");
         return q.list();
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings(UNCHECKED)
-    public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection, 
+    public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection,
             PageSortParams<T> pageSortParams) {
         StringBuilder filterQueryStr = new StringBuilder();
         SortCriterion<T> sortCrit = pageSortParams.getSortCriterion();
@@ -213,7 +239,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         q.setMaxResults(pageSortParams.getPageSize());
         return q.list();
     }
-        
+
     /**
      * {@inheritDoc}
      */

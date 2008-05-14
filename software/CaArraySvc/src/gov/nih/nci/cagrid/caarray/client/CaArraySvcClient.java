@@ -46,67 +46,67 @@ import org.oasis.wsrf.properties.GetResourcePropertyResponse;
  * @created by Introduce Toolkit version 1.1
  */
 public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySvcI {
-	protected CaArraySvcPortType portType;
-	private Object portTypeMutex;
+    protected CaArraySvcPortType portType;
+    private Object portTypeMutex;
 
-	public CaArraySvcClient(String url) throws MalformedURIException, RemoteException {
-		this(url,null);
-	}
+    public CaArraySvcClient(String url) throws MalformedURIException, RemoteException {
+        this(url,null);
+    }
 
-	public CaArraySvcClient(String url, GlobusCredential proxy) throws MalformedURIException, RemoteException {
-	   	super(url,proxy);
-	   	initialize();
-	}
+    public CaArraySvcClient(String url, GlobusCredential proxy) throws MalformedURIException, RemoteException {
+           super(url,proxy);
+           initialize();
+    }
 
-	public CaArraySvcClient(EndpointReferenceType epr) throws MalformedURIException, RemoteException {
-	   	this(epr,null);
-	}
+    public CaArraySvcClient(EndpointReferenceType epr) throws MalformedURIException, RemoteException {
+           this(epr,null);
+    }
 
-	public CaArraySvcClient(EndpointReferenceType epr, GlobusCredential proxy) throws MalformedURIException, RemoteException {
-	   	super(epr,proxy);
-		initialize();
-	}
+    public CaArraySvcClient(EndpointReferenceType epr, GlobusCredential proxy) throws MalformedURIException, RemoteException {
+           super(epr,proxy);
+        initialize();
+    }
 
-	private void initialize() throws RemoteException {
-	    this.portTypeMutex = new Object();
-		this.portType = createPortType();
-	}
+    private void initialize() throws RemoteException {
+        this.portTypeMutex = new Object();
+        this.portType = createPortType();
+    }
 
-	private CaArraySvcPortType createPortType() throws RemoteException {
+    private CaArraySvcPortType createPortType() throws RemoteException {
 
-		CaArraySvcServiceAddressingLocator locator = new CaArraySvcServiceAddressingLocator();
-		// attempt to load our context sensitive wsdd file
-		InputStream resourceAsStream = getClass().getResourceAsStream("client-config.wsdd");
-		if (resourceAsStream != null) {
-			// we found it, so tell axis to configure an engine to use it
-			EngineConfiguration engineConfig = new FileProvider(resourceAsStream);
-			// set the engine of the locator
-			locator.setEngine(new AxisClient(engineConfig));
-		}
-		CaArraySvcPortType port = null;
-		try {
-			port = locator.getCaArraySvcPortTypePort(getEndpointReference());
-		} catch (Exception e) {
-			throw new RemoteException("Unable to locate portType:" + e.getMessage(), e);
-		}
+        CaArraySvcServiceAddressingLocator locator = new CaArraySvcServiceAddressingLocator();
+        // attempt to load our context sensitive wsdd file
+        InputStream resourceAsStream = getClass().getResourceAsStream("client-config.wsdd");
+        if (resourceAsStream != null) {
+            // we found it, so tell axis to configure an engine to use it
+            EngineConfiguration engineConfig = new FileProvider(resourceAsStream);
+            // set the engine of the locator
+            locator.setEngine(new AxisClient(engineConfig));
+        }
+        CaArraySvcPortType port = null;
+        try {
+            port = locator.getCaArraySvcPortTypePort(getEndpointReference());
+        } catch (Exception e) {
+            throw new RemoteException("Unable to locate portType:" + e.getMessage(), e);
+        }
 
-		return port;
-	}
+        return port;
+    }
 
-	public GetResourcePropertyResponse getResourceProperty(QName resourcePropertyQName) throws RemoteException {
-		return portType.getResourceProperty(resourcePropertyQName);
-	}
+    public GetResourcePropertyResponse getResourceProperty(QName resourcePropertyQName) throws RemoteException {
+        return portType.getResourceProperty(resourcePropertyQName);
+    }
 
-	public static void usage(){
-		System.out.println(CaArraySvcClient.class.getName() + " -url <service url>");
-	}
+    public static void usage(){
+        System.out.println(CaArraySvcClient.class.getName() + " -url <service url>");
+    }
 
-	public static void main(String [] args){
-	    System.out.println("Running the Grid Service Client");
-		try{
-		if(!(args.length < 2)){
-			if(args[0].equals("-url")){
-			  CaArraySvcClient client = new CaArraySvcClient(args[1]);
+    public static void main(String [] args){
+        System.out.println("Running the Grid Service Client");
+        try{
+        if(!(args.length < 2)){
+            if(args[0].equals("-url")){
+              CaArraySvcClient client = new CaArraySvcClient(args[1]);
 
               ArrayDesign arrayDesign = new ArrayDesign();
               arrayDesign.setId(1L);
@@ -125,28 +125,28 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
               System.out.println(dataSet);
 
               CaArrayFile file = new CaArrayFile();
-              file.setId(2L);
+              file.setId(7L);
               byte[] bytes = client.readFile(file);
               System.out.println("Bytes: " + bytes);
 
               // place client calls here if you want to use this main as a
-			  // test....
-			} else {
-				usage();
-				System.exit(1);
-			}
-		} else {
-			usage();
-			System.exit(1);
-		}
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
+              // test....
+            } else {
+                usage();
+                System.exit(1);
+            }
+        } else {
+            usage();
+            System.exit(1);
+        }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
-	public static java.lang.Object get(CaArraySvcClient client, String type, String attr, String value)
-	throws QueryProcessingExceptionType, MalformedQueryExceptionType, RemoteException {
+    public static java.lang.Object get(CaArraySvcClient client, String type, String attr, String value)
+    throws QueryProcessingExceptionType, MalformedQueryExceptionType, RemoteException {
         CQLQuery cqlQuery = new CQLQuery();
 
         Object target = new Object();
@@ -164,7 +164,7 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
 
         return iter.next();
 
-	}
+    }
 
   public gov.nih.nci.caarray.domain.data.DataSet getDataSet(gov.nih.nci.caarray.domain.data.DataRetrievalRequest dataRetrievalRequest) throws RemoteException {
     synchronized(portTypeMutex){

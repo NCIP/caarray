@@ -30,15 +30,16 @@ p>.required {
 { padding:7px 3px 0 10px; border-top: 0px; border:1px solid #fff; border-bottom:1px solid #ccc; background:#e5e5e5; height:1%; }
 
 /* Tabs */
-
+#tabs
+{ overflow:hidden; position:relative; width:100% }
 #tabs UL
-{ height:28px; font-weight:bold; list-style:none; margin:0; padding-left:5px; clear:both; background:url("../images/bg_tabbar.gif") repeat-x bottom; border-bottom:1px solid #999   }
+{ height:28px; font-weight:bold; list-style:none; margin:0; padding-left:15px; padding-right:19px; clear:both; background:url("../images/bg_tabbar.gif") repeat-x bottom; border-bottom:1px solid #999   }
 :lang(en) #tabs UL
 { height:30px }
 #tabs UL LI
 { float:left;   margin:0;   padding:0 0 0 4px; text-align:center; min-height:.1%; height:20px }
 #tabs UL LI A
-{   display:block; margin:0; padding:5px 10px; background:#9d9a8e url("../images/bg_headerbar_tan.gif") repeat-x; color:#fff; text-decoration:none; border:1px solid #999; }
+{ white-space:nowrap; display:block; margin:0; padding:5px 10px; background:#9d9a8e url("../images/bg_headerbar_tan.gif") repeat-x; color:#fff; text-decoration:none; border:1px solid #999; }
 .tabs2 LI A
 { min-width:78px; width: auto; }
 #tabs UL LI A:hover
@@ -80,6 +81,13 @@ UL#tablevel2 LI A:hover
 UL#tablevel2 LI A.selected:hover
 {   display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #000; background:url("../images/bg_grad3d_reverse.gif") repeat-x; }
 
+/* Tab Scrolling */
+div.leftScrollBox
+{ position:absolute; left:0px; top:0px; width:17px; height:30px; cursor:pointer; background:transparent url(../images/bg_tabbar.gif) repeat-x scroll center bottom; padding-right:2px; border-bottom:1px solid #999}
+div.rightScrollBox
+{ position:absolute; right:0px; top:0px; width:17px; height:30px; cursor:pointer; background:transparent url(../images/bg_tabbar.gif) repeat-x scroll center bottom; padding-left:2px; border-bottom:1px solid #999}
+div.scrollButton
+{ width:15px; height:22px; background:#efeee9; border:1px solid #999; text-align:center; padding-top:5px; }
 
 TD.tdLabel
 { width:28%; text-align:right; font-weight:bold; }
@@ -151,3 +159,17 @@ UL.selectedItemList LI:hover
 
 .enableEnterSubmit
 { width: 0px; height: 0px; border: none; position: absolute }
+
+#uploadProgressBar {
+    width:102px;
+    height:15px;
+    border:1px solid #ccc;
+    padding:0;
+    margin:0;
+    position:relative;
+    background-color: blue;
+}
+
+#uploadProgressBar div {
+    background-color:#fff;
+}

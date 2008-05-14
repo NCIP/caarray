@@ -95,4 +95,7 @@ public class IlluminaArrayDesignFiles {
     public static final File HUMAN_WG6_CSV_INVALID_CONTENT =
         new File(IlluminaArrayDesignFiles.class.getResource("/arraydesign/illumina/Human_WG-6_invalid_content.csv").getFile());
 
+    public static final File HUMAN_HAP_300_CSV =
+        new File(IlluminaArrayDesignFiles.class.getResource("/arraydesign/illumina/HumanHap300v2_A.csv").getFile());
+
 }

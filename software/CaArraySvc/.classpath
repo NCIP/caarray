@@ -62,7 +62,7 @@
 	<classpathentry kind="var" path="GLOBUS_LOCATION/lib/xml-apis.jar"/>
 	<classpathentry kind="var" path="GLOBUS_LOCATION/lib/xmlsec.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-advertisement.jar"/>
-	<classpathentry kind="lib" path="lib/caGrid-1.1-core.jar" sourcepath="/lib-2.0.0/src/caGrid-1.1-core-src.jar"/>
+	<classpathentry kind="lib" path="lib/caGrid-1.1-core.jar" sourcepath="/lib/src/caGrid-1.1-core-src.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-Introduce-1.1-serviceTools.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-metadata-security.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-ServiceSecurityProvider-client.jar"/>
@@ -101,17 +101,18 @@
 	<classpathentry kind="lib" path="lib/caGrid-1.1-caDSR-common.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-caDSR-stubs.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-caDSR-tests.jar"/>
-	<classpathentry kind="lib" path="/lib-2.0.0/commons-collections-3.2.jar"/>
-	<classpathentry kind="lib" path="/lib-2.0.0/javaee.jar"/>
-	<classpathentry kind="lib" path="/lib-2.0.0/hibernate-annotations.jar" sourcepath="/lib/src/hibernate-annotations-3.3.0.GA-src.jar"/>
-	<classpathentry kind="lib" path="/lib-2.0.0/commons-lang-2.3.jar"/>
+	<classpathentry kind="lib" path="/caarray-client-jar/target/classes" sourcepath="/caarray-client-jar/src/main/java"/>
+	<classpathentry kind="lib" path="/caarray-common-jar/target/classes"/>
+	<classpathentry kind="lib" path="/lib/commons-collections-3.2.jar"/>
+	<classpathentry kind="lib" path="/lib/javaee.jar"/>
+	<classpathentry kind="lib" path="/lib/hibernate-annotations.jar" sourcepath="/lib/src/hibernate-annotations-3.3.0.GA-src.jar"/>
+	<classpathentry kind="lib" path="/lib/commons-lang-2.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="/lib-2.0.0/cglib-2.1.3.jar"/>
-	<classpathentry kind="lib" path="/lib-2.0.0/csmapi.jar" sourcepath="/lib/src/csmapi-4.0.1-src.jar"/>
-	<classpathentry kind="lib" path="lib/castor-1.0.4.jar"/>
-	<classpathentry kind="lib" path="/lib-2.0.0/log4j-1.2.13.jar" sourcepath="/lib/src/log4j-1.2.13-src.jar"/>
-	<classpathentry kind="lib" path="/caarray-client-jar-2_0_0/target/classes"/>
-	<classpathentry kind="lib" path="/caarray-common-jar-2_0_0/target/classes"/>
-	<classpathentry kind="lib" path="/caarray-ejb-jar-2_0_0/target/classes"/>
+	<classpathentry kind="lib" path="/lib/cglib-2.1.3.jar"/>
+	<classpathentry kind="lib" path="/lib/csmapi.jar" sourcepath="/lib/src/csmapi-4.0.1-src.jar"/>
+	<classpathentry kind="lib" path="lib/castor-1.0.4.jar" sourcepath="/lib/src/castor-1.0.4-src.jar"/>
+	<classpathentry kind="lib" path="/lib/log4j-1.2.13.jar" sourcepath="/lib/src/log4j-1.2.13-src.jar"/>
+	<classpathentry kind="lib" path="/caarray-ejb-jar/target/classes"/>
+	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.1.jar"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>

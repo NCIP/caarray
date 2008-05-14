@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.security;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Marker interface to indicate entities that should have CSM protection elements

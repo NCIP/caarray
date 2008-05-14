@@ -84,82 +84,39 @@ package gov.nih.nci.caarray.util;
 
 import gov.nih.nci.caarray.security.SecurityInterceptor;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHelper;
 
-import java.util.Iterator;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-import org.hibernate.ConnectionReleaseMode;
-import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.context.ManagedSessionContext;
-import org.hibernate.engine.SessionFactoryImplementor;
-import org.hibernate.mapping.Collection;
+
+import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 
 /**
- * Utility class to create and retrieve Hibernate sessions.
+ * Utility class to create and retrieve Hibernate sessions.  Most methods are pass-throughs to {@link HibernateHelper},
+ * except for the methods involving filters.
  *
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings("unchecked")
 public final class HibernateUtil {
-
-    private static final Logger LOG = Logger.getLogger(HibernateUtil.class);
-
-    private static final Configuration HIBERNATE_CONFIG;
-    private static final SessionFactory SESSION_FACTORY;
     /**
-     * All CSM hibernate classes.
+     * The maximum number of elements that can be in a single in clause. This is due to bug
+     * http://opensource.atlassian.com/projects/hibernate/browse/HHH-2166
      */
-    public static final Class<?>[] CSM_CLASSES = {gov.nih.nci.security.authorization.domainobjects.Application.class,
-            gov.nih.nci.security.authorization.domainobjects.Group.class,
-            gov.nih.nci.security.authorization.domainobjects.Privilege.class,
-            gov.nih.nci.security.authorization.domainobjects.ProtectionElement.class,
-            gov.nih.nci.security.authorization.domainobjects.ProtectionGroup.class,
-            gov.nih.nci.security.authorization.domainobjects.Role.class,
-            gov.nih.nci.security.authorization.domainobjects.User.class,
-            gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup.class,
-            gov.nih.nci.security.authorization.domainobjects.UserProtectionElement.class,
-            gov.nih.nci.security.authorization.domainobjects.FilterClause.class };
+    public static final int MAX_IN_CLAUSE_LENGTH = 500;
+
+    private static final HibernateHelper HIBERNATE_HELPER = new HibernateHelper(SecurityUtils.getAuthorizationManager(),
+            new NamingStrategy(), new SecurityInterceptor());
 
     private static boolean filtersEnabled = true;
-
-    static {
-        try {
-            Configuration tmpConfig = new AnnotationConfiguration().setNamingStrategy(new NamingStrategy());
-            for (Class<?> cls : CSM_CLASSES) {
-                tmpConfig.addClass(cls);
-            }
-            tmpConfig.setInterceptor(new SecurityInterceptor());
-            HIBERNATE_CONFIG = tmpConfig.configure();
-            // We call buildSessionFactory twice, because it appears that the annotated classes are
-            // not 'activated' in the config until we build. The filters required the classes to
-            // be present, so we throw away the first factory and use the second. If this is
-            // removed, you'll likely see a NoClassDefFoundError in the unit tests
-            HIBERNATE_CONFIG.buildSessionFactory();
-            InstanceLevelSecurityHelper.addFilters(SecurityUtils.getAuthorizationManager(), tmpConfig);
-            Iterator<Collection> it = HIBERNATE_CONFIG.getCollectionMappings();
-            final String role = Group.class.getName() + ".users";
-            while (it.hasNext()) {
-                Collection c = it.next();
-                if (c.getRole().equals(role)) {
-                    c.setLazy(true);
-                    c.setExtraLazy(true);
-                }
-            }
-            SESSION_FACTORY = HIBERNATE_CONFIG.buildSessionFactory();
-        } catch (HibernateException e) {
-            LOG.error(e.getMessage(), e);
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 
     /**
      * A private constructor because this class should not be instantiated. All callable methods are static methods.
@@ -168,12 +125,21 @@ public final class HibernateUtil {
     }
 
     /**
+     * Get the hibernate helper.
+     * @return the helper.
+     */
+    private static HibernateHelper getHibernateHelper() {
+        return HIBERNATE_HELPER;
+    }
+
+    /**
      * Returns the Hibernate configuration.
      *
      * @return a Hibernate configuration.
+     * @see HibernateHelper#getConfiguration()
      */
     public static Configuration getConfiguration() {
-        return HIBERNATE_CONFIG;
+        return getHibernateHelper().getConfiguration();
     }
 
     /**
@@ -182,9 +148,10 @@ public final class HibernateUtil {
      * factory.)
      *
      * @return a Hibernate session.
+     * @see HibernateHelper#getCurrentSession()
      */
     public static Session getCurrentSession() {
-        Session result = SESSION_FACTORY.getCurrentSession();
+        Session result = getHibernateHelper().getCurrentSession();
         if (filtersEnabled) {
             InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), result, SecurityUtils
                     .getAuthorizationManager());
@@ -197,21 +164,20 @@ public final class HibernateUtil {
      * unit tests - DAO / Service layer logic should rely on container-managed transactions
      *
      * @return a Hibernate session.
+     * @see HibernateHelper#beginTransaction()
      */
     public static Transaction beginTransaction() {
-        Session result = SESSION_FACTORY.getCurrentSession();
-        return result.beginTransaction();
+        return getHibernateHelper().beginTransaction();
     }
 
     /**
      * Checks if the transaction is active and then rolls it back.
      *
      * @param tx the Transaction to roll back.
+     * @see HibernateHelper#rollbackTransaction(Transaction)
      */
     public static void rollbackTransaction(Transaction tx) {
-        if ((tx != null) && (tx.isActive())) {
-            tx.rollback();
-        }
+        getHibernateHelper().rollbackTransaction(tx);
     }
 
     /**
@@ -223,37 +189,36 @@ public final class HibernateUtil {
 
     /**
      * Open a hibernate session and bind it as the current session via
-     * {@link ManagedSessionContext#bind(org.hibernate.classic.Session)}. The hibernate property
+     * {@link org.hibernate.context.ManagedSessionContext#bind(org.hibernate.classic.Session)}. The hibernate property
      * "hibernate.current_session_context_class" must be set to "managed" for this to have effect This method should be
      * called from within an Interceptor or Filter type class that is setting up the scope of the Session. This method
      * should then call {@link HibernateUtil#unbindAndCleanupSession()} when the scope of the Session is expired.
      *
-     * @see ManagedSessionContext#bind(org.hibernate.classic.Session)
+     * @see HibernateHelper#openAndBindSession()
      */
     public static void openAndBindSession() {
-        SessionFactoryImplementor sessionFactory = (SessionFactoryImplementor) SESSION_FACTORY;
-        org.hibernate.classic.Session currentSession = sessionFactory.openSession(null, true, false,
-                ConnectionReleaseMode.AFTER_STATEMENT);
-        currentSession.setFlushMode(FlushMode.COMMIT);
-        ManagedSessionContext.bind(currentSession);
+        SecurityInterceptor.clear();
+        getHibernateHelper().openAndBindSession();
     }
 
     /**
-     * Close the current session and unbind it via {@link ManagedSessionContext#unbind(SessionFactory)}. The hibernate
+     * Close the current session and unbind it via
+     * {@link org.hibernate.context.ManagedSessionContext#unbind(SessionFactory)}. The hibernate
      * property "hibernate.current_session_context_class" must be set to "managed" for this to have effect. This method
      * should be called from within an Interceptor or Filter type class that is setting up the scope of the Session,
      * when this scope is about to expire.
+     * @see HibernateHelper#unbindAndCleanupSession()
      */
     public static void unbindAndCleanupSession() {
-        org.hibernate.classic.Session currentSession = ManagedSessionContext.unbind(HibernateUtil.getSessionFactory());
-        currentSession.close();
+        getHibernateHelper().unbindAndCleanupSession();
     }
 
     /**
      * @return hibernate session factory
+     * @see HibernateHelper#getSessionFactory()
      */
     public static SessionFactory getSessionFactory() {
-        return SESSION_FACTORY;
+        return getHibernateHelper().getSessionFactory();
     }
 
     /**
@@ -262,24 +227,63 @@ public final class HibernateUtil {
      * @return the result
      */
     public static Object doUnfiltered(UnfilteredCallback uc) {
-        Session session = SESSION_FACTORY.getCurrentSession();
+        Session session = getCurrentSession();
         disableFilters(session);
         try {
-          return uc.doUnfiltered(session);
+            return uc.doUnfiltered(session);
         } finally {
             enableFilters(session);
         }
     }
+
     private static void disableFilters(Session session) {
         Set<String> filters = session.getSessionFactory().getDefinedFilterNames();
         for (String filterName : filters) {
             session.disableFilter(filterName);
         }
     }
+
     private static void enableFilters(Session session) {
         if (filtersEnabled) {
             InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), session, SecurityUtils
                     .getAuthorizationManager());
         }
+    }
+
+    /**
+     * Break up a list of items into separate in clauses, to avoid limits imposed by databases or by Hibernate bug
+     * http://opensource.atlassian.com/projects/hibernate/browse/HHH-2166.
+     * @param items list of items to include in the in clause
+     * @param columnName name of column to match against the list
+     * @param blocks empty Map of HQL param name to param list of values to be set in the HQL query - it will be
+     *               populated by the method
+     * @return full HQL "in" clause, of the form: " or columnName in (:block1) or ... or columnName in (:blockN)"
+     */
+    public static String buildInClause(List<? extends Serializable> items, String columnName,
+            Map<String, List<? extends Serializable>> blocks) {
+        StringBuffer inClause = new StringBuffer();
+        for (int i = 0; i < items.size(); i += MAX_IN_CLAUSE_LENGTH) {
+            List<? extends Serializable> block = items.subList(i, Math.min(items.size(), i
+                    + HibernateUtil.MAX_IN_CLAUSE_LENGTH));
+            String paramName = "block" + (i / HibernateUtil.MAX_IN_CLAUSE_LENGTH);
+            if (inClause.length() > 0) {
+                inClause.append(" or");
+            }
+            inClause.append(" " + columnName + " in (:" + paramName + ")");
+            blocks.put(paramName, block);
+        }
+        return inClause.toString();
+    }
+
+    /**
+     * Bind the parameters returned by {@link HibernateUtil#buildInClause(List, String, Map)} to a hibernate Query.
+     * @param query hibernate query to bind to
+     * @param blocks blocks to be bound to query
+     */
+    public static void bindInClauseParameters(Query query, Map<String, List<? extends Serializable>> blocks) {
+        for (Map.Entry<String, List<? extends Serializable>> block : blocks.entrySet()) {
+            query.setParameterList(block.getKey(), block.getValue());
+        }
+
     }
 }

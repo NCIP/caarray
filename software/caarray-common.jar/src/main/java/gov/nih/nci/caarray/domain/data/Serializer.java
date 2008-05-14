@@ -82,9 +82,9 @@
  */
 package gov.nih.nci.caarray.domain.data;
 
-import java.io.Serializable;
-
 import gov.nih.nci.caarray.domain.SerializationHelperUtility;
+
+import java.io.Serializable;
 
 /**
  * Manages serialization of Objects to and from a compressed byte[].

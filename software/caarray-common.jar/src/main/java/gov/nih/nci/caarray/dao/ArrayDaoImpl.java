@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -101,7 +102,12 @@ import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UnfilteredCallback;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -109,7 +115,7 @@ import org.hibernate.Session;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
- *
+ * 
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
@@ -150,13 +156,14 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         StringBuilder queryStr = new StringBuilder("from ").append(ArrayDesign.class.getName()).append(
                 " ad where ad.provider = :provider ");
         if (importedOnly) {
-            queryStr.append(" and ad.designFile.status = :status ");
+            queryStr.append(" and (ad.designFile.status = :status1 or ad.designFile.status = :status2) ");
         }
         queryStr.append("order by name asc");
         Query query = getCurrentSession().createQuery(queryStr.toString());
         query.setEntity("provider", provider);
         if (importedOnly) {
-            query.setString("status", FileStatus.IMPORTED.name());
+            query.setString("status1", FileStatus.IMPORTED.name());
+            query.setString("status2", FileStatus.IMPORTED_NOT_PARSED.name());
         }
         return query.list();
     }
@@ -169,14 +176,15 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         StringBuilder queryStr = new StringBuilder("from ").append(ArrayDesign.class.getName()).append(
                 " ad where ad.provider = :provider and ad.assayType = :assayType ");
         if (importedOnly) {
-            queryStr.append(" and ad.designFile.status = :status ");
+            queryStr.append(" and (ad.designFile.status = :status1 or ad.designFile.status = :status2) ");
         }
         queryStr.append("order by name asc");
         Query query = getCurrentSession().createQuery(queryStr.toString());
         query.setEntity("provider", provider);
         query.setString("assayType", assayType.getValue());
         if (importedOnly) {
-            query.setString("status", FileStatus.IMPORTED.name());
+            query.setString("status1", FileStatus.IMPORTED.name());
+            query.setString("status2", FileStatus.IMPORTED_NOT_PARSED.name());
         }
         return query.list();
     }
@@ -208,9 +216,8 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      * {@inheritDoc}
      */
     public AbstractArrayData getArrayData(long id) {
-        Query q =
-                HibernateUtil.getCurrentSession().createQuery(
-                        "from " + AbstractArrayData.class.getName() + " where id = :id");
+        Query q = HibernateUtil.getCurrentSession().createQuery(
+                "from " + AbstractArrayData.class.getName() + " where id = :id");
         q.setLong("id", id);
         return (AbstractArrayData) q.uniqueResult();
     }
@@ -219,9 +226,8 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      * {@inheritDoc}
      */
     public Hybridization getHybridization(Long id) {
-        Query q =
-                HibernateUtil.getCurrentSession().createQuery(
-                        "from " + Hybridization.class.getName() + " where id = :id");
+        Query q = HibernateUtil.getCurrentSession().createQuery(
+                "from " + Hybridization.class.getName() + " where id = :id");
         q.setLong("id", id);
         return (Hybridization) q.uniqueResult();
     }
@@ -292,9 +298,8 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
             public Object doUnfiltered(Session s) {
                 BrowseCategory cat = BrowseCategory.ARRAY_DESIGNS;
                 StringBuffer sb = new StringBuffer();
-                sb.append("SELECT COUNT(DISTINCT p) FROM ")
-                  .append(Project.class.getName()).append(" p JOIN ").append(cat.getJoin())
-                  .append(" WHERE ").append(cat.getField()).append(".id = :id");
+                sb.append("SELECT COUNT(DISTINCT p) FROM ").append(Project.class.getName()).append(" p JOIN ").append(
+                        cat.getJoin()).append(" WHERE ").append(cat.getField()).append(".id = :id");
                 Query q = s.createQuery(sb.toString());
                 q.setParameter("id", id);
                 return q.uniqueResult();
@@ -302,5 +307,46 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         };
         Number count = (Number) HibernateUtil.doUnfiltered(u);
         return count.intValue() > 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, Long> getLogicalProbeNamesToIds(ArrayDesign design, List<String> names) {
+        String queryString = "select lp.name, lp.id from " + LogicalProbe.class.getName()
+                + " lp where lp.name in (:names) and lp.arrayDesignDetails = :details";
+        Query query = getCurrentSession().createQuery(queryString);
+        query.setParameterList("names", names);
+        query.setParameter("details", design.getDesignDetails());
+        List<Object[]> results = query.list();
+        Map<String, Long> namesToIds = new HashMap<String, Long>();
+        for (Object[] result : results) {
+            namesToIds.put((String) result[0], (Long) result[1]); 
+        }
+        return namesToIds;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void createDesignElementListEntries(DesignElementList designElementList, int startIndex,
+            List<Long> logicalProbeIds) {
+        Connection conn = getCurrentSession().connection();
+        PreparedStatement stmt = null;
+        try {
+            stmt = conn.prepareStatement("insert into designelementlist_designelement "
+                    + "(designelementlist_id, designelement_id, designelement_index) values (?, ?, ?)");
+            int i = startIndex;
+            for (Long probeId : logicalProbeIds) {
+                stmt.setLong(1, designElementList.getId());
+                stmt.setLong(2, probeId);        
+                stmt.setInt(3, i++); 
+                stmt.addBatch();            
+            }
+            stmt.executeBatch();
+        } catch (SQLException e) {
+            throw new DAOException("Error inserting elements in the design element list", e);
+        }
     }
 }

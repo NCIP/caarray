@@ -11,6 +11,7 @@
     <decorator name="default" page="/WEB-INF/pages/decorators/default.jsp">
         <pattern>/*</pattern>
     </decorator>
+    <decorator name="popup" page="/WEB-INF/pages/decorators/popup.jsp"/>
 </decorators>
 
 

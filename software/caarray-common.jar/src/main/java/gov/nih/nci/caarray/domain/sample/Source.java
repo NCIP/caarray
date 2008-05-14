@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.sample;
 
 import gov.nih.nci.caarray.domain.contact.AbstractContact;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 
 import java.util.HashSet;
@@ -96,6 +97,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -109,7 +111,7 @@ import org.hibernate.annotations.ForeignKey;
 @DiscriminatorValue("SO")
 public class Source extends AbstractBioMaterial {
     private static final long serialVersionUID = 1234567890L;
-    private static final String DEFAULT_FK_ID = "SOURCE_ID";
+    private static final String DEFAULT_FK_ID = "source_id";
 
     private Set<Sample> samples = new HashSet<Sample>();
     private Set<AbstractContact> providers = new HashSet<AbstractContact>();
@@ -122,11 +124,11 @@ public class Source extends AbstractBioMaterial {
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "SOURCESAMPLE",
+            name = "sourcesample",
             joinColumns = { @javax.persistence.JoinColumn(name = DEFAULT_FK_ID) },
-            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "SAMPLE_ID") }
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "sample_id") }
     )
-    @ForeignKey(name = "SOURCESAMPLE_SOURCE_FK", inverseName = "SOURCESAMPLE_SAMPLE_FK")
+    @ForeignKey(name = "sourcesample_source_fk", inverseName = "sourcesample_sample_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @Filter(name = "Project1", condition = Experiment.SAMPLES_FILTER)
     public Set<Sample> getSamples() {
@@ -150,11 +152,11 @@ public class Source extends AbstractBioMaterial {
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "SOURCEPROVIDER",
+            name = "sourceprovider",
             joinColumns = { @javax.persistence.JoinColumn(name = DEFAULT_FK_ID) },
-            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "CONTACT_ID") }
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "contact_id") }
     )
-    @ForeignKey(name = "SOURCEPROVIDER_SOURCE_FK", inverseName = "SOURCEPROVIDER_PROVIDER_FK")
+    @ForeignKey(name = "sourceprovider_source_fk", inverseName = "sourceprovider_provider_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<AbstractContact> getProviders() {
         return providers;
@@ -174,9 +176,9 @@ public class Source extends AbstractBioMaterial {
      * @return the experiment to which this source belongs
      */
     @ManyToOne
-    @JoinTable(name = "EXPERIMENTSOURCE",
-            joinColumns = {@JoinColumn(name = "SOURCE_ID", insertable = false, updatable = false) },
-            inverseJoinColumns = {@JoinColumn(name = "EXPERIMENT_ID", insertable = false, updatable = false) })
+    @JoinTable(name = "experimentsource",
+            joinColumns = {@JoinColumn(name = "source_id", insertable = false, updatable = false) },
+            inverseJoinColumns = {@JoinColumn(name = "experiment_id", insertable = false, updatable = false) })
     public Experiment getExperiment() {
         return experiment;
     }
@@ -196,5 +198,17 @@ public class Source extends AbstractBioMaterial {
         return new ToStringBuilder(this)
             .append("providers", providers)
             .toString();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Transient
+    public Set<Hybridization> getRelatedHybridizations() {
+        Set<Hybridization> hybs = new HashSet<Hybridization>();
+        for (Sample s : getSamples()) {
+            hybs.addAll(s.getRelatedHybridizations());
+        }
+        return hybs;
     }
 }

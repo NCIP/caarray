@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.domain.permissions;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.security.authorization.domainobjects.Group;
@@ -101,11 +101,16 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.BatchSize;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+
 /**
  * CollaboratorGroups bridge CSM groups with owners.
  */
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "CSM_GROUP", "CSM_USER" }) })
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "csm_group", "csm_user" }) })
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class CollaboratorGroup implements PersistentObject, Protectable {
     //
@@ -185,7 +190,7 @@ public class CollaboratorGroup implements PersistentObject, Protectable {
     }
 
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    @Column(name = "CSM_GROUP", nullable = false)
+    @Column(name = "csm_group", nullable = false)
     private long getGroupId() {
         return group.getGroupId();
     }
@@ -196,7 +201,7 @@ public class CollaboratorGroup implements PersistentObject, Protectable {
     }
 
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    @Column(name = "CSM_USER", nullable = false)
+    @Column(name = "csm_user", nullable = false)
     private long getOwnerId() {
         return owner.getUserId();
     }

@@ -17,28 +17,19 @@
             <display:setProperty name="pagination.sortdirection.param" value="pagedItems.sortDirection" />
             <display:setProperty name="pagination.pagenumber.param" value="pagedItems.pageNumber" />
             <display:column titleKey="experiment.samples.name" sortable="true" sortProperty="NAME">
-                <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Sample" action="view" itemId="${row.id}" isSubtab="true"/>
+                <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Sample" action="view" itemId="${row.id}" isSubtab="true" maxWidth="30"/>
             </display:column>
             <display:column property="description" sortProperty="DESCRIPTION" titleKey="experiment.samples.description" sortable="true" />
             <display:column property="materialType.value" titleKey="currentSample.materialType"/>
             <display:column titleKey="experiment.samples.sources">
-                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.sources}" relatedEntityName="Source" nameProperty="name" isSubtab="true"/>
+                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.sources}" relatedEntityName="Source" nameProperty="name" isSubtab="true" maxWidth="30"/>
             </display:column>
             <display:column titleKey="experiment.samples.extracts">
-                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.extracts}" relatedEntityName="Extract" nameProperty="name" isSubtab="true"/>
+                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.extracts}" relatedEntityName="Extract" nameProperty="name" isSubtab="true" maxWidth="30"/>
             </display:column>
             <caarray:projectListTabActionColumns entityName="Sample" item="${row}" actions="!edit,!copy,!delete" 
                 isSubtab="true" canWriteProject="${canWriteProject}"/>
-            <display:column titleKey="button.download">
-        <c:url value="/ajax/project/listTab/Samples/download.action" var="actionUrl">
-            <c:param name="project.id" value="${project.id}" />
-            <c:param name="currentSample.id" value="${row.id}" />
-            <c:param name="editMode" value="${editMode}" />
-        </c:url>
-            <a href="${actionUrl}">
-                <img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>">
-            </a>
-            </display:column>
+            <caarray:projectListTabDownloadColumn entityName="Sample" itemId="${row.id}"/>
         </display:table>
     </ajax:displayTag>
 

@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
@@ -226,4 +227,22 @@ public interface ArrayDao extends CaArrayDao {
      * @return the matching design list or null.
      */
     DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId);
+
+    /**
+     * Return a mapping of logical probe names to ids for the given list of probe names.
+     * @param design probes must belong to this design
+     * @param names the names of the probes for which to get ids
+     * @return the Map&lt;String, Long> of probe names to ids for the given names
+     */
+    Map<String, Long> getLogicalProbeNamesToIds(ArrayDesign design, List<String> names);
+
+    /**
+     * Save a batch of design element entries in a design element list. The entries are put in the list starting at 
+     * a given index.
+     * @param designElementList the design element list to which the entries belong (must already be persistent)
+     * @param startIndex the starting index in the list at which the entries should be saved
+     * @param logicalProbeIds the ids of the design elements which should be added to the list starting at given index
+     */
+    void createDesignElementListEntries(DesignElementList designElementList, int startIndex, 
+            List<Long> logicalProbeIds);
 }

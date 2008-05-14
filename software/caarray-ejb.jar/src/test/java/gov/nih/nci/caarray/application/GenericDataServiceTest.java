@@ -88,17 +88,20 @@ import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Class to test the generic service.
@@ -122,12 +125,22 @@ public class GenericDataServiceTest {
 
     @Test
     public void testRetrieveProject() {
-        Object obj = this.service.retrieveEntity(Project.class, 999l);
+        Object obj = this.service.getPersistentObject(Project.class, 999l);
         assertEquals(null, obj);
 
-        obj = this.service.retrieveEntity(Project.class, 1l);
+        obj = this.service.getPersistentObject(Project.class, 1l);
         assertEquals(SecurityLevel.VISIBLE, ((Project) obj).getPublicProfile().getSecurityLevel());
     }
+    
+    @Test
+    public void testRetrieveByIds() throws IllegalAccessException, InstantiationException {
+        List<Project> lst = this.service.retrieveByIds(Project.class, Collections.singletonList(1L));
+        assertEquals(1, lst.size());
+
+        lst = this.service.retrieveByIds(Project.class, Collections.singletonList(9L));
+        assertEquals(0, lst.size());
+    }
+    
 
     @Test
     public void testGetIncrementingCopyName() {
@@ -215,6 +228,24 @@ public class GenericDataServiceTest {
                 return (T) new Project();
             }
             return null;
+        }
+        
+        @Override
+        public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
+            List<T> list = new ArrayList<T>();
+            if (Project.class.equals(entityClass)) {
+                if (ids.contains(1L)) {
+                    try {
+                        list.add(entityClass.newInstance());
+                    } catch (InstantiationException e) { // NOPMD
+                        // nothing to do - test will fail 
+                    } catch (IllegalAccessException e) { // NOPMD
+                        // nothing to do - test will fail
+                    }
+                }
+                return list;
+            }
+            return new ArrayList<T>();
         }
 
         /**

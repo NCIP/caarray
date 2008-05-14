@@ -83,18 +83,21 @@
 package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+
+import java.io.File;
 
 import org.junit.Test;
 
 /**
  * 
- * Use Case UC#7231.
- * Test Case #10320, #10321, #10324, #10325
- * Requirements: Browse by Experiments, Organism, Array Providers, and Unique Array Designs
- *
+ * Use Case UC#7231. Test Case #10320, #10321, #10324, #10325 Requirements: Browse by Experiments, Organism, Array
+ * Providers, and Unique Array Designs
+ * 
  */
 public class BrowseExperimentTest extends AbstractSeleniumTest {
-    private String experimentId;
+    private static final int TWO_MINUTES = 12;
+    private static final String ARRAY_DESIGN_NAME = "Test3";
 
     @Test
     public void testNew() throws Exception {
@@ -102,11 +105,15 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         // - Login
         loginAsPrincipalInvestigator();
 
+        // - Add the array design
+        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+
         // - Create an Experiment
-        createExperiment(title);
+        String experimentId = createExperiment(title, ARRAY_DESIGN_NAME, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
 
         // - Submit Experiment Proposal
-        makeExperimentPublic(title);
+        submitExperiment();
+        makeExperimentPublic(experimentId);
 
         // - logout
         selenium.click("link=Logout");
@@ -119,58 +126,51 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         findTitleAcrossMultiPages(experimentId);
 
         // - Browse by Organisms
-        selenium.click("link=Login");
+        selenium.click("link=Browse");
         waitForText("Welcome to the caArray Data Portal");
         selenium.click("link=Organisms");
         waitForText("found");
+        // Click on the Homo Sapien tab incase there is more than one tab
+        selenium.click("link=Homo sapiens (*");
+        waitForTab();
         // - Assert the Experiment is visible without logging in
         findTitleAcrossMultiPages(experimentId);
 
-        // - Browse by Unique Array Providers
-        selenium.click("link=Login");
+        // - Browse by Array Providers
+        selenium.click("link=Browse");
         waitForText("Welcome to the caArray Data Portal");
         selenium.click("link=Array Providers");
         waitForText("found");
+        // Click on the Affymetrix tab incase there is more than one tab
+        selenium.click("link=Affymetrix (*");
+        waitForTab();
+
         // - Assert the Experiment is visible without logging in
         findTitleAcrossMultiPages(experimentId);
 
         // - Browse by Unique Array Designs
-        //  - no array design set on the experiment
-        
-
-    }
-
-    private void makeExperimentPublic(String title) throws Exception {
-        submitExperiment();
-
-        clickAndWait("link=My Experiment Workspace");
+        selenium.click("link=Browse");
+        waitForText("Welcome to the caArray Data Portal");
+        selenium.click("link=Unique Array Designs");
+        waitForText("found");
+        // Click on the Affymetrix tab incase there is more than one tab
+        selenium.click("link=Test3 (*");
         waitForTab();
 
-        findTitleAcrossMultiPages(title);
-        // - Need the table row to click on the edit icon
-        int row = getExperimentRow(title);
-        // - Get the Experiment Id for use later when doing an anonymous search
-        experimentId = selenium.getTable("row." + row + ".0");
-        // - Click on the image to enter the edit mode again
-        selenium.click("//tr[" + row + "]/td[7]/a/img");
-        waitForText("Overall Experiment Characteristics");
-
-        // make experiment public
-        setExperimentPublic();
+        // - Assert the Experiment is visible without logging in
+        findTitleAcrossMultiPages(experimentId);
     }
 
-    private int getExperimentRow(String text) {
-        for (int loop = 1;; loop++) {
-            if (loop % PAGE_SIZE != 0) {
-                if (text.equalsIgnoreCase(selenium.getTable("row." + loop + ".1"))) {
-                    return loop;
-                }
-            } else {
-                // Moving to next page
-                selenium.click("link=Next");
-                waitForAction();
-                loop = 1;
-            }
+    private void importArrayDesign(File arrayDesign) throws Exception {
+        selenium.click("link=Manage Array Designs");
+        selenium.waitForPageToLoad("30000");
+        if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
+            addArrayDesign(arrayDesign, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+
+            // get the array design row so we do not find the wrong Imported text
+            int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
+            // wait for array design to be imported
+            waitForArrayDesignImport(TWO_MINUTES, column);
         }
     }
 

@@ -1,13 +1,11 @@
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.helper.EmailHelper;
-import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
@@ -59,14 +58,6 @@ public class ProjectAction extends AbstractBaseProjectAction {
         }
         setEditMode(true);
         return INPUT;
-    }
-
-    /**
-     * get the csm user.  This method is extracted so it can be overwritten in test cases.
-     * @return the csm user.
-     */
-    protected User getCsmUser() {
-        return UsernameHolder.getCsmUser();
     }
 
     /**
@@ -136,8 +127,13 @@ public class ProjectAction extends AbstractBaseProjectAction {
             ProposalStatus oldStatus = getProject().getStatus();
             getProjectManagementService().changeProjectStatus(getProject().getId(), this.workflowStatus);
             List<String> args = new ArrayList<String>();
-            args.add(getProject().getExperiment().getTitle());
+            args.add(StringUtils.abbreviate(getProject().getExperiment().getTitle(), TRUNCATED_TITLE_WIDTH));
             args.add(getText(this.workflowStatus.getResourceKey()));
+            if (oldStatus == ProposalStatus.PUBLIC) {
+                args.add(getText("project.workflowStatusUpdated.retractPublic"));
+            } else {
+                args.add("");
+            }
             ActionHelper.saveMessage(getText("project.workflowStatusUpdated", args));
             if (oldStatus == ProposalStatus.DRAFT && this.workflowStatus == ProposalStatus.IN_PROGRESS) {
                 sendSubmitExperimentEmail();

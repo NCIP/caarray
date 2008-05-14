@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.contact;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -93,6 +94,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -103,10 +105,11 @@ import org.hibernate.validator.Length;
  *
  */
 @Entity
-@Table(name = "CONTACT")
+@Table(name = "contact")
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(
-        name = "DISCRIMINATOR",
+        name = "discriminator",
         discriminatorType = DiscriminatorType.STRING
 )
 public abstract class AbstractContact extends AbstractCaArrayEntity {
@@ -200,7 +203,7 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "CONTACT_ADDRESS_FK")
+    @ForeignKey(name = "contact_address_fk")
     public Address getAddress() {
         return this.address;
     }

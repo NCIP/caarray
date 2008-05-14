@@ -83,11 +83,12 @@
 
 package gov.nih.nci.caarray.domain.contact;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * 

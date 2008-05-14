@@ -92,4 +92,7 @@ public class GenepixArrayDesignFiles {
     public static final File TWO_K_GAL =
         new File(GenepixArrayDesignFiles.class.getResource("/arraydesign/genepix/2K_Hs-ATC7_6k-v5px_16Bx22Cx22R.gal").getFile());
 
+    public static final File MEEBO =
+        new File(GenepixArrayDesignFiles.class.getResource("/arraydesign/genepix/MEEBO.GAL").getFile());
+
 }

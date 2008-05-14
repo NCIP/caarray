@@ -87,7 +87,6 @@ package gov.nih.nci.caarray.web.util;
  * Constant values used throughout the application.
  *
  */
-
 public class Constants {
     //~ Static fields/initializers =============================================
 

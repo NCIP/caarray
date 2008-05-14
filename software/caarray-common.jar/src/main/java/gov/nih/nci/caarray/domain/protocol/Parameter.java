@@ -1,6 +1,7 @@
 package gov.nih.nci.caarray.domain.protocol;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.validation.UniqueConstraint;
 import gov.nih.nci.caarray.validation.UniqueConstraintField;
 import gov.nih.nci.caarray.validation.UniqueConstraints;
@@ -13,6 +14,7 @@ import javax.persistence.ManyToOne;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.validator.NotNull;
@@ -104,6 +106,7 @@ import org.hibernate.validator.NotNull;
 
    */
 @Entity
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @UniqueConstraints(constraints = {@UniqueConstraint(fields = {@UniqueConstraintField(name = "name"),
         @UniqueConstraintField(name = "protocol") }) })
 public class Parameter extends AbstractCaArrayEntity {
@@ -160,8 +163,8 @@ public class Parameter extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "DEFAULT_VALUE_ID")
-    @ForeignKey(name = "PARAMETER_DEFAULTVALUE_FK")
+    @JoinColumn(name = "default_value_id")
+    @ForeignKey(name = "parameter_defaultvalue_fk")
     public ParameterValue getDefaultValue() {
         return this.defaultValue;
     }
@@ -180,7 +183,7 @@ public class Parameter extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @JoinColumn(updatable = false)
-    @ForeignKey(name = "PARAMETER_PROTOCOL_FK")
+    @ForeignKey(name = "parameter_protocol_fk")
     @NotNull
     public Protocol getProtocol() {
         return this.protocol;

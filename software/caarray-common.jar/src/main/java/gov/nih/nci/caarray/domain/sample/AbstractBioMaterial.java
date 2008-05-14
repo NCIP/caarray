@@ -85,13 +85,18 @@ package gov.nih.nci.caarray.domain.sample;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.AttributeMutator;
 import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.SecurityPolicy;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -105,9 +110,11 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.collections.Closure;
 import org.apache.commons.lang.ArrayUtils;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -118,10 +125,11 @@ import org.hibernate.validator.NotNull;
  *
  */
 @Entity
-@Table(name = "BIOMATERIAL")
+@Table(name = "biomaterial")
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.STRING)
-public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
+@DiscriminatorColumn(name = "discriminator", discriminatorType = DiscriminatorType.STRING)
+public abstract class AbstractBioMaterial extends AbstractCaArrayEntity implements ProtocolApplicable {
     private static final long serialVersionUID = 1234567890L;
 
     private Term tissueSite;
@@ -139,7 +147,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "BIOMATERIAL_SITE_FK")
+    @ForeignKey(name = "biomaterial_site_fk")
     public Term getTissueSite() {
         return this.tissueSite;
     }
@@ -158,7 +166,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "BIOMATERIAL_MAT_TYPE_FK")
+    @ForeignKey(name = "biomaterial_mat_type_fk")
     public Term getMaterialType() {
         return this.materialType;
     }
@@ -177,7 +185,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "BIOMATERIAL_CELL_TYPE_FK")
+    @ForeignKey(name = "biomaterial_cell_type_fk")
     public Term getCellType() {
         return this.cellType;
     }
@@ -194,7 +202,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "BIOMATERIAL_DIS_STATE_FK")
+    @ForeignKey(name = "biomaterial_dis_state_fk")
     public Term getDiseaseState() {
         return this.diseaseState;
     }
@@ -275,7 +283,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      * @return the protocolApplications
      */
     @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.LAZY)
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     public Set<ProtocolApplication> getProtocolApplications() {
         return this.protocolApplications;
     }
@@ -291,11 +299,25 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public void addProtocolApplication(ProtocolApplication protocolApplication) {
+        this.protocolApplications.add(protocolApplication);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void clearProtocolApplications() {
+        this.protocolApplications.clear();
+    }
+
+    /**
      * @return the organism
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "BIOMATERIAL_ORGANISM_FK")
+    @ForeignKey(name = "biomaterial_organism_fk")
     @AttributePolicy(deny = SecurityPolicy.TCGA_POLICY_NAME)
     public Organism getOrganism() {
         return this.organism;
@@ -306,6 +328,29 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     public void setOrganism(Organism organism) {
         this.organism = organism;
+    }
+
+    /**
+     * @return the set of hybridizations related to this biomaterial (via the biomaterial chain)
+     */
+    @Transient
+    public abstract Set<Hybridization> getRelatedHybridizations();
+
+    /**
+     * @return all the data files related to this biomaterial. This is the set of files
+     * that is related to at least one hybridization that is related to this biomaterial
+     * (@see getRelatedHybs()).
+     */
+    @Transient
+    public Collection<CaArrayFile> getAllDataFiles() {
+        Collection<CaArrayFile> files = new HashSet<CaArrayFile>();
+        Collection<Hybridization> hybridizations = getRelatedHybridizations();
+        if (hybridizations != null && !hybridizations.isEmpty()) {
+            for (Hybridization h : hybridizations) {
+                files.addAll(h.getAllDataFiles());
+            }
+        }
+        return files;
     }
 
     /**
@@ -338,9 +383,9 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
                 }
             }
         }
-        
+
         private static boolean isCharacteristicAllowed(TermBasedCharacteristic termChar) {
             return ArrayUtils.contains(ALLOWED_CHARACTERISTIC_CATEGORIES, termChar.getCategory().getName());
         }
-    }    
+    }
 }

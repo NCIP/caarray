@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
@@ -154,6 +155,14 @@ abstract class AbstractArrayDesignHandler {
     void flushAndClearSession() {
         getArrayDao().flushSession();
         getArrayDao().clearSession();
+    }
+    
+    FileStatus getValidationErrorStatus() {
+        return FileStatus.VALIDATION_ERRORS;
+    }
+
+    FileStatus getValidatedStatus() {
+        return FileStatus.VALIDATED;
     }
 
 }

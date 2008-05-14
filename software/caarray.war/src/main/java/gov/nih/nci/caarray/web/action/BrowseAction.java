@@ -164,7 +164,7 @@ public class BrowseAction extends ActionSupport {
      */
     @Override
     public String execute() {
-        BrowseService bs = ActionHelper.getBrowseService();
+        BrowseService bs = CaArrayActionHelper.getBrowseService();
         List<Object[]> resultList = bs.tabList(this.category);
         this.tabs = new TreeSet<BrowseTab>();
         for (Object[] tab : resultList) {
@@ -178,7 +178,7 @@ public class BrowseAction extends ActionSupport {
      * @return tab
      */
     public String list() {
-        BrowseService bs = ActionHelper.getBrowseService();
+        BrowseService bs = CaArrayActionHelper.getBrowseService();
         this.results.setFullListSize(bs.browseCount(this.category, this.id));
         this.results.setList(bs.browseList(this.results.getPageSortParams(), this.category, this.id));
         return "tab";

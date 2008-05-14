@@ -100,7 +100,6 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
@@ -177,7 +176,7 @@ public class ProjectContactsActionTest {
     public void testSave() {
         ServletActionContext.setRequest(new MockHttpServletRequest());
         // save new project
-        assertEquals("initial-save", this.action.save());
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
 
         // save existing project
         this.action.setProject(new Project());
@@ -190,7 +189,7 @@ public class ProjectContactsActionTest {
         this.action.setPiIsMainPoc(true);
         ExperimentContact piContact = new ExperimentContact(getExperiment(), DUMMY_PERSON_1, PI_ROLE);
         getExperimentContacts().add(piContact);
-        assertEquals("initial-save", this.action.save());
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
 
         this.action.setProject(new Project());
         this.action.setPrimaryInvestigator(DUMMY_PERSON_2);
@@ -198,7 +197,7 @@ public class ProjectContactsActionTest {
         piContact = new ExperimentContact(getExperiment(), DUMMY_PERSON_1, PI_ROLE);
         getExperimentContacts().add(piContact);
         piContact.getRoles().add(MAIN_POC_ROLE);
-        assertEquals("initial-save", this.action.save());
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
     }
 
     private Experiment getExperiment() {

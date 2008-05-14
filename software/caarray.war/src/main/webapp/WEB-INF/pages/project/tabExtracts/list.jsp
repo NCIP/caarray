@@ -17,18 +17,19 @@
             <display:setProperty name="pagination.sortdirection.param" value="pagedItems.sortDirection" />
             <display:setProperty name="pagination.pagenumber.param" value="pagedItems.pageNumber" />
             <display:column titleKey="experiment.extracts.name" sortable="true" sortProperty="NAME">
-                <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Extract" action="view" itemId="${row.id}" isSubtab="true"/>
+                <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Extract" action="view" itemId="${row.id}" isSubtab="true" maxWidth="30"/>
             </display:column>
             <display:column property="description" sortProperty="DESCRIPTION" titleKey="experiment.extracts.description" sortable="true" />
             <display:column property="materialType.value" titleKey="currentExtract.materialType"/>
             <display:column titleKey="experiment.extracts.relatedSamples">
-                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.samples}" relatedEntityName="Sample" nameProperty="name" isSubtab="true"/>
+                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.samples}" relatedEntityName="Sample" nameProperty="name" isSubtab="true" maxWidth="30"/>
             </display:column>
             <display:column titleKey="experiment.extracts.labeledExtracts">
-                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.labeledExtracts}" relatedEntityName="LabeledExtract" nameProperty="name" isSubtab="true"/>
+                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.labeledExtracts}" relatedEntityName="LabeledExtract" nameProperty="name" isSubtab="true" maxWidth="30"/>
             </display:column>
             <caarray:projectListTabActionColumns entityName="Extract" item="${row}" actions="!edit,!copy,!delete" 
                 isSubtab="true" canWriteProject="${canWriteProject}"/>
+            <caarray:projectListTabDownloadColumn entityName="Extract" itemId="${row.id}"/>
         </display:table>
     </ajax:displayTag>
 

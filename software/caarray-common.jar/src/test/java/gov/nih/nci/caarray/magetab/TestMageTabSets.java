@@ -82,11 +82,6 @@
  */
 package gov.nih.nci.caarray.magetab;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Collection;
-import java.util.Locale;
-
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
@@ -97,6 +92,11 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.validation.InvalidDataException;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.Collection;
+import java.util.Locale;
+
 /**
  * MAGE-TAB document sets to be used as test data.
  */
@@ -106,8 +106,6 @@ public final class TestMageTabSets {
         super();
     }
 
-    private static final FilenameFilter CEL_FILTER = createExtensionFilter("cel");
-
     /**
      * Example set of documents included with MAGE-TAB specification.
      */
@@ -116,14 +114,25 @@ public final class TestMageTabSets {
     /**
      * Example set of documents included with MAGE-TAB specification.
      */
+    public static final MageTabInputFileSet MAGE_TAB_MISPLACED_FACTOR_VALUES_INPUT_SET = getMisplacedFactorValuesInputSet();
+    
+    /**
+     * Example set of documents included with MAGE-TAB specification.
+     */
     public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_INPUT_SET = getSpecificationInputSet();
+
+    /**
+     * Example set of documents based on the MAGE-TAB specification example, with no array design ref in the SDRF.
+     */
+    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET =
+        getSpecificationNoArrayDesignInputSet();
 
     /**
      * Example set of documents included with MAGE-TAB specification, minus the data matrix
      */
-    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_NO_DATA_MATRIX_INPUT_SET = 
+    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_NO_DATA_MATRIX_INPUT_SET =
         getSpecificationWithoutDataMatrixInputSet();
-    
+
     /**
      * Example set of documents with ERRORS based on the MAGE-TAB specification.
      */
@@ -150,6 +159,11 @@ public final class TestMageTabSets {
     public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_SET = getSet(MAGE_TAB_SPECIFICATION_INPUT_SET);
 
     /**
+     * Document set parsed from the MAGE-TAB specification example files, with no array design references in the SDRF.
+     */
+    public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET = getSet(MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET);
+
+    /**
      * Document set parsed from the MAGE-TAB specification example files.
      */
     public static final MageTabDocumentSet PERFORMANCE_TEST_10_SET = getSet(PERFORMANCE_TEST_10_INPUT_SET);
@@ -166,9 +180,29 @@ public final class TestMageTabSets {
     public static final MageTabInputFileSet EBI_TEMPLATE_INPUT_SET = getEbiTemplateInputSet();
 
     /**
+     * MAGE-TAB input set derived from 1x export data
+     */
+    public static final MageTabInputFileSet CAARRAY1X_INPUT_SET = getCaarray1xInputSet();
+
+    /**
+     * MAGE-TAB input set from TCGA Broad data.
+     */
+    public static final MageTabInputFileSet DEFECT_12537_INPUT_SET = getDefect12537InputSet();
+
+    /**
+     * MAGE-TAB input set from TCGA Broad data.
+     */
+    public static final MageTabInputFileSet DEFECT_12537_ERROR_INPUT_SET = getDefect12537ErrorInputSet();
+
+    /**
      * Document set parsed from TCGA Broad data.
      */
     public static final MageTabDocumentSet TCGA_BROAD_SET = getSet(TCGA_BROAD_INPUT_SET);
+
+    /**
+     * Example set of MAGE-TAB data.
+     */
+    public static final MageTabDocumentSet GSK_TEST_SET = getSet(getGskTestSet());
 
     private static MageTabDocumentSet getSet(MageTabInputFileSet inputSet) {
         try {
@@ -180,6 +214,13 @@ public final class TestMageTabSets {
             e.printStackTrace(System.err);
             return null;
         }
+    }
+    
+    private static MageTabInputFileSet getMisplacedFactorValuesInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.MISPLACED_FACTOR_VALUES_IDF);
+        fileSet.addSdrf(MageTabDataFiles.MISPLACED_FACTOR_VALUES_SDRF);
+        return fileSet;
     }
 
     private static MageTabInputFileSet getEbiTemplateInputSet() {
@@ -201,7 +242,16 @@ public final class TestMageTabSets {
 
 
     private static void addCelFiles(MageTabInputFileSet fileSet, File dataFileDirectory) {
-        File[] celFiles = dataFileDirectory.listFiles(CEL_FILTER);
+        addDataFiles(fileSet, dataFileDirectory, "cel");
+    }
+
+    private static void addExpFiles(MageTabInputFileSet fileSet, File dataFileDirectory) {
+        addDataFiles(fileSet, dataFileDirectory, "exp");
+    }
+
+    private static void addDataFiles(MageTabInputFileSet fileSet, File dataFileDirectory, String extension) {
+        FilenameFilter filter = createExtensionFilter(extension);
+        File[] celFiles = dataFileDirectory.listFiles(filter);
         for (File file : celFiles) {
             fileSet.addNativeData(file);
         }
@@ -219,6 +269,16 @@ public final class TestMageTabSets {
         MageTabInputFileSet fileSet = new MageTabInputFileSet();
         fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+        fileSet.addAdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
+        fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
+        addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY);
+        return fileSet;
+    }
+
+    private static MageTabInputFileSet getSpecificationNoArrayDesignInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_NO_ARRAY_DESIGN_SDRF);
         fileSet.addAdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
         fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY);
@@ -259,6 +319,44 @@ public final class TestMageTabSets {
         return fileSet;
     }
 
+    private static MageTabInputFileSet getCaarray1xInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.CAARRAY1X_IDF);
+        fileSet.addSdrf(MageTabDataFiles.CAARRAY1X_SDRF);
+        addDataFiles(fileSet, MageTabDataFiles.CAARRAY1X_DIRECTORY, "gpr");
+        return fileSet;
+    }
+
+    private static MageTabInputFileSet getGskTestSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.GSK_TEST_IDF);
+        fileSet.addSdrf(MageTabDataFiles.GSK_TEST_SDRF);
+        addCelFiles(fileSet, MageTabDataFiles.GSK_TEST_DIRECTORY);
+        addExpFiles(fileSet, MageTabDataFiles.GSK_TEST_DIRECTORY);
+        return fileSet;
+    }
+
+
+    private static MageTabInputFileSet getDefect12537InputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.DEFECT_12537_IDF);
+        fileSet.addSdrf(MageTabDataFiles.DEFECT_12537_SDRF);
+        fileSet.addDataMatrix(MageTabDataFiles.DEFECT_12537_ABSOLUTE_DATA_MATRIX);
+        fileSet.addDataMatrix(MageTabDataFiles.DEFECT_12537_RMA_DATA_MATRIX);
+        addCelFiles(fileSet, MageTabDataFiles.DEFECT_12537_DATA_DIRECTORY);
+        return fileSet;
+    }
+
+    private static MageTabInputFileSet getDefect12537ErrorInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.DEFECT_12537_ERROR__IDF);
+        fileSet.addSdrf(MageTabDataFiles.DEFECT_12537_ERROR_SDRF);
+        fileSet.addDataMatrix(MageTabDataFiles.DEFECT_12537_ERROR_ABSOLUTE_DATA_MATRIX);
+        fileSet.addDataMatrix(MageTabDataFiles.DEFECT_12537_ERROR_RMA_DATA_MATRIX);
+        addCelFiles(fileSet, MageTabDataFiles.DEFECT_12537_ERROR_DATA_DIRECTORY);
+        return fileSet;
+    }
+    
     private static FilenameFilter createExtensionFilter(final String extension) {
         return new FilenameFilter() {
             public boolean accept(File dir, String name) {
@@ -296,6 +394,8 @@ public final class TestMageTabSets {
             caArrayFile.setFileType(FileType.MAGE_TAB_DATA_MATRIX);
         } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".cel")) {
             caArrayFile.setFileType(FileType.AFFYMETRIX_CEL);
+        } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".exp")) {
+            caArrayFile.setFileType(FileType.AFFYMETRIX_EXP);
         } else {
             throw new IllegalArgumentException("Unrecognized document file " + mageTabDocument.getFile());
         }

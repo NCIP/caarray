@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/java"/>
-	<classpathentry kind="lib" path="lib/ApacheJMeter_core.jar"/>
-	<classpathentry kind="lib" path="lib/ApacheJMeter_java.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/caarray-client-jar-2_0_0"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar-2_0_0"/>
-	<classpathentry kind="lib" path="lib/addressing-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/ant-jmeter.jar"/>
-	<classpathentry kind="lib" path="lib/axis.jar"/>
-	<classpathentry kind="lib" path="lib/axis-url.jar"/>
-	<classpathentry kind="lib" path="lib/cog-axis.jar"/>
-	<classpathentry kind="lib" path="lib/cog-jglobus.jar"/>
-	<classpathentry kind="lib" path="lib/javassist.jar"/>
-	<classpathentry kind="lib" path="lib/wsrf_core_stubs.jar"/>
-	<classpathentry kind="lib" path="lib/wsrf_core.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc-2_0_0/lib/caGrid-1.1-caDSR-client.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc-2_0_0/lib/caGrid-1.1-caDSR-service.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc-2_0_0/lib/caGrid-1.1-caDSR-stubs.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc-2_0_0/lib/caGrid-1.1-data-stubs.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc-2_0_0/lib/caGrid-1.1-data-utils.jar"/>
-	<classpathentry kind="lib" path="/caarray-client-jar-2_0_0/target/caarray-client.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/CaArraySvc-2_0_0"/>
-	<classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="src" path="src/java"/>
+  <classpathentry kind="lib" path="lib/ApacheJMeter_core.jar"/>
+  <classpathentry kind="lib" path="lib/ApacheJMeter_java.jar"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="lib" path="/caarray-client-jar/target/caarray-client.jar"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/caarray-client-jar"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar"/>
+  <classpathentry kind="lib" path="lib/addressing-1.0.jar"/>
+  <classpathentry kind="lib" path="lib/ant-jmeter.jar"/>
+  <classpathentry kind="lib" path="lib/axis.jar"/>
+  <classpathentry kind="lib" path="lib/axis-url.jar"/>
+  <classpathentry kind="lib" path="lib/cog-axis.jar"/>
+  <classpathentry kind="lib" path="lib/cog-jglobus.jar"/>
+  <classpathentry kind="lib" path="lib/javassist.jar"/>
+  <classpathentry kind="lib" path="lib/wsrf_core_stubs.jar"/>
+  <classpathentry kind="lib" path="lib/wsrf_core.jar"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/CaArraySvc"/>
+  <classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-caDSR-client.jar"/>
+  <classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-caDSR-service.jar"/>
+  <classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-data-stubs.jar"/>
+  <classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-data-utils.jar"/>
+  <classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-caDSR-stubs.jar"/>
+  <classpathentry kind="output" path="target/classes"/>
 </classpath>

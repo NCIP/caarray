@@ -82,34 +82,49 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getFileAccessService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getFileManagementService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileAccessService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.util.io.FileClosingInputStream;
-import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.set.TransformedSet;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
@@ -126,6 +141,20 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
                                                 expression = "selectedFiles.size() > 0"))
 public class ProjectFilesAction extends AbstractBaseProjectAction implements Preparable {
+    private static final Logger LOG = Logger.getLogger(ProjectFilesAction.class);
+
+    /**
+     * an instance of a Comparator that compares CaArrayFile instances by name.
+     */
+    public static final Comparator<CaArrayFile> CAARRAYFILE_NAME_COMPARATOR_INSTANCE = new CaArrayFileNameComparator();
+
+    /**
+     * Maximum total uncompressed size (in bytes) of files that can be downloaded in a single ZIP. If files selected
+     * for download have a greater combined size, then the user will be presented with a group download page.
+     */
+    public static final long MAX_DOWNLOAD_SIZE = 1024 * 1024 * 1536;
+
+    private static final String DOWNLOAD_CONTENT_TYPE = "application/zip";
     private static final String UPLOAD_INPUT = "upload";
     private static final long serialVersionUID = 1L;
     private static final String ACTION_UNIMPORTED = "listUnimported";
@@ -146,10 +175,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         }
     };
 
-    private List<File> uploads;
+    private List<File> uploads = new ArrayList<File>();
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
-    private InputStream downloadStream;
+    private List<Long> selectedFileIds = new ArrayList<Long>();
+    private final List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
+    private int downloadGroupNumber = -1;
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
     private String listAction;
     private String extensionFilter;
@@ -273,7 +304,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      *
      * @return the string matching the result to follow
      */
-    @SuppressWarnings("unchecked")
     @SkipValidation
     public String downloadFiles() {
         for (CaArrayFile f : getProject().getFiles()) {
@@ -337,9 +367,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 skippedFiles++;
             }
         }
-        ActionHelper.saveMessage(deletedFiles + " files deleted.");
+        ActionHelper.saveMessage(deletedFiles + " file(s) deleted.");
         if (skippedFiles > 0) {
-            ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for deletion.");
+            ActionHelper.saveMessage(skippedFiles + " file(s) were not in a status that allows for deletion.");
         }
     }
 
@@ -365,7 +395,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 }
                 getFileAccessService().save(caArrayFile);
             }
-            ActionHelper.saveMessage(getSelectedFiles().size() + " files updated.");
+            ActionHelper.saveMessage(getSelectedFiles().size() + " file(s) updated.");
         }
         return prepListUnimportedPage();
     }
@@ -487,7 +517,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         if (!fileSet.getFiles().isEmpty()) {
             getFileManagementService().addSupplementalFiles(getProject(), fileSet);
         }
-        ActionHelper.saveMessage(fileSet.getFiles().size() + " supplemental files added to project.");
+        ActionHelper.saveMessage(fileSet.getFiles().size() + " supplemental file(s) added to project.");
         refreshProject();
         return prepListUnimportedPage();
     }
@@ -535,28 +565,152 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                     new String[] {conflict }));
         }
 
-        ActionHelper.saveMessage(count + " files uploaded.");
+        ActionHelper.saveMessage(count + " file(s) uploaded.");
+        MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
         return UPLOAD_INPUT;
     }
 
     /**
-     * Prepares for download by zipping selected files and setting the internal InputStream.
+     * Implements file download. Writes a zip of the selected files to the servlet output stream
      *
-     * @return SUCCESS
-     * @throws IOException if
+     * @return null - the result is written to the servlet output stream
+     * @throws IOException if there is an error writing to the stream
      */
     @SkipValidation
     public String download() throws IOException {
-        File zipFile = getProjectManagementService().prepareForDownload(getSelectedFiles());
-        this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
-        return "download";
+        computeDownloadGroups();
+        if (downloadFileGroups.size() == 1) {
+            downloadFiles(getProject(), getSelectedFiles(), determineDownloadFileName(this.getProject()));
+            return null;
+        } else if (downloadGroupNumber > 0) { 
+            downloadFiles(getProject(), getDownloadGroupFiles(downloadFileGroups.get(downloadGroupNumber - 1)),
+                    determineDownloadFileName(this.getProject(), this.downloadGroupNumber, this.downloadFileGroups
+                            .size()));
+            return null;            
+        } else {
+            return "downloadGroups";
+        }
+    }
+
+    private List<CaArrayFile> getDownloadGroupFiles(DownloadGroup group) {
+        List<CaArrayFile> groupFiles = new ArrayList<CaArrayFile>();
+        for (CaArrayFile file : getSelectedFiles()) {
+            if (group.getFileIds().contains(file.getId())) {
+                groupFiles.add(file);
+            }
+        }
+        return groupFiles;
+    }
+
+    private void computeDownloadGroups() {
+        this.downloadFileGroups.clear();
+        List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(getSelectedFiles());        
+        Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
+        for (CaArrayFile file : sortedFiles) {
+            addToDownloadGroups(file);
+        }
     }
 
     /**
-     * @return the stream containing the zip file download
+     * Add given file to the download groups. The goal is to find the best possible group to put it, such that the total
+     * number of groups will be minimized. the algorithm is to put it in the group which will then have the closest to
+     * max allowable size without going over
+     * 
+     * @param file the file to add
      */
-    public InputStream getDownloadStream() {
-        return this.downloadStream;
+    private void addToDownloadGroups(CaArrayFile file) {
+        DownloadGroup bestGroup = null;
+        long maxNewSize = 0;
+        for (DownloadGroup group : this.downloadFileGroups) {
+            long newGroupSize = group.getTotalCompressedSize() + file.getCompressedSize();
+            if (newGroupSize < MAX_DOWNLOAD_SIZE && newGroupSize > maxNewSize) {
+                maxNewSize = newGroupSize;
+                bestGroup = group;
+            }
+        }
+        if (bestGroup == null) {
+            bestGroup = new DownloadGroup();
+            this.downloadFileGroups.add(bestGroup);
+        }
+        bestGroup.addFile(file);
+    }
+    
+    /**
+     * Zips the selected files and writes the result to the servlet output stream. Also sets content
+     * type and disposition appropriately.
+     * 
+     * @param project the project to whicb the files belong
+     * @param files the files to zip and send
+     * @param filename the filename to use for the zip file. This filename will be set as the Content-disposition
+     * header
+     * @throws IOException if there is an error writing to the stream
+     */
+    public static void downloadFiles(Project project, Collection<CaArrayFile> files, String filename)
+            throws IOException {
+        HttpServletResponse response = ServletActionContext.getResponse();
+        FileInputStream fis = null;        
+        try {
+            response.setContentType(DOWNLOAD_CONTENT_TYPE);
+            response.addHeader("Content-disposition", "filename=\"" + filename + "\"");
+            
+            List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);        
+            Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
+            OutputStream sos = response.getOutputStream();
+            ZipOutputStream zos = new ZipOutputStream(sos);
+            TemporaryFileCache tempCache = TemporaryFileCacheLocator.getTemporaryFileCache();        
+            for (CaArrayFile caf : sortedFiles) {
+                File f = tempCache.getFile(caf);
+                fis = new FileInputStream(f);
+                ZipEntry ze = new ZipEntry(f.getName());
+                zos.putNextEntry(ze);
+                IOUtils.copy(fis, zos);
+                zos.closeEntry();
+                fis.close();
+                tempCache.closeFile(caf);
+                zos.flush();
+            }
+            zos.finish();
+        } catch (Exception e) {
+            LOG.error("Error streaming download", e);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            if (fis != null) {
+                IOUtils.closeQuietly(fis);
+            }
+        }
+    }    
+
+    /**
+     * Returns the filename for a zip of files for the given project, assuming that the download will not be grouped.
+     * @param project the project whose files are downloaded
+     * @return the filename
+     */
+    public static String determineDownloadFileName(Project project) {
+        StringBuilder name = new StringBuilder("caArray_").append(project.getExperiment().getPublicIdentifier()).append(
+                "_files.zip");
+        return name.toString();
+    }
+
+    /**
+     * Returns the filename for a zip of files for the given project, when the download is grouped.
+     * @param project the project whose files are downloaded
+     * @param groupNumber the number of the group whose files are downloaded
+     * @param numberOfGroups the total number of groups
+     * @return the filename
+     */
+    public static String determineDownloadFileName(Project project, int groupNumber, int numberOfGroups) {
+        StringBuilder name = new StringBuilder("caArray_").append(project.getExperiment().getPublicIdentifier());
+        name.append("_").append(groupNumber).append("_of_").append(numberOfGroups).append("_files.zip");
+        return name.toString();
+    }
+
+    /**
+     * Action for displaying the upload in background form.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
+    public String uploadInBackground() {
+        return "uploadInBackground";
     }
 
     /**
@@ -607,6 +761,27 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public void setSelectedFiles(List<CaArrayFile> selectedFiles) {
         this.selectedFiles = selectedFiles;
+    }
+
+    /**
+     * @return the selected file ids
+     */
+    public List<Long> getSelectedFileIds() {
+        return selectedFileIds;
+    }
+
+    /**
+     * @param selectedFileIds the ids of the selected files
+     */
+    public void setSelectedFileIds(List<Long> selectedFileIds) {
+        this.selectedFileIds = selectedFileIds;
+        try {
+            this.selectedFiles = getGenericDataService().retrieveByIds(CaArrayFile.class, selectedFileIds);
+        } catch (IllegalAccessException e) {
+            LOG.error("Could not retrieve files for selected ids", e);
+        } catch (InstantiationException e) {
+            LOG.error("Could not retrieve files for selected ids", e);
+        }
     }
 
     /**
@@ -694,6 +869,27 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     /**
+     * @return the downloadFileGroups
+     */
+    public List<DownloadGroup> getDownloadFileGroups() {
+        return downloadFileGroups;
+    }
+
+    /**
+     * @return the downloadGroupNumber
+     */
+    public int getDownloadGroupNumber() {
+        return downloadGroupNumber;
+    }
+
+    /**
+     * @param downloadGroupNumber the downloadGroupNumber to set
+     */
+    public void setDownloadGroupNumber(int downloadGroupNumber) {
+        this.downloadGroupNumber = downloadGroupNumber;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -707,6 +903,15 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             } else {
                 prepListUnimportedPage();
             }
+        }
+    }
+
+    /**
+     * Comparator class that compares CaArrayFile instances by name, alphabetically.
+     */
+    private static class CaArrayFileNameComparator implements Comparator<CaArrayFile> {
+        public int compare(CaArrayFile f1, CaArrayFile f2) {
+            return new CompareToBuilder().append(f1.getName(), f2.getName()).toComparison();
         }
     }
 }

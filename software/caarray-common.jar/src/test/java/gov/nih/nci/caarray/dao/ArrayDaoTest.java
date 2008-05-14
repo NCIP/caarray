@@ -88,6 +88,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -100,6 +101,9 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.List;
@@ -154,6 +158,21 @@ public class ArrayDaoTest extends AbstractDaoTest {
      * Initialize the dummy <code>ArrayDesign</code> objects.
      */
     private static void initializeArrayDesigns() {
+        TermSource ts = new TermSource();
+        ts.setName("TS 1");
+        Category cat = new Category();
+        cat.setName("catName");
+        cat.setSource(ts);
+        
+        Term term = new Term();
+        term.setValue("testval");
+        term.setCategory(cat);
+        term.setSource(ts);
+
+        Organism organism = new Organism();
+        organism.setScientificName("Homo sapiens");
+        organism.setTermSource(ts);
+        
         DUMMY_ORGANIZATION = new Organization();
         DUMMY_ORGANIZATION.setName("DummyOrganization");
         DUMMY_ORGANIZATION2 = new Organization();
@@ -166,20 +185,31 @@ public class ArrayDaoTest extends AbstractDaoTest {
         DUMMY_ARRAYDESIGN_1.setProvider(DUMMY_ORGANIZATION);
         DUMMY_ARRAYDESIGN_1.setLsidForEntity("authority:namespace:objectId");
         DUMMY_ARRAYDESIGN_1.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
+        CaArrayFile file = new CaArrayFile();
+        file.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
+        DUMMY_ARRAYDESIGN_1.setDesignFile(file);
+        DUMMY_ARRAYDESIGN_1.setTechnologyType(term);
+        DUMMY_ARRAYDESIGN_1.setOrganism(organism);
         DUMMY_ARRAYDESIGN_2 = new ArrayDesign();
         DUMMY_ARRAYDESIGN_2.setName("DummyTestArrayDesign2");
         DUMMY_ARRAYDESIGN_2.setVersion("2.0");
         DUMMY_ARRAYDESIGN_2.setProvider(DUMMY_ORGANIZATION2);
-        CaArrayFile file = new CaArrayFile();
-        file.setFileStatus(FileStatus.IMPORTING);
-        DUMMY_ARRAYDESIGN_2.setDesignFile(file);
+        CaArrayFile file2 = new CaArrayFile();
+        file2.setFileStatus(FileStatus.IMPORTING);
+        DUMMY_ARRAYDESIGN_2.setDesignFile(file2);
+        DUMMY_ARRAYDESIGN_2.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
+        DUMMY_ARRAYDESIGN_2.setTechnologyType(term);
+        DUMMY_ARRAYDESIGN_2.setOrganism(organism);
         DUMMY_ARRAYDESIGN_3 = new ArrayDesign();
         DUMMY_ARRAYDESIGN_3.setName("DummyTestArrayDesign3");
         DUMMY_ARRAYDESIGN_3.setVersion("2.0");
         DUMMY_ARRAYDESIGN_3.setProvider(DUMMY_ORGANIZATION2);
-        CaArrayFile file2 = new CaArrayFile();
-        file2.setFileStatus(FileStatus.IMPORTED);
-        DUMMY_ARRAYDESIGN_3.setDesignFile(file2);
+        CaArrayFile file3 = new CaArrayFile();
+        file3.setFileStatus(FileStatus.IMPORTED);
+        DUMMY_ARRAYDESIGN_3.setDesignFile(file3);
+        DUMMY_ARRAYDESIGN_3.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
+        DUMMY_ARRAYDESIGN_3.setTechnologyType(term);
+        DUMMY_ARRAYDESIGN_3.setOrganism(organism);
     }
 
     @Test

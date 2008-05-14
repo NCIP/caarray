@@ -84,16 +84,18 @@ package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.LockMode;
 import org.hibernate.criterion.Order;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  *
@@ -105,8 +107,8 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    public List<AbstractCaArrayObject> query(final AbstractCaArrayObject entityToMatch) {
-        return new ArrayList<AbstractCaArrayObject>();
+    public <T extends AbstractCaArrayObject> List<T> query(T entityToMatch) {
+        return new ArrayList<T>();
     }
 
     /**
@@ -122,12 +124,16 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
     public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode) {
         return null;
+    }
+
+    public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
+        return new ArrayList<T>();
     }
     
     /**
@@ -151,7 +157,7 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
         this.callsToFiltercollection++;
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -159,7 +165,7 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
             PageSortParams<T> pageSortParams) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */

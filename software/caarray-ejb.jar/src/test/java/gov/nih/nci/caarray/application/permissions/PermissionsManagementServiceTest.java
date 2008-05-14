@@ -99,9 +99,13 @@ import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -209,6 +213,38 @@ public class PermissionsManagementServiceTest {
         Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
         assertEquals("test2", g.getGroupName());
         tx.commit();
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testAddUsersToCollaboratorGroup() throws CSTransactionException, CSObjectNotFoundException {
+        CollaboratorGroup created = this.permissionsManagementService.create(TEST);
+        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        this.permissionsManagementService.addUsers(created, Arrays.asList("3", "2", "1"));
+        Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
+        assertEquals(2, g.getUsers().size());
+        for (User u : (Set<User>) g.getUsers()) {
+            assertTrue("caarrayuser".equals(u.getLoginName()) || "caarrayadmin".equals(u.getLoginName()));
+        }
+        assertEquals(TEST, g.getGroupName());
+        tx.commit();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testAddUsersToAnonymousGroup() throws CSTransactionException, CSObjectNotFoundException {
+        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        Predicate anonUserExists = new Predicate() {
+            public boolean evaluate(Object o) {
+                return ((User) o).getLoginName().equals(SecurityUtils.ANONYMOUS_USERNAME);
+            }   
+         };
+         Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, SecurityUtils.getAnonymousGroup().getGroupId());         
+         assertTrue(CollectionUtils.exists(g.getUsers(), anonUserExists));
+         this.permissionsManagementService.addUsers(SecurityUtils.ANONYMOUS_GROUP, "biostatistician");
+         HibernateUtil.getCurrentSession().refresh(g);
+         assertTrue(CollectionUtils.exists(g.getUsers(), anonUserExists));
+         tx.commit();
     }
 
     @Test

@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.publication;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import javax.persistence.Column;
@@ -91,6 +92,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.validator.Length;
@@ -99,6 +101,7 @@ import org.hibernate.validator.Length;
  *
  */
 @Entity
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings("PMD.TooManyFields") // All fields are required
 public class Publication extends AbstractCaArrayEntity {
 
@@ -185,7 +188,7 @@ public class Publication extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PUBLICATION_STATUS_FK")
+    @ForeignKey(name = "publication_status_fk")
     public Term getStatus() {
         return status;
     }
@@ -206,7 +209,7 @@ public class Publication extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PUBLICATION_TYPE_FK")
+    @ForeignKey(name = "publication_type_fk")
     public Term getType() {
         return type;
     }

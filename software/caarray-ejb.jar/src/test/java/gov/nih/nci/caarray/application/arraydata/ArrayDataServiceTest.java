@@ -124,12 +124,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaExpressionQuantitationType;
+import gov.nih.nci.caarray.application.arraydesign.AffymetrixCdfReadException;
+import gov.nih.nci.caarray.application.arraydesign.AffymetrixCdfReader;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
@@ -141,11 +144,12 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -171,6 +175,7 @@ import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
@@ -190,6 +195,8 @@ import affymetrix.fusion.chp.FusionCHPLegacyData;
 import affymetrix.fusion.chp.FusionExpressionProbeSetResults;
 import affymetrix.fusion.chp.FusionGenotypeProbeSetResults;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+
 /**
  * Tests the ArrayDataService subsystem
  */
@@ -200,6 +207,7 @@ public class ArrayDataServiceTest {
     private static final String GAL_DERISI_LSID_OBJECT_ID = "JoeDeRisi-fix";
     private static final String GAL_YEAST1_LSID_OBJECT_ID = "Yeast1";
     private static final String AFFY_TEST3_LSID_OBJECT_ID = "Test3";
+    private static final String AFFY_TEN_K_LSID_OBJECT_ID = "Mapping10K_Xba131";
     private static final String HG_FOCUS_LSID_OBJECT_ID = "HG-Focus";
     private static final String ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID = "Human_WG-6";
     private ArrayDataService arrayDataService;
@@ -219,6 +227,8 @@ public class ArrayDataServiceTest {
         this.arrayDataService = arrayDataServiceBean;
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessServiceStub));
         TemporaryFileCacheLocator.resetTemporaryFileCache();
+        fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
+        fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEN_K_CDF);
     }
 
     @Test
@@ -228,18 +238,39 @@ public class ArrayDataServiceTest {
         assertTrue(this.daoFactoryStub.quantitationTypeMap.keySet().containsAll(Arrays.asList(AffymetrixCelQuantitationType.values())));
     }
 
-    // IMPORT
-
     @Test
-    public void testImport() throws InvalidDataFileException {
-        testImportCel();
-        testImportExpressionChp();
-        testImportSnpChp();
-        testImportGenepix();
-        testCreateAnnotation();
+    public void testImportRawAndDerivedSameName() throws InvalidDataFileException {
+        // tests that imports of raw and derived data files with same base name go
+        // to the same hybridization chain
+        CaArrayFile focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
+        CaArrayFile focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL, HG_FOCUS_LSID_OBJECT_ID);
+        CaArrayFile focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
+        CaArrayFile focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP, HG_FOCUS_LSID_OBJECT_ID);
+        focusCalvinCel.setProject(focusCel.getProject());
+        focusChp.setProject(focusCel.getProject());
+        focusCalvinChp.setProject(focusCel.getProject());
+        this.arrayDataService.importData(focusCel, true);
+        this.arrayDataService.importData(focusCalvinCel, true);
+        this.arrayDataService.importData(focusChp, true);
+        this.arrayDataService.importData(focusCalvinChp, true);
+        checkAnnotation(focusCel, 2);
+        Experiment exp = focusCel.getProject().getExperiment();
+        assertEquals(2, exp.getHybridizations().size());
+        for (Hybridization h : exp.getHybridizations()) {
+            assertNotNull(h.getArrayData());
+            assertEquals(1, h.getDerivedDataCollection().size());
+            if (h.getArrayData().getDataFile().equals(focusCel)) {
+                assertEquals(focusChp, h.getDerivedDataCollection().iterator().next().getDataFile());
+            } else if (h.getArrayData().getDataFile().equals(focusCalvinCel)) {
+                assertEquals(focusCalvinChp, h.getDerivedDataCollection().iterator().next().getDataFile());
+            } else {
+                fail("Expected hybridization to be linked to either focus or calvin focus CEL");
+            }
+        }
     }
 
-    private void testCreateAnnotation() throws InvalidDataFileException {
+    @Test
+    public void testCreateAnnotation() throws InvalidDataFileException {
         testCreateAnnotationCel();
         testCreateAnnotationChp();
         testCreateAnnotationIllumina();
@@ -294,7 +325,8 @@ public class ArrayDataServiceTest {
         assertEquals(numberOfSamples, experiment.getLabeledExtracts().size());
     }
 
-    private void testImportGenepix() throws InvalidDataFileException {
+    @Test
+    public void testImportGenepix() throws InvalidDataFileException {
         QuantitationTypeDescriptor[] expectedTypes = new QuantitationTypeDescriptor[] {
                 X, Y, DIA,
                 F635_MEDIAN, F635_MEAN, F635_SD, B635_MEDIAN, B635_MEAN, B635_SD, PERCENT_GT_B635_1SD, PERCENT_GT_B635_2SD, F635_PERCENT_SAT,
@@ -315,12 +347,13 @@ public class ArrayDataServiceTest {
         checkColumnTypes(data.getDataSet(), expectedTypes);
     }
 
-    private void testImportExpressionChp() throws InvalidDataFileException {
+    @Test
+    public void testImportExpressionChp() throws InvalidDataFileException, AffymetrixCdfReadException {
         testImportExpressionChp(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CHP);
         testImportExpressionChp(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CALVIN_CHP);
     }
 
-    private void testImportExpressionChp(File cdfFile, File chpFile) throws InvalidDataFileException {
+    private void testImportExpressionChp(File cdfFile, File chpFile) throws InvalidDataFileException, AffymetrixCdfReadException {
         DerivedArrayData chpData = getChpData(cdfFile, chpFile);
         assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
         assertNull(chpData.getDataSet());
@@ -336,6 +369,9 @@ public class ArrayDataServiceTest {
                 hybridizationData.getColumns().size());
         assertEquals(AffymetrixExpressionChpQuantitationType.values().length,
                 dataSet.getQuantitationTypes().size());
+        for (AbstractDesignElement element : dataSet.getDesignElementList().getDesignElements()) {
+            assertNotNull(element);
+        }
         checkChpExpresionColumnTypes(dataSet);
     }
 
@@ -354,12 +390,13 @@ public class ArrayDataServiceTest {
         assertEquals(typeDescriptor.getName(), type.getName());
     }
 
-    private void testImportSnpChp() throws InvalidDataFileException {
+    @Test
+    public void testImportSnpChp() throws InvalidDataFileException, AffymetrixCdfReadException {
         testImportSnpChp(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CHP);
         testImportSnpChp(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CALVIN_CHP);
     }
 
-    private void testImportSnpChp(File cdfFile, File chpFile) throws InvalidDataFileException {
+    private void testImportSnpChp(File cdfFile, File chpFile) throws InvalidDataFileException, AffymetrixCdfReadException {
         DerivedArrayData chpData = getChpData(cdfFile, chpFile);
         assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
         assertNull(chpData.getDataSet());
@@ -382,7 +419,8 @@ public class ArrayDataServiceTest {
         checkColumnTypes(dataSet, AffymetrixSnpChpQuantitationType.values());
     }
 
-    private void testImportCel() throws InvalidDataFileException {
+    @Test
+    public void testImportCel() throws InvalidDataFileException {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
         assertEquals(FileStatus.UPLOADED, celData.getDataFile().getFileStatus());
         assertNull(celData.getDataSet());
@@ -481,9 +519,15 @@ public class ArrayDataServiceTest {
         assertEquals(6528, f635MedianColumn.getValues().length);
         assertEquals(138, f635MedianColumn.getValues()[0]);
         assertEquals(6, f635MedianColumn.getValues()[6527]);
+        assertNotNull(hybridizationData.getHybridization().getArray());
     }
 
     private void testIlluminaData() throws InvalidDataFileException {
+        testIlluminaDataSmall();
+        testIlluminaDataFull();
+    }
+
+    private void testIlluminaDataSmall() throws InvalidDataFileException {
         CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
         this.arrayDataService.importData(illuminaFile, true);
         DerivedArrayData illuminaData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(illuminaFile);
@@ -497,6 +541,20 @@ public class ArrayDataServiceTest {
         assertEquals(10, signalColumn.getValues().length);
         assertEquals(5.8, signalColumn.getValues()[0]);
         assertEquals(3.6, signalColumn.getValues()[9]);
+        assertNotNull(hybridizationData.getHybridization().getArray());
+    }
+
+    private void testIlluminaDataFull() throws InvalidDataFileException {
+        CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
+        this.arrayDataService.importData(illuminaFile, true);
+        DerivedArrayData illuminaData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(illuminaFile);
+        assertEquals(19, illuminaData.getHybridizations().size());
+        DataSet dataSet = this.arrayDataService.getData(illuminaData);
+        assertNotNull(dataSet.getDesignElementList());
+        assertEquals(19, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        assertEquals(4, hybridizationData.getColumns().size());
+        assertNotNull(hybridizationData.getHybridization().getArray());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -527,6 +585,7 @@ public class ArrayDataServiceTest {
             chpData.getExpressionResults(i, results);
             assertEquals(results.getSignal(), signalColumn.getValues()[i]);
         }
+        assertNotNull(hybridizationData.getHybridization().getArray());
     }
 
     private void testSnpChpData() throws InvalidDataFileException {
@@ -548,6 +607,7 @@ public class ArrayDataServiceTest {
             chpData.getGenotypingResults(i, results);
             assertEquals(results.getAlleleCallString(), alleleColumn.getValues()[i]);
         }
+        assertNotNull(hybridizationData.getHybridization().getArray());
     }
 
     private void testCelData() throws InvalidDataFileException {
@@ -573,6 +633,7 @@ public class ArrayDataServiceTest {
         BooleanColumn isMaskedColumn = (BooleanColumn) hybridizationData.getColumns().get(4);
         BooleanColumn isOutlierColumn = (BooleanColumn) hybridizationData.getColumns().get(5);
         ShortColumn numPixelsColumn = (ShortColumn) hybridizationData.getColumns().get(6);
+        assertNotNull(hybridizationData.getHybridization().getArray());
         for (int rowIndex = 0; rowIndex < fusionCelData.getCells(); rowIndex++) {
             fusionCelData.getEntry(rowIndex, fusionCelEntry);
             assertEquals(fusionCelData.indexToX(rowIndex), xColumn.getValues()[rowIndex]);
@@ -593,7 +654,7 @@ public class ArrayDataServiceTest {
         Hybridization hybridization = createAffyHybridization(cdf);
         RawArrayData celData = new RawArrayData();
         celData.setType(this.daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_CEL));
-        celData.setDataFile(getCelCaArrayFile(cel, AFFY_TEST3_LSID_OBJECT_ID));
+        celData.setDataFile(getCelCaArrayFile(cel, getCdfObjectId(cdf)));
         celData.setHybridization(hybridization);
         this.daoFactoryStub.addData(celData);
         hybridization.setArrayData(celData);
@@ -620,11 +681,22 @@ public class ArrayDataServiceTest {
         Hybridization hybridization = createAffyHybridization(cdf);
         DerivedArrayData chpData = new DerivedArrayData();
         chpData.setType(this.daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CHP));
-        chpData.setDataFile(getChpCaArrayFile(file, AFFY_TEST3_LSID_OBJECT_ID));
+        chpData.setDataFile(getChpCaArrayFile(file, getCdfObjectId(cdf)));
         chpData.getHybridizations().add(hybridization);
         hybridization.getDerivedDataCollection().add(chpData);
         this.daoFactoryStub.addData(chpData);
         return chpData;
+    }
+
+    private String getCdfObjectId(File cdfFile) {
+        try {
+            AffymetrixCdfReader reader = AffymetrixCdfReader.create(cdfFile);
+            String objectId = reader.getCdfData().getChipType();
+            reader.close();
+            return objectId;
+        } catch (AffymetrixCdfReadException e) {
+            throw new IllegalStateException("Couldn't read CDF", e);
+        }
     }
 
     private CaArrayFile getGprCaArrayFile(File gpr, String lsidObjectId) {
@@ -663,7 +735,7 @@ public class ArrayDataServiceTest {
         return caArrayFile;
     }
 
-    private static final class LocalDaoFactoryStub extends DaoFactoryStub {
+    private final class LocalDaoFactoryStub extends DaoFactoryStub {
 
         private final Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap =
             new HashMap<ArrayDataTypeDescriptor, ArrayDataType>();
@@ -678,35 +750,55 @@ public class ArrayDataServiceTest {
         @Override
         public ArrayDao getArrayDao() {
             return new ArrayDaoStub() {
-                
+
 
                 @Override
                 public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
                     if (arrayDesignMap.containsKey(lsidObjectId)) {
                         return arrayDesignMap.get(lsidObjectId);
                     } else if (AFFY_TEST3_LSID_OBJECT_ID.equals(lsidObjectId)) {
-                        return createArrayDesign(lsidObjectId, 126, 126);
+                        return createAffymetrixArrayDesign(lsidObjectId, AffymetrixArrayDesignFiles.TEST3_CDF);
+                    } else if (AFFY_TEN_K_LSID_OBJECT_ID.equals(lsidObjectId)) {
+                        return createAffymetrixArrayDesign(lsidObjectId, AffymetrixArrayDesignFiles.TEN_K_CDF);
                     } else if (ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID.equals(lsidObjectId)) {
-                        return createArrayDesign(lsidObjectId, 126, 126);
+                        return createArrayDesign(lsidObjectId, 126, 126, IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
                     } else if (GAL_DERISI_LSID_OBJECT_ID.equals(lsidObjectId)) {
-                        return createArrayDesign(lsidObjectId, 126, 126);
+                        return createArrayDesign(lsidObjectId, 126, 126, null);
                     } else if (GAL_YEAST1_LSID_OBJECT_ID.equals(lsidObjectId)) {
-                        return createArrayDesign(lsidObjectId, 126, 126);
+                        return createArrayDesign(lsidObjectId, 126, 126, null);
                     } else if (HG_FOCUS_LSID_OBJECT_ID.equals(lsidObjectId)) {
-                        return createArrayDesign(lsidObjectId, 448, 448);
+                        return createArrayDesign(lsidObjectId, 448, 448, AffymetrixArrayDesignFiles.HG_FOCUS_CDF);
                     } else {
                         return new ArrayDesign();
                     }
                 }
 
-                @Override
-                public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-                    return new DesignElementList();
+                @SuppressWarnings("deprecation")
+                private ArrayDesign createAffymetrixArrayDesign(String lsidObjectId, File cdfFile) {
+                    try {
+                        AffymetrixCdfReader reader = AffymetrixCdfReader.create(cdfFile);
+                        int rows = reader.getCdfData().getHeader().getRows();
+                        int columns = reader.getCdfData().getHeader().getCols();
+                        ArrayDesign design = createArrayDesign(lsidObjectId, rows, columns, cdfFile);
+                        // loading probe sets in reverse order to ensure that LogicalProbe DesignElementList loading
+                        // in AffymetrixChpHandler sorts list correctly.
+                        for (int i = reader.getCdfData().getHeader().getNumProbeSets() - 1; i >= 0; i--) {
+                            LogicalProbe probeSet = new LogicalProbe();
+                            probeSet.setName(reader.getCdfData().getProbeSetName(i));
+                            design.getDesignDetails().getLogicalProbes().add(probeSet );
+                        }
+                        return design;
+                    } catch (AffymetrixCdfReadException e) {
+                        throw new IllegalStateException("Unexpected read exception", e);
+                    }
                 }
 
                 @SuppressWarnings("deprecation")
-                private ArrayDesign createArrayDesign(String lsidObjectId, int rows, int columns) {
+                private ArrayDesign createArrayDesign(String lsidObjectId, int rows, int columns, File designFile) {
                     ArrayDesign arrayDesign = new ArrayDesign();
+                    if (designFile != null) {
+                        arrayDesign.setDesignFile(fileAccessServiceStub.add(designFile));
+                    }
                     ArrayDesignDetails details = new ArrayDesignDetails();
                     for (short row = 0; row < rows; row++) {
                         for (short column = 0; column < columns; column++) {
@@ -768,6 +860,13 @@ public class ArrayDataServiceTest {
                     if (caArrayEntity instanceof AbstractArrayData) {
                         addData((AbstractArrayData) caArrayEntity);
                     }
+                }
+
+                @Override
+                public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+                    DesignElementList list = new DesignElementList();
+                    list.setLsidForEntity(lsidAuthority + ":" + lsidNamespace + ":" + lsidObjectId);
+                    return list;
                 }
 
             };

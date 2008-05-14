@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.fileaccess;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
@@ -139,6 +140,9 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
     private File openFile(CaArrayFile caArrayFile) {
         File file = new File(getSessionWorkingDirectory(), caArrayFile.getName());
         try {
+            // re-fetch the CaArrayFile instance to ensure that its blob contents are loaded
+            HibernateUtil.getCurrentSession().refresh(caArrayFile);
+            
             InputStream inputStream = caArrayFile.readContents();
             OutputStream outputStream = FileUtils.openOutputStream(file);
             IOUtils.copy(inputStream, outputStream);

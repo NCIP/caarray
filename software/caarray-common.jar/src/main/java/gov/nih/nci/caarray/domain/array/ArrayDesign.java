@@ -111,12 +111,14 @@ import org.hibernate.validator.NotNull;
  * The design details for a type of microarray.
  */
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "NAME", "PROVIDER" }) })
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "provider" }) })
+@SuppressWarnings("PMD.TooManyFields")
 public class ArrayDesign extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
 
     private String name;
+    private String description;
     private String assayType;
     private ProtocolApplication printing;
     private Term polymerType;
@@ -176,7 +178,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAYDESIGN_POLYMER_FK")
+    @ForeignKey(name = "arraydesign_polymer_fk")
     public Term getPolymerType() {
         return polymerType;
     }
@@ -196,7 +198,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAYDESIGN_SUBSTRAE_FK")
+    @ForeignKey(name = "arraydesign_substrae_fk")
     public Term getSubstrateType() {
         return substrateType;
     }
@@ -216,7 +218,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAYDESIGN_SURFACE_FK")
+    @ForeignKey(name = "arraydesign_surface_fk")
     public Term getSurfaceType() {
         return surfaceType;
     }
@@ -234,9 +236,10 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the technologyType
      */
+    @NotNull
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAYDESIGN_TECHNOLOGY_FK")
+    @ForeignKey(name = "arraydesign_technology_fk")
     public Term getTechnologyType() {
         return technologyType;
     }
@@ -254,6 +257,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the version
      */
+    @NotNull
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getVersion() {
         return version;
@@ -273,9 +277,10 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the provider
      */
+    @NotNull
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAYDESIGN_PROVIDER_FK")
+    @ForeignKey(name = "arraydesign_provider_fk")
     public Organization getProvider() {
         return provider;
     }
@@ -285,19 +290,18 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @param providerVal the provider
      */
-    public void setProvider(final
-      Organization providerVal) {
+    public void setProvider(final Organization providerVal) {
         this.provider = providerVal;
     }
 
     /**
      * Gets the printing.
-     *
+     * 
      * @return the printing
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAYDESIGN_PRINTING_FK")
+    @ForeignKey(name = "arraydesign_printing_fk")
     public ProtocolApplication getPrinting() {
         return printing;
     }
@@ -307,17 +311,17 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @param printingVal the printing
      */
-    public void setPrinting(final
-      ProtocolApplication printingVal) {
+    public void setPrinting(final ProtocolApplication printingVal) {
         this.printing = printingVal;
     }
 
     /**
      * @return the designFile
      */
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "DESIGN_FILE_FK")
+    @ForeignKey(name = "design_file_fk")
     public CaArrayFile getDesignFile() {
         return designFile;
     }
@@ -334,7 +338,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ANNOTATION_FILE_FK")
+    @ForeignKey(name = "annotation_file_fk")
     public CaArrayFile getAnnotationFile() {
         return annotationFile;
     }
@@ -357,6 +361,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the type
      */
+    @NotNull
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getAssayType() {
         return assayType;
@@ -392,9 +397,10 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the organism
      */
+    @NotNull
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAYDESIGN_ORGANISM_FK")
+    @ForeignKey(name = "arraydesign_organism_fk")
     public Organism getOrganism() {
         return organism;
     }
@@ -411,7 +417,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @OneToOne
     @Cascade(CascadeType.ALL)
-    @ForeignKey(name = "ARRAYDESIGN_MICROARRAY_FK")
+    @ForeignKey(name = "arraydesign_microarray_fk")
     public Microarray getMicroarray() {
         return microarray;
     }
@@ -428,7 +434,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @OneToOne(fetch = FetchType.LAZY)
     @Cascade(CascadeType.ALL)
-    @ForeignKey(name = "ARRAYDESIGN_DETAILS_FK")
+    @ForeignKey(name = "arraydesign_details_fk")
     public ArrayDesignDetails getDesignDetails() {
         return designDetails;
     }
@@ -438,5 +444,20 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     public void setDesignDetails(ArrayDesignDetails designDetails) {
         this.designDetails = designDetails;
+    }
+
+    /**
+     * @return the description
+     */
+    @Length(max = LARGE_TEXT_FIELD_LENGTH)
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.cabio.domain;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
-
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
@@ -98,14 +96,16 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.ForeignKey;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+
 /**
  *
  */
 @Entity
-@Table(name = "ARRAYREPORTER")
+@Table(name = "arrayreporter")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(
-        name = "DISCRIMINATOR",
+        name = "discriminator",
         discriminatorType = DiscriminatorType.STRING
 )
 @DiscriminatorValue("ARRAYREPORTER")
@@ -160,7 +160,7 @@ public class ArrayReporter implements PersistentObject {
      * @return the microarray
      */
     @ManyToOne
-    @ForeignKey(name = "ARRAYREPORTER_MICROARRAY_FK")
+    @ForeignKey(name = "arrayreporter_microarray_fk")
     public Microarray getMicroarray() {
         return microarray;
     }

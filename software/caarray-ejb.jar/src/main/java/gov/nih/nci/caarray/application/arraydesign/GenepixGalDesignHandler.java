@@ -154,10 +154,14 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         ProbeGroup group = new ProbeGroup(details);
         details.getProbeGroups().add(group);
         DelimitedFileReader reader = getReader();
-        loadHeaderInformation(reader);
-        positionAtDataRecords(reader);
-        while (reader.hasNextLine()) {
-            addToDetails(details, group, reader.nextLine());
+        try {
+            loadHeaderInformation(reader);
+            positionAtDataRecords(reader);
+            while (reader.hasNextLine()) {
+                addToDetails(details, group, reader.nextLine());
+            }
+        } finally {
+            reader.close();
         }
     }
 
@@ -238,8 +242,8 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
     private void handleBlockInformation(String name, String value) {
         String[] parts = value.split(",");
         short blockNumber = Short.parseShort(name.substring(BLOCK_INDICATOR.length()));
-        short xOrigin = Short.parseShort(parts[0].trim());
-        short yOrigin = Short.parseShort(parts[1].trim());
+        int xOrigin = Integer.parseInt(parts[0].trim());
+        int yOrigin = Integer.parseInt(parts[1].trim());
         BlockInfo blockInfo = new BlockInfo(blockNumber, xOrigin, yOrigin);
         blockInfos.add(blockInfo);
         numberToBlockMap.put(blockInfo.getBlockNumber(), blockInfo);
@@ -287,19 +291,23 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
     @Override
     void load(ArrayDesign arrayDesign) {
         arrayDesign.setName(FilenameUtils.getBaseName(getDesignFile().getName()));
-        arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + arrayDesign.getName());        
+        arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + arrayDesign.getName());
         arrayDesign.setNumberOfFeatures(getNumberOfFeatures());
     }
 
     private int getNumberOfFeatures() {
         DelimitedFileReader reader = getReader();
-        positionAtDataRecords(reader);
-        int numberOfFeatures = 0;
-        while (reader.hasNextLine()) {
-            reader.nextLine();
-            numberOfFeatures++;
+        try {
+            positionAtDataRecords(reader);
+            int numberOfFeatures = 0;
+            while (reader.hasNextLine()) {
+                reader.nextLine();
+                numberOfFeatures++;
+            }
+            return numberOfFeatures;
+        } finally {
+            reader.close();
         }
-        return numberOfFeatures;
     }
 
     private void positionAtDataRecords(DelimitedFileReader reader) {
@@ -336,12 +344,16 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
     @Override
     void validate(FileValidationResult result) {
         DelimitedFileReader reader = getReader();
-        validateFormat(reader, result);
-        if (result.isValid()) {
-            validateHeader(reader, result);
-        }
-        if (result.isValid()) {
-            validateData(reader, result);
+        try {
+            validateFormat(reader, result);
+            if (result.isValid()) {
+                validateHeader(reader, result);
+            }
+            if (result.isValid()) {
+                validateData(reader, result);
+            }
+        } finally {
+            reader.close();
         }
     }
 
@@ -396,6 +408,15 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
     private boolean isShort(String value) {
         try {
             Short.parseShort(value);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private boolean isInteger(String value) {
+        try {
+            Integer.parseInt(value);
             return true;
         } catch (NumberFormatException e) {
             return false;
@@ -512,7 +533,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
 
     private void validateBlockInformationFields(String[] values, int line, FileValidationResult result) {
         if (values.length != NUMBER_OF_BLOCK_INFORMATION_FIELDS
-                || !isShort(values[0].trim()) || !isShort(values[1].trim())) {
+                || !isInteger(values[0].trim()) || !isInteger(values[1].trim())) {
             ValidationMessage message =
                 result.addMessage(Type.ERROR,
                         "Block information must consist of exactly 7 comma-separated numeric values");

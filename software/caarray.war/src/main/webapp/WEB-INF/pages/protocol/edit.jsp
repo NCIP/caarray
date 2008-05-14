@@ -24,7 +24,7 @@
         <p class="instructions">Required fields are marked with <span class="required">*asterisks*</span>.</p>
         <s:form action="ajax/protocol/save" cssClass="form" id="protocolForm" onsubmit="submitTermForm(); return false;">
             <tr><th colspan="2">Protocol</th></tr>
-            <s:textfield key="protocol.name" required="true" size="80" tabindex="1"/>
+            <s:textfield key="protocol.name" required="true" size="80" tabindex="1" maxlength="254"/>
             <s:textfield key="protocol.description" size="80" tabindex="2"/>
             <caarray:termSelector baseId="protocolType" category="<%= ExperimentOntologyCategory.PROTOCOL_TYPE %>" hideAddButton="true"
                 tabIndex="3" termFieldName="protocol.type" termField="${protocol.type}" required="true" />
@@ -39,7 +39,7 @@
             </c:if>
             <tbody id="selectSource" <s:if test="createNewSource == true">style="display: none"</s:if>>
                 <s:select list="sources" key="protocol.source" headerKey="" headerValue="-- Select A Source --"
-                    listKey="id" listValue="name" value="protocol.source.id" tabindex="9" required="true" />
+                    listKey="id" listValue="nameAndVersion" value="protocol.source.id" tabindex="9" required="true" />
             </tbody>
             <tbody id="newSource" <s:if test="createNewSource == false">style="display: none"</s:if>>
                 <tr>

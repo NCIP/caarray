@@ -82,15 +82,11 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.services.CaArrayServer;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 
-import java.util.List;
+import java.io.File;
 
 import org.junit.Test;
 
@@ -101,35 +97,33 @@ import org.junit.Test;
  */
 public class ImportGenePixSetTest extends AbstractSeleniumTest {
 
-    private static final int NUMBER_OF_FILES = 4;
-    private static final String FIRST_COLUMN = "1";
- 
+    private static final int NUMBER_OF_FILES = 3;
+    private static final int TWO_MINUTES = 12;
+    private static final String ARRAY_DESIGN_NAME = "JoeDeRisi-fix";
+    private static final String ORGANISM = "Bos taurus (ncbitax)";
+    private static final String PROVIDER = "GenePix";
+
     @Test
     public void testImportAndRetrieval() throws Exception {
-        String title = "gpr files" + System.currentTimeMillis();
+        String title = TestProperties.getGenepixCowName();
 
         // - Login
         loginAsPrincipalInvestigator();
-
+        // - Add the array design
+        importArrayDesign(GenepixArrayDataFiles.JOE_DERISI_FIX, PROVIDER, ORGANISM);
         // Create project
-        createExperiment(title);
+        String experimentId = createExperiment(title, ARRAY_DESIGN_NAME, PROVIDER, ORGANISM);
 
         // - go to the data tab
         selenium.click("link=Data");
         waitForTab();
 
-        selenium.click("link=Upload New File(s)");
-
         // Upload the following GenePix files:
-
         upload(GenepixArrayDataFiles.GPR_3_0_6);
         upload(GenepixArrayDataFiles.GPR_4_0_1);
         upload(GenepixArrayDataFiles.GPR_4_1_1);
-        upload(GenepixArrayDataFiles.GPR_5_0_1);
         // - Check if they are uploaded
         checkFileStatus("Uploaded", THIRD_COLUMN);
-        waitForAction();
-        assertTrue(selenium.isTextPresent("files uploaded"));
 
         // - Import files
         selenium.click("selectAllCheckbox");
@@ -141,50 +135,33 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
 
         // - click on the Imported data tab
         selenium.click("link=Imported Data");
+
+        // TBD - sometimes the Import button is pressed but the app stays on the Upload page - test will time out when that occurs
+        // ** this tab consistently fails.  Selenium will press the tab but not switch the page from
+        //      the Upload page.
+        Thread.sleep(1000);  
+        selenium.click("link=Imported Data");
+        Thread.sleep(1000);  
         waitForText("displaying all items");
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);
-
-        // Submit the experiment
-        makeExperimentPublic(title);
- 
-        // - Get the data thru the API
-        verifyDataViaApi(title);
-    }
-
-    private void makeExperimentPublic(String title) throws Exception{
-        submitExperiment();
-
-        clickAndWait("link=My Experiment Workspace");
-        waitForTab();
-
-        findTitleAcrossMultiPages(title);
-        // - Make the experiment public
-        int row = getExperimentRow(title, FIRST_COLUMN);
-        // - Click on the image to enter the edit mode again
-        selenium.click("//tr[" + row + "]/td[7]/a/img");
-        waitForText("Overall Experiment Characteristics");
-
+        
         // make experiment public
-        setExperimentPublic();
+        submitExperiment();
+        makeExperimentPublic(experimentId);
     }
-
-
-    private void verifyDataViaApi(String experimentTitle) throws ServerConnectionException {
-        CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
-        server.connect();
-        CaArraySearchService searchService = server.getSearchService();
-        Experiment searchExperiment = new Experiment();
-        searchExperiment.setTitle(experimentTitle);
-        List<Experiment> matches = searchService.search(searchExperiment);
-        Experiment experiment = matches.get(0);
-        assertEquals(8, experiment.getSources().size());
-        assertEquals(8, experiment.getSamples().size());
-//        assertEquals(8, experiment.getExtracts().size());
-//        assertEquals(8, experiment.getLabeledExtracts().size());
-        assertEquals(4, experiment.getHybridizations().size());
-        System.out.println("Verified thru the Java API");
+    
+    private void importArrayDesign(File arrayDesign, String provider, String organism) throws Exception {
+        selenium.click("link=Manage Array Designs");
+        selenium.waitForPageToLoad("30000");
+        if (!doesArrayDesignExists(ARRAY_DESIGN_NAME)) {
+            addArrayDesign(arrayDesign, provider, organism);
+            // get the array design row so we do not find the wrong Imported text
+            int column = getExperimentRow(ARRAY_DESIGN_NAME, ZERO_COLUMN);
+            // wait for array design to be imported
+            waitForArrayDesignImport(TWO_MINUTES, column);
+        }
     }
 
     private void checkFileStatus(String status, int column) {

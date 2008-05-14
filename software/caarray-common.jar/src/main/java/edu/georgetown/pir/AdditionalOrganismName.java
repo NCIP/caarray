@@ -82,8 +82,6 @@
  */
 package edu.georgetown.pir;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -92,6 +90,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Other common or scientific names by which the organism known.

@@ -96,7 +96,7 @@ import com.opensymphony.xwork2.inject.Container;
 import com.opensymphony.xwork2.util.XWorkTestCaseHelper;
 
 /**
- * Test case that sets up some struts frameword stuff.
+ * Test case that sets up some struts framework stuff.
  * @author Scott Miller
  */
 public abstract class AbstractBaseStrutsTest {

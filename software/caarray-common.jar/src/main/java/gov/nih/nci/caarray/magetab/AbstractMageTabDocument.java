@@ -60,13 +60,18 @@ import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Base class for all MAGE-TAB documents.
  */
 public abstract class AbstractMageTabDocument implements Serializable {
-
     private static final long serialVersionUID = 1L;
+
+    private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
     /**
      * Lines starting with '#' will be ignored.
@@ -293,4 +298,22 @@ public abstract class AbstractMageTabDocument implements Serializable {
         return getDocumentSet().createValidationMessage(getFile(), type, message);
     }
 
+    /**
+     * Parse the given date, expected to be in the standard MAGE-TAB format of YYYY-MM-DD.
+     * If the date is not in this format, adds a warning message to the validation result
+     * @param value the date string
+     * @param columnName the name of the column from which this value came (used in the warning if needed)
+     * @return the parsed date, or null if the date was not in the required format
+     */
+    protected Date parseDateValue(String value, String columnName) {
+        try {
+            format.setLenient(false);
+            return format.parse(value);
+        } catch (ParseException pe) {
+            addWarningMessage("Invalid Date or Date Format(expected YYYY-MM-DD) for column " + columnName + ": "
+                    + value);
+            return null;
+        }
+
+    }
 }

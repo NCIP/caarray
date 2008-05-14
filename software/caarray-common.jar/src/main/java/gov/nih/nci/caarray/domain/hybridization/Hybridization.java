@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.hybridization;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
@@ -91,6 +92,7 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.FactorValue;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -98,6 +100,7 @@ import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -111,6 +114,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Filter;
@@ -122,8 +126,9 @@ import org.hibernate.validator.NotNull;
  * The act of hybridizing extracted genetic material to the probes on a microarray.
  */
 @Entity
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class Hybridization extends AbstractCaArrayEntity implements ProtectableDescendent {
+public class Hybridization extends AbstractCaArrayEntity implements ProtectableDescendent, ProtocolApplicable {
 
     private static final long serialVersionUID = 1234567890L;
     private static final String MAPPED_BY = "hybridization";
@@ -225,9 +230,9 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      *
      * @return the array
      */
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)  // Could eventually add DELETE cascade, but Arrays are shared
-    @ForeignKey(name = "HYBRIDIZATION_ARRAY_FK")
+    @ForeignKey(name = "hybridization_array_fk")
     public Array getArray() {
         return this.array;
     }
@@ -247,7 +252,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      *
      * @return the arrayData
      */
-    @OneToOne(mappedBy = MAPPED_BY)
+    @OneToOne(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     public RawArrayData getArrayData() {
         return this.arrayData;
@@ -290,9 +295,9 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      *
      * @return the protocolApplication
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
-    @ForeignKey(name = "HYBRIDIZATION_PROTOCOLAPP_FK")
+    @ForeignKey(name = "hybridization_protocolapp_fk")
     public ProtocolApplication getProtocolApplication() {
         return this.protocolApplication;
     }
@@ -308,6 +313,30 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
         this.protocolApplication = protocolApplicationVal;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Transient
+    public Set<ProtocolApplication> getProtocolApplications() {
+        return Collections.singleton(this.protocolApplication);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void addProtocolApplication(ProtocolApplication pa) {
+        if (this.protocolApplication == null) {
+            this.protocolApplication = pa;
+        }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void clearProtocolApplications() {
+        this.protocolApplication = null;
+    }
+    
     /**
      * Gets the labeledExtract.
      *
@@ -356,9 +385,9 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     /**
      * @return the amountOfMaterialUnit
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "HYBRIDIZATIONAMOUNT_UNIT_FK")
+    @ForeignKey(name = "hybridizationamount_unit_fk")
     public Term getAmountOfMaterialUnit() {
         return this.amountOfMaterialUnit;
     }

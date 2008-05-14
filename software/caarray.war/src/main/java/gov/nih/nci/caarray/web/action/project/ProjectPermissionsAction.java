@@ -1,8 +1,8 @@
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getPermissionsManagementService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getPermissionsManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -13,7 +13,6 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +21,7 @@ import java.util.Map;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
@@ -48,7 +48,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
 
         this.collaboratorGroups = getPermissionsManagementService().getCollaboratorGroups();
         if (this.collaboratorGroup.getId() != null) {
-            CollaboratorGroup retrieved = getGenericDataService().retrieveEntity(CollaboratorGroup.class,
+            CollaboratorGroup retrieved = getGenericDataService().getPersistentObject(CollaboratorGroup.class,
                                                                            this.collaboratorGroup.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.collaboratorGroup,
@@ -58,7 +58,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
             }
         }
         if (this.accessProfile.getId() != null) {
-            AccessProfile retrieved = getGenericDataService().retrieveEntity(AccessProfile.class,
+            AccessProfile retrieved = getGenericDataService().getPersistentObject(AccessProfile.class,
                     this.accessProfile.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.accessProfile,
@@ -141,7 +141,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
         this.accessProfile.getSampleSecurityLevels().clear();
         if (this.accessProfile.getSecurityLevel().isSampleLevelPermissionsAllowed()) {
             for (Map.Entry<Long, SampleSecurityLevel> sampleEntry : this.sampleSecurityLevels.entrySet()) {
-                Sample sample = getGenericDataService().retrieveEntity(Sample.class, sampleEntry.getKey());
+                Sample sample = getGenericDataService().getPersistentObject(Sample.class, sampleEntry.getKey());
                 if (this.accessProfile.getSecurityLevel().getSampleSecurityLevels().contains(sampleEntry.getValue())) {
                     this.accessProfile.getSampleSecurityLevels().put(sample, sampleEntry.getValue());
                 }

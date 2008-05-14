@@ -82,19 +82,18 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
-import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
@@ -106,7 +105,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 @Validation
 public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
-    
+
     /** page size for item lists. */
     public static final int PAGE_SIZE = 15;
 
@@ -131,12 +130,20 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     @Override
     @SkipValidation
     public String load() {
+        String checkResult = checkProject();
+        if (checkResult != null) {
+            return checkResult;
+        }
         updatePagedList();
         return "list";
     }
 
+    /**
+     * Helper method that should be called to refresh the list of items according
+     * to current paging parameters.
+     */
     @SuppressWarnings("unchecked")
-    private void updatePagedList() {
+    protected void updatePagedList() {
         GenericDataService gds = getGenericDataService();
         this.pagedItems.setList(gds.pageCollection(getCollection(), this.pagedItems.getPageSortParams()));
         this.pagedItems.setFullListSize(gds.collectionSize(getCollection()));
@@ -148,6 +155,10 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
      */
     @SkipValidation
     public String edit() {
+        String checkResult = checkProject();
+        if (checkResult != null) {
+            return checkResult;
+        }
         setEditMode(true);
         return INPUT;
     }
@@ -158,6 +169,10 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
      */
     @SkipValidation
     public String view() {
+        String checkResult = checkProject();
+        if (checkResult != null) {
+            return checkResult;
+        }
         setEditMode(false);
         return INPUT;
     }
@@ -170,6 +185,10 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     @Override
     @SuppressWarnings("unchecked")
     public String save() {
+        String checkResult = checkProject();
+        if (checkResult != null) {
+            return checkResult;
+        }
         if (this.getItem().getId() == null) {
             getCollection().add(getItem());
             ActionHelper.saveMessage(getText("experiment.items.created", new String[] {getItemName()}));
@@ -196,9 +215,13 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
      */
     @SkipValidation
     public String delete() {
+        String checkResult = checkProject();
+        if (checkResult != null) {
+            return checkResult;
+        }
         getCollection().remove(getItem());
-        super.save();
         ActionHelper.saveMessage(getText("experiment.items.deleted", new String[] {getItemName()}));
+        super.save();
         updatePagedList();
         return "list";
     }
@@ -211,13 +234,18 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
      */
     @SkipValidation
     public String copy() {
+        String checkResult = checkProject();
+        if (checkResult != null) {
+            return checkResult;
+        }
         try {
             doCopyItem();
             ActionHelper.saveMessage(getText("experiment.items.copied", new String[] {getItemName()}));
+            ActionHelper.saveMessage(getText("project.saved"));
         } catch (ProposalWorkflowException e) {
-            List<String> args = new ArrayList<String>();
-            args.add(getProject().getExperiment().getTitle());
-            ActionHelper.saveMessage(getText("project.saveProblem", args));
+            handleWorkflowError();
+        } catch (InconsistentProjectStateException e) {
+            handleInconsistentStateError(e);
         }
         updatePagedList();
         return "list";
@@ -241,8 +269,9 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     /**
      * Subclasses should make the actual call to the appropriate service method to copy the item.
      * @throws ProposalWorkflowException when the experiment cannot be saved due to workflow restrictions
+     * @throws InconsistentProjectStateException when the experiment cannot be saved due to inconsistent state
      */
-    protected abstract void doCopyItem() throws ProposalWorkflowException;
+    protected abstract void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException;
 
     /**
      * {@inheritDoc}

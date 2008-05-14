@@ -83,8 +83,6 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.CaArrayDao;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.PersistentObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -93,6 +91,8 @@ import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Base class for all dao stubs.
@@ -131,13 +131,6 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> AbstractCaArrayObject queryEntityById(AbstractCaArrayObject entityToMatch) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public void remove(PersistentObject caArrayEntity) {
         // no-op
     }
@@ -167,6 +160,20 @@ public class AbstractDaoStub implements CaArrayDao {
      * {@inheritDoc}
      */
     public void clearSession() {
+        // no-op
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void mergeObject(Object object) {
+        // no-op
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void evictObject(Object object) {
         // no-op
     }
 

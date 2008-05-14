@@ -175,9 +175,23 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
      */
     @Override
     PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException {
-        PreparedStatement s = con.prepareStatement("update caarrayfile set status = ? where project = ?");
-        s.setString(1, FileStatus.IMPORT_FAILED.toString());
-        s.setLong(2, getProjectId());
+        PreparedStatement s = con.prepareStatement(
+                "update caarrayfile set status = ? where project = ? and status = ?");
+        FileStatus newStatus;
+        switch(getInProgressStatus()) {
+        case IMPORTING:
+            newStatus = FileStatus.IMPORT_FAILED;
+            break;
+        case VALIDATING:
+            newStatus = FileStatus.VALIDATION_ERRORS;
+            break;
+        default:
+            newStatus = FileStatus.IMPORT_FAILED;
+        }
+        int i = 1;
+        s.setString(i++, newStatus.toString());
+        s.setLong(i++, getProjectId());
+        s.setString(i++, getInProgressStatus().toString());
         return s;
     }
 

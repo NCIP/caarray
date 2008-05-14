@@ -82,13 +82,13 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.io.ByteArrayInputStream;
@@ -102,6 +102,7 @@ import java.util.Set;
 import org.ajaxtags.xml.AjaxXmlBuilder;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
@@ -109,6 +110,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
  * @author Scott Miller
  * @param <T> type of objects managed by this class
  */
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends AbstractBioMaterial> extends
         AbstractProjectAnnotationsListTabAction<T> {
 
@@ -131,7 +133,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
     }
 
     private void initForm() {
-        setProtocolTypes(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PROTOCOL_TYPE));
+        setProtocolTypes(CaArrayActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PROTOCOL_TYPE));
     }
 
     /**
@@ -156,19 +158,24 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
     @Validations(fieldExpressions = @FieldExpressionValidator(message = "",
             fieldName = "protocolType", key = "protocolType.protocol.mismatch",
             expression = "(protocolType == null && protocol == null) || (protocolType == protocol.type)"))
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     public String save() {
-        AbstractBioMaterial bioMaterial = (AbstractBioMaterial) getItem();
+        ProtocolApplicable protApplicable = (ProtocolApplicable) getItem();
         if (getProtocol() != null && !getProtocol().equals(getCurrentProtocol())) {
             ProtocolApplication protocolApplication = new ProtocolApplication();
             if (getCurrentProtocol() != null) {
-                protocolApplication = bioMaterial.getProtocolApplications().iterator().next();
+                protocolApplication = protApplicable.getProtocolApplications().iterator().next();
             }
-            protocolApplication.setBioMaterial(bioMaterial);
+            if (protApplicable instanceof AbstractBioMaterial) {
+                protocolApplication.setBioMaterial((AbstractBioMaterial) protApplicable);                
+            }
             protocolApplication.setProtocol(getProtocol());
-            bioMaterial.getProtocolApplications().add(protocolApplication);
+            if (getCurrentProtocol() == null) {
+                protApplicable.addProtocolApplication(protocolApplication);                
+            }
         } else if (getProtocol() == null && getCurrentProtocol() != null) {
-            addOrphan(bioMaterial.getProtocolApplications().iterator().next());
-            bioMaterial.getProtocolApplications().clear();
+            addOrphan(protApplicable.getProtocolApplications().iterator().next());
+            protApplicable.clearProtocolApplications();
         }
         return super.save();
     }
@@ -179,7 +186,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      */
     @SkipValidation
     public String retrieveXmlProtocolList() {
-        setProtocols(ActionHelper.getVocabularyService().getProtocolByProtocolType(getProtocolType()));
+        setProtocols(CaArrayActionHelper.getVocabularyService().getProtocolByProtocolType(getProtocolType()));
         return "xmlProtocolList";
     }
 
@@ -285,11 +292,9 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      * @return the protocol
      */
     public ProtocolApplication getCurrentProtocolApplication() {
-        if (getItem() instanceof AbstractBioMaterial) {
-            AbstractBioMaterial bioMaterial = (AbstractBioMaterial) getItem();
-            for (ProtocolApplication protocolApplication : bioMaterial.getProtocolApplications()) {
-                return protocolApplication;
-            }
+        ProtocolApplicable protApplicable = (ProtocolApplicable) getItem();
+        for (ProtocolApplication protocolApplication : protApplicable.getProtocolApplications()) {
+            return protocolApplication;
         }
         return null;
     }
@@ -300,5 +305,5 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      */
     public void setCurrentProtocolApplication(ProtocolApplication p) {
         // does nothing, only here so it can be referenced in the jsp as a bean property
-    }
+    }    
 }

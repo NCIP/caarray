@@ -106,6 +106,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -120,7 +121,7 @@ import org.hibernate.annotations.ForeignKey;
 /**
  */
 @Entity
-@Table(name = "CAARRAYFILE")
+@Table(name = "caarrayfile")
 public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaArrayFile>, ProtectableDescendent {
     private static final long serialVersionUID = 1234567890L;
 
@@ -131,11 +132,11 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private FileValidationResult validationResult;
     private int uncompressedSize;
     private int compressedSize;
-    private MultiPartBlob multiPartBlob;
 
     // transient properties
-    private InputStream inputStreamToClose;
-    private File fileToDelete;
+    private transient MultiPartBlob multiPartBlob;
+    private transient InputStream inputStreamToClose;
+    private transient File fileToDelete;
 
     /**
      * Gets the name.
@@ -200,7 +201,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     @ManyToOne
     @JoinColumn(updatable = false)
-    @ForeignKey(name = "CAARRAYFILE_PROJECT_FK")
+    @ForeignKey(name = "caarrayfile_project_fk")
     public Project getProject() {
         return this.project;
     }
@@ -309,8 +310,8 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     /**
      * @return the validationResult
      */
-    @OneToOne(cascade = CascadeType.ALL)
-    @ForeignKey(name = "CAARRAYFILE_VALIDATION_RESULT_FK")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ForeignKey(name = "caarrayfile_validation_result_fk")
     public FileValidationResult getValidationResult() {
         return this.validationResult;
     }

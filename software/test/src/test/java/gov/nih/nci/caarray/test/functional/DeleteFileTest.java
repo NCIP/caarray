@@ -101,10 +101,10 @@ public class DeleteFileTest extends AbstractSeleniumTest {
         selenium.click("link=Data");
         waitForTab();
         
-        // Upload IDF file
-        selenium.click("link=Upload New File(s)");
-        upload(MageTabDataFiles.TCGA_BROAD_IDF);
         
+        // Upload IDF file
+        upload(MageTabDataFiles.TCGA_BROAD_IDF);
+                
         // - file is present
         assertTrue(selenium.isTextPresent(MageTabDataFiles.TCGA_BROAD_IDF.getName()));
         

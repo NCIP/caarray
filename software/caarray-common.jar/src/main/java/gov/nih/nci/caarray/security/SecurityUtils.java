@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.security;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
@@ -122,6 +121,8 @@ import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Utility class containing methods for synchronizing our security data model with CSM, as well as a facade for querying
@@ -165,6 +166,13 @@ public final class SecurityUtils {
 
     private static Application caarrayApp;
     private static User anonymousUser;
+
+    private static final ThreadLocal<Boolean> PRIVILEGED_MODE = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return Boolean.FALSE;
+        }
+    };
 
     static {
         AuthorizationManager am = null;
@@ -401,8 +409,12 @@ public final class SecurityUtils {
         }
     }
 
+    /**
+     * @return the CSM group instance for the anonymous group
+     * @throws CSObjectNotFoundException
+     */
     @SuppressWarnings("unchecked")
-    private static Group getAnonymousGroup() {
+    public static Group getAnonymousGroup() {
         Group group = new Group();
         group.setGroupName(ANONYMOUS_GROUP);
         GroupSearchCriteria gsc = new GroupSearchCriteria(group);
@@ -647,5 +659,19 @@ public final class SecurityUtils {
             result = result.getSuperclass();
         }
         return result;
+    }
+
+    /**
+     * @return the privilegedMode
+     */
+    public static boolean isPrivilegedMode() {
+        return PRIVILEGED_MODE.get();
+    }
+
+    /**
+     * @param privilegedMode the privilegedMode to set
+     */
+    public static void setPrivilegedMode(boolean privilegedMode) {
+        PRIVILEGED_MODE.set(privilegedMode);
     }
 }

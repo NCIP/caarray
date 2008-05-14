@@ -136,7 +136,7 @@ public final class HybridizationData extends AbstractCaArrayObject {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "HYBRIDIZATIONDATA_HYBRIDIZATION_FK")
+    @ForeignKey(name = "hybridizationdata_hybridization_fk")
     public Hybridization getHybridization() {
         return hybridization;
     }
@@ -153,7 +153,7 @@ public final class HybridizationData extends AbstractCaArrayObject {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "HYBRIDIZATIONDATA_LABELEDEXTRACT_FK")
+    @ForeignKey(name = "hybridizationdata_labeledextract_fk")
     public LabeledExtract getLabeledExtract() {
         return labeledExtract;
     }
@@ -170,7 +170,7 @@ public final class HybridizationData extends AbstractCaArrayObject {
      */
     @ManyToOne
     @JoinColumn(updatable = false, nullable = false)
-    @ForeignKey(name = "HYBRIDIZATIONDATA_DATASET_FK")
+    @ForeignKey(name = "hybridizationdata_dataset_fk")
     public DataSet getDataSet() {
         return dataSet;
     }

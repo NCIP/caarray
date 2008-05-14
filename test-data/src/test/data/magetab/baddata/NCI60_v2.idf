@@ -1,0 +1,51 @@
+#####################################################	
+#[IDF]	
+#	
+# MAGE-TAB Submission 	
+#	
+#	
+# Please see http://tab2mage.sourceforge.net/docs/magetab_subs.html 	
+#  for information on filling in the IDF and SDRF sections below.	
+# See http://mged.sourceforge.net/ontologies/MGEDontology.php	
+# or http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do	
+# for ontology term in filling sections below	
+# All lines beginning with the '#' character are treated as comments and ignored.	
+
+
+# This section contains the top-level information for your experiment.	
+Investigation Title	NCI-60 Drug Profiling Project
+Experiment Description	Transcript profiling of a dose-response study the NCI-60 cancer cell lines treated with anti-cancer drugs		
+Experimental Design	disease_state_design	time_series	dose_response
+Experimental Design Term Source REF	MO	MO	MO
+
+# Please create as many Experimental Factors here as you need to			
+# describe the variables investigated by your experiment.			
+Experimental Factor Name	Dose	Compound_NSC_Number	Time
+Experimental Factor Type	Dose	Compound	Time
+Experimental Factor Term Source REF	MO	MO	MO
+
+"# Quality Control Type examples: dye_swap_quality_control, biological_replicate, technical_replicate"			
+Quality Control Type	biological_replicate		
+Quality Control Term Source REF	MO		
+
+"# Please list contact details in columns, below:"			
+Person Last Name	Monks		
+Person First Name	Anne				
+Person Email	monksa@ncifcrf.gov				
+Person Phone	301-846-5528				
+Person Address	"NCI-Frederick, PO Box B, MD 21702"				
+Person Affiliation	SAIC-Frederick				
+Person Roles	PI				
+
+"# Please list all publications associated with this submission, in columns:"					
+
+# The next section describes the protocols used in your					
+# experiment. Please select your own Protocol Names (e.g. 'GROWTH')					
+# for use within this spreadsheet.					
+Protocol Name	NCI-60_Growth_Protocol	QiagenRNaeasy	Affymetrix GeneChip HT_HG-U133 Labeling	Affymetrix GeneChip HT_HG-U133 Hybridization Protocol	Mas5_Normalization
+Protocol Type	grow	nucleic_acid_extraction	labeling	hybridization	bioassay_data_transformation
+Protocol Description	<protocol desicription here>				
+Protocol Term Source REF	MO	MO	MO	MO	MO
+SDRF File	NCI60_v2_short.sdrf		
+Term Source Name	MO	caArray	NCI Thesaurus
+Term Source File	http://mged.sourceforge.net/ontologies/MGEDontology.php	https://caarray.nci.nih.gov	http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do

@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.filter;
 
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.web.action.registration.UserRole;
 
 import java.io.IOException;
 
@@ -103,11 +104,13 @@ public class UserFilterTest {
     public void testFilter() throws IOException, ServletException {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setRemoteUser("test");
+        request.addUserRole(UserRole.LAB_SCIENTIST.getRoleName());
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockChain chain = new MockChain();
         UserFilter uf = new UserFilter();
         uf.init(null);
         uf.doFilter(request, response, chain);
         assertEquals("test", UsernameHolder.getUser());
+        uf.destroy();
     }
 }

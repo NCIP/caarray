@@ -100,6 +100,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -127,7 +128,7 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "BIOMATERIAL_LABEL_FK")
+    @ForeignKey(name = "biomaterial_label_fk")
     public Term getLabel() {
         return label;
     }
@@ -169,12 +170,12 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "LABELEDEXTRACTHYBRIDIZATION",
-            joinColumns = { @javax.persistence.JoinColumn(name = "LABELEDEXTRACT_ID") },
-            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "HYBRIDIZATION_ID") }
+            name = "labeledextracthybridization",
+            joinColumns = { @javax.persistence.JoinColumn(name = "labeledextract_id") },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "hybridization_id") }
     )
-    @ForeignKey(name = "LABELEDEXTRACTHYBRIDIZATION_LABELEDEXTRACT_FK",
-            inverseName = "LABELEDEXTRACTHYBRIDIZATION_HYBRIDIZATION_FK")
+    @ForeignKey(name = "labeledextracthybridization_labeledextract_fk",
+            inverseName = "labeledextracthybridization_hybridization_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Hybridization> getHybridizations() {
         return hybridizations;
@@ -194,9 +195,9 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
      * @return the experiment to which this source belongs
      */
     @ManyToOne
-    @JoinTable(name = "EXPERIMENTLABELEDEXTRACT",
-            joinColumns = {@JoinColumn(name = "LABELED_EXTRACT_ID", insertable = false, updatable = false) },
-            inverseJoinColumns = {@JoinColumn(name = "EXPERIMENT_ID", insertable = false, updatable = false) })
+    @JoinTable(name = "experimentlabeledextract",
+            joinColumns = {@JoinColumn(name = "labeled_extract_id", insertable = false, updatable = false) },
+            inverseJoinColumns = {@JoinColumn(name = "experiment_id", insertable = false, updatable = false) })
     public Experiment getExperiment() {
         return experiment;
     }
@@ -217,6 +218,14 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
             protectables.addAll(e.relatedProtectables());
         }
         return protectables;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transient
+    public Set<Hybridization> getRelatedHybridizations() {
+        return getHybridizations();
     }
 
     /**

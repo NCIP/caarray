@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.validation;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
@@ -101,13 +102,15 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.BatchSize;
+
 /**
  * Contains all the validation messsages for a single file.
  */
 @Entity
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public final class FileValidationResult implements Serializable, Comparable<FileValidationResult> {
-
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
+public class FileValidationResult implements Serializable, Comparable<FileValidationResult> {
     private static final long serialVersionUID = -5402207496806890698L;
     private static final String UNUSED = "unused";
 
@@ -181,6 +184,23 @@ public final class FileValidationResult implements Serializable, Comparable<File
     }
 
     /**
+     * Returns the messages of given type, ordered by location.
+     * @param type the type of messages to return
+     * @return the messages.
+     */
+    @Transient
+    public List<ValidationMessage> getMessages(ValidationMessage.Type type) {
+        List<ValidationMessage> messageList = new ArrayList<ValidationMessage>();
+        for (ValidationMessage message : this.messageSet)  {
+            if (message.getType() == type) {
+                messageList.add(message);
+            }
+        }
+        Collections.sort(messageList);
+        return Collections.unmodifiableList(messageList);
+    }
+
+    /**
      * Adds a new validation message to the result.
      *
      * @param type the type/level of the message
@@ -217,7 +237,8 @@ public final class FileValidationResult implements Serializable, Comparable<File
      * @return validation messages
      */
     @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" })
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
     public Set<ValidationMessage> getMessageSet() {
         return this.messageSet;
     }

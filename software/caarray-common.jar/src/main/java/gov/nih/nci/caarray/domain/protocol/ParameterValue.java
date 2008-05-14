@@ -1,12 +1,14 @@
 package gov.nih.nci.caarray.domain.protocol;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
@@ -97,6 +99,7 @@ import org.hibernate.annotations.ForeignKey;
 
    */
 @Entity
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 public class ParameterValue extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -153,7 +156,7 @@ public class ParameterValue extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PARAMVALUE_PARAMETER_FK")
+    @ForeignKey(name = "paramvalue_parameter_fk")
     public Parameter getParameter() {
         return parameter;
     }
@@ -171,7 +174,7 @@ public class ParameterValue extends AbstractCaArrayEntity {
      * @return the protocolApplication
      */
     @ManyToOne
-    @ForeignKey(name = "PARAMVALUE_PROTOCOLAPP_FK")
+    @ForeignKey(name = "paramvalue_protocolapp_fk")
     public ProtocolApplication getProtocolApplication() {
         return protocolApplication;
     }

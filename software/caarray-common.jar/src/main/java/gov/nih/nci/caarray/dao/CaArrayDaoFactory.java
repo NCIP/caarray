@@ -116,13 +116,6 @@ public interface CaArrayDaoFactory {
     ArrayDao getArrayDao();
 
     /**
-     * Returns a <code>SampleDao</code>.
-     *
-     * @return a <code>SampleDao</code>.
-     */
-    SampleDao getSampleDao();
-
-    /**
      * Returns a <code>ProjectDao</code>.
      *
      * @return a <code>ProjectDao</code>.

@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.HashSet;
@@ -95,6 +96,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -105,6 +107,7 @@ import org.hibernate.validator.NotNull;
 
    */
 @Entity
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 public class Factor extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
@@ -155,7 +158,7 @@ public class Factor extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "FACTOR_TYPE_FK")
+    @ForeignKey(name = "factor_type_fk")
     @NotNull
     public Term getType() {
         return this.type;
@@ -176,7 +179,7 @@ public class Factor extends AbstractCaArrayEntity {
      * @return the factorValues
      */
     @OneToMany(mappedBy = "factor", fetch = FetchType.LAZY)
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     public Set<FactorValue> getFactorValues() {
         return this.factorValues;
     }

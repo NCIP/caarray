@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.protocol;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.Protectable;
@@ -100,6 +101,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -112,6 +114,7 @@ import org.hibernate.validator.NotNull;
  * @author Scott Miller
  */
 @Entity
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "source" }))
 public class Protocol extends AbstractCaArrayEntity implements Protectable {
     private static final long serialVersionUID = 1234567890L;
@@ -250,7 +253,7 @@ public class Protocol extends AbstractCaArrayEntity implements Protectable {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PROTOCOL_TYPE_FK")
+    @ForeignKey(name = "protocol_type_fk")
     @NotNull
     public Term getType() {
         return this.type;
@@ -310,7 +313,7 @@ public class Protocol extends AbstractCaArrayEntity implements Protectable {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PROTOCOL_TERM_SOURCE_FK")
+    @ForeignKey(name = "protocol_term_source_fk")
     @NotNull
     public TermSource getSource() {
         return this.source;

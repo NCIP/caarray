@@ -45,6 +45,7 @@
         <param-value>@ldap.install@</param-value>
     </context-param>
 
+
     <filter>
         <filter-name>temporaryFilesFilter</filter-name>
         <filter-class>gov.nih.nci.caarray.web.filter.TemporaryFilesCleanupFilter</filter-class>
@@ -103,6 +104,8 @@
     <filter-mapping>
         <filter-name>userFilter</filter-name>
         <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
     <filter-mapping>
         <filter-name>action2-cleanup</filter-name>
@@ -127,6 +130,9 @@
     </listener>
     <listener>
         <listener-class>gov.nih.nci.caarray.web.listener.StartupListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>gov.nih.nci.caarray.web.upgrade.ApplicationUpgradeListener</listener-class>
     </listener>
 
     <servlet>
@@ -158,7 +164,7 @@
         <error-code>403</error-code>
         <location>/403.jsp</location>
     </error-page>
-    
+
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>protected</web-resource-name>

@@ -84,11 +84,14 @@ package gov.nih.nci.caarray.application.translation.magetab;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -116,6 +119,8 @@ import java.util.Set;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  *
@@ -146,7 +151,9 @@ public class MageTabTranslatorTest {
     @Test
     public void testTranslate() {
         testSpecificationDocuments();
+        testSpecificationDocumentsNoArrayDesignRef();
         testTcgaBroadDocuments();
+        testGskTestDocuments();
     }
 
     private void testSpecificationDocuments() {
@@ -163,6 +170,29 @@ public class MageTabTranslatorTest {
         assertEquals(6, experiment.getExtracts().size());
         assertEquals(6, experiment.getLabeledExtracts().size());
         assertEquals(6, experiment.getHybridizations().size());
+        for (Hybridization hyb : experiment.getHybridizations()) {
+            assertNotNull(hyb.getArray().getDesign());            
+        }
+    }
+
+    private void testSpecificationDocumentsNoArrayDesignRef() {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET);
+        CaArrayTranslationResult result =
+            this.translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET, fileSet);
+        Experiment experiment = result.getInvestigations().iterator().next();
+        assertNotNull(experiment.getDescription());
+        assertTrue(experiment.getDescription().startsWith("Gene expression of TK6"));
+        assertEquals(8, experiment.getExperimentContacts().size());
+        assertEquals(1, experiment.getExperimentDesignTypes().size());
+        assertEquals("genetic_modification_design", experiment.getExperimentDesignTypes().iterator().next().getValue());
+        assertEquals(6, experiment.getSources().size());
+        assertEquals(6, experiment.getSamples().size());
+        assertEquals(6, experiment.getExtracts().size());
+        assertEquals(6, experiment.getLabeledExtracts().size());
+        assertEquals(6, experiment.getHybridizations().size());
+        for (Hybridization hyb : experiment.getHybridizations()) {
+            assertNull(hyb.getArray().getDesign());            
+        }
     }
 
     private void testTcgaBroadDocuments() {
@@ -202,6 +232,17 @@ public class MageTabTranslatorTest {
         assertEquals(26, investigation.getSamples().size());
         assertEquals(26, investigation.getExtracts().size());
         assertEquals(26, investigation.getLabeledExtracts().size());
+    }
+
+    private void testGskTestDocuments() {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.GSK_TEST_SET);
+        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.GSK_TEST_SET, fileSet);
+        Experiment experiment = result.getInvestigations().iterator().next();
+        assertEquals(6, experiment.getSources().size());
+        assertEquals(6, experiment.getSamples().size());
+        assertEquals(6, experiment.getExtracts().size());
+        assertEquals(6, experiment.getLabeledExtracts().size());
+        assertEquals(6, experiment.getHybridizations().size());
     }
 
     @Test
@@ -275,6 +316,14 @@ public class MageTabTranslatorTest {
         public VocabularyDao getVocabularyDao() {
             return new LocalVocabularyDaoStub();
         }
+        
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public ArrayDao getArrayDao() {
+            return new LocalArrayDaoStub();
+        }
 
     }
 
@@ -282,6 +331,23 @@ public class MageTabTranslatorTest {
         @Override
         public <T> List<T> queryEntityByExample(T entityToMatch, Order... order) {
             return new ArrayList<T>();
+        }
+    }
+
+    private static class LocalArrayDaoStub extends ArrayDaoStub {
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch,
+                Order... orders) {
+            if (entityToMatch instanceof ArrayDesign) {
+                ArrayDesign arrayDesign = (ArrayDesign) entityToMatch;
+                if ("URN:LSID:Affymetrix.com:PhysicalArrayDesign:Test3".equals(arrayDesign.getLsid())) {
+                    ArrayList list = new ArrayList();
+                    list.add(arrayDesign);
+                    return list;
+                }
+            }
+            return super.queryEntityAndAssociationsByExample(entityToMatch, orders);
         }
     }
 }

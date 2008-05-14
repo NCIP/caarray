@@ -8,57 +8,57 @@
 -- Strategy:
 -- - for users, we'll let the default populate script take care of the db users like caarrayadmin
 -- - for groups, we will not migrate collaborator groups.  thus, we don't need to create a group backup table
--- 
+--
 -- This means we'll save off all registered users & the **default** groups that they belong to
--- No need to save off other tables like protection groups or roles; or user relations to those tables 
+-- No need to save off other tables like protection groups or roles; or user relations to those tables
 
 -- Notes:
 -- user_id > 9 are new users
 -- group_id < 9 are prepopulate groups
 
-alter table DESIGNELEMENTLIST_DESIGNELEMENT drop foreign key DELDEDESIGNELEMENT_FK;
-alter table PROBEFEATURE drop foreign key FKA5329546AF48BA;
-alter table PROBEFEATURE drop foreign key FKA53295463C971A69;
-alter table LOGICALPROBE_PHYSICALPROBE drop foreign key FKF7B2A821AF48BA;
-alter table LOGICALPROBE_PHYSICALPROBE drop foreign key FKF7B2A821C0C30D98;
+alter table designelementlist_designelement drop foreign key DELDEDESIGNELEMENT_FK;
+alter table probefeature drop foreign key FKA5329546AF48BA;
+alter table probefeature drop foreign key FKA53295463C971A69;
+alter table logicalprobe_physicalprobe drop foreign key FKF7B2A821AF48BA;
+alter table logicalprobe_physicalprobe drop foreign key FKF7B2A821C0C30D98;
 
-DROP TABLE IF EXISTS DATASET_DESIGNELEMENT;
-DROP TABLE IF EXISTS ABSTRACT_DESIGN_ELEMENT;
-DROP TABLE IF EXISTS FEATURE;
-DROP TABLE IF EXISTS LOGICAL_PROBE;
-DROP TABLE IF EXISTS PHYSICAL_PROBE;
-DROP TABLE IF EXISTS ABSTRACT_PROBE;
+DROP TABLE IF EXISTS dataset_designelement;
+DROP TABLE IF EXISTS abstract_design_element;
+DROP TABLE IF EXISTS feature;
+DROP TABLE IF EXISTS logical_probe;
+DROP TABLE IF EXISTS physical_probe;
+DROP TABLE IF EXISTS abstract_probe;
 
-DROP TABLE IF EXISTS CSM_USER_BACKUP;
+DROP TABLE IF EXISTS csm_user_backup;
 
-CREATE TABLE CSM_USER_BACKUP (
-  USER_ID BIGINT AUTO_INCREMENT  NOT NULL,
-  LOGIN_NAME VARCHAR(100) NOT NULL,
-  FIRST_NAME VARCHAR(100) NOT NULL,
-  LAST_NAME VARCHAR(100) NOT NULL,
-  ORGANIZATION VARCHAR(100),
-  DEPARTMENT VARCHAR(100),
-  TITLE VARCHAR(100),
-  PHONE_NUMBER VARCHAR(15),
-  PASSWORD VARCHAR(100),
-  EMAIL_ID VARCHAR(100),
-  START_DATE DATE,
-  END_DATE DATE,
-  UPDATE_DATE DATE,
-  PRIMARY KEY(USER_ID)
+CREATE TABLE csm_user_backup (
+  user_id BIGINT AUTO_INCREMENT  NOT NULL,
+  login_name VARCHAR(100) NOT NULL,
+  first_name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100) NOT NULL,
+  organization VARCHAR(100),
+  department VARCHAR(100),
+  title VARCHAR(100),
+  phone_number VARCHAR(15),
+  password VARCHAR(100),
+  email_id VARCHAR(100),
+  start_date DATE,
+  end_date DATE,
+  update_date DATE,
+  PRIMARY KEY(user_id)
 )Type=InnoDB
 ;
 
 insert into csm_user_backup
 select * from csm_user where user_id > 9;
 
-DROP TABLE IF EXISTS CSM_USER_GROUP_BACKUP;
+DROP TABLE IF EXISTS csm_user_group_backup;
 
-CREATE TABLE CSM_USER_GROUP_BACKUP (
-  USER_GROUP_ID BIGINT AUTO_INCREMENT  NOT NULL,
-  USER_ID BIGINT NOT NULL,
-  GROUP_ID BIGINT NOT NULL,
-  PRIMARY KEY(USER_GROUP_ID)
+CREATE TABLE csm_user_group_backup (
+  user_group_id BIGINT AUTO_INCREMENT  NOT NULL,
+  user_id BIGINT NOT NULL,
+  group_id BIGINT NOT NULL,
+  PRIMARY KEY(user_group_id)
 )Type=InnoDB
 ;
 

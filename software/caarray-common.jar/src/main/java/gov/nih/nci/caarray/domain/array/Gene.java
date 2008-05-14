@@ -86,6 +86,8 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 import javax.persistence.Entity;
 
+import org.hibernate.validator.Length;
+
 /**
  * A hereditary unit consisting of a sequence of DNA that occupies a specific location on a chromosome and 
  * determines a particular characteristic in an organism.  The functional and physical unit of heredity passed 
@@ -121,6 +123,7 @@ public class Gene extends AbstractCaArrayEntity {
     /**
      * @return the fullName
      */
+    @Length(max = LARGE_TEXT_FIELD_LENGTH)
     public String getFullName() {
         return fullName;
     }

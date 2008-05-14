@@ -1,3 +1,11 @@
+// graceful  degradation of firebug's console object
+if (! ("console" in window) || !("firebug" in console)) {
+    var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group"
+                 , "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+    window.console = {};
+    for (var i = 0; i <names.length; ++i) window.console[names[i]] = function() {};
+}
+
 /* This function is used to change the style class of an element */
 function swapClass(obj, newStyle) {
     obj.className = newStyle;
@@ -378,7 +386,6 @@ var TabUtils = {
             TabUtils.savedFormData = null;
         }
     },
-
     setSelectedTab : function() {
         tabMenuItems = $('tabbed').getElementsByTagName('li');
         for(var i = 0; i < tabMenuItems.length; i++) {
@@ -421,7 +428,7 @@ var TabUtils = {
         var elts = document.getElementsByClassName('loadingText');
         var loadingElt = elts.length > 0 ? elts[0] : null;
         if (loadingElt) {
-			//DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
+      //DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
             //console.log("showing existing loading text");
             $(loadingElt).show();
             if (!keepMainContent) {
@@ -434,7 +441,7 @@ var TabUtils = {
             }
             if (tabwrapperdiv) {
                 // write out the loading text
-				//DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
+        //DOES NOT WORK IN IE -- only works in Safari, Firebug, Opera (commented out)
                 //console.log("creating new loading text");
                 tabwrapperdiv.innerHTML = '<div><img alt="Indicator" align="absmiddle" src="' + contextPath + '/images/indicator.gif"/>&nbsp;Loading...</div>';
             }
@@ -443,7 +450,7 @@ var TabUtils = {
             $('tabHeader').hide();
         }
     },
-    
+
     showLoadingTextKeepMainContent: function() {
         TabUtils.showLoadingText(true);
     },
@@ -495,6 +502,53 @@ var TabUtils = {
             }
         }
         return tabMenuItems[0].getElementsByTagName('a')[0];
+    },
+    addScrollTabs: function(tabPanelId, selectedTab) {
+        var tabs = $(tabPanelId).getElementsByTagName('li')
+        var tabList = tabs[0].parentNode;
+        tabList.numTabs = tabs.length;
+        tabList.index = selectedTab;
+        tabList.offsets = new Array(tabList.numTabs);
+        totalOffset = 0;
+        for (i=0; i<tabList.numTabs; i++) {
+          tabList.offsets[i] = totalOffset;
+          totalOffset += tabs[i].offsetWidth;
+        }
+        if (tabList.parentNode.offsetWidth-totalOffset > 0) {
+          return;
+        } else {
+          tabList.style.width = totalOffset+"px";
+        }
+        new Effect.Move(tabList,{ x: -tabList.offsets[selectedTab], mode: 'absolute'});
+
+        innerPrev = document.createElement('div');
+        innerPrev.innerHTML = '&lt;';
+        innerPrev.className = 'scrollButton';
+        prevButton = document.createElement('div');
+        prevButton.className = 'leftScrollBox';
+        prevButton.appendChild(innerPrev);
+        prevButton.onclick = function() {
+          if (tabList.index > 0) {
+            new Effect.Move(tabList,{ x: -tabList.offsets[--tabList.index], mode: 'absolute', duration: .3});
+          }
+        };
+        tabList.parentNode.appendChild(prevButton);
+
+        innerNext = document.createElement('div');
+        innerNext.innerHTML = '&gt;';
+        innerNext.className = 'scrollButton';
+        nextButton = document.createElement('div');
+        nextButton.className = 'rightScrollBox';
+        nextButton.appendChild(innerNext);
+        nextButton.onclick = function() {
+          var curOffset = tabList.offsets[tabList.index];
+          var maxOffset = tabList.offsetWidth - tabList.parentNode.offsetWidth;
+          if (curOffset < maxOffset && tabList.index < tabList.numTabs-1) {
+            var newOffset = Math.min(maxOffset, tabList.offsets[++tabList.index]);
+            new Effect.Move(tabList,{ x: -newOffset, mode: 'absolute', duration: .3});
+          }
+        };
+        tabList.parentNode.appendChild(nextButton);
     }
 }
 
@@ -559,114 +613,133 @@ var PermissionUtils = {
 // Download stuff here
 //
 
-function DownloadMgr(dUrl, iUrl) {
+function DownloadMgr(dUrl, dgUrl, removeImageUrl, maxDownloadSize) {
   this.downloadUrl = dUrl;
-  this.imageUrl = iUrl;
-  this.downloadIds = new Array();
-  this.downloadSizeArray = new Array();
-  this.count = 0;
+  this.downloadGroupsUrl = dgUrl;
+  this.removeImageUrl = removeImageUrl;
+  this.files = new Object();
+  this.downloadFiles = new Object();
+  this.maxDownloadSize = maxDownloadSize;
+  this.totalDownloadSize = 0;
 }
 
-DownloadMgr.prototype.downloadUrl;
-DownloadMgr.prototype.imageUrl;
-DownloadMgr.prototype.downloadIds;
-DownloadMgr.prototype.downloadSizeArray;
-DownloadMgr.prototype.count;
+DownloadMgr.prototype.addFile = function(name, id, size) {
+    this.files[id] = { name: name, id: id, size: size };
+  }
 
-DownloadMgr.prototype.addDownloadRow = function(name, id, size) {
-  this.addDownloadRow(name, id, size, null);
-}
-
-DownloadMgr.prototype.addDownloadRow = function(name, id, size, doAlert) {
-    for (i = 0; i < this.downloadIds.length; ++i) {
-      if (this.downloadIds[i] == id) {
-        if (doAlert == null) {
-          alert('File ' + name + ' already in queue.');
-        }
+DownloadMgr.prototype.addDownloadRow = function(id) {
+    if (this.downloadFiles[id]) {
+        alert('File ' + name + ' already in queue.');
         return;
-      }
     }
-    this.downloadIds.push(id);
-    this.downloadSizeArray.push(size);
-    ++this.count;
-
-  var tbl = document.getElementById('downloadTbl');
-  var lastRow = tbl.rows.length;
-  var row = tbl.insertRow(lastRow - 1);
-  row.id = 'downloadRow' + this.count;
-
-  var cell = row.insertCell(0);
-  cell.innerHTML = '<img src="'+ this.imageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + this.count + ')"/>&nbsp;&nbsp;' + name;
-
+    
+  this.deleteTotalRow();
+  this.doAddDownloadRow(id, true);
   this.addTotalRow();
 }
 
-DownloadMgr.prototype.removeRow = function(toRemove) {
-  var tbl = document.getElementById('downloadTbl');
-  var row = document.getElementById('downloadRow' + toRemove);
+DownloadMgr.prototype.doAddDownloadRow = function(id, highlightRow) {
+    
+    var file = this.files[id];
+    this.downloadFiles[id] = file;
+    this.totalDownloadSize += file.size;
+
+  var tbl = $('downloadTbl');
+  var row = tbl.insertRow(-1);
+  row.id = 'downloadRow' + id;
+
+  var cell = row.insertCell(0);
+  cell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>&nbsp;&nbsp;' + file.name;
+
+  if (highlightRow) {      
+      new Effect.Highlight($('fileRow' + file.id).up('tr'));
+  }
+}
+
+DownloadMgr.prototype.removeRow = function(id) {
+  var tbl = $('downloadTbl');
+  var row = $('downloadRow' + id);
+  var file = this.downloadFiles[id];
+  delete this.downloadFiles[id];
+  this.totalDownloadSize -= file.size;
   for (i = 0; i < tbl.rows.length; ++i) {
     if (tbl.rows[i] == row) {
-      tbl.deleteRow(i);
-      this.downloadSizeArray.splice(i - 1, 1);
-      this.downloadIds.splice(i - 1, 1);
+      tbl.deleteRow(i);      
     }
   }
+  this.deleteTotalRow();
   this.addTotalRow();
 }
 
 DownloadMgr.prototype.resetDownloadInfo = function() {
-  this.downloadIds = new Array();
-  this.downloadSizeArray = new Array();
-  var tbl = document.getElementById('downloadTbl');
+  for (id in this.downloadFiles) {
+      delete this.downloadFiles[id];
+  }
+  this.totalDownloadSize = 0;
+  var tbl = $('downloadTbl');
   while (tbl.rows.length > 1) {
     tbl.deleteRow(1);
   }
+  this.deleteTotalRow();
   this.addTotalRow();
 }
 
+DownloadMgr.prototype.deleteTotalRow = function() {
+    var tbl = $('downloadTbl');
+    var lastRow = tbl.rows.length;
+    if (lastRow > 1) {
+      tbl.deleteRow(lastRow - 1);
+    }
+  }
+
 DownloadMgr.prototype.addTotalRow = function() {
-  var tbl = document.getElementById('downloadTbl');
-  var lastRow = tbl.rows.length;
-  if (lastRow > 1) {
-    tbl.deleteRow(lastRow - 1);
-  }
-  lastRow = tbl.rows.length;
-  var row = tbl.insertRow(lastRow);
+  var tbl = $('downloadTbl');
+  var row = tbl.insertRow(-1);
   var cell = row.insertCell(0);
-  var downloadSize = 0;
-  for (i = 0; i < this.downloadSizeArray.length; ++i) {
-    downloadSize += this.downloadSizeArray[i];
-  }
-  var textNode = document.createTextNode(" Job Size: " + (downloadSize / 1024 | 0) + " KB");
+  var textNode = document.createTextNode(" Job Size: " + (this.totalDownloadSize / 1024 | 0) + " KB");
   cell.appendChild(textNode);
 }
 
 DownloadMgr.prototype.doDownloadFiles = function() {
-  if (this.downloadIds.length == 0) {
+  var files = Object.values(this.downloadFiles); 
+  if (files.length == 0) {
     alert("Select file(s) first.");
     return;
   }
-  var curLoc = window.location;
-  var params = '';
-  for (i = 0; i < this.downloadIds.length; ++i) {
-    if (i != 0) {
-      params = params + '&';
-    }
-    params = params + 'selectedFiles=' + this.downloadIds[i];
+
+  if (this.totalDownloadSize < this.maxDownloadSize) {
+      var form = document.createElement("form");
+      form.method="post";
+      form.style.display="none";
+      form.action=this.downloadUrl;
+      for (i = 0; i < files.length; ++i) {
+          var elt = document.createElement("input");
+          elt.type="hidden";
+          elt.name="selectedFileIds";
+          elt.value=files[i].id;
+          form.appendChild(elt);
+      }  
+      document.body.appendChild(form);
+      form.submit();
+      $(form).remove();      
+      this.resetDownloadInfo();      
+  } else {
+      var params = '';
+      for (i = 0; i < files.length; ++i) {
+          params = params + '&selectedFileIds=' + files[i].id;
+      }      
+      TabUtils.loadLinkInSubTab('Download Data', this.downloadGroupsUrl + params);
   }
-  window.location= this.downloadUrl + "?" + params;
-  this.resetDownloadInfo();
 }
 
 DownloadMgr.prototype.addAll = function() {
-    var x = document.getElementsByName("todownload");
-    for (var ii = 0; ii < x.length; ++ii) {
-        if (/MSIE/.test(navigator.userAgent)) {
-            x[ii].click();
-        } else {
-            x[ii].onclick();
+    this.deleteTotalRow();
+    for (id in this.files) {
+        if (!this.downloadFiles[id]) {
+            this.doAddDownloadRow(id, false);
         }
     }
+    this.addTotalRow();
 }
 
 

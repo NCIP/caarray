@@ -132,7 +132,7 @@ public final class UsernameHolder {
         User csmUser = userThreadLocal.get();
         String userName = getUser();
         if (csmUser == null || !csmUser.getLoginName().equals(userName)) {
-            csmUser = SecurityUtils.getAuthorizationManager().getUser(getUser());            
+            csmUser = SecurityUtils.getAuthorizationManager().getUser(getUser());
             userThreadLocal.set(csmUser);
         }
         return csmUser;

@@ -83,15 +83,17 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.LockMode;
 import org.hibernate.criterion.Order;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * DAO to search for entities using different criteria. Supports searching by example, CQL, HQL (Hibernate Query
@@ -139,6 +141,15 @@ public interface SearchDao extends CaArrayDao {
      * @return the entity.
      */
     <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode);
+
+    /**
+     * Return the instances of given class with given ids from the database.
+     * @param <T> the type of the entity to retrieve
+     * @param entityClass the class of entity to retrieve. must not be null
+     * @param ids the ids of entities to retrieve. 
+     * @return the entities with given ids
+     */
+    <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids);
 
     /**
      * Refreshes the object's state from the database.

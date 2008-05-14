@@ -98,6 +98,9 @@ public class MageTabDataFiles {
     public static final File SPECIFICATION_EXAMPLE_SDRF =
         new File(MageTabDataFiles.class.getResource("/magetab/specification/e-mexp-428_v1.0.sdrf").getFile());
 
+    public static final File SPECIFICATION_EXAMPLE_NO_ARRAY_DESIGN_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/specification_no_array_design/e-mexp-428_v1.0.sdrf").getFile());
+
     public static final File SPECIFICATION_EXAMPLE_ADF =
         new File(MageTabDataFiles.class.getResource("/magetab/specification/a-mexp-58f_excerpt_v1.0.adf").getFile());
 
@@ -143,6 +146,15 @@ public class MageTabDataFiles {
     public static final File EBI_TEMPLATE_SDRF =
         new File(MageTabDataFiles.class.getResource("/magetab/ebi_template/MAGE-TAB_GSK.sdrf").getFile());
 
+    public static final File GSK_TEST_DIRECTORY =
+        new File(MageTabDataFiles.class.getResource("/magetab/GSK_test").getFile());
+
+    public static final File GSK_TEST_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/GSK_test/GSK_Sample_iterate03-RNA.idf").getFile());
+
+    public static final File GSK_TEST_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/GSK_test/GSK_sample_iterate03-RNA_Jan20.sdrf").getFile());
+
     public static final File TCGA_BROAD_DATA_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/tcga/broad").getFile());
 
@@ -167,6 +179,12 @@ public class MageTabDataFiles {
     public static final File SPECIFICATION_ERROR_EXAMPLE_SDRF =
         new File(MageTabDataFiles.class.getResource("/magetab/baddata/error-e-mexp-428_v1.0.sdrf").getFile());
 
+    public static final File MISPLACED_FACTOR_VALUES_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/baddata/NCI60_v2.idf").getFile());
+
+    public static final File MISPLACED_FACTOR_VALUES_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/baddata/NCI60_v2_short.sdrf").getFile());
+
     public static final File PERFORMANCE_1_IDF =
         new File(MageTabDataFiles.class.getResource("/magetab/performance/performance_test1.idf").getFile());
 
@@ -187,4 +205,46 @@ public class MageTabDataFiles {
 
     public static final File PERFORMANCE_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/performance").getFile());
+
+    public static final File CAARRAY1X_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/caarray1x/experiment-id-1015897540503881.idf").getFile());
+
+    public static final File CAARRAY1X_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/caarray1x/experiment-id-1015897540503881.sdrf").getFile());
+
+    public static final File CAARRAY1X_ZIP =
+        new File(MageTabDataFiles.class.getResource("/magetab/caarray1x/experiment-id-1015897540503881.magetab.zip").getFile());
+
+    public static final File CAARRAY1X_DIRECTORY =
+        new File(MageTabDataFiles.class.getResource("/magetab/caarray1x").getFile());
+    
+    public static final File DEFECT_12537_ERROR_DATA_DIRECTORY =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537-error").getFile());
+
+    public static final File DEFECT_12537_ERROR__IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537-error/broad.mit.edu_GBM.HT_HG-U133A.1.idf.txt").getFile());
+
+    public static final File DEFECT_12537_ERROR_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537-error/broad.mit.edu_GBM.HT_HG-U133A.1.sdrf.txt").getFile());
+
+    public static final File DEFECT_12537_ERROR_RMA_DATA_MATRIX =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537-error/broad.mit.edu_GBM.HT_HG-U133A.1.rma.data.txt").getFile());
+
+    public static final File DEFECT_12537_ERROR_ABSOLUTE_DATA_MATRIX =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537-error/broad.mit.edu_GBM.HT_HG-U133A.1.absolute.data.txt").getFile());
+
+    public static final File DEFECT_12537_DATA_DIRECTORY =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537").getFile());
+
+    public static final File DEFECT_12537_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537/broad.mit.edu_GBM.HT_HG-U133A.1.idf.txt").getFile());
+
+    public static final File DEFECT_12537_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537/broad.mit.edu_GBM.HT_HG-U133A.1.sdrf.txt").getFile());
+
+    public static final File DEFECT_12537_RMA_DATA_MATRIX =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537/broad.mit.edu_GBM.HT_HG-U133A.1.rma.data.txt").getFile());
+
+    public static final File DEFECT_12537_ABSOLUTE_DATA_MATRIX =
+        new File(MageTabDataFiles.class.getResource("/magetab/tcga/defect-12537/broad.mit.edu_GBM.HT_HG-U133A.1.absolute.data.txt").getFile());
 }

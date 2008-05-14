@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.security;
 
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.util.CaArrayUtils;
@@ -129,6 +131,9 @@ public class SecurityPolicyPostLoadEventListener implements PostLoadEventListene
      * {@inheritDoc}
      */
     public void onPostLoad(PostLoadEvent event) {
+        if (SecurityUtils.isPrivilegedMode()) {
+            return;
+        }
         Project project = null;
         Experiment experiment = null;
         if (event.getEntity() instanceof Project) {
@@ -148,14 +153,23 @@ public class SecurityPolicyPostLoadEventListener implements PostLoadEventListene
         // need to apply the policies to both project and experiment for when both are loaded,
         // to be sure
         Set<SecurityPolicy> policies = project.getApplicablePolicies(UsernameHolder.getCsmUser());
-        applySecurityPolicies(project, getPersister(event.getSession(), project), policies);
-        applySecurityPolicies(experiment, getPersister(event.getSession(), experiment), policies);
 
-        for (Source source : experiment.getSources()) {
-            applySecurityPolicies(source, getPersister(event.getSession(), source), policies);
-        }
-        for (Sample sample : experiment.getSamples()) {
-            applySecurityPolicies(sample, getPersister(event.getSession(), sample), policies);
+        if (!policies.isEmpty()) {
+            applySecurityPolicies(project, getPersister(event.getSession(), project), policies);
+            applySecurityPolicies(experiment, getPersister(event.getSession(), experiment), policies);
+
+            for (Source source : experiment.getSources()) {
+                applySecurityPolicies(source, getPersister(event.getSession(), source), policies);
+            }
+            for (Sample sample : experiment.getSamples()) {
+                applySecurityPolicies(sample, getPersister(event.getSession(), sample), policies);
+            }
+            for (Extract extract : experiment.getExtracts()) {
+                applySecurityPolicies(extract, getPersister(event.getSession(), extract), policies);
+            }
+            for (LabeledExtract le : experiment.getLabeledExtracts()) {
+                applySecurityPolicies(le, getPersister(event.getSession(), le), policies);
+            }
         }
     }
 
@@ -289,7 +303,7 @@ public class SecurityPolicyPostLoadEventListener implements PostLoadEventListene
             if (Collection.class.isAssignableFrom(ct.getReturnedClass())
                     || Map.class.isAssignableFrom(ct.getReturnedClass())) {
                 val = CaArrayUtils.emptyCollectionOrMapFor(ct.getReturnedClass());
-            } 
+            }
             setter.set(entity, val, (SessionFactoryImplementor) HibernateUtil.getSessionFactory());
         } else if (!getter.getReturnType().isPrimitive()) {
             setter.set(entity, null, (SessionFactoryImplementor) HibernateUtil.getSessionFactory());

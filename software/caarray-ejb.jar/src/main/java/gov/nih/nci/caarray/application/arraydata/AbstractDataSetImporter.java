@@ -82,9 +82,11 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -99,6 +101,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -231,16 +234,35 @@ abstract class AbstractDataSetImporter {
         return getArrayDao().getArrayDataType(descriptor);
     }
 
-    Hybridization createHybridization(String hybridizationName) {
+    private Hybridization lookupHybridization(String hybridizationName) {        
+        Experiment experiment = getCaArrayFile().getProject().getExperiment();
+        return experiment.getHybridizationByName(hybridizationName);
+    }
+
+    private Hybridization createHybridization(String hybridizationName) {        
         Experiment experiment = getCaArrayFile().getProject().getExperiment();
         Hybridization hybridization = new Hybridization();
         hybridization.setName(hybridizationName);
+        Array array = new Array();
+        array.setDesign(getDataFileHandler().getArrayDesign(getArrayDesignService(), getFile()));
+        hybridization.setArray(array);
         experiment.getHybridizations().add(hybridization);
         return hybridization;
     }
 
-    void createAnnotation(File dataFile, Hybridization hybridization) {
-        List<String> sampleNames = getDataFileHandler().getSampleNames(dataFile, hybridization.getName());
+    Hybridization lookupOrCreateHybridization(String hybridizationName, boolean createAnnotation) {
+        Hybridization hybridization = lookupHybridization(hybridizationName);
+        if (hybridization == null) {
+            hybridization = createHybridization(hybridizationName);
+            if (createAnnotation) {
+                createAnnotation(hybridization);
+            }
+        }
+        return hybridization;
+    }
+
+    void createAnnotation(Hybridization hybridization) {        
+        List<String> sampleNames = getDataFileHandler().getSampleNames(getFile(), hybridization.getName());
         for (String sampleName : sampleNames) {
             createAnnotation(hybridization, sampleName);
         }
@@ -270,4 +292,8 @@ abstract class AbstractDataSetImporter {
         experiment.getSources().add(source);
     }
 
+    private ArrayDesignService getArrayDesignService() {
+        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
+    }
+    
 }

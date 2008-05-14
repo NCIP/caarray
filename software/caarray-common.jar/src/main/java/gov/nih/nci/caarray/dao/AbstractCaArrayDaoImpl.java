@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.util.EntityPruner;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -102,6 +101,8 @@ import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Base DAO implementation for all caArray domain DAOs.
@@ -269,8 +270,22 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      */
     public void clearSession() {
         HibernateUtil.getCurrentSession().clear();
-    }    
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void mergeObject(Object object) {
+        HibernateUtil.getCurrentSession().merge(object);
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void evictObject(Object object) {
+        HibernateUtil.getCurrentSession().evict(object);
+    }
+    
     AbstractCaArrayEntity getEntityByLsid(Class entityClass, String lsidAuthority, String lsidNamespace, 
             String lsidObjectId) {
         Query q = HibernateUtil.getCurrentSession().createQuery(

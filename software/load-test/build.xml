@@ -145,6 +145,8 @@
 
         <!-- ******************************************************************* -->
         <!-- ** LOAD DATA FOR TESTS TO USE                                    ** -->
+        <!-- ** Note: After running ArrayDesignImporter, check if designs     ** -->
+        <!-- ** finished importing before running the ExperimentDataImporter. ** -->
         <!-- ******************************************************************* -->
         <!--
         <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/ArrayDesignImporter.jmx" resultlog="${tests.out.dir}/setup/ArrayDesignImporter.jtl">

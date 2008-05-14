@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.protocol;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
@@ -97,6 +98,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -106,6 +108,7 @@ import org.hibernate.annotations.ForeignKey;
 
    */
 @Entity
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 public class ProtocolApplication extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
@@ -123,7 +126,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PROTOCOLAPP_PROTOCOL")
+    @ForeignKey(name = "protocolapp_protocol")
     public Protocol getProtocol() {
         return protocol;
     }
@@ -143,7 +146,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      * @return the image
      */
     @ManyToOne
-    @ForeignKey(name = "PROTOCOLAPP_IMAGE_FK")
+    @ForeignKey(name = "protocolapp_image_fk")
     public Image getImage() {
         return image;
     }
@@ -182,7 +185,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      * @return the abstractBioMaterial
      */
     @ManyToOne
-    @ForeignKey(name = "PROTOCOLAPP_BIOMATERIAL")
+    @ForeignKey(name = "protocolapp_biomaterial")
     public AbstractBioMaterial getBioMaterial() {
         return bioMaterial;
     }
@@ -198,7 +201,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      * @return the arrayData
      */
     @ManyToOne
-    @ForeignKey(name = "PROTOCOLAPP_ARRAYDATA_FK")
+    @ForeignKey(name = "protocolapp_arraydata_fk")
     public AbstractArrayData getArrayData() {
         return arrayData;
     }

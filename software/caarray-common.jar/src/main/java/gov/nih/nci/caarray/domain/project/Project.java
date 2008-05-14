@@ -84,9 +84,11 @@
 package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
@@ -123,10 +125,13 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.CharSetUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
@@ -140,10 +145,11 @@ import org.hibernate.validator.Valid;
  * A microarray project.
  */
 @Entity
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.TooManyFields", "PMD.ExcessiveClassLength" })
 public class Project extends AbstractCaArrayEntity implements Comparable<Project>, Protectable {
     private static final long serialVersionUID = 1234567890L;
-    
+
     private static final int PUBLIC_ID_COMPONENT_LENGTH = 5;
 
     private ProposalStatus status = ProposalStatus.DRAFT;
@@ -176,7 +182,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @Enumerated(EnumType.STRING)
     @NotNull
-    @Column(name = "STATUS")
+    @Column(name = "status")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     private ProposalStatus getStatusInternal() {
         return this.status;
@@ -211,9 +217,10 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         // in progress projects get automatically set to browsable, if they weren't before
         if (status == ProposalStatus.IN_PROGRESS) {
             setPublicIdLocked(true);
-            if (getPublicProfile().getSecurityLevel() == SecurityLevel.NO_VISIBILITY) {
-                getPublicProfile().setSecurityLevel(SecurityLevel.VISIBLE);
-            }               
+            // this is correct for both submitting a draft project and retracting a project
+            // from public availability. in the former, we need to make sure the project is visible
+            // if it wasnt before; in the latter we need to remove the public read access
+            getPublicProfile().setSecurityLevel(SecurityLevel.VISIBLE);
         }
 
         // public projects are effectively read rights to all and write rights to no one
@@ -231,6 +238,18 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @Transient
     public boolean isSaveAllowed() {
         return !isPublic();
+    }
+
+    /**
+     * @return whether this project currently has any files that are being actively imported.
+     */
+    public boolean hasImportingData() {
+        return CollectionUtils.exists(getFiles(), new Predicate() {
+            public boolean evaluate(Object o) {
+                CaArrayFile file = (CaArrayFile) o;
+                return file.getFileStatus().equals(FileStatus.IMPORTING);
+            }
+        });
     }
 
     /**
@@ -281,7 +300,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @ManyToOne
     @JoinColumn(unique = true)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PROJECT_EXPERIMENT_FK")
+    @ForeignKey(name = "project_experiment_fk")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     @Valid
     public Experiment getExperiment() {
@@ -331,7 +350,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @Sort(type = SortType.NATURAL)
-    @Filter(name = "Project1", condition = "(status = 'IMPORTED' or status = 'IMPORTED_NOT_PARSED') and " 
+    @Filter(name = "Project1", condition = "(status = 'IMPORTED' or status = 'IMPORTED_NOT_PARSED') and "
         + Experiment.FILES_FILTER)
     private SortedSet<CaArrayFile> getImportedFileSet() {
         return this.importedFiles;
@@ -386,7 +405,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @Sort(type = SortType.NATURAL)
-    @Filter(name = "Project1", condition = "status != 'IMPORTED' and status != 'IMPORTED_NOT_PARSED' " 
+    @Filter(name = "Project1", condition = "status != 'IMPORTED' and status != 'IMPORTED_NOT_PARSED' "
         + "and status != 'SUPPLEMENTAL' and " + Experiment.FILES_FILTER)
     private SortedSet<CaArrayFile> getUnImportedFileSet() {
         return this.unImportedFiles;
@@ -410,9 +429,9 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return public access profile
      */
-    @ManyToOne(cascade = {CascadeType.ALL })
+    @ManyToOne(cascade = {CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
-    @ForeignKey(name = "PROJECT_PUBLICACCESS_FK")
+    @ForeignKey(name = "project_publicaccess_fk")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public AccessProfile getPublicProfile() {
         return this.publicProfile;
@@ -426,9 +445,9 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return host institution access profile
      */
-    @ManyToOne(cascade = {CascadeType.ALL })
+    @ManyToOne(cascade = {CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
-    @ForeignKey(name = "PROJECT_HOSTACCESS_FK")
+    @ForeignKey(name = "project_hostaccess_fk")
     public AccessProfile getHostProfile() {
         return this.hostProfile;
     }
@@ -443,7 +462,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
-    @MapKeyManyToMany(joinColumns = @JoinColumn(name = "GROUP_ID"))
+    @MapKeyManyToMany(joinColumns = @JoinColumn(name = "group_id"))
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     private Map<CollaboratorGroup, AccessProfile> getGroupProfilesMap() {
         return this.groupProfiles;
@@ -588,9 +607,9 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     public void setLastUpdated(final Date lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
-        
+
     /**
-     * If the public id has not been locked, recalculate the experiment's public id value based on the 
+     * If the public id has not been locked, recalculate the experiment's public id value based on the
      * algorithm specified in @see getPublicId from the current values of the PI and persistent identifier.
      * If the public id has been locked, then this method is a no-op.
      */
@@ -601,7 +620,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         if (getExperiment().getId() == null) {
             return;
         }
-        Person pi = (Person) getExperiment().getPrimaryInvestigator().getContact();        
+        Person pi = (Person) getExperiment().getPrimaryInvestigator().getContact();
         String piComponent = StringUtils.substring(
                 CharSetUtils.keep(StringUtils.lowerCase(pi.getLastName()), "A-Za-z"), 0, PUBLIC_ID_COMPONENT_LENGTH);
         String idComponent = StringUtils.leftPad(getExperiment().getId().toString(), PUBLIC_ID_COMPONENT_LENGTH, "0");

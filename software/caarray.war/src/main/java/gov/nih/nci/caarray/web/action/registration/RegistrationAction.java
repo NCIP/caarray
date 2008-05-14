@@ -82,14 +82,14 @@
  */
 package gov.nih.nci.caarray.web.action.registration;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getCountryService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getStateService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getCountryService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getStateService;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.country.Country;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
 import gov.nih.nci.caarray.domain.state.State;
 import gov.nih.nci.caarray.util.ConfigurationHelper;
-import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.caarray.web.helper.EmailHelper;
 import gov.nih.nci.security.authentication.helper.LDAPHelper;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -110,6 +110,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
@@ -163,8 +164,8 @@ public class RegistrationAction extends ActionSupport implements Preparable {
             // We call the service to save, then send email.  This is non-transactional behavior,
             // but it's okay in this case.  The request gets logged to our db, but if email doesn't
             // send, we tell the user to retry.  (We don't send email in service because Email helper
-            // makes assemptions about the environment that are innappropriate for the service tier.)
-            ActionHelper.getRegistrationService().register(getRegistrationRequest());
+            // makes assumptions about the environment that are inappropriate for the service tier.)
+            CaArrayActionHelper.getRegistrationService().register(getRegistrationRequest());
             LOGGER.debug("done saving registration request; sending email");
             EmailHelper.registerEmail(getRegistrationRequest());
             EmailHelper.registerEmailAdmin(getRegistrationRequest());
@@ -214,14 +215,14 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     private void validateNonLdap() {
         try {
             if (StringUtils.isNotBlank(getRegistrationRequest().getLoginName())
-                    && (ActionHelper.getUserProvisioningManager()
+                    && (CaArrayActionHelper.getUserProvisioningManager()
                                     .getUser(getRegistrationRequest().getLoginName()) != null)) {
                 addActionError(getText("registration.usernameInUse"));
             }
             if (StringUtils.isNotBlank(getRegistrationRequest().getEmail())) {
                 User searchUser = new User();
                 searchUser.setEmailId(getRegistrationRequest().getEmail());
-                if (!ActionHelper.getUserProvisioningManager()
+                if (!CaArrayActionHelper.getUserProvisioningManager()
                                  .getObjects(new UserSearchCriteria(searchUser)).isEmpty()) {
                     addActionError(getText("registration.emailAddressInUse"));
                 }

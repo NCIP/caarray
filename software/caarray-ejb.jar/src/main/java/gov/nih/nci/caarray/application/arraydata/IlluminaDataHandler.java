@@ -155,13 +155,19 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     @Override
     ArrayDataTypeDescriptor getArrayDataTypeDescriptor(File dataFile) {
         DelimitedFileReader reader = getReader(dataFile);
-        if (isExpressionFile(reader)) {
-            return IlluminaArrayDataTypes.ILLUMINA_EXPRESSION;
-        } else if (isGenotypingFile(reader)) {
-            return IlluminaArrayDataTypes.ILLUMINA_GENOTYPING;
-        } else {
-            throw new IllegalArgumentException("File " + dataFile.getName()
-                    + " is not an Illumina genotyping or gene expression data file");
+        try {
+            ArrayDataTypeDescriptor descriptor;
+            if (isExpressionFile(reader)) {
+                descriptor = IlluminaArrayDataTypes.ILLUMINA_EXPRESSION;
+            } else if (isGenotypingFile(reader)) {
+                descriptor = IlluminaArrayDataTypes.ILLUMINA_GENOTYPING;
+            } else {
+                throw new IllegalArgumentException("File " + dataFile.getName()
+                        + " is not an Illumina genotyping or gene expression data file");
+            }
+            return descriptor;
+        } finally {
+            reader.close();
         }
     }
 
@@ -250,17 +256,30 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
 
     @Override
     QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(File file) {
-        return getTypeDescriptors(getReader(file)).toArray(new QuantitationTypeDescriptor[] {});
+        DelimitedFileReader reader = getReader(file);
+        try {
+            QuantitationTypeDescriptor[] descriptors =
+                getTypeDescriptors(reader).toArray(new QuantitationTypeDescriptor[] {});
+            return descriptors;
+        } finally {
+            reader.close();
+        }
     }
 
     @Override
     List<String> getHybridizationNames(File dataFile) {
         DelimitedFileReader reader = getReader(dataFile);
-        List<String> headers = getHeaders(reader);
-        if (isRowOriented(headers)) {
-            return getSampleNamesFromGroupId(headers, reader);
-        } else {
-            return getSampleNamesFromHeaders(headers);
+        try {
+            List<String> headers = getHeaders(reader);
+            List<String> hybridizationNames;
+            if (isRowOriented(headers)) {
+                hybridizationNames = getSampleNamesFromGroupId(headers, reader);
+            } else {
+                hybridizationNames =  getSampleNamesFromHeaders(headers);
+            }
+            return hybridizationNames;
+        } finally {
+            reader.close();
         }
     }
 
@@ -294,8 +313,12 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     @Override
     void loadData(DataSet dataSet, List<QuantitationType> types, File file, ArrayDesignService arrayDesignService) {
         DelimitedFileReader reader = getReader(file);
-        List<String> headers = getHeaders(reader);
-        loadData(headers, reader, dataSet, types, arrayDesignService);
+        try {
+            List<String> headers = getHeaders(reader);
+            loadData(headers, reader, dataSet, types, arrayDesignService);
+        } finally {
+            reader.close();
+        }
     }
 
     private void loadData(List<String> headers, DelimitedFileReader reader, DataSet dataSet,
@@ -319,7 +342,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, List<String> headers, 
+    private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, List<String> headers,
             ArrayDesignService arrayDesignService) {
         positionAtData(reader);
         int indexOfTargetId = headers.indexOf(TARGET_ID);
@@ -395,9 +418,13 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         DelimitedFileReader reader = getReader(file);
-        validateHeaders(reader, result);
-        if (result.isValid()) {
-            validateData(reader, result);
+        try {
+            validateHeaders(reader, result);
+            if (result.isValid()) {
+                validateData(reader, result);
+            }
+        } finally {
+            reader.close();
         }
     }
 
@@ -476,7 +503,12 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
 
     @Override
     ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
-        return getArrayDesign(arrayDesignService, getReader(file));
+        DelimitedFileReader reader = getReader(file);
+        try {
+            return getArrayDesign(arrayDesignService, reader);
+        } finally {
+            reader.close();
+        }
     }
 
 

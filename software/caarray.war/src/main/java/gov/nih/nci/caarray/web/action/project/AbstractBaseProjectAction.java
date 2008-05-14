@@ -82,10 +82,12 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
@@ -109,6 +111,16 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
      * details.
      */
     public static final String DETAILS_RESULT = "details";
+    /**
+     * reload the project in top level frame.
+     */
+    public static final String RELOAD_PROJECT_RESULT = "reload-project";
+    
+    /**
+     * Width (in characters) to which the experiment title should be truncated to prevent messages from overflowing
+     * the UI.   
+     */
+    public static final int TRUNCATED_TITLE_WIDTH = 80;
 
     private Project project = new Project();
 
@@ -137,6 +149,14 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
                 this.project = retrieved;
             }
         }
+    }
+    
+    /**
+     * get the csm user.  This method is extracted so it can be overwritten in test cases.
+     * @return the csm user.
+     */
+    protected User getCsmUser() {
+        return UsernameHolder.getCsmUser();
     }
     
     /**

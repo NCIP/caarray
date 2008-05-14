@@ -195,7 +195,7 @@
     <xs:element name="DerivedArrayData" type="DerivedArrayData" />
     <xs:complexType name="DerivedArrayData">
         <xs:complexContent>
-            <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
+            <xs:extension base="AbstractArrayData">
                 <xs:sequence>
                     <xs:element name="hybridizations" minOccurs="0">
                         <xs:complexType>
@@ -218,7 +218,7 @@
     <xs:element name="RawArrayData" type="RawArrayData" />
     <xs:complexType name="RawArrayData">
         <xs:complexContent>
-            <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
+            <xs:extension base="AbstractArrayData">
                 <xs:sequence>
                     <xs:element name="sourceImages" minOccurs="0">
                         <xs:complexType>

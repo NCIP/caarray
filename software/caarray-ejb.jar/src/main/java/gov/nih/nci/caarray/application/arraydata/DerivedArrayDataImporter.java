@@ -125,12 +125,9 @@ final class DerivedArrayDataImporter extends AbstractDataSetImporter {
         File dataFile = getFile();
         List<String> hybridiationNames = getDataFileHandler().getHybridizationNames(dataFile);
         for (String hybridizationName : hybridiationNames) {
-            Hybridization hybridization = createHybridization(hybridizationName);
+            Hybridization hybridization = lookupOrCreateHybridization(hybridizationName, createAnnnotation);
             derivedArrayData.getHybridizations().add(hybridization);
             hybridization.getDerivedDataCollection().add(derivedArrayData);
-            if (createAnnnotation) {
-                createAnnotation(dataFile, hybridization);
-            }
         }
         getArrayDao().save(derivedArrayData);
     }

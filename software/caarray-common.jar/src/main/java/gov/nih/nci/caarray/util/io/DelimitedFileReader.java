@@ -119,4 +119,9 @@ public interface DelimitedFileReader {
      */
     void reset() throws IOException;
 
+    /**
+     * Closes the reader.
+     */
+    void close();
+
 }

@@ -84,14 +84,17 @@
 package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -100,6 +103,7 @@ import org.hibernate.annotations.ForeignKey;
 
    */
 @Entity
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 public class FactorValue extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -118,7 +122,7 @@ public class FactorValue extends AbstractCaArrayEntity {
      * @return the factor
      */
     @ManyToOne
-    @ForeignKey(name = "FACTORVALUE_FACTOR_FK")
+    @ForeignKey(name = "factorvalue_factor_fk")
     public Factor getFactor() {
         return factor;
     }
@@ -139,7 +143,7 @@ public class FactorValue extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "FACTORVALUE_UNIT_FK")
+    @ForeignKey(name = "factorvalue_unit_fk")
     public Term getUnit() {
         return unit;
     }
@@ -175,9 +179,9 @@ public class FactorValue extends AbstractCaArrayEntity {
     /**
      * @return the hybridization
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "FACTORVALUE_HYBRIDIZATATION_FK")
+    @ForeignKey(name = "factorvalue_hybridizatation_fk")
     public Hybridization getHybridization() {
         return hybridization;
     }

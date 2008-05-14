@@ -8,10 +8,10 @@
 </fmt:message>
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${files}"
-        requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
+        requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id">
         <caarray:displayTagProperties/>
         <display:column title="${addAll}">
-          <a href="#" name="todownload" onclick="downloadMgr.addDownloadRow('${row.name}', '${row.id}', ${row.compressedSize})">
+          <a href="#" id="fileRow${row.id}" onclick="downloadMgr.addDownloadRow('${row.id}'); return false;">
             <img src="<c:url value="/images/ico_add.gif"/>" alt="Add ${row.name}"/>
           </a>
         </display:column>
@@ -29,3 +29,9 @@
         <display:setProperty name="paging.banner.placement" value="bottom"/>
     </display:table>
 </ajax:displayTag>
+
+<script type="text/javascript">
+<c:forEach items="${files}" var="file"> 
+    downloadMgr.addFile('${file.name}', '${file.id}', ${file.compressedSize});
+</c:forEach>
+</script>

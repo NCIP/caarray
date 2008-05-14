@@ -112,10 +112,10 @@ import org.hibernate.validator.NotNull;
  *
  */
 @Entity
-@Table(name = "ARRAYDATA")
+@Table(name = "arraydata")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(
-        name = "DISCRIMINATOR",
+        name = "discriminator",
         discriminatorType = DiscriminatorType.STRING
 )
 public abstract class AbstractArrayData extends AbstractCaArrayEntity {
@@ -135,7 +135,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
     @ManyToOne
     @NotNull
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
-    @ForeignKey(name = "ARRAYDATA_FILE_FK")
+    @ForeignKey(name = "arraydata_file_fk")
     public CaArrayFile getDataFile() {
         return dataFile;
     }
@@ -194,7 +194,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAYDATA_TYPE_FK")
+    @ForeignKey(name = "arraydata_type_fk")
     public ArrayDataType getType() {
         return type;
     }

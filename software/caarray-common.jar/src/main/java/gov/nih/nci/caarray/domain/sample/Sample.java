@@ -161,11 +161,11 @@ public class Sample extends AbstractBioMaterial implements Protectable {
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "SAMPLEEXTRACT",
-            joinColumns = { @javax.persistence.JoinColumn(name = "SAMPLE_ID") },
-            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "EXTRACT_ID") }
+            name = "sampleextract",
+            joinColumns = { @javax.persistence.JoinColumn(name = "sample_id") },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "extract_id") }
     )
-    @ForeignKey(name = "SAMPLEEXTRACT_SAMPLE_FK", inverseName = "SAMPLEEXTRACT_EXTRACT_FK")
+    @ForeignKey(name = "sampleextract_sample_fk", inverseName = "sampleextract_extract_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Extract> getExtracts() {
         return this.extracts;
@@ -210,9 +210,9 @@ public class Sample extends AbstractBioMaterial implements Protectable {
      * @return the experiment to which this source belongs
      */
     @ManyToOne
-    @JoinTable(name = "EXPERIMENTSAMPLE",
-            joinColumns = {@JoinColumn(name = "SAMPLE_ID", insertable = false, updatable = false) },
-            inverseJoinColumns = {@JoinColumn(name = "EXPERIMENT_ID", insertable = false, updatable = false) })
+    @JoinTable(name = "experimentsample",
+            joinColumns = {@JoinColumn(name = "sample_id", insertable = false, updatable = false) },
+            inverseJoinColumns = {@JoinColumn(name = "experiment_id", insertable = false, updatable = false) })
     public Experiment getExperiment() {
         return this.experiment;
     }
@@ -240,15 +240,13 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     }
 
     /**
-     * @return the set of hybridizations related to this sample (via extract-labeled extract linkages)
+     * {@inheritDoc}
      */
     @Transient
-    public Set<Hybridization> getRelatedHybs() {
+    public Set<Hybridization> getRelatedHybridizations() {
         Set<Hybridization> hybs = new HashSet<Hybridization>();
         for (Extract e : getExtracts()) {
-            for (LabeledExtract le : e.getLabeledExtracts()) {
-                hybs.addAll(le.getHybridizations());
-            }
+            hybs.addAll(e.getRelatedHybridizations());
         }
         return hybs;
     }

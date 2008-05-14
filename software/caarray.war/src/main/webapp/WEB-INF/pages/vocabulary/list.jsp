@@ -27,7 +27,7 @@
                         <c:param name="currentTerm.id" value="${row.id}" />
                     </c:url>
                     <ajax:anchors target="tabboxwrapper">
-                        <a href="${viewTermUrl}">${row.value}</a>
+                        <a href="${viewTermUrl}"><caarray:abbreviate value="${row.value}" maxWidth="30"/></a>
                     </ajax:anchors>
                 </display:column>
                 <display:column title="Description" property="description" sortable="true" />

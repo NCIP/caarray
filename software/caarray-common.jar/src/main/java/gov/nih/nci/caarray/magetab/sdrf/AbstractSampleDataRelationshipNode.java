@@ -155,40 +155,22 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     public abstract SdrfNodeType getNodeType();
 
     private Set<AbstractSampleDataRelationshipNode> getSuccessorsOfType(SdrfNodeType type) {
-        if (!getSuccessors().isEmpty()) {
-            if (getSuccessors().iterator().next().getNodeType().equals(type)) {
-                return getSuccessors();
-            } else {
-                return getAllSuccessorsOfType(getSuccessors(), type);
-            }
-        }
-        return new HashSet<AbstractSampleDataRelationshipNode>(0);
-    }
-
-    private Set<AbstractSampleDataRelationshipNode> getAllSuccessorsOfType(
-            Set<AbstractSampleDataRelationshipNode> successorNodes, SdrfNodeType type) {
         HashSet<AbstractSampleDataRelationshipNode> result = new HashSet<AbstractSampleDataRelationshipNode>();
-        for (AbstractSampleDataRelationshipNode node : successorNodes) {
+        for (AbstractSampleDataRelationshipNode node : getSuccessors()) {
+            if (node.getNodeType().equals(type)) {
+                result.add(node);
+            }
             result.addAll(node.getSuccessorsOfType(type));
         }
         return result;
     }
 
     private Set<AbstractSampleDataRelationshipNode> getPredecessorsOfType(SdrfNodeType type) {
-        if (!getPredecessors().isEmpty()) {
-            if (getPredecessors().iterator().next().getNodeType().equals(type)) {
-                return getPredecessors();
-            } else {
-                return getAllPredecessorsOfType(getPredecessors(), type);
-            }
-        }
-        return new HashSet<AbstractSampleDataRelationshipNode>(0);
-    }
-
-    private Set<AbstractSampleDataRelationshipNode> getAllPredecessorsOfType(
-            Set<AbstractSampleDataRelationshipNode> predecessorNodes, SdrfNodeType type) {
         HashSet<AbstractSampleDataRelationshipNode> result = new HashSet<AbstractSampleDataRelationshipNode>();
-        for (AbstractSampleDataRelationshipNode node : predecessorNodes) {
+        for (AbstractSampleDataRelationshipNode node : getPredecessors()) {
+            if (node.getNodeType().equals(type)) {
+                result.add(node);
+            }
             result.addAll(node.getPredecessorsOfType(type));
         }
         return result;

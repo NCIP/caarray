@@ -2,14 +2,14 @@
 
 insert into term_source (name, url) values ('ncbitax', 'http://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/');
 insert into term_source (name, url, version) values ('NCI_Thesaurus', 'http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do', '07.12a');
-insert into term_source (name, version) values ('Caarray', '2.0');
+insert into term_source (name, version) values ('caArray', '2.0');
 insert into term_source (name, url, version) values ('caDSR', 'http://ncicb.nci.nih.gov/NCICB/infrastructure/cacore_overview/cadsr', '3.2');
 
-insert into category (source, name) select id, 'PublicationStatus' from term_source where name='Caarray';
-insert into category (source, name) select id, 'Clinical Diagnosis' from term_source where name='Caarray';
-insert into category (source, name) select id, 'Histologic Diagnosis' from term_source where name='Caarray';
-insert into category (source, name) select id, 'Pathologic Status' from term_source where name='Caarray';
-insert into category (source, name) select id, 'Tissue Anatomic Site' from term_source where name='Caarray';
+insert into category (source, name) select id, 'PublicationStatus' from term_source where name='caArray';
+insert into category (source, name) select id, 'Clinical Diagnosis' from term_source where name='caArray';
+insert into category (source, name) select id, 'Histologic Diagnosis' from term_source where name='caArray';
+insert into category (source, name) select id, 'Pathologic Status' from term_source where name='caArray';
+insert into category (source, name) select id, 'Tissue Anatomic Site' from term_source where name='caArray';
 
 -- OrganismParts
 insert into term (value, accession, url, source) select 'Brain', 'C12439', 'http://nciterms.nci.nih.gov/NCIBrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C12439&bookmarktag=2', term_source.id from term_source where term_source.name='NCI_Thesaurus';
@@ -39,11 +39,11 @@ insert into term (value, accession, url, source) select 'Squamous Carcinoma', 'C
 insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Squamous Carcinoma' and category.name = 'DiseaseState';
 
 -- PublicationStatuses
-insert into term (value, source) select 'Submitted', term_source.id from term_source where term_source.name='Caarray';
+insert into term (value, source) select 'Submitted', term_source.id from term_source where term_source.name='caArray';
 insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Submitted' and category.name = 'PublicationStatus';
-insert into term (value, source) select 'In Preparation', term_source.id from term_source where term_source.name='Caarray';
+insert into term (value, source) select 'In Preparation', term_source.id from term_source where term_source.name='caArray';
 insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'In Preparation' and category.name = 'PublicationStatus';
-insert into term (value, source) select 'Published', term_source.id from term_source where term_source.name='Caarray';
+insert into term (value, source) select 'Published', term_source.id from term_source where term_source.name='caArray';
 insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'Published' and category.name = 'PublicationStatus';
 
 insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank, term_source) select 9606, 'human', 'Homo sapiens', 'species', id from term_source where term_source.name='ncbitax';
@@ -398,10 +398,11 @@ insert into config_parameter (param, raw_value) values ('REG_EMAIL_TO', 'test@ex
 insert into config_parameter (param, raw_value) values ('REG_EMAIL_SUBJECT', 'caArray 2 Registration');
 insert into config_parameter (param, raw_value) values ('THANKS_MESSAGE', '<p>Thank you for registering with caArray. You should receive an email confirmation message shortly. Your account, with the roles you requested, will be activated within 48-72 hours. Expect to hear from the helpdesk within this time frame. You can continue to use caArray without an account to browse and search available experiments, and download data, while your account is activated.<p>If you have questions, please contact NCICB Application Support by email <a href="mailto:NCICB@pop.nci.nih.gov">NCICB@pop.nci.nih.gov</a> or by phone Phone: 888-478-4423 (toll-free) or 301-451-4384 (local).');
 insert into config_parameter (param, raw_value) values ('DEVELOPMENT_MODE', 'false');
-insert into config_parameter (param, raw_value) values ('SCHEMA_VERSION', '2.0');
+insert into config_parameter (param, raw_value) values ('SCHEMA_VERSION', '2.0.1.rc4');
 
 insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_SUBJECT', 'caArray Experiment Submitted');
 insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_PLAIN_CONTENT', 'Dear {0}\n\nThank you for submitting experiment {1} to caArray. You may access this experiment at {2}.');
 insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_HTML_CONTENT', '<p>Dear {0}</p><p>Thank you for submitting experiment {1} to caArray. You may access this experiment at <a href="{2}">{2}</a>.');
 
 insert into config_parameter (param, raw_value) values ('BACKGROUND_THREAD_TRANSACTION_TIMEOUT', '28800');
+insert into config_parameter (param, raw_value) values ('STRUTS_MULTIPART_SAVEDIR', '');

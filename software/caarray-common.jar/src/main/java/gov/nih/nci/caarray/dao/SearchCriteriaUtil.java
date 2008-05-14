@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -96,6 +95,8 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Example;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.Property;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Provides helper methods for search DAOs.

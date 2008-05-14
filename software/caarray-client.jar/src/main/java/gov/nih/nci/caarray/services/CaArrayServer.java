@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.services;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.services.arraydesign.ArrayDesignDetailsService;
 import gov.nih.nci.caarray.services.data.DataRetrievalService;
 import gov.nih.nci.caarray.services.file.FileRetrievalService;
@@ -89,8 +90,10 @@ import gov.nih.nci.caarray.services.search.CaArraySearchService;
 
 import java.util.Hashtable;
 
+import javax.ejb.EJBAccessException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -135,27 +138,33 @@ public final class CaArrayServer {
      * @param username username to use to authenticate
      * @param password password to use to authenticate
      * @throws ServerConnectionException thrown when the connection is dropped/missing
-     * @throws LoginException thrown when there is a problem with the login credentials
+     * @throws FailedLoginException thrown when there is a problem with the login credentials
      */
-    public void connect(String username, String password) throws ServerConnectionException, LoginException {
-        login(username, password);
+    public void connect(String username, String password) throws ServerConnectionException, FailedLoginException {
+        setCredentials(username, password);
         connectToServer();
+        checkCredentials();
     }
 
-    /**
-     * @param username
-     * @param password
-     * @throws LoginException
-     */
-    private void login(String username, String password) throws LoginException {
+    private void checkCredentials() throws FailedLoginException {
+        try {
+            getSearchService().search((AbstractCaArrayObject) null);
+        } catch (EJBAccessException e) {
+            throw new FailedLoginException("Authentication failed: incorrect username or password");
+        }
+    }
+
+    private void setCredentials(String username, String password) {
         LoginContext loginContext = null;
         try {
+            String authConfPath = CaArrayServer.class.getResource("/auth.conf").toExternalForm();
+            System.setProperty("java.security.auth.login.config", authConfPath);
             final CaArrayCallbackHandler handler = new CaArrayCallbackHandler(username, password);
             loginContext = new LoginContext("client-login", handler);
+            loginContext.login();
         } catch (LoginException e) {
             throw new IllegalStateException("The caarray login module could not be found.", e);
         }
-        loginContext.login();
     }
 
     @SuppressWarnings("PMD.ReplaceHashtableWithMap") // needed for API compatability

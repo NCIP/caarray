@@ -107,6 +107,7 @@ import org.apache.log4j.Logger;
  */
 final class IdfTranslator extends AbstractTranslator {
 
+    private static final int LARGE_TEXT_FIELD_LENGTH = 2000;
     private static final Logger LOG = Logger.getLogger(IdfTranslator.class);
 
     IdfTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
@@ -137,7 +138,12 @@ final class IdfTranslator extends AbstractTranslator {
     private void translateInvestigationSummary(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
             Experiment investigation) {
         investigation.setTitle(idfInvestigation.getTitle());
-        investigation.setDescription(idfInvestigation.getDescription());
+        // WC: temporary fix.  this should be constrained on the db.
+        String desc = idfInvestigation.getDescription();
+        if (desc.length() > LARGE_TEXT_FIELD_LENGTH) {
+            desc = desc.substring(0, LARGE_TEXT_FIELD_LENGTH);
+        }
+        investigation.setDescription(desc);
         investigation.setDateOfExperiment(idfInvestigation.getDateOfExperiment());
         investigation.setPublicReleaseDate(idfInvestigation.getPublicReleaseDate());
     }
