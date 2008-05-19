@@ -3,17 +3,17 @@
   <div class="tableboxpad" style="overflow:auto; height:500px;">
   <table class="searchresults">
     <tr>
-        <td>
+        <td width="80%">
           <%@ include file="/WEB-INF/pages/project/files/downloadFilesList.jsp" %>
         </td>
-        <td width="100%" style="padding-left: 10px;">
+        <td width="20%" style="padding-left: 2px;">
           <br>
           <br>
           <div id="downloadInProgressMsg" class="confirm_msg" style="display:none"><fmt:message key="experiment.files.download.inProgress"/></div>
           <table class="searchresults" id="downloadTbl">
             <tr>
               <fmt:message key="experiment.files.downloadQueue" var="downloadQueueTitle" />
-              <th>${downloadQueueTitle}<br>[<a href="#" id="toggleQueue" onclick="downloadMgr.toggleQueue()" >Show Files</a>]</th>
+              <th>${downloadQueueTitle}&nbsp;[<a href="#" id="toggleQueue" onclick="downloadMgr.toggleQueue()" >Show Files</a>]</th>
             </tr>
             <tr>
               <td>

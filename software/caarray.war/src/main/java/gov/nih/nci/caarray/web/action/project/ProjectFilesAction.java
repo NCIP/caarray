@@ -668,15 +668,21 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     @SkipValidation
     public String download() throws IOException {
+        if (!validatePermissions()) {
+            // the user will be moved to the login page
+            // therefore all previous error messages are not nec.
+            ActionHelper.getMessages().clear();
+            return "denied";
+        }
         computeDownloadGroups();
         if (downloadFileGroups.size() == 1) {
             downloadFiles(getProject(), getSelectedFiles(), determineDownloadFileName(this.getProject()));
             return null;
-        } else if (downloadGroupNumber > 0) { 
+        } else if (downloadGroupNumber > 0) {
             downloadFiles(getProject(), getDownloadGroupFiles(downloadFileGroups.get(downloadGroupNumber - 1)),
                     determineDownloadFileName(this.getProject(), this.downloadGroupNumber, this.downloadFileGroups
                             .size()));
-            return null;            
+            return null;
         } else {
             return "downloadGroups";
         }
@@ -694,7 +700,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     private void computeDownloadGroups() {
         this.downloadFileGroups.clear();
-        List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(getSelectedFiles());        
+        List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(getSelectedFiles());
         Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
         for (CaArrayFile file : sortedFiles) {
             addToDownloadGroups(file);
@@ -705,7 +711,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * Add given file to the download groups. The goal is to find the best possible group to put it, such that the total
      * number of groups will be minimized. the algorithm is to put it in the group which will then have the closest to
      * max allowable size without going over
-     * 
+     *
      * @param file the file to add
      */
     private void addToDownloadGroups(CaArrayFile file) {
@@ -724,7 +730,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         }
         bestGroup.addFile(file);
     }
-    
+
     /**
      * Zips the selected files and writes the result to the servlet output stream. Also sets content
      * type and disposition appropriately.
@@ -738,16 +744,16 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     public static void downloadFiles(Project project, Collection<CaArrayFile> files, String filename)
             throws IOException {
         HttpServletResponse response = ServletActionContext.getResponse();
-        FileInputStream fis = null;        
+        FileInputStream fis = null;
         try {
             response.setContentType(DOWNLOAD_CONTENT_TYPE);
             response.addHeader("Content-disposition", "filename=\"" + filename + "\"");
-            
-            List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);        
+
+            List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);
             Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
             OutputStream sos = response.getOutputStream();
             ZipOutputStream zos = new ZipOutputStream(sos);
-            TemporaryFileCache tempCache = TemporaryFileCacheLocator.getTemporaryFileCache();        
+            TemporaryFileCache tempCache = TemporaryFileCacheLocator.getTemporaryFileCache();
             for (CaArrayFile caf : sortedFiles) {
                 File f = tempCache.getFile(caf);
                 fis = new FileInputStream(f);
@@ -785,17 +791,29 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * @return true if validation passes
      */
     private boolean validateUpload() {
+        if (!validatePermissions()) {
+            return false;
+        }
+
+        List<String> fileNames = getUploadFileName();
+        if (fileNames == null || fileNames.isEmpty()) {
+            ActionHelper.saveMessage(getText("fileRequired"));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * validates user permissions.
+     * @return true if validation passes
+     */
+    private boolean validatePermissions() {
         if (UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
             ActionHelper.saveMessage(getText("upload.session.expired"));
             return false;
         }
         if (!getProject().hasWritePermission(getCsmUser())) {
             ActionHelper.saveMessage(getText("project.permissionDenied", new String[]{getText("role.write")}));
-            return false;
-        }
-        List<String> fileNames = getUploadFileName();
-        if (fileNames == null || fileNames.isEmpty()) {
-            ActionHelper.saveMessage(getText("fileRequired"));
             return false;
         }
         return true;

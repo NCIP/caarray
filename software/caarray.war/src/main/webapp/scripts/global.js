@@ -737,16 +737,16 @@ function formatFileSize(value) {
 
     if (value >= 1099511627776) {
         value *= 10;
-        returnVal = (Math.round(value / 1099511627776)/10) + " TBs";
+        returnVal = (Math.round(value / 1099511627776)/10) + " TB";
     } else if (value >= 1073741824 ) {
         value *= 10;
-        returnVal = (Math.round(value / 1073741824)/10) + " GBs";
+        returnVal = (Math.round(value / 1073741824)/10) + " GB";
     } else if (value >= 1048576) {
         value *= 10;
-        returnVal = (Math.round(value / 1048576)/10) + " MBs";
+        returnVal = (Math.round(value / 1048576)/10) + " MB";
     } else if (value >= 1024) {
         value *= 10;
-        returnVal = (Math.round(value / 1024)/10) + " KBs";
+        returnVal = (Math.round(value / 1024)/10) + " KB";
     } else {
         returnVal = value + " Bytes";
     }

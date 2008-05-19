@@ -4,7 +4,7 @@
 <script type="text/javascript">
 groupDownloadAllFiles = new Array();
 
-<c:forEach items="${selectedFiles}" var="file"> 
+<c:forEach items="${selectedFiles}" var="file">
 groupDownloadAllFiles.push('${file.id}');
 </c:forEach>
 
@@ -23,11 +23,11 @@ launchGroupDownload = function(downloadUrl, downloadLink) {
         elt.name="selectedFileIds";
         elt.value=groupDownloadAllFiles[i];
         form.appendChild(elt);
-    }  
-    
+    }
+
     document.body.appendChild(form);
     form.submit();
-    $(form).remove();      
+    $(form).remove();
 }
 </script>
 
@@ -46,16 +46,16 @@ these files in groups. Please click the download link for each file group below 
         </display:column>
         <display:column title="Files in Group" property="fileNames"/>
         <display:column titleKey="experiment.files.compressedSize">
-            <fmt:formatNumber value="${row.totalCompressedSize / 1024}" maxFractionDigits="0"/>
+            <caarray:formatFileSize value="${row.totalCompressedSize}"/>
         </display:column>
         <display:column titleKey="experiment.files.uncompressedSize">
-            <fmt:formatNumber value="${row.totalUncompressedSize / 1024}" maxFractionDigits="0"/>
+            <caarray:formatFileSize value="${row.totalUncompressedSize}"/>
         </display:column>
         <display:column title="Download" >
-	        <c:url value="/project/files/download.action" var="actionUrl">
+          <c:url value="/project/files/download.action" var="actionUrl">
                 <c:param name="project.id" value="${project.id}" />
                 <c:param name="downloadGroupNumber" value="${row_rowNum}" />
-    	    </c:url>
+          </c:url>
             <div>
                 <a href="#" onclick="launchGroupDownload('${actionUrl}', this)">
                     <img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>">

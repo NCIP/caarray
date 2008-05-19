@@ -165,6 +165,7 @@
         <action name="project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
             <result name="upload">/WEB-INF/pages/project/files/uploadComplete.jsp</result>
             <result name="input">/error.jsp</result>
+            <result name="denied" type="chain">project/details</result>
             <result name="downloadGroups">/WEB-INF/pages/project/files/downloadFileGroups.jsp</result>
         </action>
 
