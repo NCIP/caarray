@@ -333,7 +333,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     )
     public String saveMeta() {
         if (!createMode && editMode) {
-            getFileManagementService().importArrayDesignDetails(arrayDesign);
+            saveImportFile();
             return Action.SUCCESS;
         }
         editMode = true;
