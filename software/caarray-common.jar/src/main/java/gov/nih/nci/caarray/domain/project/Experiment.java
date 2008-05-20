@@ -228,9 +228,9 @@ public class Experiment extends AbstractCaArrayEntity {
         + "left join labeledextracthybridization leh2 on h2.id = leh2.hybridization_id left join extractlabeledextract "
         + "ele2 on leh2.labeledextract_id = ele2.labeledextract_id left join sampleextract se2 on ele2.extract_id = "
         + "se2.extract_id left join biomaterial s2 on se2.sample_id = s2.id where s.id is not null and s.id in "
-        + READABLE_SAMPLE_CLAUSE + " or s2.id is not null and s2.id in " + READABLE_SAMPLE_CLAUSE + " or (f.status = "
-        + "'SUPPLEMENTAL' or f.status = 'IMPORTED') and s.id is null and s2.id is null and p.id in "
-        + READABLE_PROJECT_CLAUSE + " or p.id in " + PROJECT_OWNER_CLAUSE + ")";
+        + READABLE_SAMPLE_ALIAS_CLAUSE + " or s2.id is not null and s2.id in " + READABLE_SAMPLE_ALIAS_CLAUSE 
+        + " or (f.status = " + "'SUPPLEMENTAL' or f.status = 'IMPORTED') and s.id is null and s2.id is null and "
+        + "p.id in " + READABLE_PROJECT_CLAUSE + " or p.id in " + PROJECT_OWNER_CLAUSE + ")";
     private static final long serialVersionUID = 1234567890L;
     private static final int PAYMENT_NUMBER_FIELD_LENGTH = 100;
 
