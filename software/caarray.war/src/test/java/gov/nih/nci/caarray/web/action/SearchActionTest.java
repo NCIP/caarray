@@ -86,11 +86,9 @@ import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +96,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.opensymphony.xwork2.Action;
 
 /**
@@ -133,7 +133,7 @@ public class SearchActionTest {
     public void testExperiments() throws Exception {
         searchAction.setKeyword("keyword");
         String result = this.searchAction.experiments();
-        PaginatedListImpl<Project, ProjectSortCriterion> results = searchAction.getResults();
+        SortablePaginatedList<Project, ProjectSortCriterion> results = searchAction.getResults();
         assertEquals(SearchAction.EXPERIMENTS_TAB, searchAction.getCurrentTab());
         assertEquals(NUM_PROJECTS, results.getFullListSize());
         assertEquals(NUM_PROJECTS, results.getList().size());

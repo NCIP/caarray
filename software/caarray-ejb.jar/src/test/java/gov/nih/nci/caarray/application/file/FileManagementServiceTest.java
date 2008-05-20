@@ -86,7 +86,10 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -409,6 +412,16 @@ public class FileManagementServiceTest {
         @SuppressWarnings("unchecked")
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode) {
             return (T) this.objectMap.get(entityId);
+        }
+        
+        @Override
+        public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
+            List<T> list = new ArrayList<T>();
+            for (Serializable id : ids) {
+                T t = this.retrieve(entityClass, (Long) id);
+                list.add(t);
+            }
+            return list;
         }
 
         @SuppressWarnings("deprecation")

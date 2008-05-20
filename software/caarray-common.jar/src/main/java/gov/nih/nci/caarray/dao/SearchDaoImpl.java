@@ -83,8 +83,6 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
-import gov.nih.nci.caarray.domain.search.SortCriterion;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.data.QueryProcessingException;
@@ -106,6 +104,9 @@ import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
+import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 
 /**
  * DAO to search for entities using various types of criteria. Supports searching by example, CQL, HQL (Hibernate Query
@@ -183,9 +184,9 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         // http://opensource.atlassian.com/projects/hibernate/browse/HHH-2166
         StringBuilder queryStr = new StringBuilder("from " + entityClass.getName() + " o where ");
         Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
-        queryStr.append(HibernateUtil.buildInClause(ids, "o.id", idBlocks));
+        queryStr.append(HibernateHelper.buildInClause(ids, "o.id", idBlocks));
         Query q = HibernateUtil.getCurrentSession().createQuery(queryStr.toString());
-        HibernateUtil.bindInClauseParameters(q, idBlocks);
+        HibernateHelper.bindInClauseParameters(q, idBlocks);
         return q.list();
     }
 

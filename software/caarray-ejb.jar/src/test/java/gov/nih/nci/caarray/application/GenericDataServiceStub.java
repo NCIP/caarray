@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.application;
 
-import gov.nih.nci.caarray.domain.search.PageSortParams;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -92,6 +90,7 @@ import java.util.List;
 import org.hibernate.criterion.Order;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * @author dkokotov
@@ -114,7 +113,7 @@ public class GenericDataServiceStub implements GenericDataService {
     public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
         return null;
     }
-    
+
     public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids)
             throws IllegalAccessException, InstantiationException {
         return new ArrayList<T>();
@@ -140,14 +139,14 @@ public class GenericDataServiceStub implements GenericDataService {
     public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int collectionSize(Collection<? extends PersistentObject> collection) {
         return 0;
     }
-    
+
     /**
      * {@inheritDoc}
      */

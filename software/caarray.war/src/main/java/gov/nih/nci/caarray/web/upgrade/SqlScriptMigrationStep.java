@@ -92,6 +92,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.w3c.dom.Element;
@@ -104,9 +105,11 @@ final class SqlScriptMigrationStep extends AbstractMigrationStep {
     private static final Logger LOG = Logger.getLogger(SqlScriptMigrationStep.class);
 
     private final String script;
+    private final boolean ignoreErrors;
 
     SqlScriptMigrationStep(Element element) {
         this.script = getContent(element);
+        ignoreErrors = BooleanUtils.toBoolean(element.getAttribute("ignoreErrors"));
     }
 
     @Override
@@ -122,11 +125,13 @@ final class SqlScriptMigrationStep extends AbstractMigrationStep {
             Statement s = connection.createStatement();
             while ((line = in.readLine()) != null) {
                 line = line.trim();
-                if (line.startsWith("--")) { continue; }
+                if (line.startsWith("--")) {
+                    continue;
+                }
                 if (line.endsWith(";")) {
                     sqlStatement.append(line.substring(0, line.length() - 1));
                     LOG.info("Executing SQL statement: " + sqlStatement.toString());
-                    s.executeUpdate(sqlStatement.toString());
+                    executeUpdate(sqlStatement, s);
                     sqlStatement = new StringBuffer();
                 } else {
                     sqlStatement.append(line).append(' ');
@@ -139,6 +144,18 @@ final class SqlScriptMigrationStep extends AbstractMigrationStep {
         } finally {
             close(connection);
             close(instream);
+        }
+    }
+
+    private void executeUpdate(StringBuffer sqlStatement, Statement s) throws MigrationStepFailedException {
+        try {
+            s.executeUpdate(sqlStatement.toString());
+        } catch (SQLException e) {
+            if (ignoreErrors) {
+                LOG.info("Ignoring SQLException because ignoreErrors is true", e);
+            } else {
+                throw new MigrationStepFailedException(e);
+            }
         }
     }
 

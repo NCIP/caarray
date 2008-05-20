@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.application;
 
-import gov.nih.nci.caarray.domain.search.PageSortParams;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -91,6 +89,7 @@ import java.util.List;
 import org.hibernate.criterion.Order;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * Generic service for handling data.
@@ -175,17 +174,17 @@ public interface GenericDataService extends com.fiveamsolutions.nci.commons.serv
      * @return the list of objects representing the filtered set.
      */
     <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value);
-    
+
     /**
      * Retrieves a specific subset of items from a given collection based on given sorting and paging params. The
      * intention is that this collection is proxied, and the implementations of this will be able to retrieve the
      * requested subset without needing to initialize the entire collection
-     * 
+     *
      * Note that this method currently only supports SortCriterions that are either simple properties of the target
      * class or required single-valued associations from it. If a non-required association is used in the sort
      * criterion, then any instances for which that association is null will not be included in the results (as an inner
      * join is used)
-     * 
+     *
      * @param <T> the class of objects to expect in return.
      * @param collection the collection from which to retrieve the subset
      * @param pageSortParams parameters specifying how the collection is to be sorted and which page is to be retrieved
@@ -194,7 +193,7 @@ public interface GenericDataService extends com.fiveamsolutions.nci.commons.serv
      <T extends PersistentObject> List<T> pageCollection(Collection<T> collection, PageSortParams<T> pageSortParams);
 
      /**
-      * Returns the size of a given collection. The intention is that this collection is proxied, and the 
+      * Returns the size of a given collection. The intention is that this collection is proxied, and the
       * implementations of this will be able to calculate the size without initializing it.
       * @param collection the collection whose size to calculate
       * @return the size of the collection

@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common-jar Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,110 +80,44 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.web.upgrade;
 
-import static junit.framework.Assert.assertEquals;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
-import org.hibernate.Transaction;
-import org.junit.Test;
+import javax.transaction.UserTransaction;
+
+import org.apache.log4j.Logger;
 
 /**
+ * If the CSM filters have been updated by a previous migration step, this Migrator reinitializes the filters to make
+ * sure the changes take effect without restarting the application.
+ *
  * @author Steve Lustbader
  */
-@SuppressWarnings("PMD")
-public class FileDaoTest extends AbstractDaoTest {
+public final class CsmFilterMigrator extends AbstractMigrator implements Migrator {
+    private static final Logger LOG = Logger.getLogger(CsmFilterMigrator.class);
 
-    private static final FileDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getFileDao();
-    private static final SearchDao SEARCH_DAO = CaArrayDaoFactory.INSTANCE.getSearchDao();
-
-    private static final CaArrayFile FILE_ONE = new CaArrayFile();
-    private static final CaArrayFile FILE_TWO = new CaArrayFile();
-    private static final CaArrayFile FILE_THREE = new CaArrayFile();
-
-    @Test
-    public void testUpdateFileStatus() throws Exception {
-        FILE_ONE.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        FILE_ONE.setFileType(FileType.MAGE_TAB_IDF);
-        FILE_TWO.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF.getName());
-        FILE_TWO.setFileType(FileType.MAGE_TAB_SDRF);
-        FILE_THREE.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF.getName());
-        FILE_THREE.setFileType(FileType.MAGE_TAB_ADF);
-
-        Transaction tx = null;
-
+    /**
+     * {@inheritDoc}
+     */
+    public void migrate() throws MigrationStepFailedException {
+        LOG.info("Reinitializing CSM filters");
+        UserTransaction transaction =
+            ((UserTransaction) ServiceLocatorFactory.getLocator().lookup("java:comp/UserTransaction"));
         try {
-            tx = HibernateUtil.beginTransaction();
-            DAO_OBJECT.save(FILE_ONE);
-            DAO_OBJECT.save(FILE_TWO);
-            DAO_OBJECT.save(FILE_THREE);
-            tx.commit();
-
-            tx = HibernateUtil.beginTransaction();
-            checkStatus(FileStatus.UPLOADED);
-            tx.commit();
-
-            tx = HibernateUtil.beginTransaction();
-            DAO_OBJECT.updateFileStatus(null, FileStatus.IN_QUEUE);
-            tx.commit();
-            tx = HibernateUtil.beginTransaction();
-            checkStatus(FileStatus.UPLOADED);
-            tx.commit();
-
-            CaArrayFileSet fileSet = new CaArrayFileSet();
-
-            tx = HibernateUtil.beginTransaction();
-            DAO_OBJECT.updateFileStatus(fileSet, FileStatus.IN_QUEUE);
-            tx.commit();
-            tx = HibernateUtil.beginTransaction();
-            checkStatus(FileStatus.UPLOADED);
-            tx.commit();
-
-            fileSet.add(FILE_ONE);
-            fileSet.add(FILE_TWO);
-
-            tx = HibernateUtil.beginTransaction();
-            DAO_OBJECT.updateFileStatus(fileSet, FileStatus.IN_QUEUE);
-            tx.commit();
-
-            tx = HibernateUtil.beginTransaction();
-            SEARCH_DAO.refresh(FILE_ONE);
-            SEARCH_DAO.refresh(FILE_TWO);
-            SEARCH_DAO.refresh(FILE_THREE);
-            assertEquals(FileStatus.IN_QUEUE, FILE_ONE.getFileStatus());
-            assertEquals(FileStatus.IN_QUEUE, FILE_TWO.getFileStatus());
-            assertEquals(FileStatus.UPLOADED, FILE_THREE.getFileStatus());
-            tx.commit();
-
-            fileSet.add(FILE_THREE);
-
-            tx = HibernateUtil.beginTransaction();
-            DAO_OBJECT.updateFileStatus(fileSet, FileStatus.IMPORTED);
-            tx.commit();
-
-            tx = HibernateUtil.beginTransaction();
-            checkStatus(FileStatus.IMPORTED);
-            tx.commit();
-        } catch (DAOException e) {
-            if (tx != null) {
-                HibernateUtil.rollbackTransaction(tx);
-            }
-            throw e;
+            transaction.commit();
+            HibernateUtil.unbindAndCleanupSession();
+            HibernateUtil.reinitializeCsmFilters();
+            SecurityUtils.setPrivilegedMode(true);
+            HibernateUtil.enableFilters(false);
+            HibernateUtil.openAndBindSession();
+            transaction.setTransactionTimeout(UpgradeManager.TIMEOUT_SECONDS);
+            transaction.begin();
+        } catch (Exception e) {
+            throw new MigrationStepFailedException("Could not manage transaction when updating CSM filters", e);
         }
-    }
-
-    private void checkStatus(FileStatus fileStatus) {
-        SEARCH_DAO.refresh(FILE_ONE);
-        SEARCH_DAO.refresh(FILE_TWO);
-        SEARCH_DAO.refresh(FILE_THREE);
-        assertEquals(fileStatus, FILE_ONE.getFileStatus());
-        assertEquals(fileStatus, FILE_TWO.getFileStatus());
-        assertEquals(fileStatus, FILE_THREE.getFileStatus());
     }
 
 }

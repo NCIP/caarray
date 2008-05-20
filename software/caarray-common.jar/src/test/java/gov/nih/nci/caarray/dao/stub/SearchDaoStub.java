@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.io.Serializable;
@@ -96,6 +95,7 @@ import org.hibernate.LockMode;
 import org.hibernate.criterion.Order;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  *
@@ -135,7 +135,7 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
     public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
         return new ArrayList<T>();
     }
-    
+
     /**
      * {@inheritDoc}
      */

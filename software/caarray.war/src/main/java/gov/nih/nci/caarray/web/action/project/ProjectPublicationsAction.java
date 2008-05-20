@@ -93,13 +93,13 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
 import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.UrlValidator;
@@ -121,7 +121,7 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
      * Default constructor.
      */
     public ProjectPublicationsAction() {
-        super("publication", new PaginatedListImpl<Publication, PublicationSortCriterion>(PAGE_SIZE,
+        super("publication", new SortablePaginatedList<Publication, PublicationSortCriterion>(PAGE_SIZE,
                 PublicationSortCriterion.TITLE.name(), PublicationSortCriterion.class));
     }
 
@@ -146,14 +146,14 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
         this.publicationTypes = getTermsFromCategory(ExperimentOntologyCategory.PUBLICATION_TYPE);
         this.publicationStatuses = getTermsFromCategory(ExperimentOntologyCategory.PUBLICATION_STATUS);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     @UrlValidator(message = "", fieldName = "currentPublication.uri", key = "struts.validator.url")
-    @RequiredFieldValidator(message = "", fieldName = "currentPublication.title", 
-            key = "struts.validator.requiredString")    
+    @RequiredFieldValidator(message = "", fieldName = "currentPublication.title",
+            key = "struts.validator.requiredString")
     public String save() { //NOPMD
         return super.save();
     }

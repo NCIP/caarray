@@ -86,7 +86,6 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -94,6 +93,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
@@ -119,9 +119,9 @@ public class SearchAction extends ActionSupport {
 
     // fields for displaying search results
     private String currentTab;
-    private final PaginatedListImpl<Project, ProjectSortCriterion> results =
-        new PaginatedListImpl<Project, ProjectSortCriterion>(SEARCH_PAGE_SIZE, ProjectSortCriterion.PUBLIC_ID.name(),
-                ProjectSortCriterion.class);
+    private final SortablePaginatedList<Project, ProjectSortCriterion> results =
+        new SortablePaginatedList<Project, ProjectSortCriterion>(
+            SEARCH_PAGE_SIZE, ProjectSortCriterion.PUBLIC_ID.name(), ProjectSortCriterion.class);
     private Map<String, Integer> tabs;
 
     /**
@@ -181,7 +181,7 @@ public class SearchAction extends ActionSupport {
     /**
      * @return the experiments
      */
-    public PaginatedListImpl<Project, ProjectSortCriterion> getResults() {
+    public SortablePaginatedList<Project, ProjectSortCriterion> getResults() {
         return results;
     }
 

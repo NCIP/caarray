@@ -87,9 +87,7 @@ import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
-import gov.nih.nci.caarray.domain.search.SortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -112,10 +110,12 @@ import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
- * 
+ *
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
@@ -131,7 +131,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * Saves a project by first updating the lastUpdated field, and then saves the entity to persistent storage,
      * updating or inserting as necessary.
-     * 
+     *
      * @param persistentObject the entity to save
      */
     @Override
@@ -155,7 +155,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         c.createCriteria("experiment").add(Restrictions.eq("publicIdentifier", publicId).ignoreCase());
         return (Project) c.uniqueResult();
     }
-    
+
     @SuppressWarnings(UNCHECKED)
     public List<Project> getProjectsForCurrentUser(boolean showPublic, PageSortParams pageSortParams) {
         Query q = getProjectsForUserQuery(showPublic, false, pageSortParams);
@@ -163,24 +163,24 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         q.setMaxResults(pageSortParams.getPageSize());
         return q.list();
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getProjectCountForCurrentUser(boolean showPublic) {
         Query q = getProjectsForUserQuery(showPublic, true, null);
-        return ((Number) q.uniqueResult()).intValue();        
+        return ((Number) q.uniqueResult()).intValue();
     }
 
     @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
-    private Query getProjectsForUserQuery(boolean showPublic, boolean count, 
-            PageSortParams<Project> pageSortParams) { 
+    private Query getProjectsForUserQuery(boolean showPublic, boolean count,
+            PageSortParams<Project> pageSortParams) {
         User user  = UsernameHolder.getCsmUser();
         SortCriterion<Project> sortCrit = pageSortParams != null ? pageSortParams.getSortCriterion() : null;
         String ownerSubqueryStr =
                 "(select pe.value from " + ProtectionElement.class.getName()
                         + " pe where pe.objectId = :objectId and pe.attribute = :attribute and "
-                        + " pe.application = :application and :user in elements(pe.owners)) "; 
+                        + " pe.application = :application and :user in elements(pe.owners)) ";
         String collabSubqueryStr =
                 "(select ap.projectForGroupProfile.id from "
                         + AccessProfile.class.getName()
@@ -202,7 +202,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
                 queryStr.append(" desc");
             }
         }
-        
+
         Query query = getCurrentSession().createQuery(queryStr.toString());
         query.setParameter("status", ProposalStatus.PUBLIC);
         query.setString("objectId", Project.class.getName());
@@ -212,7 +212,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         query.setParameter("noneSecLevel", SecurityLevel.NONE);
         return query;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -258,7 +258,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         q.setString("keyword", "%" + keyword + "%");
         return q;
     }
-    
+
     private static String getJoinClause(SearchCategory... categories) {
         LinkedHashSet<String> joins = new LinkedHashSet<String>();
         for (SearchCategory category : categories) {
@@ -288,7 +288,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         }
         return sb.toString();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -322,13 +322,13 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     @SuppressWarnings(UNCHECKED)
     public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
         // DEVELOPER NOTE: it is faster to use separate queries to retrieve the material types from each
-        // biomaterial type. doing it in one query requires either multiple subselects or a cartesian product 
+        // biomaterial type. doing it in one query requires either multiple subselects or a cartesian product
         // join, both of which are very slow
         Set<Term> types = new HashSet<Term>();
         for (String biomaterial : BIOMATERIALS) {
             String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "materialType", biomaterial);
             types.addAll(HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId())
-                    .list());                
+                    .list());
         }
         return new ArrayList<Term>(types);
     }

@@ -95,7 +95,6 @@ import gov.nih.nci.caarray.domain.search.HybridizationSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -106,6 +105,7 @@ import java.util.Set;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
@@ -128,7 +128,7 @@ public class ProjectHybridizationsAction extends AbstractProjectProtocolAnnotati
      * Default constructor.
      */
     public ProjectHybridizationsAction() {
-        super("hybridization", "labeledExtract", new PaginatedListImpl<Hybridization, HybridizationSortCriterion>(
+        super("hybridization", "labeledExtract", new SortablePaginatedList<Hybridization, HybridizationSortCriterion>(
                 PAGE_SIZE, HybridizationSortCriterion.NAME.name(), HybridizationSortCriterion.class));
     }
 

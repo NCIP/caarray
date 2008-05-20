@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.domain.search;
 
 import gov.nih.nci.caarray.domain.sample.Sample;
 
+import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
+
 /**
  * Enum of possible sort criterions for samples.
  * @author dkokotov
@@ -98,9 +100,9 @@ public enum SampleSortCriterion implements SortCriterion<Sample> {
      * description.
      */
     DESCRIPTION("description");
-    
+
     private final String orderField;
- 
+
     private SampleSortCriterion(String orderField, String... joins) {
         this.orderField = orderField;
     }

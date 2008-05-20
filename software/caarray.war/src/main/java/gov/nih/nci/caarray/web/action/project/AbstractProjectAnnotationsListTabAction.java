@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
 import java.util.List;
@@ -92,6 +91,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
@@ -116,7 +116,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
      * @param pagedItems the paged list to use for this tab's item list
      */
     public AbstractProjectAnnotationsListTabAction(String resourceKey, String associatedResourceKey,
-            PaginatedListImpl<? extends PersistentObject, ?> pagedItems) {
+            SortablePaginatedList<? extends PersistentObject, ?> pagedItems) {
         super(resourceKey, pagedItems);
         this.associatedResourceKey = associatedResourceKey;
     }

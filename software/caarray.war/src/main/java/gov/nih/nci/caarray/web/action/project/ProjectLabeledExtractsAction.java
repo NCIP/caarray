@@ -95,7 +95,6 @@ import gov.nih.nci.caarray.domain.search.LabeledExtractSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -104,6 +103,7 @@ import java.util.List;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
@@ -125,7 +125,7 @@ public class ProjectLabeledExtractsAction extends AbstractProjectProtocolAnnotat
      * Default constructor.
      */
     public ProjectLabeledExtractsAction() {
-        super("labeledExtract", "extract", new PaginatedListImpl<LabeledExtract, LabeledExtractSortCriterion>(
+        super("labeledExtract", "extract", new SortablePaginatedList<LabeledExtract, LabeledExtractSortCriterion>(
                 PAGE_SIZE, LabeledExtractSortCriterion.NAME.name(), LabeledExtractSortCriterion.class));
     }
 
@@ -260,7 +260,7 @@ public class ProjectLabeledExtractsAction extends AbstractProjectProtocolAnnotat
         }
         return true;
     }
-    
+
     /**
      * download the data for this sample.
      * @return download

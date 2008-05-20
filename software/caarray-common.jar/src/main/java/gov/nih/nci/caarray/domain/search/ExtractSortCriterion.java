@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.domain.search;
 
 import gov.nih.nci.caarray.domain.sample.Extract;
 
+import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
+
 /**
  * Enum of possible sort criterions for extracts.
  * @author dkokotov

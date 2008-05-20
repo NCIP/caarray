@@ -84,9 +84,10 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
 
 import java.util.List;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * @author Winston Cheng
@@ -120,12 +121,12 @@ public interface BrowseDao {
     List<Object[]> tabList(BrowseCategory cat);
     /**
      * Returns a list of projects constrained by a browse category and id.
-     * 
+     *
      * Note that this method currently only supports SortCriterions that are either simple properties of the target
      * class or required single-valued associations from it. If a non-required association is used in the sort
      * criterion, then any instances for which that association is null will not be included in the results (as an inner
      * join is used)
-     * 
+     *
      * @param params paging and sorting parameters
      * @param cat browse category
      * @param fieldId id for the field specified by the category

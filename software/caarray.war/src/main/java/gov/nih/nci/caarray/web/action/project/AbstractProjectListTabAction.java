@@ -86,13 +86,13 @@ import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataS
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
@@ -110,14 +110,14 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     public static final int PAGE_SIZE = 15;
 
     private final String resourceKey;
-    private final PaginatedListImpl<? extends PersistentObject, ?> pagedItems;
+    private final SortablePaginatedList<? extends PersistentObject, ?> pagedItems;
 
     /**
      * @param resourceKey the resource to display
      * @param pagedItems the paged list to use for this tab's item list
      */
     public AbstractProjectListTabAction(String resourceKey,
-            PaginatedListImpl<? extends PersistentObject, ?> pagedItems) {
+            SortablePaginatedList<? extends PersistentObject, ?> pagedItems) {
         super();
         this.resourceKey = resourceKey;
         this.pagedItems = pagedItems;
@@ -287,7 +287,7 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     /**
      * @return the pagedItems
      */
-    public PaginatedListImpl<?, ?> getPagedItems() {
+    public SortablePaginatedList<?, ?> getPagedItems() {
         return pagedItems;
     }
 }

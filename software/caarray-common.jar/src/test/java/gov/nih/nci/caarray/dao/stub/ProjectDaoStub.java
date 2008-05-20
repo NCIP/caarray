@@ -85,12 +85,13 @@ package gov.nih.nci.caarray.dao.stub;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.Collections;
 import java.util.List;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  *
@@ -102,7 +103,7 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
     public int getProjectCountForCurrentUser(boolean showPublic) {
         return 0;
     }
-    
+
     public Project getProjectByPublicId(String publicId) {
         return null;
     }

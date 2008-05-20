@@ -144,7 +144,7 @@ public class FileManagementServiceBean implements FileManagementService {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForImport(fileSet);
         clearValidationMessages(fileSet);
-        getDaoFactory().getFileDao().updateFileStatus(fileSet, FileStatus.IN_QUEUE);
+        fileSet.updateStatus(FileStatus.IN_QUEUE);
         sendImportJobMessage(targetProject, fileSet);
         LogUtil.logSubsystemExit(LOG);
     }
@@ -167,7 +167,7 @@ public class FileManagementServiceBean implements FileManagementService {
     public void validateFiles(Project project, CaArrayFileSet fileSet) {
         checkForValidation(fileSet);
         clearValidationMessages(fileSet);
-        getDaoFactory().getFileDao().updateFileStatus(fileSet, FileStatus.IN_QUEUE);
+        fileSet.updateStatus(FileStatus.IN_QUEUE);
         sendValidationJobMessage(project, fileSet);
     }
 

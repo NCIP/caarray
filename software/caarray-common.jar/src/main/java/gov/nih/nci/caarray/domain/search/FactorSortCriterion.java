@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.domain.search;
 
 import gov.nih.nci.caarray.domain.project.Factor;
 
+import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
+
 /**
  * Enum of possible sort criterions for factors.
  * @author dkokotov
@@ -93,7 +95,7 @@ public enum FactorSortCriterion implements SortCriterion<Factor> {
      * name.
      */
     NAME ("name"),
-    
+
     /**
      * type.
      */

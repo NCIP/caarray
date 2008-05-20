@@ -139,6 +139,7 @@ class MageTabImporter {
         } catch (InvalidDataException e) {
             handleInvalidMageTab(fileSet, e);
         }
+        this.daoFactory.getSearchDao().save(fileSet.getFiles());
     }
 
     private void handleResult(CaArrayFileSet fileSet, ValidationResult result) {
@@ -166,6 +167,7 @@ class MageTabImporter {
         } catch (InvalidDataException e) {
             handleInvalidMageTab(fileSet, e);
         }
+        this.daoFactory.getSearchDao().save(fileSet.getFiles());
     }
 
     private void handleInvalidMageTab(CaArrayFileSet fileSet, InvalidDataException e) {
@@ -196,7 +198,7 @@ class MageTabImporter {
                 mageTabFileSet.getFiles().remove(file);
             }
         }
-        daoFactory.getFileDao().updateFileStatus(mageTabFileSet, status);
+        mageTabFileSet.updateStatus(status);
     }
 
     private boolean isMageTabFile(CaArrayFile file) {

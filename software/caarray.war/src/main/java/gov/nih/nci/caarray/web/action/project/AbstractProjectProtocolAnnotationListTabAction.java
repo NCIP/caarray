@@ -89,7 +89,6 @@ import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -103,6 +102,7 @@ import org.ajaxtags.xml.AjaxXmlBuilder;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
@@ -128,7 +128,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      * @param pagedItems the paged list to use for this tab's item list
      */
     public AbstractProjectProtocolAnnotationListTabAction(String resourceKey, String associatedResourceKey,
-            PaginatedListImpl<? extends PersistentObject, ?> pagedItems) {
+            SortablePaginatedList<? extends PersistentObject, ?> pagedItems) {
         super(resourceKey, associatedResourceKey, pagedItems);
     }
 

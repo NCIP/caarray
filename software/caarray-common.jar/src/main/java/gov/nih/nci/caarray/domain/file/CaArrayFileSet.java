@@ -217,6 +217,16 @@ public final class CaArrayFileSet implements Serializable {
     }
 
     /**
+     * Update the status of each file in this file set to the given status.
+     * @param status the new status which each file in this set should have.
+     */
+    public void updateStatus(FileStatus status) {
+        for (CaArrayFile file : files) {
+            file.setFileStatus(status);
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

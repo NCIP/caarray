@@ -94,13 +94,13 @@ import gov.nih.nci.caarray.domain.search.SourceSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
@@ -126,7 +126,7 @@ public class ProjectSourcesAction extends AbstractProjectListTabAction {
      * Default constructor.
      */
     public ProjectSourcesAction() {
-        super("source", new PaginatedListImpl<Source, SourceSortCriterion>(PAGE_SIZE,
+        super("source", new SortablePaginatedList<Source, SourceSortCriterion>(PAGE_SIZE,
                 SourceSortCriterion.NAME.name(), SourceSortCriterion.class));
     }
 

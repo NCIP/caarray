@@ -93,10 +93,10 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-
-import org.hibernate.LockMode;
 
 /**
  * Encapsulates the data necessary for a project file management job.
@@ -123,7 +123,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     long getProjectId() {
         return this.projectId;
     }
-
+    
     MageTabTranslator getMageTabTranslator() {
         return (MageTabTranslator) ServiceLocatorFactory.getLocator().lookup(MageTabTranslator.JNDI_NAME);
     }
@@ -134,9 +134,9 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 
     CaArrayFileSet getFileSet(Project project) {
         CaArrayFileSet fileSet = new CaArrayFileSet(project);
-        for (Long fileId : this.fileIds) {
-            fileSet.add(getDaoFactory().getSearchDao().retrieve(CaArrayFile.class, fileId));
-        }
+        List<CaArrayFile> files = getDaoFactory().getSearchDao().retrieveByIds(CaArrayFile.class,
+                new ArrayList<Long>(this.fileIds));
+        fileSet.addAll(files);
         return fileSet;
     }
 
@@ -197,12 +197,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 
     private void setStatus(FileStatus status) {
         CaArrayFileSet fileSet = getFileSet(getProject());
-        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
-            caArrayFile =
-                    getDaoFactory().getSearchDao().retrieve(CaArrayFile.class, caArrayFile.getId(), LockMode.UPGRADE);
-            caArrayFile.setFileStatus(status);
-            getDaoFactory().getProjectDao().save(caArrayFile);
-        }
+        fileSet.updateStatus(status);
     }
 
     abstract FileStatus getInProgressStatus();
