@@ -87,9 +87,9 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -118,7 +118,7 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
 
     private HybridizationData hybridizationData;
     private QuantitationType quantitationType;
-    private final Serializer valuesSerializer = new Serializer();
+    private Serializer valuesSerializer = new Serializer();
 
     @SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
     static AbstractDataColumn create(QuantitationType type) {
@@ -158,15 +158,6 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
      */
     public void setQuantitationType(QuantitationType quantitationType) {
         this.quantitationType = quantitationType;
-    }
-
-    @Column(columnDefinition = "LONGBLOB")
-    byte[] getSerializedValues() {
-        return valuesSerializer.getSerializedValues();
-    }
-
-    void setSerializedValues(byte[] serializedValues) {
-        valuesSerializer.setSerializedValue(serializedValues);
     }
 
     @Transient
@@ -211,6 +202,23 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
      */
     public void setHybridizationData(HybridizationData hybridizationData) {
         this.hybridizationData = hybridizationData;
+    }
+
+    /**
+     * @return the valuesSerializer
+     */
+    @Embedded
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    private Serializer getValuesSerializer() {
+        return valuesSerializer;
+    }
+
+    /**
+     * @param valuesSerializer the valuesSerializer to set
+     */
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    private void setValuesSerializer(Serializer valuesSerializer) {
+        this.valuesSerializer = valuesSerializer;
     }
 
 }

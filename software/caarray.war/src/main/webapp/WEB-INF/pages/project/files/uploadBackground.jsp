@@ -127,7 +127,9 @@
         // page, including hidden fields and checkboxes.
 
         // if itemNumber is less than 2 it means that no files were selected to upload
-        if (itemNumber < 2) { return; }
+        if (itemNumber < 2) {
+            return;
+        }
 
         // lastItemNumber - is the itemNumber param sent into this
         // method when executed last. set to 0 by page default
@@ -146,7 +148,7 @@
 
         // steps to calculate the calcItemNumber:
         if (itemNumber == lastItemNumber) {
-            // if the itemNumber passed in, is identicall to that
+            // if the itemNumber passed in, is identical to that
             // which was passed in the last time this method ran,
             // it means that the same file is still being uploaded by struts.
             calcItemNumber = lastCalcItemNumber;
@@ -160,13 +162,13 @@
             // position of the file input item.
             // if this is the first path through this method then this is
             // the absolute position in the list of upload file progress.
-            calcItemNumber = Math.round((itemNumber - lastItemNumber)/2);
+            calcItemNumber = Math.round((itemNumber - lastItemNumber) / 2);
 
             // if this is NOT the first time we enter this method
             // we need to find the absolute position in the list of uploads
             // by adding the relative position to the previous absolute position.
             // we must also subtract 1 so that we do not count the same position twice.
-            if(lastItemNumber > 0) {
+            if (lastItemNumber > 0) {
                  calcItemNumber += lastCalcItemNumber - 1;
             }
         }
@@ -177,12 +179,12 @@
 
         // since we are processing these files in order, we can assume that all files previous
         // to this iteration have finished uploading.
-        while (calcItemNumber - 1!= currentItemNumber) {
+        while (calcItemNumber - 1 != currentItemNumber) {
             $('uploadProgressFileList').tBodies[0].rows[currentItemNumber - 1].cells[1].innerHTML = "Done";
             currentItemNumber++;
         }
 
-        // automatically set status ot In Progress
+        // automatically set status to In Progress
         $('uploadProgressFileList').tBodies[0].rows[currentItemNumber - 1].cells[1].innerHTML = "In Progress";
 
         // if the upload is completed, set to Done

@@ -91,15 +91,11 @@ import gov.nih.nci.caarray.security.ProtectableDescendent;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -112,8 +108,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.ForeignKey;
@@ -343,29 +337,10 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     public void writeContents(InputStream inputStream) throws IOException {
         if (this.multiPartBlob == null) {
-            int uncompressedBytes = 0;
-            int compressedBytes = 0;
-            MultiPartBlob blob = new MultiPartBlob();
-            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-            GZIPOutputStream gzipStream = new GZIPOutputStream(byteStream);
-            byte[] unwritten = new byte[0];
-            byte[] uncompressed = new byte[MultiPartBlob.getBlobSize()];
-            int len = 0;
-            while ((len = inputStream.read(uncompressed)) > 0) {
-                uncompressedBytes += len;
-                gzipStream.write(uncompressed, 0, len);
-                if (byteStream.size() + unwritten.length >= MultiPartBlob.getBlobSize()) {
-                    compressedBytes += byteStream.size();
-                    unwritten = blob.writeData(ArrayUtils.addAll(unwritten, byteStream.toByteArray()), false);
-                    byteStream.reset();
-                }
-            }
-            IOUtils.closeQuietly(gzipStream);
-            compressedBytes += byteStream.size();
-            blob.writeData(ArrayUtils.addAll(unwritten, byteStream.toByteArray()), true);
-            setMultiPartBlob(blob);
-            setUncompressedSize(uncompressedBytes);
-            setCompressedSize(compressedBytes);
+            this.multiPartBlob = new MultiPartBlob();
+            MultiPartBlob.MetaData metaData = this.multiPartBlob.writeDataCompressed(inputStream);
+            setUncompressedSize(metaData.getUncompressedBytes());
+            setCompressedSize(metaData.getCompressedBytes());
         } else {
             throw new IllegalStateException("Can't reset the contents of an existing CaArrayFile");
         }
@@ -378,11 +353,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @throws IOException if the contents couldn't be accessed.
      */
     public InputStream readContents() throws IOException {
-        try {
-            return new GZIPInputStream(getMultiPartBlob().readData());
-        } catch (SQLException e) {
-            throw new IllegalStateException("Couldn't access file conteents", e);
-        }
+        return this.multiPartBlob.readCompressedContents();
     }
 
     /**
@@ -396,6 +367,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     /**
      * @param multiPartBlob the multiPartBlob to set
      */
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private void setMultiPartBlob(MultiPartBlob multiPartBlob) {
         this.multiPartBlob = multiPartBlob;
     }

@@ -607,7 +607,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     /**
-     * This method refreshes the project fromt he db.  It is in its own method to allow test cases to overwrite this.
+     * This method refreshes the project from the db.  It is in its own method to allow test cases to overwrite this.
      */
     protected void refreshProject() {
         HibernateUtil.getCurrentSession().refresh(getProject());
@@ -625,7 +625,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * uploads file.
      *
      * @return the string matching the result to follow
-     * @throws IOException on io error
+     * @throws IOException on i/o error
      */
     @SkipValidation
     public String upload() throws IOException {
