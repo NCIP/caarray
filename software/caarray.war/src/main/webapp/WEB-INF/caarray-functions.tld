@@ -4,7 +4,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
   version="2.0">
-    
+
   <description>CAArray Functions</description>
   <display-name>CAArray Functions</display-name>
   <tlib-version>1.1</tlib-version>
@@ -64,13 +64,13 @@
       Gets the CSM User instance for the current user, returning the synthetic __anonymous__ User instance if no user is logged in
     </description>
     <name>currentUser</name>
-    <function-class>gov.nih.nci.caarray.util.UsernameHolder</function-class>
+    <function-class>com.fiveamsolutions.nci.commons.util.UsernameHolder</function-class>
     <function-signature>gov.nih.nci.security.authorization.domainobjects.User getCsmUser()</function-signature>
     <example>
       &lt;c:out value="${caarrayfn:currentUser().name}">
     </example>
   </function>
-  
+
   <function>
     <description>
       Sees if a user is among the owners of a protectable
@@ -81,8 +81,8 @@
     <example>
       &lt;c:if test="${caarrayfn:isOwner(project, user)}">
     </example>
-  </function>  
-  
+  </function>
+
   <function>
     <description>
       makes a string safe to be used inside a quoted javascript string, dealing with quotes, tabs, newlines, etc
@@ -93,8 +93,8 @@
     <example>
       var foo = '${caarrayfn:escapeJavaScript(somVal)}';
     </example>
-  </function>  
-  
+  </function>
+
   <function>
     <description>
       Abbreviates a String using ellipses
@@ -105,6 +105,6 @@
     <example>
       var foo = '${caarrayfn:abbreviate(string, maxWidth)}';
     </example>
-  </function>  
-  
+  </function>
+
 </taglib>
