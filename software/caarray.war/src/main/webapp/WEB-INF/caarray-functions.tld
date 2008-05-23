@@ -52,7 +52,7 @@
       Gets the username of the current user, returning __anonymous__ if no user is logged in
     </description>
     <name>currentUsername</name>
-    <function-class>gov.nih.nci.caarray.util.UsernameHolder</function-class>
+    <function-class>com.fiveamsolutions.nci.commons.util.UsernameHolder</function-class>
     <function-signature>java.lang.String getUser()</function-signature>
     <example>
       &lt;c:out value="${caarrayfn:currentUsername()}">
@@ -64,7 +64,7 @@
       Gets the CSM User instance for the current user, returning the synthetic __anonymous__ User instance if no user is logged in
     </description>
     <name>currentUser</name>
-    <function-class>com.fiveamsolutions.nci.commons.util.UsernameHolder</function-class>
+    <function-class>gov.nih.nci.caarray.util.UsernameHolder</function-class>
     <function-signature>gov.nih.nci.security.authorization.domainobjects.User getCsmUser()</function-signature>
     <example>
       &lt;c:out value="${caarrayfn:currentUser().name}">
