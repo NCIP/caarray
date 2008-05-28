@@ -7,3 +7,6 @@ alter table datacolumn_blob_parts add index FKA09E0DDD964C4BEA (datacolumn), add
 alter table datacolumn_blob_parts add index FKA09E0DDDE313AEE3 (blob_parts), add constraint FKA09E0DDDE313AEE3 foreign key (blob_parts) references blob_holder (id);
 alter table datacolumn drop column serialized_values;
 alter table blob_holder drop column tmp_dc_id;
+
+-- defect 12976
+drop table experimentarray;

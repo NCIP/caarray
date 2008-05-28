@@ -274,8 +274,8 @@ public class ProjectExtractsAction extends AbstractProjectAssociatedAnnotationsL
             ActionHelper.saveMessage(getText("experiment.extracts.noDataToDownload"));
             return "noExtractData";
         }
-        ProjectFilesAction.downloadFiles(getProject(), files, ProjectFilesAction
-                .determineDownloadFileName(getProject()));
-        return null;
+        setDownloadFileGroups(ProjectFilesAction.computeDownloadGroups(files));
+        return ProjectFilesAction.downloadByGroup(getProject(), files,
+                getDownloadGroupNumber(), getDownloadFileGroups());
     }
 }

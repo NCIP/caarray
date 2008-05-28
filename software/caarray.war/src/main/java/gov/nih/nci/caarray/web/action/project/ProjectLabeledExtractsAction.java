@@ -273,8 +273,8 @@ public class ProjectLabeledExtractsAction extends AbstractProjectAssociatedAnnot
             ActionHelper.saveMessage(getText("experiment.labeledExtracts.noDataToDownload"));
             return "noLabeledExtractData";
         }
-        ProjectFilesAction.downloadFiles(getProject(), files, ProjectFilesAction
-                .determineDownloadFileName(getProject()));
-        return null;
+        setDownloadFileGroups(ProjectFilesAction.computeDownloadGroups(files));
+        return ProjectFilesAction.downloadByGroup(getProject(), files,
+                getDownloadGroupNumber(), getDownloadFileGroups());
     }
 }

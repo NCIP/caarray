@@ -1,5 +1,8 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
+<c:if test="${empty downloadUrl}">
+    <c:set value="/project/files/download.action?project.id=${project.id}" var="downloadUrl"/>
+</c:if>
 
 <script type="text/javascript">
 groupDownloadAllFiles = new Array();
@@ -52,10 +55,9 @@ these files in groups. Please click the download link for each file group below 
             <caarray:formatFileSize value="${row.totalUncompressedSize}"/>
         </display:column>
         <display:column title="Download" >
-          <c:url value="/project/files/download.action" var="actionUrl">
-                <c:param name="project.id" value="${project.id}" />
+            <c:url value="${downloadUrl}" var="actionUrl">
                 <c:param name="downloadGroupNumber" value="${row_rowNum}" />
-          </c:url>
+            </c:url>
             <div>
                 <a href="#" onclick="launchGroupDownload('${actionUrl}', this)">
                     <img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>">

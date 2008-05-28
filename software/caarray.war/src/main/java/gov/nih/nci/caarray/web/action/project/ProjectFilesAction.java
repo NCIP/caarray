@@ -205,7 +205,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
     private List<Long> selectedFileIds = new ArrayList<Long>();
-    private final List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
+    private List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
     private int downloadGroupNumber = -1;
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
     private String listAction;
@@ -674,37 +674,54 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             ActionHelper.getMessages().clear();
             return "denied";
         }
-        computeDownloadGroups();
-        if (downloadFileGroups.size() == 1) {
-            downloadFiles(getProject(), getSelectedFiles(), determineDownloadFileName(this.getProject()));
+        this.downloadFileGroups = computeDownloadGroups(getSelectedFiles());
+        return downloadByGroup(getProject(), getSelectedFiles(), this.downloadGroupNumber, this.downloadFileGroups);
+    }
+
+    /**
+     * This method will download a group of files if the group number is
+     * specified or if there is only one download group.
+     * @param project the project
+     * @param files all selected files
+     * @param groupNumber identifies the group to download
+     * @param downloadGroups list of all download groups
+     * @return downloadGroups if no group number is specified and there are multiple groups
+     * @throws IOException if there is an error writing to the stream
+     */
+    protected static String downloadByGroup(Project project, Collection<CaArrayFile> files,
+            int groupNumber, List<DownloadGroup> downloadGroups)
+    throws IOException {
+        if (downloadGroups.size() == 1) {
+            downloadFiles(project, files, determineDownloadFileName(project));
             return null;
-        } else if (downloadGroupNumber > 0) {
-            downloadFiles(getProject(), getDownloadGroupFiles(downloadFileGroups.get(downloadGroupNumber - 1)),
-                    determineDownloadFileName(this.getProject(), this.downloadGroupNumber, this.downloadFileGroups
-                            .size()));
+        } else if (groupNumber > 0) {
+            DownloadGroup group = downloadGroups.get(groupNumber - 1);
+            List<CaArrayFile> groupFiles = new ArrayList<CaArrayFile>();
+            for (CaArrayFile file : files) {
+                if (group.getFileIds().contains(file.getId())) {
+                    groupFiles.add(file);
+                }
+            }
+            downloadFiles(project, groupFiles, determineDownloadFileName(project, groupNumber, downloadGroups.size()));
             return null;
         } else {
             return "downloadGroups";
         }
     }
 
-    private List<CaArrayFile> getDownloadGroupFiles(DownloadGroup group) {
-        List<CaArrayFile> groupFiles = new ArrayList<CaArrayFile>();
-        for (CaArrayFile file : getSelectedFiles()) {
-            if (group.getFileIds().contains(file.getId())) {
-                groupFiles.add(file);
-            }
-        }
-        return groupFiles;
-    }
-
-    private void computeDownloadGroups() {
-        this.downloadFileGroups.clear();
-        List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(getSelectedFiles());
+    /**
+     * Divides the files into download groups.
+     * @param files the files to put into download groups
+     * @return a list of download file groups
+     */
+    protected static List<DownloadGroup> computeDownloadGroups(Collection<CaArrayFile> files) {
+        List<DownloadGroup> downloadGroups = new ArrayList<DownloadGroup>();
+        List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);
         Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
         for (CaArrayFile file : sortedFiles) {
-            addToDownloadGroups(file);
+            addToDownloadGroups(file, downloadGroups);
         }
+        return downloadGroups;
     }
 
     /**
@@ -714,10 +731,10 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      *
      * @param file the file to add
      */
-    private void addToDownloadGroups(CaArrayFile file) {
+    private static void addToDownloadGroups(CaArrayFile file, List<DownloadGroup> downloadGroups) {
         DownloadGroup bestGroup = null;
-        long maxNewSize = 0;
-        for (DownloadGroup group : this.downloadFileGroups) {
+        long maxNewSize = -1;
+        for (DownloadGroup group : downloadGroups) {
             long newGroupSize = group.getTotalCompressedSize() + file.getCompressedSize();
             if (newGroupSize < MAX_DOWNLOAD_SIZE && newGroupSize > maxNewSize) {
                 maxNewSize = newGroupSize;
@@ -726,7 +743,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         }
         if (bestGroup == null) {
             bestGroup = new DownloadGroup();
-            this.downloadFileGroups.add(bestGroup);
+            downloadGroups.add(bestGroup);
         }
         bestGroup.addFile(file);
     }

@@ -23,6 +23,6 @@
         <migrator-class>gov.nih.nci.caarray.web.upgrade.CsmFilterMigrator</migrator-class>
     </migration>
     <migration fromVersion="2.1.0.alpha1" toVersion="2.1.0.alpha2">
-        <sql-script>migrate-2.1.0.alpha1-to-2.1.0.alpha2.sql</sql-script>
+        <sql-script ignoreErrors="true">migrate-2.1.0.alpha1-to-2.1.0.alpha2.sql</sql-script>
     </migration>
 </migrations>

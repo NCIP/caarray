@@ -7,6 +7,14 @@
 
 <script type="text/javascript">
     doFilter = function() {
+      var checkboxIds = $('selectFilesForm').__checkbox_selectedFileIds || {};
+      if (checkboxIds.length) {
+        for (var i = 0; i < checkboxIds.length; i++) {
+          checkboxIds[i].disabled = true;
+        }
+      } else {
+        checkboxIds.disabled = true;
+      }
       Caarray.submitAjaxForm('selectFilesForm', 'unimportedForm', {url: '${listUnimportedFormUrl}'});
     }
 

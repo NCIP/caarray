@@ -160,6 +160,7 @@
             <result name="noExtractData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=extracts</result>
             <result name="noLabeledExtractData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=labeledExtracts</result>
             <result name="noHybData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=hybridizations</result>
+            <result name="downloadGroups">/WEB-INF/pages/project/annotationAssociatedDownload.jsp?tab={1}</result>
         </action>
 
         <action name="project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
