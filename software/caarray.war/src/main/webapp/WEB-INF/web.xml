@@ -25,6 +25,10 @@
         <param-value>@svn.revision@</param-value>
     </context-param>
     <context-param>
+        <param-name>buildTime</param-name>
+        <param-value>@build.time@</param-value>
+    </context-param>
+    <context-param>
         <param-name>uptUrl</param-name>
         <param-value>@upt.url@</param-value>
     </context-param>
@@ -66,6 +70,14 @@
         <filter-class>gov.nih.nci.caarray.web.filter.CacheControlFilter</filter-class>
     </filter>
     <filter>
+      <filter-name>neverExpireFilter</filter-name>
+      <filter-class>gov.nih.nci.caarray.web.filter.NeverExpireFilter</filter-class>
+    </filter>
+    <filter>
+      <filter-name>longCacheFilter</filter-name>
+      <filter-class>gov.nih.nci.caarray.web.filter.LongCacheFilter</filter-class>
+    </filter>
+    <filter>
         <filter-name>action2-cleanup</filter-name>
         <filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
     </filter>
@@ -91,10 +103,6 @@
         <url-pattern>*.action</url-pattern>
     </filter-mapping>
     <filter-mapping>
-           <filter-name>urlrewrite</filter-name>
-           <url-pattern>/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
         <filter-name>cacheControlFilter</filter-name>
         <url-pattern>*.action</url-pattern>
     </filter-mapping>
@@ -107,6 +115,30 @@
         <url-pattern>*.action</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>neverExpireFilter</filter-name>
+        <url-pattern>/scripts/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>longCacheFilter</filter-name>
+        <url-pattern>/scriptslib/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>neverExpireFilter</filter-name>
+        <url-pattern>/styles/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>longCacheFilter</filter-name>
+        <url-pattern>/images/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>longCacheFilter</filter-name>
+        <url-pattern>/logos/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+           <filter-name>urlrewrite</filter-name>
+           <url-pattern>/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>userFilter</filter-name>

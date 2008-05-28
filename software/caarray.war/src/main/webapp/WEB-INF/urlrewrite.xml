@@ -25,9 +25,15 @@
         <to type="redirect">%{context-path}/protected/project/workspace.action</to>
     </rule>
 
+    <rule>
+        <from>^/(scripts|styles)/(.+)\.(\d+)\.(js|css)$</from>
+        <to>/$1/$2.$4</to>
+    </rule>
+
     <outbound-rule>
         <from>/project/details.action?project.experiment.publicIdentifier=(.{1,5}-\d{5})</from>
         <to>%{context-path}/project/$1</to>
     </outbound-rule>
+
 </urlrewrite>
 

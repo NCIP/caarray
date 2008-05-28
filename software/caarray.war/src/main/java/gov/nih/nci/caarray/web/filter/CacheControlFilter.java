@@ -101,7 +101,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class CacheControlFilter implements Filter {
     private static final String DYNAMIC_URL_EXTENSION = "action";
-    
+
     /**
      * {@inheritDoc}
      */
@@ -120,14 +120,14 @@ public class CacheControlFilter implements Filter {
             return;
         }
 
-        HttpServletRequest httpRequest = (HttpServletRequest) request;        
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         if (StringUtils.substringAfterLast(httpRequest.getRequestURI(), ".").equals(DYNAMIC_URL_EXTENSION)) {
             if (!request.isSecure()) { // workaround for IE files bug http://support.microsoft.com/kb/812935
-                httpResponse.setHeader("Cache-control", "no-cache");                
-                httpResponse.setHeader("Pragma", "no-cache");
+                httpResponse.addHeader("Cache-control", "no-cache");
+                httpResponse.addHeader("Pragma", "no-cache");
             }
-            httpResponse.setIntHeader("Expires", 0);            
+            httpResponse.addIntHeader("Expires", 0);
         }
         chain.doFilter(request, response);
     }

@@ -204,7 +204,11 @@
         $("uploadingMessage").innerHTML = messages;
         $("uploadProgressFileList").style.display = "none";
         $("closeWindow").style.display = "";
-        alert('Your file upload is complete');
+        if (messages.match("not uploaded")) {
+            alert('Your file upload is complete, but there were errors. Not all files may have been uploaded successfully.');
+        } else {
+            alert('Your file upload is complete');
+        }
     }
 
     function beginUpload() {

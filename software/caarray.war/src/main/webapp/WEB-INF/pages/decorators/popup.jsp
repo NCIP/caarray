@@ -8,24 +8,24 @@
         <link rel="address bar icon" href="<c:url value="/images/favicon.ico"/>" />
         <link rel="icon" href="<c:url value="/images/favicon.ico"/>" type="image/x-icon" />
         <link rel="shortcut icon" href="<c:url value="/images/favicon.ico"/>" type="image/x-icon" />
-        <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/caarray.css'/>" />
-        <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/overwrites.css'/>" />
-        <script type="text/javascript" src="<c:url value='/scripts/prototype.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/scriptaculous.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/control.progress_bar.1.0.1.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/global.js'/>"></script>
-        <script type="text/javascript" src="<c:url value="/scripts/ajaxtags.js"/>"></script>
-        <script type="text/javascript" src="<c:url value="/scripts/ajaxtags_controls.js"/>"></script>
-        <script type="text/javascript" src="<c:url value="/scripts/ajaxtags_parser.js"/>"></script>
+        <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/caarray.css'/>" />
+        <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/overwrites.css'/>" />
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/prototype.js'/>"></script>
+        <script type="text/javascript" src="<c:url value='/scriptslib/scriptaculous.js'/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/control_progress_bar101.js'/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/global.js'/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags.js"/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_controls.js"/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_parser.js"/>"></script>
         <script type="text/javascript" language="javascript">
-		// for help script
-		var contextPath = "<%=request.getContextPath()%>";
-		</script>
-        <script type="text/javascript" src="<c:url value='/scripts/help.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/print.js'/>"></script>
+    // for help script
+    var contextPath = "<%=request.getContextPath()%>";
+    </script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/help.js'/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/print.js'/>"></script>
         <decorator:head/>
     </head>
-    
+
     <body>
       <div id="leftnavandcontent" style="background: none">
          <decorator:body/>
