@@ -116,8 +116,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -447,23 +445,10 @@ public final class SecurityUtils {
         return pg;
     }
 
-    @SuppressWarnings("unchecked")
     private static void addOwner(ProtectionGroup pg, User user) throws CSObjectNotFoundException,
             CSTransactionException {
         ProtectionElement pe = (ProtectionElement) pg.getProtectionElements().iterator().next();
-        Set<User> owners = new HashSet<User>(AUTH_MGR.getOwners(pe.getProtectionElementId().toString()));
-        if (owners.contains(user)) {
-            return;
-        }
-
-        owners.add(user);
-        String[] ownerIds = (String[]) CollectionUtils.collect(owners, new Transformer() {
-            public Object transform(Object o) {
-                User u = (User) o;
-                return u.getUserId().toString();
-            }
-        }).toArray(ArrayUtils.EMPTY_STRING_ARRAY);
-        AUTH_MGR.assignOwners(pe.getProtectionElementId().toString(), ownerIds);
+        AuthorizationManagerExtensions.addOwner(pe.getProtectionElementId(), user);
 
         // This shouldn't be necessary, because the filter should take into account
         // the ownership status (set above.) However, such a filter uses a UNION
@@ -501,7 +486,6 @@ public final class SecurityUtils {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private static void assignAnonymousAccess(ProtectionGroup pg) throws CSTransactionException {
         // We could cache the ids for the group and role
         Group group = getAnonymousGroup();

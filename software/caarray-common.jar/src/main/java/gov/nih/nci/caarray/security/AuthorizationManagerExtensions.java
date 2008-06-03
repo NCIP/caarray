@@ -84,7 +84,10 @@ package gov.nih.nci.caarray.security;
 
 import gov.nih.nci.logging.api.logger.hibernate.HibernateSessionFactoryHelper;
 import gov.nih.nci.security.authorization.domainobjects.Application;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.security.exceptions.CSTransactionException;
 import gov.nih.nci.security.system.ApplicationSessionFactory;
 import gov.nih.nci.security.util.StringUtilities;
 
@@ -92,9 +95,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  * Class with methods supplementing missing AuthorizationManager APIs. We expect these to eventually be implemented by
@@ -111,22 +117,79 @@ public final class AuthorizationManagerExtensions {
     }
 
     /**
+     * Add the user with given id to the set of owners of the protection element with given id. If that user was 
+     * already an owner of that protection element, then this method is a no-op.
+     * @param protectionElementId if of the protection element to modify.
+     * @param user id of the user to add to the set of owners.
+     * @throws CSTransactionException if there is an error in performing the operation
+     */
+    public static void addOwner(Long protectionElementId, User user) throws CSTransactionException {
+
+        Session s = null;
+        Transaction t = null;
+
+        try {            
+            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory("caarray"));
+            t = s.beginTransaction();
+
+            ProtectionElement pe = (ProtectionElement) s.load(ProtectionElement.class, protectionElementId);
+            Set<User> owners = pe.getOwners();
+            if (owners == null) {
+                owners = new HashSet<User>();
+                pe.setOwners(owners);
+            }
+            owners.add(user);
+            s.update(pe);
+            s.flush();       
+            t.commit();
+        } catch (Exception ex) {
+            LOG.error(ex);
+            try {
+                t.rollback();
+            } catch (Exception ex3) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Authorization|||addOwner|Failure|Error in Rolling Back Transaction|" + ex3.getMessage());
+                }
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Authorization|||addOwner|Failure|Error in adding the Owner " + user.getLoginName()
+                        + "for the Protection Element Id " + protectionElementId + "|");
+            }
+            throw new CSTransactionException("An error occured in assigning Owners to the Protection Element\n"
+                    + ex.getMessage(), ex);
+        } finally {
+            try {
+                s.close();
+            } catch (Exception ex2) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Authorization|||addOwner|Failure|Error in Closing Session |" + ex2.getMessage());
+                }
+            }
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Authorization|||addOwner|Success|Successful in adding the Owner " + user
+                    + "for the Protection Element Id " + protectionElementId + "|");
+        }
+    }
+
+
+    /**
      * The method checks the permission for a user for a given Instance. The ProtectionElement for the instance is
      * obtained using the class name, attribute name, and value of that attribute The userName is used to to obtain the
      * User object. Then the check permission operation is performed to see if the user has the required access or not.
      * If caching is enabled for the user then the permissions are validated against the internal stored cache else the
      * query is fired against the database to check the permissions
-     *
+     * 
      * @param userName The user name of the user which is trying to perform the operation
      * @param className The name of the instance class
      * @param attributeName The attribute (property) of the class used to identify the instance
      * @param value the value of the property for the instance
      * @param privilegeName The operation which the user wants to perform on the protection element
      * @param application the application to which the instance belongs
-     *
+     * 
      * @return boolean Returns true if the user has permission to perform the operation on that particular instance
      * @throws CSException If there are any errors while checking for permission
-     *
+     * 
      * DEVELOPER NOTE: This code is adapted from the CSM Source code for getPermission(userName, objectId, attribute,
      * privilege) with appropriate modifications to allow identifying the specific instance
      */

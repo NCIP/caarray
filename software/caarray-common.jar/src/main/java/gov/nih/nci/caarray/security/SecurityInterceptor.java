@@ -303,7 +303,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
             SecurityUtils.handleNewProtectables(NEWOBJS.get());
             SecurityUtils.handleBiomaterialChanges(BIOMATERIAL_CHANGES.get());
             SecurityUtils.handleDeleted(DELETEDOBJS.get());
-            SecurityUtils.handleAccessProfiles(PROFILES.get());
+            SecurityUtils.handleAccessProfiles(PROFILES.get());            
         } finally {
             clear();
         }
