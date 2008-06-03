@@ -201,7 +201,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             count += unpackUploadedFile(project, f, existingFileNameSet, conflictingFiles);
             TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(caArrayFile);
 
-            if (caArrayFile.getFileStatus().isDeletable()) {
+            if (caArrayFile.isDeletable()) {
                     getFileAccessService().remove(caArrayFile);
             }
         }

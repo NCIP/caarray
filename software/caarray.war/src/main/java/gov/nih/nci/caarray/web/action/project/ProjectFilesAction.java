@@ -375,6 +375,15 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     /**
+     * Method to delete files that have been imported.
+     * @return the string representing the UI to display.
+     */
+    public String deleteImportedFiles() {
+        doFileDeletion();
+        return prepListImportedPage();
+    }
+
+    /**
      * Method to unpack files.
      * @return the string representing the UI to display.
      */
@@ -396,7 +405,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         int deletedFiles = 0;
         int skippedFiles = 0;
         for (CaArrayFile caArrayFile : getSelectedFiles()) {
-            if (caArrayFile.getFileStatus().isDeletable()) {
+            if (caArrayFile.isDeletable()) {
                 getFileAccessService().remove(caArrayFile);
                 deletedFiles++;
             } else {
@@ -1060,6 +1069,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             String actionName = ActionContext.getContext().getName();
             if (actionName.contains("Supplemental")) {
                 prepListSupplementalPage();
+            } else if (actionName.contains("Imported")) {
+                prepListImportedPage();
             } else {
                 prepListUnimportedPage();
             }

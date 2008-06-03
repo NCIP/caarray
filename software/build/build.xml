@@ -707,41 +707,47 @@
         </unzip>
     </target>
 
+    <target name="build:caarray.war:scriptsAndStyles:minify" >
+        <if>
+         <equals arg1="${minify}" arg2="true" />
+         <then>
+             <echo>css and js files will be minified</echo>
+            <!-- compress and minify css files -->
+            <for param="cssfile">
+                      <path>
+                          <fileset dir="${caarray-war.target.webapp.dir}" includes="/styles/*.css" />
+                      </path>
+                      <sequential>
+                          <java jar="lib/yuicompressor-2.3.5.jar" fork="true" failonerror="true">
+                                    <arg line="@{cssfile}" />
+                                    <arg line="-o @{cssfile}" />
+                          </java>
+                      </sequential>
+             </for>
+            <!-- compress and minify javascripts -->
+            <for param="jsfile">
+                      <path>
+                           <fileset dir="${caarray-war.target.webapp.dir}" includes="/scripts/*.js, /scriptslib/*.js" />
+                      </path>
+                      <sequential>
+                          <java jar="lib/yuicompressor-2.3.5.jar" fork="true" failonerror="true">
+                                      <arg line="@{jsfile}" />
+                                      <arg line="-o @{jsfile}" />
+                                      <arg line="--nomunge" />
+                          </java>
+                      </sequential>
+            </for>
+          </then>
+         </if>
+    </target>
+
+
     <target name="build:caarray.war:scriptsAndStyles">
         <mkdir dir="${caarray-war.target.webapp.dir}" />
         <copy todir="${caarray-war.target.webapp.dir}">
             <fileset dir="${caarray-war.webapp.dir}" />
         </copy>
         <antcall target="build:caarray.war:scriptsAndStyles:minify" />
-    </target>
-
-    <target name="build:caarray.war:scriptsAndStyles:minify" unless="nominify">
-
-        <!-- compress and minify css files -->
-        <for param="cssfile">
-                  <path>
-                      <fileset dir="${caarray-war.target.webapp.dir}" includes="/styles/*.css" />
-                  </path>
-                  <sequential>
-                      <java jar="lib/yuicompressor-2.3.5.jar" fork="true" failonerror="true">
-                                <arg line="@{cssfile}" />
-                                <arg line="-o @{caarray.css}" />
-                      </java>
-                  </sequential>
-         </for>
-        <!-- compress and minify javascripts -->
-        <for param="jsfile">
-                  <path>
-                       <fileset dir="${caarray-war.target.webapp.dir}" includes="/scripts/*.js, /scriptslib/*.js" />
-                  </path>
-                  <sequential>
-                      <java jar="lib/yuicompressor-2.3.5.jar" fork="true" failonerror="true">
-                                  <arg line="@{jsfile}" />
-                                  <arg line="-o @{jsfile}" />
-                                  <arg line="--nomunge" />
-                      </java>
-                  </sequential>
-        </for>
     </target>
 
     <target name="build:caarray.war" depends="compile:caarray.war, prepare:caarray.war:onlinehelp,svn:getinfo,build:caarray.war:scriptsAndStyles">

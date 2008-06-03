@@ -132,7 +132,9 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
     }
 
     public void remove(CaArrayFile caArrayFile) {
-        this.removedFileCount++;
+        if (caArrayFile.isDeletable()) {
+            this.removedFileCount++;
+        }
     }
 
 

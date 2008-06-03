@@ -94,10 +94,13 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -141,6 +144,7 @@ public class ProjectFilesActionTest {
     private static final String LIST_UNIMPORTED = "listUnimported";
     private static final String LIST_SUPPLEMENTAL = "listSupplemental";
     private static final String UPLOAD = "upload";
+    private static final String UNPACK_FILES = "unpackFiles";
     private static final ProjectManagementServiceStub projectManagementServiceStub = new ProjectManagementServiceStub();
     private static final FileManagementServiceStub fileManagementServiceStub = new FileManagementServiceStub();
     private static final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
@@ -200,6 +204,21 @@ public class ProjectFilesActionTest {
         this.action.setUpload(files);
         this.action.setUploadFileName(fileNames);
         assertEquals(UPLOAD, this.action.upload());
+        assertEquals(1, projectManagementServiceStub.getFilesAddedCount());
+    }
+
+    @Test
+    public void testZipUploadAndUnpack() throws Exception {
+        assertEquals(LIST_UNIMPORTED, this.action.unpackFiles());
+        assertTrue(ActionHelper.getMessages().get(0).contains("0 file(s) extracted"));
+        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        CaArrayFile file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADED);
+
+        selectedFiles.add(file);
+        this.action.setSelectedFiles(selectedFiles);
+        assertEquals(LIST_UNIMPORTED, this.action.unpackFiles());
         assertEquals(1, projectManagementServiceStub.getFilesAddedCount());
     }
 
@@ -295,7 +314,7 @@ public class ProjectFilesActionTest {
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
         assertEquals(3, fileManagementServiceStub.getValidatedFileCount());
     }
-    
+
     @Test
     public void testDownloadGroups() throws Exception {
         FileAccessServiceStub fas = new FileAccessServiceStub();
@@ -319,26 +338,26 @@ public class ProjectFilesActionTest {
         setCompressedSize(f3, 1024 * 1024 * 512);
         setId(f3, 3L);
         f3.setName("experiment-id-1015897540503881.idf");
-        
+
         action.setSelectedFiles(Arrays.asList(f1, f2, f3));
         action.setProject(p);
-        
+
         String result = action.download();
         assertEquals("downloadGroups", result);
         assertEquals(2, action.getDownloadFileGroups().size());
         assertEquals(1, action.getDownloadFileGroups().get(0).getFileNames().size());
-        assertTrue(action.getDownloadFileGroups().get(0).getFileNames().contains("experiment-id-1015897540503881.idf"));        
+        assertTrue(action.getDownloadFileGroups().get(0).getFileNames().contains("experiment-id-1015897540503881.idf"));
                assertEquals(2, action.getDownloadFileGroups().get(1).getFileNames().size());
-        assertTrue(action.getDownloadFileGroups().get(1).getFileNames().contains("missing_term_source.sdrf"));        
-        assertTrue(action.getDownloadFileGroups().get(1).getFileNames().contains("missing_term_source.idf"));        
-        
+        assertTrue(action.getDownloadFileGroups().get(1).getFileNames().contains("missing_term_source.sdrf"));
+        assertTrue(action.getDownloadFileGroups().get(1).getFileNames().contains("missing_term_source.idf"));
+
         action.setDownloadGroupNumber(2);
         result = action.download();
         assertNull(result);
 
         assertEquals("application/zip", mockResponse.getContentType());
         assertEquals("filename=\"caArray_test_2_of_2_files.zip\"", mockResponse.getHeader("Content-disposition"));
-        
+
         ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
         ZipEntry ze = zis.getNextEntry();
         assertNotNull(ze);
@@ -486,30 +505,63 @@ public class ProjectFilesActionTest {
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATING);
         selectedFiles.add(file);
+
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATED);
         selectedFiles.add(file);
+
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.IMPORTING);
         selectedFiles.add(file);
+
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.IMPORTED);
         selectedFiles.add(file);
+
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
         selectedFiles.add(file);
+
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATION_ERRORS);
         selectedFiles.add(file);
+
         assertEquals(LIST_UNIMPORTED, this.action.deleteFiles());
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
-        assertEquals(3, fileAccessServiceStub.getRemovedFileCount());
+        assertEquals(4, fileAccessServiceStub.getRemovedFileCount());
     }
+
+    @Test
+    public void testDeleteImported() throws Exception {
+        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        this.action.setSelectedFiles(selectedFiles);
+        assertEquals(LIST_IMPORTED, this.action.deleteImportedFiles());
+        assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
+
+        CaArrayFile file = new CaArrayFile();
+
+        // make this file associated with a hyb
+        CaArrayFile celFile = fileAccessServiceStub.add(AffymetrixArrayDataFiles.TEST3_CEL);
+        celFile.setFileType(FileType.AFFYMETRIX_CEL);
+        celFile.setProject(this.action.getProject());
+        celFile.setFileStatus(FileStatus.IMPORTED);
+        RawArrayData celData = new RawArrayData();
+        celData.setDataFile(celFile);
+        Hybridization hybridization = new Hybridization();
+        hybridization.addRawArrayData(celData);
+        celFile.getProject().getExperiment().getHybridizations().add(hybridization);
+        selectedFiles.add(celFile);
+
+        assertEquals(LIST_IMPORTED, this.action.deleteImportedFiles());
+
+        assertEquals(0, fileAccessServiceStub.getRemovedFileCount());
+    }
+
     @Test
     public void testDeleteSupplemental() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
@@ -623,16 +675,16 @@ public class ProjectFilesActionTest {
         CaArrayFile f2 = new CaArrayFile();
         setCompressedSize(f2, 1024 * 1024 * 384);
         f2.setName("missing_term_source.sdrf");
-        
+
         action.setSelectedFiles(Arrays.asList(f1, f2));
         action.setProject(p);
-        
+
         String result = action.download();
         assertNull(result);
 
         assertEquals("application/zip", mockResponse.getContentType());
         assertEquals("filename=\"caArray_test_files.zip\"", mockResponse.getHeader("Content-disposition"));
-        
+
         ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
         ZipEntry ze = zis.getNextEntry();
         assertNotNull(ze);

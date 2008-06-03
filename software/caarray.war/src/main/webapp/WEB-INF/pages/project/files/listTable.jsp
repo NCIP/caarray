@@ -22,9 +22,9 @@
     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${files}" pagesize="${pageSize}"
         requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id">
         <caarray:displayTagProperties/>
-        <c:if test="${project.saveAllowed && canWriteProject && !listingImported}">
+        <c:if test="${project.saveAllowed && canWriteProject}">
             <display:column title="${checkboxAll}">
-                <s:checkbox name="selectedFileIds" disabled="${!(row.fileStatus.importable || row.fileStatus.validatable || row.fileStatus.deletable)}" fieldValue="${row.id}" value="false" theme="simple" />
+                <s:checkbox name="selectedFileIds" disabled="${!(row.importable || row.validatable || row.deletable)}" fieldValue="${row.id}" value="false" theme="simple" />
             </display:column>
         </c:if>
         <display:column property="name" titleKey="experiment.files.name" sortable="true" />

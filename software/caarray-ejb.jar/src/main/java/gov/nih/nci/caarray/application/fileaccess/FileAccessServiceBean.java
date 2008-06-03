@@ -176,13 +176,15 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public void remove(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        if (!caArrayFile.getFileStatus().isDeletable()) {
+        // special condition must be addressed if this file has import status
+        // if imported the file must not be associated with a hyb
+        if (!caArrayFile.isDeletable()) {
             throw new IllegalArgumentException("Illegal attempt to delete " + caArrayFile.getName()
                     + ", status is " + caArrayFile.getFileStatus());
         }
-        if (caArrayFile.getProject() != null) {
-            caArrayFile.getProject().getFiles().remove(caArrayFile);
-        }
+
+        caArrayFile.getProject().getFiles().remove(caArrayFile);
+
         this.daoFactory.getFileDao().remove(caArrayFile);
         LogUtil.logSubsystemExit(LOG);
     }

@@ -175,6 +175,11 @@
             <result name="listSupplemental">/WEB-INF/pages/project/files/listSupplemental.jsp</result>
         </action>
 
+        <action name="ajax/project/files/deleteImportedFiles" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="deleteImportedFiles">
+            <result name="input">/WEB-INF/pages/project/files/listImported.jsp</result>
+            <result name="listImported">/WEB-INF/pages/project/files/listImported.jsp</result>
+        </action>
+
         <action name="ajax/project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
             <result name="input">/WEB-INF/pages/project/files/listUnimported.jsp</result>
             <result name="listImported">/WEB-INF/pages/project/files/listImported.jsp</result>

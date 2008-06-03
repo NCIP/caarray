@@ -125,7 +125,7 @@ public enum FileStatus {
     /**
      * Successfully imported.
      */
-    IMPORTED(false, false, false),
+    IMPORTED(true, false, false),
 
     /**
      * Successfully imported but data not parsed.

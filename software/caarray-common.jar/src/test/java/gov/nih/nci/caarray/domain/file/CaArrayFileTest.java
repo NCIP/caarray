@@ -96,6 +96,18 @@ public class CaArrayFileTest {
         file.setFileStatus(FileStatus.IMPORTED);
         assertEquals(FileStatus.IMPORTED, file.getFileStatus());
         assertEquals("IMPORTED", file.getStatus());
+        assertEquals(true, file.isDeletable());
+
+        file.setFileStatus(FileStatus.UPLOADED);
+        assertEquals(FileStatus.UPLOADED, file.getFileStatus());
+        assertEquals("UPLOADED", file.getStatus());
+        assertEquals(true, file.isValidatable());
+
+        file.setFileStatus(FileStatus.VALIDATED);
+        assertEquals(FileStatus.VALIDATED, file.getFileStatus());
+        assertEquals("VALIDATED", file.getStatus());
+        assertEquals(true, file.isImportable());
+
         file.setFileStatus(null);
         assertEquals(null, file.getFileStatus());
         assertEquals(null, file.getStatus());
