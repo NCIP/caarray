@@ -179,3 +179,12 @@ UL.selectedItemList LI:hover
 
 #browseboxhome, #searchboxhome
 { width:294px }
+
+A.btn SPAN.btn_img
+{ background:transparent url("../images/bg_btn_left.gif") no-repeat; display:block; line-height:17px; padding:5px 0 2px 9px; }
+
+A.btn:hover SPAN.btn_img
+{ background:transparent url("../images/bg_btn_left.gif") no-repeat 0 -29px; display:block; line-height:17px; padding:5px 0 2px 9px; }
+
+A.btn:active SPAN.btn_img
+{ background-position:bottom left; background-attachment:scroll; padding:5px 0 2px 9px; /* push text down 1px */ }
