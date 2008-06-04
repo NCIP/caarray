@@ -94,6 +94,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
@@ -677,7 +678,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     @SkipValidation
     public String download() throws IOException {
-        if (!validatePermissions()) {
+        if (!getProject().getStatus().equals(ProposalStatus.PUBLIC) && !validatePermissions()) {
             // the user will be moved to the login page
             // therefore all previous error messages are not nec.
             ActionHelper.getMessages().clear();
