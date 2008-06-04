@@ -1584,6 +1584,7 @@
         </copy>
         <copy file="${clm.jar}" todir="${jboss.lib.dir}" overwrite="true" />
         <copy file="${mysql-connector.jar}" todir="${jboss.lib.dir}" overwrite="true" />
+        <copy file="${log4j.jar}" toFile="${jboss.lib.dir}/log4j.jar" overwrite="true" />
         <copy file="${resource.dir}/deploy/${jboss-mail-service.file}" todir="${jboss.deploy.dir}" />
         <replace file="${jboss.deploy.dir}/${jboss-mail-service.file}">
             <replacefilter token="@SMTPHOST@" value="${mail.smtp.host}" />
@@ -1746,6 +1747,15 @@
         <remote-scp remoteScpFileToCopy="${clm.jar}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/lib" />
     </target>
 
+    <target name="-remote-jboss:copy-log4j-jar">
+        <property name="temp.dir" value="${basedir}/log4j-temp" />
+        <mkdir dir="${temp.dir}" />
+        <copy file="${log4j.jar}" toFile="${temp.dir}/log4j.jar" overwrite="true" />
+        <echo message="Copying log4j.jar version 1.2.13 to jboss lib folder at ${ssh.server.hostname}..." />
+        <remote-scp remoteScpFileToCopy="${temp.dir}/log4j.jar" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/lib" />
+        <delete dir="${temp.dir}" />
+    </target>
+
     <target name="-remote-jboss:deploy-caarray-temp">
         <echo message="Copying caarray EAR to jboss temp folder ${jboss.temp.dir} at ${ssh.server.hostname}..." />
         <remote-scp remoteScpFileToCopy="${caarray.ear}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}" />
@@ -1770,6 +1780,7 @@
         <antcall target="-remote-jboss:copy-jboss-config" />
         <antcall target="remote-jboss:copy-jboss-mailservice" />
         <antcall target="-remote-jboss:copy-clm-jar" />
+        <antcall target="-remote-jboss:copy-log4j-jar" />
         <antcall target="remote-jboss:start" />
     </target>
 
