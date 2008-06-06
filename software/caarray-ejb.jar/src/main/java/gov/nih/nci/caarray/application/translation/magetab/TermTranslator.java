@@ -137,7 +137,7 @@ final class TermTranslator extends AbstractTranslator {
         }
         // if the source is present then it must have been translated
         TermSource ts = getTranslationResult().getSource(mageTabSource);
-        if (ts == null) {
+        if (ts == null) {     
             throw new IllegalStateException("A term is referencing an untranslated term source: " + mageTabSource);
         }
         return ts;
@@ -236,7 +236,7 @@ final class TermTranslator extends AbstractTranslator {
          */
         @Override
         public int hashCode() {
-            return new HashCodeBuilder().append(value).append(termSource).toHashCode();
+            return new HashCodeBuilder().append(StringUtils.upperCase(value)).append(termSource).toHashCode();
         }
 
         /*
@@ -253,7 +253,8 @@ final class TermTranslator extends AbstractTranslator {
                 return true;
             }
             TermKey tk = (TermKey) obj;
-            return new EqualsBuilder().append(this.value, tk.value).append(this.termSource, tk.termSource).isEquals();
+            return new EqualsBuilder().append(StringUtils.upperCase(this.value), StringUtils.upperCase(tk.value))
+                    .append(this.termSource, tk.termSource).isEquals();
         }
     }
 }

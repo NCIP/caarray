@@ -101,6 +101,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Result of MAGE-TAB translation. Also used to pass-around and look up shared objects.
@@ -137,6 +138,10 @@ final class MageTabTranslationResult implements CaArrayTranslationResult {
     public Collection<Term> getTerms() {
         return termMap.values();
     }
+    
+    public Collection<Category> getCategories() {
+        return categoryMap.values();
+    }
 
     Term getTerm(OntologyTerm term) {
         return termMap.get(term);
@@ -147,11 +152,11 @@ final class MageTabTranslationResult implements CaArrayTranslationResult {
     }
 
     Category getCategory(String name) {
-        return categoryMap.get(name);
+        return categoryMap.get(StringUtils.upperCase(name));
     }
     
     void addCategory(String name, Category cat) {
-        categoryMap.put(name, cat);
+        categoryMap.put(StringUtils.upperCase(name), cat);
     }
     
     /**

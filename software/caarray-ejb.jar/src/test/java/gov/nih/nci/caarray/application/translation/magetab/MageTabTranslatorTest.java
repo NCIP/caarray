@@ -106,6 +106,7 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
@@ -115,11 +116,14 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
@@ -150,11 +154,13 @@ public class MageTabTranslatorTest {
 
     /**
      * Test method for
-     * {@link gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator#translate(gov.nih.nci.caarray.magetab.MageTabDocumentSet)}.
+     * {@link gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator#translate(gov.nih.nci.caarray.magetab.MageTabDocumentSet)}
+     * .
      */
     @Test
     public void testTranslate() {
         testSpecificationDocuments();
+        testSpecificationTermCaseSensitivityDocuments();
         testSpecificationDocumentsNoArrayDesignRef();
         testSpecificationDocumentsNoExpDesc();
         testTcgaBroadDocuments();
@@ -164,7 +170,8 @@ public class MageTabTranslatorTest {
 
     private void testSpecificationDocuments() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
-        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET, fileSet);
+        CaArrayTranslationResult result = this.translator
+                .translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         assertNotNull(experiment.getDescription());
         assertTrue(experiment.getDescription().startsWith("Gene expression of TK6"));
@@ -182,9 +189,30 @@ public class MageTabTranslatorTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private void testSpecificationTermCaseSensitivityDocuments() {
+        CaArrayFileSet fileSet = TestMageTabSets
+                .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_SET);
+        MageTabTranslationResult result = (MageTabTranslationResult) this.translator.translate(
+                TestMageTabSets.MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_SET, fileSet);
+        Collection<Term> terms = result.getTerms();
+        Collection<Term> matchingTerms = CollectionUtils.select(terms, new Predicate() {
+            public boolean evaluate(Object o) {
+                Term t = (Term) o;
+                return t.getValue().equalsIgnoreCase("wild_type");
+            }
+        });
+        assertTrue(matchingTerms.size() >= 1);
+        Term oneMatch = matchingTerms.iterator().next();
+        for (Term eachMatch : matchingTerms) {
+            assertTrue(oneMatch == eachMatch);
+        }
+    }
+
     private void testSpecificationDocumentsNoExpDesc() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_SET);
-        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_SET, fileSet);
+        CaArrayTranslationResult result = this.translator.translate(
+                TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_SET, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         assertNull(experiment.getDescription());
         assertEquals(8, experiment.getExperimentContacts().size());
@@ -202,8 +230,8 @@ public class MageTabTranslatorTest {
 
     private void testSpecificationDocumentsNoArrayDesignRef() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET);
-        CaArrayTranslationResult result =
-            this.translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET, fileSet);
+        CaArrayTranslationResult result = this.translator.translate(
+                TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         assertNotNull(experiment.getDescription());
         assertTrue(experiment.getDescription().startsWith("Gene expression of TK6"));
@@ -322,7 +350,8 @@ public class MageTabTranslatorTest {
     public void testTranslatePersonsWithNullAffiliation() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
         MageTabDocumentSet documentSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_SET;
-        documentSet.getIdfDocuments().iterator().next().getInvestigation().getPersons().iterator().next().setAffiliation(null);
+        documentSet.getIdfDocuments().iterator().next().getInvestigation().getPersons().iterator().next()
+                .setAffiliation(null);
         CaArrayTranslationResult result = this.translator.translate(documentSet, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         for (ExperimentContact contact : experiment.getExperimentContacts()) {
@@ -347,7 +376,8 @@ public class MageTabTranslatorTest {
         checkDescription(experiment.getLabeledExtracts(), "LabeledExtract description");
     }
 
-    private void checkDescription(Set<? extends gov.nih.nci.caarray.domain.sample.AbstractBioMaterial> materials, String description) {
+    private void checkDescription(Set<? extends gov.nih.nci.caarray.domain.sample.AbstractBioMaterial> materials,
+            String description) {
         for (gov.nih.nci.caarray.domain.sample.AbstractBioMaterial material : materials) {
             assertEquals(description, material.getDescription());
         }

@@ -122,22 +122,24 @@ public final class TestMageTabSets {
     public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_INPUT_SET = getSpecificationInputSet();
 
     /**
+     * Example set of documents included with MAGE-TAB specification.
+     */
+    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_INPUT_SET = getSpecificationCaseSensitivityInputSet();
+
+    /**
      * Example set of documents based on the MAGE-TAB specification example, with no array design ref in the SDRF.
      */
-    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET =
-        getSpecificationNoArrayDesignInputSet();
+    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET = getSpecificationNoArrayDesignInputSet();
 
     /**
      * Example set of documents based on the MAGE-TAB specification example, with no experiment description in the IDF.
      */
-    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_NO_EXP_DESC_INPUT_SET =
-        getSpecificationNoExpDescInputSet();
+    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_NO_EXP_DESC_INPUT_SET = getSpecificationNoExpDescInputSet();
 
     /**
      * Example set of documents included with MAGE-TAB specification, minus the data matrix
      */
-    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_NO_DATA_MATRIX_INPUT_SET =
-        getSpecificationWithoutDataMatrixInputSet();
+    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_NO_DATA_MATRIX_INPUT_SET = getSpecificationWithoutDataMatrixInputSet();
 
     /**
      * Example set of documents with ERRORS based on the MAGE-TAB specification.
@@ -165,6 +167,12 @@ public final class TestMageTabSets {
     public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_SET = getSet(MAGE_TAB_SPECIFICATION_INPUT_SET);
 
     /**
+     * Document set parsed from the MAGE-TAB specification example files modified to test case sensitivity for term and
+     * category import.
+     */
+    public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_SET = getSet(MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_INPUT_SET);
+
+    /**
      * Document set parsed from the MAGE-TAB specification example files, with no array design references in the SDRF.
      */
     public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET = getSet(MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET);
@@ -178,7 +186,6 @@ public final class TestMageTabSets {
      * Document set parsed from the MAGE-TAB specification example files.
      */
     public static final MageTabDocumentSet PERFORMANCE_TEST_10_SET = getSet(PERFORMANCE_TEST_10_INPUT_SET);
-
 
     /**
      * MAGE-TAB input set from TCGA Broad data.
@@ -225,7 +232,6 @@ public final class TestMageTabSets {
      */
     public static final MageTabDocumentSet DERIVED_DATA_SET = getSet(DERIVED_DATA_INPUT_SET);
 
-
     private static MageTabDocumentSet getSet(MageTabInputFileSet inputSet) {
         try {
             return MageTabParser.INSTANCE.parse(inputSet);
@@ -251,7 +257,6 @@ public final class TestMageTabSets {
         fileSet.addSdrf(MageTabDataFiles.EBI_TEMPLATE_SDRF);
         return fileSet;
     }
-
 
     private static MageTabInputFileSet getTcgaBroadInputSet() {
         MageTabInputFileSet fileSet = new MageTabInputFileSet();
@@ -297,6 +302,15 @@ public final class TestMageTabSets {
         fileSet.addAdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
         fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY);
+        return fileSet;
+    }
+
+    private static MageTabInputFileSet getSpecificationCaseSensitivityInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_CASE_SENSITIVITY_IDF);
+        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_CASE_SENSITIVITY_SDRF);
+        fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_CASE_SENSITIVITY_DATA_MATRIX);
+        addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_CASE_SENSITIVITY_DIRECTORY);
         return fileSet;
     }
 
@@ -370,7 +384,6 @@ public final class TestMageTabSets {
         addExpFiles(fileSet, MageTabDataFiles.GSK_TEST_DIRECTORY);
         return fileSet;
     }
-
 
     private static MageTabInputFileSet getDefect12537InputSet() {
         MageTabInputFileSet fileSet = new MageTabInputFileSet();
