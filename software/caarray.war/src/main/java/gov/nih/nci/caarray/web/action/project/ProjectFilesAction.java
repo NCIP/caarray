@@ -94,7 +94,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
@@ -635,7 +634,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * uploads file.
      *
      * @return the string matching the result to follow
-     * @throws IOException on i/o error
+     * @throws IOException on i/o
      */
     @SkipValidation
     public String upload() throws IOException {
@@ -678,12 +677,14 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     @SkipValidation
     public String download() throws IOException {
-        if (!getProject().getStatus().equals(ProposalStatus.PUBLIC) && !validatePermissions()) {
-            // the user will be moved to the login page
-            // therefore all previous error messages are not nec.
-            ActionHelper.getMessages().clear();
+        if (this.checkInconsistentFileSelect()) {
+            if (getProject().hasReadPermission(getCsmUser())) {
+                ActionHelper.saveMessage(getText("download.session.expired"));
+            }
+
             return "denied";
         }
+
         this.downloadFileGroups = computeDownloadGroups(getSelectedFiles());
         return downloadByGroup(getProject(), getSelectedFiles(), this.downloadGroupNumber, this.downloadFileGroups);
     }
@@ -1105,6 +1106,17 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             }
         }
         return fileNamesToUnpack;
+    }
+
+    /**
+     * Verify that all files selected by their ids are retrieved.
+     */
+    private boolean checkInconsistentFileSelect() {
+        // most likely there was a session timeout which resulted in the user becoming anon
+        // have the user log in again.
+        // this will make the validation fail and the user will be kicked back to the
+        // overview screen. but because the user is anon, they will have to log in again.
+        return (this.selectedFiles.size() != this.selectedFileIds.size());
     }
 
     /**

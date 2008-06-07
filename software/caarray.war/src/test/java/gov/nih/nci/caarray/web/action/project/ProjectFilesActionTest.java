@@ -338,7 +338,16 @@ public class ProjectFilesActionTest {
         setCompressedSize(f3, 1024 * 1024 * 512);
         setId(f3, 3L);
         f3.setName("experiment-id-1015897540503881.idf");
-
+        List l = new ArrayList<Long>();
+        l.add(1L);
+        l.add(2L);
+        l.add(3L);
+        // need to catch exception as these are test files and will not be retrieved
+        try {
+            action.setSelectedFileIds(l);
+        } catch(Exception e) {
+            //NOOP
+        }
         action.setSelectedFiles(Arrays.asList(f1, f2, f3));
         action.setProject(p);
 
@@ -670,11 +679,23 @@ public class ProjectFilesActionTest {
         Project p = new Project();
         p.getExperiment().setPublicIdentifier("test");
         CaArrayFile f1 = new CaArrayFile();
+        setId(f1, 1L);
         setCompressedSize(f1, 1024 * 1024 * 1024);
         f1.setName("missing_term_source.idf");
         CaArrayFile f2 = new CaArrayFile();
+        setId(f2, 2L);
         setCompressedSize(f2, 1024 * 1024 * 384);
         f2.setName("missing_term_source.sdrf");
+
+        List l = new ArrayList<Long>();
+        l.add(1L);
+        l.add(2L);
+        // need to catch exception as these are test files and will not be retrieved
+        try {
+            action.setSelectedFileIds(l);
+        } catch(Exception e) {
+            //NOOP
+        }
 
         action.setSelectedFiles(Arrays.asList(f1, f2));
         action.setProject(p);
@@ -694,6 +715,41 @@ public class ProjectFilesActionTest {
         assertEquals("missing_term_source.sdrf", ze.getName());
         assertNull(zis.getNextEntry());
         IOUtils.closeQuietly(zis);
+    }
+
+    @Test
+    public void testSessionTimeoutDuringDownload() throws Exception {
+        FileAccessServiceStub fas = new FileAccessServiceStub();
+        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
+        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
+        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
+        fas.add(MageTabDataFiles.CAARRAY1X_IDF);
+
+
+        Project p = new Project();
+        p.getExperiment().setPublicIdentifier("test");
+        CaArrayFile f1 = new CaArrayFile();
+        setId(f1, 1L);
+        setCompressedSize(f1, 1024 * 1024 * 1024);
+        f1.setName("missing_term_source.idf");
+        CaArrayFile f2 = new CaArrayFile();
+        setId(f2, 2L);
+        setCompressedSize(f2, 1024 * 1024 * 384);
+        f2.setName("missing_term_source.sdrf");
+        List l = new ArrayList<Long>();
+        l.add(1L);
+        l.add(2L);
+        l.add(3L);
+        // need to catch exception as these are test files and will not be retrieved
+        try {
+            action.setSelectedFileIds(l);
+        } catch(Exception e) {
+            //NOOP
+        }
+        action.setSelectedFiles(Arrays.asList(f1, f2));
+        action.setProject(p);
+        String result = action.download();
+        assertEquals("denied",result);
     }
 
     @Test

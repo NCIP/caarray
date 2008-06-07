@@ -206,6 +206,8 @@
         $("closeWindow").style.display = "";
         if (messages.match("not uploaded")) {
             alert('Your file upload is complete, but there were errors. Not all files may have been uploaded successfully.');
+        } else if (messages.match("at least 1 file")) {
+            // do nothing.
         } else {
             alert('Your file upload is complete');
         }
