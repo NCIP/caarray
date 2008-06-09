@@ -193,19 +193,14 @@ final class SdrfTranslator extends AbstractTranslator {
     private void validateArrayDesigns(SdrfDocument document) {
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign : document.getAllArrayDesigns()) {
             String arrayDesignName = sdrfArrayDesign.getName();
-            if (sdrfArrayDesign.isArrayDesignRef()) {
                 ArrayDesign arrayDesign = new ArrayDesign();
                 arrayDesign.setLsidForEntity(arrayDesignName);
                 if (getDaoFactory().getArrayDao().queryEntityAndAssociationsByExample(arrayDesign).isEmpty()) {
                     document.addErrorMessage("Your reference to '" + arrayDesignName + "' can not be resolved because "
                             + "an array design with that LSID is not in caArray.  Please import it and try again.");
                 }
-            } else {
-                document.addErrorMessage("Your reference to '" + arrayDesignName + "' can not be resolved because "
-                        + "array design files are not currently supported.");
             }
         }
-    }
 
     private void translateSdrf(SdrfDocument document) {
         translateNodesToEntities(document);
@@ -506,11 +501,7 @@ final class SdrfTranslator extends AbstractTranslator {
      */
     private ArrayDesign getArrayDesign(gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign) {
         ArrayDesign arrayDesign = null;
-        if (sdrfArrayDesign.isArrayDesignRef()) {
             arrayDesign = processArrayDesignRef(sdrfArrayDesign.getName());
-        } else {
-            arrayDesign = processArrayDesignFile(sdrfArrayDesign.getName());
-        }
         return arrayDesign;
     }
 
@@ -524,14 +515,6 @@ final class SdrfTranslator extends AbstractTranslator {
         } else {
             return designs.get(0);
         }
-    }
-
-    // Processes an array design for which a file is included in the MAGE-TAB document set.
-    private ArrayDesign processArrayDesignFile(String arrayDesignName) {
-        ArrayDesign arrayDesign = new ArrayDesign();
-        CaArrayFile designFile = getFile(arrayDesignName);
-        arrayDesign.setDesignFile(designFile);
-        return arrayDesign;
     }
 
     private void translateImages(SdrfDocument document) {

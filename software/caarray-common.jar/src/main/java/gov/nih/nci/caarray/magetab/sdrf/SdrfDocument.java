@@ -342,7 +342,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleLabel(column, value);
             break;
         case ARRAY_DESIGN_FILE:
-            handleArrayDesignFile(column, value);
+            addError(column.getHeading() + " not allowed via experiment data import.");
             break;
         case ARRAY_DESIGN_REF:
             handleArrayDesignRef(column, value);
@@ -424,15 +424,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         currentNormalization = (Normalization) currentNode;
     }
 
-    private void handleArrayDesignFile(SdrfColumn column, String value) {
-        ArrayDesign arrayDesign = arrayDesignHelper(column, value);
-        arrayDesign.setFile(getDocumentSet().getAdfDocument(value).getFile());
-        arrayDesign.setArrayDesignRef(false);
-    }
-
     private void handleArrayDesignRef(SdrfColumn column, String value) {
         ArrayDesign arrayDesign = arrayDesignHelper(column, value);
-        arrayDesign.setArrayDesignRef(true);
         currentTermSourceable = arrayDesign;
     }
 
