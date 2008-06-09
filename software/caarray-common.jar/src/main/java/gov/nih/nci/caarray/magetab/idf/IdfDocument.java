@@ -192,6 +192,11 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 addWarningMessage("No term source associated with the file name : " + aTermSource.getFile());
             }
         }
+        for (ExperimentalFactor experimentalFactor : investigation.getFactors()) {
+            if (StringUtils.isEmpty(experimentalFactor.getName())) {
+                addErrorMessage("Experimental Factors must have a non-empty name");
+            }
+        }
     }
 
     private void handleLine(List<String> lineContents, boolean processingTermSources) {

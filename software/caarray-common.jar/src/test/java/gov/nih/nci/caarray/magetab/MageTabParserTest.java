@@ -305,9 +305,10 @@ public class MageTabParserTest {
         result = parser.validate(fileSet);
         System.out.println("testValidate result: " + result);
         assertFalse(result.isValid());
-        assertEquals(92, result.getMessages().size());
+        assertEquals(93, result.getMessages().size());
         // check for the fix to gforge defect 12541
         assertTrue(result.getMessages().toString().contains("ERROR: Referenced Factor Name EF1 was not found in the IDF"));
+        assertTrue(result.getMessages().toString().contains("ERROR: Experimental Factors must have a non-empty name"));
     }
 
     @Test
