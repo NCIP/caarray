@@ -834,10 +834,22 @@
             <mkdir dir="${caarray-ear.target.dir}" />
             <mkdir dir="${caarray-ear.target.dir}/xml" />
             <copy todir="${caarray-ear.target.dir}/xml">
-                <fileset dir="${caarray-ear.resources.dir}" includes="*.xml" excludes="application.xml" />
+              <fileset dir="${caarray-ear.resources.dir}" includes="*.xml" excludes="application.xml, security-config.xml, security-config-local.xml" />
+            </copy>
+            <var name="security-config-file" />
+            <if>
+               <equals arg1="${ldap.authentication.disabled}" arg2="true" />
+               <then>
+                   <var name="security-config-file" value="security-config-local.xml" />
+               </then>
+               <else>
+                   <var name="security-config-file" value="security-config.xml" />
+               </else>
+            </if>
+            <copy file="${caarray-ear.resources.dir}/${security-config-file}" tofile="${caarray-ear.target.dir}/xml/security-config.xml">
                 <!-- 2 filter sets here because the database.url line has substitutions that otherwise wouldn't be applied -->
                 <filterset>
-                    <filter token="database.url" value="${database.url}" />
+                  <filter token="database.url" value="${database.url}" />
                 </filterset>
                 <filterset refid="caarray.filterset" />
             </copy>
