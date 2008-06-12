@@ -169,7 +169,7 @@
                     <caarray:actions>
                         <caarray:linkButton actionClass="cancel" text="Cancel" onclick="window.close()"/>
                         <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
-                         <s:if test="${arrayDesign.designFile.status != importingStatus}">
+                         <s:if test="${arrayDesign.designFile.status != importingStatus && !locked}">
                             <caarray:action onclick="beginUpload();" actionClass="save" text="Save" tabindex="10"/>
                         </s:if>
                     </caarray:actions>
