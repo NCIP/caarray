@@ -47,8 +47,13 @@
                             </xs:choice>
                         </xs:complexType>
                     </xs:element>
-                    <xs:element name="arrayData" minOccurs="0" maxOccurs="1"
-                        type="gov.nih.nci.caarray.domain.data:RawArrayData" />
+                    <xs:element name="rawDataCollection" minOccurs="0">
+                        <xs:complexType>
+                            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                <xs:element ref="gov.nih.nci.caarray.domain.data:RawArrayData" />
+                            </xs:choice>
+                        </xs:complexType>
+                    </xs:element>
                     <xs:element name="images" minOccurs="0">
                         <xs:complexType>
                             <xs:choice minOccurs="0" maxOccurs="unbounded">
