@@ -94,6 +94,7 @@ import gov.nih.nci.caarray.domain.search.SourceSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.web.action.project.AbstractProjectProtocolAnnotationListTabAction.BioMaterialTypes;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -223,5 +224,45 @@ public class ProjectSourcesAction extends AbstractProjectProtocolAnnotationListT
         return super.delete();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @SkipValidation
+    @Override
+    public String view() {
+        downloadFiles();
+        return super.view();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SkipValidation
+    public String edit() {
+        downloadFiles();
+        return super.edit();
+    }
+    
+    
+    /** 
+     * {@inheritDoc}
+     */
+    protected Collection<CaArrayFile> getAllDataFiles() {
+        return getCurrentSource().getAllDataFiles();
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    public String getDownloadFileListAction() {
+        return getDownloadFileListActionUrl(BioMaterialTypes.SOURCES);
+    }
 
+    /** 
+     * {@inheritDoc}
+     */
+    public String getDownloadFilesTableListSortUrlAction() {
+        return getDownloadFileTableListSortActionUrl(BioMaterialTypes.SOURCES);
+    }
 }

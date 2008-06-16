@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
@@ -90,9 +91,14 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
+import org.apache.commons.collections.set.TransformedSet;
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -112,6 +118,49 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     private List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
     private int downloadGroupNumber = -1;
 
+
+    private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
+    private String extensionFilter;
+    private Set<String> allExtensions = new TreeSet<String>();
+    
+    /**
+     * A simple enum to use instead of string literals.
+     */
+    enum BioMaterialTypes {
+        /**
+         * Sources.
+         */
+        SOURCES("Sources"),
+        /**
+         * Samples.
+         */
+        SAMPLES("Samples"),
+        /**
+         * Extracts.
+         */
+        EXTRACTS("Extracts"),
+        /**
+         * Labeled Extracts.
+         */
+        LABELED_EXTRACTS("LabeledExtracts"),
+        /**
+         * Hybridizations.
+         */
+        HYBRIDIZATIONS("Hybridizations");
+        private final String type;
+
+        private BioMaterialTypes(String type) {
+            this.type = type;
+        }
+        
+        /**
+         * @return pretty type name
+         */
+        public String getType() {
+            return type;
+        }
+    }
+    
     /**
      * default constructor.
      *
@@ -324,4 +373,122 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
         this.downloadGroupNumber = downloadGroupNumber;
     }
 
+    
+    /**
+     * @return files to show for download
+     */
+    public Set<CaArrayFile> getFiles() {
+        return this.files;
+    }
+
+    /**
+     * @param files to show for download
+     */
+    public void setFiles(Set<CaArrayFile> files) {
+        this.files = files;
+    }
+    
+    /**
+     * @return extensions to filter for
+     */
+    public String getExtensionFilter() {
+        return this.extensionFilter;
+    }
+
+    /**
+     * @param extensionFilter extensions to filter for
+     */
+    public void setExtensionFilter(String extensionFilter) {
+        this.extensionFilter = extensionFilter;
+    }
+    
+    /**
+     * @return all extensions for the project files
+     */
+    public Set<String> getAllExtensions() {
+        return this.allExtensions;
+    }
+
+    /**
+     * @param allExtensions all extensions for the project
+     */
+    public void setAllExtensions(Set<String> allExtensions) {
+        this.allExtensions = allExtensions;
+    }
+    
+    /**
+     * Method to get the list of files.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation    
+    public String downloadFiles() {
+        for (CaArrayFile f : getAllDataFiles()) {
+            if (StringUtils.isBlank(this.extensionFilter)
+                    || ProjectFilesAction.EXTENSION_TRANSFORMER.transform(f).equals(this.extensionFilter)) {
+                getFiles().add(f);
+            }
+        }
+        prepareAllFileExtensions();
+
+        return "downloadFiles";
+    }
+
+    private void prepareAllFileExtensions() {
+        Set s = TransformedSet.decorate(new TreeSet<String>(), ProjectFilesAction.EXTENSION_TRANSFORMER);
+        s.addAll(getAllDataFiles());
+        setAllExtensions(s);
+    }
+    
+    /** 
+     * @return all downloadable data files for the page's primary entity
+     */
+    protected abstract Collection<CaArrayFile> getAllDataFiles();
+    
+    /**
+     * Ajax-only call to handle changing the filter extension.
+     * @return success.
+     */
+    @SkipValidation
+    public String downloadFilesList() {
+        downloadFiles();
+        return "downloadFilesList";
+    }
+
+    /**
+     * Ajax-only call to handle sorting.
+     *
+     * @return success
+     */
+    @SkipValidation
+    public String downloadFilesListTable() {
+        downloadFiles();
+        return "downloadFilesListTable";
+    }
+    
+    /**
+     * @return the action to handle filtering downloadable files by file type 
+     */
+    public abstract String getDownloadFileListAction();
+    
+    /**
+     * @return the action to handle sorting downloadable files
+     */
+    public abstract String getDownloadFilesTableListSortUrlAction();
+    
+    /**
+     * @param type [Sources|Samples|Extracts|LabeledExtracts|Hybridization]
+     * @return the action to handle filtering downloadable files by file type 
+     */
+    protected String getDownloadFileListActionUrl(BioMaterialTypes type) {
+        return "/ajax/project/listTab/" + type.getType() + "/downloadFilesList.action";
+    }
+    
+    /**
+     * @param type [Sources|Samples|Extracts|LabeledExtracts|Hybridization]
+     * @return the action to handle sorting downloadable files
+     */
+    protected String getDownloadFileTableListSortActionUrl(BioMaterialTypes type) {
+        return "/ajax/project/listTab/" + type.getType() + "/downloadFilesListTable.action";
+    }
 }

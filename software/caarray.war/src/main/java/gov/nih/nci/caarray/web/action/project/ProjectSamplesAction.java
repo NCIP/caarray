@@ -122,6 +122,7 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
     private List<Source> itemsToAssociate = new ArrayList<Source>();
     private List<Source> itemsToRemove = new ArrayList<Source>();
 
+
     /**
      * Default constructor.
      */
@@ -134,6 +135,7 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
      * {@inheritDoc}
      * @throws VocabularyServiceException
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void prepare() throws VocabularyServiceException {
         super.prepare();
@@ -149,13 +151,13 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
     }
 
     /**
-     * download the data for this sample.
+     * download all of the data for this sample.
      * @return download
      * @throws IOException on file error
      */
     @SkipValidation
     public String download() throws IOException {
-        Collection<CaArrayFile> files = getCurrentSample().getAllDataFiles();
+        Collection<CaArrayFile> files = getAllDataFiles();
         if (files.isEmpty()) {
             ActionHelper.saveMessage(getText("experiment.samples.noDataToDownload"));
             return "noSampleData";
@@ -164,7 +166,7 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
         return ProjectFilesAction.downloadByGroup(getProject(), files,
                 getDownloadGroupNumber(), getDownloadFileGroups());
     }
-
+    
     /**
      * {@inheritDoc}
      */
@@ -280,5 +282,47 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
             ap.getSampleSecurityLevels().remove(getCurrentSample());
         }
         return true;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @SkipValidation
+    @Override
+    public String view() {
+        downloadFiles();
+        return super.view();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SkipValidation
+    public String edit() {
+        downloadFiles();
+        return super.edit();
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    protected Collection<CaArrayFile> getAllDataFiles() {
+        return getCurrentSample().getAllDataFiles();
+    }
+
+    /** 
+     * {@inheritDoc}
+     */
+    public String getDownloadFileListAction() {
+        return getDownloadFileListActionUrl(BioMaterialTypes.SAMPLES);
+    }
+
+    /** 
+     * {@inheritDoc}
+     */
+    public String getDownloadFilesTableListSortUrlAction() {
+        return getDownloadFileTableListSortActionUrl(BioMaterialTypes.SAMPLES);
     }
 }

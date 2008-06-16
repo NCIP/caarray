@@ -186,7 +186,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private static final String ACTION_IMPORTED = "listImported";
     private static final String ACTION_SUPPLEMENTAL = "listSupplemental";
     private static final String ACTION_TABLE = "table";
-    private static final Transformer EXTENSION_TRANSFORMER = new Transformer() {
+    static final Transformer EXTENSION_TRANSFORMER = new Transformer() {
         /**
          * Transforms files to their extensions.
          */

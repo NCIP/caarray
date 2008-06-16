@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.domain.search.HybridizationSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.web.action.project.AbstractProjectProtocolAnnotationListTabAction.BioMaterialTypes;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -309,5 +310,46 @@ public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnota
             fv.getFactor().getFactorValues().remove(fv);
         }
         return true;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SkipValidation
+    @Override
+    public String view() {
+        downloadFiles();
+        return super.view();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SkipValidation
+    public String edit() {
+        downloadFiles();
+        return super.edit();
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    protected Collection<CaArrayFile> getAllDataFiles() {
+        return getCurrentHybridization().getAllDataFiles();
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    public String getDownloadFileListAction() {
+        return getDownloadFileListActionUrl(BioMaterialTypes.HYBRIDIZATIONS);
+    }
+
+    /** 
+     * {@inheritDoc}
+     */
+    public String getDownloadFilesTableListSortUrlAction() {
+        return getDownloadFileTableListSortActionUrl(BioMaterialTypes.HYBRIDIZATIONS);
     }
 }
