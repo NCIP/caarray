@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <caarray:tabPane paneTitleKey="project.tabs.downloadData" subtab="true">
-<div class="tableboxpad" style="overflow:auto;">
+<div class="tableboxpad" style="overflow:auto; max-height:500px">
 <table class="searchresults">
   <tr>
       <td width="80%">
@@ -33,3 +33,17 @@
     <caarray:action onclick="showDownloadInProgress(); downloadMgr.doDownloadFiles();" actionClass="launch_download" text="Launch Download Job" />
 </caarray:actions>    
 </caarray:tabPane>
+<script type="text/javascript">
+    downloadMgr.resetDownloadInfo();
+
+    showDownloadInProgress = function() {
+        if (Object.values(downloadMgr.downloadFiles).length > 0) {
+            $('downloadInProgressMsg').show();
+            setTimeout("hideMsg()",5000);
+        }
+    }
+
+    hideMsg = function() {
+        $('downloadInProgressMsg').hide();
+    }
+</script>
