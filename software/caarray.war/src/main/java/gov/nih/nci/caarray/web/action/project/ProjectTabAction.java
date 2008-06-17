@@ -132,7 +132,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
      */
     protected String permissionDenied(String roleKey) {
         if (UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
-            return "reload-project";
+            return ProjectTabAction.RELOAD_PROJECT_RESULT;
         } else {
             List<String> args = new ArrayList<String>();
             args.add(getText(roleKey));
