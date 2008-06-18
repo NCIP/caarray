@@ -87,9 +87,10 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.text.DecimalFormat;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
@@ -100,7 +101,8 @@ import org.hibernate.validator.NotNull;
  *
  */
 @Entity
-@DiscriminatorValue("MEASUREMENT")
+@Table(name = "characteristic_measurement")
+@PrimaryKeyJoinColumn(name = "characteristic_id")
 public class MeasurementCharacteristic extends AbstractCharacteristic {
     private static final long serialVersionUID = 1L;
 
@@ -138,7 +140,7 @@ public class MeasurementCharacteristic extends AbstractCharacteristic {
     @ManyToOne
     @NotNull
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "characteristic_unit_fk")
+    @ForeignKey(name = "characteristic_measurement_unit_fk")
     public Term getUnit() {
         return unit;
     }

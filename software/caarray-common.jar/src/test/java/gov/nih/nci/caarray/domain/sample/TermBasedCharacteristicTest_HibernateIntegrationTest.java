@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,78 +82,92 @@
  */
 package gov.nih.nci.caarray.domain.sample;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.validator.NotNull;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 /**
+ * @author Jevon Gill
  *
  */
-@Entity
-@Table(name = "characteristic_term")
-@PrimaryKeyJoinColumn(name = "characteristic_id")
-public class TermBasedCharacteristic extends AbstractCharacteristic {
+@SuppressWarnings("PMD")
+public class TermBasedCharacteristicTest_HibernateIntegrationTest extends AbstractCaArrayEntity_HibernateIntegrationTest {
 
-    private static final long serialVersionUID = 1L;
+    @Test
+    @Override
+    public void testSave() {
+        super.testSave();
+    }
 
-    private Term term;
+    @Override
+    protected void setValues(AbstractCaArrayObject caArrayObject) {
+
+        TermBasedCharacteristic termBasedCharacteristic = (TermBasedCharacteristic) caArrayObject;
+
+        //Set values in AbstractCharacteristic class
+        Category category = new Category();
+        category.setName("Survival");
+        TermSource termSource1 = new TermSource();
+        termSource1.setName("Source 1");
+        category.setSource(termSource1);
+        termBasedCharacteristic.setCategory(category);
+
+        Sample sample = new Sample();
+        sample.setName("Extract 217");
+        saveBiomaterial(sample);
+        termBasedCharacteristic.setBioMaterial(sample);
 
 
-    /**
-     * Hibernate-only constructor.
-     */
-    public TermBasedCharacteristic() {
-        //empty
+        //Set values in TermBasedCharacteristic class
+        TermSource termSource2 = new TermSource();
+        termSource2.setName("Source 1");
+
+        Term unit = new Term();
+        unit.setSource(termSource2);
+        unit.setValue("month");
+        termBasedCharacteristic.setTerm(unit);
     }
 
     /**
-     * Create a new characteristic with given category and term.
-     *
-     * @param category the category.
-     * @param term the term
+     * @param sample
      */
-    public TermBasedCharacteristic(Category category, Term term) {
-        super(category);
-        this.term = term;
+    private void saveBiomaterial(Sample sample) {
+        super.save(sample);
     }
 
-    /**
-     * Gets the term.
-     *
-     * @return the term
-     */
-    @ManyToOne(optional = false)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "characteristic_term_term_fk")
-    @NotNull
-    public Term getTerm() {
-        return term;
-    }
-
-    /**
-     * Sets the term.
-     *
-     * @param termVal the term
-     */
-    public void setTerm(final Term termVal) {
-        this.term = termVal;
-    }
-
-    /**
-     * {@inheritDoc}
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.domain.AbstractCaArrayObject_HibernateIntegrationTest#compareValues(gov.nih.nci.caarray.domain.AbstractCaArrayObject, gov.nih.nci.caarray.domain.AbstractCaArrayObject)
      */
     @Override
-    @Transient
-    public String getDisplayValue() {
-        return this.term != null ? this.term.getValue() : null;
+    protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
+        TermBasedCharacteristic original = (TermBasedCharacteristic) caArrayObject;
+        TermBasedCharacteristic retrieved = (TermBasedCharacteristic) retrievedCaArrayObject;
+        assertEquals(original.getCategory().getName(), retrieved.getCategory().getName());
+        assertEquals(original.getCategory().getSource().getName(), retrieved.getCategory().getSource().getName());
+        assertEquals(original.getBioMaterial().getName(), retrieved.getBioMaterial().getName());
+        assertEquals(original.getTerm().getValue(), retrieved.getTerm().getValue());
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.domain.AbstractCaArrayObject_HibernateIntegrationTest#createTestObject()
+     */
+    @Override
+    protected AbstractCaArrayObject createTestObject() {
+        return new TermBasedCharacteristic();
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.domain.AbstractCaArrayObject_HibernateIntegrationTest#setNullableValuesToNull(gov.nih.nci.caarray.domain.AbstractCaArrayObject)
+     */
+    @Override
+    protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
+        // TODO Auto-generated method stub
+
     }
 }

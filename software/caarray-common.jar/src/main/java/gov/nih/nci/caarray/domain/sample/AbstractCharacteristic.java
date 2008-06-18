@@ -87,8 +87,6 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -108,11 +106,7 @@ import org.hibernate.validator.NotNull;
 @Entity
 @Table(name = "characteristic")
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(
-        name = "discriminator",
-        discriminatorType = DiscriminatorType.STRING
-)
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
 
@@ -133,8 +127,6 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
     public AbstractCharacteristic(final Category category) {
         this.category = category;
     }
-
-
 
     /**
      * @return the abstractBioMaterial
@@ -185,4 +177,5 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
     @Transient
     public abstract String getDisplayValue();
 }
+
 
