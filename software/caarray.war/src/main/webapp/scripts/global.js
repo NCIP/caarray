@@ -470,18 +470,19 @@ DownloadMgr.prototype.addTotalRow = function() {
 }
 
 DownloadMgr.prototype.toggleQueue = function() {
-    this.hideQueue = !this.hideQueue;
+    var newStatus = !this.hideQueue;
+    this.cleanupDownloadQueue();
+    this.hideQueue = newStatus;
 
-    if (this.hideQueue == true) {
+    if (newStatus) {
         var href = $('toggleQueue');
         href.innerHTML='Show Files';
-        this.cleanupDownloadQueue();
     } else {
+        this.totalDownloadSize = 0;
         this.reAddFromQueue();
         var href = $('toggleQueue');
         href.innerHTML='Hide Files';
     }
-
 }
 
 DownloadMgr.prototype.doDownloadFiles = function() {
