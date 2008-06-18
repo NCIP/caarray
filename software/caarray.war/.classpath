@@ -337,7 +337,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/lib/struts2-core-2.0.9.jar">
+	<classpathentry kind="lib" path="/lib/struts2-core-2.0.9.jar" sourcepath="/lib/src/struts-2.0.9-src.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
