@@ -137,17 +137,15 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
      * {@inheritDoc}
      */
     public void prepare() throws VocabularyServiceException {
-        if (this.project.getId() != null || this.project.getExperiment().getPublicIdentifier() != null) {
-            Project retrieved = null;
-            if (this.project.getId() != null) {
-                retrieved = getProjectManagementService().getProject(this.project.getId());
-            } else {
-                retrieved = getProjectManagementService().getProjectByPublicId(
-                        this.project.getExperiment().getPublicIdentifier());
-            }
-            if (retrieved != null) {
-                this.project = retrieved;
-            }
+        Project retrieved = null;
+        if (this.project.getId() != null) {
+            retrieved = getProjectManagementService().getProject(this.project.getId());
+        } else if (this.project.getExperiment().getPublicIdentifier() != null) {
+            retrieved = getProjectManagementService().getProjectByPublicId(
+                    this.project.getExperiment().getPublicIdentifier());
+        }
+        if (retrieved != null) {
+            this.project = retrieved;
         }
     }
 

@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.GenericDataService;
@@ -96,6 +97,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -540,6 +542,65 @@ public class ProjectManagementServiceTest {
         assertTrue(project.isUseTcgaPolicy());
     }
 
+    @Test  (expected = IllegalStateException.class)
+    public void testGetSampleByExternalIdReturnsNonUniqueResult() throws Exception {
+        ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;
+        bean.setDaoFactory(new DaoFactoryStub(){
+            @Override
+            public SearchDao getSearchDao() {
+                return new SearchDaoStub(){
+                    public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(T entityToMatch) {
+                        ArrayList<Sample> arrayList = new ArrayList<Sample>();
+                        arrayList.add(new Sample());
+                        arrayList.add(new Sample());
+                        return (List<T>) arrayList;
+                    };
+                };
+            }
+        });
+        Project project = new Project();
+
+        assertNull(this.projectManagementService.getSampleByExternalId(project, "def"));
+    }
+    @Test
+    public void testGetSampleByExternalIdReturnsNull() throws Exception {
+        ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;
+        bean.setDaoFactory(new DaoFactoryStub(){
+            @Override
+            public SearchDao getSearchDao() {
+                return new SearchDaoStub(){
+                    public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(T entityToMatch) {
+                        return null;
+                    };
+                };
+            }
+        });
+        Project project = new Project();
+        
+        assertNull(this.projectManagementService.getSampleByExternalId(project, "abc"));
+    }
+    @Test
+    public void testGetSampleByExternalId() throws Exception {
+        ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;
+        bean.setDaoFactory(new DaoFactoryStub(){
+            @Override
+            public SearchDao getSearchDao() {
+                return new SearchDaoStub(){
+                    public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(T entityToMatch) {
+                        ArrayList<T> arrayList = new ArrayList<T>();
+                        arrayList.add(entityToMatch);
+                        return arrayList;
+                    };
+                };
+            }
+        });
+        Project project = new Project();
+        
+        Sample sampleByExternalId = this.projectManagementService.getSampleByExternalId(project, "abc");
+        assertNotNull(sampleByExternalId);
+        assertSame(project.getExperiment(), sampleByExternalId.getExperiment());
+    }
+    
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
 
         LocalProjectDaoStub projectDao = new LocalProjectDaoStub();
@@ -681,6 +742,25 @@ public class ProjectManagementServiceTest {
             abm.setName("Test");
             abm.setDescription("Test");
             abm.setId(entityId);
+        }
+        
+        @Override
+        public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(T entityToMatch) {
+            List<T> results = new ArrayList<T>();
+            if (entityToMatch instanceof Sample) {
+                Sample sampleToMatch = (Sample) entityToMatch;
+                for (PersistentObject po : this.projectDao.savedObjects.values()) {
+                    Project p = (Project) po;
+                    if (sampleToMatch.getExperiment().getProject().getId().equals(p.getId())) {
+                        for (Sample s : p.getExperiment().getSamples()) {
+                            if (sampleToMatch.getExternalSampleId().equals(s.getExternalSampleId())) {
+                                results.add((T) s);
+                            }
+                        } 
+                    }
+                }
+            }
+            return results;
         }
     }
 

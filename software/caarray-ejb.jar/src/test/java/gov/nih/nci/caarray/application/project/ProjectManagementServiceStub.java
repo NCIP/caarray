@@ -359,4 +359,11 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         this.filesAddedCount += files.size();
         return files.size();
     }
+
+    public Sample getSampleByExternalId(Project project, String externalSampleId) {
+        Sample s = new Sample();
+        s.setExternalSampleId(externalSampleId);
+        s.setExperiment(project.getExperiment());
+        return s;
+    }
 }

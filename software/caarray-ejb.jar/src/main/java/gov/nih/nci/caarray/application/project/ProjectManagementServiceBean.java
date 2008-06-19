@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -723,5 +724,27 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     public List<Term> getTissueSitesForExperiment(Experiment experiment) {
         return getProjectDao().getTissueSitesForExperiment(experiment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Sample getSampleByExternalId(Project project, String externalSampleId) {
+        Sample s = new Sample();
+        s.setExternalSampleId(externalSampleId);
+        s.setExperiment(project.getExperiment());
+        List<Sample> samples = getSearchDao().query(s);
+        if (samples == null) {
+            return null;
+        } else if (samples.size() > 1) {
+            throw new IllegalStateException("Too many samples found matching external sample id");
+        } else if (samples.isEmpty()) {
+            return null;
+        }
+        return samples.get(0);
+    }
+
+    private SearchDao getSearchDao() {
+        return this.daoFactory.getSearchDao();
     }
 }

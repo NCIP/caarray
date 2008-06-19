@@ -103,7 +103,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
-
+    
 import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
@@ -139,17 +139,49 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
     @Override
     public void prepare() throws VocabularyServiceException {
         super.prepare();
+        Sample retrieved = null;
         if (this.currentSample.getId() != null) {
-            Sample retrieved = getGenericDataService().getPersistentObject(Sample.class, this.currentSample.getId());
+            retrieved = getGenericDataService().getPersistentObject(Sample.class, this.currentSample.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentSample,
                         SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
-            } else {
-                this.currentSample = retrieved;
             }
+        } else if (this.currentSample.getExternalSampleId() != null) {
+            retrieved = getProjectManagementService().getSampleByExternalId(getProject(),
+                    this.currentSample.getExternalSampleId());
+            if (retrieved == null) {
+                throw new SampleExternalIdPermissionDeniedException(this.currentSample,
+                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
+            }
+        }
+        
+        if (retrieved != null) {
+            this.currentSample = retrieved;
         }
     }
 
+    /**
+     * A custom exception to show a message specific to searching by Sample.externalSampleId.
+     */
+    public class SampleExternalIdPermissionDeniedException extends PermissionDeniedException {
+
+        private static final long serialVersionUID = -1271512112927323609L;
+        
+        /**
+         * Create a new SampleExternalIdPermissionDeniedException for a given user not having the given 
+         * privilege to the given entity.
+         * 
+         * @param s the sample on which an operation was requested
+         * @param privilege the privilege that was needed to perform the operation
+         * @param userName the user attempting the operation
+         */
+        public SampleExternalIdPermissionDeniedException(Sample s, String privilege, String userName) {
+            super(s, privilege, userName, String.format(
+                    "User %s does not have privilege %s for entity of type %s with externalSampleId %s", userName,
+                    privilege, s.getClass().getName(), s.getExternalSampleId()));
+        }
+    }
+ 
     /**
      * download all of the data for this sample.
      * @return download

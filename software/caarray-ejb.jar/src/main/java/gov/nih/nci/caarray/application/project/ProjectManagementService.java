@@ -407,4 +407,13 @@ public interface ProjectManagementService {
      * @return the list of terms
      */
     List<Term> getDiseaseStatesForExperiment(Experiment experiment);
+    
+    /**
+     * Returns the sample for a give project with the given public identifier.
+     * 
+     * @param project the project to which the sample belongs
+     * @param externalSampleId the sample's external identifier
+     * @return the sample with given external identifier, or null if there is no sample with that public identifier
+     */
+    Sample getSampleByExternalId(Project project, String externalSampleId);
 }

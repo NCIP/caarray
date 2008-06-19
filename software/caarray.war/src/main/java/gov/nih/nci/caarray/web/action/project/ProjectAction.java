@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.apache.struts2.views.util.UrlHelper;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.Validation;
@@ -117,6 +118,15 @@ public class ProjectAction extends AbstractBaseProjectAction {
 
     }
 
+    /**
+     * @return a dynamic action result which includes all request parameters from the originating request
+     */
+    public String getRequestParameters() {
+        StringBuffer link = new StringBuffer();
+        UrlHelper.buildParametersString(ServletActionContext.getRequest().getParameterMap(), link, "&");
+        return link.toString();
+    }
+    
     /**
      * change the workflow status of a project.
      *

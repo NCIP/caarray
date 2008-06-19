@@ -151,7 +151,7 @@ public class ProjectSamplesActionTest {
     public void setUp() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(GenericDataService.JNDI_NAME, new LocalGenericDataService());
-        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, new ProjectManagementServiceStub());
+        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, new LocalProjectManagementService());
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
         DUMMY_SAMPLE = new Sample();
         DUMMY_SAMPLE.setId(1L);
@@ -174,6 +174,13 @@ public class ProjectSamplesActionTest {
         action.prepare();
         assertEquals(DUMMY_SAMPLE, action.getCurrentSample());
 
+        //valid sample external id
+        sample = new Sample();
+        sample.setExternalSampleId("abc");
+        action.setCurrentSample(sample);
+        action.prepare();
+        assertEquals("abc", action.getCurrentSample().getExternalSampleId());
+        
         // invalid current sample id
         sample = new Sample();
         sample.setId(2L);
@@ -181,7 +188,34 @@ public class ProjectSamplesActionTest {
         try {
             action.prepare();
             fail("Expected PermissionDeniedException");
-        } catch (PermissionDeniedException pde) {}
+        } catch (PermissionDeniedException pde) {
+            assertTrue(pde.getMessage().endsWith("id 2"));
+        }
+    }
+    
+    @Test
+    public void testPrepareUsingExternalSampleId() throws Exception {
+        // no current sample id
+        action.prepare();
+        assertNull(action.getCurrentSample().getId());
+        
+        //valid sample external id
+        Sample sample = new Sample();
+        sample.setExternalSampleId("abc");
+        action.setCurrentSample(sample);
+        action.prepare();
+        assertEquals("abc", action.getCurrentSample().getExternalSampleId());
+        
+        // invalid current sample id
+        sample = new Sample();
+        sample.setExternalSampleId("def");
+        action.setCurrentSample(sample);
+        try {
+            action.prepare();
+            fail("Expected PermissionDeniedException");
+        } catch (PermissionDeniedException pde) {
+            assertTrue(pde.getMessage().endsWith("externalSampleId def"));
+        }
     }
 
     @Test
@@ -363,6 +397,17 @@ public class ProjectSamplesActionTest {
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(Sample.class) && entityId.equals(1L)) {
                 return (T)DUMMY_SAMPLE;
+            }
+            return null;
+        }
+    }
+    
+    private static class LocalProjectManagementService extends ProjectManagementServiceStub {
+        @Override
+        public Sample getSampleByExternalId(Project project, String externalSampleId) {
+            Sample sampleByExternalId = super.getSampleByExternalId(project, externalSampleId);
+            if ("abc".equals(externalSampleId)) {
+                return sampleByExternalId;
             }
             return null;
         }

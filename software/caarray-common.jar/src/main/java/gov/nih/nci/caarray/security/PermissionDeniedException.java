@@ -108,7 +108,23 @@ public class PermissionDeniedException extends RuntimeException {
         this.entity = entity;
         this.userName = userName;
     }
-
+    
+    /**
+     * Create a new PermissionDeniedException for a given user not having the given privilege to the
+     * given entity.
+     * 
+     * @param entity the instance on which an operation was requested
+     * @param privilege the privilege that was needed to perform the operation
+     * @param userName the user attempting the operation
+     * @param message the custom message
+     */
+    protected PermissionDeniedException(PersistentObject entity, String privilege, String userName, String message) {
+        super(message);
+        this.entity = entity;
+        this.privilege = privilege;
+        this.userName = userName;
+    }
+    
     /**
      * @return the privilege
      */
