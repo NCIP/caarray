@@ -6,7 +6,7 @@
     <rule>
         <from>/project/(.{1,5}-\d{5})/sample/(.*)$</from>
         <!-- must encode the intialTab2Url otherwise the 2nd param is not passed, use %26 instead of &amp; --> 
-        <to type="redirect">&%{context-path}/project/details.action?project.experiment.publicIdentifier=$1&amp;initialTab=annotations&amp;initialTab2=samples&amp;initialTab2Url=%{context-path}/ajax/project/listTab/Samples/view.action?project.experiment.publicIdentifier=$1%26currentSample.externalSampleId=$2</to>
+        <to type="redirect">%{context-path}/project/details.action?project.experiment.publicIdentifier=$1&amp;initialTab=annotations&amp;initialTab2=samples&amp;initialTab2Url=%{context-path}/ajax/project/listTab/Samples/view.action?project.experiment.publicIdentifier=$1%26currentSample.externalSampleId=$2</to>
     </rule>
 
     <rule>
