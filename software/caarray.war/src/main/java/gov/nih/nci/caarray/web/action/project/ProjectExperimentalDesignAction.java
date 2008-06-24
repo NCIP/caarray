@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import java.util.Set;
 
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
@@ -128,6 +129,10 @@ public class ProjectExperimentalDesignAction extends ProjectTabAction {
             @FieldExpressionValidator(fieldName = "project.experiment.experimentDesignTypes",
                 message = "", key = "struts.validator.requiredString",
                 expression = "!project.experiment.experimentDesignTypes.isEmpty")
+        },
+        requiredFields = {
+            @RequiredFieldValidator(fieldName = "project.experiment.experimentDesignDescription",
+                key = "errors.required", message = "")
         }
     )
     @SuppressWarnings("PMD.UselessOverridingMethod")
