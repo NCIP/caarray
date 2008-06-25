@@ -115,6 +115,7 @@ import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
  * @author Dan Kokotov
  */
 @Validation
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsListTabAction<Source> {
     private static final long serialVersionUID = 1L;
 
@@ -135,7 +136,7 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
      * {@inheritDoc}
      * @throws VocabularyServiceException
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "PMD.CyclomaticComplexity" })
     @Override
     public void prepare() throws VocabularyServiceException {
         super.prepare();
@@ -146,7 +147,7 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
                 throw new PermissionDeniedException(this.currentSample,
                         SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
             }
-        } else if (this.currentSample.getExternalSampleId() != null) {
+        } else if (!isEditMode() && this.currentSample.getExternalSampleId() != null) {
             retrieved = getProjectManagementService().getSampleByExternalId(getProject(),
                     this.currentSample.getExternalSampleId());
             if (retrieved == null) {
