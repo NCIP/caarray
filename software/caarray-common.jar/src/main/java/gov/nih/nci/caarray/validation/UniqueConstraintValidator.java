@@ -55,7 +55,7 @@ import org.hibernate.validator.Validator;
 /**
  * Validator for UniqueConstraint annotation.
  * 
- * @author dkokotov@vecna.com
+ * @author dkokotov@5amsolutions.com
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class UniqueConstraintValidator implements Validator<UniqueConstraint>, PersistentClassConstraint {

@@ -44,7 +44,7 @@ import org.hibernate.validator.ValidatorClass;
 
 /**
  * Describes a single field that is part of a potentially-multi-field unique constraint.
- * @author dkokotov@vecna.com
+ * @author dkokotov@5amsolutions.com
  */
 @ValidatorClass(UniqueConstraintValidator.class)
 @Target({ ElementType.TYPE, ElementType.METHOD })

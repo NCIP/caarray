@@ -46,7 +46,7 @@ import org.hibernate.validator.ValidatorClass;
  * Specifies a uniqueness constraint on a set of fields that results in the creation of a DDL unique constraint, as 
  * well as enforcement via hibernate validator.
  * 
- * @author dkokotov@vecna.com
+ * @author dkokotov@5amsolutions.com
  */
 @ValidatorClass(UniqueConstraintValidator.class)
 @Target({ ElementType.TYPE, ElementType.METHOD })

@@ -48,7 +48,7 @@ import org.hibernate.validator.ValidatorClass;
  * specific uniqueness constraint fails. The messages set on the individual <code>UniqueConstraint</code> annotations
  * will be ignored
  *
- * @author dkokotov@vecna.com
+ * @author dkokotov@5amsolutions.com
  */
 @ValidatorClass(UniqueConstraintsValidator.class)
 @Target({ ElementType.TYPE, ElementType.METHOD })

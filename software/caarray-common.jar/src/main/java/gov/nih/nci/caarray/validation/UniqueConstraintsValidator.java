@@ -46,7 +46,7 @@ import org.hibernate.validator.Validator;
  * 
  * As a side effect, it is impossible to distinguish which of the constraints actually failed.
  * 
- * @author dkokotov@vecna.com
+ * @author dkokotov@5amsolutions.com
  */
 public class UniqueConstraintsValidator implements Validator<UniqueConstraints>, PersistentClassConstraint {
     private UniqueConstraint[] constraints;
