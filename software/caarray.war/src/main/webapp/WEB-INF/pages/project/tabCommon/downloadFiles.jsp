@@ -24,9 +24,6 @@
       </td>
     </tr>
   </table>
-  <s:form action="ajax/project/listTab/Sources/saveList" cssClass="form" id="projectForm" theme="simple">
-      <s:hidden name="project.id" />
-  </s:form>
 </div>
 <caarray:actions divclass="actionsthin">
     <caarray:action onclick="downloadMgr.resetDownloadInfo();" actionClass="cancel" text="Cancel" />
