@@ -161,6 +161,8 @@
     <property name="json-lib.jar" value="${lib.dir}/json-lib-2.0-jdk15.jar" />
     <property name="cargo-core-uberjar.jar" value="${lib.dir}/cargo-core-uberjar-0.9.jar"/>
     <property name="cargo-ant.jar" value="${lib.dir}/cargo-ant-0.9.jar"/>
+    <property name="xalan-2.7.1.jar" value="${lib.dir}/xalan-2.7.1.jar"/>
+    <property name="serializer.jar" value="${lib.dir}/serializer.jar"/>
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -1405,7 +1407,11 @@
             <fileset dir="${caarray-ejb.src.dir}" includes="**/*.java" />
             <fileset dir="${caarray-war.src.dir}" includes="**/*.java" />
         </checkstyle>
-        <xslt in="${site.dir}/checkstyle/checkstyle.xml" out="${site.dir}/checkstyle/checkstyle.html" style="${resource.dir}/checkstyle-frames.xsl">
+    	<path id="checkstyle.cp">
+    		<pathelement location="${xalan-2.7.1.jar}" />
+    		<pathelement location="${serializer.jar}" />
+    	</path>
+        <xslt in="${site.dir}/checkstyle/checkstyle.xml" out="${site.dir}/checkstyle/checkstyle.html" style="${resource.dir}/checkstyle-frames-errors.xsl" classpathref="checkstyle.cp">
             <param name="output.dir" expression="${site.dir}/checkstyle" />
         </xslt>
     </target>
