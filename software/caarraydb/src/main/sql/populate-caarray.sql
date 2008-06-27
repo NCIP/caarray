@@ -10,6 +10,7 @@ insert into category (source, name) select id, 'Clinical Diagnosis' from term_so
 insert into category (source, name) select id, 'Histologic Diagnosis' from term_source where name='caArray';
 insert into category (source, name) select id, 'Pathologic Status' from term_source where name='caArray';
 insert into category (source, name) select id, 'Tissue Anatomic Site' from term_source where name='caArray';
+insert into category (source, name) select id, 'ExternalSampleId' from term_source where name='caArray';
 
 -- OrganismParts
 insert into term (value, accession, url, source) select 'Brain', 'C12439', 'http://nciterms.nci.nih.gov/NCIBrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&code=C12439&bookmarktag=2', term_source.id from term_source where term_source.name='NCI_Thesaurus';

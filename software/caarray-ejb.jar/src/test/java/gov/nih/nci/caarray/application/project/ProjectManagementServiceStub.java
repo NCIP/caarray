@@ -366,4 +366,5 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         s.setExperiment(project.getExperiment());
         return s;
     }
+
 }

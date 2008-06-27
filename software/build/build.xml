@@ -568,7 +568,7 @@
     <!-- ** SVN TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
     <target name="svn:getinfo" description="obtain subversion revision info" unless="nosvn">
-        <taskdef resource="svntask.properties" classpath="${svnant.jar}:${svnClientAdapter.jar};${svnjavahl.jar}" />
+        <taskdef resource="svntask.properties" classpath="${svnant.jar}:${svnClientAdapter.jar}:${svnjavahl.jar}" />
         <svn javahl="false">
             <status path="${root.dir}" revisionProperty="svn.revision" urlProperty="svn.url" />
         </svn>

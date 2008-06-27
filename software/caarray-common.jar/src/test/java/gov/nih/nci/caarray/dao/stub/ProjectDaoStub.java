@@ -85,11 +85,14 @@ package gov.nih.nci.caarray.dao.stub;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
@@ -157,4 +160,9 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
     public List<Term> getTissueSitesForExperiment(Experiment experiment) {
         return null;
     }
+
+    public Set<Sample> getUnfilteredSamplesForProject(Project project) {
+        return new HashSet<Sample>();
+    }
+
 }

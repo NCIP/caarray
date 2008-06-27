@@ -7,12 +7,22 @@
 <caarray:tabPane subtab="true">
     <caarray:projectListTabItemForm entityName="Sample" item="${currentSample}" itemName="${currentSample.name}"
         isSubtab="true">
+
         <c:if test="${editMode}">
             <s:textfield required="true" name="currentSample.name" key="experiment.samples.name" size="80" tabindex="1" />
         </c:if>
         <s:textarea name="currentSample.description" key="experiment.samples.description" rows="3" cols="75"
             tabindex="2" />
-        <s:textfield key="currentSample.externalSampleId" size="80" tabindex="3" />
+        <s:if test="fieldErrors['currentSample'] != null">
+			<tr errorfor="currentSample">
+				<td valign="top" align="center" colspan="2">
+				<s:fielderror>
+					<s:param>currentSample</s:param>
+				</s:fielderror>
+				</td>
+			</tr>
+		</s:if>
+		<s:textfield key="currentSample.externalSampleId" size="80" tabindex="3" />
         <c:if test="${!empty currentSample.externalSampleId}">
             <caarray:outputUrl var="permalinkUrl">
                 <jsp:attribute name="url"><c:url value="/project/${project.experiment.publicIdentifier}/sample/${currentSample.externalSampleId}"/></jsp:attribute>

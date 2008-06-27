@@ -61,4 +61,9 @@ public @interface UniqueConstraint {
 
     /** The message to display if validation fails. */
     String message() default "{validator.uniqueConstraint}";
+    
+    /**
+     * Defines whether a unique constraint will be applied to the table.
+     */
+    boolean generateDDLConstraint() default true;
 }

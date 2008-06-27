@@ -747,4 +747,5 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private SearchDao getSearchDao() {
         return this.daoFactory.getSearchDao();
     }
+    
 }

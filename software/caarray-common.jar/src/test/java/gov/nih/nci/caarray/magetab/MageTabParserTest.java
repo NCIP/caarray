@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.idf.Investigation;
@@ -746,4 +747,46 @@ public class MageTabParserTest {
         }
     }
 
+    @Test
+    public void testFeature13141() throws Exception {
+        MageTabInputFileSet fileSet = TestMageTabSets.VALID_FEATURE_13141_INPUT_SET;
+        MageTabDocumentSet documentSet = parser.parse(fileSet);
+        assertNotNull(documentSet);
+        assertEquals(2, documentSet.getSdrfDocuments().size());
+        SdrfDocument sdrfDocument = documentSet.getSdrfDocument(MageTabDataFiles.FEATURE_13141_SDRF.getName());
+        assertNotNull(sdrfDocument);
+        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(0), "Sample A", "123");
+        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(1), "Sample B", "234");
+        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(2), "Sample C", "345");
+        sdrfDocument = documentSet.getSdrfDocument(MageTabDataFiles.FEATURE_13141_SDRF2.getName());
+        assertNotNull(sdrfDocument);
+        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(0), "Sample D", "456");
+        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(1), "Sample E", "567");
+        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(2), "Sample F", "678");
+    }
+
+    private void verifyFeature13141Sample(Sample s1, String expectedSampleName, String expectedTermValue) {
+        assertEquals(expectedSampleName, s1.getName());
+        assertEquals(1, s1.getCharacteristics().size());
+        assertEquals(ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName(), s1.getCharacteristics().get(0).getCategory());
+        assertEquals(expectedTermValue, s1.getCharacteristics().get(0).getTerm().getValue());
+    }
+    
+    @Test
+    public void testFeature13141VerifyCanParsesInvalidSdrf() throws Exception {
+        MageTabInputFileSet fileSet = TestMageTabSets.INVALID_FEATURE_13141_INPUT_SET;
+        MageTabDocumentSet documentSet = parser.parse(fileSet);
+        assertNotNull(documentSet);
+        assertEquals(2, documentSet.getSdrfDocuments().size());
+        SdrfDocument sdrfDocument = documentSet.getSdrfDocument(MageTabDataFiles.FEATURE_13141_INVALID_SDRF.getName());
+        assertNotNull(sdrfDocument);
+        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(0), "Sample A", "123");
+        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(1), "Sample B", "234");
+        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(2), "Sample C", "345");
+        sdrfDocument = documentSet.getSdrfDocument(MageTabDataFiles.FEATURE_13141_INVALID_SDRF2.getName());
+        assertNotNull(sdrfDocument);
+        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(0), "Sample D", "123");
+        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(1), "Sample E", "234");
+        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(2), "Sample F", "345");        
+    }
 }

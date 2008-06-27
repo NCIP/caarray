@@ -123,6 +123,13 @@ public final class CaArrayFileSet implements Serializable {
     }
 
     /**
+     * @return related project system identifier
+     */
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    /**
      * File set.  Only files <em>not</em> associated with a project can be added.
      */
     public CaArrayFileSet() {

@@ -87,10 +87,12 @@ import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.UnfilteredCallback;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -107,6 +109,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -332,4 +335,19 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         }
         return new ArrayList<Term>(types);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public Set<Sample> getUnfilteredSamplesForProject(final Project project) {
+        UnfilteredCallback unfilteredCallback = new UnfilteredCallback() {
+            public Object doUnfiltered(Session s) {
+                Project p = (Project) s.get(Project.class, project.getId());
+                return p.getExperiment().getSamples();
+            }
+        };
+        return (Set<Sample>) HibernateUtil.doUnfiltered(unfilteredCallback);
+    }
+
 }

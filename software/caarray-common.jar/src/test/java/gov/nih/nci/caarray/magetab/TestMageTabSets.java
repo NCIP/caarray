@@ -231,6 +231,25 @@ public final class TestMageTabSets {
      * MAGE-TAB data set containing data derived from other derived data.
      */
     public static final MageTabDocumentSet DERIVED_DATA_SET = getSet(DERIVED_DATA_INPUT_SET);
+    
+    /**
+     * MAGE-TAB input set containing valid usage of Characteristics[ExternalSampleId] for Sample(s).
+     */
+    public static final MageTabInputFileSet VALID_FEATURE_13141_INPUT_SET = getValidFeature13141InputSet();
+    
+    /**
+     * Document set parsed ... 
+     */
+    public static final MageTabDocumentSet VALID_FEATURE_13141_DATA_SET = getSet(VALID_FEATURE_13141_INPUT_SET);
+    /**
+     * MAGE-TAB input set containing valid usage of Characteristics[ExternalSampleId] for Sample(s).
+     */
+    public static final MageTabInputFileSet INVALID_FEATURE_13141_INPUT_SET = getInvalidFeature13141InputSet();
+    
+    /**
+     * Document set parsed ... 
+     */
+    public static final MageTabDocumentSet INVALID_FEATURE_13141_DATA_SET = getSet(INVALID_FEATURE_13141_INPUT_SET);
 
     private static MageTabDocumentSet getSet(MageTabInputFileSet inputSet) {
         try {
@@ -242,6 +261,23 @@ public final class TestMageTabSets {
             e.printStackTrace(System.err);
             return null;
         }
+    }
+
+    private static MageTabInputFileSet getValidFeature13141InputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.FEATURE_13141_IDF);
+        fileSet.addSdrf(MageTabDataFiles.FEATURE_13141_SDRF);
+        fileSet.addSdrf(MageTabDataFiles.FEATURE_13141_SDRF2);
+        addCelFiles(fileSet, MageTabDataFiles.FEATURE_13141_DIRECTORY);
+        return fileSet;
+    }
+    private static MageTabInputFileSet getInvalidFeature13141InputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.FEATURE_13141_INVALID_IDF);
+        fileSet.addSdrf(MageTabDataFiles.FEATURE_13141_INVALID_SDRF);
+        fileSet.addSdrf(MageTabDataFiles.FEATURE_13141_INVALID_SDRF2);
+        addCelFiles(fileSet, MageTabDataFiles.FEATURE_13141_DIRECTORY);
+        return fileSet;
     }
 
     private static MageTabInputFileSet getMisplacedFactorValuesInputSet() {

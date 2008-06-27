@@ -176,7 +176,11 @@ public enum ExperimentOntologyCategory {
     /**
      * ProtocolType category, used for protocol types.
      */
-    PROTOCOL_TYPE("ProtocolType", ExperimentOntology.MGED_ONTOLOGY);
+    PROTOCOL_TYPE("ProtocolType", ExperimentOntology.MGED_ONTOLOGY), 
+    /**
+     * External Sample Id, used for samples.
+     */
+    EXTERNAL_SAMPLE_ID("ExternalSampleId", ExperimentOntology.CAARRAY);
 
     private final String categoryName;
     private final ExperimentOntology ontology;

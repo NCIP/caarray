@@ -84,10 +84,12 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.List;
+import java.util.Set;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
@@ -185,4 +187,12 @@ public interface ProjectDao extends CaArrayDao {
      * @return the list of terms
      */
     List<Term> getDiseaseStatesForExperiment(Experiment experiment);
+
+    /**
+     * Return an unfiltered list of Samples for a Project (by-passes security @Filter).
+     * @param project to find all samples associated to
+     * @return all samples persisted for project
+     */
+    Set<Sample> getUnfilteredSamplesForProject(Project project);
+    
 }

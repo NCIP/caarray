@@ -89,6 +89,8 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityPolicy;
+import gov.nih.nci.caarray.validation.UniqueConstraint;
+import gov.nih.nci.caarray.validation.UniqueConstraintField;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -113,6 +115,10 @@ import org.hibernate.validator.Length;
    */
 @Entity
 @DiscriminatorValue("SA")
+@UniqueConstraint(fields = { 
+        @UniqueConstraintField(name = "externalSampleId"), 
+        @UniqueConstraintField(name = "experiment", nullsEqual = false) }, 
+        generateDDLConstraint = false, message = "{sample.externalSampleId.uniqueConstraint}")
 public class Sample extends AbstractBioMaterial implements Protectable {
     /**
      * The serial version UID for serialization.
