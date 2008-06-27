@@ -447,7 +447,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/lib/json-lib-2.0-jdk15.jar">
+	<classpathentry kind="lib" path="/lib/json-lib-2.2.2-jdk15.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>

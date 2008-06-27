@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jndiConfig xmlns="http://wsrf.globus.org/jndi/config">
   <service name="SERVICE-INSTANCE-PREFIX/CaArraySvc">
-    <resource name="configuration" type="gov.nih.nci.cagrid.caarray.service.globus.resource.ResourceConfiguration">
+    <resource name="configuration" type="gov.nih.nci.cagrid.caarray.service.globus.resource.CaArraySvcResourceConfiguration">
       <resourceParams>
         <parameter>
           <name>factory</name>
@@ -29,11 +29,15 @@
         </parameter>
       </resourceParams>
     </resource>
-    <resource name="serviceconfiguration" type="gov.nih.nci.cagrid.caarray.service.ServiceConfiguration">
+    <resource name="serviceconfiguration" type="gov.nih.nci.cagrid.caarray.service.CaArraySvcConfiguration">
       <resourceParams>
         <parameter>
           <name>factory</name>
           <value>org.globus.wsrf.jndi.BeanFactory</value>
+        </parameter>
+        <parameter>
+          <name>etcDirectoryPath</name>
+          <value>ETC-PATH</value>
         </parameter>
         <parameter>
           <name>queryProcessorClass</name>
@@ -69,7 +73,7 @@
         </parameter>
       </resourceParams>
     </resource>
-    <resource name="home" type="gov.nih.nci.cagrid.caarray.service.globus.resource.BaseResourceHome">
+    <resource name="home" type="gov.nih.nci.cagrid.caarray.service.globus.resource.CaArraySvcResourceHome">
       <resourceParams>
         <parameter>
           <name>factory</name>

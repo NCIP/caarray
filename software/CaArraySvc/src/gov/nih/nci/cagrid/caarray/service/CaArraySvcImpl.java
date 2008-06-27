@@ -1,9 +1,5 @@
 package gov.nih.nci.cagrid.caarray.service;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
-import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.services.arraydesign.ArrayDesignDetailsService;
 import gov.nih.nci.caarray.services.data.DataRetrievalService;
 import gov.nih.nci.caarray.services.file.FileRetrievalService;
@@ -16,6 +12,7 @@ import javax.naming.InitialContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cagrid.transfer.context.service.helper.TransferServiceHelper;
 
 /**
  * Primary service side implementation of the remote caArray API.  This implementation
@@ -66,7 +63,7 @@ public class CaArraySvcImpl extends CaArraySvcImplBase {
      * @return the design details.
      * @see ArrayDesignDetailsService
      */
-    public ArrayDesignDetails getDesignDetails(final ArrayDesign arrayDesign) {
+  public gov.nih.nci.caarray.domain.array.ArrayDesignDetails getDesignDetails(gov.nih.nci.caarray.domain.array.ArrayDesign arrayDesign) throws RemoteException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getDesignDetails(" + arrayDesign + ")");
         }
@@ -88,13 +85,22 @@ public class CaArraySvcImpl extends CaArraySvcImplBase {
         return fileRetrievalService.readFile(caArrayFile);
     }
 
-    public DataSet getDataSet(DataRetrievalRequest dataRetrievalRequest) throws RemoteException {
+  public gov.nih.nci.caarray.domain.data.DataSet getDataSet(gov.nih.nci.caarray.domain.data.DataRetrievalRequest dataRetrievalRequest) throws RemoteException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("getDataSetByDataRetrievalRequest(" + dataRetrievalRequest + ")");
         }
-
         return dataRetrievalService.getDataSet(dataRetrievalRequest);
     }
 
+  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference createFileTransfer(gov.nih.nci.caarray.domain.file.CaArrayFile caArrayFile) throws RemoteException {
+      if (LOG.isDebugEnabled()) {
+          LOG.debug("createFileTransfer(" + caArrayFile + ")");
+      }
+
+      // do the easy thing first - grab the bytes and then let transfer service do its thing
+      // a smarter implementation would try to use a shared filesystem or some such
+      byte[] fileData = fileRetrievalService.readFile(caArrayFile);
+      return TransferServiceHelper.createTransferContext(fileData, null);
+  }
 }
 

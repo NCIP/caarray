@@ -103,13 +103,19 @@
         <java>xml-apis.jar</java>
     </module>
     <module>
-        <java>caGrid-1.1-data-stubs.jar</java>
+        <java>caGrid-data-stubs-1.2.jar</java>
     </module>
     <module>
-        <java>caGrid-1.1-data-common.jar</java>
+        <java>caGrid-data-common-1.2.jar</java>
+    </module>
+    <module>
+        <java>caGrid-CQL-cql.1.0-1.2.jar</java>
     </module>
     <module>
         <java>caGrid-1.1-sdkQuery32-core.jar</java>
+    </module>
+    <module>
+        <java>json-lib-2.2.2-jdk15.jar</java>
     </module>
     <security-role>
         <description>A Principal Investigator (PI) typically owns experiments and studies/projects.</description>

@@ -12,8 +12,6 @@ import java.rmi.RemoteException;
  */
 public interface CaArraySvcI {
 
-  public gov.nih.nci.caarray.domain.data.DataSet getDataSet(gov.nih.nci.caarray.domain.data.DataRetrievalRequest dataRetrievalRequest) throws RemoteException ;
-
   /**
    * The standard caGrid Data Service query method.
    *
@@ -30,6 +28,21 @@ public interface CaArraySvcI {
   public gov.nih.nci.caarray.domain.array.ArrayDesignDetails getDesignDetails(gov.nih.nci.caarray.domain.array.ArrayDesign arrayDesign) throws RemoteException ;
 
   public byte[] readFile(gov.nih.nci.caarray.domain.file.CaArrayFile caArrayFile) throws RemoteException ;
+
+  public gov.nih.nci.caarray.domain.data.DataSet getDataSet(gov.nih.nci.caarray.domain.data.DataRetrievalRequest dataRetrievalRequest) throws RemoteException ;
+
+  /**
+   * Requests a Grid Transfer handle for the given file
+   *
+   * @param caArrayFile
+   */
+  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference createFileTransfer(gov.nih.nci.caarray.domain.file.CaArrayFile caArrayFile) throws RemoteException ;
+
+  public org.oasis.wsrf.properties.GetMultipleResourcePropertiesResponse getMultipleResourceProperties(org.oasis.wsrf.properties.GetMultipleResourceProperties_Element params) throws RemoteException ;
+
+  public org.oasis.wsrf.properties.GetResourcePropertyResponse getResourceProperty(javax.xml.namespace.QName params) throws RemoteException ;
+
+  public org.oasis.wsrf.properties.QueryResourcePropertiesResponse queryResourceProperties(org.oasis.wsrf.properties.QueryResourceProperties_Element params) throws RemoteException ;
 
 }
 

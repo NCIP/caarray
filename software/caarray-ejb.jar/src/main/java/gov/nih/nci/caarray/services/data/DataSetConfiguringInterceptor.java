@@ -82,12 +82,16 @@
  */
 package gov.nih.nci.caarray.services.data;
 
+import gov.nih.nci.caarray.domain.MaxSerializableSize;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.util.EntityPruner;
 import gov.nih.nci.caarray.util.HibernateUtil;
+
+import java.lang.reflect.Method;
 
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
@@ -99,7 +103,6 @@ import org.hibernate.Hibernate;
  * preventing lazy initialization errors.
  */
 public class DataSetConfiguringInterceptor {
-
     /**
      * Ensures that any object returned and its direct associated entities are loaded.
      *
@@ -135,10 +138,22 @@ public class DataSetConfiguringInterceptor {
                 Hibernate.initialize(adc.getQuantitationType());
             }
         }
+        MaxSerializableSize maxSize = getMaxSerializableDesignElements();
+        if (maxSize != null && maxSize.value() < dataSet.getDesignElementList().getDesignElements().size()) {
+            throw new IllegalStateException("Couldn't prepare result for serialization: too many design elements");
+        }
         for (AbstractDesignElement ade : dataSet.getDesignElementList().getDesignElements()) {
             pruner.makeLeaf(ade);
         }
         Hibernate.initialize(dataSet.getQuantitationTypes());
     }
 
+    private MaxSerializableSize getMaxSerializableDesignElements() {
+        try {
+            Method designElementsGetter = DesignElementList.class.getDeclaredMethod("getDesignElements");
+            return designElementsGetter.getAnnotation(MaxSerializableSize.class);
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
 }

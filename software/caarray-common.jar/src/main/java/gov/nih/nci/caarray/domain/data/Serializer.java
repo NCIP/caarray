@@ -131,7 +131,7 @@ class Serializer implements Serializable {
         return outputStream.toByteArray();
     }
 
-    void setSerializedValue(byte[] serializedBytes) {
+    void setSerializedValues(byte[] serializedBytes) {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(serializedBytes);
         MultiPartBlob multipartBlob = new MultiPartBlob();
         try {
@@ -148,7 +148,7 @@ class Serializer implements Serializable {
     }
 
     private void serialize() {
-        setSerializedValue(SerializationHelperUtility.serialize(value));
+        setSerializedValues(SerializationHelperUtility.serialize(value));
         value = null;
     }
 
@@ -156,7 +156,7 @@ class Serializer implements Serializable {
         value = SerializationHelperUtility.deserialize(getSerializedValues());
         serializedValue = null;
     }
-
+    
     /**
      * @return the serializedValue
      */

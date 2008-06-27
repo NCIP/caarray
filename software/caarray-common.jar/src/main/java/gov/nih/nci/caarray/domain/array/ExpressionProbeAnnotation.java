@@ -86,6 +86,7 @@ import gov.nih.nci.cabio.domain.ExpressionArrayReporter;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
@@ -121,7 +122,7 @@ public class ExpressionProbeAnnotation extends AbstractProbeAnnotation {
     /**
      * @return the gene
      */
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Gene getGene() {
         return gene;

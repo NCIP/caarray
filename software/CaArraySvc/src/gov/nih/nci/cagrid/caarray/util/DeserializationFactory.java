@@ -82,16 +82,24 @@
  */
 package gov.nih.nci.cagrid.caarray.util;
 
-import gov.nih.nci.cagrid.encoding.SDKDeserializerFactory;
-
 import javax.xml.namespace.QName;
+
+import org.apache.axis.encoding.ser.BaseDeserializerFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Pass through to the grid deserialization factory, but with the correct API
  * to actually work.
  */
-public final class DeserializationFactory {
-    public static SDKDeserializerFactory create(Class<?> clazz, QName qname) {
-        return new SDKDeserializerFactory(clazz, qname);
+public final class DeserializationFactory extends BaseDeserializerFactory {
+    private static final Logger LOG = Logger.getLogger(DeserializationFactory.class);
+    
+    public DeserializationFactory(Class javaType, QName xmlType) {
+        super(CaArrayDeserializer.class, xmlType, javaType);
+        LOG.debug("Initializing CaArrayDeserializerFactory for class:" + javaType + " and QName:" + xmlType);
+    }
+
+    public static DeserializationFactory create(Class<?> clazz, QName qname) {
+        return new DeserializationFactory(clazz, qname);
     }
 }

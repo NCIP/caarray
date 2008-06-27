@@ -102,5 +102,8 @@ import javax.persistence.Table;
         discriminatorType = DiscriminatorType.STRING
 )
 public abstract class AbstractProbeAnnotation extends AbstractCaArrayEntity {
-
+    /** 
+     * Batch size for all associations for probe annotation subclasses.
+     */
+    public static final int RELATED_BATCH_SIZE = 500;
 }

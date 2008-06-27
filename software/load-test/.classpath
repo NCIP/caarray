@@ -8,23 +8,10 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar"/>
 	<classpathentry kind="lib" path="lib/ant-jmeter.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/CaArraySvc"/>
-	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-caDSR-client.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-caDSR-service.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-data-stubs.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-data-utils.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-caDSR-stubs.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-core.jar" sourcepath="/lib/src/caGrid-1.1-core-src.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-metadata-common.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-metadata-security.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-ServiceSecurityProvider-client.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-ServiceSecurityProvider-common.jar"/>
-	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-1.1-ServiceSecurityProvider-stubs.jar"/>
 	<classpathentry kind="lib" path="/CaArraySvc/lib/castor-1.0.4.jar" sourcepath="/lib/src/castor-1.0.4-src.jar"/>
 	<classpathentry kind="lib" path="/lib/addressing-1.0.jar"/>
 	<classpathentry kind="lib" path="/lib/asm.jar"/>
 	<classpathentry kind="lib" path="/lib/axis.jar" sourcepath="/lib/src/axis-src.jar"/>
-	<classpathentry kind="lib" path="/lib/caGrid-1.1-data-common.jar"/>
-	<classpathentry kind="lib" path="/lib/caGrid-1.1-data-stubs.jar"/>
 	<classpathentry kind="lib" path="/lib/cglib-2.1.3.jar"/>
 	<classpathentry kind="lib" path="/lib/cog-axis.jar"/>
 	<classpathentry kind="lib" path="/lib/cog-jglobus.jar"/>
@@ -48,5 +35,17 @@
 	<classpathentry kind="lib" path="/lib/xercesImpl.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.9.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-caDSR-client-1.2.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-caDSR-service-1.2.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-caDSR-stubs-1.2.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-core-1.2.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-ServiceSecurityProvider-client-1.2.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-ServiceSecurityProvider-common-1.2.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-ServiceSecurityProvider-stubs-1.2.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-metadata-common-1.2.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-metadata-security-1.2.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-data-common-1.2.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-data-stubs-1.2.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-data-utils-1.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

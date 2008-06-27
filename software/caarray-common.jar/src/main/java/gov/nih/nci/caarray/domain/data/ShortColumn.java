@@ -110,7 +110,7 @@ public class ShortColumn extends AbstractDataColumn {
     public void setValues(short[] values) {
         setSerializableValues(values);
     }
-
+    
     /**
      * {@inheritDoc}
      */

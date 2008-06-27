@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://caarray.cagrid.nci.nih.gov/CaArraySvc" xmlns:wsrp="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.xsd" xmlns:wsrlw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceLifetime-1.2-draft-01.wsdl" xmlns:wsdlpp="http://www.globus.org/namespaces/2004/10/WSDLPreprocessor" xmlns:gtwsdl1="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ServiceGroup-1.2-draft-01.wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing" xmlns:wsntw="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.wsdl" xmlns:wsrbfw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" xmlns:wsrpw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns1="http://gov.nih.nci.cagrid.data/DataService" xmlns:wns0="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" xmlns:ns4="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.protocol" xmlns:ns0="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain" xmlns:ns2="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary" xmlns:ns17="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery" xmlns:ns16="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" xmlns:ns5="gme://caArray.caBIG/2.0/gov.nih.nci.cabio.domain" xmlns:ns21="http://gov.nih.nci.cagrid.data/DataServiceExceptions" xmlns:ns14="http://caarray.cagrid.nci.nih.gov/CaArraySvc/types" xmlns:ns3="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" xmlns:ns20="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice" xmlns:ns7="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact" xmlns:ns15="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" xmlns:ns6="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization" xmlns:ns9="gme://caArray.caBIG/2.0/edu.wustl.catissuecore.domain" xmlns:ns1="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array" xmlns:ns11="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.publication" xmlns:ns13="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file" xmlns:ns18="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet" xmlns:ns10="gme://caArray.caBIG/2.0/edu.georgetown.pir" xmlns:ns12="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" xmlns:ns19="http://caarray.cagrid.nci.nih.gov/CaArraySvc/CQLResultTypes" xmlns:ns8="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample" name="CaArraySvc" targetNamespace="http://caarray.cagrid.nci.nih.gov/CaArraySvc">
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://caarray.cagrid.nci.nih.gov/CaArraySvc" xmlns:wsrp="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.xsd" xmlns:wsrlw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceLifetime-1.2-draft-01.wsdl" xmlns:wsdlpp="http://www.globus.org/namespaces/2004/10/WSDLPreprocessor" xmlns:gtwsdl1="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ServiceGroup-1.2-draft-01.wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing" xmlns:wsntw="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.wsdl" xmlns:wsrbfw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" xmlns:wsrpw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns1="http://gov.nih.nci.cagrid.data/DataService" xmlns:wns2="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns0="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" xmlns:ns4="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.protocol" xmlns:ns23="http://transfer.cagrid.org/Transfer" xmlns:ns7="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact" xmlns:ns9="gme://caArray.caBIG/2.0/edu.wustl.catissuecore.domain" xmlns:ns1="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array" xmlns:ns13="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file" xmlns:ns22="http://transfer.cagrid.org/TransferService/Context/types" xmlns:ns18="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet" xmlns:ns12="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" xmlns:ns10="gme://caArray.caBIG/2.0/edu.georgetown.pir" xmlns:ns2="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary" xmlns:ns0="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain" xmlns:ns17="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery" xmlns:ns5="gme://caArray.caBIG/2.0/gov.nih.nci.cabio.domain" xmlns:ns16="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" xmlns:ns21="http://gov.nih.nci.cagrid.data/DataServiceExceptions" xmlns:ns3="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" xmlns:ns14="http://caarray.cagrid.nci.nih.gov/CaArraySvc/types" xmlns:ns20="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice" xmlns:ns15="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" xmlns:ns6="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization" xmlns:ns11="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.publication" xmlns:ns19="http://caarray.cagrid.nci.nih.gov/CaArraySvc/CQLResultTypes" xmlns:ns8="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample" name="CaArraySvc" targetNamespace="http://caarray.cagrid.nci.nih.gov/CaArraySvc">
   <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" location="../wsrf/properties/WS-ResourceProperties.wsdl" />
   <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" location="../wsrf/faults/WS-BaseFaults.wsdl" />
+  <import namespace="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.wsdl" location="../wsrf/notification/WS-BaseN.wsdl" />
   <import namespace="http://gov.nih.nci.cagrid.data/DataService" location="./DataService.wsdl" />
+  <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" location="./../wsrf/properties/WS-ResourceProperties.wsdl" />
   <import namespace="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" location="./ServiceSecurity.wsdl" />
   <!--============================================================
 
@@ -13,25 +15,27 @@
     <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wsrbf="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.xsd" targetNamespace="http://caarray.cagrid.nci.nih.gov/CaArraySvc" elementFormDefault="qualified" attributeFormDefault="unqualified">
       <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.xsd" schemaLocation="../wsrf/faults/WS-BaseFaults.xsd" />
       <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.protocol" schemaLocation="./gov.nih.nci.caarray.domain.protocol.xsd" />
-      <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain" schemaLocation="./gov.nih.nci.caarray.domain.xsd" />
-      <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary" schemaLocation="./gov.nih.nci.caarray.domain.vocabulary.xsd" />
-      <import namespace="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery" schemaLocation="./1_gov.nih.nci.cagrid.CQLQuery.xsd" />
-      <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" schemaLocation="./cagrid/types/caGridMetadata.xsd" />
-      <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.cabio.domain" schemaLocation="./gov.nih.nci.cabio.domain.xsd" />
-      <import namespace="http://gov.nih.nci.cagrid.data/DataServiceExceptions" schemaLocation="./DataServiceExceptions.xsd" />
-      <import namespace="http://caarray.cagrid.nci.nih.gov/CaArraySvc/types" schemaLocation="./CaArraySvcTypes.xsd" />
-      <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" schemaLocation="./gov.nih.nci.caarray.domain.data.xsd" />
-      <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice" schemaLocation="./xsd/cagrid/types/data/data.xsd" />
+      <import namespace="http://transfer.cagrid.org/Transfer" schemaLocation="./caGrid_Transfer.xsd" />
       <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact" schemaLocation="./gov.nih.nci.caarray.domain.contact.xsd" />
-      <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" schemaLocation="./xsd/security.xsd" />
-      <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization" schemaLocation="./gov.nih.nci.caarray.domain.hybridization.xsd" />
       <import namespace="gme://caArray.caBIG/2.0/edu.wustl.catissuecore.domain" schemaLocation="./edu.wustl.catissuecore.domain.xsd" />
       <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array" schemaLocation="./gov.nih.nci.caarray.domain.array.xsd" />
-      <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.publication" schemaLocation="./gov.nih.nci.caarray.domain.publication.xsd" />
       <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file" schemaLocation="./gov.nih.nci.caarray.domain.file.xsd" />
+      <import namespace="http://transfer.cagrid.org/TransferService/Context/types" schemaLocation="./TransferServiceContextTypes.xsd" />
       <import namespace="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet" schemaLocation="./1_gov.nih.nci.cagrid.CQLResultSet.xsd" />
-      <import namespace="gme://caArray.caBIG/2.0/edu.georgetown.pir" schemaLocation="./edu.georgetown.pir.xsd" />
       <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" schemaLocation="./gov.nih.nci.caarray.domain.project.xsd" />
+      <import namespace="gme://caArray.caBIG/2.0/edu.georgetown.pir" schemaLocation="./edu.georgetown.pir.xsd" />
+      <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary" schemaLocation="./gov.nih.nci.caarray.domain.vocabulary.xsd" />
+      <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain" schemaLocation="./gov.nih.nci.caarray.domain.xsd" />
+      <import namespace="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery" schemaLocation="./1_gov.nih.nci.cagrid.CQLQuery.xsd" />
+      <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.cabio.domain" schemaLocation="./gov.nih.nci.cabio.domain.xsd" />
+      <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" schemaLocation="./cagrid/types/caGridMetadata.xsd" />
+      <import namespace="http://gov.nih.nci.cagrid.data/DataServiceExceptions" schemaLocation="./DataServiceExceptions.xsd" />
+      <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" schemaLocation="./gov.nih.nci.caarray.domain.data.xsd" />
+      <import namespace="http://caarray.cagrid.nci.nih.gov/CaArraySvc/types" schemaLocation="./CaArraySvcTypes.xsd" />
+      <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice" schemaLocation="./xsd/cagrid/types/data/data.xsd" />
+      <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" schemaLocation="./xsd/security.xsd" />
+      <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization" schemaLocation="./gov.nih.nci.caarray.domain.hybridization.xsd" />
+      <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.publication" schemaLocation="./gov.nih.nci.caarray.domain.publication.xsd" />
       <import namespace="http://caarray.cagrid.nci.nih.gov/CaArraySvc/CQLResultTypes" schemaLocation="./CaArraySvc_CQLResultTypes.xsd" />
       <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample" schemaLocation="./gov.nih.nci.caarray.domain.sample.xsd" />
       <element name="GetDesignDetailsRequest">
@@ -94,6 +98,26 @@
           </sequence>
         </complexType>
       </element>
+      <element name="CreateFileTransferRequest">
+        <complexType>
+          <sequence>
+            <element name="caArrayFile">
+              <complexType>
+                <sequence>
+                  <element ref="ns13:CaArrayFile" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="CreateFileTransferResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns22:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
       <element name="CaArraySvcResourceProperties">
         <complexType>
           <sequence>
@@ -123,6 +147,12 @@
   <message name="GetDataSetResponse">
     <part name="parameters" element="tns:GetDataSetResponse" />
   </message>
+  <message name="CreateFileTransferRequest">
+    <part name="parameters" element="tns:CreateFileTransferRequest" />
+  </message>
+  <message name="CreateFileTransferResponse">
+    <part name="parameters" element="tns:CreateFileTransferResponse" />
+  </message>
   <!--============================================================
 
                        P O R T T Y P E
@@ -141,26 +171,9 @@
       <input message="tns:GetDataSetRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetRequest" />
       <output message="tns:GetDataSetResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetResponse" />
     </operation>
-    <operation name="GetResourceProperty">
-      <input name="GetResourcePropertyRequest" message="wsrpw:GetResourcePropertyRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetResourceProperty" />
-      <output name="GetResourcePropertyResponse" message="wsrpw:GetResourcePropertyResponse" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetResourcePropertyResponse" />
-      <fault name="InvalidResourcePropertyQNameFault" message="wsrpw:InvalidResourcePropertyQNameFault" />
-      <fault name="ResourceUnknownFault" message="wsrpw:ResourceUnknownFault" />
-    </operation>
-    <operation name="GetMultipleResourceProperties">
-      <input name="GetMultipleResourcePropertiesRequest" message="wsrpw:GetMultipleResourcePropertiesRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetMultipleResourceProperties" />
-      <output name="GetMultipleResourcePropertiesResponse" message="wsrpw:GetMultipleResourcePropertiesResponse" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetMultipleResourceProperties" />
-      <fault name="InvalidResourcePropertyQNameFault" message="wsrpw:InvalidResourcePropertyQNameFault" />
-      <fault name="ResourceUnknownFault" message="wsrpw:ResourceUnknownFault" />
-    </operation>
-    <operation name="QueryResourceProperties">
-      <input name="QueryResourcePropertiesRequest" message="wsrpw:QueryResourcePropertiesRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/QueryResourceProperties" />
-      <output name="QueryResourcePropertiesResponse" message="wsrpw:QueryResourcePropertiesResponse" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/QueryResourcePropertiesResponse" />
-      <fault name="ResourceUnknownFault" message="wsrpw:ResourceUnknownFault" />
-      <fault name="InvalidResourcePropertyQNameFault" message="wsrpw:InvalidResourcePropertyQNameFault" />
-      <fault name="UnknownQueryExpressionDialectFault" message="wsrpw:UnknownQueryExpressionDialectFault" />
-      <fault name="InvalidQueryExpressionFault" message="wsrpw:InvalidQueryExpressionFault" />
-      <fault name="QueryEvaluationErrorFault" message="wsrpw:QueryEvaluationErrorFault" />
+    <operation name="createFileTransfer">
+      <input message="tns:CreateFileTransferRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/CreateFileTransferRequest" />
+      <output message="tns:CreateFileTransferResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/CreateFileTransferResponse" />
     </operation>
     <operation name="getServiceSecurityMetadata">
       <input message="wns0:GetServiceSecurityMetadataRequest" wsa:Action="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity/GetServiceSecurityMetadataRequest" />
@@ -172,6 +185,27 @@
       <fault name="QueryProcessingException" message="wns1:QueryProcessingExceptionFaultMessage" wsa:Action="http://gov.nih.nci.cagrid.data/DataService/QueryProcessingExceptionFaultMessage" />
       <fault name="MalformedQueryException" message="wns1:MalformedQueryExceptionFaultMessage" wsa:Action="http://gov.nih.nci.cagrid.data/DataService/MalformedQueryExceptionFaultMessage" />
     </operation>
+    <wsdl:operation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="GetMultipleResourceProperties">
+      <wsdl:input name="GetMultipleResourcePropertiesRequest" message="wsrpw:GetMultipleResourcePropertiesRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetMultipleResourceProperties" />
+      <wsdl:output name="GetMultipleResourcePropertiesResponse" message="wsrpw:GetMultipleResourcePropertiesResponse" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetMultipleResourcePropertiesResponse" />
+      <wsdl:fault name="ResourceUnknownFault" message="wsrpw:ResourceUnknownFault" />
+      <wsdl:fault name="InvalidResourcePropertyQNameFault" message="wsrpw:InvalidResourcePropertyQNameFault" />
+    </wsdl:operation>
+    <wsdl:operation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="GetResourceProperty">
+      <wsdl:input name="GetResourcePropertyRequest" message="wsrpw:GetResourcePropertyRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetResourceProperty" />
+      <wsdl:output name="GetResourcePropertyResponse" message="wsrpw:GetResourcePropertyResponse" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetResourcePropertyResponse" />
+      <wsdl:fault name="ResourceUnknownFault" message="wsrpw:ResourceUnknownFault" />
+      <wsdl:fault name="InvalidResourcePropertyQNameFault" message="wsrpw:InvalidResourcePropertyQNameFault" />
+    </wsdl:operation>
+    <wsdl:operation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="QueryResourceProperties">
+      <wsdl:input name="QueryResourcePropertiesRequest" message="wsrpw:QueryResourcePropertiesRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/QueryResourceProperties" />
+      <wsdl:output name="QueryResourcePropertiesResponse" message="wsrpw:QueryResourcePropertiesResponse" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/QueryResourcePropertiesResponse" />
+      <wsdl:fault name="ResourceUnknownFault" message="wsrpw:ResourceUnknownFault" />
+      <wsdl:fault name="InvalidResourcePropertyQNameFault" message="wsrpw:InvalidResourcePropertyQNameFault" />
+      <wsdl:fault name="UnknownQueryExpressionDialectFault" message="wsrpw:UnknownQueryExpressionDialectFault" />
+      <wsdl:fault name="InvalidQueryExpressionFault" message="wsrpw:InvalidQueryExpressionFault" />
+      <wsdl:fault name="QueryEvaluationErrorFault" message="wsrpw:QueryEvaluationErrorFault" />
+    </wsdl:operation>
   </portType>
 </definitions>
 

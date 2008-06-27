@@ -82,14 +82,19 @@
  */
 package gov.nih.nci.cabio.domain;
 
+import gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation;
+
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+
+import org.hibernate.annotations.BatchSize;
 
 /**
  *
  */
 @Entity
 @DiscriminatorValue("EXPRESSIONARRAYREPORTER")
+@BatchSize(size = AbstractProbeAnnotation.RELATED_BATCH_SIZE)
 public class ExpressionArrayReporter extends TranscriptArrayReporter {
 
     private static final long serialVersionUID = 1L;

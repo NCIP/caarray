@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.domain.data;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.MaxSerializableSize;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 
 import java.util.ArrayList;
@@ -95,6 +96,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
@@ -107,6 +109,8 @@ import org.hibernate.annotations.IndexColumn;
 public final class DesignElementList extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 4430513886275629776L;
+    private static final int BATCH_SIZE = 200;    
+    private static final int MAX_SERIALIZABLE_SIZE = 100000;
 
     private List<AbstractDesignElement> designElements = new ArrayList<AbstractDesignElement>();
     private String designElementType;
@@ -123,6 +127,8 @@ public final class DesignElementList extends AbstractCaArrayEntity {
     )
     @ForeignKey(name = "deldedesignelementlist_fk", inverseName = "deldedesignelement_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @BatchSize(size = BATCH_SIZE)
+    @MaxSerializableSize(MAX_SERIALIZABLE_SIZE)    
     public List<AbstractDesignElement> getDesignElements() {
         return designElements;
     }

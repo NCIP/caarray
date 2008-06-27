@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 import javax.persistence.Entity;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.validator.Length;
 
 /**
@@ -94,8 +95,8 @@ import org.hibernate.validator.Length;
  * from parent to offspring.
  */
 @Entity
+@BatchSize(size = AbstractProbeAnnotation.RELATED_BATCH_SIZE)
 public class Gene extends AbstractCaArrayEntity {
-
     private static final long serialVersionUID = 1L;
 
     private String fullName;

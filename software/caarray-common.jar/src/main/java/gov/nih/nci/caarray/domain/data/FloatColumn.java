@@ -93,7 +93,6 @@ import javax.persistence.Transient;
 @Entity
 @DiscriminatorValue("FLOAT")
 public class FloatColumn extends AbstractDataColumn {
-
     private static final long serialVersionUID = 1L;
 
     /**

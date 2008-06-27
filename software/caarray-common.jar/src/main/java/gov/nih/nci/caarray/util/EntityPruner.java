@@ -429,7 +429,7 @@ public final class EntityPruner {
      * defined by an annotation.
      * @author dkokotov
      */
-    private static final class MaxCollectionSizeExceeededException extends Exception {
+    public static final class MaxCollectionSizeExceeededException extends Exception {
         private static final long serialVersionUID = 1L;
 
         /**

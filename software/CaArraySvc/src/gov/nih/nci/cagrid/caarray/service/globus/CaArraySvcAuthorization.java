@@ -24,7 +24,7 @@ import org.w3c.dom.Node;
  * authorization requirements placed on each method call.  Each method will either return
  * apon a successful authorization or will throw an exception apon a failed authorization.
  * 
- * @created by Introduce Toolkit version 1.1
+ * @created by Introduce Toolkit version 1.2
  * 
  */
 public class CaArraySvcAuthorization implements PDP {
@@ -72,6 +72,26 @@ public class CaArraySvcAuthorization implements PDP {
 		
 		
 	}
+					
+	public static void authorizeCreateFileTransfer() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeGetMultipleResourceProperties() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeGetResourceProperty() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeQueryResourceProperties() throws RemoteException {
+		
+		
+	}
 	
 	
 	public boolean isPermitted(Subject peerSubject, MessageContext context, QName operation)
@@ -115,6 +135,38 @@ public class CaArraySvcAuthorization implements PDP {
 		} else if(operation.getLocalPart().equals("getDataSet")){
 			try{
 				authorizeGetDataSet();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("createFileTransfer")){
+			try{
+				authorizeCreateFileTransfer();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("getMultipleResourceProperties")){
+			try{
+				authorizeGetMultipleResourceProperties();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("getResourceProperty")){
+			try{
+				authorizeGetResourceProperty();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("queryResourceProperties")){
+			try{
+				authorizeQueryResourceProperties();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();

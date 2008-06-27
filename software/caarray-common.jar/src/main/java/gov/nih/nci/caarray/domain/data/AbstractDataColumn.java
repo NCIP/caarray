@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.data;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.SerializationHelperUtility;
 
 import java.io.Serializable;
 
@@ -98,6 +99,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.castor.util.Base64Decoder;
+import org.castor.util.Base64Encoder;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
 
@@ -113,7 +116,6 @@ import org.hibernate.annotations.IndexColumn;
         discriminatorType = DiscriminatorType.STRING)
 @SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
 public abstract class AbstractDataColumn extends AbstractCaArrayObject {
-
     private static final long serialVersionUID = 1L;
 
     private HybridizationData hybridizationData;
@@ -168,6 +170,38 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     void setSerializableValues(Serializable values) {
         valuesSerializer.setValue(values);
     }
+    
+    @Transient
+    private byte[] getValuesAsByteArray() {
+        return valuesSerializer.getSerializedValues();
+    }
+    
+    private void setValuesAsByteArray(byte[] values) {
+        valuesSerializer.setValue(SerializationHelperUtility.deserialize(values));
+    }
+
+    /**
+     * Returns the values of this data column, as a base64-encoded string of the byte representation of the values.
+     * The byte representation of the values is obtained by applying GZip compression to the Java serialization
+     * of the values.
+     * @return the base64-encoded byte representation of the values of this column.
+     */
+    @Transient
+    public String getValuesAsString() {
+        return String.copyValueOf(Base64Encoder.encode(getValuesAsByteArray()));
+    }
+
+    /**
+     * Set the values of this column from the given string, which contains their byte representation encoded using 
+     * base64 encoding.
+     * @param base64Enc the base64 encoding of the byte representation of the values, where the byte representation
+     * is obtained by applying GZip compression to the Java serialization of the values.
+     */
+    public void setValuesAsString(String base64Enc) {
+        byte[] bytes = Base64Decoder.decode(base64Enc);
+        setValuesAsByteArray(bytes);
+    }
+
 
     /**
      * Initializes this column to hold the number of values given.

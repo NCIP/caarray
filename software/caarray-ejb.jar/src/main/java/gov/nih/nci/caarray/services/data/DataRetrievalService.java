@@ -106,5 +106,4 @@ public interface DataRetrievalService {
      * @return the corresponding data values.
      */
     DataSet getDataSet(DataRetrievalRequest request);
-
 }

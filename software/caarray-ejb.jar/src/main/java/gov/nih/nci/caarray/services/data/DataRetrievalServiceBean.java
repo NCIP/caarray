@@ -108,6 +108,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 import org.apache.commons.collections.ListUtils;
+import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
 /**
@@ -124,6 +125,7 @@ import org.jboss.annotation.ejb.TransactionTimeout;
 @Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class,
     DataSetConfiguringInterceptor.class })
 public class DataRetrievalServiceBean implements DataRetrievalService {
+    private static final Logger LOG = Logger.getLogger(DataRetrievalServiceBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     static final int TIMEOUT_SECONDS = 1800;
@@ -132,9 +134,13 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
      * {@inheritDoc}
      */
     public DataSet getDataSet(DataRetrievalRequest request) {
+        LOG.info("Received data retrieval request");
         checkRequest(request);
         List<DataSet> dataSets = getDataSets(request);
-        return createMergedDataSet(dataSets, request);
+        DataSet mergedDataSet = createMergedDataSet(dataSets, request);
+        LOG.info("Retrieved " + mergedDataSet.getHybridizationDataList().size() + " hybridization data elements, "
+                + mergedDataSet.getQuantitationTypes().size() + " quant types");
+        return mergedDataSet;
     }
 
     private List<DataSet> getDataSets(DataRetrievalRequest request) {

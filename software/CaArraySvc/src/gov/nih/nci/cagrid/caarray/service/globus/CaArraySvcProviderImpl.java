@@ -26,12 +26,6 @@ public class CaArraySvcProviderImpl{
 	}
 	
 
-    public gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse getDataSet(gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequest params) throws RemoteException {
-    gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse();
-    boxedResult.setDataSet(impl.getDataSet(params.getDataRetrievalRequest().getDataRetrievalRequest()));
-    return boxedResult;
-  }
-
     public gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsResponse getDesignDetails(gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsRequest params) throws RemoteException {
     gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsResponse();
     boxedResult.setArrayDesignDetails(impl.getDesignDetails(params.getArrayDesign().getArrayDesign()));
@@ -41,6 +35,18 @@ public class CaArraySvcProviderImpl{
     public gov.nih.nci.cagrid.caarray.stubs.ReadFileResponse readFile(gov.nih.nci.cagrid.caarray.stubs.ReadFileRequest params) throws RemoteException {
     gov.nih.nci.cagrid.caarray.stubs.ReadFileResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.ReadFileResponse();
     boxedResult.setResponse(impl.readFile(params.getCaArrayFile().getCaArrayFile()));
+    return boxedResult;
+  }
+
+    public gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse getDataSet(gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequest params) throws RemoteException {
+    gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse();
+    boxedResult.setDataSet(impl.getDataSet(params.getDataRetrievalRequest().getDataRetrievalRequest()));
+    return boxedResult;
+  }
+
+    public gov.nih.nci.cagrid.caarray.stubs.CreateFileTransferResponse createFileTransfer(gov.nih.nci.cagrid.caarray.stubs.CreateFileTransferRequest params) throws RemoteException {
+    gov.nih.nci.cagrid.caarray.stubs.CreateFileTransferResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.CreateFileTransferResponse();
+    boxedResult.setTransferServiceContextReference(impl.createFileTransfer(params.getCaArrayFile().getCaArrayFile()));
     return boxedResult;
   }
 
