@@ -79,7 +79,7 @@
         <c:param name="project.id" value="${project.id}" />
         <c:param name="editMode" value="${editMode}" />
     </c:url>
-    <c:url value="/ajax/project/tab/Contacts/load.action" var="contactsUrl">
+    <c:url value="/ajax/project/listTab/ExperimentContacts/load.action" var="contactsUrl">
         <c:param name="project.id" value="${project.id}" />
         <c:param name="editMode" value="${editMode}" />
     </c:url>
@@ -101,7 +101,7 @@
     </c:url>
 
     <fmt:message key="project.tabs.overview" var="overviewTitle" />
-    <fmt:message key="project.tabs.contacts" var="contactsTitle" />
+    <fmt:message key="project.tabs.experimentContacts" var="contactsTitle" />
     <fmt:message key="project.tabs.annotations" var="annotationsTitle" />
     <fmt:message key="project.tabs.data" var="dataTitle" />
     <fmt:message key="project.tabs.publications" var="publicationsTitle" />

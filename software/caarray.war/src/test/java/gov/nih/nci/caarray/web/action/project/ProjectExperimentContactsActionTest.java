@@ -83,153 +83,198 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
-import java.util.List;
+import java.util.Collection;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
-import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 
 /**
- * @author Winston Cheng
+ * @author Winston Cheng, Jevon Gill
  *
  */
-public class ProjectContactsActionTest {
-    private final ProjectContactsAction action = new ProjectContactsAction();
-    private static final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
-    private static final LocalProjectManagementServiceStub projectManagementServiceStub = new LocalProjectManagementServiceStub();
+public class ProjectExperimentContactsActionTest {
 
+    private final ProjectExperimentContactsAction action = new ProjectExperimentContactsAction();
+    private static ExperimentContact DUMMY_EXPERIMENT_CONTACT = new ExperimentContact();
+    private static int NUM_EXPERIMENT_CONTACTS = 2;
+    private MockHttpServletResponse mockResponse;
+    private static final LocalProjectManagementServiceStub projectManagementServiceStub = new LocalProjectManagementServiceStub();
     private static User STANDARD_USER;
-    private static Person DUMMY_PERSON_1 = new Person();
-    private static Person DUMMY_PERSON_2 = new Person();
-    private static Term PI_ROLE;
-    private static Term MAIN_POC_ROLE;
 
     @Before
+    @SuppressWarnings("deprecation")
     public void setUp() throws Exception {
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(VocabularyService.JNDI_NAME, vocabularyServiceStub);
-        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectManagementServiceStub);
-        Project project = new Project();
-        action.setProject(project);
-        PI_ROLE = vocabularyServiceStub.getTerm(null, ExperimentContact.PI_ROLE);
-        MAIN_POC_ROLE = vocabularyServiceStub.getTerm(null, ExperimentContact.MAIN_POC_ROLE);
-        UsernameHolder.setUser("caarrayadmin");
-        STANDARD_USER = UsernameHolder.getCsmUser();
+
+         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+         locatorStub.addLookup(GenericDataService.JNDI_NAME, new LocalGenericDataService());
+         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
+         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectManagementServiceStub);
+         DUMMY_EXPERIMENT_CONTACT.setId(1L);
+
+         ServletActionContext.setRequest(new MockHttpServletRequest());
+         mockResponse = new MockHttpServletResponse();
+         ServletActionContext.setResponse(mockResponse);
+
+         UsernameHolder.setUser("caarrayadmin");
+         STANDARD_USER = UsernameHolder.getCsmUser();
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testPrepare() throws VocabularyServiceException {
+        // no current experiment contact id
+        action.prepare();
+        assertNull(action.getCurrentExperimentContact().getId());
+
+        // valid current experiment id
+        ExperimentContact currentExperimentContact = new ExperimentContact();
+        currentExperimentContact.setId(1L);
+        action.setCurrentExperimentContact(currentExperimentContact);
+        action.prepare();
+        assertEquals(DUMMY_EXPERIMENT_CONTACT, action.getCurrentExperimentContact());
+
+        // invalid current experiment id
+        currentExperimentContact = new ExperimentContact();
+        currentExperimentContact.setId(2L);
+        action.setCurrentExperimentContact(currentExperimentContact);
+        try {
+            action.prepare();
+            fail("Expected PermissionDeniedException");
+        } catch (PermissionDeniedException pde) {}
+    }
+
+    @Test(expected=NotImplementedException.class)
+    public void testCopy() {
+        action.copy();
     }
 
     @Test
     public void testLoad() {
-        assertEquals(Action.INPUT, action.load());
-    }
-
-    @Test
-    public void testSetup() {
-        // no pi, no poc
-        action.setup();
-        assertEquals(STANDARD_USER.getLastName(), action.getPrimaryInvestigator().getLastName());
-        assertTrue(action.isPiIsMainPoc());
-        assertNull(action.getMainPointOfContact().getLastName());
-
-        // has pi, no poc
-        ExperimentContact piContact = new ExperimentContact(getExperiment(), DUMMY_PERSON_1, PI_ROLE);
-        getExperimentContacts().add(piContact);
-        action.setup();
-        assertEquals(DUMMY_PERSON_1.getLastName(), action.getPrimaryInvestigator().getLastName());
-        assertFalse(action.isPiIsMainPoc());
-        assertNull(action.getMainPointOfContact().getLastName());
-
-        // has pi, separate poc
-        ExperimentContact pocContact = new ExperimentContact(getExperiment(), DUMMY_PERSON_2, MAIN_POC_ROLE);
-        getExperimentContacts().add(pocContact);
-        action.setup();
-        assertEquals(DUMMY_PERSON_1.getLastName(), action.getPrimaryInvestigator().getLastName());
-        assertFalse(action.isPiIsMainPoc());
-        assertEquals(DUMMY_PERSON_2.getLastName(), action.getMainPointOfContact().getLastName());
-
-        // pi is poc
-        getExperiment().removeSeparateMainPointOfContact();
-        piContact.getRoles().add(MAIN_POC_ROLE);
-        action.setup();
-        assertEquals(DUMMY_PERSON_1.getLastName(), action.getPrimaryInvestigator().getLastName());
-        assertTrue(action.isPiIsMainPoc());
-        assertNull(action.getMainPointOfContact().getLastName());
+        Project p = new Project();
+        Experiment e = new Experiment();
+        p.setExperiment(e);
+        for (int i=0; i<NUM_EXPERIMENT_CONTACTS; i++) {
+            e.getExperimentContacts().add(new ExperimentContact());
+        }
+        action.setProject(p);
+        assertEquals("list", action.load());
+        assertEquals(NUM_EXPERIMENT_CONTACTS, action.getPagedItems().getFullListSize());
     }
 
     @Test
     public void testSave() {
+
         ServletActionContext.setRequest(new MockHttpServletRequest());
-        // save new project
-        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
+        assertEquals(1,action.getProject().getOwners().size());
+        ProjectExperimentContactsAction action = new ProjectExperimentContactsAction();
+        action.setCurrentExperimentContact(new ExperimentContact());
+        assertNull(action.getExperiment().getPrimaryInvestigator());
+        action.save();
 
-        // save existing project
-        this.action.setProject(new Project());
-        this.action.getProject().setId(1L);
-        assertEquals(Action.SUCCESS, this.action.save());
+        assertEquals(0, action.getExperiment().getExperimentContacts().size());
+        Term piRole = CaArrayActionHelper.getMOTerm(ExperimentContact.PI_ROLE);
+        DUMMY_EXPERIMENT_CONTACT.getRoles().add(piRole);
+        Person person = new Person(STANDARD_USER);
+        action.getCurrentExperimentContact().setContact(person);
+        action.setCurrentExperimentContact(DUMMY_EXPERIMENT_CONTACT);
 
-        // save project with PI
-        this.action.setProject(new Project());
-        this.action.setPrimaryInvestigator(DUMMY_PERSON_2);
-        this.action.setPiIsMainPoc(true);
-        ExperimentContact piContact = new ExperimentContact(getExperiment(), DUMMY_PERSON_1, PI_ROLE);
-        getExperimentContacts().add(piContact);
-        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
+        action.save();
+        assertEquals(1, action.getExperiment().getExperimentContacts().size());
+        assertEquals("submitter, investigator",action.getExperiment().getExperimentContacts().get(0).getRoleNames());
+        assertEquals(1,action.getExperiment().getPrimaryInvestigatorCount());
+        assertNotNull(action.getExperiment().getPrimaryInvestigator());
+        assertEquals("Administrator, caArray", action.getExperiment().getExperimentContacts().get(0).getPerson().getName());
 
-        this.action.setProject(new Project());
-        this.action.setPrimaryInvestigator(DUMMY_PERSON_2);
-        this.action.setPiIsMainPoc(false);
-        piContact = new ExperimentContact(getExperiment(), DUMMY_PERSON_1, PI_ROLE);
-        getExperimentContacts().add(piContact);
-        piContact.getRoles().add(MAIN_POC_ROLE);
-        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
+    }
 
-        // ProposalWorkflowException
+    @Test
+    public void testEdit() {
+        assertEquals(Action.INPUT, action.edit());
+   }
+
+    @Test
+    public void testDelete() {
+
         Project p = new Project();
-        p.setId(2L);
-        p.setExperiment(new Experiment());
-        p.getExperiment().setTitle("title");
-        this.action.setProject(p);
-        assertEquals(Action.INPUT, this.action.save());
-        assertTrue(ActionHelper.getMessages().contains("project.saveProblem"));
 
-        // InconsistentProjectStateException
-        p = new Project();
-        p.setId(3L);
-        p.setExperiment(new Experiment());
-        p.getExperiment().setTitle("title");
-        this.action.setProject(p);
-        assertEquals(Action.INPUT, this.action.save());
-        assertTrue(action.getActionErrors().contains("project.inconsistentState.importing_files"));
-    }
+        Term piRole = CaArrayActionHelper.getMOTerm(ExperimentContact.PI_ROLE);
+        DUMMY_EXPERIMENT_CONTACT.getRoles().add(piRole);
+        p.getExperiment().getExperimentContacts().add(DUMMY_EXPERIMENT_CONTACT);
+        ExperimentContact ec = new ExperimentContact();
+        p.getExperiment().getExperimentContacts().add(ec);
+        action.setProject(p);
 
-    private Experiment getExperiment() {
-        return action.getProject().getExperiment();
-    }
-    private List<ExperimentContact> getExperimentContacts() {
-        return getExperiment().getExperimentContacts();
+        action.setCurrentExperimentContact(ec);
+
+        assertEquals(2, action.getExperiment().getExperimentContacts().size());
+        assertEquals("list",action.delete());
+        assertEquals(1, action.getExperiment().getExperimentContacts().size());
+   }
+
+    @Test
+    public void testDeleteOnlyPi() {
+
+        Project p = new Project();
+
+        Term piRole = CaArrayActionHelper.getMOTerm(ExperimentContact.PI_ROLE);
+        DUMMY_EXPERIMENT_CONTACT.getRoles().add(piRole);
+        p.getExperiment().getExperimentContacts().add(DUMMY_EXPERIMENT_CONTACT);
+        action.setProject(p);
+
+        action.setCurrentExperimentContact(DUMMY_EXPERIMENT_CONTACT);
+
+        assertEquals(1, action.getExperiment().getExperimentContacts().size());
+        assertEquals("list",action.delete());
+        assertEquals(1, action.getExperiment().getExperimentContacts().size());
+
+   }
+
+    private static class LocalGenericDataService extends GenericDataServiceStub {
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
+            if (entityClass.equals(ExperimentContact.class) && entityId.equals(1L)) {
+                return (T)DUMMY_EXPERIMENT_CONTACT;
+            }
+            return null;
+        }
+
+        @Override
+        public int collectionSize(Collection<? extends PersistentObject> collection) {
+            return collection.size();
+        }
     }
 
     private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {

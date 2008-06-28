@@ -86,6 +86,7 @@ package gov.nih.nci.caarray.domain.project;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.AbstractContact;
+import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.Arrays;
@@ -109,9 +110,9 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
-  /**
-
-   */
+/**
+ *
+ */
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 public class ExperimentContact extends AbstractCaArrayEntity {
@@ -138,11 +139,16 @@ public class ExperimentContact extends AbstractCaArrayEntity {
 
     /**
      * Create a new ExperimentContact for given experiment, contacts, and roles.
-     * @param experiment the experiment for which this is a contact
-     * @param contact the contact
-     * @param roles the roles this contact has on the experiment
+     *
+     * @param experiment
+     *            the experiment for which this is a contact
+     * @param contact
+     *            the contact
+     * @param roles
+     *            the roles this contact has on the experiment
      */
-    public ExperimentContact(Experiment experiment, AbstractContact contact, Collection<Term> roles) {
+    public ExperimentContact(Experiment experiment, AbstractContact contact,
+            Collection<Term> roles) {
         this.contact = contact;
         this.roles.addAll(roles);
         this.experiment = experiment;
@@ -150,11 +156,16 @@ public class ExperimentContact extends AbstractCaArrayEntity {
 
     /**
      * Create a new ExperimentContact for given experiment, contacts, and role.
-     * @param experiment the experiment for which this is a contact
-     * @param contact the contact
-     * @param role the role this contact has on the experiment
+     *
+     * @param experiment
+     *            the experiment for which this is a contact
+     * @param contact
+     *            the contact
+     * @param role
+     *            the role this contact has on the experiment
      */
-    public ExperimentContact(Experiment experiment, AbstractContact contact, Term role) {
+    public ExperimentContact(Experiment experiment, AbstractContact contact,
+            Term role) {
         this(experiment, contact, Arrays.asList(role));
     }
 
@@ -173,10 +184,38 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     /**
      * Sets the contact.
      *
-     * @param contactVal the contact
+     * @param contactVal
+     *            the contact
      */
     public void setContact(final AbstractContact contactVal) {
         this.contact = contactVal;
+    }
+
+    /**
+     * Gets the person.
+     *
+     * @return the person
+     */
+    @Transient
+    public Person getPerson() {
+        if (getContact() instanceof Person) {
+            return (Person) getContact();
+        } else if (getContact() == null) {
+            return null;
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    /**
+     * Sets the person.
+     *
+     * @param personVal
+     *            the person contact
+     */
+    @Transient
+    public void setPerson(final Person personVal) {
+        this.contact = personVal;
     }
 
     /**
@@ -186,11 +225,8 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
-    @JoinTable(
-            name = "experimentcontactrole",
-            joinColumns = { @JoinColumn(name = "experimentcontact_id") },
-            inverseJoinColumns = { @JoinColumn(name = "role_id") }
-    )
+    @JoinTable(name = "experimentcontactrole", joinColumns = {
+              @JoinColumn(name = "experimentcontact_id") }, inverseJoinColumns = { @JoinColumn(name = "role_id") })
     @ForeignKey(name = "investcont_contact_fk", inverseName = "investcont_role_fk")
     public Set<Term> getRoles() {
         return roles;
@@ -201,9 +237,26 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      *
      * @param rolesVal the roles
      */
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setRoles(final Set<Term> rolesVal) {
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
+    public void setRoles(Set<Term> rolesVal) {
         this.roles = rolesVal;
+    }
+
+    /**
+     * @return comma delimited list of each role names in
+     * roles list.
+     */
+    @Transient
+    public String getRoleNames() {
+        StringBuilder sb = new StringBuilder();
+        Iterator<Term> it = getRoles().iterator();
+        while (it.hasNext()) {
+            sb.append(((Term) it.next()).getValue());
+            if (it.hasNext()) {
+                sb.append(", ");
+            }
+        }
+        return sb.toString();
     }
 
     /**
@@ -217,15 +270,17 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     }
 
     /**
-     * @param experiment the experiment to set
+     * @param experiment
+     *            the experiment to set
      */
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
     }
 
     /**
-     * Returns whether this contact is the PI for the experiment (based
-     * on whether he has the appropriate role).
+     * Returns whether this contact is the PI for the experiment (based on
+     * whether he has the appropriate role).
+     *
      * @return whether this contact is the PI for the experiment
      */
     @Transient
@@ -234,8 +289,9 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     }
 
     /**
-     * Returns whether this contact is the main POC for the experiment (based
-     * on whether he has the appropriate role).
+     * Returns whether this contact is the main POC for the experiment (based on
+     * whether he has the appropriate role).
+     *
      * @return whether this contact is the main POC for the experiment
      */
     @Transient
@@ -244,8 +300,8 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     }
 
     /**
-     * Remove the Main POC role from the list of roles of this ExperimentContact.
-     * If it did not have this role, then this is a no-op.
+     * Remove the Main POC role from the list of roles of this
+     * ExperimentContact. If it did not have this role, then this is a no-op.
      */
     public void removeMainPointOfContactRole() {
         for (Iterator<Term> it = roles.iterator(); it.hasNext();) {
@@ -273,7 +329,9 @@ public class ExperimentContact extends AbstractCaArrayEntity {
 
         /**
          * Create a RolePredicate checking for given value.
-         * @param roleValue value to check for
+         *
+         * @param roleValue
+         *            value to check for
          */
         public RolePredicate(String roleValue) {
             super();
