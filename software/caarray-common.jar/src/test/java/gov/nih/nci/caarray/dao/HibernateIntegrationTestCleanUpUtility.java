@@ -105,7 +105,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
 
     private static final Logger LOG = Logger.getLogger(HibernateIntegrationTestCleanUpUtility.class);
     private static List<Class<?>> classesToRemove;
-    
+
     private static final Class<?>[] CSM_CLASSES = {gov.nih.nci.security.authorization.domainobjects.Application.class,
         gov.nih.nci.security.authorization.domainobjects.Group.class,
         gov.nih.nci.security.authorization.domainobjects.Privilege.class,
@@ -153,8 +153,8 @@ public final class HibernateIntegrationTestCleanUpUtility {
         try {
             s = getSession();
             s.setFlushMode(FlushMode.MANUAL);
-            disableForeignKeyChecks(s);
             tx = s.beginTransaction();
+            disableForeignKeyChecks(s);
             int deletedObjs = s.createQuery("DELETE FROM " + c.getName()).executeUpdate();
             if (deletedObjs > 0) {
                 removed = true;

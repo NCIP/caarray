@@ -29,3 +29,10 @@ alter table characteristic drop column discriminator,
  drop column value,
  drop foreign key characteristic_term_fk,
  drop foreign key characteristic_unit_fk;
+
+-- feature request 11925
+create table array_design_design_file (array_design bigint not null, design_file bigint not null, primary key (array_design, design_file), unique (design_file)) type=InnoDB;
+alter table array_design_design_file add index design_file_fk (design_file), add constraint design_file_fk foreign key (design_file) references caarrayfile (id);
+alter table array_design_design_file add index array_design_fk (array_design), add constraint array_design_fk foreign key (array_design) references array_design (id);
+insert into array_design_design_file (array_design, design_file) select id, design_file from array_design where design_file is not null;
+alter table array_design drop column design_file;

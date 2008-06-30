@@ -83,10 +83,14 @@
 
 package gov.nih.nci.caarray.domain.array;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -95,7 +99,10 @@ import gov.nih.nci.cabio.domain.Microarray;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -106,6 +113,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
+import org.hibernate.validator.Size;
 
 /**
  * The design details for a type of microarray.
@@ -129,7 +137,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private Organism organism;
     private String version;
     private CaArrayFile annotationFile;
-    private CaArrayFile designFile;
+    private Set<CaArrayFile> designFiles = new HashSet<CaArrayFile>();
     private Organization provider;
     private Microarray microarray;
     private ArrayDesignDetails designDetails;
@@ -296,7 +304,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
 
     /**
      * Gets the printing.
-     * 
+     *
      * @return the printing
      */
     @ManyToOne
@@ -316,14 +324,68 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the designFile
+     * @return the designFiles
      */
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "design_file_fk")
+    @Size(min = 1)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "array_design_design_file",
+               joinColumns = @JoinColumn(name = "array_design"),
+               inverseJoinColumns = @JoinColumn(name = "design_file"))
+    @ForeignKey(name = "array_design_fk",
+                inverseName = "design_file_fk")
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<CaArrayFile> getDesignFiles() {
+        return designFiles;
+    }
+
+    /**
+     * @return the design files as a set.
+     */
+    @Transient
+    public CaArrayFileSet getDesignFileSet() {
+        CaArrayFileSet fileSet = new CaArrayFileSet();
+        fileSet.addAll(this.designFiles);
+        return fileSet;
+    }
+
+    /**
+     * @param designFiles the designFiles to set
+     */
+    public void setDesignFiles(Set<CaArrayFile> designFiles) {
+        this.designFiles = designFiles;
+    }
+
+    /**
+     * Add a new design file to this design.
+     * @param designFile design file to add
+     */
+    public void addDesignFile(CaArrayFile designFile) {
+        this.designFiles.add(designFile);
+    }
+
+    /**
+     * Gets the design file.  This method should only used when it is known that there is exactly one design file;
+     * otherwise, an {@link IllegalStateException} will be thrown.
+     * @return the single design file
+     */
+    @Transient
     public CaArrayFile getDesignFile() {
-        return designFile;
+        if (designFiles.size() == 1) {
+            return designFiles.iterator().next();
+        } else if (designFiles.isEmpty()) {
+            return null;
+        }
+        throw new IllegalStateException("getDesignFile() should only be called when there is exactly one design file.");
+    }
+
+    /**
+     * Sets the design files to a single file.  All other files will be removed from the list.
+     * @param designFile design file to set
+     */
+    public void setDesignFile(CaArrayFile designFile) {
+        this.designFiles = new HashSet<CaArrayFile>();
+        this.designFiles.add(designFile);
     }
 
     /**
@@ -341,13 +403,6 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @ForeignKey(name = "annotation_file_fk")
     public CaArrayFile getAnnotationFile() {
         return annotationFile;
-    }
-
-    /**
-     * @param designFile the designFile to set
-     */
-    public void setDesignFile(CaArrayFile designFile) {
-        this.designFile = designFile;
     }
 
     /**

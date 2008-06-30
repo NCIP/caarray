@@ -253,6 +253,9 @@
     <field name="surfaceType" type="gov.nih.nci.caarray.domain.vocabulary.Term">
       <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="surfaceType" node="element" />
     </field>
+    <field name="designFiles" type="gov.nih.nci.caarray.domain.file.CaArrayFile" collection="collection">
+      <bind-xml name="CaArrayFile" type="gov.nih.nci.caarray.domain.file.CaArrayFile" location="designFiles" node="element" />
+    </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.AbstractDesignElement" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
     <map-to xml="AbstractDesignElement" ns-uri="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array" />

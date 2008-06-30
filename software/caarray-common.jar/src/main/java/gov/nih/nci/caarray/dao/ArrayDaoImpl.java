@@ -115,7 +115,7 @@ import org.hibernate.Session;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
- * 
+ *
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity" })
@@ -153,12 +153,12 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      */
     @SuppressWarnings("unchecked")
     public List<ArrayDesign> getArrayDesignsForProvider(Organization provider, boolean importedOnly) {
-        StringBuilder queryStr = new StringBuilder("from ").append(ArrayDesign.class.getName()).append(
-                " ad where ad.provider = :provider ");
+        StringBuilder queryStr = new StringBuilder("select distinct ad from ").append(ArrayDesign.class.getName())
+                .append(" ad join ad.designFiles designFile where ad.provider = :provider ");
         if (importedOnly) {
-            queryStr.append(" and (ad.designFile.status = :status1 or ad.designFile.status = :status2) ");
+            queryStr.append(" and (designFile.status = :status1 or designFile.status = :status2) ");
         }
-        queryStr.append("order by name asc");
+        queryStr.append("order by ad.name asc");
         Query query = getCurrentSession().createQuery(queryStr.toString());
         query.setEntity("provider", provider);
         if (importedOnly) {
@@ -173,12 +173,13 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      */
     @SuppressWarnings("unchecked")
     public List<ArrayDesign> getArrayDesigns(Organization provider, AssayType assayType, boolean importedOnly) {
-        StringBuilder queryStr = new StringBuilder("from ").append(ArrayDesign.class.getName()).append(
-                " ad where ad.provider = :provider and ad.assayType = :assayType ");
+        StringBuilder queryStr = new StringBuilder("select distinct ad from ").append(ArrayDesign.class.getName())
+                .append(" ad join ad.designFiles designFile").append(
+                        " where ad.provider = :provider and ad.assayType = :assayType ");
         if (importedOnly) {
-            queryStr.append(" and (ad.designFile.status = :status1 or ad.designFile.status = :status2) ");
+            queryStr.append(" and (designFile.status = :status1 or designFile.status = :status2) ");
         }
-        queryStr.append("order by name asc");
+        queryStr.append("order by ad.name asc");
         Query query = getCurrentSession().createQuery(queryStr.toString());
         query.setEntity("provider", provider);
         query.setString("assayType", assayType.getValue());
@@ -322,7 +323,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         List<Object[]> results = query.list();
         Map<String, Long> namesToIds = new HashMap<String, Long>();
         for (Object[] result : results) {
-            namesToIds.put((String) result[0], (Long) result[1]); 
+            namesToIds.put((String) result[0], (Long) result[1]);
         }
         return namesToIds;
     }
@@ -340,9 +341,9 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
             int i = startIndex;
             for (Long probeId : logicalProbeIds) {
                 stmt.setLong(1, designElementList.getId());
-                stmt.setLong(2, probeId);        
-                stmt.setInt(3, i++); 
-                stmt.addBatch();            
+                stmt.setLong(2, probeId);
+                stmt.setInt(3, i++);
+                stmt.addBatch();
             }
             stmt.executeBatch();
         } catch (SQLException e) {

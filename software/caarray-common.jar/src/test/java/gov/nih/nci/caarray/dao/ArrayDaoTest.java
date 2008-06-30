@@ -151,6 +151,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             LOG.error("Error setting up test data.", e);
+            throw e;
         }
     }
 
@@ -163,7 +164,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         Category cat = new Category();
         cat.setName("catName");
         cat.setSource(ts);
-        
+
         Term term = new Term();
         term.setValue("testval");
         term.setCategory(cat);
@@ -172,7 +173,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         Organism organism = new Organism();
         organism.setScientificName("Homo sapiens");
         organism.setTermSource(ts);
-        
+
         DUMMY_ORGANIZATION = new Organization();
         DUMMY_ORGANIZATION.setName("DummyOrganization");
         DUMMY_ORGANIZATION2 = new Organization();
@@ -206,44 +207,51 @@ public class ArrayDaoTest extends AbstractDaoTest {
         DUMMY_ARRAYDESIGN_3.setProvider(DUMMY_ORGANIZATION2);
         CaArrayFile file3 = new CaArrayFile();
         file3.setFileStatus(FileStatus.IMPORTED);
-        DUMMY_ARRAYDESIGN_3.setDesignFile(file3);
+        CaArrayFile file4 = new CaArrayFile();
+        file4.setFileStatus(FileStatus.IMPORTED);
+        DUMMY_ARRAYDESIGN_3.addDesignFile(file3);
+        DUMMY_ARRAYDESIGN_3.addDesignFile(file4);
         DUMMY_ARRAYDESIGN_3.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
         DUMMY_ARRAYDESIGN_3.setTechnologyType(term);
         DUMMY_ARRAYDESIGN_3.setOrganism(organism);
     }
 
     @Test
-    public void testGetArrayDesign() {
+    public void testGetArrayDesign() throws Exception {
         Transaction tx = null;
-
+        HibernateUtil.enableFilters(false);
         try {
             tx = HibernateUtil.beginTransaction();
             ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getId());
-            tx.commit();
             assertEquals(DUMMY_ARRAYDESIGN_1, retrievedArrayDesign);
+            tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
-            fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
+            throw e;
         }
     }
 
     @Test
-    public void testGetArrayDesignByLsid() {
+    public void testGetArrayDesignByLsid() throws Exception {
         Transaction tx = null;
+        HibernateUtil.enableFilters(false);
         try {
             tx = HibernateUtil.beginTransaction();
             ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getLsidAuthority(),
                     DUMMY_ARRAYDESIGN_1.getLsidNamespace(), DUMMY_ARRAYDESIGN_1.getLsidObjectId());
-            tx.commit();
             assertEquals(DUMMY_ARRAYDESIGN_1, retrievedArrayDesign);
+            assertEquals(DUMMY_ARRAYDESIGN_1.getDesignFileSet().getFiles().size(),
+                    retrievedArrayDesign.getDesignFileSet().getFiles().size());
+            assertEquals(DUMMY_ARRAYDESIGN_1.getDesignFile(), retrievedArrayDesign.getDesignFile());
+            tx.commit();
             tx = HibernateUtil.beginTransaction();
             retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getLsidAuthority(),
                     DUMMY_ARRAYDESIGN_1.getLsidNamespace(), "incorrectObjectId");
-            tx.commit();
             assertNull(retrievedArrayDesign);
+            tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
-            fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
+            throw e;
         }
     }
 
@@ -251,9 +259,9 @@ public class ArrayDaoTest extends AbstractDaoTest {
      * Tests retrieving array design providers and array designs by provider
      */
     @Test
-    public void testArrayDesignProviders() {
+    public void testArrayDesignProviders() throws Exception {
         Transaction tx = null;
-
+        HibernateUtil.enableFilters(false);
         try {
             tx = HibernateUtil.beginTransaction();
             List<Organization> providers = DAO_OBJECT.getArrayDesignProviders();
@@ -261,7 +269,6 @@ public class ArrayDaoTest extends AbstractDaoTest {
             List<ArrayDesign> org2Designs = DAO_OBJECT.getArrayDesignsForProvider(DUMMY_ORGANIZATION2, false);
             List<ArrayDesign> org3Designs = DAO_OBJECT.getArrayDesignsForProvider(DUMMY_ORGANIZATION3, false);
             List<ArrayDesign> org2ImportedDesigns = DAO_OBJECT.getArrayDesignsForProvider(DUMMY_ORGANIZATION2, true);
-            tx.commit();
             assertNotNull(providers);
             assertEquals(2, providers.size());
             assertNotNull(org1Designs);
@@ -273,9 +280,10 @@ public class ArrayDaoTest extends AbstractDaoTest {
             assertNotNull(org2ImportedDesigns);
             assertEquals(1, org2ImportedDesigns.size());
             assertEquals(DUMMY_ARRAYDESIGN_3, org2ImportedDesigns.get(0));
+            tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
-            fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
+            throw e;
         }
     }
 
@@ -291,8 +299,8 @@ public class ArrayDaoTest extends AbstractDaoTest {
             List<ArrayDesign> org1Designs = DAO_OBJECT.getArrayDesigns(DUMMY_ORGANIZATION, AssayType.GENE_EXPRESSION, false);
             @SuppressWarnings("unused")
             List<ArrayDesign> org2Designs = DAO_OBJECT.getArrayDesigns(DUMMY_ORGANIZATION, AssayType.GENE_EXPRESSION, true);
-            tx.commit();
             assertNotNull(org1Designs);
+            tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());

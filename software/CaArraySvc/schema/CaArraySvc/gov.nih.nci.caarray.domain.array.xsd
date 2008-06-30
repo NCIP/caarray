@@ -96,8 +96,13 @@
                         type="gov.nih.nci.caarray.domain.vocabulary:Term" />
                     <xs:element name="surfaceType" minOccurs="0" maxOccurs="1"
                         type="gov.nih.nci.caarray.domain.vocabulary:Term" />
-                    <xs:element name="designFile" minOccurs="0" maxOccurs="1"
-                        type="gov.nih.nci.caarray.domain.file:CaArrayFile" />
+                    <xs:element name="designFiles" minOccurs="0">
+                        <xs:complexType>
+                            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                <xs:element ref="gov.nih.nci.caarray.domain.file:CaArrayFile" />
+                            </xs:choice>
+                        </xs:complexType>
+                    </xs:element>
                 </xs:sequence>
                 <xs:attribute name="name" type="xs:string" />
                 <xs:attribute name="assayType" type="xs:string" />
