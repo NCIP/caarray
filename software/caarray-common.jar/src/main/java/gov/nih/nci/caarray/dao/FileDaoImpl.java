@@ -82,7 +82,12 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.util.HibernateUtil;
+
+import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.hibernate.Query;
 
 /**
  * DAO to manipulate file objects.
@@ -93,5 +98,48 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
     @Override
     Logger getLog() {
         return LOG;
+    }
+
+
+    private List getBlobPartIdsForProject(long projectId) {
+
+         String sql = "select b.blob_parts from PROJECT p, CAARRAYFILE c, CAARRAYFILE_BLOB_PARTS b "
+                      + "where p.id = c.project AND b.caarrayfile = c.id AND p.id = :p_id";
+
+        return HibernateUtil.getCurrentSession().createSQLQuery(sql).setLong("p_id", projectId).list();
+    }
+
+
+    private int removeAssociationsByBlobHolderId(List<Long> idList) {
+
+
+        String sql = "delete from CAARRAYFILE_BLOB_PARTS where blob_parts in (:b_parts)";
+
+        Query q = HibernateUtil.getCurrentSession().createSQLQuery(sql);
+        q.setParameterList("b_parts", idList);
+        return q.executeUpdate();
+
+    }
+
+
+    private int removeBlobHoldersById(List<Long> idList) {
+
+        String sql = "delete from BLOB_HOLDER where id in (:b_parts)";
+
+        Query q = HibernateUtil.getCurrentSession().createSQLQuery(sql);
+        q.setParameterList("b_parts", idList);
+        return q.executeUpdate();
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void deleteAssociatedBlobsByProjectId(Long projectId) {
+        List<Long> list = this.getBlobPartIdsForProject(projectId);
+        if (list != null && !list.isEmpty()) {
+            this.removeAssociationsByBlobHolderId(list);
+            this.removeBlobHoldersById(list);
+        }
     }
 }

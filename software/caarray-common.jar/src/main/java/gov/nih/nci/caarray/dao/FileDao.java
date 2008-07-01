@@ -83,10 +83,18 @@
 package gov.nih.nci.caarray.dao;
 
 
+
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.file</code> package.
  *
  */
 public interface FileDao extends CaArrayDao {
     // currently no additional methods
+
+    /**
+     * Method to delete associated Blobs from a project in anticipation of project
+     * deletion.
+     * @param projectId the id of the project being manipulated
+     */
+    void deleteAssociatedBlobsByProjectId(Long projectId);
 }

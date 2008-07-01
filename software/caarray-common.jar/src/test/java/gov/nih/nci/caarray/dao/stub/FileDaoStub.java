@@ -102,4 +102,11 @@ public class FileDaoStub extends AbstractDaoStub implements FileDao {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void deleteAssociatedBlobsByProjectId(Long projectId) {
+        //NOOP
+    }
+
 }

@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -160,6 +161,10 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
     private ProjectDao getProjectDao() {
         return this.daoFactory.getProjectDao();
+    }
+
+    private FileDao getFileDao() {
+        return this.daoFactory.getFileDao();
     }
 
     /**
@@ -410,12 +415,18 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             LogUtil.logSubsystemExit(LOG);
             throw new ProposalWorkflowException("Cannot delete a non-draft project");
         }
+        // remove the blobs
+        getFileDao().deleteAssociatedBlobsByProjectId(project.getId());
+        // refresh project
+        Project freshProject = this.getProject(project.getId());
+
         // both hybridizations and project are trying to delete the save files via cascades, so explicitly
         // delete hybridizations (and their files) first
-        for (Hybridization hyb : project.getExperiment().getHybridizations()) {
+        for (Hybridization hyb : freshProject.getExperiment().getHybridizations()) {
             getProjectDao().remove(hyb);
         }
-        getProjectDao().remove(project);
+        getProjectDao().remove(freshProject);
+
         LogUtil.logSubsystemExit(LOG);
     }
 
