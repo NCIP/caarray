@@ -5,3 +5,9 @@
 -- feature request 11925
 alter table array_design drop foreign key design_file_fk;
 alter table array_design drop foreign key DESIGN_FILE_FK;
+
+alter table characteristic drop foreign key characteristic_term_fk,
+ drop foreign key characteristic_unit_fk;
+
+alter table characteristic drop foreign key CHARACTERISTIC_TERM_FK,
+ drop foreign key CHARACTERISTIC_UNIT_FK;

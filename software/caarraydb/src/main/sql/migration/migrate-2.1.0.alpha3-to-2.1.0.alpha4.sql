@@ -21,14 +21,12 @@ create table  characteristic_term (
 insert into characteristic_measurement(characteristic_id, unit, value) select id, unit, value from characteristic where discriminator='MEASUREMENT';
 insert into characteristic_term (characteristic_id, term) select id, term from characteristic where discriminator='TERM';
 
-alter table characteristic_measurement add constraint foreign key (characteristic_id) references characteristic (id);
-alter table characteristic_term add constraint foreign key (characteristic_id) references characteristic (id);
+alter table characteristic_measurement add constraint FKDCD02B18C776BCA4 foreign key (characteristic_id) references characteristic (id);
+alter table characteristic_term add constraint FK76634490C776BCA4 foreign key (characteristic_id) references characteristic (id);
 alter table characteristic drop column discriminator,
  drop column unit,
  drop column term,
- drop column value,
- drop foreign key characteristic_term_fk,
- drop foreign key characteristic_unit_fk;
+ drop column value;
 
 -- feature request 11925
 create table array_design_design_file (array_design bigint not null, design_file bigint not null, primary key (array_design, design_file), unique (design_file)) type=InnoDB;
