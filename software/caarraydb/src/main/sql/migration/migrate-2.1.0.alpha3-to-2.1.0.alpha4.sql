@@ -1,5 +1,5 @@
 -- defect 14678
-create table  caarraydb.characteristic_measurement (
+create table  characteristic_measurement (
   characteristic_id bigint(20) not null,
   value float default null,
   unit bigint(20) not null,
@@ -9,7 +9,7 @@ create table  caarraydb.characteristic_measurement (
   constraint characteristic_measurement_unit_fk foreign key (unit) references term (id)
 ) engine=innodb default charset=latin1;
 
-create table  caarraydb.characteristic_term (
+create table  characteristic_term (
   characteristic_id bigint(20) not null,
   term bigint(20) not null,
   primary key  (characteristic_id),
@@ -21,8 +21,8 @@ create table  caarraydb.characteristic_term (
 insert into characteristic_measurement(characteristic_id, unit, value) select id, unit, value from characteristic where discriminator='MEASUREMENT';
 insert into characteristic_term (characteristic_id, term) select id, term from characteristic where discriminator='TERM';
 
-alter table caarraydb.characteristic_measurement add constraint foreign key (characteristic_id) references characteristic (id);
-alter table caarraydb.characteristic_term add constraint foreign key (characteristic_id) references characteristic (id);
+alter table characteristic_measurement add constraint foreign key (characteristic_id) references characteristic (id);
+alter table characteristic_term add constraint foreign key (characteristic_id) references characteristic (id);
 alter table characteristic drop column discriminator,
  drop column unit,
  drop column term,
