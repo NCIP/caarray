@@ -34,3 +34,11 @@ alter table array_design_design_file add index design_file_fk (design_file), add
 alter table array_design_design_file add index array_design_fk (array_design), add constraint array_design_fk foreign key (array_design) references array_design (id);
 insert into array_design_design_file (array_design, design_file) select id, design_file from array_design where design_file is not null;
 alter table array_design drop column design_file;
+
+-- defect 10653
+-- step 1
+update publication set status = (select id from term_source where name = 'caArray' and version = '2.0') where status in (select id from term where value = 'In Print');
+-- step 2
+delete from term_categories where category_id = (select id from category where name = 'PublicationStatus') and term_id in (select id from term where value = 'In Print' and source != (select id from term_source where name = 'caArray' and version = '2.0'));
+-- step 3
+delete from term where value = 'In Print' and source != (select id from term_source where name = 'caArray' and version = '2.0');
