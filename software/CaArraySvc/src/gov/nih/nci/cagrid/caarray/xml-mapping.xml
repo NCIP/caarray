@@ -537,7 +537,7 @@
     </field>
     <field name="arrays" type="gov.nih.nci.caarray.domain.array.Array" collection="collection">
       <bind-xml name="Array" type="gov.nih.nci.caarray.domain.array.Array" location="arrays" node="element" />
-    </field>    
+    </field>
     <field name="publications" type="gov.nih.nci.caarray.domain.publication.Publication" collection="collection">
       <bind-xml name="Publication" type="gov.nih.nci.caarray.domain.publication.Publication" location="publications" node="element" />
     </field>

@@ -83,9 +83,6 @@
 
 package gov.nih.nci.caarray.domain.array;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -95,6 +92,9 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.cabio.domain.Microarray;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -487,7 +487,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the designDetails
      */
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @Cascade(CascadeType.ALL)
     @ForeignKey(name = "arraydesign_details_fk")
     public ArrayDesignDetails getDesignDetails() {
