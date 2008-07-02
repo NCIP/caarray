@@ -129,12 +129,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 	</target>
 
 	<target name="clean">
-		<delete dir="${dist.dir}"/>
 		<delete dir="${temp.dir}"/>
 	</target>
 
-	<target name="init" >
-		<mkdir dir="${dist.dir}"/>
+	<target name="init" >		
 		<mkdir dir="${tools.dist.dir}"/>
 		
 		<!-- start from scratch to make sure no stale
