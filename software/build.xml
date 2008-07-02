@@ -497,4 +497,28 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 	</target>
 
 
+	<macrodef name="deploy-files">
+		<attribute name="ssh.user" default="${ssh.server.username}" />
+		<attribute name="ssh.host" default="${ssh.server.hostname}" />
+		<attribute name="remote.directory.property.name" default="ssh.dir.temp" />
+		<attribute name="properties.file" default="${properties.file}" />
+		<attribute name="dist.dir" default="${caarray.dist.dir}" />
+		<attribute name="dist.file" />
+		<sequential>
+			<!-- Validate remote directory is valid -->
+			<propertycopy name="remote.dir" from="@{remote.directory.property.name}" />
+			<check-valid-directory-name directory.property="remote.dir" />
+			<!-- Delete/re-create remote directory -->
+			<remote-ssh remotesshcommand="rm -rf ${remote.dir};mkdir -p ${remote.dir}" />
+			<!-- work around for issue where basedir is required but is not currently used -->
+			<remote-ssh remotesshcommand="mkdir -p ${remote.dir}/lib" />
+
+			<!-- copy distribution and prop file to remote system -->
+			<remote-scp remoteScpFileToCopy="@{dist.dir}/@{dist.file}" remoteScpToDir="@{ssh.user}@@@{ssh.host}:${remote.dir}" />
+			<remote-scp remoteScpFileToCopy="@{properties.file}" remoteScpToDir="@{ssh.user}@@@{ssh.host}:${remote.dir}" />
+			<!-- Extract zip file -->
+			<remote-ssh remotesshcommand="cd ${remote.dir}; unzip -q @{dist.file}" />
+		</sequential>
+	</macrodef>
+
 </project>
