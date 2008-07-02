@@ -43,6 +43,7 @@
 </ajax:displayTag>
 
 <script type="text/javascript">
+downloadMgr.resetAllFiles();
 <c:forEach items="${files}" var="file">
     downloadMgr.addFile('${file.name}', '${file.id}', ${file.compressedSize});
     if (downloadMgr.inQueue('${file.id}')) {

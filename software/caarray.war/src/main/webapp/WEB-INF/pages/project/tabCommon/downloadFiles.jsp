@@ -13,7 +13,7 @@
         <table class="searchresults" id="downloadTbl">
           <tr>
             <fmt:message key="experiment.files.downloadQueue" var="downloadQueueTitle" />
-            <th>${downloadQueueTitle}&nbsp;[<a href="#" id="toggleQueue" onclick="downloadMgr.toggleQueue()" >Show Files</a>]</th>
+            <th>${downloadQueueTitle}&nbsp;[<a href="#" id="toggleQueue" onclick="downloadMgr.toggleQueue(); return false" >Show Files</a>]</th>
           </tr>
           <tr>
             <td>

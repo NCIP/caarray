@@ -448,6 +448,9 @@ DownloadMgr.prototype.cleanupDownloadQueue = function() {
   this.hideQueue=true;
 }
 
+DownloadMgr.prototype.resetAllFiles = function() {
+  this.files = new Object();
+}
 
 DownloadMgr.prototype.deleteTotalRow = function() {
     var tbl = $('downloadTbl');
