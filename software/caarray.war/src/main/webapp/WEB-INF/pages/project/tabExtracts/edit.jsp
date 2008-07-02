@@ -22,5 +22,8 @@
         <s:hidden name="editMode" />
         <input type="submit" class="enableEnterSubmit"/>
     </caarray:projectListTabItemForm>
+
+    <s:if test="${!editMode}">
     <%@ include file="/WEB-INF/pages/project/tabCommon/downloadFiles.jsp" %>
+    </s:if>
 </caarray:tabPane>
