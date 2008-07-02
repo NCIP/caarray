@@ -796,10 +796,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             zos.finish();
         } catch (Exception e) {
             LOG.error("Error streaming download", e);
+            IOUtils.closeQuietly(fis);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            if (fis != null) {
-                IOUtils.closeQuietly(fis);
-            }
         }
     }
 
