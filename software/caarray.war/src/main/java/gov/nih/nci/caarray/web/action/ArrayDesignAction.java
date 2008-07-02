@@ -347,29 +347,33 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     @SkipValidation
     public String save() {
         String returnVal = null;
+        Long id = null;
         // upload file is required for new array designs
         if (arrayDesign.getId() == null && uploadFileName == null) {
             addFieldError(UPLOAD_FIELD_NAME, getText("fileRequired"));
-            returnVal =  edit();
         } else {
 
-            Long id = arrayDesign.getId();
+            id = arrayDesign.getId();
             if (id == null) {
               arrayDesign.setName(FilenameUtils.getBaseName(uploadFileName));
             }
 
             saveImportFile();
-
-            if (this.hasErrors()) {
-                // addArrayDesign overwrites the id, so reset if there is an error.
-                arrayDesign.setId(id);
-                returnVal = "metaValid";
-            } else {
-                returnVal = "importComplete";
-            }
-
-            MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
         }
+
+        if (this.hasErrors()) {
+            // addArrayDesign overwrites the id, so reset if there is an error.
+            if (id != null) {
+                arrayDesign.setId(id);
+            }
+            returnVal = "metaValid";
+        } else {
+            returnVal = "importComplete";
+        }
+
+
+        MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
+
         return returnVal;
     }
 
