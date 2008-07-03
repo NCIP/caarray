@@ -516,7 +516,8 @@ DownloadMgr.prototype.doDownloadFiles = function() {
       for (i = 0; i < files.length; ++i) {
           params = params + '&selectedFileIds=' + files[i].id;
       }
-      TabUtils.loadLinkInSubTab('Download Data', this.downloadGroupsUrl + params);
+      var url = this.downloadGroupsUrl + encodeURIComponent(params);
+      TabUtils.loadLinkInTab('Data', url);
   }
 }
 
