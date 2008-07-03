@@ -26,12 +26,12 @@
             <td>
                 <fmt:message key="${profile.securityLevel.resourceKey}"/>
                 <c:if test="${hasSamples}">
-                    <a href="#" onclick="toggleList('samples_${accessProfile.id}', this);" style="text-decoration: none;">[+]</a>
+                    <a href="#" onclick="toggleList('samples_${profile.id}', this);" style="text-decoration: none;">[+]</a>
                 </c:if>
             </td>
         </tr>
         <c:if test="${hasSamples}">
-        <tr id="samples_${accessProfile.id}" style="display:none"><td colspan="2">
+        <tr id="samples_${profile.id}" style="display:none"><td colspan="2">
             <table class="searchresults permissiontable">
             <tbody>
             <s:iterator value="project.experiment.samples" id="sample">

@@ -167,6 +167,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
                         getProjectManagementService().addGroupProfile(getProject(), this.collaboratorGroup);
                 newProfile.setSecurityLevel(this.accessProfile.getSecurityLevel());
                 this.accessProfile = newProfile;
+                this.accessProfiles.add(newProfile);
             }
             saveSamplePermissions();
             getPermissionsManagementService().saveAccessProfile(this.accessProfile);
