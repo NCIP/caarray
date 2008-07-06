@@ -491,4 +491,17 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     protected String getDownloadFileTableListSortActionUrl(BioMaterialTypes type) {
         return "/ajax/project/listTab/" + type.getType() + "/downloadFilesListTable.action";
     }
+    
+    /**
+     * Used to render the proper action for the download all files for a Annotation
+     * (ref:projectListTabDownloadColumn.tag).
+     * 
+     * @param files all the files for the item in question
+     * @return true if the all files to download for the current item (source, sample, etc..) should use the download
+     *         groups mechanism
+     */
+    public static boolean isWillPerformDownloadByGroups(Collection<CaArrayFile> files) {
+        List<DownloadGroup> computeDownloadGroups = ProjectFilesAction.computeDownloadGroups(files);
+        return computeDownloadGroups.size() > 1 ? true : false;
+    }
 }

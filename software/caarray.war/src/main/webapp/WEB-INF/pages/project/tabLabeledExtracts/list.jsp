@@ -29,7 +29,8 @@
             </display:column>
             <caarray:projectListTabActionColumns entityName="LabeledExtract" item="${row}" actions="!edit,!copy,!delete" 
                 isSubtab="true" canWriteProject="${canWriteProject}"/>
-            <caarray:projectListTabDownloadColumn entityName="LabeledExtract" itemId="${row.id}"/>                        
+            <s:set name="showDownloadGroups" value="%{@gov.nih.nci.caarray.web.action.project.AbstractProjectProtocolAnnotationListTabAction@isWillPerformDownloadByGroups(#attr.row.getAllDataFiles())}"/>
+            <caarray:projectListTabDownloadColumn entityName="LabeledExtract" itemId="${row.id}" showDownloadGroups="${showDownloadGroups}"/>                        
         </display:table>
     </ajax:displayTag>
 
