@@ -218,6 +218,9 @@
         <include name="caGrid-ServiceSecurityProvider-client-1.2.jar" />
         <include name="caGrid-ServiceSecurityProvider-common-1.2.jar" />
         <include name="caGrid-ServiceSecurityProvider-stubs-1.2.jar" />
+        <include name="caGrid-Transfer-client-1.2.jar" />
+        <include name="caGrid-Transfer-common-1.2.jar" />
+        <include name="caGrid-Transfer-stubs-1.2.jar" />
         <include name="castor-1.0.4.jar" />
     </fileset>
 
@@ -507,8 +510,8 @@
                 <pathelement location="${log4j.jar}" />
                 <pathelement location="${dom4j.jar}" />
                 <pathelement location="${nci-commons-core.jar}"/>
-                <pathelement location="${lib.dir}/castor-1.0.2.jar"/>                
-                <pathelement location="${json-lib.jar}"/>                
+                <pathelement location="${lib.dir}/castor-1.0.2.jar"/>
+                <pathelement location="${json-lib.jar}"/>
             </classpath>
         </javac>
     </target>
@@ -1425,10 +1428,10 @@
             <fileset dir="${caarray-ejb.src.dir}" includes="**/*.java" />
             <fileset dir="${caarray-war.src.dir}" includes="**/*.java" />
         </checkstyle>
-    	<path id="checkstyle.cp">
-    		<pathelement location="${xalan-2.7.1.jar}" />
-    		<pathelement location="${serializer.jar}" />
-    	</path>
+      <path id="checkstyle.cp">
+        <pathelement location="${xalan-2.7.1.jar}" />
+        <pathelement location="${serializer.jar}" />
+      </path>
         <xslt in="${site.dir}/checkstyle/checkstyle.xml" out="${site.dir}/checkstyle/checkstyle.html" style="${resource.dir}/checkstyle-frames-errors.xsl" classpathref="checkstyle.cp">
             <param name="output.dir" expression="${site.dir}/checkstyle" />
         </xslt>
