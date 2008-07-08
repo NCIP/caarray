@@ -1644,6 +1644,10 @@
     </target>
 
     <target name="deploy:caarray-svc-jboss" depends="build:caarray-svc,prepare:create-local.properties">
+        <unzip src="${jboss-globus-serverinstance-config.zip}"  dest="${globoss.server.instance.home}"/>
+        <replace file="${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd">
+           <replacefilter token="@LOGICAL_HOST@" value="${domain.name}" />
+        </replace>
         <ant dir="${caaray-svc.dir}" target="deployJBoss" inheritall="false">
             <property name="jboss.dir" value="${globoss.server.instance.home}"/>
         </ant>

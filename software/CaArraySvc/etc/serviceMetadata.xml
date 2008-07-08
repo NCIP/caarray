@@ -1,7 +1,7 @@
 <ns1:ServiceMetadata xmlns:ns1="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata">
  <ns1:serviceDescription>
   <ns2:Service description="" name="CaArraySvc" version="1.1" xmlns:ns2="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.service">
-   <ns2:pointOfContactCollection/>
+   <ns2:pointOfContactCollection affiliation="National Cancer Institute - CBIIT" email="duncanmk@mail.nih.gov" firstName="Maki" lastName="Duncan" phoneNumber="301-443-5307" role="Project Manager"/>
    <ns2:serviceContextCollection>
     <ns2:ServiceContext description="" name="CaArraySvc">
      <ns2:operationCollection>
@@ -72,8 +72,8 @@
   </ns2:Service>
  </ns1:serviceDescription>
  <ns1:hostingResearchCenter>
-  <ns15:ResearchCenter displayName="NCICB" shortName="NCICB" xmlns:ns15="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common">
-   <ns15:Address country="" locality="" postalCode="" stateProvince="" street1=""/>
+  <ns15:ResearchCenter displayName="National Cancer Institute - CBIIT" shortName="NCI">
+   <ns15:Address country="US" locality="Rockville" postalCode="20852" stateProvince="MD" street1="2115 E. Jefferson Street"/>
    <ns15:pointOfContactCollection/>
   </ns15:ResearchCenter>
  </ns1:hostingResearchCenter>
