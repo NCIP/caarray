@@ -105,6 +105,7 @@
                     </xs:element>
                 </xs:sequence>
                 <xs:attribute name="name" type="xs:string" />
+                <xs:attribute name="description" type="xs:string" />
                 <xs:attribute name="assayType" type="xs:string" />
                 <xs:attribute name="version" type="xs:string" />
             </xs:extension>
