@@ -72,7 +72,7 @@
   </ns2:Service>
  </ns1:serviceDescription>
  <ns1:hostingResearchCenter>
-  <ns15:ResearchCenter displayName="National Cancer Institute - CBIIT" shortName="NCI">
+  <ns15:ResearchCenter displayName="National Cancer Institute - CBIIT" shortName="NCI" xmlns:ns15="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common">
    <ns15:Address country="US" locality="Rockville" postalCode="20852" stateProvince="MD" street1="2115 E. Jefferson Street"/>
    <ns15:pointOfContactCollection/>
   </ns15:ResearchCenter>
