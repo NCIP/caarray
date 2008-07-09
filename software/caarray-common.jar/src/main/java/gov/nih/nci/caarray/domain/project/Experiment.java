@@ -238,7 +238,7 @@ public class Experiment extends AbstractCaArrayEntity {
 
     private String title;
     private String description;
-    private Date dateOfExperiment;
+    private Date date;
     private Date publicReleaseDate;
     private PaymentMechanism paymentMechanism;
     private String paymentNumber;
@@ -249,7 +249,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Factor> factors = new HashSet<Factor>();
     private List<ExperimentContact> experimentContacts = new ArrayList<ExperimentContact>();
     private Set<Term> experimentDesignTypes = new HashSet<Term>();
-    private String experimentDesignDescription;
+    private String designDescription;
     private String qualityControlDescription;
     private Set<Term> qualityControlTypes = new HashSet<Term>();
     private String replicateDescription;
@@ -266,23 +266,24 @@ public class Experiment extends AbstractCaArrayEntity {
     private Project project;
 
     /**
-     * Gets the dateOfExperiment.
+     * Gets the date of this Experiment.
      *
-     * @return the dateOfExperiment
+     * @return the date of this Experiment
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "date_of_experiment")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
-    public Date getDateOfExperiment() {
-        return this.dateOfExperiment;
+    public Date getDate() {
+        return this.date;
     }
 
     /**
-     * Sets the dateOfExperiment.
+     * Sets the date of this Experiment.
      *
-     * @param dateOfExperimentVal the dateOfExperiment
+     * @param date the date of this Experiment
      */
-    public void setDateOfExperiment(final Date dateOfExperimentVal) {
-        this.dateOfExperiment = dateOfExperimentVal;
+    public void setDate(final Date date) {
+        this.date = date;
     }
 
     /**
@@ -844,18 +845,21 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the experimentDesignDescription
+     * Get the description of the experiment design.
+     * @return the designDescription
      */
+    @Column(name = "experiment_design_description")
     @Length(min = 1, max = LARGE_TEXT_FIELD_LENGTH)
-    public String getExperimentDesignDescription() {
-        return this.experimentDesignDescription;
+    public String getDesignDescription() {
+        return this.designDescription;
     }
 
     /**
-     * @param experimentDesignDescription the experimentDesignDescription to set
+     * Set the description of the experiment design.
+     * @param designDescription the designDescription to set
      */
-    public void setExperimentDesignDescription(String experimentDesignDescription) {
-        this.experimentDesignDescription = experimentDesignDescription;
+    public void setDesignDescription(String designDescription) {
+        this.designDescription = designDescription;
     }
 
     /**

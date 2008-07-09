@@ -208,11 +208,11 @@ public class ProjectManagementServiceIntegrationTest {
         DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
         DUMMY_EXPERIMENT_1.setDescription("DummyExperiment1Desc");
         Date currDate = new Date();
-        DUMMY_EXPERIMENT_1.setDateOfExperiment(currDate);
+        DUMMY_EXPERIMENT_1.setDate(currDate);
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
         DUMMY_EXPERIMENT_1.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_1.setServiceType(ServiceType.FULL);
-        DUMMY_EXPERIMENT_1.setExperimentDesignDescription("Working on it");
+        DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
     }
 
     private static void setExperimentContacts() {

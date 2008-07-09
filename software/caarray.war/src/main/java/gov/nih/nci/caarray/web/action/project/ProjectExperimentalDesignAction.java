@@ -131,7 +131,7 @@ public class ProjectExperimentalDesignAction extends ProjectTabAction {
                 expression = "!project.experiment.experimentDesignTypes.isEmpty")
         },
         requiredFields = {
-            @RequiredFieldValidator(fieldName = "project.experiment.experimentDesignDescription",
+            @RequiredFieldValidator(fieldName = "project.experiment.designDescription",
                 key = "errors.required", message = "")
         }
     )

@@ -333,11 +333,11 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
         DUMMY_EXPERIMENT_1.setDescription("DummyExperiment1Desc");
         Date currDate = new Date();
-        DUMMY_EXPERIMENT_1.setDateOfExperiment(currDate);
+        DUMMY_EXPERIMENT_1.setDate(currDate);
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
         DUMMY_EXPERIMENT_1.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_1.setServiceType(ServiceType.FULL);
-        DUMMY_EXPERIMENT_1.setExperimentDesignDescription("Working on it");
+        DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
 
         DUMMY_EXPERIMENT_2.setTitle("New DummyExperiment2");
         DUMMY_EXPERIMENT_2.setAssayTypeEnum(AssayType.ACGH);
@@ -814,7 +814,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             HibernateUtil.getCurrentSession().clear();
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
-            assertNull(p.getExperiment().getExperimentDesignDescription());
+            assertNull(p.getExperiment().getDesignDescription());
             assertFalse(SecurityUtils.canRead(p, UsernameHolder.getCsmUser()));
             assertFalse(SecurityUtils.canWrite(p, UsernameHolder.getCsmUser()));
             assertFalse(SecurityUtils.canModifyPermissions(p, UsernameHolder.getCsmUser()));
@@ -884,7 +884,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
             assertEquals(p.getPublicProfile().getSecurityLevel(), SecurityLevel.READ);
-            assertNotNull(p.getExperiment().getExperimentDesignDescription());
+            assertNotNull(p.getExperiment().getDesignDescription());
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
             Hibernate.initialize(p.getExperiment().getSamples());
             assertEquals(1, p.getExperiment().getSamples().size());
@@ -920,7 +920,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
             assertEquals(SecurityLevel.READ_SELECTIVE, p.getPublicProfile().getSecurityLevel());
-            assertNotNull(p.getExperiment().getExperimentDesignDescription());
+            assertNotNull(p.getExperiment().getDesignDescription());
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
             Hibernate.initialize(p.getExperiment().getSamples());
             assertEquals(0, p.getExperiment().getSamples().size());
@@ -943,7 +943,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
             assertEquals(SecurityLevel.READ_SELECTIVE, p.getPublicProfile().getSecurityLevel());
-            assertNotNull(p.getExperiment().getExperimentDesignDescription());
+            assertNotNull(p.getExperiment().getDesignDescription());
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
             Hibernate.initialize(p.getExperiment().getSamples());
             assertEquals(1, p.getExperiment().getSamples().size());
@@ -1050,7 +1050,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
             assertNotNull(p.getExperiment().getAssayTypeEnum());
-            assertNull(p.getExperiment().getExperimentDesignDescription());
+            assertNull(p.getExperiment().getDesignDescription());
             HibernateUtil.getCurrentSession().clear();
             tx.commit();
 

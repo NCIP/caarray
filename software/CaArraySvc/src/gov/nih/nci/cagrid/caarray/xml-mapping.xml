@@ -385,14 +385,14 @@
   </class>
   <class name="gov.nih.nci.caarray.domain.project.Experiment" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
     <map-to xml="Experiment" ns-uri="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" />
-    <field name="dateOfExperiment" type="date">
-      <bind-xml name="dateOfExperiment" node="attribute" />
+    <field name="date" type="date">
+      <bind-xml name="date" node="attribute" />
     </field>
     <field name="assayType" type="string">
       <bind-xml name="assayType" node="attribute" />
     </field>
-    <field name="experimentDesignDescription" type="string">
-      <bind-xml name="experimentDesignDescription" node="attribute" />
+    <field name="designDescription" type="string">
+      <bind-xml name="designDescription" node="attribute" />
     </field>
     <field name="qualityControlDescription" type="string">
       <bind-xml name="qualityControlDescription" node="attribute" />

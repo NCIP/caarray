@@ -155,9 +155,9 @@
                     </xs:element>
                     <xs:element name="organism" minOccurs="0" maxOccurs="1" type="edu.georgetown.pir:Organism" />
                 </xs:sequence>
-                <xs:attribute name="dateOfExperiment" type="xs:dateTime" />
+                <xs:attribute name="date" type="xs:dateTime" />
                 <xs:attribute name="assayType" type="xs:string" />
-                <xs:attribute name="experimentDesignDescription" type="xs:string" />
+                <xs:attribute name="designDescription" type="xs:string" />
                 <xs:attribute name="qualityControlDescription" type="xs:string" />
                 <xs:attribute name="replicateDescription" type="xs:string" />
                 <xs:attribute name="publicIdentifier" type="xs:string" />

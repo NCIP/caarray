@@ -3121,7 +3121,7 @@
       <ns89:enumerationCollection/>
      </ns89:ValueDomain>
     </ns89:UMLAttribute>
-    <ns89:UMLAttribute dataTypeName="java.util.Date" description="The calendar date on which an experiment was completed." name="dateOfExperiment" publicID="2727141" version="1.0">
+    <ns89:UMLAttribute dataTypeName="java.util.Date" description="The calendar date on which an experiment was completed." name="date" publicID="2727141" version="1.0">
      <ns89:SemanticMetadata conceptCode="C25164" conceptDefinition="a particular day specified as the time something has, or will, happen." conceptName="Date" order="0"/>
      <ns89:SemanticMetadata conceptCode="C42790" conceptDefinition="In the scientific method, an experiment is a set of actions and observations, performed to verify or falsify a hypothesis or research a causal relationship between phenomena. The experiment is a cornerstone of the empirical approach to knowledge. (from Wikipedia)" conceptName="Experiment" order="1"/>
      <ns89:ValueDomain longName="java.util.Date">
@@ -3153,7 +3153,7 @@
       <ns89:enumerationCollection/>
      </ns89:ValueDomain>
     </ns89:UMLAttribute>
-    <ns89:UMLAttribute dataTypeName="java.lang.String" description="Describes the methods used to ensure or measure the quality of data produced in this experiment." name="experimentDesignDescription" publicID="2727140" version="1.0">
+    <ns89:UMLAttribute dataTypeName="java.lang.String" description="Describes the methods used to ensure or measure the quality of data produced in this experiment." name="designDescription" publicID="2727140" version="1.0">
      <ns89:SemanticMetadata conceptCode="C15320" conceptDefinition="A plan for collecting and utilizing data so that desired information can be obtained with sufficient precision or so that an hypothesis can be tested properly." conceptName="Study Design" order="1"/>
      <ns89:SemanticMetadata conceptCode="C25365" conceptDefinition="Description; a statement that represents something in words." conceptName="Description" order="0"/>
      <ns89:ValueDomain longName="java.lang.String">

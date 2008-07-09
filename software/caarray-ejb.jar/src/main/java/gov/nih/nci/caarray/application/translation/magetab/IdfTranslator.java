@@ -144,7 +144,7 @@ final class IdfTranslator extends AbstractTranslator {
             desc = desc.substring(0, LARGE_TEXT_FIELD_LENGTH);
         }
         investigation.setDescription(desc);
-        investigation.setDateOfExperiment(idfInvestigation.getDateOfExperiment());
+        investigation.setDate(idfInvestigation.getDateOfExperiment());
         investigation.setPublicReleaseDate(idfInvestigation.getPublicReleaseDate());
     }
 
