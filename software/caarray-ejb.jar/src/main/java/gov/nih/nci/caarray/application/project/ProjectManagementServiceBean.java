@@ -567,7 +567,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         Sample sample = getDaoFactory().getSearchDao().retrieve(Sample.class, sampleId);
         Sample copy = new Sample();
         copyInto(Sample.class, copy, sample);
-        copy.setSpecimen(sample.getSpecimen());
         for (Source source : sample.getSources()) {
             source.getSamples().add(copy);
             copy.getSources().add(source);
@@ -589,7 +588,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         Extract extract = getDaoFactory().getSearchDao().retrieve(Extract.class, extractId);
         Extract copy = new Extract();
         copyInto(Extract.class, copy, extract);
-        copy.setMolecularSpecimen(extract.getMolecularSpecimen());
         project.getExperiment().getExtracts().add(copy);
         for (Sample sample : extract.getSamples()) {
             sample.getExtracts().add(copy);

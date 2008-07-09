@@ -109,7 +109,7 @@ public abstract class AbstractCaArrayObject implements PersistentObject {
     protected static final int LARGE_TEXT_FIELD_LENGTH = 2000;
 
     private Long id;
-    private String bigid;
+    private String caBigId;
 
     /**
      * Default hibernate batch size.
@@ -195,16 +195,16 @@ public abstract class AbstractCaArrayObject implements PersistentObject {
     /**
      * @return the gridIdentifier
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getBigid() {
-        return bigid;
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE, name = "bigid")
+    public String getCaBigId() {
+        return caBigId;
     }
 
     /**
      * @param gridIdentifier the gridIdentifier to set
      */
-    public void setBigid(String gridIdentifier) {
-        this.bigid = gridIdentifier;
+    public void setCaBigId(String gridIdentifier) {
+        this.caBigId = gridIdentifier;
     }
 
 }

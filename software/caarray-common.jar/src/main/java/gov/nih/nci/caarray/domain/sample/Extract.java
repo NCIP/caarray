@@ -83,7 +83,6 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
-import edu.wustl.catissuecore.domain.MolecularSpecimen;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.security.Protectable;
@@ -101,7 +100,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -125,7 +123,6 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
      * The samples set.
      */
     private Set<Sample> samples = new HashSet<Sample>();
-    private MolecularSpecimen molecularSpecimen;
     private Experiment experiment;
 
     /**
@@ -189,22 +186,6 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
         return new ToStringBuilder(this)
             .append("labeledExtracts", labeledExtracts)
             .toString();
-    }
-
-    /**
-     * @return the molecularSpecimen
-     */
-    @OneToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public MolecularSpecimen getMolecularSpecimen() {
-        return molecularSpecimen;
-    }
-
-    /**
-     * @param molecularSpecimen the molecularSpecimen to set
-     */
-    public void setMolecularSpecimen(MolecularSpecimen molecularSpecimen) {
-        this.molecularSpecimen = molecularSpecimen;
     }
 
     /**

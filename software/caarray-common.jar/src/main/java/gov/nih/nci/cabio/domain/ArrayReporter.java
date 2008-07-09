@@ -91,10 +91,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.ForeignKey;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
@@ -116,7 +113,6 @@ public class ArrayReporter implements PersistentObject {
     private Long id;
     private String name;
     private String bigid;
-    private Microarray microarray;
 
     /**
      * @return the bigid
@@ -156,19 +152,4 @@ public class ArrayReporter implements PersistentObject {
     public void setName(String name) {
         this.name = name;
     }
-    /**
-     * @return the microarray
-     */
-    @ManyToOne
-    @ForeignKey(name = "arrayreporter_microarray_fk")
-    public Microarray getMicroarray() {
-        return microarray;
-    }
-    /**
-     * @param microarray the microarray to set
-     */
-    public void setMicroarray(Microarray microarray) {
-        this.microarray = microarray;
-    }
-
 }

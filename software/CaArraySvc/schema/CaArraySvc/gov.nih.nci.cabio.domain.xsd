@@ -10,26 +10,6 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-    <xs:element name="Microarray" type="Microarray" />
-    <xs:complexType name="Microarray">
-        <xs:sequence>
-            <xs:element name="reporterCollection" minOccurs="0">
-                <xs:complexType>
-                    <xs:choice minOccurs="0" maxOccurs="unbounded">
-                        <xs:element ref="ArrayReporter" />
-                    </xs:choice>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-        <xs:attribute name="annotationDate" type="xs:dateTime" />
-        <xs:attribute name="bigid" type="xs:string" />
-        <xs:attribute name="dbSNPVersion" type="xs:string" />
-        <xs:attribute name="genomeVersion" type="xs:string" />
-        <xs:attribute name="id" type="xs:long" />
-        <xs:attribute name="name" type="xs:string" />
-        <xs:attribute name="platform" type="xs:string" />
-        <xs:attribute name="type" type="xs:string" />
-    </xs:complexType>
     <xs:element name="SNPArrayReporter" type="SNPArrayReporter" />
     <xs:complexType name="SNPArrayReporter">
         <xs:complexContent>
@@ -64,9 +44,6 @@
     </xs:complexType>
     <xs:element name="ArrayReporter" type="ArrayReporter" />
     <xs:complexType name="ArrayReporter">
-        <xs:sequence>
-            <xs:element name="microarray" minOccurs="0" maxOccurs="1" type="Microarray" />
-        </xs:sequence>
         <xs:attribute name="bigid" type="xs:string" />
         <xs:attribute name="id" type="xs:long" />
         <xs:attribute name="name" type="xs:string" />

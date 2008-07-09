@@ -7,7 +7,6 @@
 	<xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact" schemaLocation="./gov.nih.nci.caarray.domain.contact.xsd"/>
 	<xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array" schemaLocation="./gov.nih.nci.caarray.domain.array.xsd"/>
 	<xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain" schemaLocation="./gov.nih.nci.caarray.domain.xsd"/>
-	<xs:import namespace="gme://caArray.caBIG/2.0/edu.wustl.catissuecore.domain" schemaLocation="./edu.wustl.catissuecore.domain.xsd"/>
 	<xs:import namespace="gme://caArray.caBIG/2.0/edu.georgetown.pir" schemaLocation="./edu.georgetown.pir.xsd"/>
 	<xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.cabio.domain" schemaLocation="./gov.nih.nci.cabio.domain.xsd"/>
 	<xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary" schemaLocation="./gov.nih.nci.caarray.domain.vocabulary.xsd"/>
@@ -62,13 +61,9 @@
 		<xs:element ref="ns0:AbstractProbe" xmlns:ns0="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array"/>
 		<xs:element ref="ns0:AbstractCaArrayObject" xmlns:ns0="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain"/>
 		<xs:element ref="ns0:AbstractCaArrayEntity" xmlns:ns0="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain"/>
-		<xs:element ref="ns0:AbstractDomainObject" xmlns:ns0="gme://caArray.caBIG/2.0/edu.wustl.catissuecore.domain"/>
-		<xs:element ref="ns0:MolecularSpecimen" xmlns:ns0="gme://caArray.caBIG/2.0/edu.wustl.catissuecore.domain"/>
-		<xs:element ref="ns0:Specimen" xmlns:ns0="gme://caArray.caBIG/2.0/edu.wustl.catissuecore.domain"/>
 		<xs:element ref="ns0:Organism" xmlns:ns0="gme://caArray.caBIG/2.0/edu.georgetown.pir"/>
 		<xs:element ref="ns0:AdditionalOrganismName" xmlns:ns0="gme://caArray.caBIG/2.0/edu.georgetown.pir"/>
 		<xs:element ref="ns0:ArrayReporter" xmlns:ns0="gme://caArray.caBIG/2.0/gov.nih.nci.cabio.domain"/>
-		<xs:element ref="ns0:Microarray" xmlns:ns0="gme://caArray.caBIG/2.0/gov.nih.nci.cabio.domain"/>
 		<xs:element ref="ns0:TranscriptArrayReporter" xmlns:ns0="gme://caArray.caBIG/2.0/gov.nih.nci.cabio.domain"/>
 		<xs:element ref="ns0:ExpressionArrayReporter" xmlns:ns0="gme://caArray.caBIG/2.0/gov.nih.nci.cabio.domain"/>
 		<xs:element ref="ns0:ExonArrayReporter" xmlns:ns0="gme://caArray.caBIG/2.0/gov.nih.nci.cabio.domain"/>

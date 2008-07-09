@@ -111,7 +111,7 @@ public class PersistentObjectTypeConverterTest {
         assertEquals(null, p);
 
         p = (Project) converter.convertFromString(null, new String[] {"1"}, Project.class);
-        assertEquals("FOO", p.getBigid());
+        assertEquals("FOO", p.getCaBigId());
 
         String idString = converter.convertToString(null, p);
         assertEquals("1", idString);
@@ -167,7 +167,7 @@ public class PersistentObjectTypeConverterTest {
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             if (Project.class.equals(entityClass) && Long.valueOf(1L).equals(entityId)) {
                 Project p = new Project();
-                p.setBigid("FOO");
+                p.setCaBigId("FOO");
                 p.setId(1l);
                 return (T) p;
             }

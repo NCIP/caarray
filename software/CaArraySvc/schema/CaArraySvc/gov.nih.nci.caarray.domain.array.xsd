@@ -84,8 +84,6 @@
                         type="gov.nih.nci.caarray.domain.vocabulary:Term" />
                     <xs:element name="organism" minOccurs="0" maxOccurs="1" type="edu.georgetown.pir:Organism" />
                     <xs:element name="designDetails" minOccurs="0" maxOccurs="1" type="ArrayDesignDetails" />
-                    <xs:element name="microarray" minOccurs="0" maxOccurs="1"
-                        type="gov.nih.nci.cabio.domain:Microarray" />
                     <xs:element name="provider" minOccurs="0" maxOccurs="1"
                         type="gov.nih.nci.caarray.domain.contact:Organization" />
                     <xs:element name="polymerType" minOccurs="0" maxOccurs="1"

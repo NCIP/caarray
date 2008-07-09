@@ -83,12 +83,9 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
-import edu.wustl.catissuecore.domain.Specimen;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.Protectable;
-import gov.nih.nci.caarray.security.SecurityPolicy;
 import gov.nih.nci.caarray.validation.UniqueConstraint;
 import gov.nih.nci.caarray.validation.UniqueConstraintField;
 
@@ -102,7 +99,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -125,7 +121,6 @@ public class Sample extends AbstractBioMaterial implements Protectable {
      */
     private static final long serialVersionUID = 1234567890L;
 
-    private Specimen specimen;
     private Experiment experiment;
     private String externalSampleId;
     private Set<Source> sources = new HashSet<Source>();
@@ -184,23 +179,6 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
-    }
-
-    /**
-     * @return the specimen
-     */
-    @OneToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @AttributePolicy(deny = SecurityPolicy.TCGA_POLICY_NAME)
-    public Specimen getSpecimen() {
-        return this.specimen;
-    }
-
-    /**
-     * @param specimen the specimen to set
-     */
-    public void setSpecimen(Specimen specimen) {
-        this.specimen = specimen;
     }
 
     /**

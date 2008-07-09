@@ -24,8 +24,6 @@
         <!-- mapping files -->
         <mapping class="edu.georgetown.pir.AdditionalOrganismName" />
         <mapping class="edu.georgetown.pir.Organism" />
-        <mapping class="edu.wustl.catissuecore.domain.MolecularSpecimen" />
-        <mapping class="edu.wustl.catissuecore.domain.Specimen" />
         <mapping class="gov.nih.nci.caarray.domain.BlobHolder" />
         <mapping class="gov.nih.nci.caarray.domain.array.AbstractDesignElement"/>
         <mapping class="gov.nih.nci.caarray.domain.array.AbstractProbe"/>
@@ -95,7 +93,6 @@
         <mapping class="gov.nih.nci.cabio.domain.ArrayReporter"/>
         <mapping class="gov.nih.nci.cabio.domain.ExonArrayReporter"/>
         <mapping class="gov.nih.nci.cabio.domain.ExpressionArrayReporter"/>
-        <mapping class="gov.nih.nci.cabio.domain.Microarray"/>
         <mapping class="gov.nih.nci.cabio.domain.SNPArrayReporter"/>
         <mapping class="gov.nih.nci.cabio.domain.TranscriptArrayReporter"/>
 

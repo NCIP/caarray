@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample"
-    xmlns:edu.wustl.catissuecore.domain="gme://caArray.caBIG/2.0/edu.wustl.catissuecore.domain"
     xmlns:edu.georgetown.pir="gme://caArray.caBIG/2.0/edu.georgetown.pir"
     xmlns:gov.nih.nci.caarray.domain="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain"
     xmlns:gov.nih.nci.caarray.domain.contact="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact"
@@ -19,8 +18,6 @@
         schemaLocation="gov.nih.nci.caarray.domain.contact.xsd" />
     <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization"
         schemaLocation="gov.nih.nci.caarray.domain.hybridization.xsd" />
-    <xs:import namespace="gme://caArray.caBIG/2.0/edu.wustl.catissuecore.domain"
-        schemaLocation="edu.wustl.catissuecore.domain.xsd" />
     <xs:import namespace="gme://caArray.caBIG/2.0/edu.georgetown.pir"
         schemaLocation="edu.georgetown.pir.xsd" />
 
@@ -149,8 +146,6 @@
                             </xs:choice>
                         </xs:complexType>
                     </xs:element>
-                    <xs:element name="specimen" minOccurs="0" maxOccurs="1"
-                        type="edu.wustl.catissuecore.domain:Specimen" />
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -185,11 +180,8 @@
                             </xs:choice>
                         </xs:complexType>
                     </xs:element>
-                    <xs:element name="molecularSpecimen" minOccurs="0" maxOccurs="1"
-                        type="edu.wustl.catissuecore.domain:MolecularSpecimen" />
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
 </xs:schema>
-

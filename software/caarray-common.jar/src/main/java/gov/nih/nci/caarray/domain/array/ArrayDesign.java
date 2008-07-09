@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.cabio.domain.Microarray;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -103,7 +102,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
@@ -139,7 +137,6 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private CaArrayFile annotationFile;
     private Set<CaArrayFile> designFiles = new HashSet<CaArrayFile>();
     private Organization provider;
-    private Microarray microarray;
     private ArrayDesignDetails designDetails;
 
     /**
@@ -465,23 +462,6 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     public void setOrganism(Organism organism) {
         this.organism = organism;
-    }
-
-    /**
-     * @return the microarray
-     */
-    @OneToOne
-    @Cascade(CascadeType.ALL)
-    @ForeignKey(name = "arraydesign_microarray_fk")
-    public Microarray getMicroarray() {
-        return microarray;
-    }
-
-    /**
-     * @param microarray the microarray to set
-     */
-    public void setMicroarray(Microarray microarray) {
-        this.microarray = microarray;
     }
 
     /**
