@@ -1852,7 +1852,7 @@
         <echo message="Installing Globus configuration into JBoss Grid server instance" />
         <remote-scp remoteScpFileToCopy="${jboss-globus-serverinstance-config.zip}" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.temp.dir}" />
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="unzip -o ${globoss.temp.dir}/jboss-globus-serverinstance-config.zip -d ${globoss.server.instance.home}" />
-        <mkdir failonerror="false" dir="${target.dir}" />
+        <mkdir dir="${target.dir}" />
         <unzip src="${jboss-globus-serverinstance-config.zip}"  dest="${target.dir}/archFileReplace"/>
         <replace file="${target.dir}/archFileReplace/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd">
           <replacefilter token="@LOGICAL_HOST@" value="${domain.name}" />
