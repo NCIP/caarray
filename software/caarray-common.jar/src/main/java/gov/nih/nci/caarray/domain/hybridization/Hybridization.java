@@ -83,7 +83,6 @@
 
 package gov.nih.nci.caarray.domain.hybridization;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
@@ -91,6 +90,8 @@ import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
@@ -101,6 +102,7 @@ import gov.nih.nci.caarray.security.ProtectableDescendent;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -131,8 +133,7 @@ import org.hibernate.validator.NotNull;
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class Hybridization extends AbstractCaArrayEntity implements ProtectableDescendent, ProtocolApplicable {
-
+public class Hybridization extends AbstractExperimentDesignNode implements ProtectableDescendent, ProtocolApplicable {
     private static final long serialVersionUID = 1234567890L;
     private static final String MAPPED_BY = "hybridization";
 
@@ -442,4 +443,48 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
         return total;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public ExperimentDesignNodeType getNodeType() {
+        return ExperimentDesignNodeType.HYBRIDIZATION;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public Set<? extends AbstractExperimentDesignNode> getDirectPredecessors() {
+        return getLabeledExtracts();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public Set<? extends AbstractExperimentDesignNode> getDirectSuccessors() {
+        return Collections.emptySet();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void doAddDirectPredecessor(AbstractExperimentDesignNode predecessor) {
+        LabeledExtract le = (LabeledExtract) predecessor;
+        getLabeledExtracts().add(le);
+        le.getHybridizations().add(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void doAddDirectSuccessor(AbstractExperimentDesignNode successor) {
+        throw new IllegalArgumentException("Should never be called as sources don't have predecessors");
+    }
 }

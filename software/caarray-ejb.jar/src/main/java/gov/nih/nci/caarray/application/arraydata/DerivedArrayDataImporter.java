@@ -83,58 +83,36 @@
 package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
-import java.io.File;
-import java.util.List;
-
 /**
  * Provides specialized behavior for importing <code>DerivedArrayData</code>.
  */
-final class DerivedArrayDataImporter extends AbstractDataSetImporter {
-
-    private DerivedArrayData derivedArrayData;
-
-    DerivedArrayDataImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory) {
-        super(caArrayFile, daoFactory);
+final class DerivedArrayDataImporter extends AbstractDataSetImporter<DerivedArrayData> {
+    DerivedArrayDataImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, 
+            DataImportOptions dataImportOptions) {
+        super(caArrayFile, daoFactory, DerivedArrayData.class, dataImportOptions);
     }
 
     @Override
     void addHybridizationDatas() {
-        for (Hybridization hybridization : getDerivedArrayData().getHybridizations()) {
+        for (Hybridization hybridization : getArrayData().getHybridizations()) {
             getDataSet().addHybridizationData(hybridization);
         }
     }
 
     @Override
-    AbstractArrayData getArrayData() {
-        return getDerivedArrayData();
-    }
-
-    private DerivedArrayData getDerivedArrayData() {
-        return derivedArrayData;
-    }
-
-    @Override
-    void createArrayData(boolean createAnnnotation) {
-        derivedArrayData = new DerivedArrayData();
-        derivedArrayData.setDataFile(getCaArrayFile());
-        File dataFile = getFile();
-        List<String> hybridizationNames = getDataFileHandler().getHybridizationNames(dataFile);
-        for (String hybridizationName : hybridizationNames) {
-            Hybridization hybridization = lookupOrCreateHybridization(hybridizationName, createAnnnotation);
-            derivedArrayData.getHybridizations().add(hybridization);
-            hybridization.getDerivedDataCollection().add(derivedArrayData);
-        }
-        getArrayDao().save(derivedArrayData);
+    void associateToHybridization(Hybridization hyb) {
+        DerivedArrayData derivedArrayData = getArrayData();
+        derivedArrayData.getHybridizations().add(hyb);
+        hyb.getDerivedDataCollection().add(derivedArrayData);        
     }
 
     @Override
     void lookupArrayData() {
-        derivedArrayData = getArrayDao().getDerivedArrayData(getCaArrayFile());
+        setArrayData(getArrayDao().getDerivedArrayData(getCaArrayFile()));
     }
 
 

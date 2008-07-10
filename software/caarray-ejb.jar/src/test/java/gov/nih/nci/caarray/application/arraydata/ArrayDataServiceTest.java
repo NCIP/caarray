@@ -142,8 +142,10 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -170,7 +172,10 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
@@ -202,17 +207,18 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  */
 @SuppressWarnings("PMD")
 public class ArrayDataServiceTest {
-
-
     private static final String GAL_DERISI_LSID_OBJECT_ID = "JoeDeRisi-fix";
     private static final String GAL_YEAST1_LSID_OBJECT_ID = "Yeast1";
     private static final String AFFY_TEST3_LSID_OBJECT_ID = "Test3";
     private static final String AFFY_TEN_K_LSID_OBJECT_ID = "Mapping10K_Xba131";
     private static final String HG_FOCUS_LSID_OBJECT_ID = "HG-Focus";
     private static final String ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID = "Human_WG-6";
+    private static final DataImportOptions DEFAULT_IMPORT_OPTIONS = DataImportOptions.getAutoCreatePerFileOptions();
+    
     private ArrayDataService arrayDataService;
     FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
+    LocalSearchDaoStub searchDaoStub = new LocalSearchDaoStub();
 
     @Before
     public void setUp() throws Exception {
@@ -249,10 +255,10 @@ public class ArrayDataServiceTest {
         focusCalvinCel.setProject(focusCel.getProject());
         focusChp.setProject(focusCel.getProject());
         focusCalvinChp.setProject(focusCel.getProject());
-        this.arrayDataService.importData(focusCel, true);
-        this.arrayDataService.importData(focusCalvinCel, true);
-        this.arrayDataService.importData(focusChp, true);
-        this.arrayDataService.importData(focusCalvinChp, true);
+        this.arrayDataService.importData(focusCel, true, DEFAULT_IMPORT_OPTIONS);
+        this.arrayDataService.importData(focusCalvinCel, true, DEFAULT_IMPORT_OPTIONS);
+        this.arrayDataService.importData(focusChp, true, DEFAULT_IMPORT_OPTIONS);
+        this.arrayDataService.importData(focusCalvinChp, true, DEFAULT_IMPORT_OPTIONS);
         checkAnnotation(focusCel, 2);
         Experiment exp = focusCel.getProject().getExperiment();
         assertEquals(2, exp.getHybridizations().size());
@@ -268,6 +274,65 @@ public class ArrayDataServiceTest {
             }
         }
     }
+
+    @Test
+    public void testImportSingleAnnotationChain() throws InvalidDataFileException {
+        // tests the import of multiple files to single annotation chain
+        CaArrayFile focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
+        CaArrayFile focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL, HG_FOCUS_LSID_OBJECT_ID);
+        CaArrayFile focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
+        CaArrayFile focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP, HG_FOCUS_LSID_OBJECT_ID);
+        focusCalvinCel.setProject(focusCel.getProject());
+        focusChp.setProject(focusCel.getProject());
+        focusCalvinChp.setProject(focusCel.getProject());
+        DataImportOptions options = DataImportOptions.getAutoCreateSingleOptions("TEST_NAME");
+        this.arrayDataService.importData(focusCel, true, options);
+        this.arrayDataService.importData(focusCalvinCel, true, options);
+        this.arrayDataService.importData(focusChp, true, options);
+        this.arrayDataService.importData(focusCalvinChp, true, options);
+        checkAnnotation(focusCel, 1);
+        Experiment exp = focusCel.getProject().getExperiment();
+        assertEquals(1, exp.getHybridizations().size());
+        Hybridization h = exp.getHybridizations().iterator().next();
+        assertEquals(2, h.getRawDataCollection().size());
+        assertEquals(2, h.getDerivedDataCollection().size());
+    }
+    
+    @Test
+    public void testImportToTargetSources() throws InvalidDataFileException {
+        // tests the import of multiple files to single annotation chain
+        CaArrayFile focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
+        CaArrayFile focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL, HG_FOCUS_LSID_OBJECT_ID);
+        CaArrayFile focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
+        CaArrayFile focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP, HG_FOCUS_LSID_OBJECT_ID);
+        focusCalvinCel.setProject(focusCel.getProject());
+        focusChp.setProject(focusCel.getProject());
+        focusCalvinChp.setProject(focusCel.getProject());
+        
+        Source targetSrc1 = new Source();
+        targetSrc1.setId(1L);
+        targetSrc1.setName("targetSrc1");
+        searchDaoStub.save(targetSrc1);
+        Source targetSrc2 = new Source();
+        targetSrc2.setName("targetSrc2");
+        targetSrc2.setId(2L);
+        searchDaoStub.save(targetSrc2);
+        focusCel.getProject().getExperiment().getSources().addAll(Arrays.asList(targetSrc1, targetSrc2));
+        
+        DataImportOptions options = DataImportOptions.getAssociateToBiomaterialsOptions(
+                ExperimentDesignNodeType.SOURCE, Arrays.asList(targetSrc1.getId(), targetSrc2.getId()));
+        this.arrayDataService.importData(focusCel, true, options);
+        this.arrayDataService.importData(focusCalvinCel, true, options);
+        this.arrayDataService.importData(focusChp, true, options);
+        this.arrayDataService.importData(focusCalvinChp, true, options);
+        Experiment exp = focusCel.getProject().getExperiment();
+        assertEquals(2, exp.getSources().size());
+        assertEquals(2, exp.getSamples().size());
+        assertEquals(2, exp.getHybridizations().size());
+        assertEquals(2, targetSrc1.getSamples().size());
+        assertEquals(2, targetSrc2.getSamples().size());
+    }
+
 
     @Test
     public void testCreateAnnotation() throws InvalidDataFileException {
@@ -286,7 +351,7 @@ public class ArrayDataServiceTest {
         celData.setDataFile(celFile);
         assertNull(celData.getType());
         this.daoFactoryStub.getArrayDao().save(celData);
-        this.arrayDataService.importData(celFile, true);
+        this.arrayDataService.importData(celFile, true, DEFAULT_IMPORT_OPTIONS);
         assertNotNull(celData.getType());
         assertEquals(celData, this.daoFactoryStub.getArrayDao().getRawArrayData(celFile));
         assertEquals(hybridization, celData.getHybridizations().iterator().next());
@@ -294,26 +359,26 @@ public class ArrayDataServiceTest {
 
     private void testCreateAnnotationIllumina() throws InvalidDataFileException {
         CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
-        this.arrayDataService.importData(illuminaFile, true);
+        this.arrayDataService.importData(illuminaFile, true, DEFAULT_IMPORT_OPTIONS);
         checkAnnotation(illuminaFile, 19);
     }
 
     @Test
     public void testUnsupportedDataFile() throws InvalidDataFileException {
         CaArrayFile expFile = getDataCaArrayFile(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_EXP, FileType.AFFYMETRIX_EXP);
-        this.arrayDataService.importData(expFile, true);
+        this.arrayDataService.importData(expFile, true, DEFAULT_IMPORT_OPTIONS);
         assertEquals(FileStatus.IMPORTED_NOT_PARSED, expFile.getFileStatus());
     }
 
     private void testCreateAnnotationCel() throws InvalidDataFileException {
         CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, AFFY_TEST3_LSID_OBJECT_ID);
-        this.arrayDataService.importData(celFile, true);
+        this.arrayDataService.importData(celFile, true, DEFAULT_IMPORT_OPTIONS);
         checkAnnotation(celFile, 1);
     }
 
     private void testCreateAnnotationChp() throws InvalidDataFileException {
         CaArrayFile chpFile = getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CHP, AFFY_TEST3_LSID_OBJECT_ID);
-        this.arrayDataService.importData(chpFile, true);
+        this.arrayDataService.importData(chpFile, true, DEFAULT_IMPORT_OPTIONS);
         checkAnnotation(chpFile, 1);
     }
 
@@ -340,7 +405,7 @@ public class ArrayDataServiceTest {
 
     private void testImportGenepixFile(File gprFile, QuantitationTypeDescriptor[] expectedTypes, int expectedNumberOfSamples) throws InvalidDataFileException {
         CaArrayFile gprCaArrayFile = getGprCaArrayFile(gprFile, GAL_DERISI_LSID_OBJECT_ID);
-        this.arrayDataService.importData(gprCaArrayFile, true);
+        this.arrayDataService.importData(gprCaArrayFile, true, DEFAULT_IMPORT_OPTIONS);
         DerivedArrayData data = this.daoFactoryStub.getArrayDao().getDerivedArrayData(gprCaArrayFile);
         assertNotNull(data);
         checkAnnotation(gprCaArrayFile, expectedNumberOfSamples);
@@ -357,7 +422,7 @@ public class ArrayDataServiceTest {
         DerivedArrayData chpData = getChpData(cdfFile, chpFile);
         assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
         assertNull(chpData.getDataSet());
-        this.arrayDataService.importData(chpData.getDataFile(), false);
+        this.arrayDataService.importData(chpData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
         assertEquals(FileStatus.IMPORTED, chpData.getDataFile().getFileStatus());
         assertNotNull(chpData.getDataSet());
         DataSet dataSet = chpData.getDataSet();
@@ -400,7 +465,7 @@ public class ArrayDataServiceTest {
         DerivedArrayData chpData = getChpData(cdfFile, chpFile);
         assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
         assertNull(chpData.getDataSet());
-        this.arrayDataService.importData(chpData.getDataFile(), false);
+        this.arrayDataService.importData(chpData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
         assertEquals(FileStatus.IMPORTED, chpData.getDataFile().getFileStatus());
         assertNotNull(chpData.getDataSet());
         DataSet dataSet = chpData.getDataSet();
@@ -424,7 +489,7 @@ public class ArrayDataServiceTest {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
         assertEquals(FileStatus.UPLOADED, celData.getDataFile().getFileStatus());
         assertNull(celData.getDataSet());
-        this.arrayDataService.importData(celData.getDataFile(), false);
+        this.arrayDataService.importData(celData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
         assertEquals(FileStatus.IMPORTED, celData.getDataFile().getFileStatus());
         assertEquals(AffymetrixArrayDataFiles.TEST3_CEL.getName(), celData.getName());
         assertNotNull(celData.getDataSet());
@@ -505,7 +570,7 @@ public class ArrayDataServiceTest {
 
     private void testGenepixData() throws InvalidDataFileException {
         CaArrayFile gprFile = getGprCaArrayFile(GenepixArrayDataFiles.GPR_5_0_1, GAL_DERISI_LSID_OBJECT_ID);
-        this.arrayDataService.importData(gprFile, true);
+        this.arrayDataService.importData(gprFile, true, DEFAULT_IMPORT_OPTIONS);
         DerivedArrayData gprData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(gprFile);
         DataSet dataSet = this.arrayDataService.getData(gprData);
         assertNotNull(dataSet.getDesignElementList());
@@ -527,7 +592,7 @@ public class ArrayDataServiceTest {
 
     private void testIlluminaDataSmall() throws InvalidDataFileException {
         CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
-        this.arrayDataService.importData(illuminaFile, true);
+        this.arrayDataService.importData(illuminaFile, true, DEFAULT_IMPORT_OPTIONS);
         DerivedArrayData illuminaData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(illuminaFile);
         DataSet dataSet = this.arrayDataService.getData(illuminaData);
         assertNotNull(dataSet.getDesignElementList());
@@ -545,7 +610,7 @@ public class ArrayDataServiceTest {
 
     private void testIlluminaDataFull() throws InvalidDataFileException {
         CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
-        this.arrayDataService.importData(illuminaFile, true);
+        this.arrayDataService.importData(illuminaFile, true, DEFAULT_IMPORT_OPTIONS);
         DerivedArrayData illuminaData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(illuminaFile);
         assertEquals(19, illuminaData.getHybridizations().size());
         DataSet dataSet = this.arrayDataService.getData(illuminaData);
@@ -568,7 +633,7 @@ public class ArrayDataServiceTest {
 
     private void testExpressionChpData() throws InvalidDataFileException {
         DerivedArrayData chpData = getChpData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CHP);
-        this.arrayDataService.importData(chpData.getDataFile(), false);
+        this.arrayDataService.importData(chpData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
         DataSet dataSet = this.arrayDataService.getData(chpData);
         assertNotNull(dataSet.getDesignElementList());
         checkExpressionData(AffymetrixArrayDataFiles.TEST3_CHP, dataSet);
@@ -590,7 +655,7 @@ public class ArrayDataServiceTest {
 
     private void testSnpChpData() throws InvalidDataFileException {
         DerivedArrayData chpData = getChpData(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CHP);
-        this.arrayDataService.importData(chpData.getDataFile(), false);
+        this.arrayDataService.importData(chpData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
         DataSet dataSet = this.arrayDataService.getData(chpData);
         assertNotNull(dataSet.getDesignElementList());
         checkSnpData(AffymetrixArrayDataFiles.TEN_K_1_CHP, dataSet);
@@ -612,7 +677,7 @@ public class ArrayDataServiceTest {
 
     private void testCelData() throws InvalidDataFileException {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
-        this.arrayDataService.importData(celData.getDataFile(), false);
+        this.arrayDataService.importData(celData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
         DataSet dataSet = this.arrayDataService.getData(celData);
         assertNotNull(dataSet.getDesignElementList());
         checkCelData(AffymetrixArrayDataFiles.TEST3_CEL, dataSet);
@@ -734,6 +799,26 @@ public class ArrayDataServiceTest {
         caArrayFile.getProject().setExperiment(new Experiment());
         return caArrayFile;
     }
+    
+    private final class LocalSearchDaoStub extends SearchDaoStub {
+        private Map<Long, PersistentObject> objMap = new HashMap<Long, PersistentObject>();
+        
+        @Override
+        public void save(PersistentObject caArrayEntity) {
+            super.save(caArrayEntity);
+            objMap.put(caArrayEntity.getId(), caArrayEntity);
+        }
+        
+        @Override
+        public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
+            Object candidate = objMap.get(entityId);
+            if (candidate == null) {
+                return null;
+            } else {
+                return (T) (entityClass.isInstance(candidate) ? candidate : null);
+            }
+        }        
+    }
 
     private final class LocalDaoFactoryStub extends DaoFactoryStub {
 
@@ -746,6 +831,11 @@ public class ArrayDataServiceTest {
         private final Map<CaArrayFile, AbstractArrayData> fileDataMap = new HashMap<CaArrayFile, AbstractArrayData>();
 
         private Map<String, ArrayDesign> arrayDesignMap = new HashMap<String, ArrayDesign>();
+        
+        @Override
+        public SearchDao getSearchDao() {
+            return searchDaoStub;
+        }
 
         @Override
         public ArrayDao getArrayDao() {

@@ -8,6 +8,8 @@
         <link rel="address bar icon" href="<c:url value="/images/favicon.ico"/>" />
         <link rel="icon" href="<c:url value="/images/favicon.ico"/>" type="image/x-icon" />
         <link rel="shortcut icon" href="<c:url value="/images/favicon.ico"/>" type="image/x-icon" />
+        <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/ext-all.css'/>" />
+        <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/xtheme-gray.css'/>" />
         <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/caarray.css'/>" />
         <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/overwrites.css'/>" />
         <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/prototype.js'/>"></script>
@@ -16,6 +18,8 @@
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags.js"/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_controls.js"/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_parser.js"/>"></script>
+        <script type="text/javascript" src="<c:url value='/scripts/ext-prototype-adapter.js'/>"></script>
+        <script type="text/javascript" src="<c:url value='/scripts/ext-all-debug.js'/>"></script>
         <script type="text/javascript" language="javascript">
         // for help script
            var contextPath = "<%=request.getContextPath()%>";

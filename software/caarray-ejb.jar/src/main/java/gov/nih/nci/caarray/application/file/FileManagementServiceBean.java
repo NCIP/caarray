@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
+import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -140,12 +141,12 @@ public class FileManagementServiceBean implements FileManagementService {
     /**
      * {@inheritDoc}
      */
-    public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
+    public void importFiles(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions) {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForImport(fileSet);
         clearValidationMessages(fileSet);
         fileSet.updateStatus(FileStatus.IN_QUEUE);
-        sendImportJobMessage(targetProject, fileSet);
+        sendImportJobMessage(targetProject, fileSet, dataImportOptions);
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -156,8 +157,10 @@ public class FileManagementServiceBean implements FileManagementService {
         }
     }
 
-    private void sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet) {
-        ProjectFilesImportJob job = new ProjectFilesImportJob(UsernameHolder.getUser(), targetProject, fileSet);
+    private void sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet, 
+            DataImportOptions dataImportOptions) {
+        ProjectFilesImportJob job = new ProjectFilesImportJob(UsernameHolder.getUser(), targetProject, fileSet,
+                dataImportOptions);
         getSubmitter().submitJob(job);
     }
 

@@ -84,10 +84,11 @@
 package gov.nih.nci.caarray.domain.sample;
 
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
@@ -135,7 +136,7 @@ import org.hibernate.validator.NotNull;
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "discriminator", discriminatorType = DiscriminatorType.STRING)
-public abstract class AbstractBioMaterial extends AbstractCaArrayEntity implements ProtocolApplicable {
+public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode implements ProtocolApplicable {
     private static final long serialVersionUID = 1234567890L;
 
     private Term tissueSite;
@@ -349,7 +350,10 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity implemen
      * @return the set of hybridizations related to this biomaterial (via the biomaterial chain)
      */
     @Transient
-    public abstract Set<Hybridization> getRelatedHybridizations();
+    @SuppressWarnings("unchecked")
+    public Set<Hybridization> getRelatedHybridizations() {
+        return (Set<Hybridization>) getSuccessorsOfType(ExperimentDesignNodeType.HYBRIDIZATION);
+    }
 
     /**
      * @return all the data files related to this biomaterial. This is the set of files
@@ -367,7 +371,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity implemen
         }
         return files;
     }
-
+    
     /**
      * Attribute filter for characteristics under the TCGA Policy.
      *

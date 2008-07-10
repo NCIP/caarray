@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -112,8 +113,9 @@ public interface FileManagementService {
      *
      * @param fileSet the files to import.
      * @param targetProject entities will be added to this project (if appropriate).
+     * @param dataImportOptions options to control auto creation of annotation chains
      */
-    void importFiles(Project targetProject, CaArrayFileSet fileSet);
+    void importFiles(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions);
 
     /**
      * Associates files with the project as supplemental data or informational files.

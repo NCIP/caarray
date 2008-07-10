@@ -84,7 +84,9 @@
 package gov.nih.nci.caarray.domain.sample;
 
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.validation.UniqueConstraint;
 import gov.nih.nci.caarray.validation.UniqueConstraintField;
@@ -224,5 +226,52 @@ public class Sample extends AbstractBioMaterial implements Protectable {
             hybs.addAll(e.getRelatedHybridizations());
         }
         return hybs;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+   public ExperimentDesignNodeType getNodeType() {
+        return ExperimentDesignNodeType.SAMPLE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public Set<? extends AbstractExperimentDesignNode> getDirectPredecessors() {
+        return getSources();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public Set<? extends AbstractExperimentDesignNode> getDirectSuccessors() {
+        return getExtracts();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void doAddDirectPredecessor(AbstractExperimentDesignNode predecessor) {
+        Source source = (Source) predecessor;
+        getSources().add(source);
+        source.getSamples().add(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void doAddDirectSuccessor(AbstractExperimentDesignNode successor) {
+        Extract extract = (Extract) successor;
+        getExtracts().add(extract);
+        extract.getSamples().add(this);
     }
 }

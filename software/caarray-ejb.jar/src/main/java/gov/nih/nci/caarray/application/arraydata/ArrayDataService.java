@@ -121,11 +121,14 @@ public interface ArrayDataService {
      * by the client.
      * 
      * @param file the data file to import.
-     * @param createAnnotation if no annotation is associated with the file, create a complete set of
-     * annotation from <code>Source</code> through to <code>AbstractArrayData</code>. 
+     * @param createAnnotation if no annotation is associated with the file, create a chain
+     * of annotation to <code>AbstractArrayData</code>. How the chain is created is controlled
+     * by the dataImportOptions paramter. 
+     * @param dataImportOptions options that control creation of the annotion chain
      * @throws InvalidDataFileException if the file is not a valid data file.
      */
-    void importData(CaArrayFile file, boolean createAnnotation) throws InvalidDataFileException;
+    void importData(CaArrayFile file, boolean createAnnotation, DataImportOptions dataImportOptions)
+            throws InvalidDataFileException;
 
     /**
      * Returns the complete data content of the provided array data object.

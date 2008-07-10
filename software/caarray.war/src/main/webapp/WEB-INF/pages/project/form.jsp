@@ -26,7 +26,6 @@
 
 <script type="text/javascript">
   downloadMgr = new DownloadMgr('${downloadUrl}', '${showDataTabDownloadDataSubTabWithDownloadGroupsUrl}','${removeUrl}','${addUrl}',<s:property value="@gov.nih.nci.caarray.web.action.project.ProjectFilesAction@MAX_DOWNLOAD_SIZE"/>);
-
   setExperimentTitleHeader = function(value) {
     $('experimentTitleHeader').innerHTML = value || 'New Experiment';
   }

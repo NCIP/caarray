@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.web;
 
+import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
@@ -190,8 +191,8 @@ public class ImportTest {
         boolean calledImportFiles;
 
         @Override
-        public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-            super.importFiles(targetProject, fileSet);
+        public void importFiles(Project targetProject, CaArrayFileSet fileSet, DataImportOptions options) {
+            super.importFiles(targetProject, fileSet, options);
             this.calledImportFiles = true;
         }
     }

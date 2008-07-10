@@ -160,10 +160,11 @@ public class ArrayDataServiceBean implements ArrayDataService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void importData(CaArrayFile caArrayFile, boolean createAnnnotation) throws InvalidDataFileException {
+    public void importData(CaArrayFile caArrayFile, boolean createAnnnotation, DataImportOptions dataImportOptions)
+            throws InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        AbstractDataSetImporter abstractDataSetImporter =
-            AbstractDataSetImporter.create(caArrayFile, getDaoFactory());
+        AbstractDataSetImporter<? extends AbstractArrayData> abstractDataSetImporter =
+            AbstractDataSetImporter.create(caArrayFile, getDaoFactory(), dataImportOptions);
         AbstractArrayData arrayData = abstractDataSetImporter.importData(createAnnnotation);
         loadDataSet(arrayData);
         LogUtil.logSubsystemExit(LOG);

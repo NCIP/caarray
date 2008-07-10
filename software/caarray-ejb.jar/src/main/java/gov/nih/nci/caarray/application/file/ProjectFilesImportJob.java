@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -98,8 +99,12 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(ProjectFilesImportJob.class);
 
-    ProjectFilesImportJob(String username, Project targetProject, CaArrayFileSet fileSet) {
+    private final DataImportOptions dataImportOptions;
+    
+    ProjectFilesImportJob(String username, Project targetProject, CaArrayFileSet fileSet,
+            DataImportOptions dataImportOptions) {
         super(username, targetProject, fileSet);
+        this.dataImportOptions = dataImportOptions;
     }
 
     @Override
@@ -129,7 +134,7 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
     private void importArrayData(CaArrayFileSet fileSet) {
         ArrayDataImporter arrayDataImporter = getArrayDataImporter();
-        arrayDataImporter.importFiles(fileSet);
+        arrayDataImporter.importFiles(fileSet, this.dataImportOptions);
     }
 
     @Override

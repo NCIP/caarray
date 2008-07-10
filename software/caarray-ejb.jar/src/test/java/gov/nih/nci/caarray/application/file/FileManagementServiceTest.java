@@ -56,6 +56,7 @@ import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.UserTransactionStub;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceStub;
+import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
@@ -124,8 +125,8 @@ public class FileManagementServiceTest {
                     }
                 } else if (job instanceof ArrayDesignFileImportJob) {
                     ArrayDesignFileImportJob arrayDesignJob = (ArrayDesignFileImportJob) job;
-                    getDaoFactory().getArrayDao().getArrayDesign(
-                            arrayDesignJob.getArrayDesignId()).getDesignFile().setFileStatus(FileStatus.IMPORT_FAILED);
+                    getDaoFactory().getArrayDao().getArrayDesign(arrayDesignJob.getArrayDesignId()).getDesignFile()
+                            .setFileStatus(FileStatus.IMPORT_FAILED);
                 }
             }
 
@@ -149,7 +150,8 @@ public class FileManagementServiceTest {
         locatorStub.addLookup(ArrayDesignService.JNDI_NAME, this.arrayDesignServiceStub);
         locatorStub.addLookup(MageTabTranslator.JNDI_NAME, new MageTabTranslatorStub());
         this.fileManagementService = fileManagementServiceBean;
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessServiceStub));
+        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(
+                this.fileAccessServiceStub));
         TemporaryFileCacheLocator.resetTemporaryFileCache();
     }
 
@@ -165,7 +167,8 @@ public class FileManagementServiceTest {
     @Test
     public void testImportFiles() {
         Project project = getTgaBroadTestProject();
-        this.fileManagementService.importFiles(project, project.getFileSet());
+        this.fileManagementService.importFiles(project, project.getFileSet(), DataImportOptions
+                .getAutoCreatePerFileOptions());
         for (CaArrayFile file : project.getFiles()) {
             assertEquals(FileStatus.IMPORTED, file.getFileStatus());
         }
@@ -175,7 +178,8 @@ public class FileManagementServiceTest {
     public void testImportIllegalState() {
         Project project = getTgaBroadTestProject();
         project.getFiles().iterator().next().setFileStatus(FileStatus.VALIDATING);
-        this.fileManagementService.importFiles(project, project.getFileSet());
+        this.fileManagementService.importFiles(project, project.getFileSet(), DataImportOptions
+                .getAutoCreatePerFileOptions());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -192,7 +196,8 @@ public class FileManagementServiceTest {
         String title = "title" + System.currentTimeMillis();
         experiment.setTitle(title);
         project.setExperiment(experiment);
-        this.fileManagementService.importFiles(project, project.getFileSet());
+        this.fileManagementService.importFiles(project, project.getFileSet(), DataImportOptions
+                .getAutoCreatePerFileOptions());
         assertEquals(title, project.getExperiment().getTitle());
     }
 
@@ -297,7 +302,8 @@ public class FileManagementServiceTest {
         CaArrayFile expFile = this.fileAccessServiceStub.add(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_EXP);
         expFile.setFileType(FileType.AFFYMETRIX_EXP);
         addFile(project, expFile);
-        this.fileManagementService.importFiles(project, project.getFileSet());
+        this.fileManagementService.importFiles(project, project.getFileSet(), DataImportOptions
+                .getAutoCreatePerFileOptions());
         for (CaArrayFile file : project.getFiles()) {
             if (expFile.equals(file)) {
                 assertEquals(FileStatus.IMPORTED_NOT_PARSED, file.getFileStatus());
@@ -320,7 +326,8 @@ public class FileManagementServiceTest {
         }
 
         @Override
-        public void importData(CaArrayFile caArrayFile, boolean createAnnotation) throws InvalidDataFileException {
+        public void importData(CaArrayFile caArrayFile, boolean createAnnotation, DataImportOptions importOptions)
+                throws InvalidDataFileException {
             if (caArrayFile.getFileType().isParseableData()) {
                 caArrayFile.setFileStatus(FileStatus.IMPORTED);
             } else {
@@ -413,7 +420,7 @@ public class FileManagementServiceTest {
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode) {
             return (T) this.objectMap.get(entityId);
         }
-        
+
         @Override
         public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
             List<T> list = new ArrayList<T>();

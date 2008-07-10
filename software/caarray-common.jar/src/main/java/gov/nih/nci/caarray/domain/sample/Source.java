@@ -86,7 +86,10 @@ package gov.nih.nci.caarray.domain.sample;
 import gov.nih.nci.caarray.domain.contact.AbstractContact;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -210,5 +213,50 @@ public class Source extends AbstractBioMaterial {
             hybs.addAll(s.getRelatedHybridizations());
         }
         return hybs;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public ExperimentDesignNodeType getNodeType() {
+        return ExperimentDesignNodeType.SOURCE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public Set<? extends AbstractExperimentDesignNode> getDirectPredecessors() {
+        return Collections.emptySet();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public Set<? extends AbstractExperimentDesignNode> getDirectSuccessors() {
+        return getSamples();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void doAddDirectPredecessor(AbstractExperimentDesignNode predecessor) {
+        throw new IllegalStateException("Should never be called as sources don't have predecessors");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void doAddDirectSuccessor(AbstractExperimentDesignNode successor) {
+        Sample sample = (Sample) successor;
+        getSamples().add(sample);
+        sample.getSources().add(this);
     }
 }

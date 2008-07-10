@@ -85,6 +85,8 @@ package gov.nih.nci.caarray.domain.sample;
 
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
@@ -236,5 +238,52 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
         return new ToStringBuilder(this)
             .append("label", label)
             .toString();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public ExperimentDesignNodeType getNodeType() {
+        return ExperimentDesignNodeType.LABELED_EXTRACT;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public Set<? extends AbstractExperimentDesignNode> getDirectPredecessors() {
+        return getExtracts();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public Set<? extends AbstractExperimentDesignNode> getDirectSuccessors() {
+        return getHybridizations();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void doAddDirectPredecessor(AbstractExperimentDesignNode predecessor) {
+        Extract extract = (Extract) predecessor;
+        getExtracts().add(extract);
+        extract.getLabeledExtracts().add(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void doAddDirectSuccessor(AbstractExperimentDesignNode successor) {
+        Hybridization hyb = (Hybridization) successor;
+        getHybridizations().add(hyb);
+        hyb.getLabeledExtracts().add(this);
     }
 }

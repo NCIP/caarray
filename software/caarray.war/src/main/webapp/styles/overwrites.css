@@ -188,3 +188,31 @@ A.btn:hover SPAN.btn_img
 
 A.btn:active SPAN.btn_img
 { background-position:bottom left; background-attachment:scroll; padding:5px 0 2px 9px; /* push text down 1px */ }
+
+.source_node {
+  background-image: url("../images/ico_source.png") !important;
+}
+
+.sample_node {
+  background-image: url("../images/ico_sample.png") !important;
+}
+
+.extract_node {
+  background-image: url("../images/ico_extract.png") !important;
+}
+
+.labeled_extract_node {
+  background-image: url("../images/ico_labeledextract.png") !important;
+}
+
+.hybridization_node {
+  background-image: url("../images/ico_hybridization.png") !important;
+}
+
+.create_choice_form_item {
+  overflow: visible !important;
+}
+
+.create_choice_indented_item {
+  padding-left: 15px !important;
+}

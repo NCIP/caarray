@@ -83,8 +83,9 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
 
@@ -212,16 +213,51 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
     public Collection<? extends Protectable> relatedProtectables() {
         return Collections.unmodifiableCollection(getSamples());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public ExperimentDesignNodeType getNodeType() {
+        return ExperimentDesignNodeType.EXTRACT;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public Set<? extends AbstractExperimentDesignNode> getDirectPredecessors() {
+        return getSamples();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public Set<? extends AbstractExperimentDesignNode> getDirectSuccessors() {
+        return getLabeledExtracts();
+    }
     
     /**
      * {@inheritDoc}
      */
-    @Transient
-    public Set<Hybridization> getRelatedHybridizations() {
-        Set<Hybridization> hybs = new HashSet<Hybridization>();
-        for (LabeledExtract le : getLabeledExtracts()) {
-            hybs.addAll(le.getRelatedHybridizations());
-        }
-        return hybs;
+    @Override
+    protected void doAddDirectPredecessor(AbstractExperimentDesignNode predecessor) {
+        Sample sample = (Sample) predecessor;
+        getSamples().add(sample);
+        sample.getExtracts().add(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void doAddDirectSuccessor(AbstractExperimentDesignNode successor) {
+        LabeledExtract le = (LabeledExtract) successor;
+        getLabeledExtracts().add(le);
+        le.getExtracts().add(this);
     }
 }

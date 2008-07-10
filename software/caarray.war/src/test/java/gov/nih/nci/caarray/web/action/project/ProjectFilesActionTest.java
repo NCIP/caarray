@@ -86,6 +86,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
@@ -99,7 +101,10 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
@@ -114,8 +119,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -129,6 +136,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 
@@ -148,6 +156,7 @@ public class ProjectFilesActionTest {
     private static final ProjectManagementServiceStub projectManagementServiceStub = new ProjectManagementServiceStub();
     private static final FileManagementServiceStub fileManagementServiceStub = new FileManagementServiceStub();
     private static final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
+    private static final GenericDataServiceStub dataServiceStub = new LocalGenericDataServiceStub();
     ProjectFilesAction action = new ProjectFilesAction();
     private MockHttpServletResponse mockResponse;
 
@@ -157,6 +166,7 @@ public class ProjectFilesActionTest {
         stub.addLookup(ProjectManagementService.JNDI_NAME, projectManagementServiceStub);
         stub.addLookup(FileManagementService.JNDI_NAME, fileManagementServiceStub);
         stub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
+        stub.addLookup(GenericDataService.JNDI_NAME, dataServiceStub);
     }
 
     @Before
@@ -796,7 +806,71 @@ public class ProjectFilesActionTest {
         assertNull(action.getFileType());
         action.setFileType(FileType.AFFYMETRIX_CDF.toString());
         assertEquals(FileType.AFFYMETRIX_CDF.toString(), action.getFileType());
+    }
 
+    @Test
+    public void testExperimentTreeJson() throws Exception {
+        Experiment exp = this.action.getProject().getExperiment();
+        
+        Source src1 = new Source();
+        src1.setName("Src1");
+        src1.setId(252L);
+        dataServiceStub.save(src1);
+        exp.getSources().add(src1);
+        
+        Sample smp1  = new Sample();
+        smp1.setName("Smp1");
+        smp1.setId(781L);
+        exp.getSamples().add(smp1);
+        src1.getSamples().add(smp1);
+        dataServiceStub.save(smp1);
+        
+        this.action.setNodeType(ExperimentDesignTreeNodeType.ROOT);
+        this.action.importTreeNodesJson();
+        String expected = "[{\"id\":\"Sources\",\"text\":\"Sources\",\"sort\":\"1\",\"nodeType\":\"EXPERIMENT_SOURCES\",\"leaf\":false}," + 
+            "{\"id\":\"Samples\",\"text\":\"Samples\",\"sort\":\"2\",\"nodeType\":\"EXPERIMENT_SAMPLES\",\"leaf\":false}," + 
+            "{\"id\":\"Extracts\",\"text\":\"Extracts\",\"sort\":\"3\",\"nodeType\":\"EXPERIMENT_EXTRACTS\",\"leaf\":true}," + 
+            "{\"id\":\"LabeledExtracts\",\"text\":\"Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"EXPERIMENT_LABELED_EXTRACTS\",\"leaf\":true}," + 
+            "{\"id\":\"Hybridizations\",\"text\":\"Hybridizations\",\"sort\":\"5\",\"nodeType\":\"EXPERIMENT_HYBRIDIZATIONS\",\"leaf\":true}]";
+        assertEquals(expected, mockResponse.getContentAsString());
+
+        mockResponse = new MockHttpServletResponse();
+        ServletActionContext.setResponse(mockResponse);
+        this.action.setNodeType(ExperimentDesignTreeNodeType.EXPERIMENT_SOURCES);
+        this.action.setNode("ROOT_Sources");
+        this.action.importTreeNodesJson();
+        expected = "[{\"id\":\"ROOT_Sources_252\",\"entityId\":252,\"text\":\"Src1\",\"sort\":\"Src1\",\"nodeType\":\"SOURCE\",\"iconCls\":\"experiment_sources_node\",\"checked\":false,\"children\":[{\"id\":\"ROOT_Sources_252_Samples\",\"text\":\"Associated Samples\",\"sort\":\"2\",\"nodeType\":\"BIOMATERIAL_SAMPLES\",\"leaf\":false},{\"id\":\"ROOT_Sources_252_Extracts\",\"text\":\"Associated Extracts\",\"sort\":\"3\",\"nodeType\":\"BIOMATERIAL_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_LabeledExtracts\",\"text\":\"Associated Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"BIOMATERIAL_LABELED_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_Hybridizations\",\"text\":\"Associated Hybridizations\",\"sort\":\"5\",\"nodeType\":\"BIOMATERIAL_HYBRIDIZATIONS\",\"leaf\":true}]}]";
+        assertEquals(expected, mockResponse.getContentAsString());
+
+        mockResponse = new MockHttpServletResponse();
+        ServletActionContext.setResponse(mockResponse);
+        this.action.setNodeType(ExperimentDesignTreeNodeType.EXPERIMENT_SAMPLES);
+        this.action.setNode("ROOT_Samples");
+        this.action.importTreeNodesJson();
+        expected = "[{\"id\":\"ROOT_Samples_781\",\"entityId\":781,\"text\":\"Smp1\",\"sort\":\"Smp1\",\"nodeType\":\"SAMPLE\",\"iconCls\":\"experiment_samples_node\",\"checked\":false,\"children\":[{\"id\":\"ROOT_Samples_781_Extracts\",\"text\":\"Associated Extracts\",\"sort\":\"3\",\"nodeType\":\"BIOMATERIAL_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Samples_781_LabeledExtracts\",\"text\":\"Associated Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"BIOMATERIAL_LABELED_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Samples_781_Hybridizations\",\"text\":\"Associated Hybridizations\",\"sort\":\"5\",\"nodeType\":\"BIOMATERIAL_HYBRIDIZATIONS\",\"leaf\":true}]}]";
+        assertEquals(expected, mockResponse.getContentAsString());
+
+        mockResponse = new MockHttpServletResponse();
+        ServletActionContext.setResponse(mockResponse);
+        this.action.setNodeType(ExperimentDesignTreeNodeType.EXPERIMENT_EXTRACTS);
+        this.action.setNode("ROOT_Extracts");
+        this.action.importTreeNodesJson();
+        assertEquals("[]", mockResponse.getContentAsString());
+
+        mockResponse = new MockHttpServletResponse();
+        ServletActionContext.setResponse(mockResponse);
+        this.action.setNodeType(ExperimentDesignTreeNodeType.BIOMATERIAL_SAMPLES);
+        this.action.setNode("ROOT_Sources_252_Samples");
+        this.action.importTreeNodesJson();
+        expected = "[{\"id\":\"ROOT_Sources_252_Samples_781\",\"entityId\":781,\"text\":\"Smp1\",\"sort\":\"Smp1\",\"nodeType\":\"SAMPLE\",\"iconCls\":\"biomaterial_samples_node\",\"checked\":false,\"children\":[{\"id\":\"ROOT_Sources_252_Samples_781_Extracts\",\"text\":\"Associated Extracts\",\"sort\":\"3\",\"nodeType\":\"BIOMATERIAL_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_Samples_781_LabeledExtracts\",\"text\":\"Associated Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"BIOMATERIAL_LABELED_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_Samples_781_Hybridizations\",\"text\":\"Associated Hybridizations\",\"sort\":\"5\",\"nodeType\":\"BIOMATERIAL_HYBRIDIZATIONS\",\"leaf\":true}]}]";
+        assertEquals(expected, mockResponse.getContentAsString());
+
+        mockResponse = new MockHttpServletResponse();
+        this.action.setNodeType(ExperimentDesignTreeNodeType.BIOMATERIAL_EXTRACTS);
+        ServletActionContext.setResponse(mockResponse);
+        this.action.setNode("ROOT_Sources_252_Samples_781_Extracts");
+        this.action.importTreeNodesJson();
+        assertEquals("[]", mockResponse.getContentAsString());
     }
 
     private class LocalCaArrayFile extends CaArrayFile {
@@ -820,6 +894,27 @@ public class ProjectFilesActionTest {
 
         public String getResponseText() {
             return out.toString();
+        }
+    }
+    
+    private static class LocalGenericDataServiceStub extends GenericDataServiceStub {
+        private Map<Long, PersistentObject> objMap = new HashMap<Long, PersistentObject>();
+
+        @Override
+        public void save(PersistentObject object) {
+            // TODO Auto-generated method stub
+            super.save(object);
+            objMap.put(object.getId(), object);
+        }
+        
+        @Override
+        public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
+            Object candidate = objMap.get(entityId);
+            if (candidate == null) {
+                return null;
+            } else {
+                return (T) (entityClass.isInstance(candidate) ? candidate : null);
+            }
         }
     }
 }

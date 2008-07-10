@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
+import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -112,7 +113,7 @@ final class ArrayDataImporter {
         this.daoFactory = daoFactory;
     }
 
-    public void importFiles(CaArrayFileSet fileSet) {
+    public void importFiles(CaArrayFileSet fileSet, DataImportOptions dataImportOptions) {
         Set<CaArrayFile> dataFiles = getDataFiles(fileSet);
         fileSet.getFiles().clear();
         int fileCount = 0;
@@ -120,7 +121,7 @@ final class ArrayDataImporter {
         for (Iterator<CaArrayFile> fileIt = dataFiles.iterator(); fileIt.hasNext();) {
             CaArrayFile file = fileIt.next();
             LOG.info("Importing data file [" + ++fileCount + "/" + totalNumberOfFiles + "]: " + file.getName());
-            importFile(file);
+            importFile(file, dataImportOptions);
             fileIt.remove();
         }
     }
@@ -136,10 +137,10 @@ final class ArrayDataImporter {
         return dataFiles;
     }
 
-    private void importFile(CaArrayFile file) {
+    private void importFile(CaArrayFile file, DataImportOptions dataImportOptions) {
         try {
             this.daoFactory.getSearchDao().refresh(file);
-            this.arrayDataService.importData(file, true);
+            this.arrayDataService.importData(file, true, dataImportOptions);
         } catch (InvalidDataFileException e) {
             file.setFileStatus(FileStatus.VALIDATION_ERRORS);
             file.setValidationResult(e.getFileValidationResult());

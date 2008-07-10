@@ -83,60 +83,36 @@
 package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
-import java.io.File;
-import java.util.List;
-
 /**
  * Provides specialized behavior for importing <code>RawArrayData</code>.
  */
-class RawArrayDataImporter extends AbstractDataSetImporter {
-
-    private RawArrayData rawArrayData;
-
-    RawArrayDataImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory) {
-        super(caArrayFile, daoFactory);
-    }
-
-    @Override
-    AbstractArrayData getArrayData() {
-        return rawArrayData;
+class RawArrayDataImporter extends AbstractDataSetImporter<RawArrayData> {
+    RawArrayDataImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, 
+            DataImportOptions dataImportOptions) {
+        super(caArrayFile, daoFactory, RawArrayData.class, dataImportOptions);
     }
 
     @Override
     void addHybridizationDatas() {
-        for (Hybridization hybridization : getRawArrayData().getHybridizations()) {
+        for (Hybridization hybridization : getArrayData().getHybridizations()) {
             getDataSet().addHybridizationData(hybridization);
         }
     }
 
-    private RawArrayData getRawArrayData() {
-        return rawArrayData;
-    }
-
     @Override
-    void createArrayData(boolean createAnnnotation) {
-        rawArrayData = new RawArrayData();
-        rawArrayData.setDataFile(getCaArrayFile());
-        AbstractDataFileHandler fileHandler = getDataFileHandler();
-        File dataFile = getFile();
-        rawArrayData.setType(getArrayDataType(fileHandler.getArrayDataTypeDescriptor(dataFile)));
-        List<String> hybridizationNames = fileHandler.getHybridizationNames(dataFile);
-        for (String hybridizationName : hybridizationNames) {
-            Hybridization hybridization = lookupOrCreateHybridization(hybridizationName, createAnnnotation);
-            hybridization.addRawArrayData(rawArrayData);
-            rawArrayData.addHybridization(hybridization);
-        }
-        getArrayDao().save(rawArrayData);
+    void associateToHybridization(Hybridization hyb) {
+        RawArrayData rawArrayData = getArrayData();
+        hyb.addRawArrayData(rawArrayData);
+        rawArrayData.addHybridization(hyb);
     }
 
     @Override
     void lookupArrayData() {
-        rawArrayData = getArrayDao().getRawArrayData(getCaArrayFile());
+        setArrayData(getArrayDao().getRawArrayData(getCaArrayFile()));
     }
 
 }

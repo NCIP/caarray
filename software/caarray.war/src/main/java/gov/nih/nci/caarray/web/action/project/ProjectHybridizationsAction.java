@@ -95,7 +95,6 @@ import gov.nih.nci.caarray.domain.search.HybridizationSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.project.AbstractProjectProtocolAnnotationListTabAction.BioMaterialTypes;
 
 import java.io.IOException;
 import java.util.ArrayList;
