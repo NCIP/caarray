@@ -13,7 +13,6 @@ import org.junit.Test;
 public class ExperimentDesignNodeTest {
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testNodeTypes() {
         assertTrue(ExperimentDesignNodeType.SAMPLE.isSuccessorOf(ExperimentDesignNodeType.SOURCE));
         assertTrue(ExperimentDesignNodeType.SAMPLE.isDirectSuccessorOf(ExperimentDesignNodeType.SOURCE));
@@ -28,6 +27,7 @@ public class ExperimentDesignNodeTest {
         assertEquals(ExperimentDesignNodeType.SOURCE, ExperimentDesignNodeType.SAMPLE.getPredecesorType());
         assertEquals(ExperimentDesignNodeType.SAMPLE, ExperimentDesignNodeType.SOURCE.getSuccessorType());
         assertEquals(null, ExperimentDesignNodeType.SOURCE.getPredecesorType());
+        assertEquals(null, ExperimentDesignNodeType.HYBRIDIZATION.getSuccessorType());
     }
 
     @Test
@@ -42,11 +42,22 @@ public class ExperimentDesignNodeTest {
         sample.addDirectPredecessor(source);
         sample.addDirectSuccessor(extract);
         assertEquals(1, source.getSuccessorsOfType(ExperimentDesignNodeType.EXTRACT).size());
+        assertEquals(0, source.getSuccessorsOfType(ExperimentDesignNodeType.HYBRIDIZATION).size());
+        assertEquals(0, sample.getSuccessorsOfType(ExperimentDesignNodeType.SOURCE).size());
+        assertEquals(1, sample.getPredecessorsOfType(ExperimentDesignNodeType.SOURCE).size());
+        assertEquals(0, sample.getPredecessorsOfType(ExperimentDesignNodeType.SAMPLE).size());
         assertTrue(extract == source.getSuccessorsOfType(ExperimentDesignNodeType.EXTRACT).iterator().next());
         
         try {
             sample.addDirectSuccessor(source);
             fail("Expected not to be able to add source as successor to sample");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+        
+        try {
+            sample.addDirectPredecessor(sample);
+            fail("Expected not to be able to add sample as predecessor to sample");
         } catch (IllegalArgumentException e) {
             // expected
         }

@@ -839,7 +839,7 @@ public class ProjectFilesActionTest {
         this.action.setNodeType(ExperimentDesignTreeNodeType.EXPERIMENT_SOURCES);
         this.action.setNode("ROOT_Sources");
         this.action.importTreeNodesJson();
-        expected = "[{\"id\":\"ROOT_Sources_252\",\"entityId\":252,\"text\":\"Src1\",\"sort\":\"Src1\",\"nodeType\":\"SOURCE\",\"iconCls\":\"experiment_sources_node\",\"checked\":false,\"children\":[{\"id\":\"ROOT_Sources_252_Samples\",\"text\":\"Associated Samples\",\"sort\":\"2\",\"nodeType\":\"BIOMATERIAL_SAMPLES\",\"leaf\":false},{\"id\":\"ROOT_Sources_252_Extracts\",\"text\":\"Associated Extracts\",\"sort\":\"3\",\"nodeType\":\"BIOMATERIAL_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_LabeledExtracts\",\"text\":\"Associated Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"BIOMATERIAL_LABELED_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_Hybridizations\",\"text\":\"Associated Hybridizations\",\"sort\":\"5\",\"nodeType\":\"BIOMATERIAL_HYBRIDIZATIONS\",\"leaf\":true}]}]";
+        expected = "[{\"id\":\"ROOT_Sources_252\",\"entityId\":252,\"text\":\"Src1\",\"sort\":\"Src1\",\"nodeType\":\"SOURCE\",\"iconCls\":\"source_node\",\"checked\":false,\"children\":[{\"id\":\"ROOT_Sources_252_Samples\",\"text\":\"Associated Samples\",\"sort\":\"2\",\"nodeType\":\"BIOMATERIAL_SAMPLES\",\"leaf\":false},{\"id\":\"ROOT_Sources_252_Extracts\",\"text\":\"Associated Extracts\",\"sort\":\"3\",\"nodeType\":\"BIOMATERIAL_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_LabeledExtracts\",\"text\":\"Associated Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"BIOMATERIAL_LABELED_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_Hybridizations\",\"text\":\"Associated Hybridizations\",\"sort\":\"5\",\"nodeType\":\"BIOMATERIAL_HYBRIDIZATIONS\",\"leaf\":true}]}]";
         assertEquals(expected, mockResponse.getContentAsString());
 
         mockResponse = new MockHttpServletResponse();
@@ -847,7 +847,7 @@ public class ProjectFilesActionTest {
         this.action.setNodeType(ExperimentDesignTreeNodeType.EXPERIMENT_SAMPLES);
         this.action.setNode("ROOT_Samples");
         this.action.importTreeNodesJson();
-        expected = "[{\"id\":\"ROOT_Samples_781\",\"entityId\":781,\"text\":\"Smp1\",\"sort\":\"Smp1\",\"nodeType\":\"SAMPLE\",\"iconCls\":\"experiment_samples_node\",\"checked\":false,\"children\":[{\"id\":\"ROOT_Samples_781_Extracts\",\"text\":\"Associated Extracts\",\"sort\":\"3\",\"nodeType\":\"BIOMATERIAL_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Samples_781_LabeledExtracts\",\"text\":\"Associated Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"BIOMATERIAL_LABELED_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Samples_781_Hybridizations\",\"text\":\"Associated Hybridizations\",\"sort\":\"5\",\"nodeType\":\"BIOMATERIAL_HYBRIDIZATIONS\",\"leaf\":true}]}]";
+        expected = "[{\"id\":\"ROOT_Samples_781\",\"entityId\":781,\"text\":\"Smp1\",\"sort\":\"Smp1\",\"nodeType\":\"SAMPLE\",\"iconCls\":\"sample_node\",\"checked\":false,\"children\":[{\"id\":\"ROOT_Samples_781_Extracts\",\"text\":\"Associated Extracts\",\"sort\":\"3\",\"nodeType\":\"BIOMATERIAL_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Samples_781_LabeledExtracts\",\"text\":\"Associated Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"BIOMATERIAL_LABELED_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Samples_781_Hybridizations\",\"text\":\"Associated Hybridizations\",\"sort\":\"5\",\"nodeType\":\"BIOMATERIAL_HYBRIDIZATIONS\",\"leaf\":true}]}]";
         assertEquals(expected, mockResponse.getContentAsString());
 
         mockResponse = new MockHttpServletResponse();
@@ -862,7 +862,7 @@ public class ProjectFilesActionTest {
         this.action.setNodeType(ExperimentDesignTreeNodeType.BIOMATERIAL_SAMPLES);
         this.action.setNode("ROOT_Sources_252_Samples");
         this.action.importTreeNodesJson();
-        expected = "[{\"id\":\"ROOT_Sources_252_Samples_781\",\"entityId\":781,\"text\":\"Smp1\",\"sort\":\"Smp1\",\"nodeType\":\"SAMPLE\",\"iconCls\":\"biomaterial_samples_node\",\"checked\":false,\"children\":[{\"id\":\"ROOT_Sources_252_Samples_781_Extracts\",\"text\":\"Associated Extracts\",\"sort\":\"3\",\"nodeType\":\"BIOMATERIAL_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_Samples_781_LabeledExtracts\",\"text\":\"Associated Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"BIOMATERIAL_LABELED_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_Samples_781_Hybridizations\",\"text\":\"Associated Hybridizations\",\"sort\":\"5\",\"nodeType\":\"BIOMATERIAL_HYBRIDIZATIONS\",\"leaf\":true}]}]";
+        expected = "[{\"id\":\"ROOT_Sources_252_Samples_781\",\"entityId\":781,\"text\":\"Smp1\",\"sort\":\"Smp1\",\"nodeType\":\"SAMPLE\",\"iconCls\":\"sample_node\",\"checked\":false,\"children\":[{\"id\":\"ROOT_Sources_252_Samples_781_Extracts\",\"text\":\"Associated Extracts\",\"sort\":\"3\",\"nodeType\":\"BIOMATERIAL_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_Samples_781_LabeledExtracts\",\"text\":\"Associated Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"BIOMATERIAL_LABELED_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_Samples_781_Hybridizations\",\"text\":\"Associated Hybridizations\",\"sort\":\"5\",\"nodeType\":\"BIOMATERIAL_HYBRIDIZATIONS\",\"leaf\":true}]}]";
         assertEquals(expected, mockResponse.getContentAsString());
 
         mockResponse = new MockHttpServletResponse();
