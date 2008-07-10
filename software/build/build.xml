@@ -341,6 +341,7 @@
         <antcall target="build" />
         <antcall target="check" />
         <antcall target="test" />
+        <antcall target="javadoc" />
     </target>
 
 
