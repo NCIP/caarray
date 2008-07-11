@@ -221,8 +221,8 @@ public class Experiment extends AbstractCaArrayEntity {
     /** @Where filter for files */
     public static final String FILES_FILTER = "ID in (select f.id from caarrayfile f left join arraydata ad on f.id = "
         + "ad.data_file left join project p on f.project = p.id left join hybridization h on ad.hybridization = h.id "
-        + "left join derivedarraydata_hybridizations dadh on ad.id = dadh.hybridization_id left join hybridization h2 "
-        + "on dadh.derivedarraydata_id = h2.id left join labeledextracthybridization leh on h.id = "
+        + "left join derivedarraydata_hybridizations dadh on ad.id = dadh.derivedarraydata_id left join "
+        + "hybridization h2 on dadh.hybridization_id = h2.id left join labeledextracthybridization leh on h.id = "
         + "leh.hybridization_id left join extractlabeledextract ele on leh.labeledextract_id = ele.labeledextract_id "
         + "left join sampleextract se on ele.extract_id = se.extract_id left join biomaterial s on se.sample_id = s.id "
         + "left join labeledextracthybridization leh2 on h2.id = leh2.hybridization_id left join extractlabeledextract "
