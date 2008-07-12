@@ -80,38 +80,43 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.listener;
+package gov.nih.nci.caarray.application.fileaccess;
 
-import java.util.Timer;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
-import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
-import gov.nih.nci.caarray.application.fileaccess.FileCleanupThread;
-import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import java.io.File;
+import java.io.IOException;
 
-import javax.servlet.ServletContextEvent;
 
 /**
- * Performs initialization operations required at startup of the caArray application.
+ * Test FileCleanThread
  */
-public class StartupListener extends AbstractHibernateSessionScopeListener {
+public class FileCleanupThreadTest {
 
-    private static final int TIMER_INTERVAL_FIFTEEN_MINS = 900000;
-    /**
-     * Creates connection to DataService as well as sets configuration in
-     * application scope. Initiates scheduled task to cleanup files every 15 mins
-     * @param event ServletContextEvent
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public void doContextInitialized(ServletContextEvent event) {
-        ArrayDataService arrayDataService =
-            (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
-        arrayDataService.initialize();
+    @Test
+    public void testRun() throws IOException, FileAccessException {
+        File tmpFile1 = File.createTempFile("fileCleanTestFile1", ".ext");
+        File tmpFile2 = File.createTempFile("fileCleanTestFile2", ".ext");
+        File tmpFile3 = File.createTempFile("fileCleanTestFile3", ".ext");
+        FileCleanupThread.getInstance().addFile(tmpFile1);
+        FileCleanupThread.getInstance().addFile(tmpFile2);
+        FileCleanupThread.getInstance().addFile(tmpFile3);
 
-        SecurityUtils.init();
+        assertTrue(tmpFile1.exists());
+        assertTrue(tmpFile2.exists());
+        assertTrue(tmpFile3.exists());
+        FileCleanupThread.getInstance().run();
+        assertFalse(tmpFile1.exists());
+        assertFalse(tmpFile2.exists());
+        assertFalse(tmpFile3.exists());
 
-        Timer timer = new Timer();
-        timer.schedule(FileCleanupThread.getInstance(), TIMER_INTERVAL_FIFTEEN_MINS, TIMER_INTERVAL_FIFTEEN_MINS);
+        File tmpFile4 = File.createTempFile("fileCleanTestFile4", ".ext");
+        FileCleanupThread.getInstance().addFile(tmpFile4);
+        assertTrue(tmpFile4.delete());
+        FileCleanupThread.getInstance().run();
+        assertFalse(tmpFile4.exists());
     }
+
 }

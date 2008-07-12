@@ -200,6 +200,9 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
      * This method should always be called at the conclusion of a session of working with file data.
      */
     public void closeFiles() {
+        if (this.sessionWorkingDirectory == null) {
+            return;
+        }
         Set<CaArrayFile> filesToClose = new HashSet<CaArrayFile>(this.openFiles.keySet());
         for (CaArrayFile caarrayFile : filesToClose) {
             closeFile(caarrayFile);
@@ -233,6 +236,7 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
         LOG.debug("Deleting file: " + file.getAbsolutePath());
         if (!file.delete()) {
             LOG.warn("Couldn't delete file: " + file.getAbsolutePath());
+            FileCleanupThread.getInstance().addFile(file);
             file.deleteOnExit();
         }
     }

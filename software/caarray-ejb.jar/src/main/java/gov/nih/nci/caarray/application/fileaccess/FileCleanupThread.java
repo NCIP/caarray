@@ -80,38 +80,101 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.listener;
+package gov.nih.nci.caarray.application.fileaccess;
 
-import java.util.Timer;
 
-import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
-import gov.nih.nci.caarray.application.fileaccess.FileCleanupThread;
-import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import java.io.File;
 
-import javax.servlet.ServletContextEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.TimerTask;
+
+import org.apache.log4j.Logger;
 
 /**
- * Performs initialization operations required at startup of the caArray application.
+ * Performs file cleanup operations. Files must be added to the FileCleanupThread
+ * Collection in order to be removed when this threads run method is executed.
+ * @author Jevon Gill
  */
-public class StartupListener extends AbstractHibernateSessionScopeListener {
+public final class FileCleanupThread extends TimerTask {
 
-    private static final int TIMER_INTERVAL_FIFTEEN_MINS = 900000;
+    private static final Logger LOG = Logger.getLogger(FileCleanupThread.class);
+    private final Collection<File> filesToRemove = new ArrayList<File>();
+    private static final FileCleanupThread INSTANCE =
+      new FileCleanupThread();
+
     /**
-     * Creates connection to DataService as well as sets configuration in
-     * application scope. Initiates scheduled task to cleanup files every 15 mins
-     * @param event ServletContextEvent
+     * private constructor.
+     */
+    private FileCleanupThread() {
+    }
+
+    /**
+     * Gets instance of FileCleanupThread.
+     * @return instance of FileCleanupThread
+     */
+    public static FileCleanupThread getInstance() {
+      return INSTANCE;
+    }
+
+    /**
+     * Files added using this method will be deleted when
+     * the FileCleanupThread's run method is executed.
+     * @param file the logical file to delete
+     */
+    public void addFile(File file) {
+        if (file != null) {
+            Collection<File> synchedFilesToRemove = null;
+            synchronized (this) {
+                synchedFilesToRemove = this.filesToRemove;
+            }
+            synchedFilesToRemove.add(file);
+
+            LOG.warn(file.getAbsolutePath()
+                    + " added to FileCleanupThread collection");
+        }
+    }
+
+    /**
+     * Attempts to delete all files in the filesToRemove list. If the file is
+     * successfully deleted or does not exist it will be removed from the
+     * filesToRemove list. If unsuccessful in deleting the file it will remain
+     * in the filesToRemove list.
+     */
+    public void deleteFiles() {
+        LOG.info("Removing " + filesToRemove.size() + " files");
+        if (!filesToRemove.isEmpty()) {
+            Collection<File> synchedFilesToRemove = null;
+            synchronized (this) {
+              synchedFilesToRemove = this.filesToRemove;
+            }
+            ArrayList<File> filesRemoved = new ArrayList<File>();
+            for (File file : synchedFilesToRemove) {
+                if (!file.delete()) {
+                    if (!file.exists()) {
+                        filesRemoved.add(file);
+                    } else {
+                        LOG.warn("Still unable to delete file: "
+                                + file.getAbsolutePath());
+                    }
+                } else {
+                    filesRemoved.add(file);
+                    LOG.info("Deleted file: " + file.getAbsolutePath());
+                }
+            }
+            synchedFilesToRemove.removeAll(filesRemoved);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * Attempts to delete all files in the filesToRemove list.
+     * If the file is successfully deleted or does not exist it
+     * will be removed from the filesToRemove list. If unsuccessful
+     * in deleting the file it will remain in the filesToRemove list.
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public void doContextInitialized(ServletContextEvent event) {
-        ArrayDataService arrayDataService =
-            (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
-        arrayDataService.initialize();
-
-        SecurityUtils.init();
-
-        Timer timer = new Timer();
-        timer.schedule(FileCleanupThread.getInstance(), TIMER_INTERVAL_FIFTEEN_MINS, TIMER_INTERVAL_FIFTEEN_MINS);
+    public void run() {
+        deleteFiles();
     }
 }
