@@ -18,7 +18,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 	<property file="project.properties" />
 	<!-- added for remote deployments since file is copied to root of install dir -->
 	<basename property="properties.file.name" file="${properties.file}"/>
-
+	<property file="${properties.file}" />
+	
 	<!-- Default install time targets passed by deploy targets to the installer, can be overridden by being set on the command line if different target is desitred.  -->
 	<property name="install.target" value="install" />
 	<property name="upgrade.target" value="upgrade" />
@@ -58,13 +59,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 	<property name="bda-utils.dir" value="${basedir}/bda-utils" />
 	
 	<property name="tools.dist.dir" value="${basedir}/tools"/>
-	<property name="jboss.binaries.file" value="jboss-4.0.4.GA.zip"/>
-	<property name="jboss.src.url" value="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/techstack-2006/os-independent/${jboss.binaries.file}"/>
         <property name="jboss.dest.file" value="${tools.dist.dir}/${jboss.binaries.file}"/>
+        <property name="grid.dest.file" value="${tools.dist.dir}/${jboss.grid-binaries.file}"/>
 
-	<property name="jboss405.binaries.file" value="jboss-4.0.5.GA.zip"/>
-	<property name="jboss405.src.url" value="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/techstack-2007/os-independent/${jboss405.binaries.file}"/>
-        <property name="jboss405.dest.file" value="${tools.dist.dir}/${jboss405.binaries.file}"/>
 
 	<property name="caarray.src.zip.file" value="${caarray.src.name}${caarray.version}_${caarray.revision}.zip" />
 	
@@ -218,12 +215,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 		</if>
 	</target>
 
-	<target name="retrieve:jboss405" unless="jboss.tools.exists">
-		<get src="${jboss405.src.url}"
-			dest="${jboss405.dest.file}"/>
+	<target name="retrieve:jboss404" unless="grid.tools.exists">
+		<get src="${jboss.grid-src.url}"
+			dest="${grid.dest.file}"/>
 	</target>
 	
-	<target name="dist:tools:retrieve" depends="retrieve:jboss,retrieve:jboss405">
+	<target name="dist:tools:retrieve" depends="retrieve:jboss,retrieve:jboss404">
 
 	</target>
 	
@@ -479,10 +476,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 	</target>
 
 	<!-- Install the application remotely. Depends on above targets to copy and extract distribution. Will use the target from install.xml specified in ${install.target} (defaults to install unless passed in on command line).  Calls ant from sshexec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install. Requires specifying -Dproperties.file=@file@ on the command line to point installer to correct enviornment to install into -->
-	<target name="deploy:remote:install" depends="
+	<target name="deploy:remote:install" depends="		
 		build:all,
-		dist:installer
-		">
+		dist:installer">		
 		<deploy-files dist.file="${caarray.install.zip.file}" />
 		<remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${install.target}" />
 	</target>
@@ -502,7 +498,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 		<attribute name="ssh.host" default="${ssh.server.hostname}" />
 		<attribute name="remote.directory.property.name" default="ssh.dir.temp" />
 		<attribute name="properties.file" default="${properties.file}" />
-		<attribute name="dist.dir" default="${caarray.dist.dir}" />
+		<attribute name="dist.dir" default="${dist.dir}" />
 		<attribute name="dist.file" />
 		<sequential>
 			<!-- Validate remote directory is valid -->
