@@ -1,4 +1,4 @@
-<ns1:DomainModel projectDescription="Version 2.0 caArray Model" projectLongName="caArray" projectShortName="caArray" projectVersion="2" xmlns:ns1="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice">
+<ns1:DomainModel projectDescription="Version 2.1 caArray Model" projectLongName="caArray" projectShortName="caArray" projectVersion="2" xmlns:ns1="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice">
  <ns1:exposedUMLAssociationCollection>
   <ns1:UMLAssociation bidirectional="false">
    <ns1:targetUMLAssociationEdge>

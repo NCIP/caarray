@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact"
-    xmlns:gov.nih.nci.caarray.domain="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain"
-    targetNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact" elementFormDefault="qualified">
-    <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain"
+    xmlns="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.contact"
+    xmlns:gov.nih.nci.caarray.domain="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain"
+    targetNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.contact" elementFormDefault="qualified">
+    <xs:import namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain"
         schemaLocation="gov.nih.nci.caarray.domain.xsd" />
 
     <xs:element name="Organization" type="Organization" />

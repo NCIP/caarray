@@ -1,10 +1,10 @@
 <ns1:ServiceDescription introduceVersion="1.2" xmlns:ns1="gme://gov.nih.nci.cagrid/1/Introduce">
  <ns2:Namespaces xsi:type="ns2:NamespacesType" xmlns:ns2="gme://gov.nih.nci.cagrid.introduce/1/Namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ns2:Namespace location="./gov.nih.nci.caarray.domain.xsd" namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain" packageName="gov.nih.nci.caarray.domain" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./gov.nih.nci.caarray.domain.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain" packageName="gov.nih.nci.caarray.domain" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="AbstractCaArrayEntity" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractCaArrayEntity" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="AbstractCaArrayObject" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractCaArrayObject" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./gov.nih.nci.caarray.domain.array.xsd" namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array" packageName="gov.nih.nci.caarray.domain.array" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./gov.nih.nci.caarray.domain.array.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.array" packageName="gov.nih.nci.caarray.domain.array" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="AbstractDesignElement" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractDesignElement" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="AbstractProbe" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractProbe" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="AbstractProbeAnnotation" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractProbeAnnotation" xsi:type="ns2:SchemaElementType"/>
@@ -21,12 +21,12 @@
    <ns2:SchemaElement className="ProbeGroup" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ProbeGroup" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="SNPProbeAnnotation" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="SNPProbeAnnotation" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./gov.nih.nci.caarray.domain.vocabulary.xsd" namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary" packageName="gov.nih.nci.caarray.domain.vocabulary" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./gov.nih.nci.caarray.domain.vocabulary.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.vocabulary" packageName="gov.nih.nci.caarray.domain.vocabulary" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="Category" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Category" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Term" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Term" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="TermSource" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="TermSource" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./gov.nih.nci.caarray.domain.data.xsd" namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" packageName="gov.nih.nci.caarray.domain.data" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./gov.nih.nci.caarray.domain.data.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data" packageName="gov.nih.nci.caarray.domain.data" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="AbstractArrayData" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractArrayData" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="AbstractDataColumn" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractDataColumn" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="ArrayDataType" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ArrayDataType" xsi:type="ns2:SchemaElementType"/>
@@ -46,29 +46,29 @@
    <ns2:SchemaElement className="ShortColumn" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ShortColumn" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="StringColumn" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="StringColumn" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./gov.nih.nci.caarray.domain.protocol.xsd" namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.protocol" packageName="gov.nih.nci.caarray.domain.protocol" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./gov.nih.nci.caarray.domain.protocol.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.protocol" packageName="gov.nih.nci.caarray.domain.protocol" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="Parameter" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Parameter" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="ParameterValue" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ParameterValue" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Protocol" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Protocol" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="ProtocolApplication" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ProtocolApplication" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./gov.nih.nci.cabio.domain.xsd" namespace="gme://caArray.caBIG/2.0/gov.nih.nci.cabio.domain" packageName="gov.nih.nci.cabio.domain" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./gov.nih.nci.cabio.domain.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.cabio.domain" packageName="gov.nih.nci.cabio.domain" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="ArrayReporter" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ArrayReporter" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="ExonArrayReporter" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ExonArrayReporter" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="ExpressionArrayReporter" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ExpressionArrayReporter" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="SNPArrayReporter" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="SNPArrayReporter" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="TranscriptArrayReporter" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="TranscriptArrayReporter" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./gov.nih.nci.caarray.domain.hybridization.xsd" namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization" packageName="gov.nih.nci.caarray.domain.hybridization" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./gov.nih.nci.caarray.domain.hybridization.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.hybridization" packageName="gov.nih.nci.caarray.domain.hybridization" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="Hybridization" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Hybridization" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./gov.nih.nci.caarray.domain.contact.xsd" namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact" packageName="gov.nih.nci.caarray.domain.contact" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./gov.nih.nci.caarray.domain.contact.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.contact" packageName="gov.nih.nci.caarray.domain.contact" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="AbstractContact" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractContact" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Address" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Address" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Organization" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Organization" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Person" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Person" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./gov.nih.nci.caarray.domain.sample.xsd" namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample" packageName="gov.nih.nci.caarray.domain.sample" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./gov.nih.nci.caarray.domain.sample.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample" packageName="gov.nih.nci.caarray.domain.sample" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="AbstractBioMaterial" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractBioMaterial" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="AbstractCharacteristic" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractCharacteristic" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Extract" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Extract" xsi:type="ns2:SchemaElementType"/>
@@ -78,21 +78,21 @@
    <ns2:SchemaElement className="Source" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Source" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="TermBasedCharacteristic" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="TermBasedCharacteristic" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./edu.georgetown.pir.xsd" namespace="gme://caArray.caBIG/2.0/edu.georgetown.pir" packageName="edu.georgetown.pir" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./edu.georgetown.pir.xsd" namespace="gme://caArray.caBIG/2.1/edu.georgetown.pir" packageName="edu.georgetown.pir" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="AdditionalOrganismName" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AdditionalOrganismName" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Organism" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Organism" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./gov.nih.nci.caarray.domain.publication.xsd" namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.publication" packageName="gov.nih.nci.caarray.domain.publication" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./gov.nih.nci.caarray.domain.publication.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.publication" packageName="gov.nih.nci.caarray.domain.publication" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="Publication" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Publication" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./gov.nih.nci.caarray.domain.project.xsd" namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" packageName="gov.nih.nci.caarray.domain.project" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./gov.nih.nci.caarray.domain.project.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project" packageName="gov.nih.nci.caarray.domain.project" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="Experiment" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Experiment" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="ExperimentContact" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ExperimentContact" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Factor" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Factor" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="FactorValue" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="FactorValue" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Project" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Project" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./gov.nih.nci.caarray.domain.file.xsd" namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file" packageName="gov.nih.nci.caarray.domain.file" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./gov.nih.nci.caarray.domain.file.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.file" packageName="gov.nih.nci.caarray.domain.file" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="CaArrayFile" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="CaArrayFile" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace namespace="http://www.w3.org/2001/XMLSchema" xsi:type="ns2:NamespaceType">
@@ -213,28 +213,28 @@
     </ns4:Method>
     <ns4:Method description="" isImported="false" isProvided="false" name="getDesignDetails" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns11:ArrayDesign" description="" isArray="false" name="arrayDesign" xmlns:ns11="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array"/>
+      <ns4:Input qName="ns11:ArrayDesign" description="" isArray="false" name="arrayDesign" xmlns:ns11="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.array"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns12:ArrayDesignDetails" description="" isArray="false" xmlns:ns12="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array"/>
+     <ns4:Output qName="ns12:ArrayDesignDetails" description="" isArray="false" xmlns:ns12="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.array"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="" isImported="false" isProvided="false" name="readFile" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns13:CaArrayFile" description="" isArray="false" name="caArrayFile" xmlns:ns13="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file"/>
+      <ns4:Input qName="ns13:CaArrayFile" description="" isArray="false" name="caArrayFile" xmlns:ns13="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.file"/>
      </ns4:Inputs>
      <ns4:Output qName="xsd:byte" description="" isArray="true" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="" isImported="false" isProvided="false" name="getDataSet" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns14:DataRetrievalRequest" description="" isArray="false" name="dataRetrievalRequest" xmlns:ns14="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data"/>
+      <ns4:Input qName="ns14:DataRetrievalRequest" description="" isArray="false" name="dataRetrievalRequest" xmlns:ns14="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns15:DataSet" description="" isArray="false" xmlns:ns15="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data"/>
+     <ns4:Output qName="ns15:DataSet" description="" isArray="false" xmlns:ns15="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="Requests a Grid Transfer handle for the given file" isImported="false" isProvided="false" name="createFileTransfer" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns16:CaArrayFile" description="" isArray="false" name="caArrayFile" xmlns:ns16="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file"/>
+      <ns4:Input qName="ns16:CaArrayFile" description="" isArray="false" name="caArrayFile" xmlns:ns16="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.file"/>
      </ns4:Inputs>
      <ns4:Output qName="ns17:TransferServiceContextReference" description="" isArray="false" xmlns:ns17="http://transfer.cagrid.org/TransferService/Context/types"/>
      <ns4:Exceptions/>
@@ -275,12 +275,12 @@
    <ns24:ExtensionData>
     <ns25:Data xsi:type="ns25:Data" xmlns:ns25="http://CQL.caBIG/1/gov.nih.nci.cagrid.data.extension">
          <ns25:CadsrInformation noDomainModel="false" projectLongName="caArray" projectVersion="2" serviceUrl="http://cagrid-service.nci.nih.gov:8080/wsrf/services/cagrid/CaDSRService" useSuppliedModel="false" xsi:type="ns25:CadsrInformation">
-          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file" name="gov.nih.nci.caarray.domain.file" xsi:type="ns25:CadsrPackage">
+          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.file" name="gov.nih.nci.caarray.domain.file" xsi:type="ns25:CadsrPackage">
            <ns25:CadsrClass className="CaArrayFile" elementName="CaArrayFile" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
       </ns25:Packages>
 
-          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" name="gov.nih.nci.caarray.domain.data" xsi:type="ns25:CadsrPackage">
+          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data" name="gov.nih.nci.caarray.domain.data" xsi:type="ns25:CadsrPackage">
            <ns25:CadsrClass className="HybridizationData" elementName="HybridizationData" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
            <ns25:CadsrClass className="ArrayDataType" elementName="ArrayDataType" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
@@ -319,7 +319,7 @@
 
       </ns25:Packages>
 
-          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact" name="gov.nih.nci.caarray.domain.contact" xsi:type="ns25:CadsrPackage">
+          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.contact" name="gov.nih.nci.caarray.domain.contact" xsi:type="ns25:CadsrPackage">
            <ns25:CadsrClass className="Address" elementName="Address" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
            <ns25:CadsrClass className="AbstractContact" elementName="AbstractContact" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
@@ -330,7 +330,7 @@
 
       </ns25:Packages>
 
-          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array" name="gov.nih.nci.caarray.domain.array" xsi:type="ns25:CadsrPackage">
+          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.array" name="gov.nih.nci.caarray.domain.array" xsi:type="ns25:CadsrPackage">
            <ns25:CadsrClass className="ArrayDesignDetails" elementName="ArrayDesignDetails" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
            <ns25:CadsrClass className="AbstractProbeAnnotation" elementName="AbstractProbeAnnotation" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
@@ -363,21 +363,21 @@
 
       </ns25:Packages>
 
-          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain" name="gov.nih.nci.caarray.domain" xsi:type="ns25:CadsrPackage">
+          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain" name="gov.nih.nci.caarray.domain" xsi:type="ns25:CadsrPackage">
            <ns25:CadsrClass className="AbstractCaArrayObject" elementName="AbstractCaArrayObject" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
            <ns25:CadsrClass className="AbstractCaArrayEntity" elementName="AbstractCaArrayEntity" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
       </ns25:Packages>
 
-          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.0/edu.georgetown.pir" name="edu.georgetown.pir" xsi:type="ns25:CadsrPackage">
+          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/edu.georgetown.pir" name="edu.georgetown.pir" xsi:type="ns25:CadsrPackage">
            <ns25:CadsrClass className="Organism" elementName="Organism" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
            <ns25:CadsrClass className="AdditionalOrganismName" elementName="AdditionalOrganismName" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
       </ns25:Packages>
 
-          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.cabio.domain" name="gov.nih.nci.cabio.domain" xsi:type="ns25:CadsrPackage">
+          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.cabio.domain" name="gov.nih.nci.cabio.domain" xsi:type="ns25:CadsrPackage">
            <ns25:CadsrClass className="ArrayReporter" elementName="ArrayReporter" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
            <ns25:CadsrClass className="TranscriptArrayReporter" elementName="TranscriptArrayReporter" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
@@ -390,7 +390,7 @@
 
       </ns25:Packages>
 
-          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary" name="gov.nih.nci.caarray.domain.vocabulary" xsi:type="ns25:CadsrPackage">
+          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.vocabulary" name="gov.nih.nci.caarray.domain.vocabulary" xsi:type="ns25:CadsrPackage">
            <ns25:CadsrClass className="Category" elementName="Category" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
            <ns25:CadsrClass className="Term" elementName="Term" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
@@ -399,7 +399,7 @@
 
       </ns25:Packages>
 
-          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample" name="gov.nih.nci.caarray.domain.sample" xsi:type="ns25:CadsrPackage">
+          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample" name="gov.nih.nci.caarray.domain.sample" xsi:type="ns25:CadsrPackage">
            <ns25:CadsrClass className="AbstractBioMaterial" elementName="AbstractBioMaterial" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
            <ns25:CadsrClass className="AbstractCharacteristic" elementName="AbstractCharacteristic" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
@@ -418,12 +418,12 @@
 
       </ns25:Packages>
 
-          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.publication" name="gov.nih.nci.caarray.domain.publication" xsi:type="ns25:CadsrPackage">
+          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.publication" name="gov.nih.nci.caarray.domain.publication" xsi:type="ns25:CadsrPackage">
            <ns25:CadsrClass className="Publication" elementName="Publication" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
       </ns25:Packages>
 
-          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.protocol" name="gov.nih.nci.caarray.domain.protocol" xsi:type="ns25:CadsrPackage">
+          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.protocol" name="gov.nih.nci.caarray.domain.protocol" xsi:type="ns25:CadsrPackage">
            <ns25:CadsrClass className="ParameterValue" elementName="ParameterValue" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
            <ns25:CadsrClass className="ProtocolApplication" elementName="ProtocolApplication" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
@@ -434,7 +434,7 @@
 
       </ns25:Packages>
 
-          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" name="gov.nih.nci.caarray.domain.project" xsi:type="ns25:CadsrPackage">
+          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project" name="gov.nih.nci.caarray.domain.project" xsi:type="ns25:CadsrPackage">
            <ns25:CadsrClass className="ExperimentContact" elementName="ExperimentContact" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
            <ns25:CadsrClass className="Experiment" elementName="Experiment" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
@@ -447,7 +447,7 @@
 
       </ns25:Packages>
 
-          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization" name="gov.nih.nci.caarray.domain.hybridization" xsi:type="ns25:CadsrPackage">
+          <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.hybridization" name="gov.nih.nci.caarray.domain.hybridization" xsi:type="ns25:CadsrPackage">
            <ns25:CadsrClass className="Hybridization" elementName="Hybridization" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
       </ns25:Packages>
