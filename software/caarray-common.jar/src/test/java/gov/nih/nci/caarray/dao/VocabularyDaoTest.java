@@ -100,6 +100,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Transaction;
+import org.hibernate.validator.ClassValidator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -122,7 +123,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     private static TermSource DUMMY_SOURCE_1 = new TermSource();
     private static TermSource DUMMY_SOURCE_2 = new TermSource();
     private static Organism DUMMY_ORGANISM_1 = new Organism();
-    private static Organism DUMMY_ORGANISM_2 = new Organism();    
+    private static Organism DUMMY_ORGANISM_2 = new Organism();
 
     private static final VocabularyDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
 
@@ -160,7 +161,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         DUMMY_TERM_1.setValue("DammyValue1");
         DUMMY_TERM_1.setDescription("DummyTestTerm1");
         DUMMY_TERM_1.setAccession("DummyAccession1");
-        DUMMY_TERM_1.setUrl("DummyUrl1");        
+        DUMMY_TERM_1.setUrl("DummyUrl1");
         DUMMY_TERM_1.setCategory(DUMMY_CATEGORY_3);
         DUMMY_TERM_1.setSource(DUMMY_SOURCE_1);
         DUMMY_TERM_2 = new Term();
@@ -175,7 +176,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         DUMMY_TERM_3.setDescription("DummyTestTerm3");
         DUMMY_TERM_3.setCategory(DUMMY_CATEGORY_4);
         DUMMY_TERM_3.setSource(DUMMY_SOURCE_2);
-        
+
         DUMMY_ORGANISM_1 = new Organism();
         DUMMY_ORGANISM_1.setScientificName("name1");
         DUMMY_ORGANISM_1.setCommonName("foo");
@@ -230,14 +231,14 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             retrievedTerms = DAO_OBJECT.getTermsRecursive(DUMMY_CATEGORY_4, "DammyValue1");
             assertEquals("Did not retrieve the expected number of terms.", 1, retrievedTerms.size());
             assertEquals(DUMMY_TERM_1, retrievedTerms.iterator().next());
-                        
+
             tx.commit();
         } catch (Exception e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception while getting terms in a category: " + e.getMessage());
         }
     }
-    
+
     @Test
     public void testGetOrganism() {
         Transaction tx = null;
@@ -255,7 +256,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception while getting organisms: " + e.getMessage());
-        }        
+        }
     }
 
     @Test
@@ -267,14 +268,14 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             Term t = DAO_OBJECT.getTerm(DUMMY_SOURCE_1, DUMMY_TERM_1.getValue());
             assertEquals(DUMMY_TERM_1, t);
             t = DAO_OBJECT.getTerm(DUMMY_SOURCE_1, DUMMY_TERM_1.getValue().toUpperCase());
-            assertEquals(DUMMY_TERM_1, t);            
+            assertEquals(DUMMY_TERM_1, t);
             t = DAO_OBJECT.getTerm(DUMMY_SOURCE_2, DUMMY_TERM_1.getValue());
             assertNull(t);
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception while getting organisms: " + e.getMessage());
-        }        
+        }
     }
 
     /**
@@ -435,14 +436,14 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         }
         assertTrue(true);
     }
-    
+
     @Test
     public void testFindTermInAllSourceVersions() {
         Transaction tx = null;
         try {
             tx = HibernateUtil.beginTransaction();
             setupTestGetTermsRecursive();
-            
+
             TermSource DUMMY_SOURCE_1_V2 = new TermSource();
             DUMMY_SOURCE_1_V2.setName("Some name");
             DUMMY_SOURCE_1_V2.setUrl(DUMMY_SOURCE_1.getUrl());
@@ -450,10 +451,10 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             Term t = new Term();
             t.setValue("bazfoo");
             t.setAccession("MO23");
-            t.setSource(DUMMY_SOURCE_1_V2);            
+            t.setSource(DUMMY_SOURCE_1_V2);
             DAO_OBJECT.save(DUMMY_SOURCE_1_V2);
             DAO_OBJECT.save(t);
-            
+
             Term result = DAO_OBJECT.findTermInAllTermSourceVersions(DUMMY_SOURCE_1, "bazfoo");
             assertEquals(t, result);
             result = DAO_OBJECT.findTermInAllTermSourceVersions(DUMMY_SOURCE_2, "bazfoo");
@@ -462,7 +463,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             assertEquals(t, result);
             result = DAO_OBJECT.findTermInAllTermSourceVersions(DUMMY_SOURCE_1, "bazfoo2");
             assertNull(result);
-            
+
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
@@ -533,11 +534,89 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         DAO_OBJECT.save(DUMMY_TERM_1);
         DAO_OBJECT.save(DUMMY_TERM_2);
     }
-    
+
 
     private void setupTestGetTermsRecursive() {
         DAO_OBJECT.save(DUMMY_TERM_1);
         DAO_OBJECT.save(DUMMY_TERM_2);
         DAO_OBJECT.save(DUMMY_TERM_3);
+    }
+
+    @Test
+    public void test13755() {
+
+        String errorMessage = "A term with the same value and source or accession value and source already exists";
+        ClassValidator<Term> cv = new ClassValidator<Term>(Term.class);
+        Transaction tx = null;
+
+        try {
+            // Save term
+            tx = HibernateUtil.beginTransaction();
+            Term term1 = new Term();
+            term1.setValue("13755-value-1");
+            TermSource termSource1 = new TermSource();
+            termSource1.setName("termSource-13755-1");
+            term1.setSource(termSource1);
+            term1.setAccession("13755-accession-1");
+            DAO_OBJECT.save(term1);
+
+            // Test validation of unique key constraint
+            // for (Term.value, Term.source) of new Term
+            Term term2 = new Term();
+            term2.setValue("13755-value-1");
+            term2.setSource(termSource1);
+            assertTrue(cv.getInvalidValues(term2)[0].getMessage().contains(
+                    errorMessage));
+
+            term2.setValue("13755-value-2");
+            assertEquals(0, cv.getInvalidValues(term2).length);
+
+            // Test validation of unique key constraint
+            // for (Term.accession, Term.source) of new Term
+            Term term3 = new Term();
+            term3.setAccession("13755-accession-1");
+            term3.setSource(termSource1);
+            term3.setValue("13755-value-2");
+            assertTrue(cv.getInvalidValues(term3)[0].getMessage().contains(
+                    errorMessage));
+
+            // Test successful validation of new term
+            term3.setAccession("13755-accession-2");
+            assertEquals(0, cv.getInvalidValues(term3).length);
+
+            DAO_OBJECT.save(term2);
+            tx.commit();
+
+            // Test validation of unique key constraint
+            // for (Term.value, Term.source)
+            // of existing term
+            tx = HibernateUtil.beginTransaction();
+            term2.setValue("13755-value-1");
+            term2.setSource(termSource1);
+            term2.setAccession("13755-accession-100");
+            MockTermHibernateProxy proxy = new MockTermHibernateProxy(term2);
+            assertTrue(cv.getInvalidValues(proxy)[0].getMessage().contains(
+                    errorMessage));
+
+            // Test validation of unique key constraint
+            // for (Term.accession, Term.source)
+            // of existing term
+            term2.setValue("13755-value-100");
+            term2.setSource(termSource1);
+            term2.setAccession("13755-accession-1");
+            proxy.copyValues(term2);
+            assertTrue(cv.getInvalidValues(proxy)[0].getMessage().contains(
+                    errorMessage));
+
+            // Test successful validation of existing term
+            term2.setValue("13755-value-404");
+            term2.setSource(termSource1);
+            term2.setAccession("13755-accession-404");
+            proxy.copyValues(term2);
+            assertEquals(0, cv.getInvalidValues(proxy).length);
+            tx.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

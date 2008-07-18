@@ -56,13 +56,13 @@ import org.hibernate.validator.Validator;
 
 /**
  * Validator for UniqueConstraint annotation.
- * 
+ *
  * @author dkokotov@5amsolutions.com
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class UniqueConstraintValidator implements Validator<UniqueConstraint>, PersistentClassConstraint {
     private UniqueConstraint uniqueConstraint;
-    
+
     /**
      * {@inheritDoc}
      */
@@ -77,8 +77,9 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
     public boolean isValid(final Object o) {
         UnfilteredCallback unfilteredCallback = new UnfilteredCallback() {
             public Object doUnfiltered(Session s) {
-                Criteria crit = s.createCriteria(o.getClass());
-                ClassMetadata metadata = getMetaData(o);
+                Criteria crit = s.createCriteria(getUnwrappedClass(o).getClass());
+                ClassMetadata metadata = HibernateUtil.getSessionFactory()
+                        .getClassMetadata(getUnwrappedClass(o).getClass());
                 for (UniqueConstraintField field : uniqueConstraint.fields()) {
                     Object fieldVal = metadata.getPropertyValue(o, field.name(), EntityMode.POJO);
                     if (fieldVal == null) {
@@ -98,7 +99,9 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
                         // is not persistent then it will be a new value and thus different from any currently in the
                         // db, thus
                         // satisfying uniqueness
-                        ClassMetadata fieldMetadata = getMetaData(fieldVal);
+                        ClassMetadata fieldMetadata = HibernateUtil
+                                .getSessionFactory().getClassMetadata(
+                                        getUnwrappedClass(fieldVal).getClass());
                         if (fieldMetadata == null || fieldMetadata.getIdentifier(fieldVal, EntityMode.POJO) != null) {
                             crit.add(Restrictions.eq(field.name(), ReflectHelper.getGetter(o.getClass(), field.name())
                                     .get(o)));
@@ -116,21 +119,23 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
                 return crit.list().size() == 0;
             }
         };
-        return (Boolean) HibernateUtil.doUnfiltered(unfilteredCallback);        
+        return (Boolean) HibernateUtil.doUnfiltered(unfilteredCallback);
 
     }
 
     /**
-     * Get ClassMetadata for given persistent entity instance, properly handling proxies.
+     * Get Class for given persistent entity instance, properly handling
+     * proxies.
+     *
      * @param entity
      * @return
      */
-    private static ClassMetadata getMetaData(Object entity) {
+    private static Object getUnwrappedClass(Object entity) {
         if (entity instanceof HibernateProxy) {
-            return HibernateUtil.getSessionFactory().getClassMetadata(
-                    ((HibernateProxy) entity).getHibernateLazyInitializer().getEntityName());
+            return ((HibernateProxy) entity).getHibernateLazyInitializer()
+                    .getImplementation();
         } else {
-            return HibernateUtil.getSessionFactory().getClassMetadata(entity.getClass());
+            return entity;
         }
     }
 
