@@ -132,6 +132,7 @@ public class SearchActionTest {
     @Test
     public void testExperiments() throws Exception {
         searchAction.setKeyword("keyword");
+        this.searchAction.setResultCount(NUM_PROJECTS);
         String result = this.searchAction.experiments();
         SortablePaginatedList<Project, ProjectSortCriterion> results = searchAction.getResults();
         assertEquals(SearchAction.EXPERIMENTS_TAB, searchAction.getCurrentTab());
@@ -140,6 +141,7 @@ public class SearchActionTest {
         assertEquals("tab", result);
 
         searchAction.setCategory(SearchCategory.ORGANISM);
+        this.searchAction.setResultCount(NUM_PROJECTS_BY_ORGANISM);
         result = this.searchAction.experiments();
         results = searchAction.getResults();
         assertEquals(SearchAction.EXPERIMENTS_TAB, searchAction.getCurrentTab());

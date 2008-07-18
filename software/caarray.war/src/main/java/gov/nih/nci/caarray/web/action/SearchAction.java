@@ -115,6 +115,7 @@ public class SearchAction extends ActionSupport {
     // search parameters
     private String keyword;
     private SearchCategory category;
+    private int resultCount;
     private String location;
 
     // fields for displaying search results
@@ -186,6 +187,18 @@ public class SearchAction extends ActionSupport {
     }
 
     /**
+     * @return the resultCount
+     */
+    public int getResultCount() {
+        return resultCount;
+    }
+    /**
+     * @param resultCount the resultCount to set
+     */
+    public void setResultCount(int resultCount) {
+        this.resultCount = resultCount;
+    }
+    /**
      * This action queries for the result counts of each tab.
      * The tabs call other methods to return the actual data.
      * @return success
@@ -207,8 +220,7 @@ public class SearchAction extends ActionSupport {
         ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
         SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
         List<Project> projects = pms.searchByCategory(this.results.getPageSortParams(), keyword, categories);
-        int projectCount = pms.searchCount(keyword, categories);
-        results.setFullListSize(projectCount);
+        results.setFullListSize(this.resultCount);
         results.setList(projects);
         return "tab";
     }

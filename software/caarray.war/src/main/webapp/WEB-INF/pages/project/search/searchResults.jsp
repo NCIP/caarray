@@ -15,6 +15,7 @@
                     <c:param name="keyword" value="${keyword}"/>
                     <c:param name="category" value="${category}"/>
                     <c:param name="location" value="${location}"/>
+                    <c:param name="resultCount" value="${value}"/>                
                 </c:url>
                 <fmt:message key="search.tab.${key}" var="tabTitle">
                     <fmt:param>${value}</fmt:param>

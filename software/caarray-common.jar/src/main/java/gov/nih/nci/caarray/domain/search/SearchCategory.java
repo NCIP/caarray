@@ -83,6 +83,9 @@
 package gov.nih.nci.caarray.domain.search;
 
 import gov.nih.nci.caarray.domain.ResourceBasedEnum;
+import gov.nih.nci.caarray.domain.project.Experiment;
+
+import org.apache.commons.lang.ArrayUtils;
 
 /**
  * @author Winston Cheng
@@ -125,13 +128,25 @@ public enum SearchCategory implements ResourceBasedEnum {
      */
     SAMPLE           ("search.category.sample",
                       new String[]{"p.experiment e", "e.samples s"},
-                      "s.name"),
+                      "s.name"),    
     /**
      * Disease state.
      */
     DISEASE_STATE    ("search.category.diseaseState",
-                      new String[]{"p.experiment e", "e.sources src", "src.diseaseState ds"},
-                      "ds.value");
+                      new String[]{"p.experiment e"},
+                      ArrayUtils.EMPTY_STRING_ARRAY) {
+        /**
+         * {@inheritDoc}
+         */
+        public String getWhereClause() {
+            // the subselect is faster when searching by all categories because otherwise we get a huge number of rows
+            // with all the joins due to multiple many-to-many associations
+            // it would have been desirable to take this approach for the SAMPLE search category as well, but we cannot 
+            // because of HHH-530, which would cause the security filters to not be applied
+            return "e.id in (select exp.id from " + Experiment.class.getName() + " exp left join exp.sources src "
+                    + "left join src.diseaseState ds where ds.value like :keyword)";
+        }        
+    };
 
     private final String resourceKey;
     private final String[] joins;
@@ -163,10 +178,18 @@ public enum SearchCategory implements ResourceBasedEnum {
     }
 
     /**
-     * @return the fields to search against in the HQL query.
+     * @return the where subclause for this search category. this method assumes that the subclause
+     * will be wrapped in parenthesis before being added to the overall where clause of a query. 
      */
-    @SuppressWarnings("PMD.MethodReturnsInternalArray")
-    public String[] getSearchFields() {
-        return this.searchFields;
+    public String getWhereClause() {
+        StringBuilder sb = new StringBuilder();
+        int j = 0;
+        for (String field : this.searchFields) {
+            if (j++ > 0) {
+                sb.append(" OR ");
+            }
+            sb.append(field).append(" LIKE :keyword");
+        }
+        return sb.toString();
     }
 }

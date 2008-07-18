@@ -278,16 +278,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         StringBuffer sb = new StringBuffer();
         int i = 0;
         for (SearchCategory category : categories) {
-            sb.append(i++ == 0 ? " WHERE (" : " OR (");
-            String[] fields = category.getSearchFields();
-            int j = 0;
-            for (String field : fields) {
-                if (j++ > 0) {
-                    sb.append(" OR ");
-                }
-                sb.append(field).append(" LIKE :keyword");
-            }
-            sb.append(')');
+            sb.append(i++ == 0 ? " WHERE (" : " OR (").append(category.getWhereClause()).append(')');
         }
         return sb.toString();
     }
