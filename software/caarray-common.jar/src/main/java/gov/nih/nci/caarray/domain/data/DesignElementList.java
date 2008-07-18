@@ -85,6 +85,9 @@ package gov.nih.nci.caarray.domain.data;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.MaxSerializableSize;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
+import gov.nih.nci.caarray.validation.UniqueConstraint;
+import gov.nih.nci.caarray.validation.UniqueConstraintField;
+import gov.nih.nci.caarray.validation.UniqueConstraints;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,10 +109,15 @@ import org.hibernate.annotations.IndexColumn;
  */
 @Entity
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
+@UniqueConstraints(constraints = {
+        @UniqueConstraint(fields = {@UniqueConstraintField(name = "lsidAuthority"),
+                @UniqueConstraintField(name = "lsidNamespace"),
+                @UniqueConstraintField(name = "lsidObjectId")})},
+                message = "{designElementList.uniqueConstraint}")
 public final class DesignElementList extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 4430513886275629776L;
-    private static final int BATCH_SIZE = 200;    
+    private static final int BATCH_SIZE = 200;
     private static final int MAX_SERIALIZABLE_SIZE = 100000;
 
     private List<AbstractDesignElement> designElements = new ArrayList<AbstractDesignElement>();
@@ -128,7 +136,7 @@ public final class DesignElementList extends AbstractCaArrayEntity {
     @ForeignKey(name = "deldedesignelementlist_fk", inverseName = "deldedesignelement_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @BatchSize(size = BATCH_SIZE)
-    @MaxSerializableSize(MAX_SERIALIZABLE_SIZE)    
+    @MaxSerializableSize(MAX_SERIALIZABLE_SIZE)
     public List<AbstractDesignElement> getDesignElements() {
         return designElements;
     }
