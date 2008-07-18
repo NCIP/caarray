@@ -112,7 +112,7 @@ import org.hibernate.annotations.IndexColumn;
 @UniqueConstraints(constraints = {
         @UniqueConstraint(fields = {@UniqueConstraintField(name = "lsidAuthority"),
                 @UniqueConstraintField(name = "lsidNamespace"),
-                @UniqueConstraintField(name = "lsidObjectId")})},
+                @UniqueConstraintField(name = "lsidObjectId") }) },
                 message = "{designElementList.uniqueConstraint}")
 public final class DesignElementList extends AbstractCaArrayEntity {
 
