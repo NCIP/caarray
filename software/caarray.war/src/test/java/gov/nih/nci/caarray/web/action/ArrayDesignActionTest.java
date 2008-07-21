@@ -110,9 +110,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 
 /**
@@ -213,6 +216,17 @@ public class ArrayDesignActionTest {
         arrayDesignAction.setUploadFileName(null);
         result = arrayDesignAction.save();
         assertEquals("importComplete", result);
+    }
+
+    @Test
+    public void testSaveMeta() throws Exception {
+        ServletActionContext.setRequest(new MockHttpServletRequest());
+        arrayDesignAction.setArrayDesign(new ArrayDesign());
+        arrayDesignAction.setEditMode(true);
+        arrayDesignAction.setCreateMode(false);
+        assertEquals(Action.SUCCESS, arrayDesignAction.saveMeta());
+        assertTrue(ActionHelper.getMessages().contains("arraydesign.saved"));
+        arrayDesignAction.clearErrorsAndMessages();
     }
 
     @SuppressWarnings("deprecation")

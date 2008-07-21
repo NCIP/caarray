@@ -334,6 +334,9 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     public String saveMeta() {
         if (!createMode && editMode) {
             saveImportFile();
+            List<String> args = new ArrayList<String>();
+            args.add(getArrayDesign().getName());
+            ActionHelper.saveMessage(getText("arraydesign.saved", args));
             return Action.SUCCESS;
         }
         editMode = true;

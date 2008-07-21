@@ -30,6 +30,7 @@
                     <caarray:linkButton actionClass="add" text="Import a New Array Design" onclick="openNewImportWindow()" />
                 </div>
             </div>
+            <caarray:successMessages />
             <div class="tableboxpad">
                 <c:url value="/protected/ajax/arrayDesign/list.action" var="sortUrl"/>
                 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
