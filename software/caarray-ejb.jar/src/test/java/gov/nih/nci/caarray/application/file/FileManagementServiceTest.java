@@ -80,6 +80,7 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.GenepixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -244,6 +245,13 @@ public class FileManagementServiceTest {
         this.daoFactoryStub.searchDaoStub.save(design);
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
+        design.setDesignFile(caArrayFile);
+        this.fileManagementService.saveArrayDesign(design, caArrayFile);
+        this.fileManagementService.importArrayDesignDetails(design);
+        assertTrue(this.arrayDesignServiceStub.importCalled);
+
+        caArrayFile = this.fileAccessServiceStub.add(GenepixArrayDesignFiles.DEMO_GAL);
+        caArrayFile.setFileType(FileType.GENEPIX_GAL);
         design.setDesignFile(caArrayFile);
         this.fileManagementService.saveArrayDesign(design, caArrayFile);
         this.fileManagementService.importArrayDesignDetails(design);

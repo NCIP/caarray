@@ -771,7 +771,7 @@ public class MageTabParserTest {
         assertEquals(ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName(), s1.getCharacteristics().get(0).getCategory());
         assertEquals(expectedTermValue, s1.getCharacteristics().get(0).getTerm().getValue());
     }
-    
+
     @Test
     public void testFeature13141VerifyCanParsesInvalidSdrf() throws Exception {
         MageTabInputFileSet fileSet = TestMageTabSets.INVALID_FEATURE_13141_INPUT_SET;
@@ -787,6 +787,6 @@ public class MageTabParserTest {
         assertNotNull(sdrfDocument);
         verifyFeature13141Sample(sdrfDocument.getAllSamples().get(0), "Sample D", "123");
         verifyFeature13141Sample(sdrfDocument.getAllSamples().get(1), "Sample E", "234");
-        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(2), "Sample F", "345");        
+        verifyFeature13141Sample(sdrfDocument.getAllSamples().get(2), "Sample F", "345");
     }
 }

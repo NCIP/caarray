@@ -381,7 +381,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      * @param designFile design file to set
      */
     public void setDesignFile(CaArrayFile designFile) {
-        this.designFiles = new HashSet<CaArrayFile>();
+        this.designFiles.clear();
         this.designFiles.add(designFile);
     }
 
