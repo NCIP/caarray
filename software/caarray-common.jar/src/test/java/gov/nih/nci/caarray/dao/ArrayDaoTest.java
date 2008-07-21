@@ -232,6 +232,30 @@ public class ArrayDaoTest extends AbstractDaoTest {
     }
 
     @Test
+    public void testChangeArrayDesignFile() throws Exception {
+        Transaction tx = null;
+        HibernateUtil.enableFilters(false);
+        try {
+            tx = HibernateUtil.beginTransaction();
+            ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getId());
+            CaArrayFile file2 = new CaArrayFile();
+            file2.setName("newfile");
+            file2.setFileStatus(FileStatus.IMPORTING);
+            retrievedArrayDesign.setDesignFile(file2);
+            DAO_OBJECT.save(retrievedArrayDesign);
+            tx.commit();
+
+            tx = HibernateUtil.beginTransaction();
+            retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getId());
+            assertEquals("newfile", retrievedArrayDesign.getDesignFile().getName());
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            throw e;
+        }
+    }
+
+    @Test
     public void testGetArrayDesignByLsid() throws Exception {
         Transaction tx = null;
         HibernateUtil.enableFilters(false);
