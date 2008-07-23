@@ -1283,9 +1283,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             } else if (actionName.contains("Imported")) {
                 prepListImportedPage();
             } else if (actionName.contains("Unimported")) {
-            	// prevent a refresh or re-sort from failing
-            	// due to lack of selected files.
-            	this.clearErrorsAndMessages();
+                // prevent a refresh or re-sort from failing
+                // due to lack of selected files.
+                this.clearErrorsAndMessages();
             } else {
                 prepListUnimportedPage();
             }

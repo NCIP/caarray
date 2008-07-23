@@ -12,6 +12,6 @@
 <c:if test="${empty url}">
     <c:set var="url" value="#"/>
 </c:if>
-<a <c:if test="${!empty onclick}">onclick="${onclick}"</c:if> class="btn" href="${url}" <c:if test="${!empty tabindex}">tabindex="${tabindex}"</c:if> <c:if test="${!empty style}">style="${style}"</c:if> >
+<a <c:if test="${!empty onclick}">onclick="${onclick}; return false;"</c:if> class="btn" href="${url}" <c:if test="${!empty tabindex}">tabindex="${tabindex}"</c:if> <c:if test="${!empty style}">style="${style}"</c:if> >
     <span class="btn_img"><span class="${actionClass}">${text}</span></span>
 </a>
