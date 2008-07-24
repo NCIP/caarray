@@ -20,7 +20,7 @@
 
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${files}" pagesize="${pageSize}"
-        requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id">
+        requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id selectedFileIds __checkbox_selectedFileIds">
         <caarray:displayTagProperties/>
         <c:if test="${project.saveAllowed && canWriteProject}">
             <display:column title="${checkboxAll}">
