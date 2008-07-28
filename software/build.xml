@@ -199,7 +199,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 	</target>
 	
 	<target name="build:init-sql">
-		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-schema-sql" dir="${basedir}" />		
+		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-schema-sql" dir="${basedir}" />
+		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-mged-sql" dir="${basedir}" />
 	</target>
 	
 	
