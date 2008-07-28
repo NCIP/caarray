@@ -235,7 +235,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		<unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
 
 		<if>
-			<equals arg1="${authentication.type}" arg2="ldap" />
+			<equals arg1="${ldap.authentication.disabled}" arg2="false" />
 			<then>
 				<copy file="${jboss-conf.dir.target}/security-config-ldap.xml" tofile="${temp.dir}/caarray.ear/META-INF/security-config.xml"/>
 				
@@ -495,6 +495,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		<replaceregexp file="${grid.home}/server/${grid.server.name}/deploy/wsrf.war/WEB-INF/etc/cagrid_CaArraySvc/CaArraySvc_registration.xml" byline="true"
 			match="^(.*wsa:Address.).*(.\/wsa:Address.)"
 			replace="\1${grid.index.url}\2"/>
+
+		<replace file="${grid.home}/server/${grid.server.name}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" token="@LOGICAL_HOST@" value="${domain.name}"/>
+			
 	</target>
 
 	<target name="upgrade:init">
