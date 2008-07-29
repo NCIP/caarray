@@ -194,7 +194,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 
 	
 	<target name="build:caarray">
+		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="clean" dir="${basedir}"/>
 		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="build" dir="${basedir}"/>
+		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="build:caarray-svc" dir="${basedir}"/>		
 		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="create-grid-zip" dir="${basedir}" />		
 	</target>
 	
