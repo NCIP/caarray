@@ -23,7 +23,11 @@
     <c:forEach items="${files}" var="file">
     fileTypeLookup['${file.id}'] = '${file.fileType}';
     fileNameLookup['${file.id}'] = '${file.name}';
-    </c:forEach>    
+    </c:forEach>
+
+	unimportedFilterCallBack = function() {
+		TabUtils.hideLoadingText();
+	}
 
     doFilter = function() {
       var checkboxIds = $('selectFilesForm').__checkbox_selectedFileIds || {};
@@ -34,7 +38,8 @@
       } else {
         checkboxIds.disabled = true;
       }
-      Caarray.submitAjaxForm('selectFilesForm', 'unimportedForm', {url: '${listUnimportedFormUrl}'});
+      TabUtils.showLoadingTextKeepMainContent();
+      Caarray.submitAjaxForm('selectFilesForm', 'unimportedForm', {url: '${listUnimportedFormUrl}', onComplete: unimportedFilterCallBack});
     }
 
     openUploadWindow = function() {
@@ -43,25 +48,25 @@
 
     isMageTabImport = function() {
         var formElts = $('selectFilesForm').getInputs('checkbox', 'selectedFileIds');
-        return $A(formElts).any(function(elt) { 
-            return elt.checked && (fileTypeLookup[elt.value] == SDRF_FILE_TYPE || fileTypeLookup[elt.value] == IDF_FILE_TYPE); 
+        return $A(formElts).any(function(elt) {
+            return elt.checked && (fileTypeLookup[elt.value] == SDRF_FILE_TYPE || fileTypeLookup[elt.value] == IDF_FILE_TYPE);
         });
     }
 
     checkAnyFilesSelected = function() {
         var formElts = $('selectFilesForm').getInputs('checkbox', 'selectedFileIds');
-        return $A(formElts).any(function(elt) { 
-            return elt.checked; 
+        return $A(formElts).any(function(elt) {
+            return elt.checked;
         });
     }
 
     getSelectedFileNames = function() {
         var formElts = $('selectFilesForm').getInputs('checkbox', 'selectedFileIds');
-        return $A(formElts).select(function(elt) { return elt.checked; }).map(function(elt) { 
-            return fileNameLookup[elt.value]; 
+        return $A(formElts).select(function(elt) { return elt.checked; }).map(function(elt) {
+            return fileNameLookup[elt.value];
         });
     }
-    
+
     importFiles = function(importUrl) {
         if (!checkAnyFilesSelected()) {
             alert("At least one file must be selected");
@@ -71,7 +76,7 @@
             openImportDialog(importUrl);
         }
     }
-    
+
     doImportFiles = function(importUrl, createChoice, newAnnotationName, selectedNodes, selectedNodesType) {
         var formData = Form.serialize('selectFilesForm');
         var extraArgs = new Object();
@@ -82,7 +87,7 @@
             extraArgs['newAnnotationName'] = newAnnotationName;
         }
         if (selectedNodes && selectedNodes.length > 0) {
-           extraArgs['targetNodeIds'] = new Array();               
+           extraArgs['targetNodeIds'] = new Array();
            for (var i = 0; i < selectedNodes.length; i++) {
                extraArgs['targetNodeIds'].push(selectedNodes[i]);
            }
@@ -102,7 +107,7 @@
             parameters: formData
         });
     }
-    
+
     getCheckedNodeType = function(root) {
         var nd = ExtTreeUtils.findDescendent(root, "checked", true);
         return (nd == null ? null : nd.attributes.nodeType);
@@ -115,9 +120,9 @@
         });
     }
 
-    openImportDialog = function(importUrl) {        
+    openImportDialog = function(importUrl) {
         var treeLoader = new Ext.tree.TreeLoader({
-            dataUrl: '${nodesJsonUrl}'         
+            dataUrl: '${nodesJsonUrl}'
         });
         treeLoader.on("beforeload", function(tl, node) {
             this.baseParams["project.id"] = '${project.id}';
@@ -134,7 +139,7 @@
                 childNode.on("checkchange", function(nd, checked) {
                     if (checked) {
                         console.log("disabling nodes without node type " + nd.attributes.nodeType);
-                        disableNodesWithOtherNodeType(nd.getOwnerTree().getRootNode(), nd.attributes.nodeType);                         
+                        disableNodesWithOtherNodeType(nd.getOwnerTree().getRootNode(), nd.attributes.nodeType);
                     } else if (!ExtTreeUtils.hasCheckedNodes(nd.getOwnerTree())) {
                         ExtTreeUtils.setEnabledStatus(nd.getOwnerTree().getRootNode(), true);
                     }
@@ -146,10 +151,10 @@
         var treeSelModel = new Ext.tree.DefaultSelectionModel();
         treeSelModel.on("beforeselect", function(selModel, node, oldNode) {
             return false;
-        });  
-         
+        });
+
         var tree = new Ext.tree.TreePanel({
-            animate:true, 
+            animate:true,
             autoScroll:true,
             enableDD:false,
             containerScroll: true,
@@ -162,10 +167,10 @@
             selModel: treeSelModel
         });
         new Ext.tree.TreeSorter(tree, { property : "sort"});
-       
+
         // set the root node and expand one level to get the categories (root node itself is invisible)
         var root = new Ext.tree.AsyncTreeNode({
-            text: 'Experiment', 
+            text: 'Experiment',
             nodeType: 'ROOT',
             sort: 'Experiment',
             draggable:false, // disable root node dragging
@@ -182,7 +187,7 @@
             bodyStyle:'padding:5px 5px 0',
             labelAlign: 'right',
             autoScroll: true,
-            border: false,            
+            border: false,
             items: [{
                                 layout: 'form',
                                 border: false,
@@ -192,7 +197,7 @@
                                                 html: '<p>For the ' + getSelectedFileNames().length + ' selected file(s), please identify how biomaterial and '
                                                     + ' hybridization annotations should be created or mapped',
                                                 border: false
-                                            },   
+                                            },
                                             {
                                                 xtype: 'radio',
                                                 boxLabel: 'Autocreate annotation sets (Source -> Sample -> Extract -> Labeled'
@@ -208,7 +213,7 @@
                                                 + ' represented in a given file, biomaterial annotations will be generated'
                                                 + ' based on the number of samples in the file.<p>',
                                                 border: false
-                                            },                                               
+                                            },
                                             {
                                                 xtype: 'radio',
                                                 boxLabel: 'Autocreate a single annotation set (Source -> Sample -> Extract -> Labeled'
@@ -217,21 +222,21 @@
                                                 name: 'create_choice',
                                                 inputValue: '<s:property value="@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@AUTOCREATE_SINGLE"/>',
                                                 itemCls: 'create_choice_form_item',
-                                                hideLabel: true                                                
+                                                hideLabel: true
                                             },
                                             {
                                                 xtype: 'textfield',
                                                 fieldLabel: 'Name for created annotations',
                                                 id: 'autocreate_single_annotation_name',
                                                 name: 'autocreate_single_annotation_name',
-                                                itemCls: 'create_choice_indented_item' 
+                                                itemCls: 'create_choice_indented_item'
                                             },
                                             {
                                                 xtype: 'radio',
                                                 boxLabel: 'Associate selected file(s) to existing biomaterial or hybridization',
                                                 listeners: {
                                                     'check' : {
-                                                        fn: function(theradio,ischecked) { 
+                                                        fn: function(theradio,ischecked) {
                                                             formPanel.findById('experiment_design_tree_instructions').setVisible(ischecked);
                                                             tree.setVisible(ischecked);
                                                         }
@@ -241,7 +246,7 @@
                                                 name: 'create_choice',
                                                 inputValue: '<s:property value="@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@ASSOCIATE_TO_NODES"/>',
                                                 itemCls: 'create_choice_form_item',
-                                                hideLabel: true                                                
+                                                hideLabel: true
                                             },
                                             {
                                                 html: 'Note that biomaterials and hybridizations will be autocreated downstream'
@@ -250,11 +255,11 @@
                                                 border: false,
                                                 hidden: true,
                                                 id: 'experiment_design_tree_instructions'
-                                            },                                               
-                                            tree                       
+                                            },
+                                            tree
                                        ]
-                            }                    
-            ]    
+                            }
+            ]
         });
 
         var annotationDialog = new Ext.Window({
@@ -267,7 +272,7 @@
                 text: 'Import',
                 listeners: {
                     'click' : {
-                        fn: function() {                 
+                        fn: function() {
                             var createChoiceRadios = [$('create_choice_autocreate_per_file'), $('create_choice_autocreate_single'), $('create_choice_associate_to_biomaterials')];
                             var selectedCreateChoiceRadio = $A(createChoiceRadios).find(function(elt) { return elt.checked });
                             if (!selectedCreateChoiceRadio) {
@@ -281,8 +286,8 @@
                             }
                             var checkedNodes = ExtTreeUtils.getCheckedNodes(tree.getRootNode(), 'entityId');
                             var checkedNodesType = getCheckedNodeType(tree.getRootNode());
-                            doImportFiles(importUrl, selectedCreateChoiceRadio.value, newAnnotationName, checkedNodes, checkedNodesType); 
-                            annotationDialog.close(); 
+                            doImportFiles(importUrl, selectedCreateChoiceRadio.value, newAnnotationName, checkedNodes, checkedNodesType);
+                            annotationDialog.close();
                         }
                     }
                 }
@@ -292,11 +297,11 @@
                 'click' : {
                     fn: function() { annotationDialog.close(); }
                 }
-            }            
-            }]                
+            }
+            }]
         });
         annotationDialog.show();
-    }        
+    }
 </script>
 
 <caarray:tabPane subtab="true" submittingPaneMessageKey="experiment.files.processing">
@@ -313,8 +318,8 @@
 
     <div id="uploadInProgressDiv" style="display: none;">
         <fmt:message key="data.file.upload.inProgress"/>
-    </div>    
-    
+    </div>
+
     <div id="tree" style="float:left; margin:20px; border:1px solid #c3daf9; width:250px; height:300px; display: none"></div>
 
   <div class="tableboxpad" id="unimportedForm">

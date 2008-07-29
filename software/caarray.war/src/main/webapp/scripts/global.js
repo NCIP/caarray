@@ -101,7 +101,7 @@ var Caarray = {
             formData = formData + '&' + Hash.toQueryString(options.extraArgs);
         }
         var url = options.url || $(formId).action;
-        new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true, insertion: options.insertion} );
+        new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true, insertion: options.insertion, onComplete: options.onComplete} );
     }
 }
 
@@ -110,7 +110,7 @@ var ExtTreeUtils = {
      * Returns whether the given tree has any checked nodes.
      * @param tree the Ext.tree.TreePanel tree to search
      * @return true if the tree has any checked nodes, false otherwise
-     */    
+     */
     hasCheckedNodes: function(tree) {
         return (ExtTreeUtils.findDescendent(tree.root, "checked", true) != null);
     },
@@ -133,12 +133,12 @@ var ExtTreeUtils = {
         });
         return match;
     },
-        
+
     /**
      * Set the enabled status of all nodes matching the given predicate in the subtree rooted at the given node
      * to the given status.
      * @param parent the root node of the subtree all of whose nodes will be enabled.
-     * @param status the enabled status (true or false) to set 
+     * @param status the enabled status (true or false) to set
      * @param predicate (optional) a function that should return a boolean value for each node indicating
      * whether to set the status for that node. if omitted, each node's status will be set
      */
@@ -173,7 +173,7 @@ var ExtTreeUtils = {
                 }
             }
         return checked;
-    }            
+    }
 }
 
 var TabUtils = {

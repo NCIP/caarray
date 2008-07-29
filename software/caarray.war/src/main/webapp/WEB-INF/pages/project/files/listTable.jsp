@@ -17,9 +17,17 @@
 </fmt:message>
 
 <c:set var="canWriteProject" value="${caarrayfn:canWrite(project, caarrayfn:currentUser())}"/>
+<c:choose>
+    <c:when test="${project.saveAllowed && canWriteProject}">
+        <c:set var="defaultSortVal" value="2" />
+    </c:when>
+    <c:otherwise>
+        <c:set var="defaultSortVal" value="1" />
+    </c:otherwise>
+</c:choose>
 
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
-    <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${files}" pagesize="${pageSize}"
+    <display:table class="searchresults" cellspacing="0" defaultsort="${defaultSortVal}" list="${files}" pagesize="${pageSize}"
         requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id selectedFileIds __checkbox_selectedFileIds">
         <caarray:displayTagProperties/>
         <c:if test="${project.saveAllowed && canWriteProject}">

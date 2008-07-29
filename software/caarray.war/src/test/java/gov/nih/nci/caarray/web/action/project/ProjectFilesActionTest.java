@@ -123,6 +123,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -811,26 +813,26 @@ public class ProjectFilesActionTest {
     @Test
     public void testExperimentTreeJson() throws Exception {
         Experiment exp = this.action.getProject().getExperiment();
-        
+
         Source src1 = new Source();
         src1.setName("Src1");
         src1.setId(252L);
         dataServiceStub.save(src1);
         exp.getSources().add(src1);
-        
+
         Sample smp1  = new Sample();
         smp1.setName("Smp1");
         smp1.setId(781L);
         exp.getSamples().add(smp1);
         src1.getSamples().add(smp1);
         dataServiceStub.save(smp1);
-        
+
         this.action.setNodeType(ExperimentDesignTreeNodeType.ROOT);
         this.action.importTreeNodesJson();
-        String expected = "[{\"id\":\"Sources\",\"text\":\"Sources\",\"sort\":\"1\",\"nodeType\":\"EXPERIMENT_SOURCES\",\"leaf\":false}," + 
-            "{\"id\":\"Samples\",\"text\":\"Samples\",\"sort\":\"2\",\"nodeType\":\"EXPERIMENT_SAMPLES\",\"leaf\":false}," + 
-            "{\"id\":\"Extracts\",\"text\":\"Extracts\",\"sort\":\"3\",\"nodeType\":\"EXPERIMENT_EXTRACTS\",\"leaf\":true}," + 
-            "{\"id\":\"LabeledExtracts\",\"text\":\"Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"EXPERIMENT_LABELED_EXTRACTS\",\"leaf\":true}," + 
+        String expected = "[{\"id\":\"Sources\",\"text\":\"Sources\",\"sort\":\"1\",\"nodeType\":\"EXPERIMENT_SOURCES\",\"leaf\":false}," +
+            "{\"id\":\"Samples\",\"text\":\"Samples\",\"sort\":\"2\",\"nodeType\":\"EXPERIMENT_SAMPLES\",\"leaf\":false}," +
+            "{\"id\":\"Extracts\",\"text\":\"Extracts\",\"sort\":\"3\",\"nodeType\":\"EXPERIMENT_EXTRACTS\",\"leaf\":true}," +
+            "{\"id\":\"LabeledExtracts\",\"text\":\"Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"EXPERIMENT_LABELED_EXTRACTS\",\"leaf\":true}," +
             "{\"id\":\"Hybridizations\",\"text\":\"Hybridizations\",\"sort\":\"5\",\"nodeType\":\"EXPERIMENT_HYBRIDIZATIONS\",\"leaf\":true}]";
         assertEquals(expected, mockResponse.getContentAsString());
 
@@ -873,6 +875,100 @@ public class ProjectFilesActionTest {
         assertEquals("[]", mockResponse.getContentAsString());
     }
 
+    private static final String UNKNOWN_FILE_TYPE = "(Unknown File Types)";
+    private static final String KNOWN_FILE_TYPE = "(Supported File Types)";
+
+    @Test
+    public void testListUnimported(){
+
+        assertEquals(0,action.getFiles().size());
+        final SortedSet<CaArrayFile> fileSet = getUnimportedFileSet();
+
+        TestProject project = new TestProject();
+        project.setUnimportedFiles(fileSet);
+        action.setProject(project);
+
+        assertEquals(LIST_UNIMPORTED,action.listUnimported());
+        assertEquals(6,action.getFiles().size());
+        assertEquals(3,action.getFileStatusCountMap().get(FileStatus.UPLOADED));
+        assertEquals(3,action.getFileStatusCountMap().get(FileStatus.IMPORT_FAILED));
+
+        action.setFileType(FileType.AGILENT_CSV.name());
+        assertEquals(LIST_UNIMPORTED,action.listUnimported());
+        assertEquals(2,action.getFiles().size());
+
+        action.setFileType(null);
+        action.setFileStatus(FileStatus.UPLOADED.name());
+        assertEquals(LIST_UNIMPORTED,action.listUnimported());
+        assertEquals(3,action.getFiles().size());
+
+        action.setFileType(FileType.AGILENT_CSV.name());
+        action.setFileStatus(FileStatus.UPLOADED.name());
+        assertEquals(LIST_UNIMPORTED,action.listUnimported());
+        assertEquals(1,action.getFiles().size());
+
+        action.setFileType(UNKNOWN_FILE_TYPE);
+        action.setFileStatus(FileStatus.UPLOADED.name());
+        assertEquals(LIST_UNIMPORTED,action.listUnimported());
+        assertEquals(1,action.getFiles().size());
+
+        action.setFileStatus(FileStatus.IN_QUEUE.name());
+        assertEquals(LIST_UNIMPORTED,action.listUnimported());
+        assertEquals(0,action.getFiles().size());
+
+        action.setFileType(KNOWN_FILE_TYPE);
+        action.setFileStatus(null);
+        assertEquals(LIST_UNIMPORTED,action.listUnimported());
+        assertEquals(5,action.getFiles().size());
+
+        action.setFileType(KNOWN_FILE_TYPE);
+        action.setFileStatus(FileStatus.UPLOADED.name());
+        assertEquals(LIST_UNIMPORTED,action.listUnimported());
+        assertEquals(2,action.getFiles().size());
+        assertEquals(2,action.getFileStatusCountMap().get(FileStatus.UPLOADED));
+    }
+
+    private SortedSet<CaArrayFile> getUnimportedFileSet() {
+        SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
+
+        CaArrayFile file1 = new CaArrayFile();
+        file1.setName("file1");
+        file1.setType(FileType.AFFYMETRIX_CDF.name());
+        file1.setFileStatus(FileStatus.IMPORT_FAILED);
+        fileSet.add(file1);
+
+        CaArrayFile file2 = new CaArrayFile();
+        file2.setName("file2");
+        file2.setType(FileType.AFFYMETRIX_CDF.name());
+        file2.setFileStatus(FileStatus.IMPORT_FAILED);
+        fileSet.add(file2);
+
+        CaArrayFile file3 = new CaArrayFile();
+        file3.setName("file3");
+        file3.setType(FileType.AGILENT_CSV.name());
+        file3.setFileStatus(FileStatus.IMPORT_FAILED);
+        fileSet.add(file3);
+
+        CaArrayFile file4 = new CaArrayFile();
+        file4.setName("file4");
+        file4.setType(FileType.AGILENT_CSV.name());
+        file4.setFileStatus(FileStatus.UPLOADED);
+        fileSet.add(file4);
+
+        CaArrayFile file5 = new CaArrayFile();
+        file5.setName("file5");
+        file5.setFileType(FileType.MAGE_TAB_ADF);
+        file5.setFileStatus(FileStatus.UPLOADED);
+        fileSet.add(file5);
+
+        CaArrayFile file6 = new CaArrayFile();
+        file6.setName("file6");
+        file6.setFileType(null);
+        file6.setFileStatus(FileStatus.UPLOADED);
+        fileSet.add(file6);
+        return fileSet;
+    }
+
     private class LocalCaArrayFile extends CaArrayFile {
         private int size;
 
@@ -896,7 +992,7 @@ public class ProjectFilesActionTest {
             return out.toString();
         }
     }
-    
+
     private static class LocalGenericDataServiceStub extends GenericDataServiceStub {
         private Map<Long, PersistentObject> objMap = new HashMap<Long, PersistentObject>();
 
@@ -906,7 +1002,7 @@ public class ProjectFilesActionTest {
             super.save(object);
             objMap.put(object.getId(), object);
         }
-        
+
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             Object candidate = objMap.get(entityId);
@@ -916,5 +1012,24 @@ public class ProjectFilesActionTest {
                 return (T) (entityClass.isInstance(candidate) ? candidate : null);
             }
         }
+    }
+
+    private class TestProject extends Project {
+
+        private static final long serialVersionUID = 1L;
+        SortedSet<CaArrayFile> unimportedFiles;
+
+        public SortedSet<CaArrayFile> getUnImportedFiles() {
+            return unimportedFiles;
+        }
+
+        public SortedSet<CaArrayFile> getUnimportedFiles() {
+            return unimportedFiles;
+        }
+
+        public void setUnimportedFiles(SortedSet<CaArrayFile> unimportedFiles) {
+            this.unimportedFiles = unimportedFiles;
+        }
+
     }
 }
