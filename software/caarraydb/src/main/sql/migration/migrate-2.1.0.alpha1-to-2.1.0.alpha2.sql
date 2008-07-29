@@ -1,7 +1,7 @@
 -- dev team change request 13129
 create table datacolumn_blob_parts (datacolumn bigint not null, blob_parts bigint not null, contents_index integer not null, primary key (datacolumn, contents_index), unique (blob_parts)) type=InnoDB;
 
-create temporary table dc_blob_stage (id bigint primary key auto_increment, dc_id bigint, contents longblob);
+create table dc_blob_stage (id bigint primary key auto_increment, dc_id bigint, contents longblob) type=InnoDB;
 
 -- marker row
 insert into dc_blob_stage (id, dc_id, contents) select max(id)+1, null, null from blob_holder;
