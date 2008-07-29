@@ -159,7 +159,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 		depends="
 		clean,
 		init,
-		build:caarray
+		build:caarray,
+		build:init-sql
 	        "/>
 
 	<!-- Produces all distributions: installer, upgrader and source -->
@@ -193,10 +194,15 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 
 	
 	<target name="build:caarray">
-		<copy file="${basedir}/caarray2-local.properties" tofile="${basedir}/build/local.properties" />
-		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="continuous-integration" dir="${basedir}"/>
+		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="build" dir="${basedir}"/>
 		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="create-grid-zip" dir="${basedir}" />		
 	</target>
+	
+	<target name="build:init-sql">
+		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-schema-sql" dir="${basedir}" />
+		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-mged-sql" dir="${basedir}" />
+	</target>
+	
 	
 	<target name="retrieve:jboss" unless="jboss.tools.exists">
 		<get src="${jboss.src.url}"
