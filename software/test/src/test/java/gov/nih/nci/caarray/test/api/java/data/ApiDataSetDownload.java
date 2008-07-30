@@ -176,40 +176,38 @@ public class ApiDataSetDownload extends AbstractApiTest {
             logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "DataSet.getHybridizationDataList().size(): "
                     + dataSet.getHybridizationDataList().size());
             for (HybridizationData oneHybData : dataSet.getHybridizationDataList()) {
-                HybridizationData populatedHybData = searchService.search(oneHybData).get(0);
                 // Get each column in the HybridizationData.
                 logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "HybridizationData.getColumns().size(): "
-                        + populatedHybData.getColumns().size());
-                for (AbstractDataColumn column : populatedHybData.getColumns()) {
-                    AbstractDataColumn populatedColumn = searchService.search(column).get(0);
+                        + oneHybData.getColumns().size());
+                for (AbstractDataColumn column : oneHybData.getColumns()) {
                     // Find the type of the column.
                     logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH,
                             "AbstractDataColumn.getQuantitationType().getName(): "
-                            + populatedColumn.getQuantitationType().getName());
-                    QuantitationType qType = populatedColumn.getQuantitationType();
+                            + column.getQuantitationType().getName());
+                    QuantitationType qType = column.getQuantitationType();
                     Class typeClass = qType.getTypeClass();
                     // Retrieve the appropriate data depending on the type of the column.
                     logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "AbstractDataColumn.getValues().");
                     if (typeClass == String.class) {
-                        String[] values = ((StringColumn) populatedColumn).getValues();
+                        String[] values = ((StringColumn) column).getValues();
                         numValuesRetrieved += values.length;
                     } else if (typeClass == Float.class) {
-                        float[] values = ((FloatColumn) populatedColumn).getValues();
+                        float[] values = ((FloatColumn) column).getValues();
                         numValuesRetrieved += values.length;
                     } else if (typeClass == Short.class) {
-                        short[] values = ((ShortColumn) populatedColumn).getValues();
+                        short[] values = ((ShortColumn) column).getValues();
                         numValuesRetrieved += values.length;
                     } else if (typeClass == Boolean.class) {
-                        boolean[] values = ((BooleanColumn) populatedColumn).getValues();
+                        boolean[] values = ((BooleanColumn) column).getValues();
                         numValuesRetrieved += values.length;
                     } else if (typeClass == Double.class) {
-                        double[] values = ((DoubleColumn) populatedColumn).getValues();
+                        double[] values = ((DoubleColumn) column).getValues();
                         numValuesRetrieved += values.length;
                     } else if (typeClass == Integer.class) {
-                        int[] values = ((IntegerColumn) populatedColumn).getValues();
+                        int[] values = ((IntegerColumn) column).getValues();
                         numValuesRetrieved += values.length;
                     } else if (typeClass == Long.class) {
-                        long[] values = ((LongColumn) populatedColumn).getValues();
+                        long[] values = ((LongColumn) column).getValues();
                         numValuesRetrieved += values.length;
                     } else {
                         // Should never get here.
