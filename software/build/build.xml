@@ -222,6 +222,7 @@
         <include name="caGrid-Transfer-common-1.2.jar" />
         <include name="caGrid-Transfer-stubs-1.2.jar" />
         <include name="castor-1.0.4.jar" />
+        <include name="commons-httpclient-3.0.jar" />
     </fileset>
 
     <fileset dir="${caaray-svc.dir}/build/lib" id="grid.dependencies.caarray-svc.build.fileset">
