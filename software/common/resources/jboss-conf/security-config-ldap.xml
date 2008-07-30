@@ -1,0 +1,37 @@
+<?xml version='1.0'?>
+<!DOCTYPE policy PUBLIC
+"-//JBoss//DTD JBOSS Security Config 3.0//EN"
+"http://www.jboss.org/j2ee/dtd/security_config.dtd">
+
+<policy>
+    <application-policy name="caarray">
+        <authentication>
+            <!--
+                 Notes on the policy here:
+                 - Designed to work in both dev and production, which is why the first two are optional.
+                 - Last module only adds roles information from CSM.  Since it won't authenticate anyone
+                   and it is required, this effectively makes one of the first two required.
+                 - The CaArrayLoginModule uses CSM and integrates with the JBoss password stacking
+                   mechanism.
+             -->
+            <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule" flag="optional">
+                <module-option name="ldapHost">@ldap.host@</module-option> 
+                <module-option name="ldapSearchableBase">@ldap.searchbase@</module-option> 
+                <module-option name="ldapUserIdLabel">@ldap.searchprefix@</module-option>
+            </login-module>
+            <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule" flag="optional" >
+                <module-option name="driver">@database.driver@</module-option>
+                <module-option name="url">@database.url@</module-option>
+                <module-option name="user">@database.user@</module-option>
+                <module-option name="passwd">@database.password@</module-option>
+                <module-option name="query">SELECT * FROM csm_user WHERE login_name=? and password=?</module-option>
+                <module-option name="encryption-enabled">YES</module-option>
+            </login-module>
+            <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule" flag="required">
+              <module-option name="password-stacking">useFirstPass</module-option>
+              <module-option name="dsJndiName">java:jdbc/CaArrayDataSource</module-option>
+              <module-option name="rolesQuery">SELECT cg.group_name, 'Roles' FROM csm_group cg, csm_user_group cug, csm_user cu WHERE cg.group_id = cug.group_id AND cug.user_id = cu.user_id AND cu.login_name = ?</module-option>
+            </login-module>
+        </authentication>
+    </application-policy>
+</policy>
