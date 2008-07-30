@@ -36,7 +36,7 @@
     </logger>
    
     <logger name="gov.nih">
-        <level value="DEBUG"/>
+        <level value="WARN"/>
     </logger>
 
     <root>
