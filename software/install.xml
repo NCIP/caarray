@@ -450,9 +450,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 	
 	<target name="install:grid:deploy" description="Deploy Caarray2 application">
 		<unzip dest="${temp.dir}/grid" src="${basedir}/grid/cagrid_CaArraySvc.zip" />
-		<unzip src="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common.jar" dest="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common" />
+		<unzip src="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common.jar" dest="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common" />		
 
-		<replace file="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common/gov/nih/nci/cagrid/caarray/jndi.properties" token="%token.server.hostname%:%token.server.jndi.port%" value="${jboss.server.hostname}:${jboss.server.jndi.port}" />
+		<replaceregexp file="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common/gov/nih/nci/cagrid/caarray/jndi.properties" byline="true"
+			match="^(java.naming.provider.url)=(.*)"
+			replace="\1=jnp://${jboss.server.hostname}:${jboss.server.jndi.port}"/>	
+
 
 		<delete file="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common.jar" />
 
