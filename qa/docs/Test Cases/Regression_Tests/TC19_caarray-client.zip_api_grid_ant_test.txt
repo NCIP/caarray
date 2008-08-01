@@ -6,17 +6,18 @@ E.g.,  Check out CAARRAY_R2_1_0_ALPHA3 to F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3
 	a. > cd F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\build
 	b. > ant build:caarray-client.zip
 	
-6. You now should have a file F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client.zip. Yes I made one, it's 17,800 KB, and it has 359 files and folders. caarray-client.jar was 232 KB.
+3. You now should have a file F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client.zip. For instance, for CAARRAY_R2_1_0_ALPHA3 it's 17,800 KB, and it has 359 files and folders. caarray-client.jar was 232 KB.
 
-7. E.g., a while ago I made a file E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client.zip with 357 files and folders, and size 17,430 KB. Also,  caarray-client.jar was 227 KB.
+4. Unzip the F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.zip, e.g., to a newly created directory \software\caarray-client.jar\target\caarray-client_zip
 
-8. Unzip the F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.zip, e.g., to a newly created directory \software\caarray-client.jar\target\caarray-client_zip
+5. There is documentation at E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip\README.txt
 
-9. There is documentation at E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip\README.txt
+6. At the coommand prompt, run one or more of the following ant targets:
 
-10. Assume you are trying to test regression test the tag currently on caArray QA-VM (cbvapp-q1001.nci.nih.gov):
-
-At the coommand prompt, run the following ant target:
+For local install, using the default ports of theBDA installer:
+> E:
+> cd F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client_zip
+> ant -Dhostname=localhost -Djndi.port=31099 -Dgrid.port=18080
 
 For QA-WM:
 > E:
@@ -38,14 +39,11 @@ For PROD, run
 > cd E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip
 > ant -Dhostname=cbapp-s1001.nci.nih.gov -Djndi.port=8080 -Dgrid.port=59580
 
-
-11. The regression test should build 100% successfully:
+7. The regression test should build 100% successfully:
 
 e.g., 
 
-
-E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\build>cd E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-clien
-t_zip
+E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\build>cd E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip
 
 E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip>ant -p
 Buildfile: build.xml
@@ -214,4 +212,4 @@ test-clean:
 BUILD SUCCESSFUL
 Total time: 15 seconds
 
-Requirements for passing the regression test are the generation of the two "[java] Successfully ran query" output lines, one for "test:java-api", and one for "test:grid-api". 
+8. Requirements for passing the regression test are the generation of the two "[java] Successfully ran query" output lines, one for "test:java-api", and one for "test:grid-api". 
