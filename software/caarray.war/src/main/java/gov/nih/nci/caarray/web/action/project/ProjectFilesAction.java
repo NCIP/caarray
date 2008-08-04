@@ -188,6 +188,11 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public static final long MAX_DOWNLOAD_SIZE = 1024 * 1024 * 1536;
 
+    /**
+     * Maximum number of total files that can be imported in a single non-magetab import.
+     */
+    public static final int MAX_NUMBER_OF_FILES_FOR_IMPORT = 5;
+
     private static final String DOWNLOAD_CONTENT_TYPE = "application/zip";
     private static final String UPLOAD_INPUT = "upload";
     private static final long serialVersionUID = 1L;
@@ -599,15 +604,17 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     public String importFiles() {
         ErrorCounts errors = new ErrorCounts();
         CaArrayFileSet fileSet = checkImportFiles(errors);
-        if (!fileSet.getFiles().isEmpty()) {
+        if (!fileSet.isMageTabDataset() && fileSet.getFiles().size() > MAX_NUMBER_OF_FILES_FOR_IMPORT) {
+            addActionError(getText("project.fileImport.tooManyFiles", String.valueOf(MAX_NUMBER_OF_FILES_FOR_IMPORT)));
+        } else if (!fileSet.getFiles().isEmpty()) {
             List<Long> entityIds = new ArrayList<Long>(this.targetNodeIds);
             ExperimentDesignNodeType targetNodeType = (this.nodeType == null ? null : this.nodeType.getNodeType());
             DataImportOptions dataImportOptions = DataImportOptions.getDataImportOptions(this.targetAnnotationOption,
                     this.newAnnotationName, targetNodeType, entityIds);
             getFileManagementService().importFiles(getProject(), fileSet, dataImportOptions);
+            ActionHelper.saveMessage(getText("project.fileImport.success", new String[] {String.valueOf(fileSet
+                    .getFiles().size()) }));
         }
-        ActionHelper.saveMessage(getText("project.fileImport.success", new String[] {String.valueOf(fileSet.getFiles()
-                .size()) }));
         for (String msg : errors.getMessages()) {
             ActionHelper.saveMessage(msg);
         }

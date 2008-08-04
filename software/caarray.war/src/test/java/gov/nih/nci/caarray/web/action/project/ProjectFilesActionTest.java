@@ -495,6 +495,24 @@ public class ProjectFilesActionTest {
     }
 
     @Test
+    public void testMaxImportSize() throws Exception {
+        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();        
+        for (int i = 0; i < ProjectFilesAction.MAX_NUMBER_OF_FILES_FOR_IMPORT + 1; i++) {
+            CaArrayFile file = new CaArrayFile();
+            file.setProject(this.action.getProject());
+            file.setFileStatus(FileStatus.VALIDATED);
+            file.setFileType(FileType.AFFYMETRIX_CHP);
+            selectedFiles.add(file);            
+        }
+        this.action.setSelectedFiles(selectedFiles);
+        assertEquals(LIST_UNIMPORTED, this.action.importFiles());
+        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
+        String errorTxt = this.action.getText("project.fileImport.tooManyFiles", String.valueOf(ProjectFilesAction.MAX_NUMBER_OF_FILES_FOR_IMPORT));
+        assertEquals(1, this.action.getActionErrors().size());
+        assertEquals(errorTxt, this.action.getActionErrors().iterator().next());
+    }
+
+    @Test
     public void testAddSupplemental() {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);

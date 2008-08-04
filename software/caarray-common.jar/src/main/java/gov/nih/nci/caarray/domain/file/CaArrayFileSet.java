@@ -90,6 +90,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -255,5 +257,18 @@ public final class CaArrayFileSet implements Serializable {
             }
         }
         return null;
+    }
+ 
+    /**
+     * @return whether this fileset represents a MAGE-TAB dataset. A fileset is a mage-tab dataset if includes either a 
+     * IDF or an SDRF file.
+     */
+    public boolean isMageTabDataset() {
+        return CollectionUtils.exists(getFiles(), new Predicate() {
+            public boolean evaluate(Object o) {
+                CaArrayFile f = (CaArrayFile) o;
+                return f.getFileType() == FileType.MAGE_TAB_IDF || f.getFileType() == FileType.MAGE_TAB_SDRF;
+            }
+        });
     }
 }

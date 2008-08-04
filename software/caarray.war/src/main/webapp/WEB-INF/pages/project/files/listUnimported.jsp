@@ -14,12 +14,12 @@
 
 <c:url value="/ajax/project/files/importTreeNodesJson.action" var="nodesJsonUrl"/>
 <c:url value="/protected/ajax/project/files/validateSelectedImportFiles.action" var="validateImportFilesUrl"/>
-
 <script type="text/javascript">
     fileTypeLookup = new Object();
     fileNameLookup = new Object();
     SDRF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileType@MAGE_TAB_SDRF"/>';
     IDF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileType@MAGE_TAB_IDF"/>';
+    MAX_NUMBER_OF_FILES = '<s:property value="@gov.nih.nci.caarray.web.action.project.ProjectFilesAction@MAX_NUMBER_OF_FILES_FOR_IMPORT"/>'
     <c:forEach items="${files}" var="file">
     fileTypeLookup['${file.id}'] = '${file.fileType}';
     fileNameLookup['${file.id}'] = '${file.name}';
@@ -48,11 +48,11 @@
         });
     }
 
-    checkAnyFilesSelected = function() {
+    getNumFilesSelected = function() {
         var formElts = $('selectFilesForm').getInputs('checkbox', 'selectedFileIds');
-        return $A(formElts).any(function(elt) { 
+        return $A(formElts).select(function(elt) { 
             return elt.checked; 
-        });
+        }).size();
     }
 
     getSelectedFileNames = function() {
@@ -63,10 +63,13 @@
     }
     
     importFiles = function(importUrl) {
-        if (!checkAnyFilesSelected()) {
+        var numSelected = getNumFilesSelected();
+        if (numSelected == 0) {
             alert("At least one file must be selected");
         } else if (isMageTabImport()) {
             doImportFiles(importUrl);
+        } else if (numSelected > MAX_NUMBER_OF_FILES) {
+            alert('<fmt:message key="project.fileImport.tooManyFiles"><fmt:param><s:property value="@gov.nih.nci.caarray.web.action.project.ProjectFilesAction@MAX_NUMBER_OF_FILES_FOR_IMPORT"/></fmt:param></fmt:message>');
         } else {
             openImportDialog(importUrl);
         }
