@@ -2,12 +2,20 @@
 
 <script type="text/javascript">
     confirmDelete = function() {
-        return confirm('<fmt:message key="project.confirmDelete"/>');
+        if ( confirm('<fmt:message key="project.confirmDelete"/>') ) {
+        	$('delete_progress').show();
+        	return true;
+        }
+
+        return false;
     }
 </script>
 
 <%@page import="gov.nih.nci.caarray.domain.project.ProposalStatus"%>
 <c:set var="draftStatus" value="<%= ProposalStatus.DRAFT %>"/>
+<div id="delete_progress" class="confirm_msg" style="display: none; margin: 3px 3px">
+	Experiment deletion is in progress.
+</div>
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <display:table class="searchresults" cellspacing="0" list="${projects}" requestURI="${sortUrl}"
         id="row" excludedParams="project.id" style="clear: none;">
