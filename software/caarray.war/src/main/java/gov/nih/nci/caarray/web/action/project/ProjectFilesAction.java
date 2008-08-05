@@ -191,7 +191,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     /**
      * Maximum number of total files that can be imported in a single non-magetab import.
      */
-    public static final int MAX_NUMBER_OF_FILES_FOR_IMPORT = 5;
+    public static final int MAX_NUMBER_OF_FILES_FOR_IMPORT = 150;
 
     private static final String DOWNLOAD_CONTENT_TYPE = "application/zip";
     private static final String UPLOAD_INPUT = "upload";
