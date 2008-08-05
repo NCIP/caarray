@@ -155,6 +155,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private static final Logger LOG = Logger.getLogger(ProjectManagementServiceBean.class);
     private static final int UPLOAD_TIMEOUT = 7200;
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    private static final int DELETE_TIMEOUT = 3600;
 
     @Resource
     private SessionContext sessionContext;
@@ -405,6 +406,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    @TransactionTimeout(DELETE_TIMEOUT)
     public void deleteProject(Project project) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, project);
         if (!project.isOwner(UsernameHolder.getCsmUser())) {
@@ -416,15 +418,18 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             throw new ProposalWorkflowException("Cannot delete a non-draft project");
         }
         // remove the blobs
-        getFileDao().deleteAssociatedBlobsByProjectId(project.getId());
+        getFileDao().deleteHqlBlobsByProjectId(project.getId());
+
         // refresh project
         Project freshProject = this.getProject(project.getId());
 
         // both hybridizations and project are trying to delete the save files via cascades, so explicitly
-        // delete hybridizations (and their files) first
+        //delete hybridizations (and their files) first
+
         for (Hybridization hyb : freshProject.getExperiment().getHybridizations()) {
             getProjectDao().remove(hyb);
         }
+
         getProjectDao().remove(freshProject);
 
         LogUtil.logSubsystemExit(LOG);
@@ -756,5 +761,5 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private SearchDao getSearchDao() {
         return this.daoFactory.getSearchDao();
     }
-    
+
 }

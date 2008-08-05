@@ -82,8 +82,10 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.BlobHolder;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,23 +104,26 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
     }
 
 
-    private List<Long> getBlobPartIdsForProject(long projectId) {
-         List<Long> returnVal = new ArrayList<Long>();
+    private List getBlobPartIdsForProject(long projectId) {
+         List returnVal = new ArrayList<Long>();
          String sqlProjBlobs = "select b.blob_parts from PROJECT p, CAARRAYFILE c, CAARRAYFILE_BLOB_PARTS b "
                       + "where p.id = c.project AND b.caarrayfile = c.id AND p.id = :p_id";
 
-         String sqlHybBlobs = "select bp.blob_parts from project p, experiment e, hybridization h, datacolumn d, "
+         String sqlHybBlobs = "select bp.blob_parts from project p, experiment e, hybridization h, "
+         + "hybridization_data hd, "
+         + "datacolumn d, "
          + "datacolumn_blob_parts bp "
          + "where p.id = :p_id "
          + "and p.experiment = e.id "
          + "and e.id = h.experiment "
-         + "and h.id = d.hybridization_data "
+         + "and hd.id = d.hybridization_data "
+         + "and h.id = hd.hybridization "
          + "and d.id = bp.datacolumn";
 
-        List<Long> filesToProject = HibernateUtil.getCurrentSession().createSQLQuery(sqlProjBlobs)
+        List filesToProject = HibernateUtil.getCurrentSession().createSQLQuery(sqlProjBlobs)
             .setLong("p_id", projectId).list();
 
-        List<Long> filesToHyb = HibernateUtil.getCurrentSession().createSQLQuery(sqlHybBlobs)
+        List filesToHyb = HibernateUtil.getCurrentSession().createSQLQuery(sqlHybBlobs)
             .setLong("p_id", projectId).list();
 
         if ((filesToProject != null && !filesToProject.isEmpty()) || (filesToHyb != null && !filesToHyb.isEmpty())) {
@@ -130,7 +135,7 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
 
     }
 
-    private int removeAssociationsByBlobHolderId(List<Long> idList) {
+    private int removeAssociationsByBlobHolderId(List idList) {
 
         String sql = "delete from CAARRAYFILE_BLOB_PARTS where blob_parts in (:b_parts)";
 
@@ -145,7 +150,7 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         return q.executeUpdate();
     }
 
-    private int removeBlobHoldersById(List<Long> idList) {
+    private int removeBlobHoldersById(List idList) {
 
         String sql = "delete from BLOB_HOLDER where id in (:b_parts)";
 
@@ -158,12 +163,32 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
     /**
      * {@inheritDoc}
      */
-    public void deleteAssociatedBlobsByProjectId(Long projectId) {
+    public void deleteSqlBlobsByProjectId(Long projectId) {
         List<Long> list = this.getBlobPartIdsForProject(projectId);
         if (list != null && !list.isEmpty()) {
             this.removeAssociationsByBlobHolderId(list);
             this.removeBlobHoldersById(list);
         }
+        this.flushSession();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void deleteHqlBlobsByProjectId(Long projectId) {
+        List list = this.getBlobPartIdsForProject(projectId);
+        if (list != null && !list.isEmpty()) {
+            this.removeAssociationsByBlobHolderId(list);
+            for (int i = 0; i < list.size(); i++) {
+                String hql = "delete from " + BlobHolder.class.getName() + " where id = :bId";
+                Query q = HibernateUtil.getCurrentSession().createQuery(hql);
+                q.setBigInteger("bId", (BigInteger) list.get(i));
+                q.executeUpdate();
+                this.flushSession();
+                this.clearSession();
+            }
+        }
+
     }
 
 }

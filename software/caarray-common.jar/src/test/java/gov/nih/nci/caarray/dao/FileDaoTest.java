@@ -122,7 +122,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
         tx = HibernateUtil.beginTransaction();
         s = HibernateUtil.getCurrentSession();
-        DAO_OBJECT.deleteAssociatedBlobsByProjectId(1L);
+        DAO_OBJECT.deleteHqlBlobsByProjectId(1L);
         tx.commit();
     }
 }
