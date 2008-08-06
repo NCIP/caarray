@@ -506,5 +506,22 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		<echo  message="Checking if database properties exist.  If they do not on an upgrade install then ${jboss.home}/server/${jboss.server.name}/deploy/${caarray.ds.file} may not exist."/>
 		<property name="db.prop.list" value="database.url,database.user,database.password,database.name"/>
 		<properties-exist properties.list="${db.prop.list}"/>
+
+		<!-- Copy files to ensure values containing variables are expanded, such properties are stored in filterset.pre -->
+		<copy todir="${resource.dir.temp}" filtering="true">
+			<fileset dir="${common.dir.src}">
+				<include name="**/*"/>
+			</fileset>
+			<filterset refid="filterset.pre"/>
+		</copy> 
+		<copy todir="${common.dir.target}" filtering="true">
+			<fileset dir="${resource.dir.temp}">
+				<include name="**/*"/>
+			</fileset>
+			<filterset>
+				<filtersfile file="${properties.file}"/>
+				<filtersfile file="project.properties"/>
+			</filterset>
+		</copy> 
 	</target>
 </project>

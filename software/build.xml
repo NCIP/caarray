@@ -382,8 +382,14 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 				<exclude name="**/*.zip" />
 			</fileset>
 		</copy>	
-		
-		
+	
+		<!-- This  copies common files over
+		-->
+		<copy todir="${common.target.dir}" overwrite="true">
+			<fileset dir="${common.src.dir}">
+				<include name="**/*" />
+			</fileset>
+		</copy>			
 	</target>
 
 	<target name="create-installer-zip">
