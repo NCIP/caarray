@@ -117,19 +117,20 @@ public final class AuthorizationManagerExtensions {
     }
 
     /**
-     * Add the user with given id to the set of owners of the protection element with given id. If that user was 
+     * Add the user with given id to the set of owners of the protection element with given id. If that user was
      * already an owner of that protection element, then this method is a no-op.
      * @param protectionElementId if of the protection element to modify.
      * @param user id of the user to add to the set of owners.
+     * @param appName application context name
      * @throws CSTransactionException if there is an error in performing the operation
      */
-    public static void addOwner(Long protectionElementId, User user) throws CSTransactionException {
+    public static void addOwner(Long protectionElementId, User user, String appName) throws CSTransactionException {
 
         Session s = null;
         Transaction t = null;
 
-        try {            
-            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory("caarray"));
+        try {
+            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory(appName));
             t = s.beginTransaction();
 
             ProtectionElement pe = (ProtectionElement) s.load(ProtectionElement.class, protectionElementId);
@@ -140,7 +141,7 @@ public final class AuthorizationManagerExtensions {
             }
             owners.add(user);
             s.update(pe);
-            s.flush();       
+            s.flush();
             t.commit();
         } catch (Exception ex) {
             LOG.error(ex);
@@ -179,17 +180,17 @@ public final class AuthorizationManagerExtensions {
      * User object. Then the check permission operation is performed to see if the user has the required access or not.
      * If caching is enabled for the user then the permissions are validated against the internal stored cache else the
      * query is fired against the database to check the permissions
-     * 
+     *
      * @param userName The user name of the user which is trying to perform the operation
      * @param className The name of the instance class
      * @param attributeName The attribute (property) of the class used to identify the instance
      * @param value the value of the property for the instance
      * @param privilegeName The operation which the user wants to perform on the protection element
      * @param application the application to which the instance belongs
-     * 
+     *
      * @return boolean Returns true if the user has permission to perform the operation on that particular instance
      * @throws CSException If there are any errors while checking for permission
-     * 
+     *
      * DEVELOPER NOTE: This code is adapted from the CSM Source code for getPermission(userName, objectId, attribute,
      * privilege) with appropriate modifications to allow identifying the specific instance
      */
@@ -210,7 +211,7 @@ public final class AuthorizationManagerExtensions {
             throw new CSException("objectId can't be null!");
         }
 
-        test = checkOwnership(userName, className, attributeName, value);
+        test = checkOwnership(userName, className, attributeName, value, application.getApplicationName());
         if (test) {
             return true;
         }
@@ -221,7 +222,8 @@ public final class AuthorizationManagerExtensions {
 
         try {
 
-            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory("caarray"));
+            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory(
+                    application.getApplicationName()));
 
             connection = s.connection();
 
@@ -263,7 +265,8 @@ public final class AuthorizationManagerExtensions {
 
     @SuppressWarnings("PMD")
     // adapted from CSM code
-    private static boolean checkOwnership(String userName, String className, String attribute, String value) {
+    private static boolean checkOwnership(String userName, String className, String attribute,
+            String value, String appName) {
         boolean test = false;
         Session s = null;
         PreparedStatement preparedStatement = null;
@@ -271,7 +274,7 @@ public final class AuthorizationManagerExtensions {
         ResultSet rs = null;
 
         try {
-            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory("caarray"));
+            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory(appName));
 
             connection = s.connection();
 
