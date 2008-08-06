@@ -190,23 +190,23 @@ A.btn:active SPAN.btn_img
 { background-position:bottom left; background-attachment:scroll; padding:5px 0 2px 9px; /* push text down 1px */ }
 
 .source_node {
-  background-image: url("../images/ico_source.png") !important;
+  background-image: url("../images/ico_source.gif") !important;
 }
 
 .sample_node {
-  background-image: url("../images/ico_sample.png") !important;
+  background-image: url("../images/ico_sample.gif") !important;
 }
 
 .extract_node {
-  background-image: url("../images/ico_extract.png") !important;
+  background-image: url("../images/ico_extract.gif") !important;
 }
 
 .labeled_extract_node {
-  background-image: url("../images/ico_labeledextract.png") !important;
+  background-image: url("../images/ico_labeled_extract.gif") !important;
 }
 
 .hybridization_node {
-  background-image: url("../images/ico_hybridization.png") !important;
+  background-image: url("../images/ico_hybridization.gif") !important;
 }
 
 .create_choice_form_item {
