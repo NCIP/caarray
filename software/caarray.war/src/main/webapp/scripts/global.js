@@ -698,7 +698,7 @@ var ListPickerUtils = {
         $(baseId + 'SelectedItemDiv').appendChild(newItem);
 
         if (allowReordering) {
-            Sortable.create(baseId + 'SelectedItemDiv', { starteffect: function() { autoUpdater.sortableReordered = true; } });
+            Sortable.create(baseId + 'SelectedItemDiv', {onUpdate: function() { autoUpdater.sortableReordered = true; } });
         }
     },
 

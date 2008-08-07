@@ -38,7 +38,7 @@
 </s:if>
 
 
-<caarray:listSelector baseId="protocol" listLabel="${listLabel}" listField="${selectedProtocols}"
+<caarray:listSelector baseId="protocol" listLabel="${listLabel}" listField="${currentProtocols}"
     listFieldName="selectedProtocols" tabIndex="${tabIndex2}" required="${required}" multiple="${multiple}"
     returnInitialTab1="${returnInitialTab1}" returnInitialTab2="${returnInitialTab2}"
     returnInitialTab2Url="${returnInitialTab2Url}" hideAddButton="${hideAddButton}" addButtonUrl="${addButtonUrl}"
