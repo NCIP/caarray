@@ -114,6 +114,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -134,7 +135,6 @@ public final class SecurityUtils {
     /**
      * Key for looking up the authorization manager instance from CSM.
      */
-    public static final String AUTHORIZATION_MANAGER_KEY = "caarray";
 
     /** The username of the synthetic user for anonymous access permissions. */
     public static final String ANONYMOUS_USERNAME = "__anonymous__";
@@ -160,7 +160,7 @@ public final class SecurityUtils {
     public static final String PERMISSIONS_ROLE = "Permissions";
 
     private static final AuthorizationManager AUTH_MGR;
-    private static final String APPLICATION_NAME = "caarray";
+    private static final String APPLICATION_NAME;
 
     private static Application caarrayApp;
     private static User anonymousUser;
@@ -173,9 +173,10 @@ public final class SecurityUtils {
     };
 
     static {
+        APPLICATION_NAME = ResourceBundle.getBundle("caarray").getString("csm.application.name");
         AuthorizationManager am = null;
         try {
-            am = SecurityServiceProvider.getAuthorizationManager(AUTHORIZATION_MANAGER_KEY);
+            am = SecurityServiceProvider.getAuthorizationManager(APPLICATION_NAME);
         } catch (CSConfigurationException e) {
             LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
         } catch (CSException e) {
@@ -448,7 +449,7 @@ public final class SecurityUtils {
     private static void addOwner(ProtectionGroup pg, User user) throws CSObjectNotFoundException,
             CSTransactionException {
         ProtectionElement pe = (ProtectionElement) pg.getProtectionElements().iterator().next();
-        AuthorizationManagerExtensions.addOwner(pe.getProtectionElementId(), user);
+        AuthorizationManagerExtensions.addOwner(pe.getProtectionElementId(), user, APPLICATION_NAME);
 
         // This shouldn't be necessary, because the filter should take into account
         // the ownership status (set above.) However, such a filter uses a UNION

@@ -98,6 +98,7 @@ import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.security.SecurityServiceProvider;
 import gov.nih.nci.security.UserProvisioningManager;
@@ -110,9 +111,9 @@ import java.util.Set;
  * @author Scott Miller
  */
 public final class CaArrayActionHelper {
-    
+
     private CaArrayActionHelper() {
-        
+
     }
 
     /**
@@ -142,7 +143,7 @@ public final class CaArrayActionHelper {
     public static FileAccessService getFileAccessService() {
         return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
     }
-    
+
     /**
      * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
      * via static import
@@ -212,7 +213,8 @@ public final class CaArrayActionHelper {
      * @throws CSException on CSM error
      */
     public static UserProvisioningManager getUserProvisioningManager() throws CSException {
-            return SecurityServiceProvider.getUserProvisioningManager("caarray");
+            return SecurityServiceProvider.getUserProvisioningManager(
+                    SecurityUtils.getApplication().getApplicationName());
     }
 
     /**
@@ -223,7 +225,7 @@ public final class CaArrayActionHelper {
     public static BrowseService getBrowseService() {
         return (BrowseService) ServiceLocatorFactory.getLocator().lookup(BrowseService.JNDI_NAME);
     }
-    
+
     /**
      * Retrieve the category corresponding to the given ExperimentOntologyCategory constant.
      * @param category an ExperimentOntologyCategory constant describing a category
@@ -264,7 +266,7 @@ public final class CaArrayActionHelper {
     }
 
     /**
-     * Retrieve the set of terms belonging to the category corresponding to the given ExperimentOntologyCategory 
+     * Retrieve the set of terms belonging to the category corresponding to the given ExperimentOntologyCategory
      * constant.
      * @param category an ExperimentOntologyCategory constant describing a category
      * @return the Set of Terms belonging to this category or its subcategories
