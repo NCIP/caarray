@@ -87,6 +87,7 @@ import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileAccessSe
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManagementService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getVocabularyService;
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignDeleteException;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -378,6 +379,23 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
 
         return returnVal;
+    }
+
+    /**
+     * Delete an array design.
+     *
+     * @return input
+     */
+    @SkipValidation
+    public String delete() {
+        try {
+            getArrayDesignService().deleteArrayDesign(getArrayDesign());
+            ActionHelper.saveMessage(getText("arrayDesign.deletionSuccess",
+                    new String[] {getArrayDesign().getName() }));
+        } catch (ArrayDesignDeleteException e) {
+            ActionHelper.saveMessage(e.getMessage());
+        }
+        return list();
     }
 
     /**

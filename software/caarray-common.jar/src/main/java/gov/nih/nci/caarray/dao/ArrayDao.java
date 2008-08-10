@@ -237,12 +237,20 @@ public interface ArrayDao extends CaArrayDao {
     Map<String, Long> getLogicalProbeNamesToIds(ArrayDesign design, List<String> names);
 
     /**
-     * Save a batch of design element entries in a design element list. The entries are put in the list starting at 
+     * Save a batch of design element entries in a design element list. The entries are put in the list starting at
      * a given index.
      * @param designElementList the design element list to which the entries belong (must already be persistent)
      * @param startIndex the starting index in the list at which the entries should be saved
      * @param logicalProbeIds the ids of the design elements which should be added to the list starting at given index
      */
-    void createDesignElementListEntries(DesignElementList designElementList, int startIndex, 
+    void createDesignElementListEntries(DesignElementList designElementList, int startIndex,
             List<Long> logicalProbeIds);
+    /**
+     * Delete array design detail.
+     *
+     * @param design
+     *            array design associated with the arrayDesignDetail that will
+     *            be deleted.
+     */
+    void deleteArrayDesignDetails(ArrayDesign design);
 }

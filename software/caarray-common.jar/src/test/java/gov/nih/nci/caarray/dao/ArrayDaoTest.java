@@ -90,6 +90,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -451,6 +452,34 @@ public class ArrayDaoTest extends AbstractDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during isArrayDesignLocked: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testDeleteArrayDesignDetails() throws Exception {
+        Transaction tx = null;
+        HibernateUtil.enableFilters(false);
+        try {
+            tx = HibernateUtil.beginTransaction();
+            ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_2.getId());
+            CaArrayFile file2 = new CaArrayFile();
+            file2.setName("newfile");
+            file2.setFileStatus(FileStatus.IMPORTED);
+            retrievedArrayDesign.setDesignFile(file2);
+            ArrayDesignDetails designDetails = new ArrayDesignDetails();
+            retrievedArrayDesign.setDesignDetails(designDetails);
+            DAO_OBJECT.save(retrievedArrayDesign);
+            tx.commit();
+
+            tx = HibernateUtil.beginTransaction();
+            retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_2.getId());
+            assertNotNull(retrievedArrayDesign.getDesignDetails());
+            DAO_OBJECT.deleteArrayDesignDetails(retrievedArrayDesign);
+            tx.commit();
+            assertNull(retrievedArrayDesign.getDesignDetails());
+        } catch (Exception e) {
+            HibernateUtil.rollbackTransaction(tx);
+            throw e;
         }
     }
 

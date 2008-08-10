@@ -170,4 +170,7 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
     public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
         return null;
     }
+
+    public void deleteArrayDesign(ArrayDesign arrayDesign)throws ArrayDesignDeleteException {
+    }
 }

@@ -97,15 +97,14 @@ import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
@@ -130,7 +129,7 @@ public class ArrayDesignServiceIntegrationTest {
     private static Organization DUMMY_ORGANIZATION = new Organization();
     private static Organism DUMMY_ORGANISM = new Organism();
     private static Term DUMMY_TERM = new Term();
-
+    private static ArrayDesign DUMMY_ARRAY_DESIGN = new ArrayDesign();
     @Before
     public void setUp() {
         this.arrayDesignService = createArrayDesignService(this.fileAccessServiceStub, this.vocabularyServiceStub);
@@ -147,6 +146,14 @@ public class ArrayDesignServiceIntegrationTest {
         DUMMY_TERM.setCategory(cat);
         DUMMY_TERM.setSource(ts);
 
+        DUMMY_ARRAY_DESIGN.setId(2L);
+        DUMMY_ARRAY_DESIGN.setName("DummyTestArrayDesign1");
+        DUMMY_ARRAY_DESIGN.setVersion("2.0");
+        DUMMY_ARRAY_DESIGN.setProvider(DUMMY_ORGANIZATION);
+        DUMMY_ARRAY_DESIGN.setTechnologyType(DUMMY_TERM);
+        DUMMY_ARRAY_DESIGN.setOrganism(DUMMY_ORGANISM);
+        DUMMY_ARRAY_DESIGN.setDesignFile(getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
+        DUMMY_ARRAY_DESIGN.getDesignFile().setFileStatus(null);
         HibernateUtil.enableFilters(false);
         HibernateUtil.openAndBindSession();
     }
@@ -194,6 +201,48 @@ public class ArrayDesignServiceIntegrationTest {
         design.setOrganism(DUMMY_ORGANISM);
         this.arrayDesignService.saveArrayDesign(design);
         return design;
+    }
+
+    @Test
+    public void testdeleteArrayDesign() throws Exception {
+        System.setProperty("hibernate.show_sql", "true");
+        Transaction t = null;
+        t = HibernateUtil.beginTransaction();
+        ArrayDesign design = setupAndSaveDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        this.arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesignDetails(design);
+        Long id = design.getId();
+        t.commit();
+
+        t = HibernateUtil.beginTransaction();
+        int size = HibernateUtil.getCurrentSession().createCriteria(
+                ArrayDesign.class).list().size();
+        design = this.arrayDesignService.getArrayDesign(id);
+        this.arrayDesignService.deleteArrayDesign(design);
+        assertEquals(size - 1, HibernateUtil.getCurrentSession()
+                .createCriteria(ArrayDesign.class).list().size());
+        t.commit();
+    }
+
+    @Test(expected = ArrayDesignDeleteException.class)
+    public void testDeleteArrayDesignLocked() throws ArrayDesignDeleteException {
+       ArrayDesignService arrayDesignService = new ArrayDesignServiceLocal();
+       ArrayDesign design = DUMMY_ARRAY_DESIGN;
+       arrayDesignService.deleteArrayDesign(design);
+    }
+
+    @Test(expected = ArrayDesignDeleteException.class)
+    public void testDeleteArrayDesignImporting() throws ArrayDesignDeleteException {
+        ArrayDesignService arrayDesignService = new ArrayDesignServiceLocal();
+        DUMMY_ARRAY_DESIGN.getDesignFile().setFileStatus(FileStatus.IMPORTING);
+        arrayDesignService.deleteArrayDesign(DUMMY_ARRAY_DESIGN);
+    }
+
+    private class ArrayDesignServiceLocal extends ArrayDesignServiceBean {
+        @Override
+        public boolean isArrayDesignLocked(Long id) {
+            return true;
+        }
     }
 
     @Test
