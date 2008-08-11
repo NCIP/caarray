@@ -63,6 +63,15 @@
                                 <a href="#" onclick="openEditFileWindow('${editFileDesignUrl}')"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.editFile"/>" /></a>
                             </c:if>
                         </display:column>
+                        <display:column titleKey="button.delete" class="centered" headerClass="centered">
+                            <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
+                            <c:if test="${row.designFile.status != importingStatus}">
+                                <c:url value="/protected/arrayDesign/delete.action" var="deleteDesignUrl">
+                                     <c:param name="arrayDesign.id" value="${row.id}" />
+                                </c:url>
+                                <a href="${deleteDesignUrl}"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                          </c:if>
+                        </display:column>
                         <display:column sortProperty="designFile.status" titleKey="experiment.files.status" sortable="true" >
                             <c:if test="${not empty row.designFile.status}">
                                 <ajax:anchors target="tabboxlevel2wrapper">

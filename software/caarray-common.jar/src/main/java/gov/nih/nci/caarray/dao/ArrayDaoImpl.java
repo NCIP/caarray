@@ -83,7 +83,10 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
+import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -110,6 +113,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -326,6 +330,81 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
             namesToIds.put((String) result[0], (Long) result[1]);
         }
         return namesToIds;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public void deleteArrayDesignDetails(ArrayDesign design) {
+         // Deletes array design detail. Records in other tables that are associated
+         // with the array design detail are deleted first, then the array design
+         // detail is deleted.
+        if (design.getDesignDetails() != null && design.getDesignDetails().getId() != null) {
+            Long detailId = design.getDesignDetails().getId();
+            List<Long> probeGroupIdsList = getProbeGroupIds(detailId);
+            deleteDesignElementList(detailId);
+            deleteDesignElements(detailId);
+            deleteProbeGroup(probeGroupIdsList);
+            StringBuilder unlinkDesignDetailsQuery = new StringBuilder("update ")
+                .append(ArrayDesign.class.getName())
+                .append(" ad set ad.designDetails = null where ad.id  = :id");
+            getCurrentSession().createQuery(unlinkDesignDetailsQuery.toString())
+                .setLong("id", design.getId()).executeUpdate();
+            remove(design.getDesignDetails());
+            design.setDesignDetails(null);
+            save(design);
+        }
+    }
+
+    private List<Long> getProbeGroupIds(Long detailId) {
+          StringBuilder probeGroupIdsQuery = new StringBuilder("select id from ").append(ProbeGroup.class.getName())
+              .append(" where arrayDesignDetails.id = :detailsId");
+          return getCurrentSession().createQuery(probeGroupIdsQuery.toString()).setLong("detailsId", detailId).list();
+    }
+
+    private void deleteProbeGroup(List<Long> probeGroupIdsList) {
+        if (!probeGroupIdsList.isEmpty()) {
+            String deleteProbeGroup = "delete from " + ProbeGroup.class.getName() + " where  id in (:groupIds)";
+            getCurrentSession().createQuery(deleteProbeGroup)
+                .setParameterList("groupIds", probeGroupIdsList).executeUpdate();
+        }
+    }
+
+    private void deleteDesignElementList(Long detailId) {
+        StringBuilder elementIdsQuery = new StringBuilder("select distinct designelementlist_id from ")
+        .append("designelementlist_designelement dd inner join design_element de ")
+        .append("on dd.designelement_id=de.id and (de.logicalprobe_details_id = :id")
+        .append(" or de.feature_details_id = :id or de.physicalprobe_details_id = :id)");
+
+        List<Long> designElementListIds = getCurrentSession().createSQLQuery(elementIdsQuery.toString())
+            .addScalar("designelementlist_id", Hibernate.LONG).setLong("id", detailId).list();
+
+        if (!designElementListIds.isEmpty()) {
+            StringBuilder deleteFromDesignElementListLkup =
+                    new StringBuilder("delete from designelementlist_designelement ")
+                    .append("where designelementlist_id  in (:designIds)");
+            getCurrentSession().createSQLQuery(deleteFromDesignElementListLkup.toString())
+                .setParameterList("designIds", designElementListIds).executeUpdate();
+            getCurrentSession().createSQLQuery("delete from design_element_list where id in ( :designIds )")
+                .setParameterList("designIds", designElementListIds).executeUpdate();
+        }
+    }
+
+    private void deleteDesignElements(Long detailId) {
+        getCurrentSession().createQuery(
+                getDeleteStatement(PhysicalProbe.class.getName(), "arrayDesignDetails", "detailId")
+                ).setLong("detailId", detailId).executeUpdate();
+        getCurrentSession().createQuery(
+                getDeleteStatement(LogicalProbe.class.getName(), "arrayDesignDetails", "detailId")
+                ).setLong("detailId", detailId).executeUpdate();
+        getCurrentSession().createQuery(
+                getDeleteStatement(Feature.class.getName(), "arrayDesignDetails", "detailId")
+                ).setLong("detailId", detailId).executeUpdate();
+    }
+
+    private String getDeleteStatement(String entityName, String field, String param) {
+        return "delete from " + entityName + " e where e." + field + " = :" + param;
     }
 
     /**

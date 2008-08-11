@@ -210,6 +210,16 @@ public interface ArrayDesignService {
     void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException, InvalidDataFileException;
 
     /**
+     * Deletes an array design. Will not delete designs that are locked or in an
+     * importing state.
+     *
+     * @param arrayDesign
+     *            the array design to delete
+     * @throws ArrayDesignDeleteException TODO
+     */
+    void deleteArrayDesign(ArrayDesign arrayDesign) throws ArrayDesignDeleteException;
+
+    /**
      * Retrieves an existing <code>DesignElementList</code> for an array design by LSID.
      *
      * @param lsidAuthority the LSID authority

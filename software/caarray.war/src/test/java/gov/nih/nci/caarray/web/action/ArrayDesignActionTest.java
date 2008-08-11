@@ -87,6 +87,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignDeleteException;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
 import gov.nih.nci.caarray.application.file.FileManagementService;
@@ -229,6 +230,16 @@ public class ArrayDesignActionTest {
         arrayDesignAction.clearErrorsAndMessages();
     }
 
+    @Test
+    public void testDelete() throws Exception {
+        ServletActionContext.setRequest(new MockHttpServletRequest());
+        arrayDesignAction.setArrayDesign(new ArrayDesign());
+        arrayDesignServiceStub.throwArrayDesignDeleteException = true;
+        assertEquals("list", arrayDesignAction.delete());
+        arrayDesignServiceStub.throwArrayDesignDeleteException = false;
+        assertEquals("list", arrayDesignAction.delete());
+    }
+
     @SuppressWarnings("deprecation")
     private void setTargetIdParam() {
         ArrayDesign design = new ArrayDesign();
@@ -237,6 +248,7 @@ public class ArrayDesignActionTest {
     }
 
     private static class LocalArrayDesignServiceStub extends ArrayDesignServiceStub {
+
         @Override
         public List<ArrayDesign> getArrayDesigns() {
             List<ArrayDesign> designs = new ArrayList<ArrayDesign>();
@@ -261,6 +273,20 @@ public class ArrayDesignActionTest {
             orgs.add(new Organization());
             return orgs;
         }
+
+        boolean throwArrayDesignDeleteException = false;
+
+        @Override
+        public void deleteArrayDesign(ArrayDesign arrayDesign)
+                throws ArrayDesignDeleteException {
+            if (throwArrayDesignDeleteException) {
+                throw new ArrayDesignDeleteException(
+                        "You cannot delete an array design that is currently being "
+                        + "imported or that is associated with one or more experiments.");
+            }
+            Long id = arrayDesign.getId();
+        }
+
     }
     private static class LocalVocabularyServiceStub extends VocabularyServiceStub {}
     private static class LocalFileAccessServiceStub extends FileAccessServiceStub {

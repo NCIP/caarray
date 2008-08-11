@@ -122,6 +122,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
 
     private static final Logger LOG = Logger.getLogger(ArrayDesignServiceBean.class);
     static final int TIMEOUT_SECONDS = 1800;
+    static final int DELETE_ARRAY_DELETE_TIMEOUT_SECONDS = 7200;
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
@@ -420,5 +421,24 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
         return getArrayDao().getDesignElementList(lsidAuthority, lsidNamespace, lsidObjectId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    @TransactionTimeout(DELETE_ARRAY_DELETE_TIMEOUT_SECONDS)
+    public void deleteArrayDesign(ArrayDesign arrayDesign)
+            throws ArrayDesignDeleteException {
+        Long id = arrayDesign.getId();
+        boolean designLocked = (id != null && isArrayDesignLocked(id));
+        if (arrayDesign.getDesignFile().getFileStatus() == FileStatus.IMPORTING
+                || designLocked) {
+            throw new ArrayDesignDeleteException(
+                    "You cannot delete an array design that is currently being "
+                    + "imported or that is associated with one or more experiments.");
+        }
+        getArrayDao().deleteArrayDesignDetails(arrayDesign);
+        getArrayDao().remove(arrayDesign);
     }
 }

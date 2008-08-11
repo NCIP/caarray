@@ -196,17 +196,20 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     public void createDesignElementListEntry(DesignElementList designElementList, int elementIndex, Long logicalProbeId) {
         // empty method
     }
-    
+
     public Long getLogicalProbeId(ArrayDesign design, String name) {
         return null;
     }
-    
+
     public void createDesignElementListEntries(DesignElementList designElementList, int startIndex,
             List<Long> logicalProbeIds) {
         // empty method
     }
-    
+
     public Map<String, Long> getLogicalProbeNamesToIds(ArrayDesign design, List<String> names) {
         return null;
+    }
+
+    public void deleteArrayDesignDetails(ArrayDesign design) {
     }
 }
