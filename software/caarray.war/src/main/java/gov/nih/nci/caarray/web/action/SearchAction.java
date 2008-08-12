@@ -86,9 +86,11 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.web.util.LabelValue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,10 +113,14 @@ public class SearchAction extends ActionSupport {
      * name of the experiments tab, should have a method of the same name.
      */
     protected static final String EXPERIMENTS_TAB = "experiments";
+    /**
+     * name of the search all category.
+     */
+    public static final String SEARCH_CATEGORY_ALL = "ALL_CATEGORIES";
 
     // search parameters
     private String keyword;
-    private SearchCategory category;
+    private String category;
     private int resultCount;
     private String location;
 
@@ -145,13 +151,13 @@ public class SearchAction extends ActionSupport {
     /**
      * @return the category
      */
-    public SearchCategory getCategory() {
+    public String getCategory() {
         return category;
     }
     /**
      * @param category the category to set
      */
-    public void setCategory(SearchCategory category) {
+    public void setCategory(String category) {
         this.category = category;
     }
     /**
@@ -204,7 +210,8 @@ public class SearchAction extends ActionSupport {
      * @return success
      */
     public String basicSearch() {
-        SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
+        SearchCategory[] categories = (category.equals(SEARCH_CATEGORY_ALL)) ? SearchCategory.values()
+                : new SearchCategory[] {SearchCategory.valueOf(category) };
         ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
         int projectCount = pms.searchCount(keyword, categories);
         tabs = new LinkedHashMap<String, Integer>();
@@ -218,10 +225,24 @@ public class SearchAction extends ActionSupport {
     public String experiments() {
         currentTab = EXPERIMENTS_TAB;
         ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
-        SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
+        SearchCategory[] categories = (category.equals(SEARCH_CATEGORY_ALL)) ? SearchCategory.values()
+                : new SearchCategory[] {SearchCategory.valueOf(category) };
         List<Project> projects = pms.searchByCategory(this.results.getPageSortParams(), keyword, categories);
         results.setFullListSize(this.resultCount);
         results.setList(projects);
         return "tab";
+    }
+
+    /**
+     * @return list of label value beans.
+     */
+    public static List<LabelValue> getSearchCategories() {
+        List<LabelValue> searchCats = new ArrayList<LabelValue>();
+        for (SearchCategory cat : SearchCategory.values()) {
+            searchCats.add(new LabelValue(cat.getResourceKey(), cat.name()));
+        }
+
+        searchCats.add(new LabelValue("search.category.all", SEARCH_CATEGORY_ALL));
+        return searchCats;
     }
 }
