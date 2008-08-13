@@ -18,7 +18,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 	<property file="project.properties" />
 	<!-- added for remote deployments since file is copied to root of install dir -->
 	<basename property="properties.file.name" file="${properties.file}"/>
-	<property file="${properties.file}" />
+	<property file="${properties.file}" />
 	
 	<!-- Default install time targets passed by deploy targets to the installer, can be overridden by being set on the command line if different target is desitred.  -->
 	<property name="install.target" value="install" />
@@ -45,7 +45,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 	   
 	<property name="caarray.name.installer" value="caarray_distribution_" />
 	<property name="caarray.name.upgrader" value="caarray_upgrade_" />
-	<property name="caarray.src.name" value="caarray_src_" />
 	<property name="dist.dir" value="${basedir}/dist" />
 	<property name="caarray.lib.dir" value="${basedir}/lib" />
 	<property name="caarray.src.dir" value="${basedir}" />
@@ -63,8 +62,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <property name="grid.dest.file" value="${tools.dist.dir}/${jboss.grid-binaries.file}"/>
 
 
-	<property name="caarray.src.zip.file" value="${caarray.src.name}${caarray.version}_${caarray.revision}.zip" />
-	
 	<!-- retrive ivy files then retrieve bda files and librarires -->
 	<mkdir dir="lib"/>
 	<ant inheritAll="false" inheritRefs="false" antfile="bda-ivy-build.xml"
@@ -188,11 +185,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 	
 	
 	<target name="dist:src">
-		<!-- Add tasks here to zip up src into a distribution, may require some additoinal properties for distribution name" -->
+		<delete file="${dist.dir}/${caarray.src.zip.file}" />
+		<zip destfile="${dist.dir}/${caarray.src.zip.file}">
+		    <fileset dir="${basedir}" excludes="dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" />
+		</zip>
 	</target>
 
-
-	
 	<target name="build:caarray">		
 		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="clean" dir="${basedir}"/>
 		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="build" dir="${basedir}"/>
@@ -532,5 +530,4 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 			<remote-ssh remotesshcommand="cd ${remote.dir}; unzip -q @{dist.file}" />
 		</sequential>
 	</macrodef>
-
 </project>

@@ -2013,15 +2013,4 @@
             </fileset>
         </javadoc>
     </target>
-
-    <!-- ******************************************************************* -->
-    <!-- ** DISTRIBUTION TARGETS                                          ** -->
-    <!-- ******************************************************************* -->
-
-    <target name="dist:source" description="Creates a zip file with all source code for distribution on gforge file site" depends="clean">
-        <mkdir dir="${site.dir}/dist"/>
-        <zip destfile="${site.dir}/dist/caarray-src.zip">
-            <fileset dir="${basedir}" excludes="dist/**, load-test/**, **/eclipse-out/**, **/.svn/**" />
-        </zip>
-    </target>
 </project>
