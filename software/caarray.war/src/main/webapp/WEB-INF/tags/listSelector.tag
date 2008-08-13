@@ -94,7 +94,7 @@
                 ${baseId}Picker = ListPickerUtils.createAutoUpdater('${baseId}', '${autocompleteUrl}', '${listLabel}', '${filterFieldName}', '${listFieldName}', '${multiple}', '${autocompleteParamNames}', '${autocompleteParamValues}', '${allowReordering}');
                 <s:if test="${allowReordering == 'true'}">
                     ${baseId}Picker.sortableReordered = false;
-                    Sortable.create('${baseId}SelectedItemDiv', {onUpdate: function() { ${baseId}Picker.sortableReordered = true; } });
+                    Sortable.create('${baseId}SelectedItemDiv', { starteffect: function() { ${baseId}Picker.sortableReordered = true; } });
                 </s:if>
             </script>
         </s:if>
