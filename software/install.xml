@@ -418,6 +418,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		upgrade:init,
 		install:validation:pre-install,
 		install:jboss:stop,
+		install:grid:stop,
 		upgrade:jboss,
 		upgrade:carray-grid,
 		install:grid:start,
@@ -471,6 +472,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 			<zipfileset dir="${temp.dir}/grid" />
 		</zip>
 
+
+		<delete dir="${grid.home}/server/default/deploy/wsrf.war"/>
+		<delete>
+			<fileset dir="${grid.home}/server/default/lib" includes="cog-jglobus.jar cog-tomcat.jar cryptix32.jar cryptix.jar cryptix-asn1.jar jce-jdk13-125.jar log4j-1.2.8.jar puretls.jar"/>
+		</delete>
 		<unzip dest="${grid.home}/server/default" src="${basedir}/grid/jboss-globus-serverinstance-config.zip" />
 		<unzip dest="${grid.home}/server/default/deploy/wsrf.war" src="${basedir}/grid/cagrid_CaArraySvc.zip" />
 	</target>
