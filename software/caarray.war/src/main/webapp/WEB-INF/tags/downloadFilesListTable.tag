@@ -5,6 +5,7 @@
 <%@ taglib uri="http://ajaxtags.org/tags/ajax" prefix="ajax" %>
 <%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="/WEB-INF/caarray-functions.tld" prefix="caarrayfn" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="caarray" %>
 
 <%@ attribute name="actionDownloadFilesTableListSortUrl" required="true" type="java.lang.String"%>
@@ -45,7 +46,7 @@
 <script type="text/javascript">
 downloadMgr.resetAllFiles();
 <c:forEach items="${files}" var="file">
-    downloadMgr.addFile('${file.name}', '${file.id}', ${file.compressedSize});
+    downloadMgr.addFile('${caarrayfn:escapeJavaScript(file.name)}', '${file.id}', ${file.compressedSize});
     if (downloadMgr.inQueue('${file.id}')) {
         var fileCell = $('fileRow' + '${file.id}')
         if (fileCell) {

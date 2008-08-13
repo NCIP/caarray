@@ -22,7 +22,7 @@
     IDF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileType@MAGE_TAB_IDF"/>';
     <c:forEach items="${files}" var="file">
     fileTypeLookup['${file.id}'] = '${file.fileType}';
-    fileNameLookup['${file.id}'] = '${file.name}';
+    fileNameLookup['${file.id}'] = '${caarrayfn:escapeJavaScript(file.name)}';
     </c:forEach>
 
 	unimportedFilterCallBack = function() {
