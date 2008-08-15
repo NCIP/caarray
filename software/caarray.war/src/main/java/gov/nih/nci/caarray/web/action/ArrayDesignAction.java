@@ -485,7 +485,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             for (ValidationMessage message : result.getMessages()) {
                 addFieldError(UPLOAD_FIELD_NAME, message.getMessage());
             }
-            arrayDesign.setDesignFile(null);
         } catch (IllegalAccessException iae) {
             arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
             addActionError(iae.getMessage());
