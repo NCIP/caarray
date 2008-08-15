@@ -113,7 +113,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -229,7 +228,7 @@ public final class SecurityUtils {
 
 
 
-    static void handleBiomaterialChanges(Collection<Project> projects) {
+    static void handleBiomaterialChanges(Collection<Project> projects, Collection<Protectable> protectables) {
         if (projects == null) {
             return;
         }
@@ -238,8 +237,8 @@ public final class SecurityUtils {
             LOG.debug("Modifying biomaterial collections for project: " + p.getId());
             try {
                 for (Sample s : p.getExperiment().getSamples()) {
-                    for (User u : p.getOwners()) {
-                        addOwner(getProtectionGroup(s), u);
+                    if (protectables != null && protectables.contains(s)) {
+                        handleNewSample(s, p);
                     }
                 }
             } catch (CSTransactionException e) {
@@ -304,8 +303,7 @@ public final class SecurityUtils {
 
                 if (p instanceof Project) {
                     handleNewProject((Project) p, pg);
-                }
-
+                } 
             } catch (CSObjectNotFoundException e) {
                 LOG.warn("Could not find the " + APPLICATION_NAME + " application: " + e.getMessage(), e);
             } catch (CSTransactionException e) {
@@ -331,23 +329,38 @@ public final class SecurityUtils {
     private static void handleAccessProfile(AccessProfile ap) {
         // to populate inverse properties
 
-        Group targetGroup = null;
-        if (ap.isHostProfile()) {
-            // not supporting host profiles for now
+        Group targetGroup = getTargetGroup(ap);
+        if (targetGroup == null) {
             return;
-        } else if (ap.isPublicProfile()) {
-            targetGroup = getAnonymousGroup();
-        } else if (ap.isGroupProfile()) {
-            targetGroup = ap.getGroup().getGroup();
         }
 
         handleProjectSecurity(targetGroup, ap.getProject(), ap.getSecurityLevel());
+        for (Sample sample : ap.getProject().getExperiment().getSamples()) {
+            SampleSecurityLevel sampleSecLevel = getSampleSecurityLevel(ap, sample);
+            handleSampleSecurity(targetGroup, sample, sampleSecLevel);
+        }
+    }
+    
+    private static Group getTargetGroup(AccessProfile ap) {
+        if (ap.isHostProfile()) {
+            // not supporting host profiles for now
+            return null;
+        } else if (ap.isPublicProfile()) {
+            return getAnonymousGroup();
+        } else if (ap.isGroupProfile()) {
+            return ap.getGroup().getGroup();
+        } else {
+            throw new IllegalStateException("Unsupported access profile type: " + ap);
+        }
+    }
+    
+    private static SampleSecurityLevel getSampleSecurityLevel(AccessProfile ap, Sample s) {
+        SampleSecurityLevel sampleSecLevel = SampleSecurityLevel.NONE;
         if (ap.getSecurityLevel().isSampleLevelPermissionsAllowed()) {
-            for (Map.Entry<Sample, SampleSecurityLevel> sampleMapping : ap.getSampleSecurityLevels().entrySet()) {
-                handleSampleSecurity(targetGroup, sampleMapping.getKey(), sampleMapping.getValue());
+            if (ap.getSampleSecurityLevels().containsKey(s)) {
+                sampleSecLevel = ap.getSampleSecurityLevels().get(s);                
             }
         } else {
-            SampleSecurityLevel sampleSecLevel = null;
             switch (ap.getSecurityLevel()) {
             case READ:
                 sampleSecLevel = SampleSecurityLevel.READ;
@@ -364,10 +377,8 @@ public final class SecurityUtils {
                 throw new IllegalStateException("Encountered unknown project security level: "
                         + ap.getSecurityLevel());
             }
-            for (Sample sample : ap.getProject().getExperiment().getSamples()) {
-                handleSampleSecurity(targetGroup, sample, sampleSecLevel);
-            }
-        }
+        }        
+        return sampleSecLevel;
     }
 
     private static void handleProjectSecurity(Group targetGroup, Project project, SecurityLevel securityLevel) {
@@ -393,6 +404,11 @@ public final class SecurityUtils {
 
     private static void handleSampleSecurity(Group targetGroup, Sample sample, SampleSecurityLevel securityLevel) {
         ProtectionGroup pg = getProtectionGroup(sample);
+        handleSampleSecurity(targetGroup, pg, securityLevel);
+    }
+
+    private static void handleSampleSecurity(Group targetGroup, ProtectionGroup samplePg,
+            SampleSecurityLevel securityLevel) {
         List<String> roleIds = new ArrayList<String>();
         if (securityLevel.isAllowsRead()) {
             roleIds.add(getRoleByName(READ_ROLE).getId().toString());
@@ -401,8 +417,8 @@ public final class SecurityUtils {
             roleIds.add(getRoleByName(WRITE_ROLE).getId().toString());
         }
         try {
-            AUTH_MGR.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(), targetGroup.getGroupId()
-                    .toString(), roleIds.toArray(ArrayUtils.EMPTY_STRING_ARRAY));
+            AUTH_MGR.assignGroupRoleToProtectionGroup(samplePg.getProtectionGroupId().toString(), targetGroup
+                    .getGroupId().toString(), roleIds.toArray(ArrayUtils.EMPTY_STRING_ARRAY));
         } catch (CSTransactionException e) {
             LOG.warn("Could not assign sample group roles corresponding to profile " + e.getMessage(), e);
         }
@@ -484,6 +500,26 @@ public final class SecurityUtils {
     private static void handleNewProject(Project p, ProtectionGroup pg) throws CSTransactionException {
         if (p.getPublicProfile().getSecurityLevel() != SecurityLevel.NO_VISIBILITY) {
             assignAnonymousAccess(pg);
+        }
+    }
+
+    private static void handleNewSample(Sample s, Project p) throws CSTransactionException, CSObjectNotFoundException {
+        ProtectionGroup pg = getProtectionGroup(s);
+        User csmUser = UsernameHolder.getCsmUser();
+
+        for (User u : p.getOwners()) {
+            if (!u.equals(csmUser)) {
+                addOwner(pg, u);                
+            }
+        }
+
+        for (AccessProfile ap : p.getAllAccessProfiles()) {
+            Group targetGroup = getTargetGroup(ap);
+            if (targetGroup == null) {
+                continue;
+            }
+            SampleSecurityLevel sampleSecLevel = getSampleSecurityLevel(ap, s);
+            handleSampleSecurity(targetGroup, pg, sampleSecLevel);
         }
     }
 
