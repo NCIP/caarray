@@ -164,19 +164,16 @@ public class SecurityInterceptor extends EmptyInterceptor {
             if (pc.getOwner() instanceof AccessProfile) {
                 saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), (AccessProfile) pc.getOwner());
             }
+
             if (pc.getOwner() instanceof Experiment && pc.getRole() != null
                     && StringUtils.substringAfterLast(pc.getRole(), ".").equals("samples")) {
                 // inefficient but seems to be the cleanest way possible: force an update of all the
                 // access profiles associated with the project to make sure new or removed samples
                 // are appropriately updated for
                 Experiment experiment = (Experiment) pc.getOwner();
-                Collection<AccessProfile> allProfiles = experiment.getProject().getAllAccessProfiles();
-                for (AccessProfile ap : allProfiles) {
-                    saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), ap);
-                }
                 saveEntityForProcessing(BIOMATERIAL_CHANGES, new ArrayList<Project>(), experiment.getProject());
             }
-        }
+        }    
     }
 
     /**
@@ -301,7 +298,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
             }
 
             SecurityUtils.handleNewProtectables(NEWOBJS.get());
-            SecurityUtils.handleBiomaterialChanges(BIOMATERIAL_CHANGES.get());
+            SecurityUtils.handleBiomaterialChanges(BIOMATERIAL_CHANGES.get(), NEWOBJS.get());
             SecurityUtils.handleDeleted(DELETEDOBJS.get());
             SecurityUtils.handleAccessProfiles(PROFILES.get());            
         } finally {
