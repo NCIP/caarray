@@ -93,14 +93,6 @@ highlighted.
 
 https://gforge.nci.nih.gov/tracker/?group_id=305
 
-* [#11756] Grid service DataSet retrieval ten times slower than the
-  remote Java API.
-
-* Inefficiencies in byte[] marshalling in the grid service lead to
-  out-of-memory problems and long transfer times for files of any
-  significant size. It's recommended to use the remote Java API
-  for remote file retrieval.
-
 * The caArray grid service only supports unauthenticated access. If
   authenticated access to private data is necessary, use the remote
   Java API.

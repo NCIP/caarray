@@ -166,7 +166,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 		build:all,
 		dist:installer,
 		dist:upgrader,
-		dist:src"
+		dist:src,
+		dist:javadoc,
+		dist:caarray-client.zip"
 	      	/>
 
 
@@ -191,10 +193,23 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 		</zip>
 	</target>
 
+	<target name="dist:javadoc">
+		<delete file="${dist.dir}/${caarray.javadoc.zip.file}" />
+		<zip destfile="${dist.dir}/${caarray.javadoc.zip.file}">
+		    <fileset dir="${basedir}/caarray-client.jar/target/docs/api"/>
+		</zip>
+	</target>
+
+	<target name="dist:caarray-client.zip">
+		<delete file="${dist.dir}/${caarray.client-zip.zip.file}" />
+		<copy file="${basedir}/caarray-client.jar/target/caarray-client.zip" tofile="${dist.dir}/${caarray.client-zip.zip.file}"/>
+	</target>
+
 	<target name="build:caarray">		
 		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="clean" dir="${basedir}"/>
 		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="build" dir="${basedir}"/>
 		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="build:caarray-svc" dir="${basedir}"/>		
+		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="build:caarray-client.zip" dir="${basedir}"/>		
 		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="create-grid-zip" dir="${basedir}">
 			 <property name="local.globoss.home" value="${loc.globoss.home}"/>
 		</ant>
