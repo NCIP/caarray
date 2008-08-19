@@ -210,6 +210,15 @@ public interface ArrayDesignService {
     void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException, InvalidDataFileException;
 
     /**
+     * Checks for duplicate array design.
+     *
+     * @param arrayDesign the array design to check
+     * @return duplicate
+     */
+    boolean isDuplicate(ArrayDesign arrayDesign);
+
+
+    /**
      * Deletes an array design. Will not delete designs that are locked or in an
      * importing state.
      *

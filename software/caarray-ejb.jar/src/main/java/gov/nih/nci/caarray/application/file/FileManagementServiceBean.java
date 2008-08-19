@@ -197,8 +197,7 @@ public class FileManagementServiceBean implements FileManagementService {
         if (FileStatus.VALIDATION_ERRORS.equals(designFile.getFileStatus())) {
             if (newArrayDesign) {
                 getDaoFactory().getArrayDao().remove(arrayDesign);
-                arrayDesign.setDesignFile(null);
-                arrayDesign.setId(null);
+                arrayDesign.getDesignFiles().clear();
             } else {
                 arrayDesign.setDesignFile(oldFile);
                 getDaoFactory().getArrayDao().save(arrayDesign);

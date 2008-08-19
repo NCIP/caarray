@@ -334,9 +334,18 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     )
     public String saveMeta() {
         if (!createMode && editMode) {
+
+            if (getArrayDesignService().isDuplicate(arrayDesign)) {
+                List<String> args = new ArrayList<String>();
+                args.add(getArrayDesign().getName());
+                ActionHelper.saveMessage(getText("arraydesign.duplicate", args));
+                return Action.INPUT;
+            }
+
             saveImportFile();
             List<String> args = new ArrayList<String>();
             args.add(getArrayDesign().getName());
+            args.add(getArrayDesign().getProvider().getName());
             ActionHelper.saveMessage(getText("arraydesign.saved", args));
             return Action.SUCCESS;
         }

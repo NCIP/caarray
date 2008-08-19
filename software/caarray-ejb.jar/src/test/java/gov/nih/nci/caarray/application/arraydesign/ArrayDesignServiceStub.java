@@ -173,4 +173,12 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
 
     public void deleteArrayDesign(ArrayDesign arrayDesign)throws ArrayDesignDeleteException {
     }
+
+    public boolean isDuplicate(ArrayDesign arrayDesign) {
+        if ("duplicate".equals(arrayDesign.getDescription())) {
+            return true;
+        }
+
+        return false;
+    }
 }

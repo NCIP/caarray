@@ -193,7 +193,10 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         return result;
     }
 
-    private boolean isDuplicate(ArrayDesign arrayDesign) {
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isDuplicate(ArrayDesign arrayDesign) {
         List<ArrayDesign> providerDesigns =
             getDaoFactory().getArrayDao().getArrayDesignsForProvider(arrayDesign.getProvider(), false);
         for (ArrayDesign providerDesign : providerDesigns) {

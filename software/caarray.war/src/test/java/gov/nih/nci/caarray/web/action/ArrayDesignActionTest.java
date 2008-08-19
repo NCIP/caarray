@@ -217,16 +217,56 @@ public class ArrayDesignActionTest {
         arrayDesignAction.setUploadFileName(null);
         result = arrayDesignAction.save();
         assertEquals("importComplete", result);
+
     }
 
     @Test
     public void testSaveMeta() throws Exception {
         ServletActionContext.setRequest(new MockHttpServletRequest());
-        arrayDesignAction.setArrayDesign(new ArrayDesign());
+        ArrayDesign arrD = new ArrayDesign();
+        arrD.setName("name");
+        Organization org = new Organization();
+        org.setName("name");
+        arrD.setProvider(org);
+        arrayDesignAction.setArrayDesign(arrD);
         arrayDesignAction.setEditMode(true);
         arrayDesignAction.setCreateMode(false);
         assertEquals(Action.SUCCESS, arrayDesignAction.saveMeta());
         assertTrue(ActionHelper.getMessages().contains("arraydesign.saved"));
+        arrayDesignAction.clearErrorsAndMessages();
+    }
+
+    @Test
+    public void testSaveDuplicateMeta() throws Exception {
+        ServletActionContext.setRequest(new MockHttpServletRequest());
+        ArrayDesign arrD = new ArrayDesign();
+        arrD.setName("name");
+        Organization org = new Organization();
+        org.setName("name");
+        arrD.setProvider(org);
+        arrayDesignAction.setArrayDesign(arrD);
+        arrayDesignAction.setEditMode(true);
+        arrayDesignAction.setCreateMode(false);
+        assertEquals(Action.SUCCESS, arrayDesignAction.saveMeta());
+
+        ArrayDesign arr2D = new ArrayDesign();
+        arr2D.setName("name");
+        Organization org2 = new Organization();
+        org2.setName("name2");
+        arr2D.setProvider(org2);
+        arrayDesignAction.setArrayDesign(arr2D);
+        arrayDesignAction.setEditMode(true);
+        arrayDesignAction.setCreateMode(false);
+        assertEquals(Action.SUCCESS, arrayDesignAction.saveMeta());
+
+        arr2D.setProvider(org);
+        arr2D.setDescription("duplicate");
+        arrayDesignAction.setArrayDesign(arr2D);
+        arrayDesignAction.setEditMode(true);
+        arrayDesignAction.setCreateMode(false);
+        assertEquals(Action.INPUT, arrayDesignAction.saveMeta());
+
+        assertTrue(ActionHelper.getMessages().contains("arraydesign.duplicate"));
         arrayDesignAction.clearErrorsAndMessages();
     }
 
