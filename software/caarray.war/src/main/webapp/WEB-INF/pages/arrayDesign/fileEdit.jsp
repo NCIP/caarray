@@ -154,7 +154,9 @@
                                           listValue="%{getText('experiment.files.filetype.' + name)}"
                                           listKey="name" headerKey="" headerValue="Automatic"/>
                             </s:if>
-                            <s:hidden name="arrayDesign.id"/>
+                            <s:if test="${!empty arrayDesign.designFile}">
+                            	<s:hidden name="arrayDesign.id"/>
+                            </s:if>
                             <s:hidden name="arrayDesign.description"/>
                             <s:hidden name="arrayDesign.assayType"/>
                             <s:hidden name="arrayDesign.provider"/>
