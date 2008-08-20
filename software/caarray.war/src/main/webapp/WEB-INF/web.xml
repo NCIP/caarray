@@ -33,6 +33,10 @@
         <param-value>@upt.url@</param-value>
     </context-param>
     <context-param>
+        <param-name>releaseNotesUrl</param-name>
+        <param-value>@release-notes.url@</param-value>
+    </context-param>
+    <context-param>
         <param-name>ldapHost</param-name>
         <param-value>@ldap.host@</param-value>
     </context-param>

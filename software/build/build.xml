@@ -765,6 +765,7 @@
                 <filter token="svn.revision" value="${svn.revision}" />
                 <filter token="build.time" value="${mili.time}" />
                 <filter token="upt.url" value="${upt.url}" />
+            	<filter token="release-notes.url" value="${release-notes.url}" />
                 <filter token="ldap.host" value="${ldap.host}" />
                 <filter token="ldap.searchbase" value="${ldap.searchbase}" />
                 <filter token="ldap.searchprefix" value="${ldap.searchprefix}" />
