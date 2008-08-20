@@ -8,10 +8,15 @@
     </h1>
     <caarray:helpPrint/>
     <div class="padme">
-    <div class="addlink_notabs">
-        <caarray:linkButton url="edit.action" actionClass="add" text="Add a New Collaboration Group" />
-    </div>
-      <c:url value="/protected/ajax/collaborators/listGroups.action" var="sortUrl"/>
+    	<div id="tabboxwrapper_notabs">
+    	<div class="boxpad2">
+            <h3>Collaboration Groups</h3>
+		    <div class="addlink_notabs">
+		        <caarray:linkButton url="edit.action" actionClass="add" text="Add a New Collaboration Group" />
+		    </div>
+		</div>
+		<caarray:successMessages />
+      	<c:url value="/protected/ajax/collaborators/listGroups.action" var="sortUrl"/>
 
         <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
             <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${groups}"
@@ -52,6 +57,7 @@
                 </display:column>
             </display:table>
         </ajax:displayTag>
+  </div>
   </div>
 </body>
 </html>

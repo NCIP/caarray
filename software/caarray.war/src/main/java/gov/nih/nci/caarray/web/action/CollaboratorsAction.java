@@ -148,7 +148,9 @@ public class CollaboratorsAction extends ActionSupport {
      */
     @SkipValidation
     public String delete() throws CSTransactionException {
+        String grpName = this.targetGroup.getGroup().getGroupName();
         getPermissionsManagementService().delete(this.targetGroup);
+        ActionHelper.saveMessage(getText("collaboration.group.record.deleted", new String[] {grpName}));
         return listGroups();
     }
 
@@ -164,7 +166,7 @@ public class CollaboratorsAction extends ActionSupport {
         } else {
             getPermissionsManagementService().rename(getTargetGroup(), getGroupName());
         }
-
+        ActionHelper.saveMessage(getText("collaboration.group.record.saved", new String[] {getGroupName()}));
         return listGroups();
     }
 
