@@ -1083,7 +1083,7 @@
         </cobertura-instrument>
     </target>
 
-    <target name="test:compile:caarray-ejb.test.classes" depends="compile:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:compile:test-data-classes">
+    <target name="test:compile:caarray-ejb.test.classes" depends="compile:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:compile:caarray-common.test.classes,test:compile:test-data-classes">
         <mkdir dir="${caarray-ejb.test.classes.dir}" />
         <javac srcdir="${caarray-ejb.test.src.dir}" destdir="${caarray-ejb.test.classes.dir}" debug="true">
             <classpath>
