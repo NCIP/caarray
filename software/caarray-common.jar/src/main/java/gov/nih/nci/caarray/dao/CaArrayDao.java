@@ -96,6 +96,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  *
  * @author ETavela
  */
+@SuppressWarnings("PMD.TooManyMethods")
 public interface CaArrayDao {
 
     /**
@@ -170,7 +171,7 @@ public interface CaArrayDao {
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
     <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch, Order... order);
-    
+
     /**
      * Flushes the current Hibernate <code>Session</code>.
      */
@@ -180,12 +181,14 @@ public interface CaArrayDao {
      * Clears the current Hibernate <code>Session</code>.
      */
     void clearSession();
-    
+
     /**
      * Merges a persistent object into the current Hibernate <code>Session</code>.
      * @param object object to merge
+     * @return merged object
+     * @see Session#merge(Object)
      */
-    void mergeObject(Object object);
+    Object mergeObject(Object object);
 
     /**
      * Evicts a persistent object from the current Hibernate <code>Session</code>.

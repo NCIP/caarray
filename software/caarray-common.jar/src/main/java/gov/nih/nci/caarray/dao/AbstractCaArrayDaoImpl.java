@@ -185,7 +185,6 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, Order... order) {
         return queryEntityByExample(entityToMatch, mode, true, ArrayUtils.EMPTY_STRING_ARRAY, order);
     }
@@ -275,8 +274,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    public void mergeObject(Object object) {
-        HibernateUtil.getCurrentSession().merge(object);
+    public Object mergeObject(Object object) {
+        return HibernateUtil.getCurrentSession().merge(object);
     }
 
     /**

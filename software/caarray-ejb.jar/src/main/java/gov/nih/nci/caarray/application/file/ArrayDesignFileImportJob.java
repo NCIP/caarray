@@ -121,7 +121,7 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     @Override
     void setInProgressStatus() {
         ArrayDesign arrayDesign = getDaoFactory().getArrayDao().getArrayDesign(getArrayDesignId());
-        arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTING);
+        arrayDesign.getDesignFileSet().updateStatus(FileStatus.IMPORTING);
     }
 
     /**
@@ -130,11 +130,10 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     @Override
     PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException {
         PreparedStatement s = con.prepareStatement("update caarrayfile set status = ? where id = "
-                + "(select design_file from array_design where id = ?)");
+                + "(select design_file from array_design_design_file where array_design = ?)");
         s.setString(1, FileStatus.IMPORT_FAILED.toString());
         s.setLong(2, getArrayDesignId());
         return s;
     }
-
 
 }

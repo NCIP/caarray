@@ -127,7 +127,7 @@ public class HibernateSessionInterceptorTest {
         }
 
         public Object[] getParameters() {
-            return null;
+            return new Object[]{};
         }
 
         public Object getTarget() {

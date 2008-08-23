@@ -1,0 +1,22 @@
+#%chip_type=HuEx-1_0-st-v2
+#%chip_type=HuEx-1_0-st-v1
+#%chip_type=HuEx-1_0-st-ta1
+#%lib_set_name=HuEx-1_0-st
+#%lib_set_version=r2
+#%create_date=Tue Sep 19 15:18:05 PDT 2006
+#%guid=0000008635-1158704285-0183259307-0389325148-0127012107
+#%pgf_format_version=1.0
+#%header0=probeset_id	type
+#%header1=	atom_id
+#%header2=		probe_id	type	gc_count	probe_length	interrogation_position	probe_sequence
+2590411	"main"
+	1
+		'5402769'	pm:st	12		13
+
+2590412	 main 
+	1
+# comment line that should be ignored
+	2
+#% header line in data that should be treated like a comment and ignored
+		3869022	pm:st	11	25	13	AGGAGTACAGGGTAAGATATGGTCT
+		3869023	pm:st	11	25	13	AGGAGTACAGGGTAAGATATGGTCT

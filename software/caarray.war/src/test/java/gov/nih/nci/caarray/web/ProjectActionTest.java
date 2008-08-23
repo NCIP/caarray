@@ -149,7 +149,6 @@ public class ProjectActionTest {
         this.workspaceAction.getProjects().setFullListSize(1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testList() throws Exception {
         MockHttpSession session = new MockHttpSession ();

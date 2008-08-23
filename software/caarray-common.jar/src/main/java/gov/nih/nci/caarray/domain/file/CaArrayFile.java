@@ -117,6 +117,7 @@ import org.hibernate.annotations.ForeignKey;
  */
 @Entity
 @Table(name = "caarrayfile")
+@SuppressWarnings("PMD.TooManyMethods")
 public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaArrayFile>, ProtectableDescendent {
     private static final long serialVersionUID = 1234567890L;
 
@@ -215,7 +216,6 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         return this.uncompressedSize;
     }
 
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setUncompressedSize(int uncompressedSize) {
         this.uncompressedSize = uncompressedSize;
     }
@@ -227,7 +227,6 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         return this.compressedSize;
     }
 
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setCompressedSize(int compressedSize) {
         this.compressedSize = compressedSize;
     }
@@ -368,7 +367,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     /**
      * @param multiPartBlob the multiPartBlob to set
      */
-    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setMultiPartBlob(MultiPartBlob multiPartBlob) {
         this.multiPartBlob = multiPartBlob;
     }

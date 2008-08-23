@@ -78,7 +78,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
     }
 
     /**
-     * Helper method for creating and saving appropriate error message when a 
+     * Helper method for creating and saving appropriate error message when a
      * write operation on a project causes a inconsistent state exception.
      * @param e the exception containing information about the inconsistency
      */
@@ -99,7 +99,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
     }
 
     /**
-     * Helper method for creating and saving appropriate error message when a 
+     * Helper method for creating and saving appropriate error message when a
      * write operation on a project causes a workflow exception.
      */
     protected void handleWorkflowError() {
@@ -113,7 +113,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
      * read rights. if not, returns the result name that the action should redirect to; otherwise returns
      * null. Action methods should call this helper method first; if it returns a non-null result,
      * they should in turn return this result immediately, otherwise they can proceed with their work
-     * 
+     *
      * @return a result name in case the project was not found or the current user does not have read permissions
      * for it. null otherwise.
      */
@@ -123,7 +123,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
         }
         return null;
     }
-    
+
     /**
      * handles the case where an attempt is made to view/edit a project to which
      * the user does not have the appropriate permission.

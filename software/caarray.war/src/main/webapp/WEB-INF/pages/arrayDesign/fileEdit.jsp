@@ -144,8 +144,8 @@
                     <s:form action="/protected/ajax/arrayDesign/save" cssClass="form" enctype="multipart/form-data" method="post" id="arrayDesignForm">
                         <tbody>
                             <tr><th colspan="2">Upload Array Design File</th></tr>
-                            <s:if test="${!empty arrayDesign.designFile}">
-                                <s:textfield theme="readonly" key="arrayDesign.designFile.name" label="Current File"/>
+                            <s:if test="${!empty arrayDesign.designFiles}">
+                                <s:select theme="readonly" list="arrayDesign.designFiles" value="arrayDesign.designFiles" listValue="name" label="Current File" multiple="true"/>
                             </s:if>
                             <s:if test="${editMode && !locked}">
                                 <s:file required="${empty arrayDesign.id}" name="upload" label="Browse to File" tabindex="9"/>
@@ -169,7 +169,7 @@
                     <caarray:actions>
                         <caarray:linkButton actionClass="cancel" text="Cancel" onclick="window.close()"/>
                         <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
-                         <s:if test="${arrayDesign.designFile.status != importingStatus && !locked}">
+                         <s:if test="${arrayDesign.designFileSet.status != importingStatus && !locked}">
                             <caarray:action onclick="beginUpload();" actionClass="save" text="Save" tabindex="10"/>
                         </s:if>
                     </caarray:actions>

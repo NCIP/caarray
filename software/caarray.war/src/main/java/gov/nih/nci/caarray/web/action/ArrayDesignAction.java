@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.application.arraydesign.ArrayDesignDeleteException;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.file.UnsupportedAffymetrixCdfFiles;
@@ -295,7 +296,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     }
 
     /**
-     * Readonly view of an array design.
+     * Read-only view of an array design.
      * @return input
      */
     @SkipValidation
@@ -320,7 +321,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      * Save a new or existing array design.
      * @return success
      */
-    @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "deprecation" })
+    @SuppressWarnings("PMD.AvoidDuplicateLiterals")
     @Validations(
         requiredStrings = {
             @RequiredStringValidator(fieldName = "arrayDesign.version", key = "errors.required", message = "")
@@ -349,6 +350,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      * @return input
      */
     @SkipValidation
+    @SuppressWarnings("deprecation")
     public String save() {
         String returnVal = null;
         Long id = null;
@@ -356,7 +358,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         if (arrayDesign.getId() == null && uploadFileName == null) {
             addFieldError(UPLOAD_FIELD_NAME, getText("fileRequired"));
         } else {
-
             id = arrayDesign.getId();
             if (id == null) {
               arrayDesign.setName(FilenameUtils.getBaseName(uploadFileName));
@@ -374,7 +375,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         } else {
             returnVal = "importComplete";
         }
-
 
         MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
 
@@ -402,7 +402,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public void validate() {
         super.validate();
         if (this.hasErrors()) {
@@ -462,34 +461,21 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
                 getArrayDesignService().saveArrayDesign(arrayDesign);
             } else {
                 extractedFiles = checkForZips();
-
-                if (UnsupportedAffymetrixCdfFiles.isUnsupported(uploadFileName)) {
-                    addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.unsupportedFile"));
-                } else {
-                    CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
-                    if (uploadFormatType != null && FileType.valueOf(uploadFormatType) != null) {
-                        designFile.setFileType(FileType.valueOf(uploadFormatType));
-                    }
-                    getFileManagementService().saveArrayDesign(arrayDesign, designFile);
-                    if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
-                        getFileManagementService().importArrayDesignDetails(arrayDesign);
-                    }
-
-                    if (extractedFiles.size() > 1) {
-                        ActionHelper.saveMessage(getText("arrayDesign.warning.zipFile"));
-                    }
-                }
+                handleFiles(extractedFiles);
             }
         } catch (InvalidDataFileException e) {
+            LOG.debug("Swallowed exception saving array design file", e);
             FileValidationResult result = e.getFileValidationResult();
             for (ValidationMessage message : result.getMessages()) {
                 addFieldError(UPLOAD_FIELD_NAME, message.getMessage());
             }
-            arrayDesign.setDesignFile(null);
+            arrayDesign.getDesignFiles().clear();
         } catch (IllegalAccessException iae) {
+            LOG.debug("Swallowed exception saving array design file", iae);
             arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
             addActionError(iae.getMessage());
         } catch (Exception e) {
+            LOG.debug("Swallowed exception saving array design file", e);
             if (arrayDesign.getId() != null) {
                 arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
             }
@@ -501,6 +487,31 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
                 for (File f : extractedFiles) {
                     f.delete();
                 }
+            }
+        }
+    }
+
+    private void handleFiles(List<File> extractedFiles) throws InvalidDataFileException, IllegalAccessException {
+        if (UnsupportedAffymetrixCdfFiles.isUnsupported(uploadFileName)) {
+            addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.unsupportedFile"));
+        } else {
+            CaArrayFileSet designFiles = new CaArrayFileSet();
+            CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
+            designFiles.add(designFile);
+            if (designFile.getFileType() == FileType.AFFYMETRIX_PGF
+                    || designFile.getFileType() == FileType.AFFYMETRIX_CLF) {
+                designFiles.add(getFileAccessService().add(extractedFiles.get(1),
+                                                           extractedFiles.get(1).getName()));
+            } else if (uploadFormatType != null && FileType.valueOf(uploadFormatType) != null) {
+                designFile.setFileType(FileType.valueOf(uploadFormatType));
+            }
+            getFileManagementService().saveArrayDesign(arrayDesign, designFiles);
+            if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
+                getFileManagementService().importArrayDesignDetails(arrayDesign);
+            }
+
+            if (extractedFiles.size() > 1 && designFiles.getFiles().size() == 1) {
+                ActionHelper.saveMessage(getText("arrayDesign.warning.zipFile"));
             }
         }
     }

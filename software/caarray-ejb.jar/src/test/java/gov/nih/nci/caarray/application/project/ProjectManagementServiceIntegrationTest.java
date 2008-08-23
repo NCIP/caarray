@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
@@ -97,7 +96,6 @@ import gov.nih.nci.caarray.domain.contact.Address;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -107,7 +105,6 @@ import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.project.ServiceType;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;

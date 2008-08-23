@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
 	<classpathentry kind="src" path="src/test/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/lib/javaee.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar"/>
 	<classpathentry kind="lib" path="/lib/junit-4.3.1.jar" sourcepath="/lib/src/junit-4.3.1-src.jar"/>
@@ -23,7 +22,6 @@
 	<classpathentry kind="lib" path="/lib/commons-collections-3.2.jar"/>
 	<classpathentry kind="lib" path="/lib/commons-configuration-1.4.jar"/>
 	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.9.jar"/>
-	<classpathentry kind="lib" path="/lib/hibernate3.jar" sourcepath="/lib/src/hibernate-3.2.3-src.jar"/>
 	<classpathentry kind="lib" path="/lib/hibernate-annotations.jar" sourcepath="/lib/src/hibernate-annotations-3.3.0.GA-src.jar"/>
 	<classpathentry kind="lib" path="/lib/ejb3-persistence.jar"/>
 	<classpathentry kind="lib" path="/lib/nc2.2.jar"/>
@@ -31,5 +29,7 @@
 	<classpathentry kind="lib" path="/lib/caGrid-data-stubs-1.2.jar"/>
 	<classpathentry kind="lib" path="/lib/caGrid-CQL-cql.1.0-1.2.jar"/>
 	<classpathentry kind="lib" path="/lib/mysql-connector-java-5.0.5-bin.jar"/>
+	<classpathentry kind="lib" path="/lib/hibernate3.jar" sourcepath="/lib/src/hibernate-3.2.3-src.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>

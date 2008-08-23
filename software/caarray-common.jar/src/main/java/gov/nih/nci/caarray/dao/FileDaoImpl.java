@@ -103,9 +103,9 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         return LOG;
     }
 
-
-    private List getBlobPartIdsForProject(long projectId) {
-         List returnVal = new ArrayList<Long>();
+    @SuppressWarnings("unchecked")
+    private List<Long> getBlobPartIdsForProject(long projectId) {
+         List<Long> returnVal = new ArrayList<Long>();
          String sqlProjBlobs = "select b.blob_parts from PROJECT p, CAARRAYFILE c, CAARRAYFILE_BLOB_PARTS b "
                       + "where p.id = c.project AND b.caarrayfile = c.id AND p.id = :p_id";
 

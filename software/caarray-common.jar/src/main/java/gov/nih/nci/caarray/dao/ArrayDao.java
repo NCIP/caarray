@@ -82,7 +82,10 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -98,6 +101,8 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 
 import java.util.List;
 import java.util.Map;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
@@ -237,6 +242,15 @@ public interface ArrayDao extends CaArrayDao {
     Map<String, Long> getLogicalProbeNamesToIds(ArrayDesign design, List<String> names);
 
     /**
+     * Returns a list of IDs of logical probes in a given array design, in batches.
+     *
+     * @param design probes must belong to this design
+     * @param params paging parameters (sorting parameters are ignored)
+     * @return a list of matching IDs
+     */
+    List<Long> getLogicalProbeIds(ArrayDesign design, PageSortParams<LogicalProbe> params);
+
+    /**
      * Save a batch of design element entries in a design element list. The entries are put in the list starting at
      * a given index.
      * @param designElementList the design element list to which the entries belong (must already be persistent)
@@ -245,6 +259,7 @@ public interface ArrayDao extends CaArrayDao {
      */
     void createDesignElementListEntries(DesignElementList designElementList, int startIndex,
             List<Long> logicalProbeIds);
+
     /**
      * Delete array design detail.
      *
@@ -253,4 +268,35 @@ public interface ArrayDao extends CaArrayDao {
      *            be deleted.
      */
     void deleteArrayDesignDetails(ArrayDesign design);
+
+    /**
+     * Create all features for an array design, rows * cols total features will be created.  It is assumed that there
+     * is only one block.
+     * @param rows number of rows in the design
+     * @param cols number of columns in the design
+     * @param designDetails array design details in which to create the features
+     */
+    void createFeatures(int rows, int cols, ArrayDesignDetails designDetails);
+
+    /**
+     * Get the ID of the first feature associated with the given design details (the lowest ID number).
+     * @param designDetails array design details to find features for
+     * @return lowest ID associated with the design details
+     */
+    Long getFirstFeatureId(ArrayDesignDetails designDetails);
+
+    /**
+     * Get the DB ID for a design element given its vendor ID.  Vendor IDs are cleared during and after array design
+     * import, so vendor IDs are only ever set for one type of element for one array design, and the vendor ID will
+     * therefore be unique.
+     * @param vendorId vendor-assigned ID
+     * @return abstract design element
+     */
+    AbstractDesignElement getDesignElementFromVendorId(String vendorId);
+
+    /**
+     * Clear out the temporary vendor IDs that may be set on any design elements.
+     */
+    void clearVendorIds();
+
 }

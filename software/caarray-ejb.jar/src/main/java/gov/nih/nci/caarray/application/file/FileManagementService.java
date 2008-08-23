@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
@@ -129,12 +128,12 @@ public interface FileManagementService {
      * Validates and adds/edits the array design (if valid) without adding design details.
      *
      * @param arrayDesign the array design object
-     * @param designFile the file containing the array design annotation.
-     * @throws InvalidDataFileException if the design file was invalid for import.
+     * @param designFiles the file(s) describing the array design.
+     * @throws InvalidDataFileException if the design files are invalid for import.
      * @throws IllegalAccessException if trying to modify locked fields on an array design
      */
-    void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile)
-    throws InvalidDataFileException, IllegalAccessException;
+    void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFileSet designFiles) throws InvalidDataFileException,
+            IllegalAccessException;
 
     /**
      * Imports array design information from the file provided into an <code>ArrayDesign</code> asynchronously.

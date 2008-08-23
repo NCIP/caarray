@@ -224,7 +224,6 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("deprecation")
     public List<Protocol> getProtocolsByProtocolType(Term type, String name) {
         if (type == null) {
             return new ArrayList<Protocol>();

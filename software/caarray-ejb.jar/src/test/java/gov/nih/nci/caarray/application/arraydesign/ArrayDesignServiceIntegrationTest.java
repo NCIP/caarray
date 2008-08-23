@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.application.arraydesign;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
@@ -91,14 +91,13 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
-import gov.nih.nci.caarray.dao.HibernateIntegrationTestCleanUpUtility;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
+import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -130,7 +129,9 @@ public class ArrayDesignServiceIntegrationTest {
     private static Organism DUMMY_ORGANISM = new Organism();
     private static Term DUMMY_TERM = new Term();
     private static ArrayDesign DUMMY_ARRAY_DESIGN = new ArrayDesign();
+
     @Before
+    @SuppressWarnings("deprecation")
     public void setUp() {
         this.arrayDesignService = createArrayDesignService(this.fileAccessServiceStub, this.vocabularyServiceStub);
 
@@ -152,8 +153,8 @@ public class ArrayDesignServiceIntegrationTest {
         DUMMY_ARRAY_DESIGN.setProvider(DUMMY_ORGANIZATION);
         DUMMY_ARRAY_DESIGN.setTechnologyType(DUMMY_TERM);
         DUMMY_ARRAY_DESIGN.setOrganism(DUMMY_ORGANISM);
-        DUMMY_ARRAY_DESIGN.setDesignFile(getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
-        DUMMY_ARRAY_DESIGN.getDesignFile().setFileStatus(null);
+        DUMMY_ARRAY_DESIGN.addDesignFile(getCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
+        DUMMY_ARRAY_DESIGN.getDesignFileSet().updateStatus(null);
         HibernateUtil.enableFilters(false);
         HibernateUtil.openAndBindSession();
     }
@@ -169,7 +170,7 @@ public class ArrayDesignServiceIntegrationTest {
             // ok - there was no active transaction
         }
         HibernateUtil.unbindAndCleanupSession();
-        HibernateIntegrationTestCleanUpUtility.cleanUp();
+//        HibernateIntegrationTestCleanUpUtility.cleanUp();
 
     }
 
@@ -185,7 +186,7 @@ public class ArrayDesignServiceIntegrationTest {
         return bean;
     }
 
-    private ArrayDesign setupAndSaveDesign(File designFile) throws IllegalAccessException, InvalidDataFileException {
+    private ArrayDesign setupAndSaveDesign(File... designFiles) throws IllegalAccessException, InvalidDataFileException {
         HibernateUtil.getCurrentSession().save(DUMMY_ORGANIZATION);
         HibernateUtil.getCurrentSession().save(DUMMY_ORGANISM);
         HibernateUtil.getCurrentSession().save(DUMMY_TERM);
@@ -194,9 +195,11 @@ public class ArrayDesignServiceIntegrationTest {
         design.setName("DummyTestArrayDesign1");
         design.setVersion("2.0");
         design.setProvider(DUMMY_ORGANIZATION);
-        design.setLsidForEntity("authority:namespace:" + designFile.getName());
+        design.setLsidForEntity("authority:namespace:" + designFiles[0].getName());
         design.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
-        design.setDesignFile(getAffymetrixCaArrayFile(designFile));
+        for (File designFile : designFiles) {
+            design.addDesignFile(getCaArrayFile(designFile));
+        }
         design.setTechnologyType(DUMMY_TERM);
         design.setOrganism(DUMMY_ORGANISM);
         this.arrayDesignService.saveArrayDesign(design);
@@ -234,7 +237,7 @@ public class ArrayDesignServiceIntegrationTest {
     @Test(expected = ArrayDesignDeleteException.class)
     public void testDeleteArrayDesignImporting() throws ArrayDesignDeleteException {
         ArrayDesignService arrayDesignService = new ArrayDesignServiceLocal();
-        DUMMY_ARRAY_DESIGN.getDesignFile().setFileStatus(FileStatus.IMPORTING);
+        DUMMY_ARRAY_DESIGN.getFirstDesignFile().setFileStatus(FileStatus.IMPORTING);
         arrayDesignService.deleteArrayDesign(DUMMY_ARRAY_DESIGN);
     }
 
@@ -246,10 +249,8 @@ public class ArrayDesignServiceIntegrationTest {
     }
 
     @Test
-    public void testImportDesignDetails_AffymetrixTest3() throws AffymetrixCdfReadException {
-
+    public void testImportDesignDetails_AffymetrixTest3() throws Exception {
         Transaction t = null;
-
         try {
             t = HibernateUtil.beginTransaction();
             ArrayDesign design = setupAndSaveDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
@@ -260,37 +261,57 @@ public class ArrayDesignServiceIntegrationTest {
             this.arrayDesignService.importDesignDetails(design);
             t.commit();
 
+            t = HibernateUtil.beginTransaction();
+            design = arrayDesignService.getArrayDesign(design.getId());
             assertEquals("Test3", design.getName());
             assertEquals("Affymetrix.com", design.getLsidAuthority());
             assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
             assertEquals("Test3", design.getLsidObjectId());
+            assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
+            t.commit();
 
             t = HibernateUtil.beginTransaction();
             DesignElementList designElementList =
-                AffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
+                AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
             checkChpDesignElementList(designElementList, AffymetrixArrayDesignFiles.TEST3_CDF);
             t.commit();
             assertEquals(15876, design.getNumberOfFeatures());
+
+            // now try to re-import the design over itself
+            // this only works when the delete array design details has been hooked up!
+//            t = HibernateUtil.beginTransaction();
+//            this.arrayDesignService.importDesign(design);
+//            this.arrayDesignService.importDesignDetails(design);
+//            t.commit();
+//
+//            t = HibernateUtil.beginTransaction();
+//            design = arrayDesignService.getArrayDesign(design.getId());
+//            assertEquals("Test3", design.getName());
+//            assertEquals("Affymetrix.com", design.getLsidAuthority());
+//            assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
+//            assertEquals("Test3", design.getLsidObjectId());
+//            assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
+//            t.commit();
+//
+//            t = HibernateUtil.beginTransaction();
+//            designElementList = AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
+//            checkChpDesignElementList(designElementList, AffymetrixArrayDesignFiles.TEST3_CDF);
+//            t.commit();
+//            assertEquals(15876, design.getNumberOfFeatures());
         } catch (Exception e) {
             if (t != null && t.isActive()) {
                 t.rollback();
             }
-            e.printStackTrace();
-            fail("unexpected error: " + e);
+            throw e;
         }
     }
 
-    private CaArrayFile getAffymetrixCaArrayFile(File file) {
-        return getCaArrayFile(file, FileType.AFFYMETRIX_CDF);
-    }
-
-    private CaArrayFile getCaArrayFile(File file, FileType type) {
+    private CaArrayFile getCaArrayFile(File file) {
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
-        caArrayFile.setFileType(type);
         return caArrayFile;
     }
 
-    private void checkChpDesignElementList(DesignElementList designElementList, File cdfFile) throws AffymetrixCdfReadException {
+    private void checkChpDesignElementList(DesignElementList designElementList, File cdfFile) throws AffymetrixArrayDesignReadException {
         AffymetrixCdfReader cdfReader = AffymetrixCdfReader.create(cdfFile);
         assertEquals(cdfReader.getCdfData().getHeader().getNumProbeSets(), designElementList.getDesignElements().size());
         for (int i = 0; i < designElementList.getDesignElements().size(); i++) {
@@ -298,4 +319,66 @@ public class ArrayDesignServiceIntegrationTest {
             assertEquals(cdfReader.getCdfData().getProbeSetName(i), probe.getName());
         }
     }
+
+    @Test
+    public void testImportDesignDetails_AffymetrixHuEx() throws Exception {
+        Transaction t = null;
+        try {
+            t = HibernateUtil.beginTransaction();
+            ArrayDesign design = setupAndSaveDesign(AffymetrixArrayDesignFiles.HUEX_TEST_CLF,
+                    AffymetrixArrayDesignFiles.HUEX_TEST_PGF);
+            t.commit();
+
+            t = HibernateUtil.beginTransaction();
+            this.arrayDesignService.importDesign(design);
+            this.arrayDesignService.importDesignDetails(design);
+            HibernateUtil.getCurrentSession().getTransaction().commit();
+
+            assertEquals("HuEx-1_0-st-v1-test", design.getName());
+            assertEquals("Affymetrix.com", design.getLsidAuthority());
+            assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
+            assertEquals("HuEx-1_0-st-v1-test", design.getLsidObjectId());
+
+            t = HibernateUtil.beginTransaction();
+            DesignElementList designElementList = AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(
+                    design, arrayDesignService);
+            assertEquals(DesignElementType.LOGICAL_PROBE, designElementList.getDesignElementTypeEnum());
+            assertEquals(94, designElementList.getDesignElements().size());
+            t.commit();
+
+            t = HibernateUtil.beginTransaction();
+            design = this.arrayDesignService.getArrayDesign(design.getId());
+            assertEquals(1024, design.getNumberOfFeatures());
+            assertEquals(94, design.getDesignDetails().getLogicalProbes().size());
+            assertEquals(364, design.getDesignDetails().getProbes().size());
+            assertEquals(1024, design.getDesignDetails().getFeatures().size());
+            t.commit();
+
+            t = HibernateUtil.beginTransaction();
+            design = this.arrayDesignService.getArrayDesign(design.getId());
+            ArrayDesign otherDesign = this.arrayDesignService.getArrayDesign("Affymetrix.com", "PhysicalArrayDesign",
+                    "HuEx-1_0-st-ta1-test");
+            assertEquals("HuEx-1_0-st-ta1-test", otherDesign.getName());
+            assertEquals("Affymetrix.com", otherDesign.getLsidAuthority());
+            assertEquals("PhysicalArrayDesign", otherDesign.getLsidNamespace());
+            assertEquals("HuEx-1_0-st-ta1-test", otherDesign.getLsidObjectId());
+            assertEquals(1024, otherDesign.getNumberOfFeatures());
+            assertEquals(94, otherDesign.getDesignDetails().getLogicalProbes().size());
+            assertEquals(364, otherDesign.getDesignDetails().getProbes().size());
+            assertEquals(1024, otherDesign.getDesignDetails().getFeatures().size());
+            assertEquals(2, otherDesign.getDesignFiles().size());
+            for (CaArrayFile designFile : design.getDesignFiles()) {
+                assertTrue(otherDesign.getDesignFiles().contains(designFile));
+            }
+            t.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (t != null && t.isActive()) {
+                t.rollback();
+            }
+            throw e;
+        }
+    }
+
 }

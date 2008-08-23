@@ -95,7 +95,6 @@ import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
-import gov.nih.nci.caarray.web.action.project.AbstractProjectProtocolAnnotationListTabAction.BioMaterialTypes;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -279,7 +278,7 @@ public class ProjectExtractsAction extends AbstractProjectAssociatedAnnotationsL
         return ProjectFilesAction.downloadByGroup(getProject(), files,
                 getDownloadGroupNumber(), getDownloadFileGroups());
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -289,7 +288,7 @@ public class ProjectExtractsAction extends AbstractProjectAssociatedAnnotationsL
         downloadFiles();
         return super.view();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -299,22 +298,22 @@ public class ProjectExtractsAction extends AbstractProjectAssociatedAnnotationsL
         downloadFiles();
         return super.edit();
     }
-    
-    /** 
+
+    /**
      * {@inheritDoc}
      */
     protected Collection<CaArrayFile> getAllDataFiles() {
         return getCurrentExtract().getAllDataFiles();
     }
-    
-    /** 
+
+    /**
      * {@inheritDoc}
      */
     public String getDownloadFileListAction() {
         return getDownloadFileListActionUrl(BioMaterialTypes.EXTRACTS);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     public String getDownloadFilesTableListSortUrlAction() {

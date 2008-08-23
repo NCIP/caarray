@@ -186,7 +186,7 @@ public final class IlluminaExpressionDesignFixer extends AbstractMigrator implem
     }
 
     private DelimitedFileReader getReader(ArrayDesign design) throws MigrationStepFailedException {
-        File csvFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(design.getDesignFile());
+        File csvFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(design.getFirstDesignFile());
         try {
             return DelimitedFileReaderFactory.INSTANCE.getCsvReader(csvFile);
         } catch (IOException e) {
@@ -213,9 +213,9 @@ public final class IlluminaExpressionDesignFixer extends AbstractMigrator implem
     }
 
     private boolean isIlluminaExpressionDesign(ArrayDesign design) {
-        return design.getDesignFile() != null
-            && FileType.ILLUMINA_DESIGN_CSV.equals(design.getDesignFile().getFileType())
-            && AssayType.GENE_EXPRESSION.equals(design.getAssayTypeEnum());
+        return design.getFirstDesignFile() != null
+                && FileType.ILLUMINA_DESIGN_CSV.equals(design.getFirstDesignFile().getFileType())
+                && AssayType.GENE_EXPRESSION.equals(design.getAssayTypeEnum());
     }
 
 }

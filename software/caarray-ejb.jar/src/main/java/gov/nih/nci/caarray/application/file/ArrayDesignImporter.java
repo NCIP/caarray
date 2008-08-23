@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
 /**
@@ -98,20 +97,8 @@ class ArrayDesignImporter {
         this.arrayDesignService = arrayDesignService;
     }
 
-    private boolean isArrayDesign(CaArrayFile file) {
-        return file.getFileType() != null && file.getFileType().isArrayDesign();
-    }
-
     void validateFiles(CaArrayFileSet fileSet) {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (isArrayDesign(file)) {
-                validateFile(file);
-            }
-        }
-    }
-
-    private void validateFile(CaArrayFile file) {
-        arrayDesignService.validateDesign(file);
+        arrayDesignService.validateDesign(fileSet.getFiles());
     }
 
     void importArrayDesign(ArrayDesign arrayDesign) {

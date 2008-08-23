@@ -180,6 +180,15 @@ public final class ValidationResult implements Serializable {
     }
 
     /**
+     * Add the results for a file, replacing any previous results for that file.
+     * @param file file to add
+     * @param fileResult results to add
+     */
+    public void addFile(File file, FileValidationResult fileResult) {
+        fileValidationResults.put(file, fileResult);
+    }
+
+    /**
      * Returns the <code>FileValidationResult</code> corresponding to the
      * given file, or null if non exists.
      *

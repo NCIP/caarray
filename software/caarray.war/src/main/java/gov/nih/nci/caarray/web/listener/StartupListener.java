@@ -82,12 +82,12 @@
  */
 package gov.nih.nci.caarray.web.listener;
 
-import java.util.Timer;
-
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.fileaccess.FileCleanupThread;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+
+import java.util.Timer;
 
 import javax.servlet.ServletContextEvent;
 
@@ -103,7 +103,6 @@ public class StartupListener extends AbstractHibernateSessionScopeListener {
      * @param event ServletContextEvent
      */
     @Override
-    @SuppressWarnings("unchecked")
     public void doContextInitialized(ServletContextEvent event) {
         ArrayDataService arrayDataService =
             (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);

@@ -141,7 +141,6 @@ public class FileValidationResult implements Serializable, Comparable<FileValida
         return this.file;
     }
 
-    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" })
     private void setFile(File file) {
         this.file = file;
     }
@@ -236,7 +235,6 @@ public class FileValidationResult implements Serializable, Comparable<FileValida
     /**
      * @return validation messages
      */
-    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" })
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
     public Set<ValidationMessage> getMessageSet() {

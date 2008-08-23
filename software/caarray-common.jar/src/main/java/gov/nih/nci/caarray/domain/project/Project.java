@@ -146,7 +146,8 @@ import org.hibernate.validator.Valid;
  */
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
-@SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.TooManyFields", "PMD.ExcessiveClassLength" })
+@SuppressWarnings({ "PMD.AvoidDuplicateLiterals", "PMD.TooManyFields", "PMD.TooManyMethods",
+        "PMD.ExcessiveClassLength" })
 public class Project extends AbstractCaArrayEntity implements Comparable<Project>, Protectable {
     private static final long serialVersionUID = 1234567890L;
 
@@ -639,7 +640,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      * For hibernate use only.
      * @param publicIdLocked whether the public identifier has been locked from further editing
      */
-    @SuppressWarnings({"unused", "PMD.unused" })
     private void setPublicIdLocked(boolean publicIdLocked) {
         this.publicIdLocked = publicIdLocked;
     }

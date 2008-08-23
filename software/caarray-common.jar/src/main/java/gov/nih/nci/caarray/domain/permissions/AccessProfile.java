@@ -132,7 +132,6 @@ public class AccessProfile implements PersistentObject, Serializable {
     /**
      * Hibernate-only constructor.
      */
-    @SuppressWarnings("unused")
     public AccessProfile() {
         // no body
     }
@@ -239,7 +238,6 @@ public class AccessProfile implements PersistentObject, Serializable {
      * @return the projectForPublicProfile
      */
     @OneToOne(mappedBy = "publicProfile", fetch = FetchType.LAZY)
-    @SuppressWarnings("unused")
     private Project getProjectForPublicProfile() {
         return projectForPublicProfile;
     }
@@ -250,7 +248,6 @@ public class AccessProfile implements PersistentObject, Serializable {
      * This method should not generally never be called. It needs to remain public
      * as it must be called by Project to establish the symmetric link
      */
-    @SuppressWarnings("unused")
     public void setProjectForPublicProfile(Project projectForPublicProfile) {
         this.projectForPublicProfile = projectForPublicProfile;
     }
@@ -259,7 +256,6 @@ public class AccessProfile implements PersistentObject, Serializable {
      * @return the projectForHostProfile
      */
     @OneToOne(mappedBy = "hostProfile", fetch = FetchType.LAZY)
-    @SuppressWarnings("unused")
     private Project getProjectForHostProfile() {
         return projectForHostProfile;
     }
@@ -270,7 +266,6 @@ public class AccessProfile implements PersistentObject, Serializable {
      * This method should not generally never be called. It needs to remain public
      * as it must be called by Project to establish the symmetric link
      */
-    @SuppressWarnings("unused")
     public void setProjectForHostProfile(Project projectForHostProfile) {
         this.projectForHostProfile = projectForHostProfile;
     }
@@ -280,7 +275,6 @@ public class AccessProfile implements PersistentObject, Serializable {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", insertable = false, updatable = false)
-    @SuppressWarnings("unused")
     private Project getProjectForGroupProfile() {
         return projectForGroupProfile;
     }

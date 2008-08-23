@@ -97,7 +97,6 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -385,6 +384,7 @@ public class ProjectManagementServiceTest {
      * Test method for {@link ProjectManagementService#saveProject(Project, PersistentObject...)}.
      */
     @Test
+    @SuppressWarnings("deprecation")
     public void testSaveProjectWithImportingFiles() throws Exception {
         Project project = new Project();
         CaArrayFile file1 = new CaArrayFile();
@@ -420,6 +420,7 @@ public class ProjectManagementServiceTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testDeleteProject() throws Exception {
         Project project = new Project();
         project.setId(1L);
@@ -435,6 +436,7 @@ public class ProjectManagementServiceTest {
     }
 
     @Test(expected = ProposalWorkflowException.class)
+    @SuppressWarnings("deprecation")
     public void testDeleteNonDraftProject() throws Exception {
         Project project = new Project();
         project.setId(1L);
@@ -444,6 +446,7 @@ public class ProjectManagementServiceTest {
     }
 
     @Test(expected = PermissionDeniedException.class)
+    @SuppressWarnings("deprecation")
     public void testDeleteUnownedProject() throws Exception {
         Project project = new Project();
         project.setId(1L);
@@ -543,6 +546,7 @@ public class ProjectManagementServiceTest {
     }
 
     @Test  (expected = IllegalStateException.class)
+    @SuppressWarnings("unchecked")
     public void testGetSampleByExternalIdReturnsNonUniqueResult() throws Exception {
         ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;
         bean.setDaoFactory(new DaoFactoryStub(){
@@ -576,7 +580,7 @@ public class ProjectManagementServiceTest {
             }
         });
         Project project = new Project();
-        
+
         assertNull(this.projectManagementService.getSampleByExternalId(project, "abc"));
     }
     @Test
@@ -595,12 +599,12 @@ public class ProjectManagementServiceTest {
             }
         });
         Project project = new Project();
-        
+
         Sample sampleByExternalId = this.projectManagementService.getSampleByExternalId(project, "abc");
         assertNotNull(sampleByExternalId);
         assertSame(project.getExperiment(), sampleByExternalId.getExperiment());
     }
-    
+
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
 
         LocalProjectDaoStub projectDao = new LocalProjectDaoStub();
@@ -664,7 +668,7 @@ public class ProjectManagementServiceTest {
         /**
          * {@inheritDoc}
          */
-        @SuppressWarnings({ "unchecked", "deprecation" })
+        @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             PersistentObject po = this.projectDao.savedObjects.get(entityId);
@@ -743,8 +747,9 @@ public class ProjectManagementServiceTest {
             abm.setDescription("Test");
             abm.setId(entityId);
         }
-        
+
         @Override
+        @SuppressWarnings("unchecked")
         public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(T entityToMatch) {
             List<T> results = new ArrayList<T>();
             if (entityToMatch instanceof Sample) {
@@ -756,7 +761,7 @@ public class ProjectManagementServiceTest {
                             if (sampleToMatch.getExternalSampleId().equals(s.getExternalSampleId())) {
                                 results.add((T) s);
                             }
-                        } 
+                        }
                     }
                 }
             }

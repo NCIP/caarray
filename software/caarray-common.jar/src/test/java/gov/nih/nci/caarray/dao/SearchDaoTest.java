@@ -175,7 +175,6 @@ public class SearchDaoTest {
     /**
      * Initialize the dummy <code>Protocol</code> objects.
      */
-    @SuppressWarnings("unchecked")
     private static void initializeProtocols() {
         DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
         DUMMY_TERM_SOURCE.setUrl("test url");
@@ -404,7 +403,7 @@ public class SearchDaoTest {
         return cqlQuery;
     }
 
-    @SuppressWarnings({ "unchecked", "deprecation"} )
+    @SuppressWarnings("deprecation")
     private Protocol setUpExampleProtocol() {
         Protocol exampleProtocol = new Protocol();
         exampleProtocol.setDescription(DUMMY_PROTOCOL_1.getDescription());

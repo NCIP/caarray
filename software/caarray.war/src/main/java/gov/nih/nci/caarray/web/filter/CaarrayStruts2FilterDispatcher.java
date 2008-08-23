@@ -98,7 +98,7 @@ import org.apache.struts2.dispatcher.Dispatcher;
 import org.apache.struts2.dispatcher.FilterDispatcher;
 
 /**
- * filter to initialize struts 2 fof caarray 2.
+ * filter to initialize struts 2 of caarray 2.
  * @author Scott Miller
  */
 public class CaarrayStruts2FilterDispatcher extends FilterDispatcher {
@@ -106,6 +106,7 @@ public class CaarrayStruts2FilterDispatcher extends FilterDispatcher {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     protected Dispatcher createDispatcher(FilterConfig filterConfig) {
         Map<String, String> params = new HashMap<String, String>();

@@ -135,7 +135,6 @@ public class CollaboratorsAction extends ActionSupport {
      * @return listGroups
      */
     @SkipValidation
-    @SuppressWarnings("unchecked")
     public String listGroups() {
         this.groups = getPermissionsManagementService().getCollaboratorGroups();
         return "list";

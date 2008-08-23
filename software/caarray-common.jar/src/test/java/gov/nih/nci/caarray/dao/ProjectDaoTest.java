@@ -164,7 +164,6 @@ public class ProjectDaoTest extends AbstractDaoTest {
     private static final Logger LOG = Logger.getLogger(ProjectDaoTest.class);
 
     // Experiment
-    private static final String UNCHECKED = "unchecked";
     private static Organism DUMMY_ORGANISM = new Organism();
     private static Organization DUMMY_PROVIDER = new Organization();
     private static Project DUMMY_PROJECT_1 = new Project();
@@ -405,7 +404,6 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_FILE_2.setProject(DUMMY_PROJECT_1);
     }
 
-    @SuppressWarnings(UNCHECKED)
     private static void setPublications() {
         DUMMY_PUBLICATION_1.setTitle("DummyPublicationTitle1");
         DUMMY_PUBLICATION_1.setAuthors("DummyAuthors1");
@@ -684,7 +682,6 @@ public class ProjectDaoTest extends AbstractDaoTest {
     /**
      * Tests searching for a <code>Person</code> by example, including associations in the search.
      */
-    @SuppressWarnings(UNCHECKED)
     @Test
     public void testDeepSearchPersonByExample() {
         Transaction tx = null;
@@ -747,7 +744,6 @@ public class ProjectDaoTest extends AbstractDaoTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testProtectionElements() {
         Transaction tx = HibernateUtil.beginTransaction();
@@ -793,7 +789,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertNotNull(experimentId);
             checkVisible(DUMMY_PROJECT_1);
 
-            // a new project, in default draft status, will not be visible to the annonymous user
+            // a new project, in default draft status, will not be visible to the anonymous user
             tx = HibernateUtil.beginTransaction();
             UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             Experiment e = SEARCH_DAO.retrieve(Experiment.class, experimentId);

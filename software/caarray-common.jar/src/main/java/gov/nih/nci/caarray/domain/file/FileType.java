@@ -92,7 +92,7 @@ import java.util.Set;
 /**
  *
  */
-public enum FileType implements Comparable<FileType>  {
+public enum FileType implements Comparable<FileType> {
 
     /**
      * Affymetrix native array design file.
@@ -110,6 +110,11 @@ public enum FileType implements Comparable<FileType>  {
     AFFYMETRIX_CHP,
 
     /**
+     * Affymetrix native CLF array design format (paired with an {@link #AFFYMETRIX_PGF} file).
+     */
+    AFFYMETRIX_CLF,
+
+    /**
      * Affymetrix native DAT image format.
      */
     AFFYMETRIX_DAT,
@@ -118,6 +123,11 @@ public enum FileType implements Comparable<FileType>  {
      * Affymetrix EXP format.
      */
     AFFYMETRIX_EXP,
+
+    /**
+     * Affymetrix native PGF array design format (paired with an {@link #AFFYMETRIX_CLF} file).
+     */
+    AFFYMETRIX_PGF,
 
     /**
      * Affymetrix TXT format.
@@ -248,18 +258,18 @@ public enum FileType implements Comparable<FileType>  {
     private static final Map<FileType, FileType> DERIVED_TO_RAW_MAP = new HashMap<FileType, FileType>();
 
     static {
-        ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
+        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
+        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CLF);
+        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_PGF);
+        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
+        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(GENEPIX_GAL);
+        ARRAY_DESIGN_FILE_TYPES.addAll(PARSEABLE_ARRAY_DESIGN_FILE_TYPES);
         ARRAY_DESIGN_FILE_TYPES.add(AGILENT_CSV);
         ARRAY_DESIGN_FILE_TYPES.add(AGILENT_XML);
-        ARRAY_DESIGN_FILE_TYPES.add(GENEPIX_GAL);
-        ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
         ARRAY_DESIGN_FILE_TYPES.add(IMAGENE_TPL);
         ARRAY_DESIGN_FILE_TYPES.add(NIMBLEGEN_NDF);
         ARRAY_DESIGN_FILE_TYPES.add(UCSF_SPOT_SPT);
         ARRAY_DESIGN_FILE_TYPES.add(MAGE_TAB_ADF);
-        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
-        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
-        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(GENEPIX_GAL);
         RAW_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_IDAT);
         RAW_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
         RAW_ARRAY_DATA_FILE_TYPES.add(AGILENT_RAW_TXT);

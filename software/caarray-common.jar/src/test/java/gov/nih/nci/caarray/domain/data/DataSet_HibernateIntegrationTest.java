@@ -122,6 +122,7 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
         super.testSave();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void setValues(AbstractCaArrayObject caArrayObject) {
         DataSet dataSet = (DataSet) caArrayObject;

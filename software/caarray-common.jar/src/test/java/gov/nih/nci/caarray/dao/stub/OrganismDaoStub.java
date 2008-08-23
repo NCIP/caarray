@@ -89,7 +89,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  */
 public class OrganismDaoStub extends AbstractDaoStub implements OrganismDao {
     /**
@@ -102,7 +102,6 @@ public class OrganismDaoStub extends AbstractDaoStub implements OrganismDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public List<Organism> getAllOrganisms() {
         return new ArrayList<Organism>();
     }

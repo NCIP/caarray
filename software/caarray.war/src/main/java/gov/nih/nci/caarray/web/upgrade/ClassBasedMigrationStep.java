@@ -96,6 +96,7 @@ class ClassBasedMigrationStep extends AbstractMigrationStep {
         this.className = getContent(element);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     void execute() throws MigrationStepFailedException {
         try {

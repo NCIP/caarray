@@ -82,113 +82,24 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-
-import affymetrix.fusion.cdf.FusionCDFData;
-
 /**
- * Utility class used to generate and retrieve the singleton <code>DesignElementList</code> to be used for all parsed
- * CHP files.
+ * Exception that indicates an Affymetrix array design file couldn't be successfully read.
  */
-public final class AffymetrixChpDesignElementListUtility {
-    private static final Logger LOG = Logger.getLogger(AffymetrixChpDesignElementListUtility.class);
-    
-    private static final String LSID_AUTHORITY = "Affymetrix.com";
-    private static final String LSID_NAMESPACE_ELEMENT_LIST = "DesignElementList";
-    private static final String LSID_OBJECT_ID_ELEMENT_LIST_PREFIX = "LogicalProbes";
-    
-    private static final int BATCH_SIZE = 500;
+public final class AffymetrixArrayDesignReadException extends Exception {
 
-    private AffymetrixChpDesignElementListUtility() {
-        super();
+    private static final long serialVersionUID = 1L;
+
+    AffymetrixArrayDesignReadException(String message) {
+        super(message);
     }
 
     /**
-     * Creates the singleton <code>DesignElementList</code> for CHP files associated with the given
-     * Affymetrix design. 
-     * 
-     * @param design the design to create the <code>DesignElementList</code> for
-     * @param arrayDao used to retrieve <code>LogicalProges</code> from design
-     * @throws AffymetrixCdfReadException if the CDF file associated with the design couldn't be read.
+     * Create a new exception.
+     * @param message error message
+     * @param cause underlying cause
      */
-    public static void createDesignElementList(ArrayDesign design, ArrayDao arrayDao)
-    throws AffymetrixCdfReadException {
-        checkDesign(design);
-        List<String> probeSetNames = getProbeSetNames(design);
-        DesignElementList designElementList = new DesignElementList();
-        designElementList.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE_ELEMENT_LIST
-                + ":" + getDesignElementListObjectId(design));
-        designElementList.setDesignElementTypeEnum(DesignElementType.LOGICAL_PROBE);
-        arrayDao.save(designElementList);
-        List<Long> orderedProbeSetIds = new ArrayList<Long>(BATCH_SIZE);
-        for (int i = 0; i < probeSetNames.size(); i += BATCH_SIZE) {
-            LOG.info("Retrieving " + BATCH_SIZE + " probe names starting with #" + i);
-            List<String> probeSetNamesBatch = probeSetNames.subList(i, Math.min(probeSetNames.size(), i + BATCH_SIZE));
-            Map<String, Long> nameToIdMap = arrayDao.getLogicalProbeNamesToIds(design, probeSetNamesBatch);
-            orderedProbeSetIds.clear();
-            for (int j = i; j < i + probeSetNamesBatch.size(); j++) {
-                String probeSetName = probeSetNames.get(j);
-                orderedProbeSetIds.add(nameToIdMap.get(probeSetName));
-            }
-            arrayDao.createDesignElementListEntries(designElementList, i, orderedProbeSetIds);
-            LOG.info("Saving " + BATCH_SIZE + " probe names starting with #" + i);
-        }
+    AffymetrixArrayDesignReadException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    private static List<String> getProbeSetNames(ArrayDesign design) throws AffymetrixCdfReadException {
-        AffymetrixCdfReader reader = null;
-        try {
-            File cdfFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(design.getDesignFile());
-            reader = AffymetrixCdfReader.create(cdfFile);
-            FusionCDFData fusionCDFData = reader.getCdfData();
-            int numProbeSets = fusionCDFData.getHeader().getNumProbeSets();
-            List<String> probeSetNames = new ArrayList<String>(numProbeSets);
-            for (int index = 0; index < numProbeSets; index++) {
-                probeSetNames.add(fusionCDFData.getProbeSetName(index));
-            }
-            return probeSetNames;
-        } finally {
-            close(reader);
-        }
-    }
-
-    /**
-     * Returns the existing <code>DesignElementList</code> for CHP files associated with the given
-     * Affymetrix design, or null if none exists.
-     *
-     * @param design the design to retrieve the <code>DesignElementList</code> for
-     * @param arrayDesignService service instance used to retrieve the list
-     * @return the corresponding list or null.
-     */
-    public static DesignElementList getDesignElementList(ArrayDesign design, ArrayDesignService arrayDesignService) {
-        return arrayDesignService.getDesignElementList(LSID_AUTHORITY, LSID_NAMESPACE_ELEMENT_LIST,
-                getDesignElementListObjectId(design));
-    }
-
-    private static void checkDesign(ArrayDesign design) {
-        if (!LSID_AUTHORITY.equals(design.getLsidAuthority())) {
-            throw new IllegalArgumentException("ArrayDesign must be an Affymetrix design");
-        }
-    }
-
-    private static String getDesignElementListObjectId(ArrayDesign design) {
-        return LSID_OBJECT_ID_ELEMENT_LIST_PREFIX + "." + design.getLsidObjectId();
-    }
-
-    private static void close(AffymetrixCdfReader reader) {
-        if (reader != null) {
-            reader.close();
-        }
-    }
 }

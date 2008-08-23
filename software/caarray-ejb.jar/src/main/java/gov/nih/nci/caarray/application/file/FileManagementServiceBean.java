@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.file;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -157,7 +158,7 @@ public class FileManagementServiceBean implements FileManagementService {
         }
     }
 
-    private void sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet, 
+    private void sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet,
             DataImportOptions dataImportOptions) {
         ProjectFilesImportJob job = new ProjectFilesImportJob(UsernameHolder.getUser(), targetProject, fileSet,
                 dataImportOptions);
@@ -183,25 +184,30 @@ public class FileManagementServiceBean implements FileManagementService {
      * {@inheritDoc}
      */
     @TransactionTimeout(SAVE_ARRAY_DESIGN_TIMEOUT)
-    public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile) throws InvalidDataFileException,
+    public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFileSet designFiles) throws InvalidDataFileException,
             IllegalAccessException {
         boolean newArrayDesign = arrayDesign.getId() == null;
-        CaArrayFile oldFile = arrayDesign.getDesignFile();
-        designFile.setFileStatus(FileStatus.VALIDATING);
+        CaArrayFileSet oldFiles = arrayDesign.getDesignFileSet();
+        designFiles.updateStatus(FileStatus.VALIDATING);
 
-        arrayDesign.setDesignFile(designFile);
-        getDaoFactory().getProjectDao().save(designFile);
+        arrayDesign.setDesignFileSet(designFiles);
         getArrayDesignService().saveArrayDesign(arrayDesign);
         getArrayDesignService().importDesign(arrayDesign);
 
-        if (FileStatus.VALIDATION_ERRORS.equals(designFile.getFileStatus())) {
+        final ArrayDao arrayDao = getDaoFactory().getArrayDao();
+        if (FileStatus.VALIDATION_ERRORS.equals(designFiles.getStatus())) {
             if (newArrayDesign) {
-                getDaoFactory().getArrayDao().remove(arrayDesign);
+                arrayDao.remove(arrayDesign);
             } else {
-                arrayDesign.setDesignFile(oldFile);
-                getDaoFactory().getArrayDao().save(arrayDesign);
+                arrayDesign.setDesignFileSet(oldFiles);
+                arrayDao.save(arrayDesign);
             }
-            throw new InvalidDataFileException(designFile.getValidationResult());
+            for (CaArrayFile designFile : designFiles.getFiles()) {
+                if (designFile.getValidationResult() != null
+                        && !designFile.getValidationResult().getMessages().isEmpty()) {
+                    throw new InvalidDataFileException(designFile.getValidationResult());
+                }
+            }
         }
     }
 
@@ -210,8 +216,8 @@ public class FileManagementServiceBean implements FileManagementService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importArrayDesignDetails(ArrayDesign arrayDesign) {
-        arrayDesign.getDesignFile().setFileStatus(FileStatus.IN_QUEUE);
-        getDaoFactory().getProjectDao().save(arrayDesign.getDesignFile());
+        arrayDesign.getDesignFileSet().updateStatus(FileStatus.IN_QUEUE);
+        getDaoFactory().getProjectDao().save(arrayDesign.getDesignFiles());
         ArrayDesignFileImportJob job = new ArrayDesignFileImportJob(UsernameHolder.getUser(), arrayDesign);
         getSubmitter().submitJob(job);
     }

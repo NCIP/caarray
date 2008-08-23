@@ -96,8 +96,8 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
@@ -189,7 +189,7 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
             }
             // intentional fallthrough - for target nodes other than hybs
         case AUTOCREATE_PER_FILE:
-            hybs = lookupOrCreateHybridizations(getDataFileHandler().getHybridizationNames(dataFile), 
+            hybs = lookupOrCreateHybridizations(getDataFileHandler().getHybridizationNames(dataFile),
                     createAnnnotation);
             break;
         case AUTOCREATE_SINGLE:
@@ -309,7 +309,7 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
         }
         return hybridization;
     }
-    
+
     List<Hybridization> lookupOrCreateHybridizations(List<String> hybridizationNames, boolean createAnnotation) {
         List<Hybridization> hybs = new ArrayList<Hybridization>();
         for (String hybName : hybridizationNames) {
@@ -324,7 +324,7 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
             AbstractExperimentDesignNode newChainStart = hybridization;
             if (this.dataImportOptions.getTargetNodeType() != ExperimentDesignNodeType.LABELED_EXTRACT) {
                 newChainStart = createAnnotationChain(hybridization, this.dataImportOptions.getTargetNodeType()
-                        .getSuccessorType(), hybridization.getName());                
+                        .getSuccessorType(), hybridization.getName());
             }
             for (Long targetId : this.dataImportOptions.getTargetNodeIds()) {
                 AbstractBioMaterial target = this.daoFactory.getSearchDao().retrieve(AbstractBioMaterial.class,
@@ -357,7 +357,7 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
     private AbstractBioMaterial createAnnotationChain(Hybridization hybridization,
             ExperimentDesignNodeType chainStartNodeType, String newAnnotationName) {
         Experiment experiment = getCaArrayFile().getProject().getExperiment();
-        
+
         switch (chainStartNodeType) {
         case SOURCE:
             Source source = new Source();
@@ -391,13 +391,13 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
     /**
      * Fill in the annotation chain from the given hybridization to the given target biomaterial, creating
      * the intermediate biomaterials.
-     * 
+     *
      * @param hybridization the hybridization for which to create the chain
      * @param target the target biomaterial to which the chain should link. A new biomaterial is created for each step
-     *            in the chain between the hybridization and this target. 
+     *            in the chain between the hybridization and this target.
      * @param newAnnotationName the name to be given to each newly created biomaterial in the chain
      */
-    private void fillInAnnotationChain(Hybridization hybridization, AbstractBioMaterial target, 
+    private void fillInAnnotationChain(Hybridization hybridization, AbstractBioMaterial target,
             String newAnnotationName) {
         ExperimentDesignNodeType nextNodeType = target.getNodeType().getSuccessorType();
         if (nextNodeType == ExperimentDesignNodeType.HYBRIDIZATION) {

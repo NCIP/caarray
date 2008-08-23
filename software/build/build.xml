@@ -112,9 +112,9 @@
     <property name="dom4j.jar" value="${lib.dir}/dom4j-1.6.1.jar" />
     <property name="ehcache.jar" value="${lib.dir}/ehcache-1.2.3.jar" />
     <property name="hibernate.jar" value="${lib.dir}/hibernate3.jar" />
+    <property name="hibernate-annotations.jar" value="${lib.dir}/hibernate-annotations.jar" />
     <property name="hibernate-client.jar" value="${lib.dir}/hibernate-client.jar" />
     <property name="ejb3-persistence.jar" value="${lib.dir}/ejb3-persistence.jar" />
-    <property name="hibernate-annotations.jar" value="${lib.dir}/hibernate-annotations.jar" />
     <property name="jakarta-oro-2.0.8.jar" value="${lib.dir}/jakarta-oro-2.0.8.jar" />
     <property name="javaee.jar" value="${lib.dir}/javaee.jar" />
     <property name="jaxen.jar" value="${lib.dir}/jaxen-1.1-beta.jar" />
@@ -467,7 +467,7 @@
     <!-- ******************************************************************* -->
 
     <target name="compile" depends="compile:caarray-client.jar,
-      compile:caarray-common.jar,
+        compile:caarray-common.jar,
         compile:caarray-ejb.jar,
         compile:caarray.war,
         compile:caarray-svc" />
@@ -495,8 +495,8 @@
         <javac srcdir="${caarray-common.src.dir}" destdir="${caarray-common.classes.dir}" debug="true">
             <classpath>
                 <pathelement location="${hibernate.jar}" />
-                <pathelement location="${ejb3-persistence.jar}" />
                 <pathelement location="${hibernate-annotations.jar}" />
+                <pathelement location="${ejb3-persistence.jar}" />
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${commons-beanutils.jar}" />
                 <pathelement location="${commons-collections.jar}" />
@@ -720,33 +720,32 @@
              <echo>css and js files will be minified</echo>
             <!-- compress and minify css files -->
             <for param="cssfile">
-                      <path>
-                          <fileset dir="${caarray-war.target.webapp.dir}" includes="/styles/*.css" />
-                      </path>
-                      <sequential>
-                          <java jar="lib/yuicompressor-2.3.5.jar" fork="true" failonerror="true">
-                                    <arg line="@{cssfile}" />
-                                    <arg line="-o @{cssfile}" />
-                          </java>
-                      </sequential>
+                <path>
+                    <fileset dir="${caarray-war.target.webapp.dir}" includes="/styles/*.css" />
+                </path>
+                <sequential>
+                    <java jar="lib/yuicompressor-2.3.5.jar" fork="true" failonerror="true">
+                        <arg line="@{cssfile}" />
+                        <arg line="-o @{cssfile}" />
+                    </java>
+                </sequential>
              </for>
             <!-- compress and minify javascripts -->
             <for param="jsfile">
-                      <path>
-                           <fileset dir="${caarray-war.target.webapp.dir}" includes="/scripts/*.js, /scriptslib/*.js" />
-                      </path>
-                      <sequential>
-                          <java jar="lib/yuicompressor-2.3.5.jar" fork="true" failonerror="true">
-                                      <arg line="@{jsfile}" />
-                                      <arg line="-o @{jsfile}" />
-                                      <arg line="--nomunge" />
-                          </java>
-                      </sequential>
+                <path>
+                    <fileset dir="${caarray-war.target.webapp.dir}" includes="/scripts/*.js, /scriptslib/*.js" />
+                </path>
+                <sequential>
+                    <java jar="lib/yuicompressor-2.3.5.jar" fork="true" failonerror="true">
+                        <arg line="@{jsfile}" />
+                        <arg line="-o @{jsfile}" />
+                        <arg line="--nomunge" />
+                    </java>
+                </sequential>
             </for>
           </then>
          </if>
     </target>
-
 
     <target name="build:caarray.war:scriptsAndStyles">
         <mkdir dir="${caarray-war.target.webapp.dir}" />
@@ -829,7 +828,7 @@
                 <include name="nci-commons-struts2-${nci-commons-version}.jar" />
             </lib>
             <zipfileset dir="${caarray-war.target.dir}/help/caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help"
-        prefix="help"/>
+                prefix="help"/>
         </war>
     </target>
 
@@ -1147,7 +1146,6 @@
                 <pathelement location="${myfaces-api.jar}" />
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${ejb3-persistence.jar}" />
-                <pathelement location="${hibernate-annotations.jar}" />
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${spring.jar}" />
                 <pathelement location="${spring-mock.jar}" />
@@ -1161,6 +1159,7 @@
                 <pathelement location="${commons-io.jar}" />
                 <pathelement location="${displaytag.jar}" />
                 <pathelement location="${hibernate.jar}" />
+                <pathelement location="${hibernate-annotations.jar}" />
                 <pathelement location="${urlrewrite.jar}" />
                 <pathelement location="${cglib.jar}" />
                 <pathelement location="${nci-commons-core.jar}" />
@@ -1572,6 +1571,7 @@
         <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm2.sql" />
         <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-mged.sql" />
         <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />
+        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-caarray-procedures.sql" sql.delimiter="//" />
     </target>
 
     <target name="database:env-specific-sql" description="populates db with initial data">

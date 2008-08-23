@@ -96,6 +96,8 @@ enum FileExtension {
     CDF(FileType.AFFYMETRIX_CDF),
     CEL(FileType.AFFYMETRIX_CEL),
     CHP(FileType.AFFYMETRIX_CHP),
+    CLF(FileType.AFFYMETRIX_CLF),
+    PGF(FileType.AFFYMETRIX_PGF),
     CSV(FileType.ILLUMINA_DESIGN_CSV),
     DAT(FileType.AFFYMETRIX_DAT),
     EXP(FileType.AFFYMETRIX_EXP),

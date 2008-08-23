@@ -88,11 +88,12 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.AssayType;
-import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ArrayDesignServiceStub implements ArrayDesignService {
 
@@ -100,7 +101,11 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
         return null;
     }
 
-    public FileValidationResult validateDesign(CaArrayFile designFile) {
+    public ValidationResult validateDesign(CaArrayFile designFile) {
+        return null;
+    }
+
+    public ValidationResult validateDesign(Set<CaArrayFile> designFiles) {
         return null;
     }
 
@@ -148,7 +153,7 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
         return null;
     }
 
-    public FileValidationResult validateDesign(ArrayDesign design) {
+    public ValidationResult validateDesign(ArrayDesign design) {
         return null;
     }
 

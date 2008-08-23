@@ -83,7 +83,10 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -100,7 +103,10 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
+import org.apache.commons.lang.math.NumberUtils;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
 
@@ -211,5 +217,27 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     }
 
     public void deleteArrayDesignDetails(ArrayDesign design) {
+        // empty method
     }
+
+    public List<Long> getLogicalProbeIds(ArrayDesign design, PageSortParams<LogicalProbe> params) {
+        return null;
+    }
+
+    public void createFeatures(int rows, int cols, ArrayDesignDetails designDetails) {
+        // empty method
+    }
+
+    public Long getFirstFeatureId(ArrayDesignDetails designDetails) {
+        return NumberUtils.LONG_ONE;
+    }
+
+    public AbstractDesignElement getDesignElementFromVendorId(String vendorId) {
+        return null;
+    }
+
+    public void clearVendorIds() {
+        // empty method
+    }
+
 }

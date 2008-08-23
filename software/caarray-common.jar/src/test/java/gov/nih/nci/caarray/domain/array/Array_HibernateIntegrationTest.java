@@ -111,18 +111,18 @@ public class Array_HibernateIntegrationTest extends AbstractCaArrayEntity_Hibern
         Term term = new Term();
         term.setValue("term");
         term.setSource(ts);
-        
+
         ArrayDesign design = new ArrayDesign();
         design.setName(getUniqueStringValue());
         design.setTechnologyType(term);
-        design.setDesignFile(new CaArrayFile());
+        design.addDesignFile(new CaArrayFile());
         design.setVersion(getUniqueStringValue());
         design.setProvider(new Organization());
         design.setAssayTypeEnum(getNextValue(AssayType.values(), design.getAssayTypeEnum()));
         design.setOrganism(new Organism());
         design.getOrganism().setScientificName(getUniqueStringValue());
         design.getOrganism().setTermSource(ts);
-        
+
         Array array = (Array) caArrayObject;
         array.setBatch(getUniqueStringValue());
         array.setSerialNumber(getUniqueStringValue());

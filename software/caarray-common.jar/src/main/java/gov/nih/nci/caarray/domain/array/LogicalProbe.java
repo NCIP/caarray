@@ -93,6 +93,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
 /**
@@ -135,6 +136,7 @@ public class LogicalProbe extends AbstractProbe {
             joinColumns = { @JoinColumn(name = "logical_probe_id") },
             inverseJoinColumns = { @JoinColumn(name = "physical_probe_id") }
     )
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE })
     public Set<PhysicalProbe> getProbes() {
         return probes;
     }
@@ -142,6 +144,14 @@ public class LogicalProbe extends AbstractProbe {
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setProbes(Set<PhysicalProbe> physicalProbes) {
         this.probes = physicalProbes;
+    }
+
+    /**
+     * Add a physical probe to this logical probe.
+     * @param physicalProbe physical probe to add
+     */
+    public void addProbe(PhysicalProbe physicalProbe) {
+        this.probes.add(physicalProbe);
     }
 
     /**

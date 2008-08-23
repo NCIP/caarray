@@ -93,7 +93,7 @@
                             <s:if test="${editMode}">
                                 <caarray:action onclick="document.getElementById('arrayDesignForm').submit();" actionClass="save" text="Save" tabindex="12"/>
                             </s:if>
-                            <s:elseif test="${arrayDesign.designFile.status != importingStatus}">
+                            <s:elseif test="${arrayDesign.designFileSet.status != importingStatus}">
                                 <c:url value="/protected/arrayDesign/edit.action" var="editUrl">
                                     <c:param name="arrayDesign.id" value="${arrayDesign.id}"/>
                                 </c:url>

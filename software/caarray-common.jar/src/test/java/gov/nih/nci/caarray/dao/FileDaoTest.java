@@ -103,6 +103,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
     private static final FileDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getFileDao();
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testSaveAndRemove() throws Exception {
         Transaction tx = HibernateUtil.beginTransaction();

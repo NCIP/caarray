@@ -82,7 +82,9 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
@@ -116,6 +118,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
@@ -335,7 +339,6 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public void deleteArrayDesignDetails(ArrayDesign design) {
          // Deletes array design detail. Records in other tables that are associated
          // with the array design detail are deleted first, then the array design
@@ -357,6 +360,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private List<Long> getProbeGroupIds(Long detailId) {
           StringBuilder probeGroupIdsQuery = new StringBuilder("select id from ").append(ProbeGroup.class.getName())
               .append(" where arrayDesignDetails.id = :detailsId");
@@ -371,6 +375,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void deleteDesignElementList(Long detailId) {
         StringBuilder elementIdsQuery = new StringBuilder("select distinct designelementlist_id from ")
         .append("designelementlist_designelement dd inner join design_element de ")
@@ -410,6 +415,19 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
+    public List<Long> getLogicalProbeIds(ArrayDesign design, PageSortParams<LogicalProbe> params) {
+        Query query = getCurrentSession().createQuery("select id from " + LogicalProbe.class.getName()
+                + " where arrayDesignDetails = :details order by id");
+        query.setParameter("details", design.getDesignDetails());
+        query.setFirstResult(params.getIndex());
+        query.setMaxResults(params.getPageSize());
+        return query.list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void createDesignElementListEntries(DesignElementList designElementList, int startIndex,
             List<Long> logicalProbeIds) {
         Connection conn = getCurrentSession().connection();
@@ -440,4 +458,45 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
             }
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void createFeatures(int rows, int cols, ArrayDesignDetails designDetails) {
+        Query query = getCurrentSession().createSQLQuery("call create_features(:rows, :cols, :designDetailsId)");
+        query.setInteger("rows", rows);
+        query.setInteger("cols", cols);
+        query.setLong("designDetailsId", designDetails.getId());
+        query.executeUpdate();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Long getFirstFeatureId(ArrayDesignDetails designDetails) {
+        String queryString = "select min(id) from " + Feature.class.getName() + " where arrayDesignDetails = :details";
+        Query query = getCurrentSession().createQuery(queryString);
+        query.setParameter("details", designDetails);
+        return (Long) query.uniqueResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public AbstractDesignElement getDesignElementFromVendorId(String vendorId) {
+        String queryString = "from " + AbstractDesignElement.class.getName() + " de where de.vendorId = :vendorId";
+        Query query = getCurrentSession().createQuery(queryString);
+        query.setString("vendorId", vendorId);
+        return (AbstractDesignElement) query.uniqueResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void clearVendorIds() {
+        String queryString = "update " + AbstractDesignElement.class.getName()
+                + " set vendorId = null where vendorId is not null";
+        getCurrentSession().createQuery(queryString).executeUpdate();
+    }
+
 }

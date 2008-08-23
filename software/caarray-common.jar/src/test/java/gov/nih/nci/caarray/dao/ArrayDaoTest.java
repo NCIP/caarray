@@ -189,7 +189,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         DUMMY_ARRAYDESIGN_1.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
         CaArrayFile file = new CaArrayFile();
         file.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
-        DUMMY_ARRAYDESIGN_1.setDesignFile(file);
+        DUMMY_ARRAYDESIGN_1.addDesignFile(file);
         DUMMY_ARRAYDESIGN_1.setTechnologyType(term);
         DUMMY_ARRAYDESIGN_1.setOrganism(organism);
         DUMMY_ARRAYDESIGN_2 = new ArrayDesign();
@@ -198,7 +198,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         DUMMY_ARRAYDESIGN_2.setProvider(DUMMY_ORGANIZATION2);
         CaArrayFile file2 = new CaArrayFile();
         file2.setFileStatus(FileStatus.IMPORTING);
-        DUMMY_ARRAYDESIGN_2.setDesignFile(file2);
+        DUMMY_ARRAYDESIGN_2.addDesignFile(file2);
         DUMMY_ARRAYDESIGN_2.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
         DUMMY_ARRAYDESIGN_2.setTechnologyType(term);
         DUMMY_ARRAYDESIGN_2.setOrganism(organism);
@@ -242,13 +242,14 @@ public class ArrayDaoTest extends AbstractDaoTest {
             CaArrayFile file2 = new CaArrayFile();
             file2.setName("newfile");
             file2.setFileStatus(FileStatus.IMPORTING);
-            retrievedArrayDesign.setDesignFile(file2);
+            retrievedArrayDesign.getDesignFiles().clear();
+            retrievedArrayDesign.addDesignFile(file2);
             DAO_OBJECT.save(retrievedArrayDesign);
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
             retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getId());
-            assertEquals("newfile", retrievedArrayDesign.getDesignFile().getName());
+            assertEquals("newfile", retrievedArrayDesign.getFirstDesignFile().getName());
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
@@ -267,7 +268,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
             assertEquals(DUMMY_ARRAYDESIGN_1, retrievedArrayDesign);
             assertEquals(DUMMY_ARRAYDESIGN_1.getDesignFileSet().getFiles().size(),
                     retrievedArrayDesign.getDesignFileSet().getFiles().size());
-            assertEquals(DUMMY_ARRAYDESIGN_1.getDesignFile(), retrievedArrayDesign.getDesignFile());
+            assertEquals(DUMMY_ARRAYDESIGN_1.getFirstDesignFile(), retrievedArrayDesign.getFirstDesignFile());
             tx.commit();
             tx = HibernateUtil.beginTransaction();
             retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getLsidAuthority(),
@@ -465,7 +466,8 @@ public class ArrayDaoTest extends AbstractDaoTest {
             CaArrayFile file2 = new CaArrayFile();
             file2.setName("newfile");
             file2.setFileStatus(FileStatus.IMPORTED);
-            retrievedArrayDesign.setDesignFile(file2);
+            retrievedArrayDesign.getDesignFiles().clear();
+            retrievedArrayDesign.addDesignFile(file2);
             ArrayDesignDetails designDetails = new ArrayDesignDetails();
             retrievedArrayDesign.setDesignDetails(designDetails);
             DAO_OBJECT.save(retrievedArrayDesign);

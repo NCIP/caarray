@@ -125,7 +125,6 @@ public class IlluminaExpressionDesignFixerTest {
     private final ArrayDesign ILLUMINA_DESIGN = new ArrayDesign();
 
     @Before
-    @SuppressWarnings("deprecation")
     public void setUp() {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         localArrayDesignService.setDaoFactory(localDaoFactoryStub);
@@ -158,7 +157,7 @@ public class IlluminaExpressionDesignFixerTest {
         CaArrayFile designFile = this.fileAccessServiceStub.add(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
         designFile.setFileType(FileType.ILLUMINA_DESIGN_CSV);
 
-        ILLUMINA_DESIGN.setDesignFile(designFile);
+        ILLUMINA_DESIGN.addDesignFile(designFile);
         ILLUMINA_DESIGN.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
         ILLUMINA_DESIGN.setId(1L);
         ILLUMINA_DESIGN.setName("illumina design");

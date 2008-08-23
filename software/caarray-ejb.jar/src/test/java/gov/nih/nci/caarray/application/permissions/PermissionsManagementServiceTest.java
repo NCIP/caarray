@@ -214,7 +214,7 @@ public class PermissionsManagementServiceTest {
         assertEquals("test2", g.getGroupName());
         tx.commit();
     }
-    
+
     @Test
     @SuppressWarnings("unchecked")
     public void testAddUsersToCollaboratorGroup() throws CSTransactionException, CSObjectNotFoundException {
@@ -231,15 +231,14 @@ public class PermissionsManagementServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testAddUsersToAnonymousGroup() throws CSTransactionException, CSObjectNotFoundException {
         Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
         Predicate anonUserExists = new Predicate() {
             public boolean evaluate(Object o) {
                 return ((User) o).getLoginName().equals(SecurityUtils.ANONYMOUS_USERNAME);
-            }   
+            }
          };
-         Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, SecurityUtils.getAnonymousGroup().getGroupId());         
+         Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, SecurityUtils.getAnonymousGroup().getGroupId());
          assertTrue(CollectionUtils.exists(g.getUsers(), anonUserExists));
          this.permissionsManagementService.addUsers(SecurityUtils.ANONYMOUS_GROUP, "biostatistician");
          HibernateUtil.getCurrentSession().refresh(g);

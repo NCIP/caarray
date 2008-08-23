@@ -84,10 +84,11 @@ package gov.nih.nci.caarray.application.fileaccess;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+
+import org.junit.Test;
 
 
 /**
@@ -95,11 +96,13 @@ import java.io.IOException;
  */
 public class FileCleanupThreadTest {
 
+    private static final String EXTENSION = ".ext";
+
     @Test
     public void testRun() throws IOException, FileAccessException {
-        File tmpFile1 = File.createTempFile("fileCleanTestFile1", ".ext");
-        File tmpFile2 = File.createTempFile("fileCleanTestFile2", ".ext");
-        File tmpFile3 = File.createTempFile("fileCleanTestFile3", ".ext");
+        File tmpFile1 = File.createTempFile("fileCleanTestFile1", EXTENSION);
+        File tmpFile2 = File.createTempFile("fileCleanTestFile2", EXTENSION);
+        File tmpFile3 = File.createTempFile("fileCleanTestFile3", EXTENSION);
         FileCleanupThread.getInstance().addFile(tmpFile1);
         FileCleanupThread.getInstance().addFile(tmpFile2);
         FileCleanupThread.getInstance().addFile(tmpFile3);
@@ -112,7 +115,7 @@ public class FileCleanupThreadTest {
         assertFalse(tmpFile2.exists());
         assertFalse(tmpFile3.exists());
 
-        File tmpFile4 = File.createTempFile("fileCleanTestFile4", ".ext");
+        File tmpFile4 = File.createTempFile("fileCleanTestFile4", EXTENSION);
         FileCleanupThread.getInstance().addFile(tmpFile4);
         assertTrue(tmpFile4.delete());
         FileCleanupThread.getInstance().run();

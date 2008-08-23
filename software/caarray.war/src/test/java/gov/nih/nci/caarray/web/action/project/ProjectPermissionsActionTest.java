@@ -121,6 +121,7 @@ public class ProjectPermissionsActionTest {
     private static AccessProfile DUMMY_PROFILE = new AccessProfile(SecurityLevel.READ_SELECTIVE);
     private static Sample DUMMY_SAMPLE = new Sample();
 
+    @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
@@ -135,6 +136,7 @@ public class ProjectPermissionsActionTest {
         ServletActionContext.setRequest(new MockHttpServletRequest());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPrepare() throws Exception {
         // no collab group or access profile
@@ -204,6 +206,7 @@ public class ProjectPermissionsActionTest {
     }
 
     private static class LocalGenericDataService extends GenericDataServiceStub {
+        @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(CollaboratorGroup.class) && entityId.equals(1L)) {

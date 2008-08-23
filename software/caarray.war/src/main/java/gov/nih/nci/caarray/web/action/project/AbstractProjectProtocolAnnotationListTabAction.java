@@ -122,7 +122,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
     private String extensionFilter;
     private Set<String> allExtensions = new TreeSet<String>();
-    
+
     /**
      * A simple enum to use instead of string literals.
      */
@@ -152,7 +152,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
         private BioMaterialTypes(String type) {
             this.type = type;
         }
-        
+
         /**
          * @return pretty type name
          */
@@ -160,7 +160,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
             return type;
         }
     }
-    
+
     /**
      * default constructor.
      *
@@ -373,7 +373,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
         this.downloadGroupNumber = downloadGroupNumber;
     }
 
-    
+
     /**
      * @return files to show for download
      */
@@ -387,7 +387,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     public void setFiles(Set<CaArrayFile> files) {
         this.files = files;
     }
-    
+
     /**
      * @return extensions to filter for
      */
@@ -401,7 +401,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     public void setExtensionFilter(String extensionFilter) {
         this.extensionFilter = extensionFilter;
     }
-    
+
     /**
      * @return all extensions for the project files
      */
@@ -415,13 +415,13 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     public void setAllExtensions(Set<String> allExtensions) {
         this.allExtensions = allExtensions;
     }
-    
+
     /**
      * Method to get the list of files.
      *
      * @return the string matching the result to follow
      */
-    @SkipValidation    
+    @SkipValidation
     public String downloadFiles() {
         for (CaArrayFile f : getAllDataFiles()) {
             if (StringUtils.isBlank(this.extensionFilter)
@@ -434,17 +434,18 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
         return "downloadFiles";
     }
 
+    @SuppressWarnings("unchecked")
     private void prepareAllFileExtensions() {
         Set s = TransformedSet.decorate(new TreeSet<String>(), ProjectFilesAction.EXTENSION_TRANSFORMER);
         s.addAll(getAllDataFiles());
         setAllExtensions(s);
     }
-    
-    /** 
+
+    /**
      * @return all downloadable data files for the page's primary entity
      */
     protected abstract Collection<CaArrayFile> getAllDataFiles();
-    
+
     /**
      * Ajax-only call to handle changing the filter extension.
      * @return success.
@@ -465,25 +466,25 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
         downloadFiles();
         return "downloadFilesListTable";
     }
-    
+
     /**
-     * @return the action to handle filtering downloadable files by file type 
+     * @return the action to handle filtering downloadable files by file type
      */
     public abstract String getDownloadFileListAction();
-    
+
     /**
      * @return the action to handle sorting downloadable files
      */
     public abstract String getDownloadFilesTableListSortUrlAction();
-    
+
     /**
      * @param type [Sources|Samples|Extracts|LabeledExtracts|Hybridization]
-     * @return the action to handle filtering downloadable files by file type 
+     * @return the action to handle filtering downloadable files by file type
      */
     protected String getDownloadFileListActionUrl(BioMaterialTypes type) {
         return "/ajax/project/listTab/" + type.getType() + "/downloadFilesList.action";
     }
-    
+
     /**
      * @param type [Sources|Samples|Extracts|LabeledExtracts|Hybridization]
      * @return the action to handle sorting downloadable files
@@ -491,11 +492,11 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     protected String getDownloadFileTableListSortActionUrl(BioMaterialTypes type) {
         return "/ajax/project/listTab/" + type.getType() + "/downloadFilesListTable.action";
     }
-    
+
     /**
      * Used to render the proper action for the download all files for a Annotation
      * (ref:projectListTabDownloadColumn.tag).
-     * 
+     *
      * @param files all the files for the item in question
      * @return true if the all files to download for the current item (source, sample, etc..) should use the download
      *         groups mechanism

@@ -253,7 +253,6 @@ public class EntityPrunerTest {
             this.user = user;
         }
 
-        @SuppressWarnings("unused")
         private String getFoo() {
             fooAccessed = true;
             return foo;

@@ -115,7 +115,8 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         ArrayDesign arrayDesign = (ArrayDesign) caArrayObject;
         CaArrayFile file1 = new CaArrayFile();
         file1.setName(getUniqueStringValue());
-        arrayDesign.setDesignFile(file1);
+        arrayDesign.getDesignFiles().clear();
+        arrayDesign.addDesignFile(file1);
         arrayDesign.setName(getUniqueStringValue());
         arrayDesign.setNumberOfFeatures(getUniqueIntValue());
         arrayDesign.setPolymerType(new Term());

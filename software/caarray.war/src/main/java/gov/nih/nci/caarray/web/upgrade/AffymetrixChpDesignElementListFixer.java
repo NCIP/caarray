@@ -83,8 +83,9 @@
 package gov.nih.nci.caarray.web.upgrade;
 
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
-import gov.nih.nci.caarray.application.arraydesign.AffymetrixCdfReadException;
-import gov.nih.nci.caarray.application.arraydesign.AffymetrixChpDesignElementListUtility;
+import gov.nih.nci.caarray.application.arraydesign.AbstractAffymetrixChpDesignElementListUtility;
+import gov.nih.nci.caarray.application.arraydesign.AffymetrixArrayDesignReadException;
+import gov.nih.nci.caarray.application.arraydesign.AffymetrixChpCdfDesignElementListUtility;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -119,7 +120,7 @@ public class AffymetrixChpDesignElementListFixer extends AbstractMigrator {
         try {
             createDesignElementLists();
             fixChpDataSets();
-        } catch (AffymetrixCdfReadException e) {
+        } catch (AffymetrixArrayDesignReadException e) {
             throw new MigrationStepFailedException(e);
         }
     }
@@ -130,13 +131,13 @@ public class AffymetrixChpDesignElementListFixer extends AbstractMigrator {
         FusionCHPTilingData.registerReader();
     }
 
-    private void createDesignElementLists() throws AffymetrixCdfReadException {
+    private void createDesignElementLists() throws AffymetrixArrayDesignReadException {
         ArrayDao arrayDao = getDaoFactory().getArrayDao();
         List<Long> designIds = getAllAffymetrixDesignIds();
         for (Long designId : designIds) {
             ArrayDesign design = getDesignService().getArrayDesign(designId);
             LOG.info("Creating fixed DesignElementList for design " + design.getName());
-            AffymetrixChpDesignElementListUtility.createDesignElementList(design, arrayDao);
+            AffymetrixChpCdfDesignElementListUtility.createDesignElementList(design, arrayDao);
             arrayDao.flushSession();
             arrayDao.clearSession();
         }
@@ -153,7 +154,7 @@ public class AffymetrixChpDesignElementListFixer extends AbstractMigrator {
         LOG.info("Fixing CHP data " + chpData.getName());
         ArrayDesign design = getDesign(chpData);
         DesignElementList designElementList =
-            AffymetrixChpDesignElementListUtility.getDesignElementList(design, getDesignService());
+            AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(design, getDesignService());
         chpData.getDataSet().setDesignElementList(designElementList);
         getDaoFactory().getArrayDao().save(chpData.getDataSet());
     }
@@ -208,8 +209,8 @@ public class AffymetrixChpDesignElementListFixer extends AbstractMigrator {
     }
 
     private boolean isAffymetrixDesign(ArrayDesign design) {
-        return design.getDesignFile() != null
-            && FileType.AFFYMETRIX_CDF.equals(design.getDesignFile().getFileType());
+        return design.getFirstDesignFile() != null
+                && FileType.AFFYMETRIX_CDF.equals(design.getFirstDesignFile().getFileType());
     }
 
 }

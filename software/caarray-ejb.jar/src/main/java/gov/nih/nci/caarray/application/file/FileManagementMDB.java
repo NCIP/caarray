@@ -134,6 +134,7 @@ public class FileManagementMDB implements MessageListener {
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     @Resource private UserTransaction transaction;
+    private static ThreadLocal<FileManagementMDB> currentMDB = new ThreadLocal<FileManagementMDB>();
 
     /**
      * Handles file management job message.
@@ -146,6 +147,7 @@ public class FileManagementMDB implements MessageListener {
             return;
         }
         try {
+            currentMDB.set(this);
             Serializable contents = ((ObjectMessage) message).getObject();
             if (!(contents instanceof AbstractFileManagementJob)) {
                 LOG.error("Invalid message contents: " + contents.getClass().getName());
@@ -159,10 +161,15 @@ public class FileManagementMDB implements MessageListener {
             }
         } catch (JMSException e) {
             LOG.error("Error handling message", e);
+        } finally {
+            currentMDB.remove();
         }
     }
 
-    private void beginTransaction() {
+    /**
+     * Begin the transaction used by the job.
+     */
+    public void beginTransaction() {
         try {
             this.transaction.setTransactionTimeout(getBackgroundThreadTransactionTimeout());
             this.transaction.begin();
@@ -191,7 +198,10 @@ public class FileManagementMDB implements MessageListener {
         return timeout;
     }
 
-    private void commitTransaction()  {
+    /**
+     * Commit the transaction used by the job.
+     */
+    public void commitTransaction()  {
         try {
             this.transaction.commit();
         } catch (SecurityException e) {
@@ -210,7 +220,10 @@ public class FileManagementMDB implements MessageListener {
         }
     }
 
-    private void rollbackTransaction() {
+    /**
+     * Roll back the transaction used by the job.
+     */
+    public void rollbackTransaction() {
         try {
             this.transaction.rollback();
         } catch (SecurityException e) {
@@ -231,7 +244,7 @@ public class FileManagementMDB implements MessageListener {
             rollbackTransaction();
             handleUnexpectedError(job);
             throw e;
-        }        
+        }
         commitTransaction();
     }
 
@@ -269,6 +282,14 @@ public class FileManagementMDB implements MessageListener {
      */
     public void setTransaction(UserTransaction transaction) {
         this.transaction = transaction;
+    }
+
+    /**
+     * Get the instance of FileManagementMDB that is processing the current message.
+     * @return the current instance
+     */
+    public static FileManagementMDB getCurrentMDB() {
+        return currentMDB.get();
     }
 
 }

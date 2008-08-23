@@ -140,7 +140,7 @@ public class ExceptionLoggingInterceptorTest {
         }
 
         public Object[] getParameters() {
-            return null;
+            return new Object[]{};
         }
 
         public Object getTarget() {

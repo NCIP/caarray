@@ -144,10 +144,11 @@ public class ProjectSamplesActionTest {
 
     private static Sample DUMMY_SAMPLE = new Sample();
     private static Source DUMMY_SOURCE = new Source();
-    
+
     private MockHttpServletResponse mockResponse;
 
     @Before
+    @SuppressWarnings("deprecation")
     public void setUp() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(GenericDataService.JNDI_NAME, new LocalGenericDataService());
@@ -162,6 +163,7 @@ public class ProjectSamplesActionTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testPrepare() throws Exception {
         // no current sample id
         action.prepare();
@@ -180,7 +182,7 @@ public class ProjectSamplesActionTest {
         action.setCurrentSample(sample);
         action.prepare();
         assertEquals("abc", action.getCurrentSample().getExternalSampleId());
-        
+
         // invalid current sample id
         sample = new Sample();
         sample.setId(2L);
@@ -192,20 +194,20 @@ public class ProjectSamplesActionTest {
             assertTrue(pde.getMessage().endsWith("id 2"));
         }
     }
-    
+
     @Test
     public void testPrepareUsingExternalSampleId() throws Exception {
         // no current sample id
         action.prepare();
         assertNull(action.getCurrentSample().getId());
-        
+
         //valid sample external id
         Sample sample = new Sample();
         sample.setExternalSampleId("abc");
         action.setCurrentSample(sample);
         action.prepare();
         assertEquals("abc", action.getCurrentSample().getExternalSampleId());
-        
+
         // invalid current sample id
         sample = new Sample();
         sample.setExternalSampleId("def");
@@ -221,7 +223,7 @@ public class ProjectSamplesActionTest {
     @Test
     public void testDownload() throws Exception {
         assertEquals("noSampleData", action.download());
-        
+
         FileAccessServiceStub fas = new FileAccessServiceStub();
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
         fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
@@ -246,7 +248,7 @@ public class ProjectSamplesActionTest {
         CaArrayFile derivedFile = new CaArrayFile();
         derivedFile.setName("missing_term_source.sdrf");
         derived.setDataFile(derivedFile);
-        
+
         action.setCurrentSample(s);
         action.setProject(p);
         List<CaArrayFile> files = new ArrayList<CaArrayFile>(s.getAllDataFiles());
@@ -254,11 +256,11 @@ public class ProjectSamplesActionTest {
         assertEquals(2, files.size());
         assertEquals("missing_term_source.idf", files.get(0).getName());
         assertEquals("missing_term_source.sdrf", files.get(1).getName());
-        
+
         action.download();
         assertEquals("application/zip", mockResponse.getContentType());
         assertEquals("filename=\"caArray_test_files.zip\"", mockResponse.getHeader("Content-disposition"));
-        
+
         ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
         ZipEntry ze = zis.getNextEntry();
         assertNotNull(ze);
@@ -282,6 +284,7 @@ public class ProjectSamplesActionTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testSave() {
         // save new
         assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
@@ -343,6 +346,7 @@ public class ProjectSamplesActionTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testEdit() {
         ProtocolApplication pa = new ProtocolApplication();
         Protocol p = new Protocol();
@@ -374,7 +378,7 @@ public class ProjectSamplesActionTest {
         p.getPublicProfile().setSecurityLevel(SecurityLevel.READ_SELECTIVE);
         p.getPublicProfile().getSampleSecurityLevels().put(DUMMY_SAMPLE, SampleSecurityLevel.READ);
         DUMMY_SAMPLE.setExperiment(p.getExperiment());
-        action.setCurrentSample(DUMMY_SAMPLE);        
+        action.setCurrentSample(DUMMY_SAMPLE);
         assertEquals("list", action.delete());
         assertFalse(DUMMY_SOURCE.getSamples().contains(DUMMY_SAMPLE));
         assertTrue(p.getPublicProfile().getSampleSecurityLevels().isEmpty());
@@ -384,7 +388,7 @@ public class ProjectSamplesActionTest {
         assertEquals("list", action.delete());
         assertTrue(ActionHelper.getMessages().contains("experiment.annotations.cantdelete"));
     }
-    
+
     private void setProjectForExperiment(Experiment e, Project p) throws SecurityException, NoSuchMethodException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         Method m = e.getClass().getDeclaredMethod("setProject", Project.class);
@@ -393,6 +397,7 @@ public class ProjectSamplesActionTest {
     }
 
     private static class LocalGenericDataService extends GenericDataServiceStub {
+        @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(Sample.class) && entityId.equals(1L)) {
@@ -401,7 +406,7 @@ public class ProjectSamplesActionTest {
             return null;
         }
     }
-    
+
     private static class LocalProjectManagementService extends ProjectManagementServiceStub {
         @Override
         public Sample getSampleByExternalId(Project project, String externalSampleId) {

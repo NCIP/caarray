@@ -174,6 +174,14 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
      * {@inheritDoc}
      */
     @SuppressWarnings(UNCHECKED)
+    public <T extends PersistentObject> T retrieveUnsecured(Class<T> entityClass, Long entityId) {
+        return (T) getCurrentSession().get(entityClass, entityId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
     public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
         // degenerate case:
         if (ids == null || ids.isEmpty()) {

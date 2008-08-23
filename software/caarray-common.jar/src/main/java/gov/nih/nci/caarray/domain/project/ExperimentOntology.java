@@ -91,7 +91,7 @@ public enum ExperimentOntology {
     /**
      * MGED Ontology.
      */
-    MGED_ONTOLOGY("MO", "1.3.1.1"),
+    MGED_ONTOLOGY("MO", "1.3.1.1"), // NOPMD PMD thinks the version is a hard-coded IP address
 
     /**
      * CAArray Local (aka User-defined) Ontology.

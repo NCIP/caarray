@@ -178,7 +178,6 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
     /**
      * Initialize the dummy <code>Protocol</code> objects.
      */
-    @SuppressWarnings("unchecked")
     private static void initializeProtocols() {
         DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
         DUMMY_TERM_SOURCE.setUrl("test url");
@@ -203,7 +202,6 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
     /**
      * Initialize the dummy <code>ProtocolApplication</code> objects.
      */
-    @SuppressWarnings("unchecked")
     private static void initializeProtocolApps() {
         DUMMY_PROTOCOL_APPLICATION_1.setProtocol(DUMMY_PROTOCOL_1);
         DUMMY_PROTOCOL_APPLICATION_1.getValues().add(DUMMY_PARAMETER_VALUE_1);
@@ -338,7 +336,6 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
      * Tests searching for a <code>Protocol</code> by name and type
      */
     @Test
-    @SuppressWarnings("deprecation")
     public void testSearchProtocolsByNameAndType() {
         Transaction tx = null;
 
@@ -394,7 +391,6 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
      * Both dummy protocols 2 and 3 have the same text, but only protocol 3 has the matching type.
      */
     @Test
-    @SuppressWarnings("deprecation")
     public void testDeepSearchProtocolByExample() {
         Transaction tx = null;
 

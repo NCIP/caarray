@@ -87,10 +87,11 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.AssayType;
-import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Provides array design detail parsing, storage, and retrieval functionality. Interface to the
@@ -108,7 +109,7 @@ public interface ArrayDesignService {
      * @param design the design to validate
      * @return the validation result.
      */
-    FileValidationResult validateDesign(ArrayDesign design);
+    ValidationResult validateDesign(ArrayDesign design);
 
     /**
      * Validates an array design file in preparation for import.
@@ -116,7 +117,15 @@ public interface ArrayDesignService {
      * @param designFile the native file to validate
      * @return the validation result.
      */
-    FileValidationResult validateDesign(CaArrayFile designFile);
+    ValidationResult validateDesign(CaArrayFile designFile);
+
+    /**
+     * Validates an array design files in preparation for import.
+     *
+     * @param designFiles the native files to validate
+     * @return the validation result.
+     */
+    ValidationResult validateDesign(Set<CaArrayFile> designFiles);
 
     /**
      * Imports top-level attributes for an existing array design from the associated

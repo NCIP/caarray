@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.application.arraydata;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
-import gov.nih.nci.caarray.application.arraydesign.AffymetrixChpDesignElementListUtility;
+import gov.nih.nci.caarray.application.arraydesign.AbstractAffymetrixChpDesignElementListUtility;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
@@ -182,11 +182,10 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void getDesignElementList(DataSet dataSet, File file,
-            ArrayDesignService arrayDesignService) {
+    private void getDesignElementList(DataSet dataSet, File file, ArrayDesignService arrayDesignService) {
         ArrayDesign design = getArrayDesign(arrayDesignService, file);
         DesignElementList probeList =
-            AffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
+            AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
         dataSet.setDesignElementList(probeList);
     }
 

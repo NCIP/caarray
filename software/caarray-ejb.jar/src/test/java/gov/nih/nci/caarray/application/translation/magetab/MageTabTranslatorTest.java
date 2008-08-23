@@ -105,10 +105,8 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
-import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
@@ -120,7 +118,6 @@ import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -128,9 +125,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.SetUtils;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
@@ -423,21 +418,21 @@ public class MageTabTranslatorTest {
             assertNotNull(s.getExternalSampleId());
         }
     }
-    
+
     @Test
     public void testTranslateInvalid_Feature13141() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.INVALID_FEATURE_13141_DATA_SET);
         ValidationResult vResult = this.translator.validate(TestMageTabSets.INVALID_FEATURE_13141_DATA_SET, fileSet);
-        assertFalse(vResult.getMessages().isEmpty());   
+        assertFalse(vResult.getMessages().isEmpty());
         assertEquals(3, vResult.getMessages(ValidationMessage.Type.ERROR).size());
         String string = "[ExternalSampleId] value '%s"
                                             + "' is referenced multiple times (ExternalSampleId must be unique). "
                                             + "Please correct and try again.";
         assertEquals(String.format(string, "345"), vResult.getMessages(ValidationMessage.Type.ERROR).get(0).getMessage());
         assertEquals(String.format(string, "234"), vResult.getMessages(ValidationMessage.Type.ERROR).get(1).getMessage());
-        assertEquals(String.format(string, "123"), vResult.getMessages(ValidationMessage.Type.ERROR).get(2).getMessage());        
+        assertEquals(String.format(string, "123"), vResult.getMessages(ValidationMessage.Type.ERROR).get(2).getMessage());
         CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.INVALID_FEATURE_13141_DATA_SET, fileSet);
-        
+
         assertEquals(1,result.getInvestigations().size());
         Experiment e = result.getInvestigations().iterator().next();
         assertEquals(6, e.getSamples().size());
