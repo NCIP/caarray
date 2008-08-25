@@ -207,13 +207,13 @@ public class ApiCqlSearchExperiment extends AbstractApiTest {
             }
             // Check if retrieved experiment has mandatory fields.
             if ((retrievedExperiment.getTitle() == null) || (retrievedExperiment.getServiceType() == null)
-                    || (retrievedExperiment.getAssayType() == null)) {
+                    || (retrievedExperiment.getAssayTypes() == null && retrievedExperiment.getManufacturer() == null)) {
                 return false;
             }
             logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getServiceType().getResourceKey(): "
                     + retrievedExperiment.getServiceType().getResourceKey());
-            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getAssayType(): "
-                    + retrievedExperiment.getAssayType());
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getAssayTypes(): "
+                    + retrievedExperiment.getAssayTypes());
         }
         return true;
     }

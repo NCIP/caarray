@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Provides array design detail parsing, storage, and retrieval functionality. Interface to the
@@ -150,22 +151,15 @@ public interface ArrayDesignService {
     List<Organization> getArrayDesignProviders();
 
     /**
-     * Returns the list of imported ArrayDesigns with the given provider.
-     *
-     * @param provider the provider
-     * @return the List&lt;ArrayDesign&gt; of the array designs whose provider is the given provider and
-     * whose array design details have been successfully imported
+     * Returns the list of ArrayDesigns with at least one of the given assay types and the provider.  Either the
+     * provider or the list of assayTypes is required.  If the list of assay types is null or empty, the function
+     * will return the list of array designs for the given provider.  If the provider is null, the function will
+     * return the list of array designs associated with any of the assay types passed in.
+     * @param provider the provider is optional if the list of assayTypes is provided
+     * @param assayTypes the list of assay types is optional if provider is specified
+     * @return the List&lt;ArrayDesign&gt; of the array designs with the given provider and assay type
      */
-    List<ArrayDesign> getImportedArrayDesignsForProvider(Organization provider);
-
-    /**
-     * Returns the list of ArrayDesigns with the given provider and assay type.
-     *
-     * @param provider the provider
-     * @param assayType the assay type
-     * @return the List&lt;ArrayDesign&gt; of the array designs whose provider is the given provider
-     */
-    List<ArrayDesign> getImportedArrayDesigns(Organization provider, AssayType assayType);
+    List<ArrayDesign> getImportedArrayDesigns(Organization provider, Set<AssayType> assayTypes);
 
     /**
      * Returns the <code>ArrayDesign</code> with the id given.

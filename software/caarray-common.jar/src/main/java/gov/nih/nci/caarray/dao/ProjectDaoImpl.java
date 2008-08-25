@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
@@ -326,7 +327,16 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         }
         return new ArrayList<Term>(types);
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public List<AssayType> getAssayTypes() {
+        String queryString = "from " + AssayType.class.getName() + " c order by c.name asc";
+        return HibernateUtil.getCurrentSession().createQuery(queryString).setCacheable(true).list();
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -340,5 +350,4 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         };
         return (Set<Sample>) HibernateUtil.doUnfiltered(unfilteredCallback);
     }
-
 }

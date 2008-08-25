@@ -673,38 +673,50 @@ var AssociationPickerUtils = {
 var ListPickerUtils = {
     processSelection : function(selectedItem, baseId, listLabel, listFieldName, multiple, allowReordering, autoUpdater) {
         var id = selectedItem.firstChild.value;
+        var selectedItemValues = $(baseId + 'SelectedItemValues');
         if (id == null || id == '') {
             return;
         }
         if (multiple != 'true') {
-            if ($(baseId + 'SelectedItemDiv').getElementsBySelector('input').length  > 0) {
+            if (selectedItemValues.length  > 1) {
                 alert('Only one ' + listLabel + ' may be selected.');
                 return;
             }
         }
-        if ($(baseId + 'SelectedItemDiv').getElementsBySelector('input[value="' + id + '"]').length  > 0) {
-            alert(listLabel + ' already selected.');
-            return;
+        for(var i = 0; i < selectedItemValues.length; i++) {
+            if(id == selectedItemValues.options[i].value) {
+                alert(listLabel + ' already selected.');
+                return;
+            }
         }
 
         var newItem = document.createElement("li");
-        newItem.id = baseId + '_' + id;
-        var newInput = selectedItem.childNodes[0].cloneNode(false);
-        newInput.name = listFieldName;
-        newItem.appendChild(newInput);
+        var option = new Option(selectedItem.childNodes[0].value, selectedItem.childNodes[0].value);
         var newText = selectedItem.childNodes[1].cloneNode(false);
+        newItem.id = baseId + '_' + id;
+        option.selected = true;
+        selectedItemValues.options[selectedItemValues.length] = option;
         newItem.appendChild(newText);
-        newItem.onclick = function() { ListPickerUtils.removeSelection(this, autoUpdater); };
+        newItem.onclick = function() { ListPickerUtils.removeSelection(this, autoUpdater, baseId); };
         $(baseId + 'SelectedItemDiv').appendChild(newItem);
+
+        fireEvent(selectedItemValues, "change", "onchange");
 
         if (allowReordering) {
             Sortable.create(baseId + 'SelectedItemDiv', { starteffect: function() { autoUpdater.sortableReordered = true; } });
         }
     },
 
-    removeSelection : function(selectedItem, autoUpdater) {
+    removeSelection : function(selectedItem, autoUpdater, baseId) {
+        var selectedItemValues = $(baseId + 'SelectedItemValues');
         if (!autoUpdater.sortableReordered) {
+            for(var i = 0; i < selectedItemValues.length; i++) {
+                if(selectedItem.id == baseId + '_' + selectedItemValues.options[i].value) {
+                    selectedItemValues.removeChild(selectedItemValues.options[i]);
+                }
+            }
             Element.remove(selectedItem);
+            fireEvent(selectedItemValues, "change", "onchange");
         } else {
             autoUpdater.sortableReordered = false;
         }
@@ -825,6 +837,25 @@ function formatFileSize(value) {
 
     return returnVal;
 }
+// Fires an event for the element passed in.
+// Params:
+//          1. eventElement - If contextName is not blank or null, the topic will be appended.
+//          2. includeNav - If true, the left navigation pane appears. Else, the navigation pane is not displayed.
+function fireEvent(eventElement, firefoxEvent, ieEvent) {
+    if(document.createEvent) {
+        var e = document.createEvent('Events');
+        e.initEvent(firefoxEvent, true, true);
+    }
+    else if(document.createEventObject) {
+        var e = document.createEventObject();
+    }
 
+    if(eventElement.dispatchEvent) {
+        eventElement.dispatchEvent(e);
+    }
+    else if(eventElement.fireEvent) {
+        eventElement.fireEvent(ieEvent, e);
+    }
+}
 
 

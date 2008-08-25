@@ -137,10 +137,13 @@ import gov.nih.nci.security.dao.SearchCriteria;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -175,6 +178,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
     private static Experiment DUMMY_EXPERIMENT_3 = new Experiment();
     private static TermSource DUMMY_TERM_SOURCE = new TermSource();
     private static Category DUMMY_CATEGORY = new Category();
+    private static AssayType DUMMY_ASSAYTYPE_1;
+    private static AssayType DUMMY_ASSAYTYPE_2;
 
     // Contacts
     private static ExperimentContact DUMMY_EXPERIMENT_CONTACT = new ExperimentContact();
@@ -232,6 +237,9 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_3 = new Experiment();
         DUMMY_TERM_SOURCE = new TermSource();
         DUMMY_CATEGORY = new Category();
+        DUMMY_ASSAYTYPE_1 = new AssayType("aCGH");
+        DUMMY_ASSAYTYPE_2 = new AssayType("Methylation");
+
 
         // Contacts
         DUMMY_EXPERIMENT_CONTACT = new ExperimentContact();
@@ -335,18 +343,21 @@ public class ProjectDaoTest extends AbstractDaoTest {
         Date currDate = new Date();
         DUMMY_EXPERIMENT_1.setDate(currDate);
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
-        DUMMY_EXPERIMENT_1.setAssayTypeEnum(AssayType.ACGH);
+        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+        assayTypes.add(DUMMY_ASSAYTYPE_1);
+        DUMMY_EXPERIMENT_1.setAssayTypes(assayTypes);
         DUMMY_EXPERIMENT_1.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
 
         DUMMY_EXPERIMENT_2.setTitle("New DummyExperiment2");
-        DUMMY_EXPERIMENT_2.setAssayTypeEnum(AssayType.ACGH);
+        assayTypes = new TreeSet<AssayType>();
+        assayTypes.add(DUMMY_ASSAYTYPE_1);
+        assayTypes.add(DUMMY_ASSAYTYPE_2);
+        DUMMY_EXPERIMENT_2.setAssayTypes(assayTypes);
         DUMMY_EXPERIMENT_2.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_2.setOrganism(DUMMY_ORGANISM);
-        DUMMY_EXPERIMENT_2.setManufacturer(DUMMY_PROVIDER);
 
         DUMMY_EXPERIMENT_3.setTitle("Ahab DummyExperiment3");
-        DUMMY_EXPERIMENT_3.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_3.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_3.setManufacturer(DUMMY_PROVIDER);
@@ -473,6 +484,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
             saveSupportingObjects();
             int size = DAO_OBJECT.getProjectCountForCurrentUser(false);
             DAO_OBJECT.save(DUMMY_PROJECT_1);
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
@@ -519,6 +532,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx = HibernateUtil.beginTransaction();
             saveSupportingObjects();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
@@ -718,6 +733,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             saveSupportingObjects();
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
             tx = HibernateUtil.beginTransaction();
@@ -753,6 +770,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
         Transaction tx = HibernateUtil.beginTransaction();
         saveSupportingObjects();
         HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
@@ -788,6 +807,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
             saveSupportingObjects();
             assertTrue(SecurityUtils.canWrite(DUMMY_PROJECT_1, UsernameHolder.getCsmUser()));
             HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+            HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+            HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
             Long experimentId = DUMMY_PROJECT_1.getExperiment().getId();
             tx.commit();
             assertNotNull(experimentId);
@@ -1049,7 +1070,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
-            assertNotNull(p.getExperiment().getAssayTypeEnum());
+            assertNotNull(p.getExperiment().getAssayTypes());
             assertNull(p.getExperiment().getDesignDescription());
             HibernateUtil.getCurrentSession().clear();
             tx.commit();
@@ -1077,6 +1098,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
         Transaction tx = HibernateUtil.beginTransaction();
         saveSupportingObjects();
         HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
         tx.commit();
 
         //check initial settings.. drafts should be not visible
@@ -1118,6 +1141,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
         Transaction tx = HibernateUtil.beginTransaction();
         saveSupportingObjects();
         HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
@@ -1156,6 +1181,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
         saveSupportingObjects();
         DUMMY_PROJECT_1.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
         HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
         assertFalse(DUMMY_PROJECT_1.isUseTcgaPolicy());
         tx.commit();
 
@@ -1213,6 +1240,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DAO_OBJECT.save(DUMMY_PROJECT_1);
         DAO_OBJECT.save(DUMMY_PROJECT_2);
         DAO_OBJECT.save(DUMMY_PROJECT_3);
+        DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
+        DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
         tx.commit();
         tx = HibernateUtil.beginTransaction();
 
@@ -1257,6 +1286,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DAO_OBJECT.save(DUMMY_PROJECT_1);
         DAO_OBJECT.save(DUMMY_PROJECT_2);
         DAO_OBJECT.save(DUMMY_PROJECT_3);
+        DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
+        DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
         tx.commit();
         tx = HibernateUtil.beginTransaction();
 
@@ -1301,10 +1332,14 @@ public class ProjectDaoTest extends AbstractDaoTest {
             Experiment e = new Experiment();
             e.setTitle("test title");
             e.setServiceType(ServiceType.FULL);
-            e.setAssayTypeEnum(AssayType.ACGH);
+            SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+            assayTypes.add(DUMMY_ASSAYTYPE_1);
+            e.setAssayTypes(assayTypes);
             e.setManufacturer(new Organization());
             e.setOrganism(org);
             DAO_OBJECT.save(e);
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
             assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
             assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
             assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());

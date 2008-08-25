@@ -164,6 +164,7 @@
             <result name="downloadFiles">/WEB-INF/pages/project/tabCommon/downloadFiles.jsp</result>
             <result name="downloadFilesList">/WEB-INF/pages/project/tabCommon/downloadFilesList.jsp</result>
             <result name="downloadFilesListTable">/WEB-INF/pages/project/tabCommon/downloadFilesListTable.jsp</result>
+            <result name="generateAssayList">/WEB-INF/pages/project/generateAssayList.jsp</result>
         </action>
 
         <action name="project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
@@ -270,6 +271,7 @@
             <result name="input">/WEB-INF/pages/arrayDesign/edit.jsp</result>
             <result name="metaValid">/WEB-INF/pages/arrayDesign/fileEdit.jsp</result>
             <result name="importComplete">/WEB-INF/pages/arrayDesign/importComplete.jsp</result>
+            <result name="generateAssayList">/WEB-INF/pages/project/generateAssayList.jsp</result>
         </action>
 
         <action name="vocabulary/manage">

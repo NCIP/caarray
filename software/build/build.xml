@@ -82,7 +82,8 @@
 
     <property name="caarray-svc.dir" value="${basedir}/CaArraySvc" />
 
-    <property name="nci-commons-version" value="1.0.9" />
+    <property name="nci-commons-core-version" value="1.0.9" />
+    <property name="nci-commons-struts2-version" value="1.0.10" />
 
     <!-- Third-party -->
     <property name="affxfusion.jar" value="${lib.dir}/AffxFusion.jar" />
@@ -156,8 +157,8 @@
     <property name="jboss-jmx.jar" value="${lib.dir}/jboss-jmx.jar" />
     <property name="jgroups.jar" value="${lib.dir}/jgroups.jar" />
     <property name="concurrent.jar" value="${lib.dir}/concurrent.jar" />
-    <property name="nci-commons-core.jar" value="${lib.dir}/nci-commons-core-${nci-commons-version}.jar" />
-    <property name="nci-commons-struts2.jar" value="${lib.dir}/nci-commons-struts2-${nci-commons-version}.jar" />
+    <property name="nci-commons-core.jar" value="${lib.dir}/nci-commons-core-${nci-commons-core-version}.jar" />
+    <property name="nci-commons-struts2.jar" value="${lib.dir}/nci-commons-struts2-${nci-commons-struts2-version}.jar" />
     <property name="ezmorph.jar" value="${lib.dir}/ezmorph-1.0.4.jar" />
     <property name="json-lib.jar" value="${lib.dir}/json-lib-2.2.2-jdk15.jar" />
     <property name="cargo-core-uberjar.jar" value="${lib.dir}/cargo-core-uberjar-0.9.jar"/>
@@ -251,7 +252,7 @@
             <include name="jbossall-client.jar" />
             <include name="jboss-aspect-jdk50-client.jar" />
             <include name="jboss-aop-jdk50-client.jar" />
-            <include name="nci-commons-core-${nci-commons-version}.jar" />
+            <include name="nci-commons-core-${nci-commons-core-version}.jar" />
         </fileset>
     </path>
 
@@ -424,12 +425,12 @@
     <!-- ******************************************************************* -->
 
     <!-- Copy hibernate files to classes directory and configure datasource and transaction management -->
-	<target name="configure-datasource-for-deploy">
+  <target name="configure-datasource-for-deploy">
         <copy todir="${caarray-common.classes.dir}" overwrite="true">
             <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml,ValidatorMessages.properties" />
         </copy>
-		<move file="${caarray-common.classes.dir}/template.csm.new.hibernate.cfg.xml"
-			toFile="${caarray-common.classes.dir}/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
+    <move file="${caarray-common.classes.dir}/template.csm.new.hibernate.cfg.xml"
+      toFile="${caarray-common.classes.dir}/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
         <replace dir="${caarray-common.classes.dir}" includes="*.cfg.xml">
             <replacefilter token="@DATASOURCE_CONFIG_START@" value="${comment.end}" />
             <replacefilter token="@DATASOURCE_CONFIG_END@" value="${comment.start}" />
@@ -445,8 +446,8 @@
         <copy todir="${caarray-common.test.classes.dir}" overwrite="true">
             <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml,MGEDOntology.owl" />
         </copy>
-    	<move file="${caarray-common.test.classes.dir}/template.csm.new.hibernate.cfg.xml"
-    		toFile="${caarray-common.test.classes.dir}/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
+      <move file="${caarray-common.test.classes.dir}/template.csm.new.hibernate.cfg.xml"
+        toFile="${caarray-common.test.classes.dir}/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
         <replace dir="${caarray-common.test.classes.dir}" includes="*.cfg.xml">
             <replacefilter token="@HIBERNATE_CONFIG_START@" value="${comment.end}" />
             <replacefilter token="@HIBERNATE_CONFIG_END@" value="${comment.start}" />
@@ -662,11 +663,11 @@
     </target>
 
     <target name="build:caarray-common.jar" depends="compile:caarray-common.jar,configure-datasource-for-deploy,svn:getinfo">
-    	<copy file="${caarray-common.resources.dir}/caarray.properties" tofile="${caarray-common.classes.dir}/caarray.properties"/>
-    	<replace file="${caarray-common.classes.dir}/caarray.properties">
-    		<replacefilter token="@CSM_APPLICATION_NAME@" value="${csm.application.name}" />
-    	</replace>
-    	<mkdir dir="${caarray-common.target.dir}" />
+      <copy file="${caarray-common.resources.dir}/caarray.properties" tofile="${caarray-common.classes.dir}/caarray.properties"/>
+      <replace file="${caarray-common.classes.dir}/caarray.properties">
+        <replacefilter token="@CSM_APPLICATION_NAME@" value="${csm.application.name}" />
+      </replace>
+      <mkdir dir="${caarray-common.target.dir}" />
         <jar destfile="${caarray-common.jar}">
             <manifest>
                 <section name="gov/nih/nci/caarray/">
@@ -765,7 +766,7 @@
                 <filter token="svn.revision" value="${svn.revision}" />
                 <filter token="build.time" value="${mili.time}" />
                 <filter token="upt.url" value="${upt.url}" />
-            	<filter token="release-notes.url" value="${release-notes.url}" />
+              <filter token="release-notes.url" value="${release-notes.url}" />
                 <filter token="ldap.host" value="${ldap.host}" />
                 <filter token="ldap.searchbase" value="${ldap.searchbase}" />
                 <filter token="ldap.searchprefix" value="${ldap.searchprefix}" />
@@ -827,7 +828,7 @@
                 <include name="jericho-html-2.4.jar" />
                 <include name="json-lib-2.2.2-jdk15.jar" />
                 <include name="ezmorph-1.0.4.jar" />
-                <include name="nci-commons-struts2-${nci-commons-version}.jar" />
+                <include name="nci-commons-struts2-${nci-commons-struts2-version}.jar" />
             </lib>
             <zipfileset dir="${caarray-war.target.dir}/help/caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help"
         prefix="help"/>
@@ -920,7 +921,7 @@
                     <include name="caGrid-CQL-cql.1.0-1.2.jar"/>
                     <include name="caGrid-data-common-1.2.jar" />
                     <include name="caGrid-1.1-sdkQuery32-core.jar" />
-                    <include name="nci-commons-core-${nci-commons-version}.jar" />
+                    <include name="nci-commons-core-${nci-commons-core-version}.jar" />
                     <include name="json-lib-2.2.2-jdk15.jar" />
                 </fileset>
             </ear>
@@ -1566,10 +1567,10 @@
 
     <target name="database:populate" description="populates db with initial data">
         <antcall target="database:generate-mged-sql" />
-    	<replace file="${caarraydb.sql.dir}/populate-csm.sql">
-    	            <replacefilter token="@CSM_APPLICATION_NAME@" value="${csm.application.name}" />
-    	</replace>
-    	<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm.sql" />
+      <replace file="${caarraydb.sql.dir}/populate-csm.sql">
+                  <replacefilter token="@CSM_APPLICATION_NAME@" value="${csm.application.name}" />
+      </replace>
+      <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm.sql" />
         <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm2.sql" />
         <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-mged.sql" />
         <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />

@@ -109,6 +109,8 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Transaction;
@@ -130,6 +132,7 @@ public class ArrayDesignServiceIntegrationTest {
     private static Organism DUMMY_ORGANISM = new Organism();
     private static Term DUMMY_TERM = new Term();
     private static ArrayDesign DUMMY_ARRAY_DESIGN = new ArrayDesign();
+    private static AssayType DUMMY_ASSAY_TYPE = new AssayType("Gene Expression");
     @Before
     public void setUp() {
         this.arrayDesignService = createArrayDesignService(this.fileAccessServiceStub, this.vocabularyServiceStub);
@@ -195,7 +198,8 @@ public class ArrayDesignServiceIntegrationTest {
         design.setVersion("2.0");
         design.setProvider(DUMMY_ORGANIZATION);
         design.setLsidForEntity("authority:namespace:" + designFile.getName());
-        design.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
+        Set <AssayType>assayTypes = new TreeSet<AssayType>();
+        assayTypes.add(DUMMY_ASSAY_TYPE);
         design.setDesignFile(getAffymetrixCaArrayFile(designFile));
         design.setTechnologyType(DUMMY_TERM);
         design.setOrganism(DUMMY_ORGANISM);

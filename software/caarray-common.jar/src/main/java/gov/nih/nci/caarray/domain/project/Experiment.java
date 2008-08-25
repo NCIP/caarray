@@ -108,6 +108,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -135,6 +137,8 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
@@ -243,7 +247,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private PaymentMechanism paymentMechanism;
     private String paymentNumber;
     private ServiceType serviceType = ServiceType.FULL;
-    private String assayType;
+    private SortedSet<AssayType> assayTypes = new TreeSet<AssayType>();
     private Organization manufacturer;
     private Organism organism;
     private Set<Factor> factors = new HashSet<Factor>();
@@ -500,38 +504,20 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the assay type
      */
-    @NotNull
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "experiment")
+    @ForeignKey(name = "experiment_assaytypes_exp_fk", inverseName = "experiment_assaytypes_at_fk")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
-    public String getAssayType() {
-        return this.assayType;
+    @Sort(type = SortType.NATURAL)
+    public SortedSet<AssayType> getAssayTypes() {
+        return this.assayTypes;
     }
 
     /**
-     * @param assayType the assayType to set
+     * @param assayTypes the assayTypes to set
      */
-    public void setAssayType(String assayType) {
-        AssayType.checkType(assayType);
-        this.assayType = assayType;
-    }
-
-    /**
-     * @return the assayType enum
-     */
-    @Transient
-    public AssayType getAssayTypeEnum() {
-        return AssayType.getByValue(getAssayType());
-    }
-
-    /**
-     * @param assayTypeEnum the assayTypeEnum to set
-     */
-    public void setAssayTypeEnum(AssayType assayTypeEnum) {
-        if (assayTypeEnum == null) {
-            setAssayType(null);
-        } else {
-            setAssayType(assayTypeEnum.getValue());
-        }
+    public void setAssayTypes(SortedSet<AssayType> assayTypes) {
+        this.assayTypes = assayTypes;
     }
 
     /**
@@ -542,7 +528,6 @@ public class Experiment extends AbstractCaArrayEntity {
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "experiment_manufacturer_fk")
-    @NotNull
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public Organization getManufacturer() {
         return this.manufacturer;

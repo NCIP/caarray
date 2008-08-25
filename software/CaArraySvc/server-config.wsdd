@@ -140,6 +140,8 @@
 
 <ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.publication.Publication" qname="ns2:Publication" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.publication" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
 
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.project.AssayType" qname="ns2:AssayType" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
 <ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.project.Experiment" qname="ns2:Experiment" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
 
 <ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.project.ExperimentContact" qname="ns2:ExperimentContact" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>

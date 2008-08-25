@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.web.action;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getArrayDesignService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileAccessService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManagementService;
+import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getVocabularyService;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignDeleteException;
@@ -94,6 +95,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.file.UnsupportedAffymetrixCdfFiles;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -108,6 +110,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.struts2.ServletActionContext;
@@ -117,6 +120,7 @@ import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
@@ -142,6 +146,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     private List<Organization> providers;
     private Set<Term> featureTypes;
     private List<Organism> organisms;
+    private Set<AssayType> assayTypes;
     private boolean editMode;
     private boolean locked;
     private boolean createMode;
@@ -322,11 +327,15 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      */
     @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "deprecation" })
     @Validations(
+        fieldExpressions = {
+            @FieldExpressionValidator(fieldName = "arrayDesign.assayTypes",
+                message = "", key = "errors.required",
+                expression = "!arrayDesign.assayTypes.isEmpty")
+        },
         requiredStrings = {
             @RequiredStringValidator(fieldName = "arrayDesign.version", key = "errors.required", message = "")
         },
         requiredFields = {
-            @RequiredFieldValidator(fieldName = "arrayDesign.assayType", key = "errors.required", message = ""),
             @RequiredFieldValidator(fieldName = "arrayDesign.provider", key = "errors.required", message = ""),
             @RequiredFieldValidator(fieldName = "arrayDesign.technologyType", key = "errors.required", message = ""),
             @RequiredFieldValidator(fieldName = "arrayDesign.organism", key = "errors.required", message = "")
@@ -511,5 +520,28 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
                 }
             }
         }
+    }
+    /**
+     * Action is used for an ajax call by the list generator.
+     *
+     * @return the string indicating which result to follow.
+     */
+    @SkipValidation
+    public String generateAssayList() {
+        setAssayTypes(new TreeSet<AssayType>(getProjectManagementService().getAssayTypes()));
+
+        return "generateAssayList";
+    }
+    /**
+     * @return the assayTypes
+     */
+    public Set<AssayType> getAssayTypes() {
+        return assayTypes;
+    }
+    /**
+     * @param assayTypes the assayTypes to set
+     */
+    public void setAssayTypes(Set<AssayType> assayTypes) {
+        this.assayTypes = assayTypes;
     }
 }

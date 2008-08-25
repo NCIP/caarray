@@ -130,6 +130,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.PredicateUtils;
@@ -155,6 +158,7 @@ public class ArrayDesignServiceTest {
     private static Organization DUMMY_ORGANIZATION = new Organization();
     private static Organism DUMMY_ORGANISM = new Organism();
     private static Term DUMMY_TERM = new Term();
+    private static AssayType DUMMY_ASSAY_TYPE = new AssayType("microRNA");
 
     @Before
     public void setUp() {
@@ -274,7 +278,9 @@ public class ArrayDesignServiceTest {
         // since the test DB is in memory, we have to instantiate a new copy of this design to alter it
         design = createDesign(null, null, null, getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         design.setId(2L);
-        design.setAssayTypeEnum(AssayType.MICRORNA);
+        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+        assayTypes.add(DUMMY_ASSAY_TYPE);
+        design.setAssayTypes(assayTypes);
         this.arrayDesignService.saveArrayDesign(design);
     }
 
@@ -564,7 +570,7 @@ public class ArrayDesignServiceTest {
         assertEquals("a-mexp-58f_excerpt_v1.0", arrayDesign.getLsidObjectId());
     }
 
-    private ArrayDesign createDesign(Organization provider, Organism organism, AssayType assayType,
+    private ArrayDesign createDesign(Organization provider, Organism organism, SortedSet<AssayType> assayTypes,
             CaArrayFile caArrayFile) {
         ArrayDesign arrayDesign = new ArrayDesign();
 
@@ -578,10 +584,11 @@ public class ArrayDesignServiceTest {
         }
         arrayDesign.setOrganism(organism);
 
-        if (assayType == null) {
-            assayType = AssayType.GENE_EXPRESSION;
+        if (assayTypes == null) {
+            assayTypes = new TreeSet<AssayType>();
+            assayTypes.add(DUMMY_ASSAY_TYPE);
         }
-        arrayDesign.setAssayTypeEnum(assayType);
+        arrayDesign.setAssayTypes(assayTypes);
 
         if (caArrayFile == null) {
             caArrayFile = new CaArrayFile();
@@ -650,6 +657,22 @@ public class ArrayDesignServiceTest {
                     return map;
                 }
 
+                @Override
+                public List<ArrayDesign> getArrayDesigns(Organization provider, Set<AssayType> assayTypes, boolean importedOnly) {
+                    List<ArrayDesign> designs = new ArrayList<ArrayDesign>();
+                    for (PersistentObject entity : LocalDaoFactoryStub.this.objectMap.values()) {
+                        if (entity instanceof ArrayDesign) {
+                            ArrayDesign design = (ArrayDesign) entity;
+                            if (ObjectUtils.equals(provider, design.getProvider())
+                                    && (!importedOnly || design.getDesignFile().getFileStatus() == FileStatus.IMPORTED
+                                            || design.getDesignFile().getFileStatus() == FileStatus.IMPORTED_NOT_PARSED)) {
+                                designs.add(design);
+                            }
+                        }
+                    }
+                    return designs;
+                }
+
                 @SuppressWarnings("deprecation")
                 @Override
                 public void save(PersistentObject object) {
@@ -683,25 +706,6 @@ public class ArrayDesignServiceTest {
                 @Override
                 public ArrayDesign getArrayDesign(long id) {
                     return (ArrayDesign) LocalDaoFactoryStub.this.objectMap.get(id);
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public List<ArrayDesign> getArrayDesignsForProvider(Organization provider, boolean importedOnly) {
-                    List<ArrayDesign> designs = new ArrayList<ArrayDesign>();
-                    for (PersistentObject entity : LocalDaoFactoryStub.this.objectMap.values()) {
-                        if (entity instanceof ArrayDesign) {
-                            ArrayDesign design = (ArrayDesign) entity;
-                            if (ObjectUtils.equals(provider, design.getProvider())
-                                    && (!importedOnly || design.getDesignFile().getFileStatus() == FileStatus.IMPORTED
-                                            || design.getDesignFile().getFileStatus() == FileStatus.IMPORTED_NOT_PARSED)) {
-                                designs.add(design);
-                            }
-                        }
-                    }
-                    return designs;
                 }
 
                 @Override

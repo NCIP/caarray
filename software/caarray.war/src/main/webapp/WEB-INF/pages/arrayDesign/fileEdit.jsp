@@ -158,13 +158,16 @@
                             	<s:hidden name="arrayDesign.id"/>
                             </s:if>
                             <s:hidden name="arrayDesign.description"/>
-                            <s:hidden name="arrayDesign.assayType"/>
                             <s:hidden name="arrayDesign.provider"/>
                             <s:hidden name="arrayDesign.version"/>
                             <s:hidden name="arrayDesign.technologyType"/>
                             <s:hidden name="arrayDesign.organism"/>
                             <s:hidden name="createMode"/>
                             <s:hidden name="editMode"/>
+                            <s:hidden name="arrayDesign.assayTypes"/>
+                            <c:forEach items="${arrayDesign.assayTypes}" var="currAssayType">
+                                <input name="arrayDesign.assayTypes" type="hidden" value="<s:property value='#attr.currAssayType.id'/>"/>
+                            </c:forEach>
                         </tbody>
                         <input type="submit" class="enableEnterSubmit"/>
                     </s:form>

@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ArrayDesignServiceStub implements ArrayDesignService {
 
@@ -125,7 +126,7 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
-    public List<ArrayDesign> getImportedArrayDesigns(Organization provider, AssayType assayType) {
+    public List<ArrayDesign> getImportedArrayDesigns(Organization provider, Set<AssayType> assayTypes) {
         return new ArrayList<ArrayDesign>();
     }
 
