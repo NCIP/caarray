@@ -113,10 +113,4 @@ public class AffymetrixArrayDesignFiles {
     public static final File HUEX_TEST_CLF  =
         new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/HuEx-test.clf").getFile());
 
-    public static final File HUGENE_1_0_PGF  =
-        new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/HuGene-1_0-st-v1.r3.pgf").getFile());
-
-    public static final File HUGENE_1_0_CLF  =
-        new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/HuGene-1_0-st-v1.r3.clf").getFile());
-
 }
