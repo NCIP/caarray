@@ -11,11 +11,11 @@ values("csmupt","CSM UPT Super Admin Application Protection Element","csmupt",1,
 
 INSERT INTO csm_application(application_name,application_description,declarative_flag,active_flag,update_date,
 database_url, database_user_name, database_password, database_dialect, database_driver)
-VALUES ("@CSM_APPLICATION_NAME@","description of caarray",0,0,sysdate(),
+VALUES ("@csm.application.name@","description of caarray",0,0,sysdate(),
 'jdbc:mysql://localhost:3306/caarray2', 'caarray2op', 'qN+MnXquuqO8j2uyHEABIQ==', 'org.hibernate.dialect.MySQLDialect', 'com.mysql.jdbc.Driver');
 
 insert into csm_protection_element(protection_element_name,protection_element_description,object_id,application_id,update_date)
-values("@CSM_APPLICATION_NAME@","caarray Admin Application Protection Element","caarray",1,sysdate());
+values("@csm.application.name@","caarray Admin Application Protection Element","caarray",1,sysdate());
 
 -- Create some users and their protection elements
 
