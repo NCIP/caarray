@@ -67,4 +67,5 @@ function completeLogin() {
       </table>
       <input type="submit" class="enableEnterSubmit"/>
     </form>
+    <caarray:focusFirstElement formId="login"/>
 </div>

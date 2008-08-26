@@ -38,7 +38,8 @@
         <s:hidden name="targetGroup" value="${targetGroup.id}"/>
         <input type="submit" class="enableEnterSubmit"/>
       </s:form>
-        <caarray:actions>
+      <caarray:focusFirstElement formId="filterForm"/>
+       <caarray:actions>
             <caarray:action onclick="clearFilter();" actionClass="cancel" text="Clear" />
             <caarray:action onclick="document.getElementById('filterForm').submit();" actionClass="filter" text="Filter" />
         </caarray:actions>

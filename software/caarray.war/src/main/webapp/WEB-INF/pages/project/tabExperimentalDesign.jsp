@@ -25,6 +25,7 @@
             <s:hidden name="editMode" />
             <input type="submit" class="enableEnterSubmit"/>
         </s:form>
+        <caarray:focusFirstElement formId="projectForm"/>
         <caarray:projectTabButtons tab="ExperimentalDesign" isSubtab="true"/>
     </div>
 </caarray:tabPane>

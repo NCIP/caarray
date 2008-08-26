@@ -55,7 +55,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
             <s:hidden name="editMode" />
             <input type="submit" class="enableEnterSubmit"/>
         </s:form>
-
+		<caarray:focusFirstElement formId="projectForm"/>
         <script type="text/javascript">
             startArrayDesignLookup = function() {
                 $("progressMsg").show();

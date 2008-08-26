@@ -68,7 +68,8 @@
                     </tr>
                     <input type="submit" class="enableEnterSubmit"/>
                 </s:form>
-            </div>
+                <caarray:focusFirstElement formId="searchform"/>
+           </div>
         </div>
     </div>
     <div class="clear"></div>

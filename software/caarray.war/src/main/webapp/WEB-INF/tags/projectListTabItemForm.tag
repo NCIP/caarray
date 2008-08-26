@@ -28,5 +28,6 @@
             onsubmit="TabUtils.submitTabForm('projectForm', '${tabAnchor}'); return false;">
         <jsp:doBody/>
     </s:form>
+    <caarray:focusFirstElement formId="projectForm"/>
     <caarray:projectListTabItemButtons entityName="${entityName}" item="${item}" isSubtab="${isSubtab}"/>
 </div>

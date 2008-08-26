@@ -57,6 +57,7 @@
                         <s:password name="j_password" label="Password" maxlength="100" size="15" />
                         <input type="submit" class="enableEnterSubmit"/>
                     </s:form>
+                    <caarray:focusFirstElement formId="login"/>
                     <caarray:actions>
                         <caarray:action actionClass="cancel" text="Cancel">
                             <jsp:attribute name="url"><c:url value="/home.action"/></jsp:attribute>

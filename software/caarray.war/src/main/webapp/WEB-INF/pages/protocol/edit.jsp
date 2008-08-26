@@ -62,6 +62,7 @@
             <s:hidden name="editMode" />
             <input type="submit" class="enableEnterSubmit"/>
         </s:form>
+        <caarray:focusFirstElement formId="protocolForm"/>
         <caarray:actions>
             <s:if test="returnToProjectOnCompletion && returnProjectId == null">
                 <c:url value="/protected/project/create.action" var="returnUrl" />

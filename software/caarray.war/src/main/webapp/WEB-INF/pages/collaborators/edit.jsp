@@ -33,6 +33,7 @@
           <s:hidden name="targetGroup" value="${targetGroup.id}"/>
           <input type="submit" class="enableEnterSubmit"/>
         </s:form>
+        <caarray:focusFirstElement formId="newGroupForm"/>
         <caarray:actions>
             <caarray:action onclick="document.getElementById('newGroupForm').submit();" actionClass="save" text="Save" />
         </caarray:actions>

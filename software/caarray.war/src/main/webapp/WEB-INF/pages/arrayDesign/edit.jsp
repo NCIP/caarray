@@ -94,6 +94,7 @@
                         </tbody>
                         <input type="submit" class="enableEnterSubmit"/>
                     </s:form>
+                    <caarray:focusFirstElement formId="arrayDesignForm"/>
                     <caarray:actions>
                          <s:if test="${createMode}">
                             <caarray:linkButton actionClass="cancel" text="Cancel" onclick="window.close()"/>

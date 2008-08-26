@@ -21,5 +21,6 @@
     <s:hidden name="currentHybridization.id" />
     <input type="submit" class="enableEnterSubmit"/>
   </s:form>
+  <caarray:focusFirstElement formId="extensionForm"/>
   <jsp:doBody/>
 </div>
