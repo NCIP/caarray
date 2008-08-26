@@ -36,7 +36,7 @@
     <ul class="${pageContext.request.remoteUser != null ? 'aboutmenu' : 'welcomemenu' }">
         <li class="liheader">About caArray</li>
         <li><a href="http://caarray.nci.nih.gov/" target="_blank">What is caArray?</a></li>
-        <li><a href="https://gforge.nci.nih.gov/frs/shownotes.php?release_id=1984" target="_blank">Release Notes</a></li>
+        <li><a href='${initParam["releaseNotesUrl"]}' target="_blank">Release Notes</a></li>
         <li><a href="http://caarray.nci.nih.gov/" target="_blank">Technical Documentation</a></li>
         <li><a href="http://ncicb.nci.nih.gov/training/caarray/" target="_blank">Training</a></li>
         <li><a href="javascript:openHelpWindow('')">Help</a></li>
