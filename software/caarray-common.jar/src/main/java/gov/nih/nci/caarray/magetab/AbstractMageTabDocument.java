@@ -50,6 +50,7 @@
  */
 package gov.nih.nci.caarray.magetab;
 
+import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
@@ -62,7 +63,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -315,5 +318,18 @@ public abstract class AbstractMageTabDocument implements Serializable {
             return null;
         }
 
+    }
+
+    /**
+     * Gets names of files passed in.
+     * @param data data files
+     * @return list of file names
+     */
+    protected List<String> getFileNames(List<? extends AbstractSampleDataRelationshipNode> data) {
+        List<String> fileNames = new ArrayList<String>();
+        for (AbstractSampleDataRelationshipNode adf : data) {
+                fileNames.add(adf.getName());
+        }
+        return fileNames;
     }
 }

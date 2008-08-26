@@ -309,25 +309,11 @@ public class FileManagementServiceTest {
         for (CaArrayFile file : project.getFiles()) {
             if (expFile.equals(file)) {
                 assertEquals(FileStatus.VALIDATED_NOT_PARSED, file.getFileStatus());
+            } else if (FileType.MAGE_TAB_SDRF.equals(file.getFileType()) || FileType.MAGE_TAB_IDF.equals(file.getFileType())) {
+                // fix for unsupported mas5
+                assertEquals(FileStatus.VALIDATION_ERRORS, file.getFileStatus());
             } else {
                 assertEquals(FileStatus.VALIDATED, file.getFileStatus());
-            }
-        }
-    }
-
-    @Test
-    public void testImportMageTabAndUnparsedDataFile() {
-        Project project = getTgaBroadTestProject();
-        CaArrayFile expFile = this.fileAccessServiceStub.add(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_EXP);
-        expFile.setFileType(FileType.AFFYMETRIX_EXP);
-        addFile(project, expFile);
-        this.fileManagementService.importFiles(project, project.getFileSet(), DataImportOptions
-                .getAutoCreatePerFileOptions());
-        for (CaArrayFile file : project.getFiles()) {
-            if (expFile.equals(file)) {
-                assertEquals(FileStatus.IMPORTED_NOT_PARSED, file.getFileStatus());
-            } else {
-                assertEquals(FileStatus.IMPORTED, file.getFileStatus());
             }
         }
     }

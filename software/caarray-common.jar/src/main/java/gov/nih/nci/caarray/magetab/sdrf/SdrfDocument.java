@@ -844,4 +844,20 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void addWarning(String message) {
         addWarningMessage(currentLineNumber, currentColumnNumber, message);
     }
+
+    /**
+     * Get all data file names from array data, data matrix, derived data,
+     * and derived data matrix files.
+     * @return list of file names
+     */
+    public List<String> getAllDataFiles() {
+        List<String> fileNames = new ArrayList<String>();
+        fileNames.addAll(getFileNames(this.getAllArrayDataFiles()));
+        fileNames.addAll(getFileNames(this.getAllArrayDataMatrixFiles()));
+        fileNames.addAll(getFileNames(this.getAllDerivedArrayDataFiles()));
+        fileNames.addAll(getFileNames(this.getAllDerivedArrayDataMatrixFiles()));
+        return fileNames;
+    }
+
+
 }
