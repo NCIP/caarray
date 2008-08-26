@@ -15,9 +15,11 @@ import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -35,9 +37,9 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
 
     private List<CollaboratorGroup> collaboratorGroups = new ArrayList<CollaboratorGroup>();
     private CollaboratorGroup collaboratorGroup = new CollaboratorGroup();
-    private List<AccessProfile> accessProfiles = new ArrayList<AccessProfile>();
+    private Set<AccessProfile> accessProfiles = new TreeSet<AccessProfile>();
     private AccessProfile accessProfile = new AccessProfile(SecurityLevel.NONE);
-    private Map<Long, SampleSecurityLevel> sampleSecurityLevels = new HashMap<Long, SampleSecurityLevel>();
+    private Map<Long, SampleSecurityLevel> sampleSecurityLevels = new TreeMap<Long, SampleSecurityLevel>();
     private boolean useTcgaPolicy;
 
     /**
@@ -68,7 +70,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
                 this.accessProfile = retrieved;
             }
         }
-        accessProfiles = new ArrayList<AccessProfile>();
+        accessProfiles = new TreeSet<AccessProfile>();
         accessProfiles.add(getProject().getPublicProfile());
         accessProfiles.addAll(getProject().getGroupProfiles().values());
     }
@@ -212,7 +214,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     /**
      * @return the accessProfiles
      */
-    public List<AccessProfile> getAccessProfiles() {
+    public Set<AccessProfile> getAccessProfiles() {
         return this.accessProfiles;
     }
 

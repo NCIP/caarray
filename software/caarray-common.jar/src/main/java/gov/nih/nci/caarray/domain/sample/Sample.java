@@ -113,11 +113,11 @@ import org.hibernate.validator.Length;
    */
 @Entity
 @DiscriminatorValue("SA")
-@UniqueConstraint(fields = { 
-        @UniqueConstraintField(name = "externalSampleId"), 
-        @UniqueConstraintField(name = "experiment", nullsEqual = false) }, 
+@UniqueConstraint(fields = {
+        @UniqueConstraintField(name = "externalSampleId"),
+        @UniqueConstraintField(name = "experiment", nullsEqual = false) },
         generateDDLConstraint = false, message = "{sample.externalSampleId.uniqueConstraint}")
-public class Sample extends AbstractBioMaterial implements Protectable {
+public class Sample extends AbstractBioMaterial implements Protectable, Comparable<Sample> {
     /**
      * The serial version UID for serialization.
      */
@@ -227,7 +227,7 @@ public class Sample extends AbstractBioMaterial implements Protectable {
         }
         return hybs;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -254,7 +254,7 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     public Set<? extends AbstractExperimentDesignNode> getDirectSuccessors() {
         return getExtracts();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -273,5 +273,16 @@ public class Sample extends AbstractBioMaterial implements Protectable {
         Extract extract = (Extract) successor;
         getExtracts().add(extract);
         extract.getSamples().add(this);
+    }
+    /**
+     * Compares samples by name.
+     * @param o other sample to compare to
+     * @return result of comparison
+     */
+    public int compareTo(Sample o) {
+        if (o == null) {
+            return 1;
+        }
+        return this.getName().compareToIgnoreCase(o.getName());
     }
 }
