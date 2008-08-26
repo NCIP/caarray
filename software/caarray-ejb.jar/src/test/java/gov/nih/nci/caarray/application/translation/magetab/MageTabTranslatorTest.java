@@ -251,7 +251,7 @@ public class MageTabTranslatorTest {
         assertEquals(6, experiment.getLabeledExtracts().size());
         assertEquals(6, experiment.getHybridizations().size());
         for (Hybridization hyb : experiment.getHybridizations()) {
-            assertNull(hyb.getArray().getDesign());
+            assertNull(hyb.getArray().getDesign().getName());
         }
     }
 

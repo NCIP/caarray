@@ -91,12 +91,15 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.io.FileUtility;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -240,6 +243,9 @@ public final class MageTabDocumentSet implements Serializable {
         // DEVELOPER NOTE: ADF documents currently not parsed
         parse(sdrfDocuments);
         // DEVELOPER NOTE: DATA MATRIX documents currently not parsed
+
+        //check that the sdrf refs all data files
+        checkSdrfRefDataFiles();
     }
 
     private void parse(Set<? extends AbstractMageTabDocument> documents) throws MageTabParsingException {
@@ -378,5 +384,46 @@ public final class MageTabDocumentSet implements Serializable {
     ValidationMessage createValidationMessage(File file, ValidationMessage.Type type, String message) {
         return getValidationResult().addMessage(file, type, message);
     }
+
+    private void checkSdrfRefDataFiles() {
+        // check that all native data files are mentioned in the sdrf
+        // get all the file names
+
+        List<String> fileNames = generateSdrfRefFileNames();
+
+        checkFileNames(fileNames);
+
+        if (this.getNativeDataFiles() != null && !this.getNativeDataFiles().isEmpty() && fileNames.isEmpty()) {
+            addSdrfErrorMessage("any files");
+        }
+    }
+
+    private void checkFileNames(List<String> fileNames) {
+        if (this.getNativeDataFiles() != null && !this.getNativeDataFiles().isEmpty() && !fileNames.isEmpty()) {
+            for (NativeDataFile ndf : this.getNativeDataFiles()) {
+                if (!fileNames.contains(ndf.getFile().getName())) {
+                    addSdrfErrorMessage(ndf.getFile().getName());
+                }
+            }
+        }
+    }
+
+    private void addSdrfErrorMessage(String txt) {
+        for (SdrfDocument sdrf : sdrfDocuments) {
+            this.createValidationMessage(sdrf.getFile(),
+                    Type.ERROR, "SDRF file does not reference "
+                    + txt + " being validated.");
+        }
+    }
+
+    private List<String> generateSdrfRefFileNames() {
+        List<String> fileNames = new ArrayList<String>();
+        for (SdrfDocument sdrf : sdrfDocuments) {
+            fileNames.addAll(sdrf.getAllDataFiles());
+        }
+        return fileNames;
+    }
+
+
 
 }
