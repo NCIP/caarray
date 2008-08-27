@@ -262,7 +262,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Publication> publications = new HashSet<Publication>();
     private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
     private Set<Source> sources = new HashSet<Source>();
-    private Set<Sample> samples = new HashSet<Sample>();
+    private SortedSet<Sample> samples = new TreeSet<Sample>();
     private Set<Extract> extracts = new HashSet<Extract>();
     private Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
     private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
@@ -682,7 +682,8 @@ public class Experiment extends AbstractCaArrayEntity {
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @Filter(name = "Project1", condition = SAMPLES_ALIAS_FILTER)
-    public Set<Sample> getSamples() {
+    @Sort(type = SortType.NATURAL)
+    public SortedSet<Sample> getSamples() {
         return this.samples;
     }
 
@@ -700,7 +701,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param samplesVal the sources
      */
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setSamples(final Set<Sample> samplesVal) {
+    private void setSamples(final SortedSet<Sample> samplesVal) {
         this.samples = samplesVal;
     }
 
