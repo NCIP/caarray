@@ -118,15 +118,15 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import javax.annotation.Resource;
 import javax.ejb.Local;
@@ -281,11 +281,10 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             Set<String> existingFileNameSet, List<String> conflictingFiles)
             throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException {
         int count = 0;
-
-        ZipFile zipFile = new ZipFile(file);
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
-             ZipEntry entry = entries.nextElement();
+        FileInputStream fis = new FileInputStream(file);
+        ZipInputStream zis = new ZipInputStream(fis);
+        ZipEntry entry = zis.getNextEntry();
+        while (entry != null && zis.available() > 0) {
              String entryName = entry.getName();
              if (entryName.indexOf('/') >= 0 || entryName.indexOf('\\') >= 0) {
                  throw new InvalidFileException("Directories not supported", "directoriesNotSupported");
@@ -293,14 +292,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
              if (existingFileNameSet.contains(entryName)) {
                  conflictingFiles.add(entryName);
              } else {
-                 InputStream in = zipFile.getInputStream(entry);
-                 doAddStream(project, in, entryName);
-                 in.close();
+                 doAddStream(project, zis, entryName);
                  existingFileNameSet.add(entryName);
                  count++;
              }
+             entry = zis.getNextEntry();
         }
-        zipFile.close();
+        zis.close();
+        fis.close();
         return count;
     }
 
