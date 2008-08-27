@@ -240,4 +240,8 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
         // empty method
     }
 
+    public List<ArrayDesign> getArrayDesigns(ArrayDesignDetails arrayDesignDetails) {
+        return new ArrayList<ArrayDesign>();
+    }
+
 }

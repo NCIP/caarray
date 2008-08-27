@@ -355,16 +355,6 @@ public class AffymetrixPgfClfDesignHandler extends AbstractAffymetrixArrayDesign
         int cols = getNumCols();
         int rows = getNumRows();
         getArrayDao().createFeatures(rows, cols, designDetails);
-//        for (int y = 0; y < rows; y++) {
-//            for (int x = 0; x < cols; x++) {
-//                System.out.println("Creating feature " + x + ", " + y);
-//                createFeature(x, y, designDetails);
-//                if (x % PROBE_SET_BATCH_SIZE == 0) {
-//                    System.out.println("Flushing session");
-//                    flushSession();
-//                }
-//            }
-//        }
     }
 
     @SuppressWarnings("PMD.ExcessiveMethodLength")

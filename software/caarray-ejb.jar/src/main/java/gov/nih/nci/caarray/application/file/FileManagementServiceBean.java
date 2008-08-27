@@ -113,6 +113,7 @@ import org.jboss.annotation.ejb.TransactionTimeout;
 @Local(FileManagementService.class)
 @Stateless
 @Interceptors(ExceptionLoggingInterceptor.class)
+@SuppressWarnings("PMD.TooManyMethods")
 public class FileManagementServiceBean implements FileManagementService {
 
     private static final Logger LOG = Logger.getLogger(FileManagementServiceBean.class);
@@ -202,11 +203,19 @@ public class FileManagementServiceBean implements FileManagementService {
                 arrayDesign.setDesignFileSet(oldFiles);
                 arrayDao.save(arrayDesign);
             }
-            for (CaArrayFile designFile : designFiles.getFiles()) {
-                if (designFile.getValidationResult() != null
-                        && !designFile.getValidationResult().getMessages().isEmpty()) {
-                    throw new InvalidDataFileException(designFile.getValidationResult());
-                }
+            checkDesignFiles(designFiles);
+        } else if (oldFiles.getFiles().size() > 0) {
+            for (CaArrayFile file : oldFiles.getFiles()) {
+                arrayDao.remove(file);
+            }
+        }
+    }
+
+    private void checkDesignFiles(CaArrayFileSet designFiles) throws InvalidDataFileException {
+        for (CaArrayFile designFile : designFiles.getFiles()) {
+            if (designFile.getValidationResult() != null
+                    && !designFile.getValidationResult().getMessages().isEmpty()) {
+                throw new InvalidDataFileException(designFile.getValidationResult());
             }
         }
     }

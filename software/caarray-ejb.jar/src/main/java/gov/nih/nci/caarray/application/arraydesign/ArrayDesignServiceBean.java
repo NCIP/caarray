@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -277,16 +278,11 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             }
         }
 
-        // Delete design details here (if last status was IMPORT_FAILED or for all reimported designs, if possible)
-//        LOG.info("Deleting details");
-//        ArrayDesignDetails designDetails = arrayDesign.getDesignDetails();
-//        if (designDetails != null) {
-//            arrayDesign.setDesignDetails(null);
-//            getArrayDao().deleteDesignDetails(designDetails);
-//            getArrayDao().save(arrayDesign);
-//            getArrayDao().flushSession();
-//        }
-//        LOG.info("Done deleting details");
+        ArrayDesignDetails designDetails = arrayDesign.getDesignDetails();
+        if (designDetails != null) {
+            getArrayDao().deleteArrayDesignDetails(arrayDesign);
+            getArrayDao().flushSession();
+        }
 
         doImportDesignDetails(arrayDesign);
         LogUtil.logSubsystemExit(LOG);
@@ -475,8 +471,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @TransactionTimeout(DELETE_ARRAY_DELETE_TIMEOUT_SECONDS)
-    public void deleteArrayDesign(ArrayDesign arrayDesign)
-            throws ArrayDesignDeleteException {
+    public void deleteArrayDesign(ArrayDesign arrayDesign) throws ArrayDesignDeleteException {
         Long id = arrayDesign.getId();
         boolean designLocked = (id != null && isArrayDesignLocked(id));
         if (arrayDesign.getDesignFileSet().getStatus() == FileStatus.IMPORTING || designLocked) {
@@ -484,7 +479,15 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
                     "You cannot delete an array design that is currently being "
                     + "imported or that is associated with one or more experiments.");
         }
-        getArrayDao().deleteArrayDesignDetails(arrayDesign);
+
+        if (getArrayDao().getArrayDesigns(arrayDesign.getDesignDetails()).size() > 1) {
+            // if there's more than one array design for the design details, we don't want to delete the details
+            // or the files, just the array design itself, because other array designs share the files and details.
+            arrayDesign.getDesignFiles().clear();
+            arrayDesign.setDesignDetails(null);
+        } else {
+            getArrayDao().deleteArrayDesignDetails(arrayDesign);
+        }
         getArrayDao().remove(arrayDesign);
     }
 }

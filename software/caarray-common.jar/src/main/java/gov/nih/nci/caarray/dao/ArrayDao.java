@@ -299,4 +299,13 @@ public interface ArrayDao extends CaArrayDao {
      */
     void clearVendorIds();
 
+    /**
+     * Gets the array designs associated with an ArrayDesignDetails object.  Most array design details are only
+     * associated with one array design, but some (such as those imported from PGF/CLF files) are associated with
+     * several.
+     * @param arrayDesignDetails the array design details by which to look up array designs
+     * @return the ArrayDesigns associated with the given details
+     */
+    List<ArrayDesign> getArrayDesigns(ArrayDesignDetails arrayDesignDetails);
+
 }
