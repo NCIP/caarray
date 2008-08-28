@@ -123,7 +123,7 @@ import org.apache.commons.lang.StringUtils;
 public final class SdrfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 1116542609494378874L;
-    private static final String EMPTY_SYMBOL = "->";
+    private static final String EMPTY_SYMBOL = "-&gt;";
     private IdfDocument idfDocument;
     private final List<SdrfColumn> columns = new ArrayList<SdrfColumn>();
     private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache =

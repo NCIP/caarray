@@ -176,7 +176,7 @@ public class MageTabTranslatorTest {
                 .translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         assertNotNull(experiment.getDescription());
-        assertTrue(experiment.getDescription().contains("Gene expression of TK6"));
+        assertTrue(experiment.getDescription().startsWith("&lt;&gt;Gene expression of TK6"));
         assertEquals(8, experiment.getExperimentContacts().size());
         assertEquals(1, experiment.getExperimentDesignTypes().size());
         assertEquals("genetic_modification_design", experiment.getExperimentDesignTypes().iterator().next().getValue());
@@ -236,7 +236,7 @@ public class MageTabTranslatorTest {
                 TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         assertNotNull(experiment.getDescription());
-        assertTrue(experiment.getDescription().contains("Gene expression of TK6"));
+        assertTrue(experiment.getDescription().startsWith("&lt;&gt;Gene expression of TK6"));
         assertFalse(experiment.getDescription().contains("<"));
         assertEquals(8, experiment.getExperimentContacts().size());
         assertEquals(1, experiment.getExperimentDesignTypes().size());
