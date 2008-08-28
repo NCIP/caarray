@@ -305,27 +305,29 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         FileType type = designFile.getFileType();
         if (type == null) {
             throw new IllegalArgumentException("FileType was null");
-        } else if (FileType.AFFYMETRIX_CDF.equals(type)) {
+        } else if (FileType.AFFYMETRIX_CDF.equals(type) && designFiles.size() == 1) {
             return new AffymetrixCdfHandler(getVocabularyService(), daoFactory, designFile);
         } else if (FileType.AFFYMETRIX_CLF.equals(type) || FileType.AFFYMETRIX_PGF.equals(type)
                 && designFiles.size() == 2) {
             return new AffymetrixPgfClfDesignHandler(getVocabularyService(), daoFactory, designFiles);
-        } else if (FileType.ILLUMINA_DESIGN_CSV.equals(type)) {
+        } else if (FileType.ILLUMINA_DESIGN_CSV.equals(type) && designFiles.size() == 1) {
             return new IlluminaCsvDesignHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.GENEPIX_GAL.equals(type)) {
+        } else if (FileType.GENEPIX_GAL.equals(type) && designFiles.size() == 1) {
             return new GenepixGalDesignHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.AGILENT_CSV.equals(type) || FileType.AGILENT_XML.equals(type)) {
+        } else if ((FileType.AGILENT_CSV.equals(type) || FileType.AGILENT_XML.equals(type))
+                && designFiles.size() == 1) {
             return new AgilentUnsupportedDesignHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.IMAGENE_TPL.equals(type)) {
+        } else if (FileType.IMAGENE_TPL.equals(type) && designFiles.size() == 1) {
             return new ImageneTplHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.UCSF_SPOT_SPT.equals(type)) {
+        } else if (FileType.UCSF_SPOT_SPT.equals(type) && designFiles.size() == 1) {
             return new UcsfSpotSptHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.NIMBLEGEN_NDF.equals(type)) {
+        } else if (FileType.NIMBLEGEN_NDF.equals(type) && designFiles.size() == 1) {
             return new NimbleGenNdfHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.MAGE_TAB_ADF.equals(type)) {
+        } else if (FileType.MAGE_TAB_ADF.equals(type) && designFiles.size() == 1) {
             return new MageTabAdfHandler(getVocabularyService(), daoFactory, designFile);
         } else {
-            throw new IllegalArgumentException("Unsupported array design file type: " + type);
+            throw new IllegalArgumentException("Unsupported array design file type: "
+                    + type + " or number of files provided is unsupported.");
         }
     }
 

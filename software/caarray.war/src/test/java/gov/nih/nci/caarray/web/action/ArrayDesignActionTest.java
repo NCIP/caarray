@@ -207,9 +207,13 @@ public class ArrayDesignActionTest {
         arrayDesignAction.setArrayDesign(design);
         String result = arrayDesignAction.saveMeta();
         assertEquals("metaValid", result);
-        arrayDesignAction.setUploadFileName(UnsupportedAffymetrixCdfFiles.HUMAN_EXON_1_0_ST.getFilename());
+        List<String> list = new ArrayList<String>();
+        list.add(UnsupportedAffymetrixCdfFiles.HUMAN_EXON_1_0_ST.getFilename());
+        arrayDesignAction.setUploadFileName(list);
         arrayDesignAction.setUpload(null);
-        arrayDesignAction.setUploadFormatType(FileType.UCSF_SPOT_SPT.name());
+        List<String> flist = new ArrayList<String>();
+        flist.add(FileType.UCSF_SPOT_SPT.name());
+        arrayDesignAction.setFileFormatType(flist);
         result = arrayDesignAction.save();
         assertEquals("metaValid", result);
 

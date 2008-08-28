@@ -20,6 +20,9 @@
 <script type="text/javascript">
     var progressBar;
     var pbPoller;
+    var fileCount =1;
+    var currentItemNumber = 2;
+    var rowNumber = 1;
 
     unsupportedFilenames = new Array();
     <s:iterator id="file" value="@gov.nih.nci.caarray.domain.file.UnsupportedAffymetrixCdfFiles@values()">
@@ -27,30 +30,45 @@
     </s:iterator>
 
     isFilenameSupported = function() {
-        var filename = $('arrayDesignForm_upload').value;
-        var indx = filename.lastIndexOf('/');
-        if (indx < 0) {
-            indx = filename.lastIndexOf('\\');
-        }
-        if (indx >= 0 && indx < filename.length - 1) {
-            filename = filename.substring(indx + 1);
-        }
+    	 var myForm = $('arrayDesignForm');
+         var myFiles = myForm.getElementsBySelector('input[type=file]');
+         for (var i = 0; i < myFiles.length; i++) {
+            var filename = myFiles[i].value;
+	        var indx = filename.lastIndexOf('/');
+    	    if (indx < 0) {
+        	    indx = filename.lastIndexOf('\\');
+        	}
+        	if (indx >= 0 && indx < filename.length - 1) {
+            	filename = filename.substring(indx + 1);
+        	}
 
-        return unsupportedFilenames.indexOf(filename) == -1;
+        	if (unsupportedFilenames.indexOf(filename) != -1) {
+        		return false;
+        	}
+		}
+
+		return true;
     }
 
 
-    function updateProgress(itemNumber, percentComplete) {
-        var progressTable = $('uploadProgressFileList');
-        var fileRow = progressTable.tBodies[0].rows[progressTable.tBodies[0].rows.length-2];
-        progressBar.setProgress(percentComplete);
-        fileRow.cells[1].innerHTML = "In Progress";
 
-        // if the upload is completed, set to Done
+    function updateProgress(itemNumber, percentComplete) {
+        if (itemNumber < 10) { return; }
+        progressBar.setProgress(percentComplete);
+
+       while (itemNumber - 8 != currentItemNumber) {
+            $('uploadProgressFileList').tBodies[0].rows[rowNumber].cells[1].innerHTML = "Done";
+            currentItemNumber = currentItemNumber+2;
+            rowNumber++;
+        }
+
+        $('uploadProgressFileList').tBodies[0].rows[rowNumber].cells[1].innerHTML = "In Progress";
         if (percentComplete == 100) {
-          fileRow.cells[1].innerHTML = "Done";
-          $('uploadingMessage').innerHTML = "Your file(s) have finished uploading and are now being processed by the server. Please continue to leave this window open until this is complete.";
+          $('uploadProgressFileList').tBodies[0].rows[rowNumber].cells[1].innerHTML = "Done";
+          if (!processingFinished) {
+              $('uploadingMessage').innerHTML = "Your file(s) have finished uploading and are now being processed by the server. Please continue to leave this window open until this is complete.";
               new Effect.Highlight('uploadingMessage', { duration: 5.0 });
+          }
           pbPoller.stop();
         }
     }
@@ -103,6 +121,29 @@
          }, 2);
     };
 
+    function moreUploads(offset) {
+        formTable = $('arrayFileDiv').getElementsByTagName('table')[0];
+
+        newRow = $(formTable.rows[offset].cloneNode(true));
+        newFile = newRow.down('input');
+        if (newFile == null ) {
+        	moreUploads(offset+1);
+        	return;
+        }
+        newFile.value = '';
+        newFile.id = 'upload'+fileCount;
+
+        newSelectRow = $(formTable.rows[offset+1].cloneNode(true));
+        newSelectbox = newSelectRow.down('select');
+        newSelectbox.value = '';
+        newSelectbox.id = 'fileFormatType'+fileCount;
+
+        formTable.tBodies[0].appendChild(newRow);
+        formTable.tBodies[0].appendChild(newSelectRow);
+
+        fileCount++;
+    }
+
 
 </script>
 <html>
@@ -112,7 +153,6 @@
 <body>
     <h1>Manage Array Designs</h1>
     <caarray:helpPrint/>
-
     <div class="padme" id="uploadFileDiv">
         <div id="tabboxwrapper_notabs">
             <div class="boxpad2">
@@ -140,29 +180,30 @@
                     </div>
                 </s:if>
 
-                <div>
+                <div id="arrayFileDiv">
                     <s:form action="/protected/ajax/arrayDesign/save" cssClass="form" enctype="multipart/form-data" method="post" id="arrayDesignForm">
                         <tbody>
                             <tr><th colspan="2">Upload Array Design File</th></tr>
                             <s:if test="${!empty arrayDesign.designFiles}">
                                 <s:select theme="readonly" list="arrayDesign.designFiles" value="arrayDesign.designFiles" listValue="name" label="Current File" multiple="true"/>
                             </s:if>
+							<s:hidden name="arrayDesign.id"/>
+	                        <s:hidden name="arrayDesign.description"/>
+	                        <s:hidden name="arrayDesign.assayType"/>
+	                        <s:hidden name="arrayDesign.provider"/>
+	                        <s:hidden name="arrayDesign.version"/>
+	                        <s:hidden name="arrayDesign.technologyType"/>
+	                        <s:hidden name="arrayDesign.organism"/>
+	                        <s:hidden name="createMode"/>
+	                        <s:hidden name="editMode"/>
                             <s:if test="${editMode && !locked}">
-                                <s:file required="${empty arrayDesign.id}" name="upload" label="Browse to File" tabindex="9"/>
-                                <s:select name="uploadFormatType" key="arrayDesign.designFile.fileType" tabindex="10"
+                                <s:file id="upload0" required="${empty arrayDesign.id}" name="upload" label="Browse to File" tabindex="9"/>
+                                <s:select id="fileFormatType0" name="fileFormatType" key="arrayDesign.designFile.fileType" tabindex="10"
                                           list="@gov.nih.nci.caarray.domain.file.FileType@getArrayDesignFileTypes()"
                                           listValue="%{getText('experiment.files.filetype.' + name)}"
                                           listKey="name" headerKey="" headerValue="Automatic"/>
                             </s:if>
-                            <s:hidden name="arrayDesign.id"/>
-                            <s:hidden name="arrayDesign.description"/>
-                            <s:hidden name="arrayDesign.assayType"/>
-                            <s:hidden name="arrayDesign.provider"/>
-                            <s:hidden name="arrayDesign.version"/>
-                            <s:hidden name="arrayDesign.technologyType"/>
-                            <s:hidden name="arrayDesign.organism"/>
-                            <s:hidden name="createMode"/>
-                            <s:hidden name="editMode"/>
+
                         </tbody>
                         <input type="submit" class="enableEnterSubmit"/>
                     </s:form>
@@ -171,6 +212,9 @@
                         <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
                          <s:if test="${arrayDesign.designFileSet.status != importingStatus && !locked}">
                             <caarray:action onclick="beginUpload();" actionClass="save" text="Save" tabindex="10"/>
+                            <s:if test="${editMode && !locked}">
+                            	<caarray:linkButton actionClass="add" text="Add More Files" onclick="moreUploads(1);"/>
+                            </s:if>
                         </s:if>
                     </caarray:actions>
                 </div>
