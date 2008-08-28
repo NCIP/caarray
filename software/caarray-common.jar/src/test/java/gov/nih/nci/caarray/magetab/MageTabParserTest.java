@@ -411,6 +411,7 @@ public class MageTabParserTest {
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
         assertEquals(1, documentSet.getIdfDocuments().size());
+        assertEquals(-1, documentSet.getIdfDocuments().iterator().next().getInvestigation().getDescription().indexOf("<"));
         assertEquals(1, documentSet.getSdrfDocuments().size());
         assertEquals(1, documentSet.getDataMatrixes().size());
         assertEquals(26, documentSet.getNativeDataFiles().size());
@@ -687,6 +688,7 @@ public class MageTabParserTest {
         assertEquals(idfDocument, sdrfDocument.getIdfDocument());
         assertEquals(6, sdrfDocument.getLeftmostNodes().size());
         assertEquals(SIX, sdrfDocument.getAllSources().size());
+        assertEquals(-1, sdrfDocument.getAllSources().get(0).getName().indexOf("<"));
         assertEquals(SIX, sdrfDocument.getAllSamples().size());
         assertEquals(SIX, sdrfDocument.getAllExtracts().size());
         assertEquals(SIX, sdrfDocument.getAllHybridizations().size());

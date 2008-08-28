@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf;
 
+import com.fiveamsolutions.nci.commons.util.NCICommonsUtils;
+
 import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabOntologyCategory;
@@ -268,7 +270,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             for (int i = 0; i < values.size(); i++) {
                 currentColumnNumber = i + 1;
                 try {
-                    handleValue(columns.get(i), StringUtils.trim(values.get(i)));
+                    String value = StringUtils.trim(values.get(i));
+                    value = NCICommonsUtils.performXSSFilter(value);
+                    handleValue(columns.get(i), value);
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();
                     e.printStackTrace(new PrintWriter(sw));

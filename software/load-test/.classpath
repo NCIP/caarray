@@ -34,7 +34,7 @@
 	<classpathentry kind="lib" path="/lib/wss4j.jar"/>
 	<classpathentry kind="lib" path="/lib/xercesImpl.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.9.jar"/>
+	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.12.jar"/>
 	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-caDSR-client-1.2.jar"/>
 	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-caDSR-service-1.2.jar"/>
 	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-caDSR-stubs-1.2.jar"/>

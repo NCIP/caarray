@@ -453,7 +453,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/test-data"/>
-	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.9.jar"/>
-	<classpathentry kind="lib" path="/lib/nci-commons-struts2-1.0.9.jar"/>
+	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.12.jar"/>
+	<classpathentry kind="lib" path="/lib/nci-commons-struts2-1.0.12.jar"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>

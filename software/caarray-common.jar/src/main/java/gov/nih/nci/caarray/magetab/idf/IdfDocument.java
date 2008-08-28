@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.magetab.idf;
 
+import com.fiveamsolutions.nci.commons.util.NCICommonsUtils;
+
 import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab.EntryHeading;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -211,6 +213,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 currentColumnNumber = columnIndex + 1;
                 int valueIndex = columnIndex - 1;
                 String value = StringUtils.trim(lineContents.get(columnIndex));
+                value = NCICommonsUtils.performXSSFilter(value);
                 if (!StringUtils.isEmpty(value)) {
                     handleValue(idfRow, value, valueIndex);
                 }

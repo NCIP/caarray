@@ -82,7 +82,7 @@
 
     <property name="caarray-svc.dir" value="${basedir}/CaArraySvc" />
 
-    <property name="nci-commons-version" value="1.0.9" />
+    <property name="nci-commons-version" value="1.0.12" />
 
     <!-- Third-party -->
     <property name="affxfusion.jar" value="${lib.dir}/AffxFusion.jar" />

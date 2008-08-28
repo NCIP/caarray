@@ -66,7 +66,7 @@
   <classpathentry kind="lib" path="/lib/commons-lang-2.3.jar" />
   <classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4" />
   <classpathentry kind="lib" path="/caarray-ejb-jar/target/classes" />
-  <classpathentry kind="lib" path="/lib/nci-commons-core-1.0.9.jar" />
+  <classpathentry kind="lib" path="/lib/nci-commons-core-1.0.12.jar" />
   <classpathentry kind="lib" path="lib/caarray-client.jar" />
   <classpathentry kind="lib" path="lib/caGrid-advertisement-1.2.jar" />
   <classpathentry kind="lib" path="lib/caGrid-caDSR-client-1.2.jar" />
