@@ -16,6 +16,9 @@
             <interceptor name="parameterTrim"
                 class="com.fiveamsolutions.nci.commons.web.struts2.interceptor.ParameterTrimInterceptor" />
 
+            <interceptor name="maliciousInput"
+                class="com.fiveamsolutions.nci.commons.web.struts2.interceptor.XSSFilterInterceptor" />
+
             <interceptor-stack name="caarrayParamsPrepareParamsStack">
                 <interceptor-ref name="exception" />
                 <interceptor-ref name="alias" />
@@ -31,6 +34,7 @@
                 <interceptor-ref name="caarrayParams" />
                 <interceptor-ref name="conversionError" />
                 <interceptor-ref name="nullCollectionElements" />
+                <interceptor-ref name="maliciousInput" />
                 <interceptor-ref name="parameterTrim">
                   <param name="trimToNull">true</param>
                 </interceptor-ref>
@@ -61,6 +65,7 @@
                 </interceptor-ref>
                 <interceptor-ref name="conversionError" />
                 <interceptor-ref name="nullCollectionElements" />
+                <interceptor-ref name="maliciousInput" />
                 <interceptor-ref name="parameterTrim">
                   <param name="trimToNull">true</param>
                 </interceptor-ref>
