@@ -93,6 +93,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.w3c.dom.Element;
@@ -106,10 +107,12 @@ final class SqlScriptMigrationStep extends AbstractMigrationStep {
 
     private final String script;
     private final boolean ignoreErrors;
+    private final String delimiter;
 
     SqlScriptMigrationStep(Element element) {
         this.script = getContent(element);
         ignoreErrors = BooleanUtils.toBoolean(element.getAttribute("ignoreErrors"));
+        delimiter = StringUtils.defaultIfEmpty(element.getAttribute("delimiter"), ";");
     }
 
     @Override
@@ -128,8 +131,8 @@ final class SqlScriptMigrationStep extends AbstractMigrationStep {
                 if (line.startsWith("--")) {
                     continue;
                 }
-                if (line.endsWith(";")) {
-                    sqlStatement.append(line.substring(0, line.length() - 1));
+                if (line.endsWith(delimiter)) {
+                    sqlStatement.append(line.substring(0, line.length() - delimiter.length()));
                     LOG.info("Executing SQL statement: " + sqlStatement.toString());
                     executeUpdate(sqlStatement, s);
                     sqlStatement = new StringBuffer();

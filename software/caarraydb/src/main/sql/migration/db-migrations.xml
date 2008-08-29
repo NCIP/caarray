@@ -37,4 +37,8 @@
     <migration fromVersion="2.1.0.rc1" toVersion="2.1.0.rc2">
         <sql-script>migrate-2.1.0.rc1-to-2.1.0.rc2.sql</sql-script>
     </migration>
+    <migration fromVersion="2.1.0.rc2" toVersion="2.1.1.rc1">
+        <sql-script>migrate-2.1.0.rc2-to-2.1.1.rc1.sql</sql-script>
+        <sql-script delimiter="//">migrate-2.1.0.rc2-to-2.1.1.rc1-procedure.sql</sql-script>
+    </migration>
 </migrations>
