@@ -445,7 +445,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             if (arrayDesign.getId() != null && (uploadFileName == null || uploadFileName.isEmpty())) {
                 getArrayDesignService().saveArrayDesign(arrayDesign);
             } else {
-                // Checks if any uploaded files are zip files.  If they are, the files are unzipped,
+                // Checks if any uploaded files are zip files. If they are, the files are unzipped,
                 // and the appropriate properties are updated so that the unzipped files are
                 // part of the uploads list.
                 getFileAccessService().unzipFiles(uploads, uploadFileName);
@@ -480,42 +480,40 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     }
 
     private void handleFiles() throws InvalidDataFileException, IllegalAccessException {
-       // check file names against list of unsupported files
-       for (String fileName : uploadFileName) {
-           if (UnsupportedAffymetrixCdfFiles.isUnsupported(fileName)) {
-               addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.unsupportedFile"));
-               return;
-           }
-       }
+        // check file names against list of unsupported files
+        for (String fileName : uploadFileName) {
+            if (UnsupportedAffymetrixCdfFiles.isUnsupported(fileName)) {
+                addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.unsupportedFile"));
+                return;
+            }
+        }
 
-       // check user assigned file types and derived ext against known array designs
-       int fileCount = 0;
-       Map<String, File> arrayDesignFiles = new HashMap<String, File>();
-       Map<String, FileType> arrayDesignFileTypes = new HashMap<String, FileType>();
-       for (File file : uploads) {
-           FileType userType = checkFileType(fileCount);
-           FileType derivedType = checkFileExt(uploadFileName.get(fileCount));
-           if (userType != null || derivedType != null) {
+        // check user assigned file types and derived ext against known array designs
+        int fileCount = 0;
+        Map<String, File> arrayDesignFiles = new HashMap<String, File>();
+        Map<String, FileType> arrayDesignFileTypes = new HashMap<String, FileType>();
+        for (File file : uploads) {
+            FileType userType = checkFileType(fileCount);
+            FileType derivedType = checkFileExt(uploadFileName.get(fileCount));
+            if (userType != null || derivedType != null) {
 
-               arrayDesignFiles.put(uploadFileName.get(fileCount), file);
+                arrayDesignFiles.put(uploadFileName.get(fileCount), file);
 
-               if (userType != null) {
-                   arrayDesignFileTypes.put(uploadFileName.get(fileCount), userType);
-               } else {
-                   arrayDesignFileTypes.put(uploadFileName.get(fileCount), derivedType);
-               }
+                if (userType != null) {
+                    arrayDesignFileTypes.put(uploadFileName.get(fileCount), userType);
+                } else {
+                    arrayDesignFileTypes.put(uploadFileName.get(fileCount), derivedType);
+                }
 
-           }
-           fileCount++;
-      }
+            }
+            fileCount++;
+        }
 
-      doImport(arrayDesignFiles, arrayDesignFileTypes);
+        doImport(arrayDesignFiles, arrayDesignFileTypes);
     }
 
     private FileType checkFileType(int index) {
-        if (fileFormatTypes != null
-                && !fileFormatTypes.isEmpty()
-                && !"".equals(fileFormatTypes.get(index))
+        if (fileFormatTypes != null && !fileFormatTypes.isEmpty() && !"".equals(fileFormatTypes.get(index))
                 && FileType.valueOf(fileFormatTypes.get(index)).isArrayDesign()) {
 
             return FileType.valueOf(fileFormatTypes.get(index));
@@ -527,46 +525,43 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     private FileType checkFileExt(String filename) {
         FileType ft = FileExtension.getTypeFromExtension(filename);
 
-         if (ft != null && ft.isArrayDesign()) {
-             return ft;
-         }
+        if (ft != null && ft.isArrayDesign()) {
+            return ft;
+        }
 
-         return null;
+        return null;
     }
 
     private void doImport(Map<String, File> arrayDesignFiles, Map<String, FileType> arrayDesignFileTypes)
-        throws InvalidDataFileException, IllegalAccessException {
+            throws InvalidDataFileException, IllegalAccessException {
 
-         if (!arrayDesignFiles.isEmpty()) {
-             CaArrayFileSet designFiles = new CaArrayFileSet();
-             for (String fileName : arrayDesignFiles.keySet()) {
-                  CaArrayFile designFile = getFileAccessService().add(arrayDesignFiles.get(fileName), fileName);
+        if (!arrayDesignFiles.isEmpty()) {
+            CaArrayFileSet designFiles = new CaArrayFileSet();
+            for (String fileName : arrayDesignFiles.keySet()) {
+                CaArrayFile designFile = getFileAccessService().add(arrayDesignFiles.get(fileName), fileName);
 
-                  designFile.setFileType(arrayDesignFileTypes.get(fileName));
-                  designFiles.add(designFile);
+                designFile.setFileType(arrayDesignFileTypes.get(fileName));
+                designFiles.add(designFile);
 
-             }
+            }
 
+            getFileManagementService().saveArrayDesign(arrayDesign, designFiles);
 
-             getFileManagementService().saveArrayDesign(arrayDesign, designFiles);
-
-             // even if some of the file could not be parsed still import the array design details
-
-             for (CaArrayFile designFile : designFiles.getFiles()) {
-                 if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
-                          getFileManagementService().importArrayDesignDetails(arrayDesign);
-                          break;
-                 }
-             }
-
-             // add error message for the user if there was an attempt to import non-array design files.
-                if (uploads.size() > designFiles.getFiles().size()) {
-                    ActionHelper.saveMessage(getText("arrayDesign.warning.zipFile"));
+            // even if some of the file could not be parsed still import the array design details
+            for (CaArrayFile designFile : designFiles.getFiles()) {
+                if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
+                    getFileManagementService().importArrayDesignDetails(arrayDesign);
+                    break;
                 }
+            }
 
-         } else {
-           addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.multipleUnsupportedFiles"));
-         }
+            // add error message for the user if there was an attempt to import non-array design files.
+            if (uploads.size() > designFiles.getFiles().size()) {
+                ActionHelper.saveMessage(getText("arrayDesign.warning.zipFile"));
+            }
 
+        } else {
+            addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.multipleUnsupportedFiles"));
+        }
     }
 }

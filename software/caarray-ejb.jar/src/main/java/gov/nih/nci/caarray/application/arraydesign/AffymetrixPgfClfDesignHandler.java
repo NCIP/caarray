@@ -458,7 +458,6 @@ public class AffymetrixPgfClfDesignHandler extends AbstractAffymetrixArrayDesign
         flushAndClearSession();
         setProbeGroup(getDaoFactory().getSearchDao().retrieve(ProbeGroup.class,
                 getProbeGroup().getId()));
-//        ((SessionImplementor) HibernateUtil.getCurrentSession()).getBatcher().closeStatements();
     }
 
     /**
