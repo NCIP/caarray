@@ -119,11 +119,12 @@ public class SearchActionTest {
 
     @Test
     public void testBasicSearch() throws Exception {
+        this.searchAction.setCategory(SearchAction.SEARCH_CATEGORY_ALL);
         String result = this.searchAction.basicSearch();
         assertEquals(NUM_PROJECTS, searchAction.getTabs().get(SearchAction.EXPERIMENTS_TAB));
         assertEquals(Action.SUCCESS, result);
 
-        searchAction.setCategory(SearchCategory.ORGANISM);
+        searchAction.setCategory(SearchCategory.ORGANISM.name());
         result = this.searchAction.basicSearch();
         assertEquals(NUM_PROJECTS_BY_ORGANISM, searchAction.getTabs().get(SearchAction.EXPERIMENTS_TAB));
         assertEquals(Action.SUCCESS, result);
@@ -131,6 +132,7 @@ public class SearchActionTest {
 
     @Test
     public void testExperiments() throws Exception {
+        this.searchAction.setCategory(SearchAction.SEARCH_CATEGORY_ALL);
         searchAction.setKeyword("keyword");
         this.searchAction.setResultCount(NUM_PROJECTS);
         String result = this.searchAction.experiments();
@@ -140,7 +142,7 @@ public class SearchActionTest {
         assertEquals(NUM_PROJECTS, results.getList().size());
         assertEquals("tab", result);
 
-        searchAction.setCategory(SearchCategory.ORGANISM);
+        searchAction.setCategory(SearchCategory.ORGANISM.name());
         this.searchAction.setResultCount(NUM_PROJECTS_BY_ORGANISM);
         result = this.searchAction.experiments();
         results = searchAction.getResults();
@@ -148,6 +150,11 @@ public class SearchActionTest {
         assertEquals(NUM_PROJECTS_BY_ORGANISM, results.getFullListSize());
         assertEquals(NUM_PROJECTS_BY_ORGANISM, results.getList().size());
         assertEquals("tab", result);
+    }
+
+    @Test
+    public void testGetSearchCategories() {
+        assertEquals(SearchCategory.values().length + 1, this.searchAction.getSearchCategories().size());
     }
 
     private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {

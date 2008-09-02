@@ -52,8 +52,8 @@
                 <s:form id="searchform" action="/search/basicSearch.action" cssClass="alttable">
                     <s:textfield name="keyword" key="search.keyword"/>
                     <s:select name="category" key="search.category"
-                              list="@gov.nih.nci.caarray.domain.search.SearchCategory@values()" listValue="%{getText(resourceKey)}"
-                              headerKey="" headerValue="(All Categories)"/>
+                              list="@gov.nih.nci.caarray.web.action.SearchAction@getSearchCategories()" listValue="%{getText(label)}"
+                              listKey="value" value="EXPERIMENT_ID"/>
                     <s:select name="location" key="search.location"
                               list="#{'NCICB':'NCICB'}"
                               headerKey="" headerValue="(All Locations)"/>
