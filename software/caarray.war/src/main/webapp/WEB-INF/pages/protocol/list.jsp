@@ -22,20 +22,20 @@
                         <c:param name="protocol.id" value="${row.id}" />
                     </c:url>
                     <ajax:anchors target="tabboxwrapper">
-                        <a href="${viewProtocolUrl}"><caarray:abbreviate value="${row.name}" maxWidth="30"/></a>
+                        <a href="${viewProtocolUrl}"><caarray:abbreviate value="${row.name}" maxWidth="25"/></a>
                     </ajax:anchors>
                 </display:column>>
                 <display:column titleKey="protocol.type" property="type.value" sortable="true" maxLength="30"/>
                 <display:column title="Source" sortProperty="source.name" sortable="true">
                     <c:choose>
-                        <c:when test="${not empty row.source.url}"><a href="${row.source.url}" target="_blank">${row.source.nameAndVersion}</a></c:when>
-                        <c:otherwise>${row.source.nameAndVersion}</c:otherwise>
+                        <c:when test="${not empty row.source.url}"><a href="${row.source.url}" target="_blank"><caarray:abbreviate value="${row.source.nameAndVersion}" maxWidth="11"/></a></c:when>
+                        <c:otherwise><caarray:abbreviate value="${row.source.nameAndVersion}" maxWidth="11"/></c:otherwise>
                     </c:choose>
                 </display:column>
-                <display:column titleKey="protocol.description" property="description" sortable="true" />
-                <display:column titleKey="protocol.contact" property="contact" sortable="true" />
-                <display:column titleKey="protocol.url" sortable="true">
-                    <a href="${row.url}" target="_blank">${row.url}</a>
+                <display:column titleKey="protocol.description" property="description" sortable="true" maxLength="30" />
+                <display:column titleKey="protocol.contact" property="contact" sortable="true" maxLength="25" />
+                <display:column titleKey="protocol.url" sortable="true" >
+                    <a href="${row.url}" target="_blank"><caarray:abbreviate value="${row.url}" maxWidth="30"/></a>
                 </display:column>
                 <display:column titleKey="button.edit" class="centered" headerClass="centered">
                     <c:if test="${caarrayfn:canWrite(row, caarrayfn:currentUser())}">
