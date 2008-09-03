@@ -125,4 +125,6 @@ public class AffymetrixArrayDataFiles {
     public static final File TEST3_INVALID_DATA_CEL =
         new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/Test3_invalid_data.CEL").getFile());
 
+    public static final File TEST3_SPECIFICATION_ZIP =
+        new File(AffymetrixArrayDataFiles.class.getResource("/magetab/specification/specification.zip").getFile());
 }

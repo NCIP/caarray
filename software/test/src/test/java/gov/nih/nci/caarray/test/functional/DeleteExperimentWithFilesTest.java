@@ -87,8 +87,6 @@ import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -101,13 +99,13 @@ import org.junit.Test;
  */
 public class DeleteExperimentWithFilesTest extends AbstractSeleniumTest {
 
-    private static final int NUMBER_OF_FILES = 30;
+    private static final int NUMBER_OF_FILES = 29;
 
     @Test
-    public void testImportAndRetrieval() throws Exception {
+    public void testDeleteExperimentWithFiles() throws Exception {
         long startTime = System.currentTimeMillis();
         long endTime = 0;
-        String title = "Standard mage" + System.currentTimeMillis();
+        String title = "Delete Experiment" + System.currentTimeMillis();
         System.out.println("Started at " + DateFormat.getTimeInstance().format(new Date()));
 
         loginAsPrincipalInvestigator();
@@ -119,62 +117,31 @@ public class DeleteExperimentWithFilesTest extends AbstractSeleniumTest {
         this.selenium.click("link=Data");
         waitForTab();
 
-        // Upload the following files:
-        // - MAGE-TAB IDF
-        // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
-        // - MAGE-TAB Derived Data Matrix
-        // - CEL files referenced in SDRF
-        upload(MageTabDataFiles.TCGA_BROAD_IDF);
-        upload(MageTabDataFiles.TCGA_BROAD_SDRF);
-        upload(MageTabDataFiles.TCGA_BROAD_DATA_MATRIX);
-        FileFilter celFilter = new FileFilter() {
-            public boolean accept(File pathname) {
-                return pathname.getName().toLowerCase().endsWith(".cel");
-            }
-        };
-        for (File celFile : MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY.listFiles(celFilter)) {
-            upload(celFile);
-        }
-
+        upload(MageTabDataFiles.TCGA_BROAD_ZIP);
         // - Check if they are uploaded
-        checkFileStatus("Uploaded", THIRD_COLUMN);
+        checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // - Import files
-        selenium.click("selectAllCheckbox");
-        selenium.click("link=Import");
-        waitForAction();
-
-        // - hit the refresh button until files are imported
-        waitForImport("Nothing found to display");
+        importData(MAGE_TAB);
 
         // - click on the Imported data tab and re-click until data
         // - can be found
-        reClickForText("29 items found", "link=Imported Data", 4, 60000);
+        reClickForText("29 items found", "link=Imported Data", 10, 10000);
 
 
         // go back to experiment list screen
         selenium.click("link=My Experiment Workspace");
-        waitForTab();
+        waitForText("Work Queue");
+        pause(2000);
         int row = getExperimentRow(experimentId, ZERO_COLUMN);
         // - Click on the image to enter the delete mode again
         selenium.click("//tr[" + row + "]/td[8]/a/img");
 
         // delete experiment
-        waitForText("Experiment has been deleted");
+        waitForText("Experiment has been deleted", FIFTEEN_MINUTES);
 
         endTime = System.currentTimeMillis();
         String totalTime = df.format((endTime - startTime)/60000f);
         System.out.println("total time = " + totalTime);
     }
-
-
-     private void checkFileStatus(String status, int column) {
-        System.out.println("statu = " + status);
-        for (int row = 1; row < NUMBER_OF_FILES; row++) {
-            System.out.println("row = " + row);
-            assertEquals(status, selenium.getTable("row." + row + "." + column));
-        }
-    }
-
-
 }

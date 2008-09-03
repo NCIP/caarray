@@ -194,9 +194,9 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
         waitForTab();
         selenium.click("link=Ext.");
         waitForTab();
-        selenium.click("link=Compressed Size (KB)");
+        selenium.click("link=Compressed Size");
         waitForTab();
-        selenium.click("link=Uncompressed Size (KB)");
+        selenium.click("link=Uncompressed Size");
         waitForTab();
     }
 
@@ -305,7 +305,6 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
         assertTrue("Did not get to Array Design Page", selenium.isTextPresent("Import a New Array Design"));
         selenium.click("link=Array Design Name");
         selenium.click("link=Provider");
-        selenium.click("link=Assay Type");
         selenium.click("link=Version Number");
         selenium.click("link=Feature Type");
         selenium.click("link=Organism");
@@ -317,9 +316,7 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
         waitForTab();
         selenium.click("link=Experiment Title");
         waitForTab();
-        selenium.click("link=Assay Type");
-        waitForTab();
-    }
+   }
 
     private void clickManageCollaborationGroupLinks() {
         System.out.println("Clicking on Manage Collaboration Groups");

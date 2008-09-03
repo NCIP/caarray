@@ -84,28 +84,25 @@ package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 import gov.nih.nci.caarray.test.base.TestProperties;
+import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
-import java.io.FileFilter;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 
 import org.junit.Test;
 
 /**
- * Test case #7959.
- *
- * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
+ * 
+ * Tests the import options.
  */
-public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
-
-    private static final int NUMBER_OF_FILES = 10;
+public class ImportCelFileOptionsTest extends AbstractSeleniumTest {
 
     @Test
-    public void testImportAndRetrieval() throws Exception {
-        String title = TestProperties.getAffymetricSpecificationName();
+    public void testImportCelFileOptions() throws Exception {
+        String title = "ImportOptions " + System.currentTimeMillis();
         long startTime = System.currentTimeMillis();
         long endTime = 0;
         System.out.println("Started at " + DateFormat.getTimeInstance().format(new Date()));
@@ -115,39 +112,100 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
         // - Add the array design
         importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF, TestProperties.getAffymetrixSpecificationDesignName());
-
-        // Create project
-        String experimentId = createExperiment(title,TestProperties.getAffymetrixSpecificationDesignName());
+        // Create experiment
+        createExperiment(title, TestProperties.getAffymetrixSpecificationDesignName());
 
         // - go to the data tab
         selenium.click("link=Data");
         waitForTab();
-        
-        // Upload the sepecification zip file:
-        upload(MageTabDataFiles.SPECIFICATION_ZIP);
-        
-        // - Check if they are uploaded
-        checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
 
-        // - Import files
-        importData(MAGE_TAB);
+        // autocreats the biomaterial chain - Source -> Sample -> Extract -> Labeled Extract -> Hybridization
+        optionTest(AUTOCREATE_ANNOTATION_SET, AffymetrixArrayDataFiles.TEST3_CEL, 1, AffymetrixArrayDataFiles.TEST3_CEL
+                .getName());
+        verifyImport(AffymetrixArrayDataFiles.TEST3_CEL.getName().substring(0,
+                AffymetrixArrayDataFiles.TEST3_CEL.getName().indexOf('.')));
+        selenium.click("link=Data");
+        waitForTab();
 
-        // - hit the refresh button until files are imported
-        waitForImport("Nothing found to display");
+        // Autocreate a single annotation set for a named annotation
+        optionTest(AUTOCREATE_SINGLE_ANNOTATION, AffymetrixArrayDataFiles.TEST3_CHP, 1,
+                AffymetrixArrayDataFiles.TEST3_CHP.getName());
+        verifyImport(AffymetrixArrayDataFiles.TEST3_CHP.getName().substring(0,
+                AffymetrixArrayDataFiles.TEST3_CHP.getName().indexOf('.')));
+        selenium.click("link=Data");
+        waitForTab();
 
-        // - click on the Imported data tab and re-click until data
-        // - can be found
-        reClickForText("15 items found", "link=Imported Data", 4, 60000);
-
-        // - validate the status
-        checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
+        // Associates selected file(s) to existing biomaterial or hybridization
+        optionTest(ASSOCIATE_TO_EXISTING_BIOMATERIAL, AffymetrixArrayDataFiles.TEST3_CALVIN_CEL, 1,
+                AffymetrixArrayDataFiles.TEST3_CALVIN_CEL.getName());
+        verifyImportToExistingBiomaterial(AffymetrixArrayDataFiles.TEST3_CALVIN_CEL.getName().substring(0,
+                AffymetrixArrayDataFiles.TEST3_CALVIN_CEL.getName().lastIndexOf('.')));
 
         endTime = System.currentTimeMillis();
-        String totalTime = df.format((endTime - startTime)/60000f);
+        String totalTime = df.format((endTime - startTime) / 60000f);
         System.out.println("total time = " + totalTime);
+    }
 
-        // make experiment public
-        submitExperiment();
-        makeExperimentPublic(experimentId);
+    /**
+     * Check if the biomaterial got imported
+     * 
+     * @param string bioMaterialName look for this name on the Source tab
+     */
+    private void verifyImport(String bioMaterialName) {
+        selenium.click("link=Annotations");
+        waitForTab();
+        selenium.click("link=Sources");
+        waitForTab();
+        assertTrue("Unable to find " + bioMaterialName + " on the Source tab", selenium.isTextPresent(bioMaterialName));
+    }
+
+    private void verifyImportToExistingBiomaterial(String bioMaterialName) {
+        String relatedSample = null;
+        String source = null;
+     
+        selenium.click("link=Annotations");
+        waitForTab();
+        selenium.click("link=Sources");
+        waitForTab();
+        boolean foundBioMaterialNameInSamplesColumn = false;
+        for (int i = 1; i < 3; i++) {
+            relatedSample = selenium.getTable("row." + i + ".3");
+            source = selenium.getTable("row." + i + ".0");
+            // ensure the biomaterial is not in the Source column
+            assertFalse(bioMaterialName + " was found as a Source and should not be", source.equalsIgnoreCase(bioMaterialName));
+            // check if the bioMaterial is in the Related Samples column
+            if (relatedSample.contains(bioMaterialName)){
+                foundBioMaterialNameInSamplesColumn = true;
+            }
+        }
+        assertTrue("Unable to find " + bioMaterialName + " in the Related Samples column", foundBioMaterialNameInSamplesColumn);
+        
+        // Check the files got linked together.  See if two files are available for download
+        selenium.click("link=" + DEFAULT_SOURCE_NAME);
+        waitForTab();
+        assertTrue("failed to find file Test3-1-121502.CHP", selenium.isTextPresent("Test3-1-121502.CHP"));
+        assertTrue("failed to find file Test3-1-121502.calvin.CEL", selenium.isTextPresent("Test3-1-121502.calvin.CEL"));
+    }
+
+    /**
+     * Upload the file using the various upload options
+     * 
+     * @param forThisOption
+     * @param thisFile
+     * @param numberOfFiles
+     * @param lookForThisText
+     * @throws IOException
+     */
+    private void optionTest(int forThisOption, File thisFile, int numberOfFiles, String lookForThisText)
+            throws IOException {
+        upload(thisFile);
+        // - Check if they are uploaded
+        checkFileStatus("Uploaded", THIRD_COLUMN, numberOfFiles);
+        importData(forThisOption);
+        // - click on the Imported data tab and re-click until data
+        // - can be found
+        reClickForText(lookForThisText, "link=Imported Data", 40, 1000);
+        // - validate the status
+        checkFileStatus("Imported", THIRD_COLUMN, numberOfFiles);
     }
 }

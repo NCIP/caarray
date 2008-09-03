@@ -128,22 +128,12 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // - Import files
-        selenium.click("selectAllCheckbox");
-        selenium.click("link=Import");
-        waitForAction();
+        importData(AUTOCREATE_ANNOTATION_SET);
 
         // - hit the refresh button until files are imported
         waitForImport("Nothing found to display");
 
-        // - click on the Imported data tab
-        // ** this tab consistently fails.  Selenium will press the tab but not switch the page from
-        //      the Upload page.
-        selenium.click("link=Imported Data");
-        pause(3000);
-        selenium.click("link=Imported Data");
-        pause(1000);
-
-        waitForText("One item found");
+        reClickForText("One item found", "link=Imported Data", 4, 10000);
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN, NUMBER_OF_FILES);

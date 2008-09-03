@@ -182,6 +182,9 @@ public class MageTabDataFiles {
     public static final File TCGA_BROAD_DATA_MATRIX = new File(MageTabDataFiles.class.getResource(
             "/magetab/tcga/broad/broad.mit.edu_GBM.HT_HG-U133A.1.data").getFile());
 
+    public static final File TCGA_BROAD_ZIP = new File(MageTabDataFiles.class.getResource(
+    "/magetab/tcga/broad/broad.mit.edu_GBM.HT_HG-U133A.1.zip").getFile());
+
     public static final File GEDP_IDF = new File(MageTabDataFiles.class.getResource(
             "/magetab/baddata/GEDP_Nelson_2007-10-17T20_34_21Z.idf").getFile());
 

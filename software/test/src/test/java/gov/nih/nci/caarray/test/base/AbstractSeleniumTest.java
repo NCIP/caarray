@@ -91,7 +91,7 @@ import com.thoughtworks.selenium.SeleneseTestCase;
 /**
  * Base class for all functional tests that use Selenium Remote Control. Provides proper set up in order to be called by
  * caArray's ant script.
- *
+ * 
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
@@ -112,8 +112,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected static final String AFFYMETRIX_PROVIDER = "Affymetrix";
     protected static final String HOMO_SAPIENS_ORGANISM = "Homo sapiens (ncbitax)";
     private static final int FOURTY_MINUTES = 2400;
-
-
+    protected static final int AUTOCREATE_ANNOTATION_SET = 1;
+    protected static final int AUTOCREATE_SINGLE_ANNOTATION = 2;
+    protected static final int ASSOCIATE_TO_EXISTING_BIOMATERIAL = 3;
+    protected static final int MAGE_TAB = 4;
+    protected static final String DEFAULT_SOURCE_NAME= "seleniumTest";
 
     @Override
     public void setUp() throws Exception {
@@ -261,7 +264,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     protected void reClickForText(String id, String link, int times, int waitTime) {
         selenium.click(link);
-        pause(1000);
+        waitForTab();
         if (!selenium.isTextPresent(id)) {
             for (int clicked = 0; clicked < times; clicked++) {
                 selenium.click(link);
@@ -270,7 +273,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                     return;
                 }
             }
-            fail("timeout waiting for text " + id + ". Exceeded wait time (sec): " + (times*waitTime)/1000);
+            fail("timeout waiting for text " + id + ". Exceeded wait time (sec): " + (times * waitTime) / 1000);
         }
     }
 
@@ -292,7 +295,8 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     /**
-     * Create an experiment wih an array design and the default Afftmetrix provider and human organism
+     * Create an experiment with an array design and the default Afftmetrix provider and human organism
+     * 
      * @param title
      * @param arrayDesignName
      * @return String Experiment Identifier of the experiment e.g. admin-002
@@ -304,6 +308,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     /**
      * Create an experiment without an array design and the default Afftmetrix provider and human organism
+     * 
      * @param title
      * @return String Experiment Identifier of the experiment e.g. admin-002
      * @throws InterruptedException
@@ -315,6 +320,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     /**
      * Create an experiment
+     * 
      * @param title
      * @throws InterruptedException
      * @return String Experiment Identifier of the experiment e.g. admin-002
@@ -354,12 +360,13 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         return experimentId;
     }
 
-   /**
-    * Waits for the list of Array Designs to fill before making the selection. Test fails if the array design is not in
-    * the list
-    * @param arrayDesignName
-    * @param provider
-    */
+    /**
+     * Waits for the list of Array Designs to fill before making the selection. Test fails if the array design is not in
+     * the list
+     * 
+     * @param arrayDesignName
+     * @param provider
+     */
     private void selectArrayDesign(String arrayDesignName, String provider) {
         String[] values;
         boolean found = false;
@@ -397,9 +404,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         }
     }
 
+   // selenium.addSelection("projectForm_project_experiment_arrayDesigns", "label=Test3");
 
     /**
      * Import array design with default provider and organism
+     * 
      * @param arrayDesignFile
      * @param arrayDesignName
      * @throws Exception
@@ -410,13 +419,15 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     /**
      * Import the array design
+     * 
      * @param arrayDesignFile - file to be imported
      * @param arrayDesignName - name of array design
      * @param provider - array design provider
      * @param Organism - array design organism
      * @throws Exception
      */
-    protected void importArrayDesign(File arrayDesignFile, String arrayDesignName, String provider, String Organism) throws Exception  {
+    protected void importArrayDesign(File arrayDesignFile, String arrayDesignName, String provider, String Organism)
+            throws Exception {
         selenium.click("link=Manage Array Designs");
         selenium.waitForPageToLoad("30000");
         if (!doesArrayDesignExists(arrayDesignName)) {
@@ -427,13 +438,16 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             selenium.waitForPageToLoad("30000");
             // - click on the array designs list and re-click until data
             // - can be found
-            reClickForText(arrayDesignName, "link=Manage Array Designs", 10, 60000);
+            System.out.println("reclick Manage Array Designs");
+            //reClickForText(arrayDesignName, "link=Manage Array Designs", 30, 60000);
             // get the array design row so we do not find the wrong Imported text
             int column = getExperimentRow(arrayDesignName, ZERO_COLUMN);
             // wait for array design to be imported
+            System.out.println("waiting for array design to import");
             waitForArrayDesignImport(FOURTY_MINUTES, column);
         }
     }
+
     private void addArrayDesign(File arrayDesign, String arrayDesignProvider, String arrayDesignOrganism) {
         selenium.click("link=Import a New Array Design");
         waitForPopup("uploadWindow", 3000);
@@ -455,19 +469,19 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         }
         selenium.select("arrayDesignForm_arrayDesign_organism", "label=" + arrayDesignOrganism);
         selenium.click("link=Next");
-        selenium.waitForPageToLoad("3000");
+        waitForText("New Array Design (Step 2)");
         assertArrayDesignFileRequiredFields();
         selenium.type("arrayDesignForm_upload", arrayDesign.toString());
         selenium.click("link=Save");
         // we should now be at the
         // all-good page
-        waitForText("has been successfully uploaded.");
+        waitForText("has been successfully uploaded.", FOURTY_MINUTES);
         selenium.click("link=Close Window and go to Manage Design Array");
     }
 
     /**
      * assert the required field for Array Designs conform to the use case
-     *
+     * 
      */
     private void assertArrayDesignMetaRequiredFields() {
         assertTrue(selenium.isTextPresent("Provider*"));
@@ -515,11 +529,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
         // making an experiement public will return the user back to the experiment's main page
-        waitForText("My Experiment Workspace");
+        waitForTab();
     }
 
     /**
-     *
+     * 
      * @param seconds
      * @param row
      * @return
@@ -544,24 +558,29 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     /**
-     *
+     * 
      * @param text - value to seach for
      * @param column - Table column which contains the search text
      * @return int the row number
-     *
+     * 
      * Returns the row where the data resides in a particular column For example - find title "Exp 1" in column 1
      * (column 1 holds the experiment names)
      */
 
     protected int getExperimentRow(String text, String column) {
-        int page = 1;
+        String tblValue = null;
         for (int loop = 1;; loop++) {
-            if (text.equalsIgnoreCase(selenium.getTable("row." + loop + "." + column))) {
+            try {
+                tblValue = selenium.getTable("row." + loop + "." + column);
+            } catch (RuntimeException e) {
+                System.out.println("problem looking for " + text + " at (" + loop + "," + column + ") Stopped at : " + tblValue);
+                throw e;
+            }
+            if (text.equalsIgnoreCase(tblValue)) {
                 return loop;
             }
 
             if (loop % PAGE_SIZE == 0) {
-                System.out.println("page number " + (++page));
                 // Moving to next page
                 // this will fail once there are no more pages and the text parameter is not found
                 try {
@@ -635,9 +654,83 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     protected void checkFileStatus(String status, int column, int numFiles) {
-        for (int i = 1; i < numFiles; i++) {
-            assertEquals(status, selenium.getTable("row." + i + "." + column));
+        int rowCount = 0;
+
+        for (int row = 1; row < numFiles; row++) {
+            if (rowCount == numFiles) {
+                break;
+            }
+            rowCount++;
+            assertEquals(status, selenium.getTable("row." + row + "." + column));
+            if (status.equalsIgnoreCase("Imported")) {
+                if (row % PAGE_SIZE == 0) {
+                    // Moving to next page
+                    selenium.click("link=Next");
+                    waitForDiv("loadingText");
+                    pause(2000);
+                    row = 0;
+                }
+            }
         }
     }
+    // defaults a name for named annotations
+    protected void importData(int type) {
+        importData(type, DEFAULT_SOURCE_NAME);
+    }
+    
+    /**
+     * Handles the 3 types of file import cases
+     * 
+     * @param type the type of import
+     */
+    protected void importData(int type, String annotationName) {
+        String importButton = "//button[text()='Import']";
+        String treeSourceIcon = "//img[@class='x-tree-ec-icon x-tree-elbow-plus']";
+        String treeSouceCheckbox = "//*[@class='x-tree-node-cb']";
 
+        selenium.click("selectAllCheckbox");
+        selenium.click("link=Import");
+
+        switch (type) {
+        case AUTOCREATE_ANNOTATION_SET:
+            waitForText("Import Options");
+            selenium.click("create_choice_autocreate_per_file");
+            selenium.click(importButton);
+            break;
+        case AUTOCREATE_SINGLE_ANNOTATION:
+            waitForText("Import Options");
+            selenium.click("create_choice_autocreate_single");
+            selenium.type("autocreate_single_annotation_name", annotationName);
+            selenium.click(importButton);
+            break;
+        case ASSOCIATE_TO_EXISTING_BIOMATERIAL:
+            waitForText("Import Options");
+            selenium.click("create_choice_associate_to_biomaterials");
+            assertTrue("No Sources to associate Biomaterial with", selenium.isElementPresent(treeSourceIcon));
+            selenium.click(treeSourceIcon);
+            pause(1000);
+            selenium.click(treeSouceCheckbox);
+            selenium.click(importButton);
+            break;
+        case MAGE_TAB: // mage tab import
+            pause(1000); // allow time for the confirmation to popup
+            if (selenium.isConfirmationPresent()) {
+                assertTrue(selenium
+                        .getConfirmation()
+                        .matches(
+                                "^1 Array Design\\(s\\) cannot not imported\\.  Please use Manage Array Designs\\.\nWould you like to continue importing the remaining 15 file\\(s\\)[\\s\\S]$"));
+                // switch to the import data tab to check for a successfull import
+                reClickForText("idf", "link=Imported Data", 20, 8000);
+                return;
+            }
+            break;
+        default:
+            // should never get here
+            return;
+        }
+
+        waitForAction();
+        // - hit the refresh button until files are imported
+        waitForImport("Nothing found to display");
+    }
 }

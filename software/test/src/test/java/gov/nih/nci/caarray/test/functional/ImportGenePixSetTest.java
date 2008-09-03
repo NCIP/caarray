@@ -90,7 +90,7 @@ import org.junit.Test;
 
 /**
  * Test case #7959.
- *
+ * 
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
 public class ImportGenePixSetTest extends AbstractSeleniumTest {
@@ -106,7 +106,8 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         // - Login
         loginAsPrincipalInvestigator();
         // - Add the array design
-        importArrayDesign(GenepixArrayDataFiles.JOE_DERISI_FIX, TestProperties.getGenepixDesignName(),PROVIDER, ORGANISM);
+        importArrayDesign(GenepixArrayDataFiles.JOE_DERISI_FIX, TestProperties.getGenepixDesignName(), PROVIDER,
+                ORGANISM);
         // Create project
         String experimentId = createExperiment(title, TestProperties.getGenepixDesignName(), PROVIDER, ORGANISM);
 
@@ -119,36 +120,19 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         upload(GenepixArrayDataFiles.GPR_4_0_1);
         upload(GenepixArrayDataFiles.GPR_4_1_1);
         // - Check if they are uploaded
-        checkFileStatus("Uploaded", THIRD_COLUMN);
+        checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // - Import files
-        selenium.click("selectAllCheckbox");
-        selenium.click("link=Import");
-        waitForAction();
+        importData(AUTOCREATE_ANNOTATION_SET);
 
-        // - hit the refresh button until files are imported
-        waitForImport("Nothing found to display");
-
-        // TBD - sometimes the Import button is pressed but the app stays on the Upload page - test will time out when that occurs
-        // ** this tab consistently fails.  Selenium will press the tab but not switch the page from
-        //      the Upload page.
-        // - click on the Imported data tab and re-click until data
-        // - can be found
+        // - click on the Imported data tab and re-click until data can be found
         reClickForText("displaying all items", "link=Imported Data", 4, 60000);
 
         // - validate the status
-        checkFileStatus("Imported", SECOND_COLUMN);
+        checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // make experiment public
         submitExperiment();
         makeExperimentPublic(experimentId);
     }
-
-
-    private void checkFileStatus(String status, int column) {
-        for (int i = 1; i < NUMBER_OF_FILES; i++) {
-            assertEquals(status, selenium.getTable("row." + i + "." + column));
-        }
-    }
-
 }

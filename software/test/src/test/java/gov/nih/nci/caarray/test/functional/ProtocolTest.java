@@ -164,7 +164,7 @@ public class ProtocolTest extends AbstractSeleniumTest {
     private void addExperimentDesign() {
         selenium.setCursorPosition("id=experimentDesignTypesSearchInput", "0");
         selenium.keyPress("id=experimentDesignTypesSearchInput", TAB_KEY);
-        selenium.type("projectForm_project_experiment_experimentDesignDescription", "Experiment Design Description");
+        selenium.type("projectForm_project_experiment_designDescription", "Experiment Design Description");
         selenium.keyPress("id=qualityControlTypesSearchInput", TAB_KEY);
         selenium.type("projectForm_project_experiment_qualityControlDescription", "Quality Control Description");
         selenium.keyPress("id=replicateTypesSearchInput", TAB_KEY);

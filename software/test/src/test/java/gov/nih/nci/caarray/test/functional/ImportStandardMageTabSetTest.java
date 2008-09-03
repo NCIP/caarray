@@ -96,12 +96,12 @@ import org.junit.Test;
 
 /**
  * Test case #7959.
- *
+ * 
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
 public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
-    private static final int NUMBER_OF_FILES = 30;
+    private static final int NUMBER_OF_FILES = 29;
 
     @Test
     public void testImportAndRetrieval() throws Exception {
@@ -119,55 +119,23 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         this.selenium.click("link=Data");
         waitForTab();
 
-        // Upload the following files:
-        // - MAGE-TAB IDF
-        // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
-        // - MAGE-TAB Derived Data Matrix
-        // - CEL files referenced in SDRF
-        upload(MageTabDataFiles.TCGA_BROAD_IDF);
-        upload(MageTabDataFiles.TCGA_BROAD_SDRF);
-        upload(MageTabDataFiles.TCGA_BROAD_DATA_MATRIX);
-        FileFilter celFilter = new FileFilter() {
-            public boolean accept(File pathname) {
-                return pathname.getName().toLowerCase().endsWith(".cel");
-            }
-        };
-        for (File celFile : MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY.listFiles(celFilter)) {
-            upload(celFile);
-        }
-
+        // Upload the following zip file:
+        upload(MageTabDataFiles.TCGA_BROAD_ZIP);
         // - Check if they are uploaded
-        checkFileStatus("Uploaded", THIRD_COLUMN);
+        checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
 
-        // - Import files
-        selenium.click("selectAllCheckbox");
-        selenium.click("link=Import");
-        waitForAction();
-
-        // - hit the refresh button until files are imported
-        waitForImport("Nothing found to display");
-
+        importData(MAGE_TAB);
         // - click on the Imported data tab and re-click until data
         // - can be found
-        reClickForText("29 items found", "link=Imported Data", 4, 60000);
+        reClickForText("29 items found", "link=Imported Data", 10, 30000);
 
-
+        // validate the status
+        checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
         // make experiment public
         submitExperiment();
         makeExperimentPublic(experimentId);
         endTime = System.currentTimeMillis();
-        String totalTime = df.format((endTime - startTime)/60000f);
+        String totalTime = df.format((endTime - startTime) / 60000f);
         System.out.println("total time = " + totalTime);
     }
-
-
-     private void checkFileStatus(String status, int column) {
-        System.out.println("statu = " + status);
-        for (int row = 1; row < NUMBER_OF_FILES; row++) {
-            System.out.println("row = " + row);
-            assertEquals(status, selenium.getTable("row." + row + "." + column));
-        }
-    }
-
-
 }

@@ -97,7 +97,7 @@ import org.junit.Test;
 public class MultipleCelFileImporterTest extends AbstractSeleniumTest {
 
     private static final int NUM_SETS_OF_TEN = 1;
-    
+
     private static final int NUMBER_OF_FILES = 10;
 
     @Test
@@ -132,14 +132,11 @@ public class MultipleCelFileImporterTest extends AbstractSeleniumTest {
         checkFileStatus("Uploaded", THIRD_COLUMN);
 
         // Import the files.
-        selenium.click("selectAllCheckbox");
-        // import button
-        selenium.click("link=Import");
-        waitForAction();
+        importData(MAGE_TAB);
         submitExperiment();
         makeExperimentPublic(experimentId);
     }
-    
+
     private void checkFileStatus(String status, int column) {
         for (int row = 1; row < NUMBER_OF_FILES; row++) {
             assertEquals(status, selenium.getTable("row." + row + "." + column));

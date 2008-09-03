@@ -126,7 +126,7 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
 
         // Upload the following files:
         upload(IlluminaArrayDataFiles.HUMAN_WG6);
-        checkFileStatus("Uploaded", THIRD_COLUMN);
+        checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // change the file type to "Illumina CSV Data File".
         selenium.click("selectFilesForm_selectedFileIds");
@@ -136,23 +136,18 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         selenium.click("link=Save");
         waitForText("1 file(s) updated", FIFTEEN_MINUTES);
         // - Check if they are uploaded
-        checkFileStatus("Uploaded", THIRD_COLUMN);
+        checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
         waitForAction();
 
         // - Import files
-        selenium.click("selectAllCheckbox");
-        selenium.click("link=Import");
-        waitForAction();
-
-        // - hit the refresh button until files are imported
-        waitForImport("Nothing found to display");
+        importData(AUTOCREATE_ANNOTATION_SET);
 
         // - click on the Imported data tab and re-click until data
         // - can be found
         reClickForText("One item found", "link=Imported Data", 4, 60000);
 
         // - validate the status
-        checkFileStatus("Imported", SECOND_COLUMN);
+        checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // make experiment public
         submitExperiment();
@@ -161,12 +156,6 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         endTime = System.currentTimeMillis();
         String totalTime = df.format((endTime - startTime) / 60000f);
         System.out.println("total time = " + totalTime);
-    }
-
-    private void checkFileStatus(String status, int column) {
-        for (int i = 1; i < NUMBER_OF_FILES; i++) {
-            assertEquals(status, selenium.getTable("row." + i + "." + column));
-        }
     }
 
 }
