@@ -26,9 +26,9 @@
   </table>
 </div>
 <caarray:actions divclass="actionsthin">
-    <caarray:action onclick="downloadMgr.resetDownloadInfo();" actionClass="cancel" text="Cancel" />
+    <caarray:action onclick="downloadMgr.resetDownloadInfo();" actionClass="cancel" text="Clear Download Queue" />
     <caarray:action onclick="showDownloadInProgress(); downloadMgr.doDownloadFiles();" actionClass="launch_download" text="Launch Download Job" />
-</caarray:actions>    
+</caarray:actions>
 </caarray:tabPane>
 <script type="text/javascript">
     downloadMgr.resetDownloadInfo();
