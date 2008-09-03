@@ -19,7 +19,7 @@
 <fmt:message key="experiment.files.selectAll" var="addAll">
     <fmt:param value="${addIco}"/>
 </fmt:message>
-<ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
+<ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="displayTablePostFuncCallback">
     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${files}"
         requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id">
         <caarray:displayTagProperties/>
@@ -44,6 +44,10 @@
 </ajax:displayTag>
 
 <script type="text/javascript">
+displayTablePostFuncCallback = function() {
+    	TabUtils.hideLoadingText();
+    	downloadMgr.reAddFromQueue();
+}
 downloadMgr.resetAllFiles();
 <c:forEach items="${files}" var="file">
     downloadMgr.addFile('${caarrayfn:escapeJavaScript(file.name)}', '${file.id}', ${file.compressedSize});
