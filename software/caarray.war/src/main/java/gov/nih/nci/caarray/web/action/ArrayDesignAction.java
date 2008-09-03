@@ -103,6 +103,7 @@ import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.validation.InvalidNumberOfArgsException;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 
@@ -451,6 +452,14 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
                 getFileAccessService().unzipFiles(uploads, uploadFileName);
                 handleFiles();
             }
+        } catch (RuntimeException re) {
+            if (re.getCause() instanceof InvalidNumberOfArgsException) {
+                InvalidNumberOfArgsException inv = (InvalidNumberOfArgsException) re.getCause();
+                addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error." + inv.getMessage(), inv.getArguments()));
+            } else {
+                addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.importingFile"));
+            }
+            arrayDesign.getDesignFiles().clear();
         } catch (InvalidDataFileException e) {
             LOG.debug("Swallowed exception saving array design file", e);
             FileValidationResult result = e.getFileValidationResult();
@@ -555,13 +564,18 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
                 }
             }
 
-            // add error message for the user if there was an attempt to import non-array design files.
-            if (uploads.size() > designFiles.getFiles().size()) {
-                ActionHelper.saveMessage(getText("arrayDesign.warning.zipFile"));
-            }
+              // add error message for the user if there was an attempt to import non-array design files.
+             if (uploads.size() > designFiles.getFiles().size()) {
+                 ActionHelper.saveMessage(getText("arrayDesign.warning.multiFile"));
+             }
 
-        } else {
-            addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.multipleUnsupportedFiles"));
-        }
+         } else {
+           if (uploads.size() > 1) {
+               addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.multipleUnsupportedFiles"));
+           } else {
+               addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.unsupportedFile"));
+           }
+
+         }
     }
 }

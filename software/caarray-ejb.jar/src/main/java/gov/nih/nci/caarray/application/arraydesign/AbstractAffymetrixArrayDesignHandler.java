@@ -178,8 +178,8 @@ public abstract class AbstractAffymetrixArrayDesignHandler extends AbstractArray
         } catch (AffymetrixArrayDesignReadException e) {
             LOG.error("We were unable to process an uploaded array design file.  The Affy parser recorded the "
                     + " following error: " + e.getMessage());
-            result.addMessage(getFile(), ValidationMessage.Type.ERROR, "Unable to read the file : "
-                    + getDesignFile().getName());
+            result.addMessage(getFile(), ValidationMessage.Type.ERROR, "Unable to parse the file "
+                    + getDesignFile().getName() + ". " + e.getMessage().replaceAll("null", "unknown"));
         } finally {
             closeFileReaders();
         }
