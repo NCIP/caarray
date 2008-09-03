@@ -42,7 +42,10 @@
             <s:textfield key="newSource.version" size="80" tabindex="7"/>
             </tbody>
             <tr><th colspan="2">Accession</th></tr>
-            <s:textfield key="currentTerm.url" size="80" tabindex="8"/>
+            <s:textfield key="currentTerm.url" size="80" tabindex="8">
+                <s:param name="url">true</s:param>
+                <s:param name="target">_blank</s:param>
+            </s:textfield>
             <s:textfield name="currentTerm.accession" label="Accession Value" size="80" tabindex="9"/>
             <s:hidden name="category" />
             <s:hidden name="currentTerm.id" />

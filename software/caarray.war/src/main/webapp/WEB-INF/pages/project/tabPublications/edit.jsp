@@ -9,7 +9,10 @@
         <s:textarea name="currentPublication.authors" key="experiment.publications.authors" rows="3" cols="75"
             tabindex="2" />
         <s:textfield name="currentPublication.uri" key="experiment.publications.uri" size="80" tabindex="3"
-            maxlength="254"/>
+            maxlength="254">
+            <s:param name="url">true</s:param>
+            <s:param name="target">_blank</s:param>
+        </s:textfield>
         <s:textfield name="currentPublication.editor" key="experiment.publications.editor" size="50" tabindex="4"
             maxlength="254"/>
         <s:textfield name="currentPublication.pages" key="experiment.publications.pages" size="20" tabindex="5"

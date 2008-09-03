@@ -26,7 +26,9 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
                 <caarray:outputUrl var="permalinkUrl">
                     <jsp:attribute name="url"><c:url value="/project/${project.experiment.publicIdentifier}"/></jsp:attribute>
                 </caarray:outputUrl>
-                <s:textfield theme="readonly" label="Experiment URL" value="%{#attr.permalinkUrl}"/>
+                <s:textfield theme="readonly" label="Experiment URL" value="%{#attr.permalinkUrl}">
+                    <s:param name="url">true</s:param>
+                </s:textfield>
             </c:if>
             <c:url var="autocompleteUrl" value="/protected/ajax/project/listTab/Overview/generateAssayList.action" />
             <caarray:listSelector baseId="assayTypes" listField="${project.experiment.assayTypes}" listFieldName="project.experiment.assayTypes"
@@ -55,7 +57,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
             <s:hidden name="editMode" />
             <input type="submit" class="enableEnterSubmit"/>
         </s:form>
-		<caarray:focusFirstElement formId="projectForm"/>
+    <caarray:focusFirstElement formId="projectForm"/>
         <script type="text/javascript">
             startArrayDesignLookup = function() {
                 $("progressMsg").show();

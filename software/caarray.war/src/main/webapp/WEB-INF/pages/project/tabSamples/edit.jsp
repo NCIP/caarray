@@ -14,21 +14,23 @@
         <s:textarea name="currentSample.description" key="experiment.samples.description" rows="3" cols="75"
             tabindex="2" />
         <s:if test="fieldErrors['currentSample'] != null">
-			<tr errorfor="currentSample">
-				<td valign="top" align="center" colspan="2">
-				<s:fielderror>
-					<s:param>currentSample</s:param>
-				</s:fielderror>
-				</td>
-			</tr>
-		</s:if>
-		<s:textfield key="currentSample.externalSampleId" size="80" tabindex="3" />
+      <tr errorfor="currentSample">
+        <td valign="top" align="center" colspan="2">
+        <s:fielderror>
+          <s:param>currentSample</s:param>
+        </s:fielderror>
+        </td>
+      </tr>
+    </s:if>
+    <s:textfield key="currentSample.externalSampleId" size="80" tabindex="3" />
         <c:if test="${!empty currentSample.externalSampleId}">
             <caarray:outputUrl var="permalinkUrl">
                 <jsp:attribute name="url"><c:url value="/project/${project.experiment.publicIdentifier}/sample/${currentSample.externalSampleId}"/></jsp:attribute>
             </caarray:outputUrl>
-            <s:textfield theme="readonly" label="Sample URL" value="%{#attr.permalinkUrl}"/>
-        </c:if>                    
+            <s:textfield theme="readonly" label="Sample URL" value="%{#attr.permalinkUrl}">
+                <s:param name="url">true</s:param>
+            </s:textfield>
+        </c:if>
         <caarray:annotationAssociationPicker baseId="sourcePicker" entityName="Sample" associatedEntityName="Source" itemId="${currentSample.id}" tabIndex="4" />
         <caarray:termSelector baseId="materialType" category="<%= ExperimentOntologyCategory.MATERIAL_TYPE %>" termField="${currentSample.materialType}"
             tabIndex="5" termFieldName="currentSample.materialType" returnInitialTab1="annotations" returnInitialTab2="samples" returnInitialTab2Url="${thisUrl}" />
@@ -39,7 +41,7 @@
         <s:hidden name="editMode" />
         <input type="submit" class="enableEnterSubmit"/>
     </caarray:projectListTabItemForm>
-    
+
     <s:if test="${!editMode}">
     <%@ include file="/WEB-INF/pages/project/tabCommon/downloadFiles.jsp" %>
     </s:if>

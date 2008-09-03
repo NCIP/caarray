@@ -31,7 +31,10 @@
             <s:textfield key="protocol.contact" size="80" tabindex="4"/>
             <s:textfield key="protocol.software" size="80" tabindex="5"/>
             <s:textfield key="protocol.hardware" size="80" tabindex="6"/>
-            <s:textfield key="protocol.url" size="80" tabindex="7"/>
+            <s:textfield key="protocol.url" size="80" tabindex="7">
+                <s:param name="url">true</s:param>
+                <s:param name="target">_blank</s:param>
+            </s:textfield>
             <tr><th colspan="2">Source</th></tr>
             <c:if test="${editMode}">
             <s:radio name="createNewSource" label="Create a new Source?" list="#{true: 'Yes', false: 'No'}"
