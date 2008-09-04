@@ -467,7 +467,8 @@ public class AffymetrixPgfClfDesignHandler extends AbstractAffymetrixArrayDesign
     void createProbeSetDesignElementList(ArrayDesign arrayDesign) throws AffymetrixArrayDesignReadException {
         ArrayDesign refreshedArrayDesign = getRefreshedDesign(arrayDesign);
         AffymetrixChpPgfClfDesignElementListUtility.createDesignElementList(refreshedArrayDesign, getArrayDao());
-        flushAndClearSession();
+        LOG.info("Committing design element list for " + refreshedArrayDesign.getName());
+        flushAndCommitTransaction();
         try {
             for (String designName : pgfReader.getFileHeader(HEADER_CHIP_TYPE)) {
                 if (refreshedArrayDesign.getName().equals(designName)) {
@@ -480,7 +481,8 @@ public class AffymetrixPgfClfDesignHandler extends AbstractAffymetrixArrayDesign
                 newDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + designName);
                 getArrayDao().save(newDesign);
                 AffymetrixChpPgfClfDesignElementListUtility.createDesignElementList(newDesign, getArrayDao());
-                flushAndClearSession();
+                LOG.info("Committing design element list for " + designName);
+                flushAndCommitTransaction();
             }
         } catch (Exception e) {
             throw new AffymetrixArrayDesignReadException("Exception creating array design aliases"
