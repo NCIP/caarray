@@ -13,6 +13,10 @@
        uploadWindow = window.open(url, '_blank', "width=685,height=480,left=0,top=0,toolbar,scrollbars,resizable,status=yes");
     }
 
+    confirmDeleteArrayDesign = function() {
+        return confirm('You are about to delete this array design.   Please note that large array designs will take longer to delete.\nPress OK to continue.');
+    }
+
 </script>
 
 <html>
@@ -70,7 +74,7 @@
                                 <c:url value="/protected/arrayDesign/delete.action" var="deleteDesignUrl">
                                      <c:param name="arrayDesign.id" value="${row.id}" />
                                 </c:url>
-                                <a href="${deleteDesignUrl}"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                                <a href="${deleteDesignUrl}" onclick="return confirmDeleteArrayDesign();"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
                           </c:if>
                         </display:column>
                         <display:column sortProperty="designFileSet.status" titleKey="experiment.files.status" sortable="true" >
