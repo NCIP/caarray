@@ -8,8 +8,8 @@
                 <property name="mail.transport.protocol" value="smtp"/>
 
                 <!-- Configure the SMTP gateway server -->
-                <property name="mail.smtp.host" value="@SMTPHOST@"/>
-                <property name="mail.smtp.port" value="@SMTPPORT@"/>
+                <property name="mail.smtp.host" value="@mail.smtp.host@"/>
+                <property name="mail.smtp.port" value="@mail.smtp.port@"/>
 
                 <property name="mail.debug" value="false"/>
             </configuration>

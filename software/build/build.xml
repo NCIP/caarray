@@ -21,6 +21,7 @@
     <property name="cobertura-functional.file" value="${cobertura.dir}/cobertura-functional.ser" />
     <property name="cobertura-merged.file" value="${cobertura.dir}/cobertura-merged.ser" />
     <property name="ear.dist.dir" value="${basedir}/dist/ear" />
+    <property name="common.resources.jboss.conf.dir" value="${basedir}/common/resources/jboss-conf"/>
 
     <!-- Components -->
 
@@ -891,6 +892,7 @@
                     <include name="asm-attrs.jar" />
                     <include name="axis.jar" />
                     <include name="castor-1.0.2.jar" />
+                    <include name="clm.jar" />
                     <include name="jdbc-se2.0.jar" />
                     <include name="xerces-J_1.4.0.jar" />
                     <include name="cglib-2.1.3.jar" />
@@ -1611,17 +1613,14 @@
     <target name="deploy" depends="deploy:caarray.ear,deploy:caarray-svc" description="Deploy the application to JBoss" />
 
     <target name="deploy:caarray.ear-dependencies" depends="prepare:create-local.properties">
-        <copy file="${resource.dir}/deploy/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
+        <copy file="${common.resources.jboss.conf.dir}/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
             <filterset refid="caarray.filterset" />
         </copy>
-        <copy file="${clm.jar}" todir="${jboss.lib.dir}" overwrite="true" />
         <copy file="${mysql-connector.jar}" todir="${jboss.lib.dir}" overwrite="true" />
         <copy file="${log4j.jar}" toFile="${jboss.lib.dir}/log4j.jar" overwrite="true" />
-        <copy file="${resource.dir}/deploy/${jboss-mail-service.file}" todir="${jboss.deploy.dir}" />
-        <replace file="${jboss.deploy.dir}/${jboss-mail-service.file}">
-            <replacefilter token="@SMTPHOST@" value="${mail.smtp.host}" />
-            <replacefilter token="@SMTPPORT@" value="${mail.smtp.port}" />
-        </replace>
+        <copy file="${common.resources.jboss.conf.dir}/${jboss-mail-service.file}" todir="${jboss.deploy.dir}">
+            <filterset refid="caarray.filterset" />
+        </copy>
     </target>
 
     <target name="deploy:caarray.ear" depends="build:caarray.ear,deploy:caarray.ear-dependencies">
@@ -1760,7 +1759,7 @@
     <target name="-remote-jboss:configure-jboss-ds">
         <echo message="Configuring caarray-mysql database..." />
         <mkdir dir="${target.dir}" />
-        <copy todir="${target.dir}/deploy/" file="${resource.dir}/deploy/${mysql.datasource.file}" />
+        <copy todir="${target.dir}/deploy/" file="${common.resources.jboss.conf.dir}/${mysql.datasource.file}" />
         <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="project.classpath" />
         <xmlconfig in="${target.dir}/deploy/${mysql.datasource.file}" verbose="false">
             <update path="//datasources/local-tx-datasource/connection-url" value="jdbc:mysql://${database.server}:${database.port}/${database.name}" />
@@ -1772,11 +1771,9 @@
     <target name="-remote-jboss:configure-jboss-mailservice">
         <echo message="Configuring jboss mail service..." />
         <mkdir dir="${target.dir}" />
-        <copy todir="${target.dir}/deploy/" file="${resource.dir}/deploy/${jboss-mail-service.file}" />
-        <replace file="${target.dir}/deploy/${jboss-mail-service.file}">
-            <replacefilter token="@SMTPHOST@" value="${mail.smtp.host}" />
-            <replacefilter token="@SMTPPORT@" value="${mail.smtp.port}" />
-        </replace>
+        <copy todir="${target.dir}/deploy/" file="${common.resources.jboss.conf.dir}/${jboss-mail-service.file}">
+            <filterset refid="caarray.filterset" />
+        </copy>
     </target>
 
     <target name="-remote-jboss:copy-jboss-config">
@@ -1787,11 +1784,6 @@
     <target name="remote-jboss:copy-jboss-mailservice">
         <echo message="Copying mail service configuration to jboss server at ${ssh.server.hostname}..." />
         <remote-scp remoteScpFileToCopy="${target.dir}/deploy/${jboss-mail-service.file}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/deploy" />
-    </target>
-
-    <target name="-remote-jboss:copy-clm-jar">
-        <echo message="Copying clm.jar to jboss lib folder at ${ssh.server.hostname}..." />
-        <remote-scp remoteScpFileToCopy="${clm.jar}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/lib" />
     </target>
 
     <target name="-remote-jboss:copy-log4j-jar">
@@ -1826,7 +1818,6 @@
         <antcall target="remote-jboss:deploy-caarray" />
         <antcall target="-remote-jboss:copy-jboss-config" />
         <antcall target="remote-jboss:copy-jboss-mailservice" />
-        <antcall target="-remote-jboss:copy-clm-jar" />
         <antcall target="-remote-jboss:copy-log4j-jar" />
         <antcall target="remote-jboss:start" />
     </target>
