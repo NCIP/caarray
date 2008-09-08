@@ -5,7 +5,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 -->
 <project name="caarray-installer" default="upgrade" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 	<description>
-		TBD
+        Apache Ant-based installer for caArray2.
 	</description>
 
 	<!-- Properties file related properties and tasks -->
@@ -33,6 +33,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 	<!-- *-ds.xml and EAR -->
 	<property name="caarray.dir.dist" value="${basedir}/${caarray.dist.relative.dir}" />
 	<property name="caarray.ds.file" value="caarray-mysql-ds.xml" />
+    <property name="mail.service.file" value="mail-service.xml" />
 	<property name="caarray.ear.file" value="caarray.ear" />
 	
 	<property name="temp.dir" value="${basedir}/temp" />
@@ -213,7 +214,15 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 	</target>
 
 	<target name="install:jboss:binaries" description="Unzip JBoss binary" unless="exclude.jboss">
-		<unzip dest="${application.base.path}" src="${tools.dir.src}/${jboss.binaries.file}" />
+        <java jar="${tools.dir.src}/${jboss.binaries.file}" fork="true">
+            <arg line="-installGroup ejb3 installpath=${jboss.home}"/>
+        </java>
+        <if>
+            <os family="unix"/>
+            <then>
+                <chmod dir="${jboss.home}/bin" perm="ugo+rx" includes="**/*.sh"/>
+            </then>
+        </if>
 	</target>
 	
 	<target name="install:jboss:grid-binaries" description="Unzip JBoss binary for grid services" unless="exclude.jboss.grid">
@@ -272,6 +281,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
 	<target name="install:jboss:caarray:configure" description="Configure caarray application" unless="exclude.jboss">
 		<copy file="${jboss-conf.dir.target}/${caarray.ds.file}" todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true" />
+        <copy file="${jboss-conf.dir.target}/${mail.service.file}" todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true" />
 	</target>
 
 	<!-- Wrapper target to configure jboss container, not deployed application -->
@@ -291,6 +301,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 			
 		<jboss-bindings
 			jboss.server.bindingfile.location="${jboss.home}/server/${jboss.server.name}/conf/bindings.xml"
+            jboss.server.binding.template.location="${bda-utils.dir}/resource/template-binding.xml"
 			/>
 	</target>
 

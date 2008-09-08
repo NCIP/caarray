@@ -117,6 +117,9 @@
     <module>
         <java>json-lib-2.2.2-jdk15.jar</java>
     </module>
+    <module>
+        <java>clm.jar</java>
+    </module>
     <security-role>
         <description>A Principal Investigator (PI) typically owns experiments and studies/projects.</description>
         <role-name>PrincipalInvestigator</role-name>
