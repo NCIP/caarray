@@ -130,11 +130,17 @@ public class UserFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String username = httpRequest.getRemoteUser();
         UsernameHolder.setUser(username);
+        boolean hasUserRole = false;
+
         for (UserRole ur : UserRole.values()) {
             if (httpRequest.isUserInRole(ur.getRoleName())) {
                 httpRequest.getSession().setAttribute(ur.getSessionVar(), true);
+                hasUserRole = true;
             }
         }
+
+        httpRequest.getSession().setAttribute("isUserHasRole", hasUserRole);
+
         addAnonymousGroup(username, httpRequest);
         chain.doFilter(request, response);
     }

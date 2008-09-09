@@ -7,7 +7,7 @@
 </div>
 <div id="caarrayheader">
     <div id="caarraylogo"><a href="<c:url value="/" />"><img src="<c:url value="/images/logo_caarray.gif"/>" width="172" height="46" alt="Logo: caArray - Array Data Management System" /></a></div>
-    <c:if test="${pageContext.request.remoteUser != null}">
+    <c:if test="${pageContext.request.remoteUser != null && isUserHasRole == true}">
         <div id="topsearch">
             <s:form action="/search/basicSearch.action" theme="simple">
                 <table>
@@ -36,7 +36,7 @@
         <span title="Subversion URL: <c:out value='${initParam["svnUrl"]}'/>, revision: <c:out value='${initParam["svnRevision"]}'/>">Build <c:out value='${initParam["caarrayVersion"]}'/></span>
         <span class="bar">|</span>  Node: <span>NCICB</span>
         <c:if test="${pageContext.request.remoteUser != null}">
-            <span class="bar">|</span> Welcome, <s:property value="@gov.nih.nci.caarray.util.UsernameHolder@getUser()"/>
+            <span class="bar">|</span> Welcome, <c:out value='${pageContext.request.remoteUser}'/>
             <span class="bar">|</span> <a href="<c:url value="/logout.action" />"><span>Logout</span></a>
         </c:if>
     </div>

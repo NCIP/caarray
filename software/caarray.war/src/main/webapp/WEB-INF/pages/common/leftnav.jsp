@@ -2,7 +2,7 @@
 
 <div id="leftnav">
     <c:choose>
-        <c:when test="${pageContext.request.remoteUser != null}">
+        <c:when test="${pageContext.request.remoteUser != null && isUserHasRole == true}">
             <div class="navheader">Welcome to caArray</div>
             <ul class="caarraymenu">
                 <li class="liheader">Home</li>
@@ -28,7 +28,9 @@
             <div class="navheader">Welcome to caArray</div>
             <ul class="caarraymenu">
                 <li><a href="<c:url value="/home.action" />">Browse</a></li>
-                <li><a href="<c:url value="/protected/project/workspace.action" />">Login</a></li>
+                <c:if test="${pageContext.request.remoteUser == null}">
+                        <li><a href="<c:url value="/protected/project/workspace.action" />">Login</a></li>
+                </c:if>
                 <li><a href="<c:url value="/registration/input.action"/>">Register</a></li>
             </ul>
         </c:otherwise>
