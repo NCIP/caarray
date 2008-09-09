@@ -608,6 +608,25 @@ DownloadMgr.prototype.reAddFromQueue = function() {
     this.addTotalRow();
 }
 
+DownloadMgr.prototype.reApplySelection = function(id, highlightRow) {
+    this.deleteTotalRow();
+        for (id in this.files) {
+            if (this.downloadFiles[id]) {
+                 var file = this.files[id];
+		  		 this.downloadFiles[id] = file;
+
+				  if (false) {
+				      new Effect.Highlight($('fileRow' + file.id).up('tr'));
+				  }
+
+				  var fileCell = $('fileRow' + file.id)
+				  if (fileCell) {
+				    fileCell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>';
+		  		   }
+            }
+        }
+    this.addTotalRow();
+}
 
 function AssociationPicker(baseId, associatedEntityName, entityName, projectId, itemId, url) {
   this.baseId = baseId;

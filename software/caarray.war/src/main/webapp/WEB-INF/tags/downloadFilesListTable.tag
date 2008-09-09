@@ -46,7 +46,7 @@
 <script type="text/javascript">
 displayTablePostFuncCallback = function() {
     	TabUtils.hideLoadingText();
-    	downloadMgr.reAddFromQueue();
+    	downloadMgr.reApplySelection();
 }
 downloadMgr.resetAllFiles();
 <c:forEach items="${files}" var="file">
