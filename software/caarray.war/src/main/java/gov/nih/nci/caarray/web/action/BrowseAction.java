@@ -168,7 +168,7 @@ public class BrowseAction extends ActionSupport {
         List<Object[]> resultList = bs.tabList(this.category);
         this.tabs = new TreeSet<BrowseTab>();
         for (Object[] tab : resultList) {
-            this.tabs.add(new BrowseTab((String) tab[0], (Number) tab[1], ((Number) tab[2]).intValue()));
+           this.tabs.add(new BrowseTab((String) tab[0], (Number) tab[1], ((Number) tab[2]).intValue()));
         }
         return Action.SUCCESS;
     }

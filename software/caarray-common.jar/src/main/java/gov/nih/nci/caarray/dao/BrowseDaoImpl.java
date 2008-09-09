@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
@@ -101,6 +102,8 @@ import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class BrowseDaoImpl implements BrowseDao {
+
+    private final CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
      * {@inheritDoc}
@@ -175,8 +178,8 @@ public class BrowseDaoImpl implements BrowseDao {
         if (BrowseCategory.EXPERIMENTS.equals(cat)) {
             queryStr = "SELECT 'Experiments',0,COUNT(p) FROM " + Project.class.getName() + " p";
         } else if (BrowseCategory.ORGANISMS.equals(cat)) {
-            queryStr = "SELECT o.scientificName, o.id, COUNT(p) FROM " + Project.class.getName()
-            + " p JOIN p.experiment.organism o GROUP BY o";
+            queryStr = "SELECT o.scientificName, o.id, count(o.scientificName) FROM " + Project.class.getName()
+            + " p JOIN p.experiment.organism o GROUP BY o.scientificName";
         } else if (BrowseCategory.ARRAY_PROVIDERS.equals(cat)) {
             queryStr = "SELECT m.name, m.id, count(p) FROM " + Project.class.getName()
             + " p JOIN p.experiment.manufacturer m GROUP BY m";
@@ -197,6 +200,7 @@ public class BrowseDaoImpl implements BrowseDao {
         SortCriterion<Project> sortCrit = params != null ? params.getSortCriterion() : null;
         boolean allProjects = BrowseCategory.EXPERIMENTS.equals(cat);
         StringBuffer sb = new StringBuffer();
+
         if (count) {
             sb.append("SELECT COUNT(DISTINCT p)");
         } else {
@@ -210,7 +214,8 @@ public class BrowseDaoImpl implements BrowseDao {
             sb.append(" JOIN ").append(cat.getJoin());
         }
         if (!allProjects) {
-            sb.append(" WHERE ").append(cat.getField()).append(".id = :id");
+            sb.append(" WHERE ").append(cat.getField());
+            sb.append((BrowseCategory.ORGANISMS.equals(cat)?".scientificName = :name" : ".id = :id"));
         }
         if (!count && sortCrit != null) {
             sb.append(" ORDER BY p.").append(sortCrit.getOrderField());
@@ -220,8 +225,20 @@ public class BrowseDaoImpl implements BrowseDao {
         }
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
         if (!allProjects) {
-            q.setParameter("id", fieldId);
+            if (cat.equals(BrowseCategory.ORGANISMS)) {
+                Organism org = getDaoFactory().getOrganismDao().getOrganism(fieldId.longValue());
+                q.setParameter("name", org.getScientificName());
+            } else {
+                q.setParameter("id", fieldId);
+            }
         }
         return q;
+    }
+
+    /**
+     * @return the daoFactory
+     */
+    public CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
     }
 }
