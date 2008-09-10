@@ -4,7 +4,9 @@
 <table class="searchresults">
   <tr>
       <td width="80%">
+      <span id="downloadFilesList">
         <%@ include file="/WEB-INF/pages/project/tabCommon/downloadFilesList.jsp" %>
+        </span>
       </td>
       <td width="20%" style="padding-left: 2px;">
         <br>

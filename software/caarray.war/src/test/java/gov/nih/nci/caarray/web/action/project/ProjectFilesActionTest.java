@@ -801,10 +801,6 @@ public class ProjectFilesActionTest {
         action.setUploadFileName(new ArrayList<String>());
         assertTrue(action.getUploadFileName().isEmpty());
 
-        assertTrue(!action.getAllExtensions().isEmpty());
-        action.setAllExtensions(new HashSet<String>());
-        assertTrue(action.getAllExtensions().isEmpty());
-
         assertNull(action.getFileType());
         action.setFileType(FileType.AFFYMETRIX_CDF.toString());
         assertEquals(FileType.AFFYMETRIX_CDF.toString(), action.getFileType());

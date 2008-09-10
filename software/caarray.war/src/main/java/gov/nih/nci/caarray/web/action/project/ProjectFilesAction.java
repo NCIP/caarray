@@ -120,6 +120,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -130,8 +131,6 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.set.TransformedSet;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -196,21 +195,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private static final String ACTION_IMPORTED = "listImported";
     private static final String ACTION_SUPPLEMENTAL = "listSupplemental";
     private static final String ACTION_TABLE = "table";
-    static final Transformer EXTENSION_TRANSFORMER = new Transformer() {
-        /**
-         * Transforms files to their extensions.
-         */
-        public Object transform(Object o) {
-            CaArrayFile f = (CaArrayFile) o;
-            int index = f.getName().lastIndexOf('.');
-            if (index == -1) {
-                return "(No Extension)";
-            }
-            return f.getName().substring(index).toLowerCase(Locale.US);
-        }
-    };
+
     private static final String UNKNOWN_FILE_TYPE = "(Unknown File Types)";
     private static final String KNOWN_FILE_TYPE = "(Supported File Types)";
+
+    private static final String IMPORTED = "IMPORTED";
+    private static final String VALIDATED = "VALIDATED";
 
     private static final String ID_PROPERTY = "id";
     private static final String TEXT_PROPERTY = "text";
@@ -227,12 +217,10 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private int downloadGroupNumber = -1;
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
     private String listAction;
-    private String extensionFilter;
-    private Set<String> allExtensions = new TreeSet<String>();
     private String fileType;
     private String fileStatus;
     private String changeToFileType;
-    private List<String> fileTypes = new ArrayList<String>();
+    private Set<String> fileTypes = new TreeSet<String>();
     private List<String> fileStatuses = new ArrayList<String>();
     private String nodeId;
     private ExperimentDesignTreeNodeType nodeType;
@@ -241,26 +229,39 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private String newAnnotationName;
     private EnumMap<FileStatus, Integer> fileStatusCountMap = new EnumMap<FileStatus, Integer>(FileStatus.class);
 
-    private void initFileTypes() {
-        fileTypes.add(KNOWN_FILE_TYPE);
-        fileTypes.add(UNKNOWN_FILE_TYPE);
-        for (FileType ft : FileType.values()) {
-            fileTypes.add(ft.toString());
-        }
+    private void initFileTypesAndStatuses() {
+        setFileTypeNamesAndStatuses(getProject().getFiles());
+
     }
 
-    private void initFileStatuses() {
-        for (FileStatus fs : FileStatus.values()) {
-            getFileStatuses().add(fs.toString());
+    private void initUnImportedFileTypesAndStatuses() {
+        setFileTypeNamesAndStatuses(getProject().getUnImportedFiles());
+    }
+
+    private void setFileTypeNamesAndStatuses(SortedSet<CaArrayFile> fileSet) {
+        Set<String> fileTypeNames = new TreeSet<String>();
+        List<String> fileStatusList = new ArrayList<String>();
+        for (CaArrayFile file : fileSet) {
+            if (file.getFileType() != null) {
+                fileTypeNames.add(file.getFileType().getName());
+            }
+            if (file.getStatus().contains(IMPORTED) && !fileStatusList.contains(IMPORTED)) {
+                fileStatusList.add(IMPORTED);
+            } else if (file.getStatus().contains(VALIDATED) && !fileStatusList.contains(VALIDATED)) {
+                fileStatusList.add(VALIDATED);
+            } else if (!fileStatusList.contains(file.getStatus())) {
+                fileStatusList.add(file.getStatus());
+            }
         }
+        fileTypeNames.add(KNOWN_FILE_TYPE);
+        fileTypeNames.add(UNKNOWN_FILE_TYPE);
+        setFileTypes(fileTypeNames);
+        setFileStatuses(fileStatusList);
     }
 
     private String prepListUnimportedPage() {
-        initFileTypes();
-        initFileStatuses();
         setListAction(ACTION_UNIMPORTED);
         setFiles(new HashSet<CaArrayFile>());
-
         for (CaArrayFile f : getProject().getUnImportedFiles()) {
             boolean fileStatusMatch = (getFileStatus() == null
                     || getFileStatus().equals(f.getFileStatus().name()));
@@ -273,6 +274,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 getFiles().add(f);
             }
         }
+        initUnImportedFileTypesAndStatuses();
         setFileStatusCountMap(computeFileStatusCounts());
         return ACTION_UNIMPORTED;
     }
@@ -371,15 +373,18 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     @SkipValidation
     public String downloadFiles() {
         for (CaArrayFile f : getProject().getFiles()) {
-            if (StringUtils.isBlank(this.extensionFilter)
-                    || EXTENSION_TRANSFORMER.transform(f).equals(this.extensionFilter)) {
+            boolean fileStatusMatch = (getFileStatus() == null
+                    || getFileStatus().equals(f.getFileStatus().name()));
+            boolean fileTypeMatch = (getFileType() == null
+                    || (f.getFileType() != null
+                            && f.getFileType().toString().equals(getFileType())
+                    || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null)
+                    || (UNKNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() == null)));
+            if (fileStatusMatch && fileTypeMatch) {
                 getFiles().add(f);
             }
         }
-        Set s = TransformedSet.decorate(new TreeSet<String>(), EXTENSION_TRANSFORMER);
-        s.addAll(getProject().getFiles());
-        setAllExtensions(s);
-
+        initFileTypesAndStatuses();
         return Action.SUCCESS;
     }
 
@@ -1197,34 +1202,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     /**
-     * @return all extensions for the project files
-     */
-    public Set<String> getAllExtensions() {
-        return this.allExtensions;
-    }
-
-    /**
-     * @param allExtensions all extensions for the project
-     */
-    public void setAllExtensions(Set<String> allExtensions) {
-        this.allExtensions = allExtensions;
-    }
-
-    /**
-     * @return extensions to filter for
-     */
-    public String getExtensionFilter() {
-        return this.extensionFilter;
-    }
-
-    /**
-     * @param extensionFilter extensions to filter for
-     */
-    public void setExtensionFilter(String extensionFilter) {
-        this.extensionFilter = extensionFilter;
-    }
-
-    /**
      * @return the fileType
      */
     public String getFileType() {
@@ -1255,14 +1232,14 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     /**
      * @return the fileTypes
      */
-    public List<String> getFileTypes() {
+    public Set<String> getFileTypes() {
         return this.fileTypes;
     }
 
     /**
      * @param fileTypes the fileTypes to set
      */
-    public void setFileTypes(List<String> fileTypes) {
+    public void setFileTypes(Set<String> fileTypes) {
         this.fileTypes = fileTypes;
     }
 

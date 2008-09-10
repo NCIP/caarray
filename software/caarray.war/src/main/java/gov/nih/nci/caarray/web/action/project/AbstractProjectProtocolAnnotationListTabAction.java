@@ -97,8 +97,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.collections.set.TransformedSet;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.Transformer;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -109,6 +108,20 @@ import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public abstract class AbstractProjectProtocolAnnotationListTabAction extends AbstractProjectListTabAction {
+    static final Transformer FILE_TYPE_TRANSFORMER = new Transformer() {
+        /**
+         * Transforms files to their extensions.
+         */
+        public Object transform(Object o) {
+            CaArrayFile f = (CaArrayFile) o;
+            return f.getFileType().getName();
+        }
+    };
+    private static final String UNKNOWN_FILE_TYPE = "(Unknown File Types)";
+    private static final String KNOWN_FILE_TYPE = "(Supported File Types)";
+
+    private static final String IMPORTED = "IMPORTED";
+    private static final String VALIDATED = "VALIDATED";
 
     private Term protocolType;
     private Set<Term> protocolTypes;
@@ -116,13 +129,14 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     private List<Protocol> protocols = new ArrayList<Protocol>();
     private String protocolName;
     private List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
+    private Set<String> fileTypes = new TreeSet<String>();
+    private List<String> fileStatuses = new ArrayList<String>();
+    private String fileType;
     private int downloadGroupNumber = -1;
 
 
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
-    private String extensionFilter;
-    private Set<String> allExtensions = new TreeSet<String>();
-    
+
     /**
      * A simple enum to use instead of string literals.
      */
@@ -152,7 +166,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
         private BioMaterialTypes(String type) {
             this.type = type;
         }
-        
+
         /**
          * @return pretty type name
          */
@@ -160,7 +174,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
             return type;
         }
     }
-    
+
     /**
      * default constructor.
      *
@@ -373,7 +387,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
         this.downloadGroupNumber = downloadGroupNumber;
     }
 
-    
+
     /**
      * @return files to show for download
      */
@@ -387,64 +401,56 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     public void setFiles(Set<CaArrayFile> files) {
         this.files = files;
     }
-    
-    /**
-     * @return extensions to filter for
-     */
-    public String getExtensionFilter() {
-        return this.extensionFilter;
-    }
 
-    /**
-     * @param extensionFilter extensions to filter for
-     */
-    public void setExtensionFilter(String extensionFilter) {
-        this.extensionFilter = extensionFilter;
-    }
-    
-    /**
-     * @return all extensions for the project files
-     */
-    public Set<String> getAllExtensions() {
-        return this.allExtensions;
-    }
-
-    /**
-     * @param allExtensions all extensions for the project
-     */
-    public void setAllExtensions(Set<String> allExtensions) {
-        this.allExtensions = allExtensions;
-    }
-    
     /**
      * Method to get the list of files.
      *
      * @return the string matching the result to follow
      */
-    @SkipValidation    
+    @SkipValidation
     public String downloadFiles() {
         for (CaArrayFile f : getAllDataFiles()) {
-            if (StringUtils.isBlank(this.extensionFilter)
-                    || ProjectFilesAction.EXTENSION_TRANSFORMER.transform(f).equals(this.extensionFilter)) {
+            if (getFileType() == null
+                    || (f.getFileType() != null
+                            && f.getFileType().toString().equals(getFileType())
+                    || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null)
+                    || (UNKNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() == null))) {
                 getFiles().add(f);
             }
         }
-        prepareAllFileExtensions();
-
+        initFileTypes();
         return "downloadFiles";
     }
-
-    private void prepareAllFileExtensions() {
-        Set s = TransformedSet.decorate(new TreeSet<String>(), ProjectFilesAction.EXTENSION_TRANSFORMER);
-        s.addAll(getAllDataFiles());
-        setAllExtensions(s);
+    private void initFileTypes() {
+        setFileTypeNamesAndStatuses(getAllDataFiles());
     }
-    
-    /** 
+
+    private void setFileTypeNamesAndStatuses(Collection<CaArrayFile> fileSet) {
+        Set<String> fileTypeNames = new TreeSet<String>();
+        List<String> fileStatusList = new ArrayList<String>();
+        for (CaArrayFile file : fileSet) {
+            if (file.getFileType() != null) {
+                fileTypeNames.add(file.getFileType().getName());
+            }
+            if (file.getStatus().contains(IMPORTED) && !fileStatusList.contains(IMPORTED)) {
+                fileStatusList.add(IMPORTED);
+            } else if (file.getStatus().contains(VALIDATED) && !fileStatusList.contains(VALIDATED)) {
+                fileStatusList.add(VALIDATED);
+            } else if (!fileStatusList.contains(file.getStatus())) {
+                fileStatusList.add(file.getStatus());
+            }
+        }
+        fileTypeNames.add(KNOWN_FILE_TYPE);
+        fileTypeNames.add(UNKNOWN_FILE_TYPE);
+        setFileTypes(fileTypeNames);
+        setFileStatuses(fileStatusList);
+    }
+
+    /**
      * @return all downloadable data files for the page's primary entity
      */
     protected abstract Collection<CaArrayFile> getAllDataFiles();
-    
+
     /**
      * Ajax-only call to handle changing the filter extension.
      * @return success.
@@ -465,25 +471,25 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
         downloadFiles();
         return "downloadFilesListTable";
     }
-    
+
     /**
-     * @return the action to handle filtering downloadable files by file type 
+     * @return the action to handle filtering downloadable files by file type
      */
     public abstract String getDownloadFileListAction();
-    
+
     /**
      * @return the action to handle sorting downloadable files
      */
     public abstract String getDownloadFilesTableListSortUrlAction();
-    
+
     /**
      * @param type [Sources|Samples|Extracts|LabeledExtracts|Hybridization]
-     * @return the action to handle filtering downloadable files by file type 
+     * @return the action to handle filtering downloadable files by file type
      */
     protected String getDownloadFileListActionUrl(BioMaterialTypes type) {
         return "/ajax/project/listTab/" + type.getType() + "/downloadFilesList.action";
     }
-    
+
     /**
      * @param type [Sources|Samples|Extracts|LabeledExtracts|Hybridization]
      * @return the action to handle sorting downloadable files
@@ -491,11 +497,11 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     protected String getDownloadFileTableListSortActionUrl(BioMaterialTypes type) {
         return "/ajax/project/listTab/" + type.getType() + "/downloadFilesListTable.action";
     }
-    
+
     /**
      * Used to render the proper action for the download all files for a Annotation
      * (ref:projectListTabDownloadColumn.tag).
-     * 
+     *
      * @param files all the files for the item in question
      * @return true if the all files to download for the current item (source, sample, etc..) should use the download
      *         groups mechanism
@@ -503,5 +509,47 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     public static boolean isWillPerformDownloadByGroups(Collection<CaArrayFile> files) {
         List<DownloadGroup> computeDownloadGroups = ProjectFilesAction.computeDownloadGroups(files);
         return computeDownloadGroups.size() > 1 ? true : false;
+    }
+
+    /**
+     * @return the fileTypes
+     */
+    public Set<String> getFileTypes() {
+        return fileTypes;
+    }
+
+    /**
+     * @param fileTypes the fileTypes to set
+     */
+    public void setFileTypes(Set<String> fileTypes) {
+        this.fileTypes = fileTypes;
+    }
+
+    /**
+     * @return the fileType
+     */
+    public String getFileType() {
+        return fileType;
+    }
+
+    /**
+     * @param fileType the fileType to set
+     */
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    /**
+     * @return the fileStatuses
+     */
+    public List<String> getFileStatuses() {
+        return fileStatuses;
+    }
+
+    /**
+     * @param fileStatuses the fileStatuses to set
+     */
+    public void setFileStatuses(List<String> fileStatuses) {
+        this.fileStatuses = fileStatuses;
     }
 }
