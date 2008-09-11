@@ -89,6 +89,10 @@ import javax.sql.DataSource;
 
 import org.apache.commons.configuration.DataConfiguration;
 import org.apache.commons.configuration.DatabaseConfiguration;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
+
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 /**
  * Helper class for retrieving system configuration.
@@ -108,7 +112,15 @@ public final class ConfigurationHelper {
      * @return the system configuration.
      */
     public static DataConfiguration getConfiguration() {
-        DataSource ds = (DataSource) ServiceLocatorFactory.getLocator().lookup(DATASOURCE_JNDI_LOC);
+        DataSource ds = null;
+        try {
+            ds = (DataSource) ServiceLocatorFactory.getLocator().lookup(DATASOURCE_JNDI_LOC);
+            if (ds == null) {
+                ds = getAdhocDataSource();
+            }
+        } catch (IllegalStateException e) {
+            ds = getAdhocDataSource();
+        }
         DatabaseConfiguration config = new DatabaseConfiguration(ds, TABLE_NAME, PARAM_NAME_COLUMN, PARAM_VALUE_COLUMN);
         config.setDelimiterParsingDisabled(true);
         return new DataConfiguration(config);
@@ -120,4 +132,14 @@ public final class ConfigurationHelper {
     public static boolean isDev() {
         return getConfiguration().getBoolean(ConfigParamEnum.DEVELOPMENT_MODE.name(), false);
     }
+    
+    private static DataSource getAdhocDataSource() {
+        MysqlDataSource ds = new MysqlDataSource();
+        Configuration config = HibernateUtil.getConfiguration();
+        ds.setUrl(config.getProperty(Environment.URL));
+        ds.setUser(config.getProperty(Environment.USER));
+        ds.setPassword(config.getProperty(Environment.PASS));
+        return ds;
+    }
+
 }

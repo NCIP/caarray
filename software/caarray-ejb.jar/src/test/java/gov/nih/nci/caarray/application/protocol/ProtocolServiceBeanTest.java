@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.application.protocol;
 
 //import gov.nih.nci.caarray.domain.protocol.Protocol;
 
+import gov.nih.nci.caarray.AbstractCaarrayTest;
+
 import org.junit.Test;
 
 /**
@@ -91,7 +93,7 @@ import org.junit.Test;
  *
  * @author ETavela
  */
-public class ProtocolServiceBeanTest {
+public class ProtocolServiceBeanTest extends AbstractCaarrayTest {
 
     /**
      * Test method for {@link gov.nih.nci.caarray.application.protocol.ProtocolServiceBean#save(gov.nih.nci.caarray.domain.protocol.Protocol)}.

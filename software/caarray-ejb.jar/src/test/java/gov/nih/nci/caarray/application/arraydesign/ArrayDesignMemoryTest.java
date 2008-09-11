@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
@@ -98,7 +99,7 @@ import affymetrix.fusion.cdf.FusionCDFProbeSetInformation;
  * Test class for ArrayDesignService subsystem.
  */
 @SuppressWarnings("PMD")
-public class ArrayDesignMemoryTest {
+public class ArrayDesignMemoryTest extends AbstractCaarrayTest {
 
     private ArrayDesignDetails details = new ArrayDesignDetails();
     FusionCDFData fusionCDFData = new FusionCDFData();

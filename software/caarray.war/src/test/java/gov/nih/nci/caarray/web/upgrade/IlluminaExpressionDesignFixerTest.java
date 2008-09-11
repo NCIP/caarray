@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.upgrade;
 
 import static org.junit.Assert.assertNotNull;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
@@ -117,7 +118,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * @author Winston Cheng
  *
  */
-public class IlluminaExpressionDesignFixerTest {
+public class IlluminaExpressionDesignFixerTest extends AbstractCaarrayTest {
     private IlluminaExpressionDesignFixer migrator;
 
     private final LocalDaoFactoryStub localDaoFactoryStub = new LocalDaoFactoryStub();

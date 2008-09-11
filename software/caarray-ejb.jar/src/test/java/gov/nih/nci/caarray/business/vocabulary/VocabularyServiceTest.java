@@ -55,6 +55,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.OrganismDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
@@ -88,7 +89,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * 
  */
 @SuppressWarnings("PMD")
-public class VocabularyServiceTest {
+public class VocabularyServiceTest extends AbstractCaarrayTest {
 
     private static final int NUM_PROT_TYPES = 5;
     private VocabularyService vocabularyService;

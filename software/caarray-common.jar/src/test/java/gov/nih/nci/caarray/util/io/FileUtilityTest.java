@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.util.io;
 
+import gov.nih.nci.caarray.AbstractCaarrayTest;
+
 import java.io.File;
 
 import org.junit.Test;
@@ -89,7 +91,7 @@ import org.junit.Test;
 /**
  * Test cases for file utility.
  */
-public class FileUtilityTest {
+public class FileUtilityTest extends AbstractCaarrayTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testNull() {

@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.web;
 
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
@@ -105,7 +106,7 @@ import org.springframework.mock.web.MockHttpSession;
  * @author John Hedden
  *
  */
-public class ImportTest {
+public class ImportTest extends AbstractCaarrayTest {
 
     private final ProjectFilesAction action = new ProjectFilesAction();
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();

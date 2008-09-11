@@ -151,5 +151,10 @@ public enum ConfigParamEnum {
     /**
      * caArray version number, for schema migration purposes.
      */
-    SCHEMA_VERSION;
+    SCHEMA_VERSION,
+    
+    /**
+     * the CSM application name of this caArray instance.
+     */
+    CSM_APPLICATION_NAME;
 }

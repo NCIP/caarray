@@ -83,10 +83,10 @@
 package gov.nih.nci.caarray.web.action.vocabulary;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
@@ -107,7 +107,7 @@ import com.opensymphony.xwork2.Action;
  * @author Scott Miller
  *
  */
-public class VocabularyActionTest {
+public class VocabularyActionTest extends AbstractCaarrayTest {
     private static final String START_WITH_EDIT = "startWithEdit";
     private static final String RETURN_PROJECT_ID = "returnProjectId";
     private static final String RETURN_INITIAL_TAB1 = "returnInitialTab1";

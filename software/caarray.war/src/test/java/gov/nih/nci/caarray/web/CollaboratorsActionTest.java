@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementServiceStub;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
@@ -111,7 +112,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 /**
  * Test cases for struts action.
  */
-public class CollaboratorsActionTest {
+public class CollaboratorsActionTest extends AbstractCaarrayTest {
 
     private final CollaboratorsAction action = new CollaboratorsAction();
     private static final PermissionsManagementServiceStub pstub = new PermissionsManagementServiceStub();

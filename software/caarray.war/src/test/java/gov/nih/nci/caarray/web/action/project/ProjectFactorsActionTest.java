@@ -87,6 +87,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
@@ -109,7 +110,7 @@ import com.opensymphony.xwork2.Action;
  * @author Winston Cheng
  *
  */
-public class ProjectFactorsActionTest {
+public class ProjectFactorsActionTest extends AbstractCaarrayTest {
     private final ProjectFactorsAction action = new ProjectFactorsAction();
     private final LocalGenericDataService localGenericDataService = new LocalGenericDataService();
     private static final Factor DUMMY_FACTOR = new Factor();

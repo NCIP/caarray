@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.util.io.logging;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -90,7 +91,7 @@ import org.junit.Test;
 /**
  * Test the <code>LogUtil</code> class.
  */
-public class LogUtilTest {
+public class LogUtilTest extends AbstractCaarrayTest {
 
     private final TestLog testLog = new TestLog() {
         @Override

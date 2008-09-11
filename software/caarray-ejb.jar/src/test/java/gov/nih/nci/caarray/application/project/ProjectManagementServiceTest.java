@@ -89,6 +89,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.SessionContextStub;
@@ -146,7 +147,7 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 @SuppressWarnings("PMD")
-public class ProjectManagementServiceTest {
+public class ProjectManagementServiceTest extends AbstractCaarrayTest {
 
     private ProjectManagementService projectManagementService;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();

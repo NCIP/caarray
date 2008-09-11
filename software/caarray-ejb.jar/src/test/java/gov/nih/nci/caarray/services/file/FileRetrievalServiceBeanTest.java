@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.services.file;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
@@ -109,7 +110,7 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 /**
  *
  */
-public class FileRetrievalServiceBeanTest {
+public class FileRetrievalServiceBeanTest extends AbstractCaarrayTest {
 
 
 

@@ -82,11 +82,10 @@
  */
 package gov.nih.nci.caarray.services.search;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
@@ -94,10 +93,13 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
-public class CaArraySearchServiceTest {
+public class CaArraySearchServiceTest extends AbstractCaarrayTest {
 
     private CaArraySearchService searchService;
     private final LocalDaoFactoryStub caArrayDaoFactoryStub = new LocalDaoFactoryStub();

@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.project;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
@@ -128,7 +129,7 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
  * Integration Test class for ArrayDesignService subsystem.
  */
 @SuppressWarnings("PMD")
-public class ProjectManagementServiceIntegrationTest {
+public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayTest {
 
     private ProjectManagementService projectManagementService;
     private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();

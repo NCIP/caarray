@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 
 import org.junit.Test;
 
@@ -92,7 +93,7 @@ import org.junit.Test;
  * @author dkokotov
  * 
  */
-public class SecurityPolicyTest {    
+public class SecurityPolicyTest extends AbstractCaarrayTest {    
     @Test
     public void testSecurityPolicy() {
         TestClass test = new TestClass();

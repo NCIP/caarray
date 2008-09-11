@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
@@ -115,7 +116,7 @@ import com.opensymphony.xwork2.Action;
  *
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class ProjectOverviewActionTest {
+public class ProjectOverviewActionTest extends AbstractCaarrayTest {
     private final ProjectOverviewAction action = new ProjectOverviewAction();
     private static final LocalArrayDesignServiceStub arrayDesignServiceStub = new LocalArrayDesignServiceStub();
     private static final LocalGenericDataServiceStub genericDataServiceStub = new LocalGenericDataServiceStub();
@@ -124,7 +125,6 @@ public class ProjectOverviewActionTest {
 
     @Before
     public void setUp() throws Exception {
-        SecurityUtils.init();
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceStub);
         locatorStub.addLookup(GenericDataService.JNDI_NAME, genericDataServiceStub);

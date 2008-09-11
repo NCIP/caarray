@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.arraydesign;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 
@@ -92,7 +93,7 @@ import java.io.File;
 
 import org.junit.Test;
 
-public class AffymetrixCdfReaderTest {
+public class AffymetrixCdfReaderTest extends AbstractCaarrayTest {
 
     @Test
     public final void testCreate() throws AffymetrixCdfReadException {

@@ -2,11 +2,12 @@ package gov.nih.nci.caarray.application.arraydata.affymetrix;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 
 import org.junit.Test;
 
-public class AffymetrixArrayDataTypeTest {
+public class AffymetrixArrayDataTypeTest extends AbstractCaarrayTest {
 
     @Test
     public void testIsEquivalent() {

@@ -87,6 +87,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
@@ -110,7 +111,7 @@ import com.opensymphony.xwork2.Action;
  *
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class ProtocolManagementActionTest {
+public class ProtocolManagementActionTest extends AbstractCaarrayTest {
 
     private static GenericDataService genericDataService;
     private static VocabularyService vocabularyService;

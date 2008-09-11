@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -98,7 +99,7 @@ import org.junit.Test;
  * @author Winston Cheng
  *
  */
-public class ProjectExperimentalDesignActionTest {
+public class ProjectExperimentalDesignActionTest extends AbstractCaarrayTest {
     private final ProjectExperimentalDesignAction action = new ProjectExperimentalDesignAction();
 
     @Before

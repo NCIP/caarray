@@ -107,6 +107,8 @@ public abstract class AbstractHibernateSessionScopeListener implements ServletCo
      * {@inheritDoc}
      */
     public final void contextInitialized(ServletContextEvent event) {
+        HibernateUtil.init();
+
         HibernateUtil.openAndBindSession();
         doContextInitialized(event);
         HibernateUtil.unbindAndCleanupSession();

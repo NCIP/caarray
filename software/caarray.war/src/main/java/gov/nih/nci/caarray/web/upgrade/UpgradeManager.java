@@ -144,13 +144,6 @@ public final class UpgradeManager {
                 Migration migration = new Migration(element);
                 allMigrations.put(migration.getFromVersion(), migration);
             }
-
-            String version = getCurrentVersion();
-            Migration migration;
-            while ((migration = allMigrations.get(version)) != null) {
-                upgradeList.add(migration);
-                version = migration.getToVersion();
-            }
         } catch (Exception e) {
             LOG.info("error loading migration file", e);
         }
@@ -181,11 +174,22 @@ public final class UpgradeManager {
         }
         return currentVersion;
     }
+    
+    private void computeUpgradeList() {
+        String version = getCurrentVersion();
+        Migration migration;
+        while ((migration = allMigrations.get(version)) != null) {
+            upgradeList.add(migration);
+            version = migration.getToVersion();
+        }
+    }
 
     /**
      * Performs any necessary upgrades.
      */
     public void performUpgrades() {
+        computeUpgradeList();
+        
         if (!isUpgradeRequired()) {
             return;
         }

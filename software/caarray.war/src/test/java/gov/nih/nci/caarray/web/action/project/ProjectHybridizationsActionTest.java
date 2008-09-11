@@ -88,6 +88,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
@@ -130,7 +131,7 @@ import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
  * @author Winston Cheng
  *
  */
-public class ProjectHybridizationsActionTest {
+public class ProjectHybridizationsActionTest extends AbstractCaarrayTest {
     private final ProjectHybridizationsAction action = new ProjectHybridizationsAction();
 
     private static Hybridization DUMMY_HYBRIDIZATION = new Hybridization();

@@ -86,6 +86,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
+import gov.nih.nci.caarray.AbstractCaarrayTest;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -93,7 +95,7 @@ import java.io.IOException;
 /**
  * Test FileCleanThread
  */
-public class FileCleanupThreadTest {
+public class FileCleanupThreadTest extends AbstractCaarrayTest {
 
     @Test
     public void testRun() throws IOException, FileAccessException {

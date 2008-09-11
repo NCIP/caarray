@@ -82,11 +82,13 @@
  */
 package gov.nih.nci.caarray.security;
 
+import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.util.ConfigurationHelper;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.logging.api.logger.hibernate.HibernateSessionFactoryHelper;
@@ -113,9 +115,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.Set;
 
+import org.apache.commons.configuration.DataConfiguration;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -158,9 +160,8 @@ public final class SecurityUtils {
     /** The role for modifying the permissions of a Protectable. * */
     public static final String PERMISSIONS_ROLE = "Permissions";
 
-    private static final AuthorizationManager AUTH_MGR;
-    private static final String APPLICATION_NAME;
-
+    private static String caarrayAppName;
+    private static AuthorizationManager authMgr;
     private static Application caarrayApp;
     private static User anonymousUser;
 
@@ -170,21 +171,6 @@ public final class SecurityUtils {
             return Boolean.FALSE;
         }
     };
-
-    static {
-        APPLICATION_NAME = ResourceBundle.getBundle("caarray").getString("csm.application.name");
-        AuthorizationManager am = null;
-        try {
-            am = SecurityServiceProvider.getAuthorizationManager(APPLICATION_NAME);
-        } catch (CSConfigurationException e) {
-            LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
-        } catch (CSException e) {
-            LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
-        }
-
-        AUTH_MGR = am;
-        LOG.debug("Set up new authManager: " + AUTH_MGR);
-    }
 
     // hidden constructor for static utility class
     private SecurityUtils() {
@@ -196,10 +182,17 @@ public final class SecurityUtils {
      */
     public static void init() {
         try {
-            caarrayApp = AUTH_MGR.getApplication(APPLICATION_NAME);
-            anonymousUser = AUTH_MGR.getUser(ANONYMOUS_USERNAME);
+            DataConfiguration config = ConfigurationHelper.getConfiguration();
+            caarrayAppName = config.getString(ConfigParamEnum.CSM_APPLICATION_NAME.name());
+            authMgr = SecurityServiceProvider.getAuthorizationManager(caarrayAppName);
+            caarrayApp = authMgr.getApplication(caarrayAppName);
+            anonymousUser = authMgr.getUser(ANONYMOUS_USERNAME);
         } catch (CSObjectNotFoundException e) {
             throw new IllegalStateException("Could not retrieve caarray application or anonymous user", e);
+        } catch (CSConfigurationException e) {
+            LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
+        } catch (CSException e) {
+            LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
         }
     }
 
@@ -207,7 +200,7 @@ public final class SecurityUtils {
      * @return the CSM AuthorizationManager
      */
     public static AuthorizationManager getAuthorizationManager() {
-        return AUTH_MGR;
+        return authMgr;
     }
 
     /**
@@ -262,11 +255,11 @@ public final class SecurityUtils {
                 List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
                 for (UserGroupRoleProtectionGroup ugrpg : l) {
                     if (ugrpg.getGroup() != null) {
-                        AUTH_MGR.removeGroupRoleFromProtectionGroup(ugrpg.getProtectionGroup().getProtectionGroupId()
+                        authMgr.removeGroupRoleFromProtectionGroup(ugrpg.getProtectionGroup().getProtectionGroupId()
                                 .toString(), ugrpg.getGroup().getGroupId().toString(), new String[]{ugrpg.getRole()
                                 .getId().toString() });
                     } else {
-                        AUTH_MGR.removeUserRoleFromProtectionGroup(ugrpg.getProtectionGroup().getProtectionGroupId()
+                        authMgr.removeUserRoleFromProtectionGroup(ugrpg.getProtectionGroup().getProtectionGroupId()
                                 .toString(), ugrpg.getUser().getUserId().toString(), new String[]{ugrpg.getRole()
                                 .getId().toString() });
                     }
@@ -275,8 +268,8 @@ public final class SecurityUtils {
                 LOG.debug("HAndling delete for protection group " + pg.getProtectionGroupName());
                 Set<ProtectionElement> protElements = pg.getProtectionElements();
                 ProtectionElement pe = protElements.iterator().next();
-                AUTH_MGR.removeProtectionGroup(pg.getProtectionGroupId().toString());
-                AUTH_MGR.removeProtectionElement(pe.getProtectionElementId().toString());
+                authMgr.removeProtectionGroup(pg.getProtectionGroupId().toString());
+                authMgr.removeProtectionElement(pe.getProtectionElementId().toString());
 
             } catch (CSTransactionException e) {
                 LOG.warn("Unable to remove CSM elements from deleted object: " + e.getMessage(), e);
@@ -305,7 +298,7 @@ public final class SecurityUtils {
                     handleNewProject((Project) p, pg);
                 } 
             } catch (CSObjectNotFoundException e) {
-                LOG.warn("Could not find the " + APPLICATION_NAME + " application: " + e.getMessage(), e);
+                LOG.warn("Could not find the " + caarrayAppName + " application: " + e.getMessage(), e);
             } catch (CSTransactionException e) {
                 LOG.warn("Could not save new protection element: " + e.getMessage(), e);
             }
@@ -395,7 +388,7 @@ public final class SecurityUtils {
         }
 
         try {
-            AUTH_MGR.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(), targetGroup.getGroupId()
+            authMgr.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(), targetGroup.getGroupId()
                     .toString(), roleIds.toArray(ArrayUtils.EMPTY_STRING_ARRAY));
         } catch (CSTransactionException e) {
             LOG.warn("Could not assign project group roles corresponding to profile " + e.getMessage(), e);
@@ -417,7 +410,7 @@ public final class SecurityUtils {
             roleIds.add(getRoleByName(WRITE_ROLE).getId().toString());
         }
         try {
-            AUTH_MGR.assignGroupRoleToProtectionGroup(samplePg.getProtectionGroupId().toString(), targetGroup
+            authMgr.assignGroupRoleToProtectionGroup(samplePg.getProtectionGroupId().toString(), targetGroup
                     .getGroupId().toString(), roleIds.toArray(ArrayUtils.EMPTY_STRING_ARRAY));
         } catch (CSTransactionException e) {
             LOG.warn("Could not assign sample group roles corresponding to profile " + e.getMessage(), e);
@@ -433,7 +426,7 @@ public final class SecurityUtils {
         Group group = new Group();
         group.setGroupName(ANONYMOUS_GROUP);
         GroupSearchCriteria gsc = new GroupSearchCriteria(group);
-        List<Group> groupList = AUTH_MGR.getObjects(gsc);
+        List<Group> groupList = authMgr.getObjects(gsc);
         group = groupList.get(0);
         return group;
     }
@@ -449,14 +442,14 @@ public final class SecurityUtils {
         pe.setAttribute("id");
         pe.setValue(p.getId().toString());
         pe.setUpdateDate(new Date());
-        AUTH_MGR.createProtectionElement(pe);
+        authMgr.createProtectionElement(pe);
 
         ProtectionGroup pg = new ProtectionGroup();
         pg.setApplication(application);
         pg.setProtectionElements(Collections.singleton(pe));
         pg.setProtectionGroupName("PE(" + pe.getProtectionElementId() + ") group");
         pg.setUpdateDate(new Date());
-        AUTH_MGR.createProtectionGroup(pg);
+        authMgr.createProtectionGroup(pg);
 
         addOwner(pg, csmUser);
         return pg;
@@ -465,7 +458,7 @@ public final class SecurityUtils {
     private static void addOwner(ProtectionGroup pg, User user) throws CSObjectNotFoundException,
             CSTransactionException {
         ProtectionElement pe = (ProtectionElement) pg.getProtectionElements().iterator().next();
-        AuthorizationManagerExtensions.addOwner(pe.getProtectionElementId(), user, APPLICATION_NAME);
+        AuthorizationManagerExtensions.addOwner(pe.getProtectionElementId(), user, caarrayAppName);
 
         // This shouldn't be necessary, because the filter should take into account
         // the ownership status (set above.) However, such a filter uses a UNION
@@ -477,7 +470,7 @@ public final class SecurityUtils {
                 {getRoleByName(BROWSE_ROLE).getId().toString(), getRoleByName(READ_ROLE).getId().toString(),
                         getRoleByName(WRITE_ROLE).getId().toString(),
                         getRoleByName(PERMISSIONS_ROLE).getId().toString() };
-        AUTH_MGR.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(), g.getGroupId().toString(),
+        authMgr.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(), g.getGroupId().toString(),
                 ownerRoles);
     }
 
@@ -486,12 +479,12 @@ public final class SecurityUtils {
         Group g = new Group();
         g.setGroupName("__selfgroup__" + user.getLoginName() + " (" + user.getUserId() + ")");
         GroupSearchCriteria gsc = new GroupSearchCriteria(g);
-        List<Group> groupList = AUTH_MGR.getObjects(gsc);
+        List<Group> groupList = authMgr.getObjects(gsc);
         if (groupList == null || groupList.isEmpty()) {
             g.setApplication(getApplication());
             g.setGroupDesc("Singleton group for CSM filter performance.  Do not edit.");
-            AUTH_MGR.createGroup(g);
-            AUTH_MGR.assignUserToGroup(user.getLoginName(), g.getGroupName());
+            authMgr.createGroup(g);
+            authMgr.assignUserToGroup(user.getLoginName(), g.getGroupName());
             return g;
         }
         return groupList.get(0);
@@ -526,7 +519,7 @@ public final class SecurityUtils {
     private static void assignAnonymousAccess(ProtectionGroup pg) throws CSTransactionException {
         // We could cache the ids for the group and role
         Group group = getAnonymousGroup();
-        AUTH_MGR.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(),
+        authMgr.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(),
                 group.getGroupId().toString(), new String[]{getRoleByName(BROWSE_ROLE).getId().toString() });
     }
 
@@ -535,7 +528,7 @@ public final class SecurityUtils {
         Role role = new Role();
         role.setName(roleName);
         RoleSearchCriteria rsc = new RoleSearchCriteria(role);
-        List<Role> roleList = AUTH_MGR.getObjects(rsc);
+        List<Role> roleList = authMgr.getObjects(rsc);
         role = roleList.get(0);
         return role;
     }
@@ -573,7 +566,7 @@ public final class SecurityUtils {
         try {
             Query q =
                     HibernateSessionFactoryHelper.getAuditSession(
-                            ApplicationSessionFactory.getSessionFactory(APPLICATION_NAME)).createQuery(queryString);
+                            ApplicationSessionFactory.getSessionFactory(caarrayAppName)).createQuery(queryString);
             q.setString("objectId", getNonGLIBClass(p).getName());
             q.setString("value", p.getId().toString());
             return (ProtectionGroup) q.uniqueResult();

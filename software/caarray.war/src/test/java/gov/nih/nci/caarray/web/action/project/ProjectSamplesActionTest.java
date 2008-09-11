@@ -88,6 +88,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
@@ -139,7 +140,7 @@ import com.opensymphony.xwork2.Action;
  * @author Winston Cheng
  *
  */
-public class ProjectSamplesActionTest {
+public class ProjectSamplesActionTest extends AbstractCaarrayTest {
     private final ProjectSamplesAction action = new ProjectSamplesAction();
 
     private static Sample DUMMY_SAMPLE = new Sample();

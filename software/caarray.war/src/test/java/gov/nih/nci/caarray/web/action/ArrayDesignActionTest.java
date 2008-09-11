@@ -87,6 +87,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignDeleteException;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
@@ -124,7 +125,7 @@ import com.opensymphony.xwork2.Action;
  *
  */
 @SuppressWarnings("PMD")
-public class ArrayDesignActionTest {
+public class ArrayDesignActionTest extends AbstractCaarrayTest {
     private final ArrayDesignAction arrayDesignAction = new ArrayDesignAction();
     private final LocalArrayDesignServiceStub arrayDesignServiceStub = new LocalArrayDesignServiceStub();
     private final LocalVocabularyServiceStub vocabularyServiceStub = new LocalVocabularyServiceStub();

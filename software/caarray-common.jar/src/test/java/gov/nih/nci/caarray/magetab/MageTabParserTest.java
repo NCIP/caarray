@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
@@ -123,7 +124,7 @@ import org.junit.Test;
  * Tests for the MageTabParser subsystem.
  */
 @SuppressWarnings("PMD")
-public class MageTabParserTest {
+public class MageTabParserTest extends AbstractCaarrayTest {
 
     private static final int ONE = 1;
     private static final int SIX = 6;

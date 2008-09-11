@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.web.upgrade;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 
 import java.io.StringReader;
 
@@ -101,7 +102,7 @@ import org.xml.sax.InputSource;
  * @author Winston Cheng
  *
  */
-public class ClassBasedMigrationStepTest {
+public class ClassBasedMigrationStepTest extends AbstractCaarrayTest {
     private DocumentBuilder db;
 
     @Before

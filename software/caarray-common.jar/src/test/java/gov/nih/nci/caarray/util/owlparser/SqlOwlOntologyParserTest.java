@@ -1,6 +1,15 @@
 package gov.nih.nci.caarray.util.owlparser;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.domain.project.ExperimentOntology;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -17,7 +26,7 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
  * Tests the OWL Ontology Parser
  * @author dkokotov
  */
-public class SqlOwlOntologyParserTest {
+public class SqlOwlOntologyParserTest extends AbstractCaarrayTest {
     @Test
     public void testParser() {
         File out = null;

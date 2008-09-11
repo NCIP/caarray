@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.util;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.security.SecurityUtils;
 
 import org.junit.Test;
@@ -90,7 +91,7 @@ import org.junit.Test;
 /**
  * Tests username holder.
  */
-public class UsernameHolderTest {
+public class UsernameHolderTest extends AbstractCaarrayTest {
 
     @Test
     public void testHolder() {

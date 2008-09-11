@@ -88,6 +88,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
@@ -148,7 +149,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * Test class for ArrayDesignService subsystem.
  */
 @SuppressWarnings("PMD")
-public class ArrayDesignServiceTest {
+public class ArrayDesignServiceTest extends AbstractCaarrayTest {
 
     private ArrayDesignService arrayDesignService;
     private final LocalDaoFactoryStub caArrayDaoFactoryStub = new LocalDaoFactoryStub();

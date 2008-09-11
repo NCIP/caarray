@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
@@ -96,16 +97,15 @@ import gov.nih.nci.caarray.application.project.InconsistentProjectStateException
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
-import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
-import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.Collection;
@@ -124,7 +124,7 @@ import com.opensymphony.xwork2.Action;
  * @author Winston Cheng, Jevon Gill
  *
  */
-public class ProjectExperimentContactsActionTest {
+public class ProjectExperimentContactsActionTest extends AbstractCaarrayTest {
 
     private final ProjectExperimentContactsAction action = new ProjectExperimentContactsAction();
     private static ExperimentContact DUMMY_EXPERIMENT_CONTACT = new ExperimentContact();

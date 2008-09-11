@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
@@ -96,7 +97,7 @@ import com.opensymphony.xwork2.Action;
  * @author Winston Cheng
  *
  */
-public class ProjectWorkspaceActionTest {
+public class ProjectWorkspaceActionTest extends AbstractCaarrayTest {
     private final ProjectWorkspaceAction action = new ProjectWorkspaceAction();
 
     private static final int PUBLIC_COUNT = 3;

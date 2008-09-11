@@ -84,11 +84,13 @@ package gov.nih.nci.caarray.validation;
 
 import static org.junit.Assert.*;
 
+import gov.nih.nci.caarray.AbstractCaarrayTest;
+
 import java.io.File;
 
 import org.junit.Test;
 
-public class InvalidDataFileExceptionTest {
+public class InvalidDataFileExceptionTest extends AbstractCaarrayTest {
 
     @Test
     public final void testGetFileValidationResult() {

@@ -53,6 +53,7 @@ package gov.nih.nci.caarray.application.file;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.UserTransactionStub;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceStub;
@@ -103,7 +104,7 @@ import org.junit.Test;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 @SuppressWarnings("PMD")
-public class FileManagementServiceTest {
+public class FileManagementServiceTest extends AbstractCaarrayTest {
 
     private FileManagementService fileManagementService;
     private final LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
