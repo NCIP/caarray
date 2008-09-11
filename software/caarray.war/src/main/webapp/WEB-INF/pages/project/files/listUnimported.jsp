@@ -25,25 +25,19 @@
     fileNameLookup['${file.id}'] = '${caarrayfn:escapeJavaScript(file.name)}';
     </c:forEach>
 
-	unimportedFilterCallBack = function() {
-		TabUtils.hideLoadingText();
-	}
+    unimportedFilterCallBack = function() {
+        TabUtils.hideLoadingText();
+    }
 
     doFilter = function() {
-      var checkboxIds = $('selectFilesForm').__checkbox_selectedFileIds || {};
-      if (checkboxIds.length) {
-        for (var i = 0; i < checkboxIds.length; i++) {
-          checkboxIds[i].disabled = true;
-        }
-      } else {
-        checkboxIds.disabled = true;
-      }
-      TabUtils.showLoadingTextKeepMainContent();
-      Caarray.submitAjaxForm('selectFilesForm', 'unimportedForm', {url: '${listUnimportedFormUrl}', onComplete: unimportedFilterCallBack});
+        var checkboxIds = $('selectFilesForm').__checkbox_selectedFileIds || {};
+        TabUtils.disableFormCheckboxes(checkboxIds);
+        TabUtils.showLoadingTextKeepMainContent();
+        Caarray.submitAjaxForm('selectFilesForm', 'unimportedForm', {url: '${listUnimportedFormUrl}', onComplete: unimportedFilterCallBack});
     }
 
     openUploadWindow = function() {
-       uploadWindow = window.open('${uploadInBackgroundUrl}', '_blank', "width=685,height=350,left=0,top=0,toolbar,scrollbars,resizable,status=yes");
+        uploadWindow = window.open('${uploadInBackgroundUrl}', '_blank', "width=685,height=350,left=0,top=0,toolbar,scrollbars,resizable,status=yes");
     }
 
     isMageTabImport = function() {

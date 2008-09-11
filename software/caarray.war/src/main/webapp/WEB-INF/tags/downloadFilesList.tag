@@ -11,27 +11,26 @@
   <s:form action="${actionDownloadFilesList}" id="fileTypeForm" theme="simple">
   <fmt:message key="experiment.files.filterby.fileType" var="filterByTypeLabel" />
   <fmt:message key="experiment.files.filterby.status" var="filterByStatusLabel" />
-<table class="searchresults">
-    <tr>
-      <td>${filterByTypeLabel}:
-    <s:select label="Filter By File Type"
-          name="fileType"
-          list="#attr.fileTypes"
-          headerKey=" "
-          headerValue="(All)"
-          onchange="Caarray.submitAjaxForm('fileTypeForm', 'downloadFilesList')"/>
-          </td>
-          <td>${filterByTypeLabel}:
-    <s:select label="Filter By File Status"
-          name="fileStatus"
-          list="#attr.fileStatuses"
-          headerKey=" "
-          headerValue="(All)"
-          onchange="Caarray.submitAjaxForm('fileTypeForm', 'downloadFilesList')"/>
-          </td></tr>
-          </table>
-
-
+    <table class="searchresults">
+        <tr>
+            <td>${filterByTypeLabel}:
+                <s:select label="Filter By File Type"
+                    name="fileType"
+                    list="#attr.fileTypes"
+                    headerKey=" "
+                    headerValue="(All)"
+                    onchange="Caarray.submitAjaxForm('fileTypeForm', 'downloadFilesList')"/>
+            </td>
+            <td>${filterByTypeLabel}:
+                <s:select label="Filter By File Status"
+                    name="fileStatus"
+                    list="#attr.fileStatuses"
+                    headerKey=" "
+                    headerValue="(All)"
+                    onchange="Caarray.submitAjaxForm('fileTypeForm', 'downloadFilesList')"/>
+            </td>
+        </tr>
+    </table>
     <s:hidden name="project.id" value="${project.id}" />
     <s:hidden name="currentSource.id" />
     <s:hidden name="currentSample.id" />

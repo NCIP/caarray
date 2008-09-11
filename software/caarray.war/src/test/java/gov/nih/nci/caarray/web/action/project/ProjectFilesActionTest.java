@@ -152,6 +152,9 @@ public class ProjectFilesActionTest {
 
     private static final String LIST_IMPORTED = "listImported";
     private static final String LIST_UNIMPORTED = "listUnimported";
+    private static final String LIST_IMPORTED_FORM = "listImportedForm";
+    private static final String LIST_UNIMPORTED_FORM = "listUnimportedForm";
+
     private static final String LIST_SUPPLEMENTAL = "listSupplemental";
     private static final String UPLOAD = "upload";
     private static final String UNPACK_FILES = "unpackFiles";
@@ -772,6 +775,79 @@ public class ProjectFilesActionTest {
     @Test
     public void validateDownloadfiles() {
         assertEquals(Action.SUCCESS, this.action.downloadFiles());
+        final SortedSet<CaArrayFile> fileSet = getDownloadedFileSet();
+
+        TestProject project = new TestProject();
+        action.setProject(project);
+        project.setFiles(fileSet);
+
+        assertEquals(Action.SUCCESS,action.downloadFiles());
+        assertEquals(4,action.getFiles().size());
+
+        action.setFileType(FileType.AGILENT_CSV.name());
+        action.setFileStatus(FileStatus.IMPORTED.name());
+        assertEquals(Action.SUCCESS,action.downloadFiles());
+        assertEquals(1,action.getFiles().size());
+
+        action.setFileType(FileType.GENEPIX_GAL.name());
+        action.setFileStatus(FileStatus.VALIDATED_NOT_PARSED.name());
+        assertEquals(Action.SUCCESS,action.downloadFiles());
+        assertEquals(1,action.getFiles().size());
+
+        action.setFileStatus(null);
+        action.setFileType(FileType.AFFYMETRIX_EXP.name());
+        assertEquals(Action.SUCCESS,action.downloadFiles());
+        assertEquals(0,action.getFiles().size());
+
+        action.setFileType(null);
+        assertEquals(Action.SUCCESS,action.downloadFiles());
+        assertEquals(4,action.getFiles().size());
+
+        action.setFileType(UNKNOWN_FILE_TYPE);
+        assertEquals(Action.SUCCESS,action.downloadFiles());
+        assertEquals(1,action.getFiles().size());
+
+        action.setFileType(KNOWN_FILE_TYPE);
+        assertEquals(Action.SUCCESS,action.downloadFiles());
+        assertEquals(3,action.getFiles().size());
+    }
+
+    @Test
+    public void validateListImportedForm() {
+        final SortedSet<CaArrayFile> fileSet = getImportedFileSet();
+
+        TestProject project = new TestProject();
+        assertEquals(0,action.getFiles().size());
+        project.setImportedFiles(fileSet);
+        action.setProject(project);
+
+        assertEquals(LIST_IMPORTED_FORM,action.listImportedForm());
+        assertEquals(3,action.getFiles().size());
+
+        action.setFileType(FileType.AGILENT_CSV.name());
+        assertEquals(LIST_IMPORTED_FORM,action.listImportedForm());
+        assertEquals(1,action.getFiles().size());
+
+        action.setFileType(FileType.AFFYMETRIX_EXP.name());
+        assertEquals(LIST_IMPORTED_FORM,action.listImportedForm());
+        assertEquals(0,action.getFiles().size());
+
+        action.setFileType(null);
+        assertEquals(LIST_IMPORTED_FORM,action.listImportedForm());
+        assertEquals(3,action.getFiles().size());
+
+        action.setFileType(UNKNOWN_FILE_TYPE);
+        assertEquals(LIST_IMPORTED_FORM,action.listImportedForm());
+        assertEquals(1,action.getFiles().size());
+
+        action.setFileType(KNOWN_FILE_TYPE);
+        assertEquals(LIST_IMPORTED_FORM,action.listImportedForm());
+        assertEquals(2,action.getFiles().size());
+    }
+
+    @Test
+    public void validateListUnimportedForm() {
+        assertEquals(LIST_UNIMPORTED_FORM, this.action.listUnimportedForm());
     }
 
     @Test
@@ -895,10 +971,12 @@ public class ProjectFilesActionTest {
 
         action.setFileType(null);
         action.setFileStatus(FileStatus.UPLOADED.name());
+        assertEquals(FileStatus.UPLOADED.name(), action.getFileStatus());
         assertEquals(LIST_UNIMPORTED,action.listUnimported());
         assertEquals(3,action.getFiles().size());
 
         action.setFileType(FileType.AGILENT_CSV.name());
+        assertEquals(FileType.AGILENT_CSV.name(), action.getFileType());
         action.setFileStatus(FileStatus.UPLOADED.name());
         assertEquals(LIST_UNIMPORTED,action.listUnimported());
         assertEquals(1,action.getFiles().size());
@@ -965,6 +1043,58 @@ public class ProjectFilesActionTest {
         return fileSet;
     }
 
+    private SortedSet<CaArrayFile> getImportedFileSet() {
+        SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
+
+        CaArrayFile file1 = new CaArrayFile();
+        file1.setName("file1");
+        file1.setType(FileType.AFFYMETRIX_CDF.name());
+        file1.setFileStatus(FileStatus.IMPORTED);
+        fileSet.add(file1);
+
+        CaArrayFile file2 = new CaArrayFile();
+        file2.setName("file2");
+        file2.setType(FileType.AGILENT_CSV.name());
+        file2.setFileStatus(FileStatus.VALIDATED);
+        fileSet.add(file2);
+
+        CaArrayFile file3 = new CaArrayFile();
+        file3.setName("file3");
+        file3.setType(null);
+        file3.setFileStatus(FileStatus.VALIDATED);
+        fileSet.add(file3);
+        return fileSet;
+    }
+
+    private SortedSet<CaArrayFile> getDownloadedFileSet() {
+        SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
+
+        CaArrayFile file1 = new CaArrayFile();
+        file1.setName("file1");
+        file1.setType(FileType.AFFYMETRIX_CDF.name());
+        file1.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
+        fileSet.add(file1);
+
+        CaArrayFile file2 = new CaArrayFile();
+        file2.setName("file2");
+        file2.setType(FileType.AGILENT_CSV.name());
+        file2.setFileStatus(FileStatus.IMPORTED);
+        fileSet.add(file2);
+
+        CaArrayFile file3 = new CaArrayFile();
+        file3.setName("file3");
+        file3.setType(null);
+        file3.setFileStatus(FileStatus.VALIDATED);
+        fileSet.add(file3);
+
+        CaArrayFile file4 = new CaArrayFile();
+        file4.setName("file4");
+        file4.setType(FileType.GENEPIX_GAL.name());
+        file4.setFileStatus(FileStatus.VALIDATED_NOT_PARSED);
+        fileSet.add(file4);
+        return fileSet;
+    }
+
     private class LocalCaArrayFile extends CaArrayFile {
         private int size;
 
@@ -1014,17 +1144,31 @@ public class ProjectFilesActionTest {
 
         private static final long serialVersionUID = 1L;
         SortedSet<CaArrayFile> unimportedFiles;
+        SortedSet<CaArrayFile> importedFiles;
+        SortedSet<CaArrayFile> files;
 
         public SortedSet<CaArrayFile> getUnImportedFiles() {
             return unimportedFiles;
         }
 
-        public SortedSet<CaArrayFile> getUnimportedFiles() {
-            return unimportedFiles;
-        }
-
         public void setUnimportedFiles(SortedSet<CaArrayFile> unimportedFiles) {
             this.unimportedFiles = unimportedFiles;
+        }
+
+        public SortedSet<CaArrayFile> getImportedFiles() {
+            return importedFiles;
+        }
+
+        public void setImportedFiles(SortedSet<CaArrayFile> importedFiles) {
+            this.importedFiles = importedFiles;
+        }
+
+        public SortedSet<CaArrayFile> getFiles() {
+            return files;
+        }
+
+        public void setFiles(SortedSet<CaArrayFile> files) {
+            this.files = files;
         }
 
     }

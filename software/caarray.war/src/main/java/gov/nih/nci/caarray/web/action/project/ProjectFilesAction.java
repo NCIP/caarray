@@ -229,13 +229,56 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private String newAnnotationName;
     private EnumMap<FileStatus, Integer> fileStatusCountMap = new EnumMap<FileStatus, Integer>(FileStatus.class);
 
-    private void initFileTypesAndStatuses() {
-        setFileTypeNamesAndStatuses(getProject().getFiles());
-
+    private String prepListUnimportedPage() {
+        setListAction(ACTION_UNIMPORTED);
+        setFilesMatchingTypeAndStatus(getProject().getUnImportedFiles());
+        setFileTypeNamesAndStatuses(getProject().getUnImportedFiles());
+        setFileStatusCountMap(computeFileStatusCounts());
+        return ACTION_UNIMPORTED;
     }
 
-    private void initUnImportedFileTypesAndStatuses() {
-        setFileTypeNamesAndStatuses(getProject().getUnImportedFiles());
+    private String prepListImportedPage() {
+        setListAction(ACTION_IMPORTED);
+        setFiles(new HashSet<CaArrayFile>());
+        for (CaArrayFile f : getProject().getImportedFiles()) {
+            if (getFileType() == null
+                        || (f.getFileType() != null
+                                && f.getFileType().toString().equals(getFileType())
+                        || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null)
+                        || (UNKNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() == null))) {
+                getFiles().add(f);
+            }
+        }
+        setFileTypeNamesAndStatuses(getProject().getImportedFiles());
+        return ACTION_IMPORTED;
+    }
+
+    /**
+     * Method to get the list of files.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
+    public String downloadFiles() {
+        setFilesMatchingTypeAndStatus(getProject().getFiles());
+        setFileTypeNamesAndStatuses(getProject().getFiles());
+        return Action.SUCCESS;
+    }
+
+    private void setFilesMatchingTypeAndStatus(SortedSet<CaArrayFile> fileSet) {
+        setFiles(new HashSet<CaArrayFile>());
+        for (CaArrayFile f : fileSet) {
+            boolean fileStatusMatch = (getFileStatus() == null
+                    || getFileStatus().equals(f.getFileStatus().name()));
+            boolean fileTypeMatch = (getFileType() == null
+                        || (f.getFileType() != null
+                                && f.getFileType().toString().equals(getFileType())
+                        || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null)
+                        || (UNKNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() == null)));
+            if (fileStatusMatch && fileTypeMatch) {
+                getFiles().add(f);
+            }
+        }
     }
 
     private void setFileTypeNamesAndStatuses(SortedSet<CaArrayFile> fileSet) {
@@ -257,32 +300,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         fileTypeNames.add(UNKNOWN_FILE_TYPE);
         setFileTypes(fileTypeNames);
         setFileStatuses(fileStatusList);
-    }
-
-    private String prepListUnimportedPage() {
-        setListAction(ACTION_UNIMPORTED);
-        setFiles(new HashSet<CaArrayFile>());
-        for (CaArrayFile f : getProject().getUnImportedFiles()) {
-            boolean fileStatusMatch = (getFileStatus() == null
-                    || getFileStatus().equals(f.getFileStatus().name()));
-            boolean fileTypeMatch = (getFileType() == null
-                        || (f.getFileType() != null
-                                && f.getFileType().toString().equals(getFileType())
-                        || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null)
-                        || (UNKNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() == null)));
-            if (fileStatusMatch && fileTypeMatch) {
-                getFiles().add(f);
-            }
-        }
-        initUnImportedFileTypesAndStatuses();
-        setFileStatusCountMap(computeFileStatusCounts());
-        return ACTION_UNIMPORTED;
-    }
-
-    private String prepListImportedPage() {
-        setListAction(ACTION_IMPORTED);
-        setFiles(getProject().getImportedFiles());
-        return ACTION_IMPORTED;
     }
 
     private String prepListSupplementalPage() {
@@ -310,6 +327,17 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     public String listUnimportedForm() {
         prepListUnimportedPage();
         return "listUnimportedForm";
+    }
+
+    /**
+     * Method to get the list of files.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
+    public String listImportedForm() {
+        prepListImportedPage();
+        return "listImportedForm";
     }
 
     /**
@@ -363,29 +391,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     public String listSupplementalTable() {
         prepListSupplementalPage();
         return ACTION_TABLE;
-    }
-
-    /**
-     * Method to get the list of files.
-     *
-     * @return the string matching the result to follow
-     */
-    @SkipValidation
-    public String downloadFiles() {
-        for (CaArrayFile f : getProject().getFiles()) {
-            boolean fileStatusMatch = (getFileStatus() == null
-                    || getFileStatus().equals(f.getFileStatus().name()));
-            boolean fileTypeMatch = (getFileType() == null
-                    || (f.getFileType() != null
-                            && f.getFileType().toString().equals(getFileType())
-                    || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null)
-                    || (UNKNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() == null)));
-            if (fileStatusMatch && fileTypeMatch) {
-                getFiles().add(f);
-            }
-        }
-        initFileTypesAndStatuses();
-        return Action.SUCCESS;
     }
 
     /**

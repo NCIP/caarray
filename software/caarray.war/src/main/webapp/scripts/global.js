@@ -275,6 +275,16 @@ var TabUtils = {
         TabUtils.showLoadingText(true);
     },
 
+    disableFormCheckboxes: function(checkboxIds) {
+        if (checkboxIds.length) {
+            for (var i = 0; i < checkboxIds.length; i++) {
+              checkboxIds[i].disabled = true;
+            }
+        } else {
+            checkboxIds.disabled = true;
+        }
+    },
+
     hideLoadingText : function() {
         document.getElementsByClassName('loadingText').each(function(elt) { $(elt).hide(); });
     },
@@ -613,16 +623,16 @@ DownloadMgr.prototype.reApplySelection = function(id, highlightRow) {
         for (id in this.files) {
             if (this.downloadFiles[id]) {
                  var file = this.files[id];
-		  		 this.downloadFiles[id] = file;
+           this.downloadFiles[id] = file;
 
-				  if (false) {
-				      new Effect.Highlight($('fileRow' + file.id).up('tr'));
-				  }
+          if (false) {
+              new Effect.Highlight($('fileRow' + file.id).up('tr'));
+          }
 
-				  var fileCell = $('fileRow' + file.id)
-				  if (fileCell) {
-				    fileCell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>';
-		  		   }
+          var fileCell = $('fileRow' + file.id)
+          if (fileCell) {
+            fileCell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>';
+             }
             }
         }
     this.addTotalRow();

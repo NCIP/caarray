@@ -1,5 +1,16 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-
+<c:url value="/protected/ajax/project/files/listImportedForm.action" var="listImportedFormUrl" />
+<script type="text/javascript">
+    importedFilterCallBack = function() {
+        TabUtils.hideLoadingText();
+    }
+    doImportedFilter = function() {
+        var checkboxIds = $('selectFilesForm').__checkbox_selectedFileIds || {};
+        TabUtils.disableFormCheckboxes(checkboxIds);
+        TabUtils.showLoadingTextKeepMainContent();
+        Caarray.submitAjaxForm('selectFilesForm', 'importedForm', {url: '${listImportedFormUrl}', onComplete: importedFilterCallBack});
+    }
+</script>
 <caarray:tabPane subtab="true" submittingPaneMessageKey="experiment.files.processing">
 
     <caarray:successMessages />
@@ -7,13 +18,10 @@
     <div class="boxpad2">
         <h3><fmt:message key="project.tabs.importedFiles" /></h3>
     </div>
-
     <div class="tableboxpad" id="importedForm">
-        <s:form action="/ajax/project/files/process" id="selectFilesForm" method="post" theme="simple">
-            <s:hidden name="project.id" value="${project.id}" />
-            <%@ include file="/WEB-INF/pages/project/files/listTable.jsp" %>
-        </s:form>
+            <%@ include file="/WEB-INF/pages/project/files/listImportedForm.jsp" %>
     </div>
+
      <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
         <caarray:actions divclass="actionsthin">
             <c:url value="/protected/ajax/project/files/deleteImportedFiles.action" var="deleteUrl" />
