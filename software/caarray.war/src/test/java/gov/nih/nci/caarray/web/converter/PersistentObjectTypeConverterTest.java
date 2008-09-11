@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.converter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceBean;
 import gov.nih.nci.caarray.dao.SearchDao;
@@ -100,7 +101,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * Test for the persistent object type converter.
  * @author Scott Miller
  */
-public class PersistentObjectTypeConverterTest {
+public class PersistentObjectTypeConverterTest extends AbstractCaarrayTest {
 
     @Test
     public void testConverter() {

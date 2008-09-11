@@ -89,6 +89,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.domain.contact.Address;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
@@ -530,7 +531,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertEquals(0, DAO_OBJECT.getProjectCountForCurrentUser(true));
             tx.commit();
 
-            UsernameHolder.setUser(AbstractDaoTest.STANDARD_USER);
+            UsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
             tx = HibernateUtil.beginTransaction();
             Project p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.setStatus(ProposalStatus.IN_PROGRESS);
@@ -542,7 +543,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertEquals(0, DAO_OBJECT.getProjectCountForCurrentUser(true));
             tx.commit();
 
-            UsernameHolder.setUser(AbstractDaoTest.STANDARD_USER);
+            UsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
             tx = HibernateUtil.beginTransaction();
              p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
@@ -554,7 +555,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertEquals(0, DAO_OBJECT.getProjectCountForCurrentUser(true));
             tx.commit();
 
-            UsernameHolder.setUser(AbstractDaoTest.STANDARD_USER);
+            UsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
             tx = HibernateUtil.beginTransaction();
             AuthorizationManager am = SecurityUtils.getAuthorizationManager();
             group = new Group();
@@ -576,7 +577,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(true, ALL_BY_ID).size());
             tx.commit();
 
-            UsernameHolder.setUser(AbstractDaoTest.STANDARD_USER);
+            UsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
             tx = HibernateUtil.beginTransaction();
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.setStatus(ProposalStatus.PUBLIC);
@@ -780,6 +781,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     public void testProjectPermissions() throws Exception {
         Group group = null;
         try {
+            UsernameHolder.setUser(STANDARD_USER);
             Transaction tx = HibernateUtil.beginTransaction();
             saveSupportingObjects();
             assertTrue(SecurityUtils.canWrite(DUMMY_PROJECT_1, UsernameHolder.getCsmUser()));
@@ -790,8 +792,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
             checkVisible(DUMMY_PROJECT_1);
 
             // a new project, in default draft status, will not be visible to the anonymous user
-            tx = HibernateUtil.beginTransaction();
             UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
+            tx = HibernateUtil.beginTransaction();
             Experiment e = SEARCH_DAO.retrieve(Experiment.class, experimentId);
             assertNull(e);
             assertFalse(SecurityUtils.canRead(DUMMY_PROJECT_1, UsernameHolder.getCsmUser()));

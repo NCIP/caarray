@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.util.io;
 
 import static org.junit.Assert.assertTrue;
 
+import gov.nih.nci.caarray.AbstractCaarrayTest;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -97,7 +99,7 @@ import org.junit.Test;
 /**
  * Test cases for the file closing input stream.
  */
-public class FileClosingInputStreamTest {
+public class FileClosingInputStreamTest extends AbstractCaarrayTest {
 
     @Test
     public void testStream() throws IOException {

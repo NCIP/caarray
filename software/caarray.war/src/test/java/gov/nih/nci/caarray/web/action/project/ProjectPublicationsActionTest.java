@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.web.action.project;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
@@ -103,7 +104,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * @author Winston Cheng
  *
  */
-public class ProjectPublicationsActionTest {
+public class ProjectPublicationsActionTest extends AbstractCaarrayTest {
     private final ProjectPublicationsAction action = new ProjectPublicationsAction();
     private static Publication DUMMY_PUBLICATION = new Publication();
 

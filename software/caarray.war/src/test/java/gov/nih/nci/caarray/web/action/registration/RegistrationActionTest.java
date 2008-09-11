@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.action.registration;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.country.CountryService;
 import gov.nih.nci.caarray.application.country.CountryServiceStub;
 import gov.nih.nci.caarray.application.registration.RegistrationService;
@@ -102,7 +103,7 @@ import org.springframework.mock.web.MockServletContext;
  * @author Winston Cheng
  *
  */
-public class RegistrationActionTest {
+public class RegistrationActionTest extends AbstractCaarrayTest {
     private final RegistrationAction registrationAction = new RegistrationAction();
 
     @Before

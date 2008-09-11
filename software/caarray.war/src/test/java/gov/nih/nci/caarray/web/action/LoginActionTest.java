@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.action;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.application.browse.BrowseServiceStub;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
@@ -101,7 +102,7 @@ import com.opensymphony.xwork2.Action;
  *
  */
 @SuppressWarnings("PMD")
-public class LoginActionTest {
+public class LoginActionTest extends AbstractCaarrayTest {
     private final HomeAction loginAction = new HomeAction();
     private final LocalBrowseServiceStub projectServiceStub = new LocalBrowseServiceStub();
 

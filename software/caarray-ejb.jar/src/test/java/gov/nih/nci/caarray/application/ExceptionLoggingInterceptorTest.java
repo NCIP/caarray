@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application;
 
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -91,7 +92,7 @@ import javax.interceptor.InvocationContext;
 
 import org.junit.Test;
 
-public class ExceptionLoggingInterceptorTest {
+public class ExceptionLoggingInterceptorTest extends AbstractCaarrayTest {
 
     @Test
     @SuppressWarnings("PMD")

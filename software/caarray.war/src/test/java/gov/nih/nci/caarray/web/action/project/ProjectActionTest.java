@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
@@ -109,7 +110,7 @@ import com.opensymphony.xwork2.Action;
 /**
  * @author Scott Miller
  */
-public class ProjectActionTest {
+public class ProjectActionTest extends AbstractCaarrayTest {
 
     private static final String WORKSPACE = "workspace";
     ProjectAction action = new ProjectAction();

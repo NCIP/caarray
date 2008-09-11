@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.fileaccess;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,7 +95,7 @@ import org.junit.Test;
 /**
  * Test FileCleanThread
  */
-public class FileCleanupThreadTest {
+public class FileCleanupThreadTest extends AbstractCaarrayTest {
 
     private static final String EXTENSION = ".ext";
 

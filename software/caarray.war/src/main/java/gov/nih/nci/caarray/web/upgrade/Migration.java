@@ -161,6 +161,4 @@ public final class Migration {
     public void setStatus(MigrationStatus status) {
         this.status = status;
     }
-
-
 }

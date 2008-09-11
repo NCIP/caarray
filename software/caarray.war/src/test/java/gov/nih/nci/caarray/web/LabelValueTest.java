@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web;
 
 import static org.junit.Assert.assertNotNull;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
 import org.junit.Test;
@@ -91,7 +92,7 @@ import org.junit.Test;
  * @author John Hedden
  *
  */
-public class LabelValueTest {
+public class LabelValueTest extends AbstractCaarrayTest {
 
     @SuppressWarnings("unchecked")
     @Test

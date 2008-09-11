@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.country;
 
 import static org.junit.Assert.assertNotNull;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.dao.CountryDao;
 import gov.nih.nci.caarray.dao.stub.CountryDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -102,7 +103,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * @author John Hedden (Amentra, Inc.)
  *
  */
-public class CountryServiceTest {
+public class CountryServiceTest extends AbstractCaarrayTest {
 
     private CountryService countryService;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();

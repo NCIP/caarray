@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.file.FileManagementService;
@@ -148,7 +149,7 @@ import com.opensymphony.xwork2.Action;
  *
  */
 @SuppressWarnings("PMD")
-public class ProjectFilesActionTest {
+public class ProjectFilesActionTest extends AbstractCaarrayTest {
 
     private static final String LIST_IMPORTED = "listImported";
     private static final String LIST_UNIMPORTED = "listUnimported";

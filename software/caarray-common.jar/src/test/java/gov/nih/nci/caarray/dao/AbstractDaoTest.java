@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
@@ -95,16 +95,13 @@ import org.junit.Before;
  * Helper methods for the dao classes
  */
 @SuppressWarnings("PMD")
-public class AbstractDaoTest {
-    public static final String STANDARD_USER = "caarrayadmin";
-
+public abstract class AbstractDaoTest extends AbstractCaarrayTest {
     @Before
     public void abstractSetup() {
         UsernameHolder.setUser(STANDARD_USER);
-        SecurityUtils.init();
         HibernateUtil.enableFilters(true);
         HibernateUtil.openAndBindSession();
-    }
+   }
 
 
     @After

@@ -3,13 +3,14 @@ package gov.nih.nci.caarray.application.arraydata.affymetrix;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 
 import java.util.Comparator;
 
 import org.junit.Test;
 
-public class AffymetrixQuantitationTypeTest {
+public class AffymetrixQuantitationTypeTest extends AbstractCaarrayTest {
 
     @Test
     public void testIsEquivalent() {

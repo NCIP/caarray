@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.filter;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.registration.UserRole;
 
@@ -98,7 +99,7 @@ import org.tuckey.web.MockChain;
 /**
  * Tests for web user filter.
  */
-public class UserFilterTest {
+public class UserFilterTest extends AbstractCaarrayTest {
 
     @Test
     public void testFilter() throws IOException, ServletException {

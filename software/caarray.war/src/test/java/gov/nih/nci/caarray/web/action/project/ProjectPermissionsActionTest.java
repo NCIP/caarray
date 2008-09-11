@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
@@ -114,7 +115,7 @@ import com.opensymphony.xwork2.Action;
  * @author Winston Cheng
  *
  */
-public class ProjectPermissionsActionTest {
+public class ProjectPermissionsActionTest extends AbstractCaarrayTest {
     private final ProjectPermissionsAction action = new ProjectPermissionsAction();
     private static Project DUMMY_PROJECT = new Project();
     private static CollaboratorGroup DUMMY_GROUP = new CollaboratorGroup();

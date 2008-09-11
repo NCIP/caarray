@@ -83,13 +83,14 @@
 package gov.nih.nci.caarray.magetab;
 
 import static org.junit.Assert.*;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 
 import org.junit.Test;
 
 /**
  * 
  */
-public class EntryHeadingTest {
+public class EntryHeadingTest extends AbstractCaarrayTest {
 
     @Test
     public void testEntryHeading() {

@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.services.arraydesign;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -93,7 +94,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 @SuppressWarnings("PMD")
-public class ArrayDesignDetailsServiceBeanTest {
+public class ArrayDesignDetailsServiceBeanTest extends AbstractCaarrayTest {
 
     private ArrayDesignDetailsService arrayDesignDetailsService;
     private LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();

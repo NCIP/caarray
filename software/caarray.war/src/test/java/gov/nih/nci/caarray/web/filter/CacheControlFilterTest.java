@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.filter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 
 import java.io.IOException;
 
@@ -97,7 +98,7 @@ import org.tuckey.web.MockChain;
 /**
  * Tests for web user filter.
  */
-public class CacheControlFilterTest {
+public class CacheControlFilterTest extends AbstractCaarrayTest {
 
     @Test
     public void testFilter() throws IOException, ServletException {

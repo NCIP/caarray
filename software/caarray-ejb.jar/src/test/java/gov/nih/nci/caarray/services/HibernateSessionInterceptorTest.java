@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.services;
 
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.lang.reflect.Method;
@@ -95,7 +96,7 @@ import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 
-public class HibernateSessionInterceptorTest {
+public class HibernateSessionInterceptorTest extends AbstractCaarrayTest {
 
     @Before
     public void setUp() {

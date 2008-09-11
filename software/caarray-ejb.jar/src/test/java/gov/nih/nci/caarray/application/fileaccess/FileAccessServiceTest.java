@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
@@ -114,7 +115,7 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
  *
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class FileAccessServiceTest {
+public class FileAccessServiceTest extends AbstractCaarrayTest {
 
     private FileAccessServiceBean fileAccessService;
     private Transaction transaction;

@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -110,7 +111,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * @author Scott Miller
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class GenericDataServiceTest {
+public class GenericDataServiceTest extends AbstractCaarrayTest {
 
     GenericDataService service = null;
 

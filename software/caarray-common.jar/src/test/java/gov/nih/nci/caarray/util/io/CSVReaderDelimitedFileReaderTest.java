@@ -5,12 +5,13 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.List;
 
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class CSVReaderDelimitedFileReaderTest {
+public class CSVReaderDelimitedFileReaderTest extends AbstractCaarrayTest {
 
     private final static int NUMBER_OF_LINES = 37;
     private CSVReaderDelimitedFileReader reader;

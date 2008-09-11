@@ -4,6 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.util.io.AffymetrixTsvFileReader.Record;
 
 import java.io.File;
@@ -17,7 +18,7 @@ import org.junit.Test;
  * @author Steve Lustbader
  */
 @SuppressWarnings("PMD")
-public class AffymetrixTsvFileReaderTest {
+public class AffymetrixTsvFileReaderTest extends AbstractCaarrayTest {
 
     private AffymetrixTsvFileReader tsvFile;
     private static final File V1_FILE = new File(AffymetrixTsvFileReader.class.getResource(

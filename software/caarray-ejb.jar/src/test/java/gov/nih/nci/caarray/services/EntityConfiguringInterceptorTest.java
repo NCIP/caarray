@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.services;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.lang.reflect.Method;
@@ -100,7 +101,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 /**
  *
  */
-public class EntityConfiguringInterceptorTest {
+public class EntityConfiguringInterceptorTest extends AbstractCaarrayTest {
 
     @Test
     public void testPrepareReturnValue() throws Exception {

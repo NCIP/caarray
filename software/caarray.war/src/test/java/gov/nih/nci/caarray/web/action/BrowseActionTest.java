@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.action;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.application.browse.BrowseServiceStub;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -106,7 +107,7 @@ import com.opensymphony.xwork2.Action;
  * @author Winston Cheng
  *
  */
-public class BrowseActionTest {
+public class BrowseActionTest extends AbstractCaarrayTest {
     private final BrowseAction browseAction = new BrowseAction();
     private final LocalBrowseServiceStub projectServiceStub = new LocalBrowseServiceStub();
     private static final int NUM_TABS = 3;

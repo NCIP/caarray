@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.dao.HibernateIntegrationTestCleanUpUtility;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -93,7 +94,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public abstract class AbstractCaArrayObject_HibernateIntegrationTest {
+public abstract class AbstractCaArrayObject_HibernateIntegrationTest extends AbstractCaarrayTest {
 
     private static int uniqueIntValue = 0;
 

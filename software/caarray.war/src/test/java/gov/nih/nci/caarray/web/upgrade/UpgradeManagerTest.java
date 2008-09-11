@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.upgrade;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.UserTransactionStub;
@@ -90,33 +91,23 @@ import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.util.ConfigurationHelper;
-import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import org.apache.commons.configuration.DataConfiguration;
-import org.hibernate.cfg.Configuration;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 /**
  * @author Winston Cheng
  *
  */
-public class UpgradeManagerTest {
+public class UpgradeManagerTest extends AbstractCaarrayTest {
 
     @Before
     public void setUp() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(ArrayDesignService.JNDI_NAME, new ArrayDesignServiceStub());
         locatorStub.addLookup(GenericDataService.JNDI_NAME, new GenericDataServiceStub());
-        MysqlDataSource ds = new MysqlDataSource();
-        Configuration config = HibernateUtil.getConfiguration();
-        ds.setUrl(config.getProperty("hibernate.connection.url"));
-        ds.setUser(config.getProperty("hibernate.connection.username"));
-        ds.setPassword(config.getProperty("hibernate.connection.password"));
-        locatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
         locatorStub.addLookup("java:comp/UserTransaction", new UserTransactionStub());
     }
 
@@ -127,10 +118,12 @@ public class UpgradeManagerTest {
         config.setProperty(ConfigParamEnum.SCHEMA_VERSION.name(), "test1");
 
         // perform upgrades (test1->test2->test3)
-        UpgradeManager.getInstance().performUpgrades();
-        assertEquals("test3", config.getString(ConfigParamEnum.SCHEMA_VERSION.name()));
-
-        // revert version back
-        config.setProperty(ConfigParamEnum.SCHEMA_VERSION.name(), currentVersion);
+        try {
+            UpgradeManager.getInstance().performUpgrades();
+            assertEquals("test3", config.getString(ConfigParamEnum.SCHEMA_VERSION.name()));            
+        } finally {
+            // revert version back
+            config.setProperty(ConfigParamEnum.SCHEMA_VERSION.name(), currentVersion);            
+        }
     }
 }

@@ -87,6 +87,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
@@ -106,7 +107,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 /**
  * Test cases for the entity pruner
  */
-public class EntityPrunerTest {
+public class EntityPrunerTest extends AbstractCaarrayTest {
     @Test
     public void testNullSetter() {
         User u = new User();

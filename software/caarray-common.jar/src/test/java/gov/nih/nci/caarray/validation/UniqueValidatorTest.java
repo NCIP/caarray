@@ -48,7 +48,7 @@ import org.hibernate.Transaction;
 import org.junit.Test;
 
 /**
- * @author dkokotov@vecna.com
+ * @author dkokotov
  */
 @SuppressWarnings("PMD")
 public class UniqueValidatorTest extends AbstractDaoTest {

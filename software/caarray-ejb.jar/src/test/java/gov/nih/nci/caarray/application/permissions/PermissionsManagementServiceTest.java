@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.dao.stub.CollaboratorGroupDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -117,7 +118,7 @@ import org.junit.Test;
  * Test cases for service.
  */
 @SuppressWarnings("PMD")
-public class PermissionsManagementServiceTest {
+public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
 
     private static final String TEST = "test";
     private PermissionsManagementService permissionsManagementService;
@@ -126,7 +127,6 @@ public class PermissionsManagementServiceTest {
 
     @Before
     public void setup() {
-        SecurityUtils.init();
         PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean();
         bean.setGenericDataService(this.genericDataServiceStub);
         bean.setDaoFactory(this.daoFactoryStub);

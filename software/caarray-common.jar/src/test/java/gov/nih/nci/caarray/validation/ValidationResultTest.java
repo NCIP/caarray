@@ -84,12 +84,14 @@ package gov.nih.nci.caarray.validation;
 
 import static org.junit.Assert.*;
 
+import gov.nih.nci.caarray.AbstractCaarrayTest;
+
 import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
 
-public class ValidationResultTest {
+public class ValidationResultTest extends AbstractCaarrayTest {
 
     private static final String TEST_MESSAGE = "message";
 

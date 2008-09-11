@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.state;
 
 import static org.junit.Assert.assertNotNull;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.state.State;
 
@@ -95,7 +96,7 @@ import org.junit.Test;
  * @author Winston Cheng
  *
  */
-public class StateServiceTest {
+public class StateServiceTest extends AbstractCaarrayTest {
     private StateService stateService;
     private final DaoFactoryStub daoFactoryStub = new DaoFactoryStub();
 

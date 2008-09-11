@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.registration;
 
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.country.Country;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
@@ -93,7 +94,7 @@ import org.junit.Test;
  * @author John Hedden (Amentra, Inc.)
  *
  */
-public class RegistrationServiceTest {
+public class RegistrationServiceTest extends AbstractCaarrayTest {
 
     private RegistrationService registrationService;
 

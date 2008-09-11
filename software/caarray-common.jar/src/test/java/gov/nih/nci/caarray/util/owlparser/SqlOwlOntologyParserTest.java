@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -20,7 +21,7 @@ import org.junit.Test;
  * Tests the OWL Ontology Parser
  * @author dkokotov
  */
-public class SqlOwlOntologyParserTest {
+public class SqlOwlOntologyParserTest extends AbstractCaarrayTest {
     @Test
     public void testParser() {
         File out = null;

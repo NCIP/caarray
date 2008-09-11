@@ -240,8 +240,14 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
 	<target name="install:jboss:caarray:re-configure" description="Update xml files in meta-inf directory of ear that have deployment attributes">
 		<delete dir="${temp.dir}/caarray.ear" />
+		<delete dir="${temp.dir}/caarray-common.jar" />
 		<mkdir dir="${temp.dir}/caarray.ear" />
+		<mkdir dir="${temp.dir}/caarray-common.jar" />
 		<unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
+
+		<unjar src="${temp.dir}/caarray.ear/caarray-common.jar" dest="${temp.dir}/caarray-common.jar"/>
+		<move file="${temp.dir}/caarray-common.jar/caarray.csm.new.hibernate.cfg.xml" tofile="${temp.dir}/caarray-common.jar/${csm.application.name}.csm.new.hibernate.cfg.xml"/>		
+		<jar destfile="${temp.dir}/caarray.ear/caarray-common.jar" basedir="${temp.dir}/caarray-common.jar" update="false" manifest="${temp.dir}/caarray-common.jar/META-INF/MANIFEST.MF"/>
 
 		<if>
 			<equals arg1="${ldap.authentication.disabled}" arg2="false" />

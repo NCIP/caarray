@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.translation.magetab;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import org.junit.Test;
@@ -92,7 +93,7 @@ import org.junit.Test;
  * @author Scott Miller
  *
  */
-public class ProtocolKeyTest {
+public class ProtocolKeyTest extends AbstractCaarrayTest {
 
     @Test
     public void testEqualsHashCode() {

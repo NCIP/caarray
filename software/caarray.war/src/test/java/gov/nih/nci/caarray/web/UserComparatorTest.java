@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.web.util.UserComparator;
 
 import org.displaytag.model.Cell;
@@ -93,7 +94,7 @@ import org.junit.Test;
  * Test cases for comparator.
  */
 @SuppressWarnings("PMD")
-public class UserComparatorTest {
+public class UserComparatorTest extends AbstractCaarrayTest {
 
     @Test
     public void testComparator() {

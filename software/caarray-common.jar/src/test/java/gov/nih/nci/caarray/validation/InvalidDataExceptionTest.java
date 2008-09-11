@@ -83,10 +83,11 @@
 package gov.nih.nci.caarray.validation;
 
 import static org.junit.Assert.*;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 
 import org.junit.Test;
 
-public class InvalidDataExceptionTest {
+public class InvalidDataExceptionTest extends AbstractCaarrayTest {
 
     @Test
     public final void testGetValidationResult() {

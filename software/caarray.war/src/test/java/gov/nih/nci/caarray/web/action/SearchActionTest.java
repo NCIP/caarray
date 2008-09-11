@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.action;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -105,7 +106,7 @@ import com.opensymphony.xwork2.Action;
  *
  */
 @SuppressWarnings("PMD")
-public class SearchActionTest {
+public class SearchActionTest extends AbstractCaarrayTest {
     private final SearchAction searchAction = new SearchAction();
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
     private static final int NUM_PROJECTS = 4;

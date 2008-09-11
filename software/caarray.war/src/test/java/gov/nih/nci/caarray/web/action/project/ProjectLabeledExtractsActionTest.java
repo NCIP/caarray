@@ -88,6 +88,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
@@ -129,7 +130,7 @@ import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
  * @author Winston Cheng
  *
  */
-public class ProjectLabeledExtractsActionTest {
+public class ProjectLabeledExtractsActionTest extends AbstractCaarrayTest {
     private final ProjectLabeledExtractsAction action = new ProjectLabeledExtractsAction();
 
     private static LabeledExtract DUMMY_LABELED_EXTRACT = new LabeledExtract();

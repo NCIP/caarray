@@ -119,7 +119,7 @@ public final class ServiceLocatorStub implements ServiceLocator {
      * Prevents direct construction; use the static register methods.
      */
     private ServiceLocatorStub() {
-        super();
+        // no-op
     }
 
     public Object lookup(String jndiName) {
@@ -131,7 +131,7 @@ public final class ServiceLocatorStub implements ServiceLocator {
     }
 
     public static ServiceLocatorStub registerEmptyLocator() {
-        ServiceLocatorStub locatorStub = new ServiceLocatorStub();
+        ServiceLocatorStub locatorStub = new ServiceLocatorStub();        
         ServiceLocatorFactory.setLocator(locatorStub);
         return locatorStub;
     }
@@ -151,5 +151,4 @@ public final class ServiceLocatorStub implements ServiceLocator {
         ServiceLocatorFactory.setLocator(locatorStub);
         return locatorStub;
     }
-
 }
