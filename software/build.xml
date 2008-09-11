@@ -250,8 +250,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 	<target name="run-caarray2-build" depends="
 		clean,
 		init,
-		build:caarray">
-
+		build:caarray,
+		build:init-sql">
 	</target>
 
 	
@@ -446,15 +446,14 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 				<include name="*.properties"/>
 			</fileset>
 		</copy>
-		<exec os="Linux, Max OS X" executable="ant" dir="${caarray.dist.dir}">
+		<exec osfamily="unix" executable="ant" dir="${caarray.dist.dir}">
 			<!-- use alternate properties file since default has replace values -->
 			<arg value="-Dproperties.file=linux-install.properties"/>
 			<!-- force reinstall of database and jboss without prompting -->
 			<arg value="-Dforce.reinstall=true"/>
 			<arg value="${install.target}"/>
 		</exec> 
-		<exec os="Windows XP, Windows 2000, Windows 2003"
-			executable="ant.bat" dir="${caarray.dist.dir}">
+		<exec osfamily="windows" executable="ant.bat" dir="${caarray.dist.dir}">
 			<!-- use alternate properties file since default has replace values -->
 			<arg value="-Dproperties.file=windows-install.properties"/>
 			<!-- force reinstall of database and jboss without prompting -->
@@ -473,32 +472,18 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 				<include name="*.properties"/>
 			</fileset>
 		</copy>
-		<if>
-			<isset property="ci.server"/>
-			<then>
-				<replaceregexp file="${caarray.dist.dir}/linux-upgrade.properties" byline="true"
-					match="exclude.start.servers=true"
-					replace=""/>
-				<replaceregexp file="${caarray.dist.dir}/windows-upgrade.properties" byline="true"
-					match="exclude.start.servers=true"
-					replace=""/>
-			</then>
-		</if>
-		<exec os="Linux, Max OS X" executable="ant" dir="${caarray.dist.dir}">
+		<exec osfamily="unix" executable="ant" dir="${caarray.dist.dir}">
 			<!-- use alternate properties file since default has replace values -->
 			<arg value="-Dproperties.file=linux-upgrade.properties"/>
 			<!-- force reinstall of database and jboss without prompting -->
 			<arg value="-Dforce.reinstall=true"/>
-			<arg value="-Dlocal.install=true"/>
 			<arg value="${upgrade.target}"/>
 		</exec> 
-		<exec os="Windows XP, Windows 2000, Windows 2003"
-			executable="ant.bat" dir="${caarray.dist.dir}">
+		<exec osfamily="windows" executable="ant.bat" dir="${caarray.dist.dir}">
 			<!-- use alternate properties file since default has replace values -->
 			<arg value="-Dproperties.file=windows-upgrade.properties"/>
 			<!-- force reinstall of database and jboss without prompting -->
 			<arg value="-Dforce.reinstall=true"/>
-			<arg value="-Dlocal.install=true"/>
 			<arg value="${upgrade.target}"/>
 		</exec> 
 		<echo message="The server is not started as part of local deployment.  You will need to run $JBOSS_HOME/bin/run.bat (or run.sh if you are linux)."/>
