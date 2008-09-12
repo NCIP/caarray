@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
@@ -230,14 +229,6 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
 
     public Long getFirstFeatureId(ArrayDesignDetails designDetails) {
         return NumberUtils.LONG_ONE;
-    }
-
-    public AbstractDesignElement getDesignElementFromVendorId(String vendorId) {
-        return null;
-    }
-
-    public void clearVendorIds() {
-        // empty method
     }
 
     public List<ArrayDesign> getArrayDesigns(ArrayDesignDetails arrayDesignDetails) {

@@ -239,7 +239,7 @@ public abstract class AbstractAffymetrixArrayDesignHandler extends AbstractArray
         this.probeGroup = new ProbeGroup(designDetails);
         this.probeGroup.setName(LSID_AUTHORITY + ":" + this.probeGroup.getClass().getSimpleName() + ":All."
                 + getArrayDesignName());
-        getDaoFactory().getSearchDao().save(this.probeGroup);
+        getSearchDao().save(this.probeGroup);
     }
 
 
@@ -264,7 +264,7 @@ public abstract class AbstractAffymetrixArrayDesignHandler extends AbstractArray
                 }
             }
             flushAndClearSession();
-            this.probeGroup = getDaoFactory().getSearchDao().retrieve(ProbeGroup.class, probeGroup.getId());
+            this.probeGroup = getSearchDao().retrieve(ProbeGroup.class, probeGroup.getId());
         }
     }
 

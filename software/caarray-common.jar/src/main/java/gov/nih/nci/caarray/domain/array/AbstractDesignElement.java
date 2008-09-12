@@ -91,8 +91,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Index;
-
 /**
  * Base class for all array design elements.
  */
@@ -102,9 +100,6 @@ import org.hibernate.annotations.Index;
 @DiscriminatorColumn(name = "discriminator", discriminatorType = DiscriminatorType.STRING)
 public abstract class AbstractDesignElement extends AbstractCaArrayObject {
 
-    // this field will generally be null; it is only used temporarily when parsing array design files
-    private transient String vendorId;
-
     /**
      * Element constructor.
      */
@@ -112,22 +107,4 @@ public abstract class AbstractDesignElement extends AbstractCaArrayObject {
         super();
     }
 
-    /**
-     * THIS FIELD SHOULD ONLY BE USED DURING ARRAY DESIGN CREATION.
-     * Get the vendor-specific ID.  This ID is only set when parsing array design files and will be
-     * null at other times.
-     * @return the vendorId the vendor-specific ID
-     */
-    @Index(name = "vendor_id_indx")
-    public String getVendorId() {
-        return vendorId;
-    }
-
-    /**
-     * THIS FIELD SHOULD ONLY BE USED DURING ARRAY DESIGN CREATION.
-     * @param vendorId the vendorId to set
-     */
-    public void setVendorId(String vendorId) {
-        this.vendorId = vendorId;
-    }
 }

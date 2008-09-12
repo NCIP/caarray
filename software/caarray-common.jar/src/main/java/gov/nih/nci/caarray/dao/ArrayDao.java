@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
@@ -284,20 +283,6 @@ public interface ArrayDao extends CaArrayDao {
      * @return lowest ID associated with the design details
      */
     Long getFirstFeatureId(ArrayDesignDetails designDetails);
-
-    /**
-     * Get the DB ID for a design element given its vendor ID.  Vendor IDs are cleared during and after array design
-     * import, so vendor IDs are only ever set for one type of element for one array design, and the vendor ID will
-     * therefore be unique.
-     * @param vendorId vendor-assigned ID
-     * @return abstract design element
-     */
-    AbstractDesignElement getDesignElementFromVendorId(String vendorId);
-
-    /**
-     * Clear out the temporary vendor IDs that may be set on any design elements.
-     */
-    void clearVendorIds();
 
     /**
      * Gets the array designs associated with an ArrayDesignDetails object.  Most array design details are only

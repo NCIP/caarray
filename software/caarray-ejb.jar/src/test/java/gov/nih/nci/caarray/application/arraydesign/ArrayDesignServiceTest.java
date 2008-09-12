@@ -104,7 +104,6 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
@@ -441,7 +440,6 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
         for (PhysicalProbe probe : design.getDesignDetails().getProbes()) {
             assertTrue(probe.getFeatures().size() > 0);
             assertEquals(design.getDesignDetails(), probe.getArrayDesignDetails());
-            assertNull(probe.getVendorId());
             for (Feature feature : probe.getFeatures()) {
                 assertTrue(feature.getColumn() >= 0 && feature.getColumn() < 32);
                 assertTrue(feature.getRow() >= 0 && feature.getRow() < 32);
@@ -749,8 +747,6 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
         private final Map<Long, PersistentObject> objectMap = new HashMap<Long, PersistentObject>();
         private static long nextId = 0;
         private static long nextFeatureId = 1;
-        private final Map<String, AbstractDesignElement> designElementVendorIdMap =
-            new HashMap<String, AbstractDesignElement>();
 
         @Override
         public ArrayDao getArrayDao() {
@@ -804,21 +800,12 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
                     if (object instanceof LogicalProbe) {
                         LogicalProbe probe = (LogicalProbe) object;
                         probe.getArrayDesignDetails().getLogicalProbes().add(probe);
-                        if (StringUtils.isNotBlank(probe.getVendorId())) {
-                            designElementVendorIdMap.put(probe.getVendorId(), probe);
-                        }
                     } else if (object instanceof PhysicalProbe) {
                         PhysicalProbe probe = (PhysicalProbe) object;
                         probe.getArrayDesignDetails().getProbes().add(probe);
-                        if (StringUtils.isNotBlank(probe.getVendorId())) {
-                            designElementVendorIdMap.put(probe.getVendorId(), probe);
-                        }
                     } else if (object instanceof Feature) {
                         Feature feature = (Feature) object;
                         feature.getArrayDesignDetails().getFeatures().add(feature);
-                        if (StringUtils.isNotBlank(feature.getVendorId())) {
-                            designElementVendorIdMap.put(feature.getVendorId(), feature);
-                        }
                     }
                 }
 
@@ -876,22 +863,6 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
                 }
 
                 @Override
-                public void clearVendorIds() {
-                    designElementVendorIdMap.clear();
-                    for (PersistentObject entry : LocalDaoFactoryStub.this.objectMap.values()) {
-                        if (entry instanceof PhysicalProbe) {
-                            PhysicalProbe probe = (PhysicalProbe) entry;
-                            probe.setVendorId(null);
-                        }
-                    }
-                }
-
-                @Override
-                public AbstractDesignElement getDesignElementFromVendorId(String vendorId) {
-                    return designElementVendorIdMap.get(vendorId);
-                }
-
-                @Override
                 public void createFeatures(int rows, int cols, ArrayDesignDetails designDetails) {
                     for (int y = 0; y < rows; y++) {
                         for (int x = 0; x < cols; x++) {
@@ -911,7 +882,6 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
             objectMap.clear();
             nextId = 0;
             nextFeatureId = 1;
-            designElementVendorIdMap.clear();
         }
 
         /**
@@ -936,7 +906,6 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
                 public void save(PersistentObject object) {
                     LocalDaoFactoryStub.this.objectMap.put(object.getId(), object);
                 }
-
             };
         }
 

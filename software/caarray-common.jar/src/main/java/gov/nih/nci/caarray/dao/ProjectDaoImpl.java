@@ -326,7 +326,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         }
         return new ArrayList<Term>(types);
     }
-    
+
     /**
      * {@inheritDoc}
      */

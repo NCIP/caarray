@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -166,6 +167,10 @@ abstract class AbstractArrayDesignHandler {
 
     ArrayDao getArrayDao() {
         return getDaoFactory().getArrayDao();
+    }
+
+    SearchDao getSearchDao() {
+        return getDaoFactory().getSearchDao();
     }
 
     void flushAndClearSession() {

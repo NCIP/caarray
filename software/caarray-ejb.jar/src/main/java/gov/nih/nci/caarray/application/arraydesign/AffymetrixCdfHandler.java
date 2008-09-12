@@ -183,7 +183,7 @@ class AffymetrixCdfHandler extends AbstractAffymetrixArrayDesignHandler {
             handleProbeSet(probeSetInformation, fusionCDFData.getProbeSetName(index), designDetails);
             if (index % PROBE_SET_BATCH_SIZE == 0) {
                 flushAndClearSession();
-                setProbeGroup(getDaoFactory().getSearchDao().retrieve(ProbeGroup.class, getProbeGroup().getId()));
+                setProbeGroup(getSearchDao().retrieve(ProbeGroup.class, getProbeGroup().getId()));
             }
         }
     }
@@ -230,7 +230,7 @@ class AffymetrixCdfHandler extends AbstractAffymetrixArrayDesignHandler {
             handleQCProbeSet(qcProbeSetInformation, designDetails);
             if (index % PROBE_SET_BATCH_SIZE == 0) {
                 flushAndClearSession();
-                setProbeGroup(getDaoFactory().getSearchDao().retrieve(ProbeGroup.class, getProbeGroup().getId()));
+                setProbeGroup(getSearchDao().retrieve(ProbeGroup.class, getProbeGroup().getId()));
             }
         }
     }

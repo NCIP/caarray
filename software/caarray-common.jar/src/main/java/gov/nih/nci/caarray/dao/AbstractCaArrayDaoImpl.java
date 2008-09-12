@@ -127,25 +127,19 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     }
 
     /**
-     * Saves the entity to persistent storage, updating or inserting
-     * as necessary.
-     *
-     * @param persistentObject the entity to save
+     * {@inheritDoc}
      */
     public void save(PersistentObject persistentObject) {
         try {
             getCurrentSession().saveOrUpdate(persistentObject);
         } catch (HibernateException e) {
             getLog().error("Unable to save entity", e);
-           throw new DAOException("Unable to save entity", e);
+            throw new DAOException("Unable to save entity", e);
         }
     }
 
     /**
-     * Saves the collection of entities to persistent storage, updating or inserting
-     * as necessary.
-     *
-     * @param persistentObjects the entity collection to save
+     * {@inheritDoc}
      */
     public void save(Collection<? extends PersistentObject> persistentObjects) {
         try {
@@ -161,10 +155,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     }
 
     /**
-     * Deletes the entity from persistent storage.
-     *
-     * @param persistentObject the entity to be deleted.
-     * @if unable to delete the entity.
+     * {@inheritDoc}
      */
     public void remove(PersistentObject persistentObject) {
         try {

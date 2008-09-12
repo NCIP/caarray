@@ -102,7 +102,9 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.math.NumberUtils;
@@ -152,6 +154,8 @@ public class AffymetrixPgfClfDesignHandler extends AbstractAffymetrixArrayDesign
 
     private AffymetrixTsvFileReader pgfReader;
     private AffymetrixTsvFileReader clfReader;
+
+    private final Map<String, Long> vendorIdDesignElementMap = new HashMap<String, Long>();
 
     AffymetrixPgfClfDesignHandler(VocabularyService vocabularyService, CaArrayDaoFactory daoFactory,
             Set<CaArrayFile> designFiles) {
@@ -326,10 +330,9 @@ public class AffymetrixPgfClfDesignHandler extends AbstractAffymetrixArrayDesign
             flushAndCommitTransaction();
             pgfReader.reset();
             handleProbeSets(designDetails);
-            LOG.info("Done creating logical probes, clearing vendor IDs");
+            LOG.info("Done creating logical probes");
             flushAndCommitTransaction();
-            getArrayDao().clearVendorIds();
-            flushAndCommitTransaction();
+            vendorIdDesignElementMap.clear();
         } catch (IOException e) {
             throw new AffymetrixArrayDesignReadException("Error loading design details from "
                     + pgfReader.getFile().getName(), e);
@@ -368,7 +371,7 @@ public class AffymetrixPgfClfDesignHandler extends AbstractAffymetrixArrayDesign
             while (nextLine != null) {
                 if (recordLevel == 1) {
                     PhysicalProbe physicalProbe = new PhysicalProbe(designDetails, getProbeGroup());
-                    physicalProbe.setVendorId(nextLine.get(COL_ATOM_ID));
+                    String vendorId = nextLine.get(COL_ATOM_ID);
                     nextLine = pgfReader.readNextDataLine();
                     recordLevel = getRecordLevel(nextLine);
                     while (recordLevel == 2) {
@@ -378,6 +381,7 @@ public class AffymetrixPgfClfDesignHandler extends AbstractAffymetrixArrayDesign
                         features++;
                     }
                     getArrayDao().save(physicalProbe);
+                    vendorIdDesignElementMap.put(vendorId, physicalProbe.getId());
                     manageDesignElementSession(physicalProbe, counter);
                     counter++;
                 } else {
@@ -401,7 +405,7 @@ public class AffymetrixPgfClfDesignHandler extends AbstractAffymetrixArrayDesign
     private void linkFeatureToPhysicalProbe(String probeId, Long firstFeatureId, PhysicalProbe physicalProbe) {
         int probeIdInt = Integer.valueOf(probeId);
         long probeDbId = probeIdInt - clfReader.getFileHeaderAsInteger(HEADER_SEQUENTIAL) + firstFeatureId;
-        Feature feature = getDaoFactory().getSearchDao().retrieveUnsecured(Feature.class, probeDbId);
+        Feature feature = getSearchDao().retrieveUnsecured(Feature.class, probeDbId);
         physicalProbe.addFeature(feature);
     }
 
@@ -450,14 +454,14 @@ public class AffymetrixPgfClfDesignHandler extends AbstractAffymetrixArrayDesign
 
     private void linkPhysicalProbeToLogicalProbe(String atomId, LogicalProbe logicalProbe) {
         LOG.debug("Linking physical probe atom #" + atomId + " to logical probe " + logicalProbe.getId());
-        PhysicalProbe physicalProbe = (PhysicalProbe) getArrayDao().getDesignElementFromVendorId(atomId);
+        PhysicalProbe physicalProbe = getSearchDao().retrieveUnsecured(PhysicalProbe.class,
+                vendorIdDesignElementMap.get(atomId));
         logicalProbe.addProbe(physicalProbe);
     }
 
     private void flushSession() {
         flushAndClearSession();
-        setProbeGroup(getDaoFactory().getSearchDao().retrieve(ProbeGroup.class,
-                getProbeGroup().getId()));
+        setProbeGroup(getSearchDao().retrieve(ProbeGroup.class, getProbeGroup().getId()));
     }
 
     /**

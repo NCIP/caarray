@@ -487,25 +487,6 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     /**
      * {@inheritDoc}
      */
-    public AbstractDesignElement getDesignElementFromVendorId(String vendorId) {
-        String queryString = "from " + AbstractDesignElement.class.getName() + " de where de.vendorId = :vendorId";
-        Query query = getCurrentSession().createQuery(queryString);
-        query.setString("vendorId", vendorId);
-        return (AbstractDesignElement) query.uniqueResult();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void clearVendorIds() {
-        String queryString = "update " + AbstractDesignElement.class.getName()
-                + " set vendorId = null where vendorId is not null";
-        getCurrentSession().createQuery(queryString).executeUpdate();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("unchecked")
     public List<ArrayDesign> getArrayDesigns(ArrayDesignDetails arrayDesignDetails) {
         String queryString = "from " + ArrayDesign.class.getName() + " ad where ad.designDetails = :designDetails";
