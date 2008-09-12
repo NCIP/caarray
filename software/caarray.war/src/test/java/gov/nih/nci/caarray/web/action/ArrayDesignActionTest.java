@@ -276,9 +276,9 @@ public class ArrayDesignActionTest extends AbstractCaarrayTest {
         ServletActionContext.setRequest(new MockHttpServletRequest());
         arrayDesignAction.setArrayDesign(new ArrayDesign());
         arrayDesignServiceStub.throwArrayDesignDeleteException = true;
-        assertEquals("list", arrayDesignAction.delete());
+        assertEquals(arrayDesignAction.SUCCESS, arrayDesignAction.delete());
         arrayDesignServiceStub.throwArrayDesignDeleteException = false;
-        assertEquals("list", arrayDesignAction.delete());
+        assertEquals(arrayDesignAction.SUCCESS, arrayDesignAction.delete());
     }
 
     @SuppressWarnings("deprecation")

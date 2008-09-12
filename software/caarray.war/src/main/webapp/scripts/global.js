@@ -287,6 +287,7 @@ var TabUtils = {
 
     hideLoadingText : function() {
         document.getElementsByClassName('loadingText').each(function(elt) { $(elt).hide(); });
+        document.getElementsByClassName('message').each(function(elt) { $(elt).hide(); });
     },
 
     submitTabForm : function(formId, tabDivId) {

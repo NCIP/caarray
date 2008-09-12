@@ -98,6 +98,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -191,7 +192,7 @@ public class ProjectExperimentContactsAction extends
     public String delete() {
         if (getCurrentExperimentContact().isPrimaryInvestigator()
                 && getProject().getExperiment().getPrimaryInvestigatorCount() < 2) {
-            addActionError("Unable to delete contact. At least one Primary Investigator is required.");
+            ActionHelper.saveMessage("Unable to delete contact. At least one Primary Investigator is required.");
             super.load();
             return "list";
         }

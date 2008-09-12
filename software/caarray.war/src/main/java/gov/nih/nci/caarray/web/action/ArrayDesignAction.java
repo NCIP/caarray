@@ -413,7 +413,8 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         } catch (ArrayDesignDeleteException e) {
             ActionHelper.saveMessage(e.getMessage());
         }
-        return list();
+        arrayDesigns = getArrayDesignService().getArrayDesigns();
+        return SUCCESS;
     }
 
     /**
