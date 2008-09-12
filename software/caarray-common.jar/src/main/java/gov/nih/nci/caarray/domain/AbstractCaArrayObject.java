@@ -97,7 +97,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 public abstract class AbstractCaArrayObject implements PersistentObject {
 
     private static final long serialVersionUID = 2732929116326299995L;
-    
+
     /**
      * The default column size for string columns in the db.
      */

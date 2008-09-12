@@ -100,6 +100,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.file.UnsupportedAffymetrixCdfFiles;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -200,15 +201,20 @@ public class ArrayDesignActionTest extends AbstractCaarrayTest {
         assertEquals("metaValid", result);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testSave() throws Exception {
         ArrayDesign design = new ArrayDesign();
         arrayDesignAction.setArrayDesign(design);
         String result = arrayDesignAction.saveMeta();
         assertEquals("metaValid", result);
-        arrayDesignAction.setUploadFileName(UnsupportedAffymetrixCdfFiles.HUMAN_EXON_1_0_ST.getFilename());
+        List<String> list = new ArrayList<String>();
+        list.add(UnsupportedAffymetrixCdfFiles.HUMAN_EXON_1_0_ST.getFilename());
+        arrayDesignAction.setUploadFileName(list);
         arrayDesignAction.setUpload(null);
-        arrayDesignAction.setUploadFormatType(FileType.UCSF_SPOT_SPT.name());
+        List<String> flist = new ArrayList<String>();
+        flist.add(FileType.UCSF_SPOT_SPT.name());
+        arrayDesignAction.setFileFormatType(flist);
         result = arrayDesignAction.save();
         assertEquals("metaValid", result);
 
@@ -339,7 +345,7 @@ public class ArrayDesignActionTest extends AbstractCaarrayTest {
     }
     private static class LocalFileManagementServiceStub extends FileManagementServiceStub {
         @Override
-        public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile) throws InvalidDataFileException {
+        public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFileSet designFiles) throws InvalidDataFileException {
             FileValidationResult fvr = new FileValidationResult(null);
             fvr.addMessage(Type.ERROR, "asdf");
             throw new InvalidDataFileException(fvr);

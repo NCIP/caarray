@@ -96,7 +96,6 @@ import org.junit.Test;
 public class ProtocolKeyTest extends AbstractCaarrayTest {
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testEqualsHashCode() {
         TermSource source1 = new TermSource();
         String name1 = "name1";

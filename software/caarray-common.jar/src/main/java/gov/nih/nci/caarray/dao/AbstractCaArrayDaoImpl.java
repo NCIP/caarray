@@ -127,25 +127,19 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     }
 
     /**
-     * Saves the entity to persistent storage, updating or inserting
-     * as necessary.
-     *
-     * @param persistentObject the entity to save
+     * {@inheritDoc}
      */
     public void save(PersistentObject persistentObject) {
         try {
             getCurrentSession().saveOrUpdate(persistentObject);
         } catch (HibernateException e) {
             getLog().error("Unable to save entity", e);
-           throw new DAOException("Unable to save entity", e);
+            throw new DAOException("Unable to save entity", e);
         }
     }
 
     /**
-     * Saves the collection of entities to persistent storage, updating or inserting
-     * as necessary.
-     *
-     * @param persistentObjects the entity collection to save
+     * {@inheritDoc}
      */
     public void save(Collection<? extends PersistentObject> persistentObjects) {
         try {
@@ -161,10 +155,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     }
 
     /**
-     * Deletes the entity from persistent storage.
-     *
-     * @param persistentObject the entity to be deleted.
-     * @if unable to delete the entity.
+     * {@inheritDoc}
      */
     public void remove(PersistentObject persistentObject) {
         try {
@@ -185,7 +176,6 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, Order... order) {
         return queryEntityByExample(entityToMatch, mode, true, ArrayUtils.EMPTY_STRING_ARRAY, order);
     }
@@ -275,8 +265,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    public void mergeObject(Object object) {
-        HibernateUtil.getCurrentSession().merge(object);
+    public Object mergeObject(Object object) {
+        return HibernateUtil.getCurrentSession().merge(object);
     }
 
     /**

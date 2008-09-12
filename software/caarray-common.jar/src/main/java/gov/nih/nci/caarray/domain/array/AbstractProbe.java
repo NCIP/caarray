@@ -98,7 +98,7 @@ public abstract class AbstractProbe extends AbstractDesignElement {
     private String name;
 
     /**
-     * Construtor.
+     * Constructor.
      */
     public AbstractProbe() {
         super();

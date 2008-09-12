@@ -124,6 +124,7 @@ public final class AuthorizationManagerExtensions {
      * @param appName application context name
      * @throws CSTransactionException if there is an error in performing the operation
      */
+    @SuppressWarnings("unchecked")
     public static void addOwner(Long protectionElementId, User user, String appName) throws CSTransactionException {
 
         Session s = null;
@@ -330,7 +331,7 @@ public final class AuthorizationManagerExtensions {
     }
 
     /**
-     * Utility class to contstruct PReparedStatement queries, adapted from CSM.
+     * Utility class to construct PreparedStatement queries, adapted from CSM.
      */
     @SuppressWarnings("PMD")
     // method adopted from CSM

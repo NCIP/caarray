@@ -87,7 +87,7 @@ package gov.nih.nci.caarray.web.util;
  * Constant values used throughout the application.
  *
  */
-public class Constants {
+public final class Constants {
     //~ Static fields/initializers =============================================
 
     /** The name of the ResourceBundle used in this application. */
@@ -111,4 +111,8 @@ public class Constants {
      * to do extra work or have two session-level variables.
      */
     public static final String PREFERRED_LOCALE_KEY = "org.apache.struts2.action.LOCALE";
+
+    private Constants() {
+        // nothing to do here
+    }
 }

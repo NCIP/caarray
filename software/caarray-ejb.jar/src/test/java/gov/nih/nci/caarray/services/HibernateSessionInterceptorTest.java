@@ -128,7 +128,7 @@ public class HibernateSessionInterceptorTest extends AbstractCaarrayTest {
         }
 
         public Object[] getParameters() {
-            return null;
+            return new Object[]{};
         }
 
         public Object getTarget() {

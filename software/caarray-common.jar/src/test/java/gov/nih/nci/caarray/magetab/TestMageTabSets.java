@@ -100,6 +100,7 @@ import java.util.Locale;
 /**
  * MAGE-TAB document sets to be used as test data.
  */
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public final class TestMageTabSets {
 
     private TestMageTabSets() {
@@ -231,23 +232,23 @@ public final class TestMageTabSets {
      * MAGE-TAB data set containing data derived from other derived data.
      */
     public static final MageTabDocumentSet DERIVED_DATA_SET = getSet(DERIVED_DATA_INPUT_SET);
-    
+
     /**
      * MAGE-TAB input set containing valid usage of Characteristics[ExternalSampleId] for Sample(s).
      */
     public static final MageTabInputFileSet VALID_FEATURE_13141_INPUT_SET = getValidFeature13141InputSet();
-    
+
     /**
-     * Document set parsed ... 
+     * Document set parsed ...
      */
     public static final MageTabDocumentSet VALID_FEATURE_13141_DATA_SET = getSet(VALID_FEATURE_13141_INPUT_SET);
     /**
      * MAGE-TAB input set containing valid usage of Characteristics[ExternalSampleId] for Sample(s).
      */
     public static final MageTabInputFileSet INVALID_FEATURE_13141_INPUT_SET = getInvalidFeature13141InputSet();
-    
+
     /**
-     * Document set parsed ... 
+     * Document set parsed ...
      */
     public static final MageTabDocumentSet INVALID_FEATURE_13141_DATA_SET = getSet(INVALID_FEATURE_13141_INPUT_SET);
 

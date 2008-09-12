@@ -86,7 +86,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Interface to read text files with delimiters and separators (e.g. CSV or tab delmited files).
+ * Interface to read text files with delimiters and separators (e.g. CSV or tab delimited files).
  */
 public interface DelimitedFileReader {
 

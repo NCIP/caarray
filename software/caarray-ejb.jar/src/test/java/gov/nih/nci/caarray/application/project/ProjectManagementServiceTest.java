@@ -98,7 +98,6 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -386,6 +385,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
      * Test method for {@link ProjectManagementService#saveProject(Project, PersistentObject...)}.
      */
     @Test
+    @SuppressWarnings("deprecation")
     public void testSaveProjectWithImportingFiles() throws Exception {
         Project project = new Project();
         CaArrayFile file1 = new CaArrayFile();
@@ -421,6 +421,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testDeleteProject() throws Exception {
         Project project = new Project();
         project.setId(1L);
@@ -436,6 +437,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
     }
 
     @Test(expected = ProposalWorkflowException.class)
+    @SuppressWarnings("deprecation")
     public void testDeleteNonDraftProject() throws Exception {
         Project project = new Project();
         project.setId(1L);
@@ -445,6 +447,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
     }
 
     @Test(expected = PermissionDeniedException.class)
+    @SuppressWarnings("deprecation")
     public void testDeleteUnownedProject() throws Exception {
         Project project = new Project();
         project.setId(1L);
@@ -544,6 +547,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
     }
 
     @Test  (expected = IllegalStateException.class)
+    @SuppressWarnings("unchecked")
     public void testGetSampleByExternalIdReturnsNonUniqueResult() throws Exception {
         ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;
         bean.setDaoFactory(new DaoFactoryStub(){
@@ -577,7 +581,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
             }
         });
         Project project = new Project();
-        
+
         assertNull(this.projectManagementService.getSampleByExternalId(project, "abc"));
     }
     @Test
@@ -596,12 +600,12 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
             }
         });
         Project project = new Project();
-        
+
         Sample sampleByExternalId = this.projectManagementService.getSampleByExternalId(project, "abc");
         assertNotNull(sampleByExternalId);
         assertSame(project.getExperiment(), sampleByExternalId.getExperiment());
     }
-    
+
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
 
         LocalProjectDaoStub projectDao = new LocalProjectDaoStub();
@@ -665,7 +669,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         /**
          * {@inheritDoc}
          */
-        @SuppressWarnings({ "unchecked", "deprecation" })
+        @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             PersistentObject po = this.projectDao.savedObjects.get(entityId);
@@ -744,8 +748,9 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
             abm.setDescription("Test");
             abm.setId(entityId);
         }
-        
+
         @Override
+        @SuppressWarnings("unchecked")
         public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(T entityToMatch) {
             List<T> results = new ArrayList<T>();
             if (entityToMatch instanceof Sample) {
@@ -757,7 +762,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
                             if (sampleToMatch.getExternalSampleId().equals(s.getExternalSampleId())) {
                                 results.add((T) s);
                             }
-                        } 
+                        }
                     }
                 }
             }

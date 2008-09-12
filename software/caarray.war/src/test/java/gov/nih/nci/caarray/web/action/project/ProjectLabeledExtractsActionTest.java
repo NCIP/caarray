@@ -138,6 +138,7 @@ public class ProjectLabeledExtractsActionTest extends AbstractCaarrayTest {
 
     private MockHttpServletResponse mockResponse;
 
+    @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
@@ -150,6 +151,7 @@ public class ProjectLabeledExtractsActionTest extends AbstractCaarrayTest {
         ServletActionContext.setResponse(mockResponse);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPrepare() throws Exception {
         // no current extract id
@@ -192,11 +194,11 @@ public class ProjectLabeledExtractsActionTest extends AbstractCaarrayTest {
         assertEquals("list", action.delete());
         assertTrue(ActionHelper.getMessages().contains("experiment.annotations.cantdelete"));
     }
-    
+
     @Test
     public void testDownload() throws Exception {
         assertEquals("noLabeledExtractData", action.download());
-        
+
         FileAccessServiceStub fas = new FileAccessServiceStub();
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
         fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
@@ -219,7 +221,7 @@ public class ProjectLabeledExtractsActionTest extends AbstractCaarrayTest {
         CaArrayFile derivedFile = new CaArrayFile();
         derivedFile.setName("missing_term_source.sdrf");
         derived.setDataFile(derivedFile);
-        
+
         action.setCurrentLabeledExtract(le);
         action.setProject(p);
         List<CaArrayFile> files = new ArrayList<CaArrayFile>(le.getAllDataFiles());
@@ -227,11 +229,11 @@ public class ProjectLabeledExtractsActionTest extends AbstractCaarrayTest {
         assertEquals(2, files.size());
         assertEquals("missing_term_source.idf", files.get(0).getName());
         assertEquals("missing_term_source.sdrf", files.get(1).getName());
-        
+
         action.download();
         assertEquals("application/zip", mockResponse.getContentType());
         assertEquals("filename=\"caArray_test_files.zip\"", mockResponse.getHeader("Content-disposition"));
-        
+
         ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
         ZipEntry ze = zis.getNextEntry();
         assertNotNull(ze);
@@ -264,6 +266,7 @@ public class ProjectLabeledExtractsActionTest extends AbstractCaarrayTest {
     }
 
     private static class LocalGenericDataService extends GenericDataServiceStub {
+        @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(LabeledExtract.class) && entityId.equals(1L)) {

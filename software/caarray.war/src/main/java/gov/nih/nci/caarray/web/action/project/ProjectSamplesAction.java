@@ -136,7 +136,7 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
      * {@inheritDoc}
      * @throws VocabularyServiceException
      */
-    @SuppressWarnings({ "unchecked", "PMD.CyclomaticComplexity" })
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     @Override
     public void prepare() throws VocabularyServiceException {
         super.prepare();
@@ -155,7 +155,7 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
                         SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
             }
         }
-        
+
         if (retrieved != null) {
             this.currentSample = retrieved;
         }
@@ -167,11 +167,11 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
     public class SampleExternalIdPermissionDeniedException extends PermissionDeniedException {
 
         private static final long serialVersionUID = -1271512112927323609L;
-        
+
         /**
-         * Create a new SampleExternalIdPermissionDeniedException for a given user not having the given 
+         * Create a new SampleExternalIdPermissionDeniedException for a given user not having the given
          * privilege to the given entity.
-         * 
+         *
          * @param s the sample on which an operation was requested
          * @param privilege the privilege that was needed to perform the operation
          * @param userName the user attempting the operation
@@ -182,7 +182,7 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
                     privilege, s.getClass().getName(), s.getExternalSampleId()));
         }
     }
- 
+
     /**
      * download all of the data for this sample.
      * @return download
@@ -199,7 +199,7 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
         return ProjectFilesAction.downloadByGroup(getProject(), files,
                 getDownloadGroupNumber(), getDownloadFileGroups());
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -327,7 +327,7 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
         downloadFiles();
         return super.view();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -337,22 +337,22 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
         downloadFiles();
         return super.edit();
     }
-    
-    /** 
+
+    /**
      * {@inheritDoc}
      */
     protected Collection<CaArrayFile> getAllDataFiles() {
         return getCurrentSample().getAllDataFiles();
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     public String getDownloadFileListAction() {
         return getDownloadFileListActionUrl(BioMaterialTypes.SAMPLES);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     public String getDownloadFilesTableListSortUrlAction() {

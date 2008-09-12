@@ -132,7 +132,7 @@ import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpression
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaExpressionQuantitationType;
-import gov.nih.nci.caarray.application.arraydesign.AffymetrixCdfReadException;
+import gov.nih.nci.caarray.application.arraydesign.AffymetrixArrayDesignReadException;
 import gov.nih.nci.caarray.application.arraydesign.AffymetrixCdfReader;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
@@ -175,7 +175,6 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
@@ -215,7 +214,7 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
     private static final String HG_FOCUS_LSID_OBJECT_ID = "HG-Focus";
     private static final String ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID = "Human_WG-6";
     private static final DataImportOptions DEFAULT_IMPORT_OPTIONS = DataImportOptions.getAutoCreatePerFileOptions();
-    
+
     private ArrayDataService arrayDataService;
     FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
@@ -298,7 +297,8 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
         assertEquals(2, h.getRawDataCollection().size());
         assertEquals(2, h.getDerivedDataCollection().size());
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Test
     public void testImportToTargetSources() throws InvalidDataFileException {
         // tests the import of multiple files to single annotation chain
@@ -309,7 +309,7 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
         focusCalvinCel.setProject(focusCel.getProject());
         focusChp.setProject(focusCel.getProject());
         focusCalvinChp.setProject(focusCel.getProject());
-        
+
         Source targetSrc1 = new Source();
         targetSrc1.setId(1L);
         targetSrc1.setName("targetSrc1");
@@ -319,7 +319,7 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
         targetSrc2.setId(2L);
         searchDaoStub.save(targetSrc2);
         focusCel.getProject().getExperiment().getSources().addAll(Arrays.asList(targetSrc1, targetSrc2));
-        
+
         DataImportOptions options = DataImportOptions.getAssociateToBiomaterialsOptions(
                 ExperimentDesignNodeType.SOURCE, Arrays.asList(targetSrc1.getId(), targetSrc2.getId()));
         this.arrayDataService.importData(focusCel, true, options);
@@ -414,12 +414,12 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
     }
 
     @Test
-    public void testImportExpressionChp() throws InvalidDataFileException, AffymetrixCdfReadException {
+    public void testImportExpressionChp() throws InvalidDataFileException, AffymetrixArrayDesignReadException {
         testImportExpressionChp(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CHP);
         testImportExpressionChp(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CALVIN_CHP);
     }
 
-    private void testImportExpressionChp(File cdfFile, File chpFile) throws InvalidDataFileException, AffymetrixCdfReadException {
+    private void testImportExpressionChp(File cdfFile, File chpFile) throws InvalidDataFileException, AffymetrixArrayDesignReadException {
         DerivedArrayData chpData = getChpData(cdfFile, chpFile);
         assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
         assertNull(chpData.getDataSet());
@@ -457,12 +457,12 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
     }
 
     @Test
-    public void testImportSnpChp() throws InvalidDataFileException, AffymetrixCdfReadException {
+    public void testImportSnpChp() throws InvalidDataFileException, AffymetrixArrayDesignReadException {
         testImportSnpChp(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CHP);
         testImportSnpChp(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CALVIN_CHP);
     }
 
-    private void testImportSnpChp(File cdfFile, File chpFile) throws InvalidDataFileException, AffymetrixCdfReadException {
+    private void testImportSnpChp(File cdfFile, File chpFile) throws InvalidDataFileException, AffymetrixArrayDesignReadException {
         DerivedArrayData chpData = getChpData(cdfFile, chpFile);
         assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
         assertNull(chpData.getDataSet());
@@ -735,7 +735,7 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
         ArrayDesign arrayDesign = new ArrayDesign();
         CaArrayFile designFile = this.fileAccessServiceStub.add(design);
         designFile.setFileType(type);
-        arrayDesign.setDesignFile(designFile);
+        arrayDesign.addDesignFile(designFile);
         Array array = new Array();
         array.setDesign(arrayDesign);
         Hybridization hybridization = new Hybridization();
@@ -760,7 +760,7 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
             String objectId = reader.getCdfData().getChipType();
             reader.close();
             return objectId;
-        } catch (AffymetrixCdfReadException e) {
+        } catch (AffymetrixArrayDesignReadException e) {
             throw new IllegalStateException("Couldn't read CDF", e);
         }
     }
@@ -800,16 +800,17 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
         caArrayFile.getProject().setExperiment(new Experiment());
         return caArrayFile;
     }
-    
+
     private final class LocalSearchDaoStub extends SearchDaoStub {
         private Map<Long, PersistentObject> objMap = new HashMap<Long, PersistentObject>();
-        
+
         @Override
         public void save(PersistentObject caArrayEntity) {
             super.save(caArrayEntity);
             objMap.put(caArrayEntity.getId(), caArrayEntity);
         }
-        
+
+        @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             Object candidate = objMap.get(entityId);
@@ -818,7 +819,7 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
             } else {
                 return (T) (entityClass.isInstance(candidate) ? candidate : null);
             }
-        }        
+        }
     }
 
     private final class LocalDaoFactoryStub extends DaoFactoryStub {
@@ -832,7 +833,7 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
         private final Map<CaArrayFile, AbstractArrayData> fileDataMap = new HashMap<CaArrayFile, AbstractArrayData>();
 
         private Map<String, ArrayDesign> arrayDesignMap = new HashMap<String, ArrayDesign>();
-        
+
         @Override
         public SearchDao getSearchDao() {
             return searchDaoStub;
@@ -879,7 +880,7 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
                             design.getDesignDetails().getLogicalProbes().add(probeSet );
                         }
                         return design;
-                    } catch (AffymetrixCdfReadException e) {
+                    } catch (AffymetrixArrayDesignReadException e) {
                         throw new IllegalStateException("Unexpected read exception", e);
                     }
                 }
@@ -888,7 +889,7 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
                 private ArrayDesign createArrayDesign(String lsidObjectId, int rows, int columns, File designFile) {
                     ArrayDesign arrayDesign = new ArrayDesign();
                     if (designFile != null) {
-                        arrayDesign.setDesignFile(fileAccessServiceStub.add(designFile));
+                        arrayDesign.addDesignFile(fileAccessServiceStub.add(designFile));
                     }
                     ArrayDesignDetails details = new ArrayDesignDetails();
                     for (short row = 0; row < rows; row++) {

@@ -107,9 +107,9 @@ public final class AffymetrixCdfReader {
      *
      * @param   cdfFile the CDF to open
      * @return  a reader for the CDF
-     * @throws AffymetrixCdfReadException if the file couldn't be read
+     * @throws AffymetrixArrayDesignReadException if the file couldn't be read
      */
-    public static AffymetrixCdfReader create(File cdfFile) throws AffymetrixCdfReadException {
+    public static AffymetrixCdfReader create(File cdfFile) throws AffymetrixArrayDesignReadException {
         AffymetrixCdfReader reader = new AffymetrixCdfReader(cdfFile);
 
         boolean opened = false;
@@ -120,10 +120,11 @@ public final class AffymetrixCdfReader {
             // runtime exception being thrown - see GForge defect 11922 at
             // https://gforge.nci.nih.gov/tracker/?group_id=305&atid=1344&func=detail&aid=11922
             // we catch the exception to handle it more gracefully
-            throw new AffymetrixCdfReadException("Unsupported file type", e);
+            throw new AffymetrixArrayDesignReadException("Unsupported file type", e);
         }
         if (!opened) {
-            AffymetrixCdfReadException readException = new AffymetrixCdfReadException(reader.getCdfData().getError());
+            AffymetrixArrayDesignReadException readException =
+                new AffymetrixArrayDesignReadException(reader.getCdfData().getError());
             reader.close();
             throw readException;
         }

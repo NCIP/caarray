@@ -86,13 +86,16 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -101,20 +104,30 @@ import org.apache.log4j.Logger;
  */
 abstract class AbstractArrayDesignHandler {
 
-    private final CaArrayFile designFile;
+    private final Set<CaArrayFile> designFiles = new HashSet<CaArrayFile>();
     private final VocabularyService vocabularyService;
     private final CaArrayDaoFactory daoFactory;
 
-    AbstractArrayDesignHandler(CaArrayFile designFile, VocabularyService vocabularyService,
-            CaArrayDaoFactory daoFactory) {
-        super();
-        this.designFile = designFile;
+    AbstractArrayDesignHandler(VocabularyService vocabularyService, CaArrayDaoFactory daoFactory,
+            CaArrayFile designFiles) {
+        this.designFiles.add(designFiles);
         this.vocabularyService = vocabularyService;
         this.daoFactory = daoFactory;
     }
 
+    AbstractArrayDesignHandler(VocabularyService vocabularyService, CaArrayDaoFactory daoFactory,
+            Set<CaArrayFile> designFiles) {
+        this.designFiles.addAll(designFiles);
+        this.vocabularyService = vocabularyService;
+        this.daoFactory = daoFactory;
+    }
+
+    final Set<CaArrayFile> getDesignFiles() {
+        return designFiles;
+    }
+
     final CaArrayFile getDesignFile() {
-        return designFile;
+        return designFiles.isEmpty() ? null : designFiles.iterator().next();
     }
 
     final VocabularyService getVocabularyService() {
@@ -125,24 +138,28 @@ abstract class AbstractArrayDesignHandler {
         return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(getDesignFile());
     }
 
+    final File getFile(CaArrayFile file) {
+        return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(file);
+    }
+
     abstract void load(ArrayDesign arrayDesign);
 
     abstract void createDesignDetails(ArrayDesign arrayDesign);
 
-    final FileValidationResult validate() {
-        FileValidationResult result = new FileValidationResult(getFile());
+    final ValidationResult validate() {
+        ValidationResult result = new ValidationResult();
         try {
             validate(result);
         } catch (RuntimeException e) {
             getLog().error("Unexpected error validating file", e);
-            result.addMessage(Type.ERROR, "Unexpected error validating file: " + e.getMessage());
+            result.addMessage(getFile(), Type.ERROR, "Unexpected error validating file: " + e.getMessage());
         }
         return result;
     }
 
     abstract Logger getLog();
 
-    abstract void validate(FileValidationResult result);
+    abstract void validate(ValidationResult result);
 
     CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
@@ -152,11 +169,15 @@ abstract class AbstractArrayDesignHandler {
         return getDaoFactory().getArrayDao();
     }
 
+    SearchDao getSearchDao() {
+        return getDaoFactory().getSearchDao();
+    }
+
     void flushAndClearSession() {
         getArrayDao().flushSession();
         getArrayDao().clearSession();
     }
-    
+
     FileStatus getValidationErrorStatus() {
         return FileStatus.VALIDATION_ERRORS;
     }

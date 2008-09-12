@@ -119,7 +119,7 @@ public class AbstractDaoStub implements CaArrayDao {
     public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, Order... order) {
         return queryEntityByExample(entityToMatch, mode, true, ArrayUtils.EMPTY_STRING_ARRAY, order);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -162,14 +162,14 @@ public class AbstractDaoStub implements CaArrayDao {
     public void clearSession() {
         // no-op
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public void mergeObject(Object object) {
-        // no-op
+    public Object mergeObject(Object object) {
+        return object;
     }
-    
+
     /**
      * {@inheritDoc}
      */

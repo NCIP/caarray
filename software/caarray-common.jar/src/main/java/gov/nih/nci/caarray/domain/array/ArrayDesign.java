@@ -106,7 +106,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
@@ -145,6 +144,37 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private Set<CaArrayFile> designFiles = new HashSet<CaArrayFile>();
     private Organization provider;
     private ArrayDesignDetails designDetails;
+
+    /**
+     * Default constructor.
+     */
+    public ArrayDesign() {
+        // nothing to do here
+    }
+
+    /**
+     * Copy constructor.  The newly created array design will be a shallow copy of the given design.
+     * @param arrayDesign existing array design on which to base the new array design.
+     */
+    public ArrayDesign(ArrayDesign arrayDesign) {
+        this.setLsidForEntity(arrayDesign.getLsid());
+
+        this.name = arrayDesign.name;
+        this.description = arrayDesign.description;
+        this.assayTypes.addAll(arrayDesign.assayTypes);
+        this.printing = arrayDesign.printing;
+        this.polymerType = arrayDesign.polymerType;
+        this.numberOfFeatures = arrayDesign.numberOfFeatures;
+        this.substrateType = arrayDesign.substrateType;
+        this.surfaceType = arrayDesign.surfaceType;
+        this.technologyType = arrayDesign.technologyType;
+        this.organism = arrayDesign.organism;
+        this.version = arrayDesign.version;
+        this.annotationFile = arrayDesign.annotationFile;
+        this.designFiles.addAll(arrayDesign.designFiles);
+        this.provider = arrayDesign.provider;
+        this.designDetails = arrayDesign.designDetails;
+    }
 
     /**
      * Gets the name.
@@ -332,13 +362,13 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @NotNull
     @Size(min = 1)
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "array_design_design_file",
                joinColumns = @JoinColumn(name = "array_design"),
                inverseJoinColumns = @JoinColumn(name = "design_file"))
     @ForeignKey(name = "array_design_fk",
                 inverseName = "design_file_fk")
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     public Set<CaArrayFile> getDesignFiles() {
         return designFiles;
     }
@@ -354,9 +384,19 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
+     * Set the design files of this array design to the ones contained in the given set.
+     * @param designFileSet files to set
+     */
+    public void setDesignFileSet(CaArrayFileSet designFileSet) {
+        this.designFiles.clear();
+        this.designFiles.addAll(designFileSet.getFiles());
+    }
+
+    /**
      * @param designFiles the designFiles to set
      */
-    public void setDesignFiles(Set<CaArrayFile> designFiles) {
+    @SuppressWarnings({"PMD.UnusedPrivateMethod", "unused" })
+    private void setDesignFiles(Set<CaArrayFile> designFiles) {
         this.designFiles = designFiles;
     }
 
@@ -369,27 +409,16 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the design file.  This method should only used when it is known that there is exactly one design file;
-     * otherwise, an {@link IllegalStateException} will be thrown.
-     * @return the single design file
+     * Gets the first (or only) design file.
+     * @return the design file
      */
     @Transient
-    public CaArrayFile getDesignFile() {
-        if (designFiles.size() == 1) {
-            return designFiles.iterator().next();
-        } else if (designFiles.isEmpty()) {
+    public CaArrayFile getFirstDesignFile() {
+        if (designFiles.isEmpty()) {
             return null;
+        } else {
+            return designFiles.iterator().next();
         }
-        throw new IllegalStateException("getDesignFile() should only be called when there is exactly one design file.");
-    }
-
-    /**
-     * Sets the design files to a single file.  All other files will be removed from the list.
-     * @param designFile design file to set
-     */
-    public void setDesignFile(CaArrayFile designFile) {
-        this.designFiles.clear();
-        this.designFiles.add(designFile);
     }
 
     /**

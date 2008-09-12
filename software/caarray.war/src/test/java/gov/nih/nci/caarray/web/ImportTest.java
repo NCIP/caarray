@@ -123,7 +123,7 @@ public class ImportTest extends AbstractCaarrayTest {
         loadTestProject();
     }
 
-    @SuppressWarnings({ "PMD", "unchecked", "deprecation" })
+    @SuppressWarnings("deprecation")
     private void loadTestProject() {
         final Project project = new Project();;
         CaArrayFile file1 = new CaArrayFile();

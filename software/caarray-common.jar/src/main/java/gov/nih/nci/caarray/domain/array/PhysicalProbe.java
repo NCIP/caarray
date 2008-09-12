@@ -100,7 +100,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
 /**
- * Represents a phsyical probe on a microarray.
+ * Represents a physical probe on a microarray.
  */
 @Entity
 @DiscriminatorValue("PP")
@@ -157,6 +157,7 @@ public class PhysicalProbe extends AbstractProbe {
             joinColumns = { @JoinColumn(name = "physical_probe_id") },
             inverseJoinColumns = { @JoinColumn(name = "feature_id") }
     )
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE })
     public Set<Feature> getFeatures() {
         return features;
     }
@@ -164,6 +165,14 @@ public class PhysicalProbe extends AbstractProbe {
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setFeatures(Set<Feature> features) {
         this.features = features;
+    }
+
+    /**
+     * Add a feature to this physical probe.
+     * @param feature feature to add
+     */
+    public void addFeature(Feature feature) {
+        this.features.add(feature);
     }
 
     /**
@@ -195,4 +204,5 @@ public class PhysicalProbe extends AbstractProbe {
     public void setControlType(Term controlType) {
         this.controlType = controlType;
     }
+
 }

@@ -139,12 +139,11 @@ public interface FileAccessService {
     void save(CaArrayFile caArrayFile);
 
     /**
-     * unzips a .zip file, removes it from uploads
-     * and adds files present in zip to uploads.
+     * Unzips a .zip file, removes it from <code>files</code> and adds the extracted files to <code>files</code>.
      *
-     * @param uploads the list of files that were uploaded
-     * @param uploadFileNames the list of filenames to go along with the uploaded files
+     * @param files the list of files to unzip and the files extracted from the zips
+     * @param fileNames the list of filenames to go along with the list of files
      */
-    void unzipFiles(List<File> uploads, List<String> uploadFileNames);
+    void unzipFiles(List<File> files, List<String> fileNames);
 
 }

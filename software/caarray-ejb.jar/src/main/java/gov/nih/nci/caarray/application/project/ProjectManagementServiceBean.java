@@ -152,7 +152,7 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 @Stateless
 @Interceptors(ExceptionLoggingInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-@SuppressWarnings({"PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity" })
+@SuppressWarnings({"PMD.ExcessiveClassLength", "PMD.TooManyMethods", "PMD.CyclomaticComplexity" })
 public class ProjectManagementServiceBean implements ProjectManagementService {
     private static final Logger LOG = Logger.getLogger(ProjectManagementServiceBean.class);
     private static final int UPLOAD_TIMEOUT = 7200;
@@ -423,7 +423,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
         // refresh project
         Project freshProject = this.getProject(project.getId());
-
         // both hybridizations and project are trying to delete the save files via cascades, so explicitly
         //delete hybridizations (and their files) first
 
@@ -509,7 +508,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public List<Project> getMyProjects(boolean showPublic, PageSortParams<Project> pageSortParams) {
         LogUtil.logSubsystemEntry(LOG, showPublic);
         List<Project> result = getProjectDao().getProjectsForCurrentUser(showPublic, pageSortParams);

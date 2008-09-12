@@ -83,15 +83,13 @@
 package gov.nih.nci.caarray.domain.sample;
 
 import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+
+import org.junit.Test;
 
 /**
  * @author Jevon Gill

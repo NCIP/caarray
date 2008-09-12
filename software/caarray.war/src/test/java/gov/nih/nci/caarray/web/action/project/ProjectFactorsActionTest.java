@@ -112,9 +112,9 @@ import com.opensymphony.xwork2.Action;
  */
 public class ProjectFactorsActionTest extends AbstractCaarrayTest {
     private final ProjectFactorsAction action = new ProjectFactorsAction();
-    private final LocalGenericDataService localGenericDataService = new LocalGenericDataService();
     private static final Factor DUMMY_FACTOR = new Factor();
 
+    @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
@@ -124,6 +124,7 @@ public class ProjectFactorsActionTest extends AbstractCaarrayTest {
         DUMMY_FACTOR.setId(1L);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPrepare() throws Exception {
         // no current factor id
@@ -171,7 +172,7 @@ public class ProjectFactorsActionTest extends AbstractCaarrayTest {
         action.setCurrentFactor(DUMMY_FACTOR);
         assertEquals("list", action.copy());
     }
-    
+
     @Test
     public void testDelete() throws Exception {
         Factor f = new Factor();
@@ -186,9 +187,10 @@ public class ProjectFactorsActionTest extends AbstractCaarrayTest {
         String result = action.delete();
         assertTrue(h.getFactorValues().isEmpty());
         assertEquals("list", result);
-    }    
+    }
 
     private static class LocalGenericDataService extends GenericDataServiceStub {
+        @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(Factor.class) && entityId.equals(1L)) {

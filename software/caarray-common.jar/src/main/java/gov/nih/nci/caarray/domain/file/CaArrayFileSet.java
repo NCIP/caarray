@@ -164,29 +164,29 @@ public final class CaArrayFileSet implements Serializable {
      * @return status of the set.
      */
     public FileStatus getStatus() {
-        if (allStatusesEqual(FileStatus.IMPORTED)) {
-            return FileStatus.IMPORTED;
-        } else if (allStatusesEqual(FileStatus.IMPORTED_NOT_PARSED)) {
-            return FileStatus.IMPORTED_NOT_PARSED;
+        if (!files.isEmpty() && allStatusesEqual()) {
+            return files.iterator().next().getFileStatus();
         } else if (allStatusesEqual(FileStatus.IMPORTED, FileStatus.IMPORTED_NOT_PARSED)) {
             return FileStatus.IMPORTED;
+        } else if (allStatusesEqual(FileStatus.VALIDATED, FileStatus.VALIDATED_NOT_PARSED)) {
+            return FileStatus.VALIDATED;
         } else if (statusesContains(FileStatus.IMPORTING)) {
             return FileStatus.IMPORTING;
         } else if (statusesContains(FileStatus.VALIDATING)) {
             return FileStatus.VALIDATING;
         } else if (statusesContains(FileStatus.VALIDATION_ERRORS)) {
             return FileStatus.VALIDATION_ERRORS;
-        } else if (allStatusesEqual(FileStatus.VALIDATED)) {
-            return FileStatus.VALIDATED;
-        } else if (allStatusesEqual(FileStatus.VALIDATED_NOT_PARSED)) {
-            return FileStatus.VALIDATED_NOT_PARSED;
-        } else if (allStatusesEqual(FileStatus.VALIDATED, FileStatus.VALIDATED_NOT_PARSED)) {
-            return FileStatus.VALIDATED;
+        } else if (statusesContains(FileStatus.IMPORT_FAILED)) {
+            return FileStatus.IMPORT_FAILED;
         } else {
             return FileStatus.UPLOADED;
         }
     }
 
+    /**
+     * @return true if the status of all the files is one of the given statuses
+     */
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private boolean allStatusesEqual(FileStatus... statuses) {
         Set<FileStatus> fileSetStatuses = new HashSet<FileStatus>();
         for (CaArrayFile file : files) {
@@ -196,6 +196,17 @@ public final class CaArrayFileSet implements Serializable {
             fileSetStatuses.remove(status);
         }
         return fileSetStatuses.isEmpty();
+    }
+
+    /**
+     * @return true if the status of all the files is the same
+     */
+    private boolean allStatusesEqual() {
+        Set<FileStatus> fileSetStatuses = new HashSet<FileStatus>();
+        for (CaArrayFile file : files) {
+            fileSetStatuses.add(file.getFileStatus());
+        }
+        return fileSetStatuses.size() == 1;
     }
 
     /**

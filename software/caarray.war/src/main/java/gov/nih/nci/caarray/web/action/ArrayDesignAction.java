@@ -89,9 +89,11 @@ import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManag
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getVocabularyService;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignDeleteException;
+import gov.nih.nci.caarray.application.fileaccess.FileExtension;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.file.UnsupportedAffymetrixCdfFiles;
@@ -108,7 +110,9 @@ import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -138,10 +142,10 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     private static final long serialVersionUID = 1L;
 
     private ArrayDesign arrayDesign;
-    private File upload;
-    private String uploadFileName;
+    private List<File> uploads;
+    private List<String> uploadFileName;
     private String uploadContentType;
-    private String uploadFormatType;
+    private List<String> fileFormatTypes;
     private List<ArrayDesign> arrayDesigns;
     private List<Organization> providers;
     private Set<Term> featureTypes;
@@ -163,29 +167,38 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     public void setArrayDesign(ArrayDesign arrayDesign) {
         this.arrayDesign = arrayDesign;
     }
+
+
     /**
-     * @return the upload
+     * uploaded file.
+     *
+     * @return uploads uploaded files
      */
-    public File getUpload() {
-        return upload;
+    public List<File> getUpload() {
+        return this.uploads;
     }
+
     /**
-     * @param upload the designFile to set
+     * sets file uploads.
+     *
+     * @param inUploads List
      */
-    public void setUpload(File upload) {
-        this.upload = upload;
+    public void setUpload(List<File> inUploads) {
+        this.uploads = inUploads;
     }
+
     /**
      * @return the uploadFileName
      */
-    public String getUploadFileName() {
+    public List<String> getUploadFileName() {
         return uploadFileName;
     }
+
     /**
-     * @param uploadFileName the uploadFileName to set
+     * @param uploadFileNames List
      */
-    public void setUploadFileName(String uploadFileName) {
-        this.uploadFileName = uploadFileName;
+    public void setUploadFileName(List<String> uploadFileNames) {
+        this.uploadFileName = uploadFileNames;
     }
     /**
      * @return the uploadContentType
@@ -202,14 +215,14 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     /**
      * @return the uploadFormatType
      */
-    public String getUploadFormatType() {
-        return uploadFormatType;
+    public List<String> getFileFormatType() {
+        return fileFormatTypes;
     }
     /**
-     * @param uploadFormatType the uploadFormatType to set
+     * @param uploadFormatTypes the uploadFormatType to set
      */
-    public void setUploadFormatType(String uploadFormatType) {
-        this.uploadFormatType = uploadFormatType;
+    public void setFileFormatType(List<String> uploadFormatTypes) {
+        this.fileFormatTypes = uploadFormatTypes;
     }
     /**
      * @return the arrayDesigns
@@ -300,7 +313,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     }
 
     /**
-     * Readonly view of an array design.
+     * Read-only view of an array design.
      * @return input
      */
     @SkipValidation
@@ -325,7 +338,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      * Save a new or existing array design.
      * @return success
      */
-    @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "deprecation" })
+    @SuppressWarnings("PMD.AvoidDuplicateLiterals")
     @Validations(
         fieldExpressions = {
             @FieldExpressionValidator(fieldName = "arrayDesign.assayTypes",
@@ -367,17 +380,17 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      * @return input
      */
     @SkipValidation
+    @SuppressWarnings("deprecation")
     public String save() {
         String returnVal = null;
         Long id = null;
         // upload file is required for new array designs
-        if (arrayDesign.getId() == null && uploadFileName == null) {
+        if (arrayDesign.getId() == null && (uploadFileName == null || uploadFileName.isEmpty())) {
             addFieldError(UPLOAD_FIELD_NAME, getText("fileRequired"));
         } else {
-
             id = arrayDesign.getId();
             if (id == null) {
-              arrayDesign.setName(FilenameUtils.getBaseName(uploadFileName));
+              arrayDesign.setName(FilenameUtils.getBaseName(uploadFileName.get(0)));
             }
 
             saveImportFile();
@@ -392,7 +405,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         } else {
             returnVal = "importComplete";
         }
-
 
         MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
 
@@ -421,7 +433,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public void validate() {
         super.validate();
         if (this.hasErrors()) {
@@ -447,67 +458,31 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         this.editMode = editMode;
     }
 
-    /**
-     * Checks if the uploaded file is a zip file.  If it is, the file is unzipped, and the appropriate properties are
-     * updated so that the first file in the zip is considered to be the uploaded file.
-     * @return the list of files extracted from the zip, or a list containing the original file if it's not a zip
-     */
-    private List<File> checkForZips() {
-        List<File> uploads = new ArrayList<File>();
-        uploads.add(upload);
-        List<String> uploadFileNames = new ArrayList<String>();
-        uploadFileNames.add(uploadFileName);
-        getFileAccessService().unzipFiles(uploads, uploadFileNames);
-        // if the initial file was not a zip, uploads/uploadFileNames
-        // contain the original file and filename. otherwise
-        // the uploads/uploadFileNames potentially may have multiple files
-        // that were inside the zip.
-        // the assumption is that each zip will only contain one array design file.
-        // if there are more than one, then the first one is processed and a message
-        // is displayed to the user.
-        if (!uploads.get(0).equals(upload)) {
-            upload = uploads.get(0);
-            uploadFileName = uploadFileNames.get(0);
-        }
-
-        return uploads;
-    }
-
     private void saveImportFile() {
-        List<File> extractedFiles = null;
         try {
             // figure out if we are editing or creating.
-            if (arrayDesign.getId() != null && uploadFileName == null) {
+            if (arrayDesign.getId() != null && (uploadFileName == null || uploadFileName.isEmpty())) {
                 getArrayDesignService().saveArrayDesign(arrayDesign);
             } else {
-                extractedFiles = checkForZips();
-
-                if (UnsupportedAffymetrixCdfFiles.isUnsupported(uploadFileName)) {
-                    addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.unsupportedFile"));
-                } else {
-                    CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
-                    if (uploadFormatType != null && FileType.valueOf(uploadFormatType) != null) {
-                        designFile.setFileType(FileType.valueOf(uploadFormatType));
-                    }
-                    getFileManagementService().saveArrayDesign(arrayDesign, designFile);
-                    if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
-                        getFileManagementService().importArrayDesignDetails(arrayDesign);
-                    }
-
-                    if (extractedFiles.size() > 1) {
-                        ActionHelper.saveMessage(getText("arrayDesign.warning.zipFile"));
-                    }
-                }
+                // Checks if any uploaded files are zip files. If they are, the files are unzipped,
+                // and the appropriate properties are updated so that the unzipped files are
+                // part of the uploads list.
+                getFileAccessService().unzipFiles(uploads, uploadFileName);
+                handleFiles();
             }
         } catch (InvalidDataFileException e) {
+            LOG.debug("Swallowed exception saving array design file", e);
             FileValidationResult result = e.getFileValidationResult();
             for (ValidationMessage message : result.getMessages()) {
                 addFieldError(UPLOAD_FIELD_NAME, message.getMessage());
             }
+            arrayDesign.getDesignFiles().clear();
         } catch (IllegalAccessException iae) {
+            LOG.debug("Swallowed exception saving array design file", iae);
             arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
             addActionError(iae.getMessage());
         } catch (Exception e) {
+            LOG.debug("Swallowed exception saving array design file", e);
             if (arrayDesign.getId() != null) {
                 arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
             }
@@ -515,13 +490,14 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         } finally {
             // delete any files created as part of the unzipping process.
             // if the file uploaded was not a zip it will also be deleted
-            if (extractedFiles != null) {
-                for (File f : extractedFiles) {
+            if (uploads != null) {
+                for (File f : uploads) {
                     f.delete();
                 }
             }
         }
     }
+
     /**
      * Action is used for an ajax call by the list generator.
      *
@@ -544,5 +520,91 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      */
     public void setAssayTypes(Set<AssayType> assayTypes) {
         this.assayTypes = assayTypes;
+    }
+
+    private void handleFiles() throws InvalidDataFileException, IllegalAccessException {
+        // check file names against list of unsupported files
+        for (String fileName : uploadFileName) {
+            if (UnsupportedAffymetrixCdfFiles.isUnsupported(fileName)) {
+                addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.unsupportedFile"));
+                return;
+            }
+        }
+
+        // check user assigned file types and derived ext against known array designs
+        int fileCount = 0;
+        Map<String, File> arrayDesignFiles = new HashMap<String, File>();
+        Map<String, FileType> arrayDesignFileTypes = new HashMap<String, FileType>();
+        for (File file : uploads) {
+            FileType userType = checkFileType(fileCount);
+            FileType derivedType = checkFileExt(uploadFileName.get(fileCount));
+            if (userType != null || derivedType != null) {
+
+                arrayDesignFiles.put(uploadFileName.get(fileCount), file);
+
+                if (userType != null) {
+                    arrayDesignFileTypes.put(uploadFileName.get(fileCount), userType);
+                } else {
+                    arrayDesignFileTypes.put(uploadFileName.get(fileCount), derivedType);
+                }
+
+            }
+            fileCount++;
+        }
+
+        doImport(arrayDesignFiles, arrayDesignFileTypes);
+    }
+
+    private FileType checkFileType(int index) {
+        if (fileFormatTypes != null && !fileFormatTypes.isEmpty() && !"".equals(fileFormatTypes.get(index))
+                && FileType.valueOf(fileFormatTypes.get(index)).isArrayDesign()) {
+
+            return FileType.valueOf(fileFormatTypes.get(index));
+        }
+
+        return null;
+    }
+
+    private FileType checkFileExt(String filename) {
+        FileType ft = FileExtension.getTypeFromExtension(filename);
+
+        if (ft != null && ft.isArrayDesign()) {
+            return ft;
+        }
+
+        return null;
+    }
+
+    private void doImport(Map<String, File> arrayDesignFiles, Map<String, FileType> arrayDesignFileTypes)
+            throws InvalidDataFileException, IllegalAccessException {
+
+        if (!arrayDesignFiles.isEmpty()) {
+            CaArrayFileSet designFiles = new CaArrayFileSet();
+            for (String fileName : arrayDesignFiles.keySet()) {
+                CaArrayFile designFile = getFileAccessService().add(arrayDesignFiles.get(fileName), fileName);
+
+                designFile.setFileType(arrayDesignFileTypes.get(fileName));
+                designFiles.add(designFile);
+
+            }
+
+            getFileManagementService().saveArrayDesign(arrayDesign, designFiles);
+
+            // even if some of the file could not be parsed still import the array design details
+            for (CaArrayFile designFile : designFiles.getFiles()) {
+                if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
+                    getFileManagementService().importArrayDesignDetails(arrayDesign);
+                    break;
+                }
+            }
+
+            // add error message for the user if there was an attempt to import non-array design files.
+            if (uploads.size() > designFiles.getFiles().size()) {
+                ActionHelper.saveMessage(getText("arrayDesign.warning.zipFile"));
+            }
+
+        } else {
+            addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.multipleUnsupportedFiles"));
+        }
     }
 }

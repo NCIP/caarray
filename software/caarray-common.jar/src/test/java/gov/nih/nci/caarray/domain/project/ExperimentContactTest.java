@@ -4,20 +4,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.junit.Test;
 
 public class ExperimentContactTest {
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testGetPerson() {
         ExperimentContact ec = new ExperimentContact();
 

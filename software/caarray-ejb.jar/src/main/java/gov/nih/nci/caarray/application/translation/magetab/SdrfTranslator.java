@@ -195,7 +195,6 @@ final class SdrfTranslator extends AbstractTranslator {
         validateSamples(document, externalSampleIds);
     }
 
-    @SuppressWarnings("deprecation")
     private void validateSamples(SdrfDocument document, Set<String> externalSampleIds) {
         for (gov.nih.nci.caarray.magetab.sdrf.Sample sdrfSample : document.getAllSamples()) {
             for (Characteristic sdrfCharacteristic : sdrfSample.getCharacteristics()) {
@@ -217,6 +216,7 @@ final class SdrfTranslator extends AbstractTranslator {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private Set<String> getExistingSampleExternalIdsForCurrentExperiment() {
         Set<String> results = new HashSet<String>();
         Project project = new Project();
@@ -226,7 +226,7 @@ final class SdrfTranslator extends AbstractTranslator {
             if (s.getExternalSampleId() != null) {
                 if (!results.add(s.getExternalSampleId())) {
                     throw new IllegalStateException("System contains samples with duplicate external sample id " + "("
-                            + s.getExternalSampleId() 
+                            + s.getExternalSampleId()
                             + ") already. Unable to continue, please correct"
                             + " existing samples and try again.");
                 }

@@ -132,6 +132,13 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> T retrieveUnsecured(Class<T> entityClass, Long entityId) {
+        return null;
+    }
+
     public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
         return new ArrayList<T>();
     }
@@ -140,7 +147,7 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
      * {@inheritDoc}
      */
     public void refresh(PersistentObject o) {
-        //norhing to do
+        //nothing to do
     }
 
     /**

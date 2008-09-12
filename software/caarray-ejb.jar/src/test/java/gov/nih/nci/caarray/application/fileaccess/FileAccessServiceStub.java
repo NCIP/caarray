@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.fileaccess;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileType;
 
 import java.io.File;
 import java.io.InputStream;
@@ -105,8 +106,16 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
     public CaArrayFile add(File file) {
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName(file.getName());
+        setTypeFromExtension(caArrayFile, file.getName());
         this.nameToFile.put(caArrayFile.getName(), file);
         return caArrayFile;
+    }
+
+    private void setTypeFromExtension(CaArrayFile caArrayFile, String filename) {
+        FileType type = FileExtension.getTypeFromExtension(filename);
+        if (type != null) {
+            caArrayFile.setFileType(type);
+        }
     }
 
     public File getFile(CaArrayFile caArrayFile) {

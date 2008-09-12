@@ -121,7 +121,7 @@ public class Array_HibernateIntegrationTest extends AbstractCaArrayEntity_Hibern
         ArrayDesign design = new ArrayDesign();
         design.setName(getUniqueStringValue());
         design.setTechnologyType(term);
-        design.setDesignFile(new CaArrayFile());
+        design.addDesignFile(new CaArrayFile());
         design.setVersion(getUniqueStringValue());
         design.setProvider(new Organization());
         SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();

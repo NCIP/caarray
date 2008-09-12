@@ -107,7 +107,7 @@ public interface SearchDao extends CaArrayDao {
      * if none exists. If the id of the given entity is not null, this query will only match by id, ignoring all other
      * fields.
      *
-     * @param <T> the type of entites to retreive
+     * @param <T> the type of entities to retrieve
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
@@ -124,9 +124,9 @@ public interface SearchDao extends CaArrayDao {
     /**
      * Retrieves the object from the database.
      *
-     * @param <T> the class to retreieve
+     * @param <T> the class to retrieve
      * @param entityClass the class of the object to retrieve
-     * @param entityId the id of the enity to retrieve
+     * @param entityId the id of the entity to retrieve
      * @return the entity.
      */
     <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId);
@@ -134,13 +134,23 @@ public interface SearchDao extends CaArrayDao {
     /**
      * Retrieves the object from the database using given lock mode.
      *
-     * @param <T> the class to retreieve
+     * @param <T> the class to retrieve
      * @param entityClass the class of the object to retrieve
-     * @param entityId the id of the enity to retrieve
+     * @param entityId the id of the entity to retrieve
      * @param lockMode the lock mode to use
      * @return the entity.
      */
     <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode);
+
+    /**
+     * Retrieves the object from the database, bypassing security filters.
+     *
+     * @param <T> the class to retrieve
+     * @param entityClass the class of the object to retrieve
+     * @param entityId the id of the entity to retrieve
+     * @return the entity.
+     */
+    <T extends PersistentObject> T retrieveUnsecured(Class<T> entityClass, Long entityId);
 
     /**
      * Return the instances of given class with given ids from the database.
@@ -172,7 +182,7 @@ public interface SearchDao extends CaArrayDao {
     /**
      * Filters the given collection where the given property = the given value.
      *
-     * @param <T> the class of objects to expext in return.
+     * @param <T> the class of objects to expect in return.
      * @param collection the collection to filter.
      * @param property the property to filter on.
      * @param value the value of the property.
@@ -190,7 +200,7 @@ public interface SearchDao extends CaArrayDao {
      * criterion, then any instances for which that association is null will not be included in the results (as an inner
      * join is used)
      *
-     * @param <T> the class of objects to expext in return.
+     * @param <T> the class of objects to expect in return.
      * @param collection the collection from which to retrieve the subset
      * @param pageSortParams parameters specifying how the collection is to be sorted and which page is to be retrieved
      * @return the list of objects representing the requested subset

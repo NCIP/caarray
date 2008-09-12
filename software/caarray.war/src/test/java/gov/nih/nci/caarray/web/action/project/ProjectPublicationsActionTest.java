@@ -108,6 +108,7 @@ public class ProjectPublicationsActionTest extends AbstractCaarrayTest {
     private final ProjectPublicationsAction action = new ProjectPublicationsAction();
     private static Publication DUMMY_PUBLICATION = new Publication();
 
+    @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
@@ -116,6 +117,7 @@ public class ProjectPublicationsActionTest extends AbstractCaarrayTest {
         DUMMY_PUBLICATION.setId(1L);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPrepare() throws Exception {
         action.setPublicationTypes(null);
@@ -150,6 +152,7 @@ public class ProjectPublicationsActionTest extends AbstractCaarrayTest {
     }
 
     private static class LocalGenericDataService extends GenericDataServiceStub {
+        @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(Publication.class) && entityId.equals(1L)) {

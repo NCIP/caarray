@@ -584,7 +584,6 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param qualityControlTypesVal the qualityControlTypes
      */
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     public void setQualityControlTypes(final Set<Term> qualityControlTypesVal) {
         this.qualityControlTypes = qualityControlTypesVal;
     }
@@ -637,7 +636,6 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param replicateTypesVal the replicateTypes
      */
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     public void setReplicateTypes(final Set<Term> replicateTypesVal) {
         this.replicateTypes = replicateTypesVal;
     }
@@ -780,7 +778,6 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param arrayDesignsVal the arrayDesigns
      */
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     public void setArrayDesigns(final Set<ArrayDesign> arrayDesignsVal) {
         this.arrayDesigns = arrayDesignsVal;
     }

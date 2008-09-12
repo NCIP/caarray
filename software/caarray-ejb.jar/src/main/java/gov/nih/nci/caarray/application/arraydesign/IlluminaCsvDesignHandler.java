@@ -82,11 +82,6 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -96,7 +91,13 @@ import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
+import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -115,9 +116,9 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
 
     private AbstractIlluminaDesignHandler handler;
 
-    IlluminaCsvDesignHandler(CaArrayFile designFile, VocabularyService vocabularyService,
-            CaArrayDaoFactory daoFactory) {
-        super(designFile, vocabularyService, daoFactory);
+    IlluminaCsvDesignHandler(VocabularyService vocabularyService, CaArrayDaoFactory daoFactory,
+            CaArrayFile designFile) {
+        super(vocabularyService, daoFactory, designFile);
     }
 
     @Override
@@ -147,12 +148,17 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
     }
 
     @Override
-    void validate(FileValidationResult result) {
+    void validate(ValidationResult result) {
         if (getHandler() == null) {
-            result.addMessage(Type.ERROR, "The file " + getFile().getName()
+            result.addMessage(getFile(), Type.ERROR, "The file " + getFile().getName()
                     + " is not a recognizable Illumina array annotation format.");
         } else {
-            doValidation(result);
+            FileValidationResult fileResult = result.getFileValidationResult(getFile());
+            if (fileResult == null) {
+                fileResult = new FileValidationResult(getFile());
+                result.addFile(getFile(), fileResult);
+            }
+            doValidation(fileResult);
         }
     }
 

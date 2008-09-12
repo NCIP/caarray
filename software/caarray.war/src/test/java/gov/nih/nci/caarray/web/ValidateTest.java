@@ -111,7 +111,6 @@ public class ValidateTest extends AbstractCaarrayTest {
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
     private final LocalFileManagementServiceStub fileManagementStub = new LocalFileManagementServiceStub();
 
-
     /**
      * setup.
      */
@@ -123,7 +122,7 @@ public class ValidateTest extends AbstractCaarrayTest {
         loadTestProject();
     }
 
-    @SuppressWarnings({ "PMD", "unchecked", "deprecation" })
+    @SuppressWarnings("deprecation")
     private void loadTestProject() {
         final Project project = new Project();;
         CaArrayFile file1 = new CaArrayFile();
@@ -162,7 +161,6 @@ public class ValidateTest extends AbstractCaarrayTest {
      * test messages.
      * @throws Exception Exception
      */
-    @SuppressWarnings("unchecked")
     @Test
     public void testMessages() throws Exception {
 //        assertNotNull(action.getDelegate().getProjectManagementService());
@@ -186,7 +184,6 @@ public class ValidateTest extends AbstractCaarrayTest {
      * test messages.
      * @throws Exception Exception
      */
-    @SuppressWarnings("unchecked")
     @Test
     public void testManage() throws Exception {
 //        Project myProject = action.getProject();
@@ -198,7 +195,6 @@ public class ValidateTest extends AbstractCaarrayTest {
      * test messages.
      * @throws Exception Exception
      */
-    @SuppressWarnings({ "unchecked", "deprecation" })
     @Test
     public void testEdit() throws Exception {
 
@@ -235,7 +231,6 @@ public class ValidateTest extends AbstractCaarrayTest {
      * test validation.
      * @throws Exception
      */
-    @SuppressWarnings({ "PMD", "unchecked" })
     @Test
     public void testValidateFile() throws Exception {
 //        MockHttpSession session = new MockHttpSession ();

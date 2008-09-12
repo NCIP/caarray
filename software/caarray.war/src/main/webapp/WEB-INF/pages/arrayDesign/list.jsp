@@ -66,7 +66,7 @@
                         <display:column property="organism.scientificName" titleKey="arrayDesign.organism" sortable="true"/>
                         <display:column titleKey="button.edit" class="centered" headerClass="centered">
                             <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
-                            <c:if test="${row.designFile.status != importingStatus}">
+                            <c:if test="${row.designFileSet.status != importingStatus}">
                                 <c:url value="/protected/arrayDesign/edit.action" var="editDesignUrl">
                                      <c:param name="arrayDesign.id" value="${row.id}" />
                                 </c:url>
@@ -75,7 +75,8 @@
                         </display:column>
                         <display:column titleKey="button.editFile" class="centered" headerClass="centered">
                             <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
-                            <c:if test="${row.designFile.status != importingStatus}">
+                            <c:set var="importedStatus" value="<%= FileStatus.IMPORTED.name() %>"/>
+                            <c:if test="${row.designFileSet.status != importingStatus && row.designFileSet.status != importedStatus}">
                                 <c:url value="/protected/ajax/arrayDesign/editFile.action" var="editFileDesignUrl">
                                      <c:param name="arrayDesign.id" value="${row.id}" />
                                 </c:url>
@@ -84,7 +85,7 @@
                         </display:column>
                         <display:column titleKey="button.delete" class="centered" headerClass="centered">
                             <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
-                            <c:if test="${row.designFile.status != importingStatus}">
+                            <c:if test="${row.designFileSet.status != importingStatus}">
                                 <c:url value="/protected/arrayDesign/delete.action" var="deleteDesignUrl">
                                      <c:param name="arrayDesign.id" value="${row.id}" />
                                 </c:url>
@@ -93,10 +94,10 @@
                                 </div>
                           </c:if>
                         </display:column>
-                        <display:column sortProperty="designFile.status" titleKey="experiment.files.status" sortable="true" >
-                            <c:if test="${not empty row.designFile.status}">
+                        <display:column sortProperty="designFileSet.status" titleKey="experiment.files.status" sortable="true" >
+                            <c:if test="${not empty row.designFileSet.status}">
                                 <ajax:anchors target="tabboxlevel2wrapper">
-                                    <fmt:message key="experiment.files.filestatus.${row.designFile.status}">
+                                    <fmt:message key="experiment.files.filestatus.${row.designFileSet.status}">
                                         <fmt:param><c:url value="/" /></fmt:param>
                                     </fmt:message>
                                 </ajax:anchors>

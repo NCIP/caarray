@@ -28,42 +28,34 @@ public class MockTermHibernateProxy extends Term implements HibernateProxy {
     }
 
     public LazyInitializer getHibernateLazyInitializer() {
-        // TODO Auto-generated method stub
         return new LazyInitializer() {
 
             public String getEntityName() {
-                // TODO Auto-generated method stub
                 return implementation.getClass().getName();
             }
 
             public Serializable getIdentifier() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             public Object getImplementation() {
-                // TODO Auto-generated method stub
                 return implementation;
             }
 
             public Object getImplementation(SessionImplementor s)
                     throws HibernateException {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             public Class getPersistentClass() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             public SessionImplementor getSession() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             public void initialize() throws HibernateException {
-                // TODO Auto-generated method stub
 
             }
 

@@ -254,7 +254,6 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
             this.user = user;
         }
 
-        @SuppressWarnings("unused")
         private String getFoo() {
             fooAccessed = true;
             return foo;

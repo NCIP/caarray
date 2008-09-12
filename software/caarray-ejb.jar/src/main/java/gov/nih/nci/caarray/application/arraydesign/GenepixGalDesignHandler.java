@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
+import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.IOException;
@@ -112,6 +113,7 @@ import org.apache.log4j.Logger;
  * Manages validation and loading of array designs described in the GenePix GAL
  * format.
  */
+@SuppressWarnings("PMD.TooManyMethods")
 final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
 
     private static final String LSID_AUTHORITY = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;
@@ -133,8 +135,8 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
     private final List<BlockInfo> blockInfos = new ArrayList<BlockInfo>();
     private final Map<Short, BlockInfo> numberToBlockMap = new HashMap<Short, BlockInfo>();
 
-    GenepixGalDesignHandler(CaArrayFile designFile, VocabularyService vocabularyService, CaArrayDaoFactory daoFactory) {
-        super(designFile, vocabularyService, daoFactory);
+    GenepixGalDesignHandler(VocabularyService vocabularyService, CaArrayDaoFactory daoFactory, CaArrayFile designFile) {
+        super(vocabularyService, daoFactory, designFile);
     }
 
     @Override
@@ -234,9 +236,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
     }
 
     private boolean isBlockInformationHeading(String name) {
-        return name.startsWith(BLOCK_INDICATOR)
-        && !BLOCK_COUNT_HEADER.equals(name)
-        && !BLOCK_TYPE_HEADER.equals(name);
+        return name.startsWith(BLOCK_INDICATOR) && !BLOCK_COUNT_HEADER.equals(name) && !BLOCK_TYPE_HEADER.equals(name);
     }
 
     private void handleBlockInformation(String name, String value) {
@@ -342,15 +342,20 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
     }
 
     @Override
-    void validate(FileValidationResult result) {
+    void validate(ValidationResult result) {
         DelimitedFileReader reader = getReader();
+        FileValidationResult fileResult = result.getFileValidationResult(getFile());
+        if (fileResult == null) {
+            fileResult = new FileValidationResult(getFile());
+            result.addFile(getFile(), fileResult);
+        }
         try {
-            validateFormat(reader, result);
+            validateFormat(reader, fileResult);
             if (result.isValid()) {
-                validateHeader(reader, result);
+                validateHeader(reader, fileResult);
             }
             if (result.isValid()) {
-                validateData(reader, result);
+                validateData(reader, fileResult);
             }
         } finally {
             reader.close();

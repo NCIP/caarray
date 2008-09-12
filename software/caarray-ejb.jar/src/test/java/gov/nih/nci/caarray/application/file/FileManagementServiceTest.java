@@ -74,6 +74,7 @@ import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -86,6 +87,7 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
@@ -127,8 +129,8 @@ public class FileManagementServiceTest extends AbstractCaarrayTest {
                     }
                 } else if (job instanceof ArrayDesignFileImportJob) {
                     ArrayDesignFileImportJob arrayDesignJob = (ArrayDesignFileImportJob) job;
-                    getDaoFactory().getArrayDao().getArrayDesign(arrayDesignJob.getArrayDesignId()).getDesignFile()
-                            .setFileStatus(FileStatus.IMPORT_FAILED);
+                    getDaoFactory().getArrayDao().getArrayDesign(
+                            arrayDesignJob.getArrayDesignId()).getDesignFileSet().updateStatus(FileStatus.IMPORT_FAILED);
                 }
             }
 
@@ -246,15 +248,20 @@ public class FileManagementServiceTest extends AbstractCaarrayTest {
         this.daoFactoryStub.searchDaoStub.save(design);
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
-        design.setDesignFile(caArrayFile);
-        this.fileManagementService.saveArrayDesign(design, caArrayFile);
+        design.addDesignFile(caArrayFile);
+        CaArrayFileSet fileSet = new CaArrayFileSet();
+        fileSet.add(caArrayFile);
+        this.fileManagementService.saveArrayDesign(design, fileSet);
         this.fileManagementService.importArrayDesignDetails(design);
         assertTrue(this.arrayDesignServiceStub.importCalled);
 
         caArrayFile = this.fileAccessServiceStub.add(GenepixArrayDesignFiles.DEMO_GAL);
         caArrayFile.setFileType(FileType.GENEPIX_GAL);
-        design.setDesignFile(caArrayFile);
-        this.fileManagementService.saveArrayDesign(design, caArrayFile);
+        design.getDesignFiles().clear();
+        design.addDesignFile(caArrayFile);
+        fileSet = new CaArrayFileSet();
+        fileSet.add(caArrayFile);
+        this.fileManagementService.saveArrayDesign(design, fileSet);
         this.fileManagementService.importArrayDesignDetails(design);
         assertTrue(this.arrayDesignServiceStub.importCalled);
     }
@@ -266,8 +273,10 @@ public class FileManagementServiceTest extends AbstractCaarrayTest {
         this.daoFactoryStub.searchDaoStub.save(design);
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
-        design.setDesignFile(caArrayFile);
-        this.fileManagementService.saveArrayDesign(design, caArrayFile);
+        design.addDesignFile(caArrayFile);
+        CaArrayFileSet fileSet = new CaArrayFileSet();
+        fileSet.add(caArrayFile);
+        this.fileManagementService.saveArrayDesign(design, fileSet);
         assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
         try {
             this.fileManagementService.importArrayDesignDetails(design);
@@ -285,8 +294,10 @@ public class FileManagementServiceTest extends AbstractCaarrayTest {
         this.daoFactoryStub.searchDaoStub.save(design);
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDataFiles.TEST3_CHP);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CHP);
-        design.setDesignFile(caArrayFile);
-        this.fileManagementService.saveArrayDesign(design, caArrayFile);
+        design.addDesignFile(caArrayFile);
+        CaArrayFileSet fileSet = new CaArrayFileSet();
+        fileSet.add(caArrayFile);
+        this.fileManagementService.saveArrayDesign(design, fileSet);
     }
 
     @Test
@@ -336,19 +347,23 @@ public class FileManagementServiceTest extends AbstractCaarrayTest {
         protected boolean importCalled;
 
         @Override
-        public FileValidationResult validateDesign(ArrayDesign design) {
-            return validateDesign(design.getDesignFile());
+        public ValidationResult validateDesign(ArrayDesign design) {
+            return validateDesign(design.getDesignFiles());
         }
 
         @Override
-        public FileValidationResult validateDesign(CaArrayFile designFile) {
-            FileValidationResult result = new FileValidationResult(new File(designFile.getName()));
+        public ValidationResult validateDesign(Set<CaArrayFile> designFiles) {
+            CaArrayFile designFile = designFiles.iterator().next();
+            File file = new File(designFile.getName());
+            ValidationResult result = new ValidationResult();
             if (!designFile.getFileType().isArrayDesign()) {
-                result.addMessage(Type.ERROR, "Invalid design");
+                result.addMessage(file, Type.ERROR, "Invalid design");
                 designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
+                designFile.setValidationResult(result.getFileValidationResult(file));
             } else {
                 designFile.setFileStatus(FileStatus.VALIDATED);
             }
+
             return result;
         }
 

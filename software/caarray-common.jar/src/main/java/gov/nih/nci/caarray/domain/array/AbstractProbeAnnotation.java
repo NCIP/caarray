@@ -92,7 +92,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
 /**
- * Base class for caArray reporter annotations.
+ * Base class for caArray probe annotations.
  */
 @Entity
 @Table(name = "probeannotation")
@@ -101,6 +101,7 @@ import javax.persistence.Table;
         name = "discriminator",
         discriminatorType = DiscriminatorType.STRING
 )
+@SuppressWarnings("PMD.AbstractClassWithoutAnyMethod")
 public abstract class AbstractProbeAnnotation extends AbstractCaArrayEntity {
     /** 
      * Batch size for all associations for probe annotation subclasses.

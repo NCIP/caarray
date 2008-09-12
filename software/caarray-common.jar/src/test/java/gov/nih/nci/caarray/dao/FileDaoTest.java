@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ServiceType;
@@ -220,7 +219,7 @@ public class FileDaoTest extends AbstractDaoTest {
         DUMMY_FILE_1.setFileStatus(FileStatus.UPLOADED);
         ByteArrayInputStream in1 = new ByteArrayInputStream("test blob".getBytes());
         DUMMY_FILE_1.writeContents(in1);
-        
+
         DUMMY_FILE_1.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_1);
         DAO_OBJECT.save(DUMMY_FILE_1);

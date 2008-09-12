@@ -139,6 +139,7 @@ public class ProjectHybridizationsActionTest extends AbstractCaarrayTest {
 
     private MockHttpServletResponse mockResponse;
 
+    @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
@@ -151,6 +152,7 @@ public class ProjectHybridizationsActionTest extends AbstractCaarrayTest {
         ServletActionContext.setResponse(mockResponse);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPrepare() throws Exception {
         // no current hybridization id
@@ -177,7 +179,7 @@ public class ProjectHybridizationsActionTest extends AbstractCaarrayTest {
     @Test
     public void testDownload() throws Exception {
         assertEquals("noHybData", action.download());
-        
+
         FileAccessServiceStub fas = new FileAccessServiceStub();
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
         fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
@@ -197,7 +199,7 @@ public class ProjectHybridizationsActionTest extends AbstractCaarrayTest {
         CaArrayFile derivedFile = new CaArrayFile();
         derivedFile.setName("missing_term_source.sdrf");
         derived.setDataFile(derivedFile);
-        
+
         action.setCurrentHybridization(h1);
         action.setProject(p);
         List<CaArrayFile> files = new ArrayList<CaArrayFile>(h1.getAllDataFiles());
@@ -208,11 +210,11 @@ public class ProjectHybridizationsActionTest extends AbstractCaarrayTest {
         Collections.sort(files, ProjectFilesAction.CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
         assertEquals(1, files.size());
         assertEquals("missing_term_source.sdrf", files.get(0).getName());
-        
+
         assertEquals(null, action.download());
         assertEquals("application/zip", mockResponse.getContentType());
         assertEquals("filename=\"caArray_test_files.zip\"", mockResponse.getHeader("Content-disposition"));
-        
+
         ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
         ZipEntry ze = zis.getNextEntry();
         assertNotNull(ze);
@@ -236,6 +238,7 @@ public class ProjectHybridizationsActionTest extends AbstractCaarrayTest {
         assertFalse(DUMMY_LABELED_EXTRACT.getHybridizations().contains(DUMMY_HYBRIDIZATION));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testSave() {
         LabeledExtract toAdd = new LabeledExtract();
@@ -269,6 +272,7 @@ public class ProjectHybridizationsActionTest extends AbstractCaarrayTest {
     }
 
     private static class LocalGenericDataService extends GenericDataServiceStub {
+        @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(Hybridization.class) && entityId.equals(1L)) {

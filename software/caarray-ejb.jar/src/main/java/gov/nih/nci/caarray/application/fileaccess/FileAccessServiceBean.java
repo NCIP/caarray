@@ -217,18 +217,18 @@ public class FileAccessServiceBean implements FileAccessService {
      * {@inheritDoc}
      */
     @SuppressWarnings("PMD.ExcessiveMethodLength")
-    public void unzipFiles(List<File> uploads, List<String> uploadFileNames) {
+    public void unzipFiles(List<File> files, List<String> fileNames) {
         try {
             Pattern p = Pattern.compile("\\.zip$");
             int index = 0;
-            for (int i = 0; i < uploadFileNames.size(); i++) {
-                Matcher m = p.matcher(uploadFileNames.get(i).toLowerCase());
+            for (int i = 0; i < fileNames.size(); i++) {
+                Matcher m = p.matcher(fileNames.get(i).toLowerCase());
 
                 if (m.find()) {
-                    File uploadedFile = uploads.get(i);
-                    String uploadedFileName = uploadedFile.getAbsolutePath();
-                    String directoryPath = uploadedFile.getParent();
-                    ZipFile zipFile = new ZipFile(uploadedFileName);
+                    File file = files.get(i);
+                    String fileName = file.getAbsolutePath();
+                    String directoryPath = file.getParent();
+                    ZipFile zipFile = new ZipFile(fileName);
                     Enumeration<? extends ZipEntry> entries = zipFile.entries();
                     while (entries.hasMoreElements()) {
                         ZipEntry entry = entries.nextElement();
@@ -239,12 +239,12 @@ public class FileAccessServiceBean implements FileAccessService {
                         IOUtils.copy(fileInputStream, fileOutputStream);
                         IOUtils.closeQuietly(fileOutputStream);
 
-                        uploads.add(entryFile);
-                        uploadFileNames.add(entry.getName());
+                        files.add(entryFile);
+                        fileNames.add(entry.getName());
                     }
                     zipFile.close();
-                    uploads.remove(index);
-                    uploadFileNames.remove(index);
+                    files.remove(index);
+                    fileNames.remove(index);
                 }
                 index++;
             }

@@ -141,6 +141,7 @@ public class ProjectSourcesActionTest extends AbstractCaarrayTest {
     private MockHttpServletResponse mockResponse;
 
     @Before
+    @SuppressWarnings("deprecation")
     public void setUp() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(GenericDataService.JNDI_NAME, new LocalGenericDataService());
@@ -153,6 +154,7 @@ public class ProjectSourcesActionTest extends AbstractCaarrayTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testPrepare() throws Exception {
         // no current source id
         action.prepare();
@@ -192,11 +194,11 @@ public class ProjectSourcesActionTest extends AbstractCaarrayTest {
         assertEquals("list", action.delete());
         assertTrue(ActionHelper.getMessages().contains("experiment.annotations.cantdelete"));
     }
-    
+
     @Test
     public void testDownload() throws Exception {
         assertEquals("noSourceData", action.download());
-        
+
         FileAccessServiceStub fas = new FileAccessServiceStub();
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
         fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
@@ -211,7 +213,7 @@ public class ProjectSourcesActionTest extends AbstractCaarrayTest {
         so.getSamples().add(s2);
         Extract e = new Extract();
         s1.getExtracts().add(e);
-        s2.getExtracts().add(e);        
+        s2.getExtracts().add(e);
         LabeledExtract le = new LabeledExtract();
         e.getLabeledExtracts().add(le);
         Hybridization h = new Hybridization();
@@ -226,7 +228,7 @@ public class ProjectSourcesActionTest extends AbstractCaarrayTest {
         CaArrayFile derivedFile = new CaArrayFile();
         derivedFile.setName("missing_term_source.sdrf");
         derived.setDataFile(derivedFile);
-        
+
         action.setCurrentSource(so);
         action.setProject(p);
         List<CaArrayFile> files = new ArrayList<CaArrayFile>(so.getAllDataFiles());
@@ -234,11 +236,11 @@ public class ProjectSourcesActionTest extends AbstractCaarrayTest {
         assertEquals(2, files.size());
         assertEquals("missing_term_source.idf", files.get(0).getName());
         assertEquals("missing_term_source.sdrf", files.get(1).getName());
-        
+
         action.download();
         assertEquals("application/zip", mockResponse.getContentType());
         assertEquals("filename=\"caArray_test_files.zip\"", mockResponse.getHeader("Content-disposition"));
-        
+
         ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
         ZipEntry ze = zis.getNextEntry();
         assertNotNull(ze);
@@ -264,6 +266,7 @@ public class ProjectSourcesActionTest extends AbstractCaarrayTest {
     }
 
     private static class LocalGenericDataService extends GenericDataServiceStub {
+        @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(Source.class) && entityId.equals(1L)) {

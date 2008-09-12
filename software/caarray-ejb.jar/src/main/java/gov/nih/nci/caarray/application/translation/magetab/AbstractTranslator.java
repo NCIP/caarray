@@ -180,7 +180,7 @@ abstract class AbstractTranslator {
     abstract Logger getLog();
 
     /**
-     * Creates or retrieves the org witht he given name.
+     * Creates or retrieves the org with the given name.
      * @param name the name.
      * @return the org.
      */

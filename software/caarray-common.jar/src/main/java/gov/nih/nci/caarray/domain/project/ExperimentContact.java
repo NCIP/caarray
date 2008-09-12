@@ -134,7 +134,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      * Default constructor, mostly for hibernate.
      */
     public ExperimentContact() {
-        // intentially blanks
+        // intentionally blank
     }
 
     /**
@@ -237,7 +237,6 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      *
      * @param rolesVal the roles
      */
-    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
     public void setRoles(Set<Term> rolesVal) {
         this.roles = rolesVal;
     }

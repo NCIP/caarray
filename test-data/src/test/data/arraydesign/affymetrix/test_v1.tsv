@@ -1,0 +1,8 @@
+# These cel files are from the latin square study
+pool	cel_files	scanner
+1	sp1.cel	gcos1
+2	sp2.cel	gcos2
+3	sp3.cel	gcos3
+4	sp4.cel	gcos4
+5	sp5.cel	gcos5
+6	sp6.cel	gcos6

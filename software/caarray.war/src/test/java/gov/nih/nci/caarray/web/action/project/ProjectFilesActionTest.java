@@ -121,7 +121,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -158,7 +157,6 @@ public class ProjectFilesActionTest extends AbstractCaarrayTest {
 
     private static final String LIST_SUPPLEMENTAL = "listSupplemental";
     private static final String UPLOAD = "upload";
-    private static final String UNPACK_FILES = "unpackFiles";
     private static final ProjectManagementServiceStub projectManagementServiceStub = new ProjectManagementServiceStub();
     private static final FileManagementServiceStub fileManagementServiceStub = new FileManagementServiceStub();
     private static final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
@@ -354,7 +352,7 @@ public class ProjectFilesActionTest extends AbstractCaarrayTest {
         setCompressedSize(f3, 1024 * 1024 * 512);
         setId(f3, 3L);
         f3.setName("experiment-id-1015897540503881.idf");
-        List l = new ArrayList<Long>();
+        List<Long> l = new ArrayList<Long>();
         l.add(1L);
         l.add(2L);
         l.add(3L);
@@ -568,8 +566,6 @@ public class ProjectFilesActionTest extends AbstractCaarrayTest {
         assertEquals(LIST_IMPORTED, this.action.deleteImportedFiles());
         assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
 
-        CaArrayFile file = new CaArrayFile();
-
         // make this file associated with a hyb
         CaArrayFile celFile = fileAccessServiceStub.add(AffymetrixArrayDataFiles.TEST3_CEL);
         celFile.setFileType(FileType.AFFYMETRIX_CEL);
@@ -703,7 +699,7 @@ public class ProjectFilesActionTest extends AbstractCaarrayTest {
         setCompressedSize(f2, 1024 * 1024 * 384);
         f2.setName("missing_term_source.sdrf");
 
-        List l = new ArrayList<Long>();
+        List<Long> l = new ArrayList<Long>();
         l.add(1L);
         l.add(2L);
         // need to catch exception as these are test files and will not be retrieved
@@ -752,7 +748,7 @@ public class ProjectFilesActionTest extends AbstractCaarrayTest {
         setId(f2, 2L);
         setCompressedSize(f2, 1024 * 1024 * 384);
         f2.setName("missing_term_source.sdrf");
-        List l = new ArrayList<Long>();
+        List<Long> l = new ArrayList<Long>();
         l.add(1L);
         l.add(2L);
         l.add(3L);
@@ -883,6 +879,7 @@ public class ProjectFilesActionTest extends AbstractCaarrayTest {
         assertEquals(FileType.AFFYMETRIX_CDF.toString(), action.getFileType());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testExperimentTreeJson() throws Exception {
         Experiment exp = this.action.getProject().getExperiment();
@@ -1096,17 +1093,6 @@ public class ProjectFilesActionTest extends AbstractCaarrayTest {
         return fileSet;
     }
 
-    private class LocalCaArrayFile extends CaArrayFile {
-        private int size;
-
-        @Override
-        public int getCompressedSize() {
-            return size;
-        }
-        public void setCompressedSize(int compressedSize) {
-            size = compressedSize;
-        }
-    }
     private class LocalHttpServletResponse extends MockHttpServletResponse {
         private StringWriter out = new StringWriter();
 
@@ -1125,11 +1111,11 @@ public class ProjectFilesActionTest extends AbstractCaarrayTest {
 
         @Override
         public void save(PersistentObject object) {
-            // TODO Auto-generated method stub
             super.save(object);
             objMap.put(object.getId(), object);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             Object candidate = objMap.get(entityId);
