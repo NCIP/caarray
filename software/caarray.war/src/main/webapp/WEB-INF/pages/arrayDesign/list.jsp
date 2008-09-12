@@ -13,8 +13,14 @@
        uploadWindow = window.open(url, '_blank', "width=685,height=480,left=0,top=0,toolbar,scrollbars,resizable,status=yes");
     }
 
-    confirmDeleteArrayDesign = function() {
-        return confirm('You are about to delete this array design.   Please note that large array designs will take longer to delete.\nPress OK to continue.');
+    confirmDeleteArrayDesign = function(id) {
+        var buttonDiv = 'delete_button' + id;
+        if (confirm('You are about to delete this array design.   Please note that large array designs will take longer to delete.\nPress OK to continue.')) {
+            $('delete_progress').show();
+            $(buttonDiv).hide();
+            return true;
+        }
+        return false;
     }
 
 </script>
@@ -27,6 +33,9 @@
     <h1>Manage Array Designs</h1>
     <caarray:helpPrint/>
     <div class="padme">
+        <div id="delete_progress" class="confirm_msg" style="display: none; margin: 3px 3px">
+            Array Design deletion is in progress.
+        </div>
         <div id="tabboxwrapper_notabs">
             <div class="boxpad2">
                 <h3>Array Designs</h3>
@@ -74,7 +83,9 @@
                                 <c:url value="/protected/arrayDesign/delete.action" var="deleteDesignUrl">
                                      <c:param name="arrayDesign.id" value="${row.id}" />
                                 </c:url>
-                                <a href="${deleteDesignUrl}" onclick="return confirmDeleteArrayDesign();"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                                <div id="delete_button${row.id}">
+                                    <a href="${deleteDesignUrl}" onclick="return confirmDeleteArrayDesign(${row.id});"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                                </div>
                           </c:if>
                         </display:column>
                         <display:column sortProperty="designFileSet.status" titleKey="experiment.files.status" sortable="true" >
