@@ -20,9 +20,9 @@
                     <tr>
                         <td><s:textfield name="keyword"/></td>
                         <td>
-                            <s:select name="category"
-                                      list="@gov.nih.nci.caarray.domain.search.SearchCategory@values()" listValue="%{getText(resourceKey)}"
-                                      headerKey="" headerValue="(All Categories)"/>
+                            <s:select name="category" key="search.category"
+                              list="@gov.nih.nci.caarray.web.action.SearchAction@getSearchCategories()" listValue="%{getText(label)}"
+                              listKey="value" value="EXPERIMENT_ID"/>
                         </td>
                         <td><s:submit value="Search"/></td>
                     </tr>
