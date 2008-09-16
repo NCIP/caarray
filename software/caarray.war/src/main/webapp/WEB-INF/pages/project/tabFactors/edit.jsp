@@ -15,4 +15,7 @@
             <s:hidden name="project.id" />
             <input type="submit" class="enableEnterSubmit"/>
     </caarray:projectListTabItemForm>
+    <c:if test="${!editMode}">
+        <%@ include file="/WEB-INF/pages/project/tabFactors/factorValuesList.jsp" %>
+    </c:if>
 </caarray:tabPane>

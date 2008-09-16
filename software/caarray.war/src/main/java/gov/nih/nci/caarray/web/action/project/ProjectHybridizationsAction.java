@@ -195,6 +195,16 @@ public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnota
     }
 
     /**
+     * Ajax-only call to handle sorting.
+     *
+     * @return factorValuesList
+     */
+    @SkipValidation
+    public String factorValuesList() {
+        return "factorValuesList";
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -310,7 +320,7 @@ public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnota
         }
         return true;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -320,7 +330,7 @@ public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnota
         downloadFiles();
         return super.view();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -330,22 +340,22 @@ public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnota
         downloadFiles();
         return super.edit();
     }
-    
-    /** 
+
+    /**
      * {@inheritDoc}
      */
     protected Collection<CaArrayFile> getAllDataFiles() {
         return getCurrentHybridization().getAllDataFiles();
     }
-    
-    /** 
+
+    /**
      * {@inheritDoc}
      */
     public String getDownloadFileListAction() {
         return getDownloadFileListActionUrl(BioMaterialTypes.HYBRIDIZATIONS);
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     public String getDownloadFilesTableListSortUrlAction() {

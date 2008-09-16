@@ -200,6 +200,15 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
         return super.delete();
     }
 
+    /**
+     * Ajax-only call to handle sorting.
+     *
+     * @return factorValuesList
+     */
+    @SkipValidation
+    public String factorValuesList() {
+        return "factorValuesList";
+    }
 
     /**
      * {@inheritDoc}

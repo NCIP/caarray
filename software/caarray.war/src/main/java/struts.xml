@@ -170,6 +170,7 @@
             <result name="downloadFilesList">/WEB-INF/pages/project/tabCommon/downloadFilesList.jsp</result>
             <result name="downloadFilesListTable">/WEB-INF/pages/project/tabCommon/downloadFilesListTable.jsp</result>
             <result name="generateAssayList">/WEB-INF/pages/project/generateAssayList.jsp</result>
+            <result name="factorValuesList">/WEB-INF/pages/project/tab{1}/factorValuesList.jsp</result>
         </action>
 
         <action name="project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
