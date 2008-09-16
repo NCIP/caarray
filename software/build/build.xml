@@ -429,8 +429,6 @@
         <copy todir="${caarray-common.classes.dir}" overwrite="true">
             <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml,ValidatorMessages.properties" />
         </copy>
-	<move file="${caarray-common.classes.dir}/template.csm.new.hibernate.cfg.xml"
-			toFile="${caarray-common.classes.dir}/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
         <replace dir="${caarray-common.classes.dir}" includes="*.cfg.xml">
             <replacefilter token="@DATASOURCE_CONFIG_START@" value="${comment.end}" />
             <replacefilter token="@DATASOURCE_CONFIG_END@" value="${comment.start}" />
@@ -440,14 +438,14 @@
             <replacefilter token="#@TRANSACTION_MANAGER@" value="${jta.transaction.manager}" />
             <replacefilter token="#@CONNECTION_PROVIDER@" value="${datasource.connection.provider}" />
         </replace>
+	<move file="${caarray-common.classes.dir}/template.csm.new.hibernate.cfg.xml"
+			toFile="${caarray-common.classes.dir}/csm/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
     </target>
 
     <target name="configure-datasource-for-test">
         <copy todir="${caarray-common.test.classes.dir}" overwrite="true">
             <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml,MGEDOntology.owl" />
         </copy>
-    	<move file="${caarray-common.test.classes.dir}/template.csm.new.hibernate.cfg.xml"
-    		toFile="${caarray-common.test.classes.dir}/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
         <replace dir="${caarray-common.test.classes.dir}" includes="*.cfg.xml">
             <replacefilter token="@HIBERNATE_CONFIG_START@" value="${comment.end}" />
             <replacefilter token="@HIBERNATE_CONFIG_END@" value="${comment.start}" />
@@ -461,6 +459,8 @@
             <replacefilter token="#@SESSION_CONTEXT@" value="${hibernate.session.context}" />
             <replacefilter token="#@CONNECTION_PROVIDER@" value="${hibernate.connection.provider}" />
         </replace>
+    	<move file="${caarray-common.test.classes.dir}/template.csm.new.hibernate.cfg.xml"
+    		toFile="${caarray-common.test.classes.dir}/csm/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
     </target>
 
     <!-- ******************************************************************* -->
@@ -520,6 +520,7 @@
                 <pathelement location="${lib.dir}/castor-1.0.2.jar"/>
                 <pathelement location="${json-lib.jar}"/>
 		<pathelement location="${mysql-connector.jar}"/>
+		<pathelement location="${spring.jar}"/>
             </classpath>
         </javac>
     </target>
@@ -1064,7 +1065,7 @@
     </target>
 
     <target name="test:junit-caarray-common.jar" depends="test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:unpack-test-data">
-        <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${ejb3-persistence.jar};${caGrid-data-common.jar};${caGrid-data-stubs.jar};${caGrid-CQL-cql.jar};${caGrid-1.1-sdkQuery32-core.jar};${log4j.jar};${clm.jar};${axis.jar};${javaee.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${nci-commons-core.jar};${commons-configuration.jar}" />
+        <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${ejb3-persistence.jar};${caGrid-data-common.jar};${caGrid-data-stubs.jar};${caGrid-CQL-cql.jar};${caGrid-1.1-sdkQuery32-core.jar};${log4j.jar};${clm.jar};${axis.jar};${javaee.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar};${nci-commons-core.jar};${commons-configuration.jar};${spring.jar}" />
     </target>
 
     <!-- caarray-ejb.jar -->
