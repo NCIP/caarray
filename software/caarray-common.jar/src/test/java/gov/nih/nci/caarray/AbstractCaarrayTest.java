@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray;
 
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.security.SecurityUtils;
 
 import org.junit.BeforeClass;
 
@@ -97,6 +97,6 @@ public abstract class AbstractCaarrayTest {
     
     @BeforeClass
     public static void globalInit() {
-        HibernateUtil.init();
+        SecurityUtils.init();
     }
 }

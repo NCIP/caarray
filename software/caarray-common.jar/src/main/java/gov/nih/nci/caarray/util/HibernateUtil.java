@@ -116,15 +116,6 @@ public final class HibernateUtil {
     }
 
     /**
-     * Method that must be called prior to usage of HibernateUtil.
-     * Intended to be called at system startup, such as from a web application startup listener.
-     */
-    public static void init() {
-        SecurityUtils.init();
-        HIBERNATE_HELPER.reinitializeCsmFilters(SecurityUtils.getAuthorizationManager());
-    }
-
-    /**
      * Get the hibernate helper.
      * @return the helper.
      */

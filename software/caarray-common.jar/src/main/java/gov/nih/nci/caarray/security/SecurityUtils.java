@@ -82,18 +82,15 @@
  */
 package gov.nih.nci.caarray.security;
 
-import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.util.ConfigurationHelper;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.logging.api.logger.hibernate.HibernateSessionFactoryHelper;
 import gov.nih.nci.security.AuthorizationManager;
-import gov.nih.nci.security.SecurityServiceProvider;
 import gov.nih.nci.security.authorization.domainobjects.Application;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
@@ -101,14 +98,17 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.Role;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup;
+import gov.nih.nci.security.constants.Constants;
 import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.dao.RoleSearchCriteria;
 import gov.nih.nci.security.exceptions.CSConfigurationException;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
+import gov.nih.nci.security.provisioning.AuthorizationManagerImpl;
 import gov.nih.nci.security.system.ApplicationSessionFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -117,10 +117,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.configuration.DataConfiguration;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
@@ -133,10 +136,8 @@ public final class SecurityUtils {
     private static final Logger LOG = Logger.getLogger(SecurityUtils.class);
     private static final long serialVersionUID = -2071964672876972370L;
 
-    /**
-     * Key for looking up the authorization manager instance from CSM.
-     */
-
+    private static final String CSM_HIBERNATE_CONFIG_PREFIX = "/csm/*";
+    
     /** The username of the synthetic user for anonymous access permissions. */
     public static final String ANONYMOUS_USERNAME = "__anonymous__";
     /** The name of the group for anonymous access permissions. */
@@ -175,6 +176,18 @@ public final class SecurityUtils {
     // hidden constructor for static utility class
     private SecurityUtils() {
     }
+    
+    static {
+        try {
+            Resource csmHibernateConfig = getCsmHibernateConfig();
+            caarrayAppName = StringUtils.substringBefore(csmHibernateConfig.getFilename(), Constants.FILE_NAME_SUFFIX);
+            authMgr = new AuthorizationManagerImpl(caarrayAppName, csmHibernateConfig.getURL());
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not initialize CSM: " + e.getMessage(), e);
+        } catch (CSConfigurationException e) {
+            LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
+        }         
+    }
 
     /**
      * Method that must be called prior to usage of SecurityUtils, initializing some cached values.
@@ -182,18 +195,21 @@ public final class SecurityUtils {
      */
     public static void init() {
         try {
-            DataConfiguration config = ConfigurationHelper.getConfiguration();
-            caarrayAppName = config.getString(ConfigParamEnum.CSM_APPLICATION_NAME.name());
-            authMgr = SecurityServiceProvider.getAuthorizationManager(caarrayAppName);
             caarrayApp = authMgr.getApplication(caarrayAppName);
             anonymousUser = authMgr.getUser(ANONYMOUS_USERNAME);
         } catch (CSObjectNotFoundException e) {
             throw new IllegalStateException("Could not retrieve caarray application or anonymous user", e);
-        } catch (CSConfigurationException e) {
-            LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
-        } catch (CSException e) {
-            LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
         }
+    }
+    
+    private static Resource getCsmHibernateConfig() throws IOException {
+        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        Resource[] resources = resolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
+                + CSM_HIBERNATE_CONFIG_PREFIX + Constants.FILE_NAME_SUFFIX); 
+        if (resources.length == 0) {
+            throw new IllegalStateException("Could not locate a CSM hibernate configuration");
+        }
+        return resources[0];
     }
 
     /**

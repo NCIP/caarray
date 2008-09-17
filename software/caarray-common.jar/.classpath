@@ -39,5 +39,6 @@
 	<classpathentry kind="lib" path="/lib/caGrid-CQL-cql.1.0-1.2.jar"/>
 	<classpathentry kind="lib" path="/lib/castor-1.0.2.jar"/>
 	<classpathentry kind="lib" path="/lib/json-lib-2.2.2-jdk15.jar"/>
+	<classpathentry kind="lib" path="/lib/spring.jar"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>
