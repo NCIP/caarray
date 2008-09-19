@@ -3,7 +3,8 @@
 <script type="text/javascript">
     selectAll = function(selectAllBox, theform) {
        var state = selectAllBox.checked;
-        for (i = 0; i < theform.elements.length; i++) {
+       numElements = theform.elements.length;
+       for (i = 0; i < numElements; i++) {
             var element = theform.elements[i];
             if ("checkbox" == element.type) {
                 element.checked = state;

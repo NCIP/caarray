@@ -25,7 +25,7 @@
         <caarray:displayTagProperties/>
         <display:column title="${addAll}">
            <a href="#" id="fileRow${row.id}">
-               <img src="<c:url value="/images/ico_add.gif"/>" onclick="downloadMgr.addDownloadRow('${row.id}'); return false;" alt="Add ${row.name}"/>
+               <img id="rIcon${row.id}" src="<c:url value="/images/ico_add.gif"/>" onclick="downloadMgr.addDownloadRow('${row.id}'); return false;" alt="Add ${row.name}"/>
            </a>
         </display:column>
         <display:column titleKey="experiment.files.name" property="name" sortable="true"/>
@@ -54,7 +54,7 @@ downloadMgr.resetAllFiles();
     if (downloadMgr.inQueue('${file.id}')) {
         var fileCell = $('fileRow' + '${file.id}')
         if (fileCell) {
-            fileCell.innerHTML = '<img src="${removeIco}" alt="remove" onclick="downloadMgr.removeRow(${file.id}); return false;"/>';
+            fileCell.innerHTML = '<img id="rIcon${file.id}" src="${removeIco}" alt="remove" onclick="downloadMgr.removeRow(${file.id}); return false;"/>';
         }
     }
 </c:forEach>

@@ -457,34 +457,35 @@ DownloadMgr.prototype.addDownloadRow = function(id) {
         alert('File ' + name + ' already in queue.');
         return;
     }
-
+  var tbl = $('downloadTbl');
   this.deleteTotalRow();
-  this.doAddDownloadRow(id, true);
+  this.doAddDownloadRow(id, true, tbl , true);
   this.addTotalRow();
 }
 
-DownloadMgr.prototype.doAddDownloadRow = function(id, highlightRow) {
+DownloadMgr.prototype.doAddDownloadRow = function(id, highlightRow, tbl, showRemoveIcon) {
 
   var file = this.files[id];
   this.downloadFiles[id] = file;
   this.totalDownloadSize += file.size;
 
   if (this.hideQueue == false) {
-      var tbl = $('downloadTbl');
       var row = tbl.insertRow(-1);
       row.id = 'downloadRow' + id;
 
       var cell = row.insertCell(0);
-      cell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>&nbsp;&nbsp;' + file.name;
+      cell.innerHTML = '<img id="rIcon'+ id +'" src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>&nbsp;&nbsp;' + file.name;
   }
 
   if (highlightRow) {
       new Effect.Highlight($('fileRow' + file.id).up('tr'));
   }
 
-  var fileCell = $('fileRow' + file.id)
-  if (fileCell) {
-    fileCell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>';
+  if(showRemoveIcon) {
+	  var fileCell = $('fileRow' + file.id)
+	  if (fileCell) {
+	    fileCell.innerHTML = '<img id="rIcon'+ id +'" src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>';
+	  }
   }
 }
 
@@ -504,7 +505,7 @@ DownloadMgr.prototype.removeRow = function(id) {
 
   var fileCell = $('fileRow' + file.id);
   if (fileCell) {
-    fileCell.innerHTML = '<img src="'+ this.addImageUrl +'" alt="Add '+ file.name + '" onclick="downloadMgr.addDownloadRow(' + id + '); return false;"/>';
+    fileCell.innerHTML = '<img id="rIcon'+ id +'" src="'+ this.addImageUrl +'" alt="Add '+ file.name + '" onclick="downloadMgr.addDownloadRow(' + id + '); return false;"/>';
   }
 }
 
@@ -601,12 +602,29 @@ DownloadMgr.prototype.doDownloadFiles = function() {
 
 DownloadMgr.prototype.addAll = function() {
     this.deleteTotalRow();
+    var tbl = $('downloadTbl');
     for (id in this.files) {
         if (!this.downloadFiles[id]) {
-            this.doAddDownloadRow(id, false);
+            this.doAddDownloadRow(id, false, tbl, false);
         }
     }
+    this.displayAllRemoveIcons();
     this.addTotalRow();
+}
+
+DownloadMgr.prototype.displayAllRemoveIcons = function() {
+	var icons = document.getElementById('datatable').getElementsByTagName('img');
+	for(i=0;i<icons.length;i++) {
+		if(icons[i].id.lastIndexOf("rIcon") != -1) {
+			icons[i].src = this.removeImageUrl;
+			icons[i].alt = "remove";
+			var dlMgr = this;
+			icons[i].onclick= function() {
+			  var fid = this.id.substring(5,this.id.length);
+			  dlMgr.removeRow(fid);return false;
+			};
+		}
+   	}
 }
 
 DownloadMgr.prototype.reAddFromQueue = function() {
@@ -632,7 +650,7 @@ DownloadMgr.prototype.reApplySelection = function(id, highlightRow) {
 
           var fileCell = $('fileRow' + file.id)
           if (fileCell) {
-            fileCell.innerHTML = '<img src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>';
+            fileCell.innerHTML = '<img id="rIcon'+ id +'" src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>';
              }
             }
         }
