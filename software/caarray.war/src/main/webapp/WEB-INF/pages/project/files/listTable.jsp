@@ -32,7 +32,7 @@
         <caarray:displayTagProperties/>
         <c:if test="${project.saveAllowed && canWriteProject}">
             <display:column title="${checkboxAll}">
-                <s:checkbox name="selectedFileIds" disabled="${!(row.importable || row.validatable || row.deletable)}" fieldValue="${row.id}" value="false" theme="simple" />
+                <s:checkbox id="chk${row.id}" name="selectedFileIds" disabled="${!(row.importable || row.validatable || row.deletable)}" fieldValue="${row.id}" value="false" theme="simple" />
             </display:column>
         </c:if>
         <display:column property="name" titleKey="experiment.files.name" sortable="true" />

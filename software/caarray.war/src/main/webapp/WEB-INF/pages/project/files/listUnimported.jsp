@@ -41,22 +41,30 @@
     }
 
     isMageTabImport = function() {
-        var formElts = $('selectFilesForm').getInputs('checkbox', 'selectedFileIds');
+        var formElts = document.getElementById('datatable').getElementsByTagName('input');
         return $A(formElts).any(function(elt) {
-            return elt.checked && (fileTypeLookup[elt.value] == SDRF_FILE_TYPE || fileTypeLookup[elt.value] == IDF_FILE_TYPE);
+            return elt.checked && (elt.id.lastIndexOf('chk') > -1) && (fileTypeLookup[elt.value] == SDRF_FILE_TYPE || fileTypeLookup[elt.value] == IDF_FILE_TYPE);
         });
     }
 
     checkAnyFilesSelected = function() {
-        var formElts = $('selectFilesForm').getInputs('checkbox', 'selectedFileIds');
+        var formElts = document.getElementById('datatable').getElementsByTagName('input');
         return $A(formElts).any(function(elt) {
+            if(elt.id.lastIndexOf('chk') < 0) {
+             return false;
+            }
             return elt.checked;
         });
     }
 
     getSelectedFileNames = function() {
-        var formElts = $('selectFilesForm').getInputs('checkbox', 'selectedFileIds');
-        return $A(formElts).select(function(elt) { return elt.checked; }).map(function(elt) {
+        var formElts = document.getElementById('datatable').getElementsByTagName('input');
+        return $A(formElts).select(function(elt) {
+        	if(elt.id.lastIndexOf('chk') < 0) {
+             return false;
+            }
+            return elt.checked;
+        }).map(function(elt) {
             return fileNameLookup[elt.value];
         });
     }
