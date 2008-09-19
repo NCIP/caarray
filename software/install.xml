@@ -240,13 +240,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
     <target name="install:jboss:caarray:re-configure" description="Update xml files in meta-inf directory of ear that have deployment attributes">
         <delete dir="${temp.dir}/caarray.ear" />
-	<delete dir="${temp.dir}/caarray-common.jar" />
+    <delete dir="${temp.dir}/caarray-common.jar" />
         <mkdir dir="${temp.dir}/caarray.ear" />
-	<mkdir dir="${temp.dir}/caarray-common.jar" />
+    <mkdir dir="${temp.dir}/caarray-common.jar" />
         <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
 
         <unjar src="${temp.dir}/caarray.ear/caarray-common.jar" dest="${temp.dir}/caarray-common.jar"/>
-        <move file="${temp.dir}/caarray-common.jar/csm/caarray.csm.new.hibernate.cfg.xml" tofile="${temp.dir}/caarray-common.jar/csm/${csm.application.name}.csm.new.hibernate.cfg.xml"/>		
+        <move file="${temp.dir}/caarray-common.jar/csm/caarray.csm.new.hibernate.cfg.xml" tofile="${temp.dir}/caarray-common.jar/csm/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
         <jar destfile="${temp.dir}/caarray.ear/caarray-common.jar" basedir="${temp.dir}/caarray-common.jar" update="false" manifest="${temp.dir}/caarray-common.jar/META-INF/MANIFEST.MF"/>
 
         <if>
@@ -458,7 +458,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         depends="install:jboss:grid-binaries,
         -install:grid:configure:update-shutdown,
         -install:grid:configure:ports,
-        -install:grid:configure:wsdl
+        -install:grid:configure:wsdl,
+        -install:grid:configure:serviceMetadataXml
         "/>
 
 
@@ -508,6 +509,31 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <jboss-bindings
             jboss.home="${grid.home}" jboss.server.bindingfile.location="${grid.home}/server/default/conf/bindings.xml"
         />
+    </target>
+
+    <target name="-install:grid:configure:serviceMetadataXml" description="Configure caArray's grid service serviceMetadata.xml.">
+        <xmlconfig in="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/etc/cagrid_CaArraySvc/serviceMetadata.xml" verbose="false">
+
+            <!-- set ResearchCenter element's attributes -->
+            <update path="//*[local-name()='ResearchCenter']/@displayName" value="${research.center.displayName}" />
+            <update path="//*[local-name()='ResearchCenter']/@shortName" value="${research.center.shortName}" />
+
+            <!-- set ResearchCenter element's child address element's attributes -->
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@country" value="${research.center.address.country}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@locality" value="${research.center.address.locality}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@postalCode" value="${research.center.address.postalCode}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@stateProvince" value="${research.center.address.stateProvince}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@street1" value="${research.center.address.street1}" />
+
+            <!-- set ResearchCenter element's child pointOfContactCollection elements' child PointOfContact element's attributes -->
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@affiliation" value="${point.of.contact.affiliation}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@email" value="${point.of.contact.email}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@firstName" value="${point.of.contact.firstName}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@lastName" value="${point.of.contact.lastName}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@phoneNumber" value="${point.of.contact.phoneNumber}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@role" value="${point.of.contact.role}" />
+
+        </xmlconfig>
     </target>
 
     <target name="-install:grid:configure:wsdl" description="Configure grid service based on properties">
