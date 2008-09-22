@@ -47,7 +47,7 @@
             <div class="tableboxpad">
                 <c:url value="/protected/ajax/arrayDesign/list.action" var="sortUrl"/>
                 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
-                    <display:table class="searchresults" cellspacing="0" defaultsort="2" list="${arrayDesigns}"
+                    <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${arrayDesigns}"
                                    requestURI="${sortUrl}" sort="list" id="row" pagesize="20">
                         <caarray:displayTagProperties/>
                         <display:column property="name" titleKey="arrayDesign.name" sortable="true" url="/protected/arrayDesign/view.action" paramId="arrayDesign.id" paramProperty="id" maxLength="30"/>
