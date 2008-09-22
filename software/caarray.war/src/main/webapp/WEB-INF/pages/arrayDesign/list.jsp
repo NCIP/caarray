@@ -90,7 +90,7 @@
                                      <c:param name="arrayDesign.id" value="${row.id}" />
                                 </c:url>
                                 <div id="delete_button${row.id}">
-                                    <a href="${deleteDesignUrl}" onclick="return confirmDeleteArrayDesign(${row.id});"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                                    <a href="${deleteDesignUrl}" onclick="return confirmDeleteArrayDesign(${row.id});"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
                                 </div>
                           </c:if>
                         </display:column>
