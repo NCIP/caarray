@@ -238,13 +238,14 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @Transient
     public boolean isSaveAllowed() {
-        return !isPublic();
+        return !isPublic() && !isImportingData();
     }
 
     /**
      * @return whether this project currently has any files that are being actively imported.
      */
-    public boolean hasImportingData() {
+    @Transient
+    public boolean isImportingData() {
         return CollectionUtils.exists(getFiles(), new Predicate() {
             public boolean evaluate(Object o) {
                 CaArrayFile file = (CaArrayFile) o;

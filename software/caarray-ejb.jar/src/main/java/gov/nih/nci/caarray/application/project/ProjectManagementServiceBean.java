@@ -444,7 +444,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * @throws InconsistentProjectStateException if the project state is not consistent
      */
     private void checkImportInProgress(Project project) throws InconsistentProjectStateException {
-        if (project.hasImportingData()) {
+        if (project.isImportingData()) {
             throw new InconsistentProjectStateException(Reason.IMPORTING_FILES);
         }
     }

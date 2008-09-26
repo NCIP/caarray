@@ -22,7 +22,7 @@
 
 <caarray:actions>
     <c:choose>
-        <c:when test="${editMode}">
+        <c:when test="${editMode && (!project.importingData)}">
             <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('projectForm', '${tabAnchor}'); return false;"/>
         </c:when>
         <c:when test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">

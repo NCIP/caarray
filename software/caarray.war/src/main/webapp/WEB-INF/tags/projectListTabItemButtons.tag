@@ -13,7 +13,7 @@
 </c:if>
 <caarray:actions>
     <c:choose>
-        <c:when test="${editMode}">
+        <c:when test="${editMode && (!project.importingData)}">
             <caarray:projectListTabActionLink entityName="${entityName}" action="load" itemId="${item.id}" isSubtab="${isSubtab}">
                 <jsp:attribute name="linkRenderer">
                     <caarray:action actionClass="cancel" text="Cancel" onclick="TabUtils.updateSavedFormData(); TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
@@ -27,6 +27,6 @@
                     <caarray:action actionClass="edit" text="Edit" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
                 </jsp:attribute>
             </caarray:projectListTabActionLink>
-        </c:when> 
+        </c:when>
     </c:choose>
 </caarray:actions>

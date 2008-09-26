@@ -328,21 +328,25 @@
       <%@ include file="/WEB-INF/pages/project/files/listUnimportedForm.jsp" %>
     </div>
 
-    <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
+    <c:if test="${!project.public && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
         <caarray:actions divclass="actionsthin">
+            <c:if test="${(!project.importingData)}">
             <c:url value="/protected/ajax/project/files/deleteFiles.action" var="deleteUrl" />
             <caarray:linkButton actionClass="delete" text="Delete" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${deleteUrl}', 'tabboxlevel2wrapper');" />
             <c:url value="/protected/ajax/project/files/unpackFiles.action" var="unpackUrl" />
             <caarray:linkButton actionClass="import" text="Unpack Archive" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${unpackUrl}', 'tabboxlevel2wrapper');" />
             <c:url value="/protected/ajax/project/files/editFiles.action" var="editUrl" />
             <caarray:linkButton actionClass="edit" text="Change File Type" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${editUrl}', 'tabboxlevel2wrapper');" />
+            </c:if>
             <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />
             <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
             <c:url value="/protected/ajax/project/files/importFiles.action" var="importUrl"/>
+            <c:if test="${(!project.importingData)}">
             <caarray:linkButton actionClass="import" text="Import" onclick="importFiles('${importUrl}');" />
             <c:url value="/protected/ajax/project/files/addSupplementalFiles.action" var="supplementalUrl"/>
             <caarray:linkButton actionClass="import" text="Add Supplemental Files" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${supplementalUrl}', 'tabboxlevel2wrapper');" />
             <c:url value="/protected/ajax/project/files/listUnimported.action" var="unimportedUrl"/>
+            </c:if>
             <caarray:linkButton actionClass="import" text="Refresh Status" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${unimportedUrl}', 'tabboxlevel2wrapper');" />
         </caarray:actions>
     </c:if>
