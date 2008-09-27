@@ -238,7 +238,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @Transient
     public boolean isSaveAllowed() {
-        return !isPublic() && !isImportingData();
+        return !isPublic();
     }
 
     /**

@@ -310,7 +310,7 @@
 
     <div class="boxpad2">
         <h3><fmt:message key="project.tabs.unimportedFiles" /></h3>
-        <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
+        <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser()) && (!project.importingData)}">
             <div class="addlink">
                 <fmt:message key="experiment.data.upload" var="uploadLabel" />
                 <caarray:linkButton actionClass="add" text="${uploadLabel}" onclick="openUploadWindow()"/>
@@ -328,7 +328,7 @@
       <%@ include file="/WEB-INF/pages/project/files/listUnimportedForm.jsp" %>
     </div>
 
-    <c:if test="${!project.public && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
+    <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
         <caarray:actions divclass="actionsthin">
             <c:if test="${(!project.importingData)}">
             <c:url value="/protected/ajax/project/files/deleteFiles.action" var="deleteUrl" />
