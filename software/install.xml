@@ -459,7 +459,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         -install:grid:configure:update-shutdown,
         -install:grid:configure:ports,
         -install:grid:configure:wsdl,
-        -install:grid:configure:serviceMetadataXml
+        -install:grid:configure:serviceMetadataXml,
+        -install:grid:configure:webXml
         "/>
 
 
@@ -536,6 +537,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         </xmlconfig>
     </target>
 
+    <target name="-install:grid:configure:webXml" description="Configure caArray's grid service web.xml.">
+        <xmlconfig in="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/web.xml" verbose="false">
+            <update path="/web-app/servlet/init-param/param-value[text()='80']" value="${grid.static.port}" />
+        </xmlconfig>
+    </target>
+
     <target name="-install:grid:configure:wsdl" description="Configure grid service based on properties">
         <replace dir="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war" token="%token.server.hostname%:%token.jboss.jndi.port%" value="${grid.server.hostname}:${grid.server.port}">
             <include name="**/*.wsdl" />
@@ -547,7 +554,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             match="^(.*wsa:Address.).*(.\/wsa:Address.)"
             replace="\1${grid.index.url}\2"/>
 
-        <replace file="${grid.home}/server/${grid.server.name}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" token="@LOGICAL_HOST@" value="${domain.name}"/>
+        <replace file="${grid.home}/server/${grid.server.name}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" token="@LOGICAL_HOST@" value="${grid.static.hostname}"/>
 
     </target>
 
