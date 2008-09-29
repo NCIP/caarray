@@ -241,6 +241,17 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 	<target name="retrieve:jboss404" unless="grid.tools.exists">
 		<get src="${jboss.grid-src.url}"
 			dest="${grid.dest.file}"/>
+
+        <!-- delete unneeded "all" and "minimal" configurations as only "default" is needed -->
+        <property name="jboss.temp.staging.dir" value="${grid.dest.file}.jboss.temp.staging"/>
+        <mkdir dir="${jboss.temp.staging.dir}"/>
+        <unzip src="${grid.dest.file}" dest="${jboss.temp.staging.dir}"/>
+        <delete file="${grid.dest.file}"/>
+        <!-- be careful as these configurations might not be there in future if zip updated -->
+        <delete dir="${jboss.temp.staging.dir}/jboss-4.0.4.GA/server/all" failonerror="false"/>
+        <delete dir="${jboss.temp.staging.dir}/jboss-4.0.4.GA/server/minimal" failonerror="false"/>
+        <zip update="true" destfile="${grid.dest.file}" basedir="${jboss.temp.staging.dir}"/>
+        <delete dir="${jboss.temp.staging.dir}"/>
 	</target>
 	
 	<target name="dist:tools:retrieve" depends="retrieve:jboss,retrieve:jboss404">
