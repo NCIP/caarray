@@ -234,13 +234,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <delete dir="${jboss.home}/server/${jboss.server.name}/tmp"/>
         <delete dir="${jboss.home}/server/${jboss.server.name}/work"/>
 
-        <copy file="${caarray.dir.dist}/${caarray.ear.file}" todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true" />
+        <copy file="${temp.dir}/caarray.ear.to_deploy/${caarray.ear.file}" todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true" />
         <copy file="${database.driver.file}" todir="${jboss.home}/server/${jboss.server.name}/lib" overwrite="true" />
     </target>
 
     <target name="install:jboss:caarray:re-configure" description="Update xml files in meta-inf directory of ear that have deployment attributes">
-        <delete dir="${temp.dir}/caarray.ear" />
-    <delete dir="${temp.dir}/caarray-common.jar" />
+        <delete dir="${temp.dir}" />
+        <mkdir dir="${temp.dir}/caarray.ear.to_deploy" />
         <mkdir dir="${temp.dir}/caarray.ear" />
     <mkdir dir="${temp.dir}/caarray-common.jar" />
         <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
@@ -277,7 +277,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </else>
         </if>
 
-        <ear destfile="${caarray.dir.dist}/${caarray.ear.file}" appxml="${temp.dir}/caarray.ear/META-INF/application.xml" update="false">
+        <ear destfile="${temp.dir}/caarray.ear.to_deploy/${caarray.ear.file}" appxml="${temp.dir}/caarray.ear/META-INF/application.xml" update="false">
             <metainf dir="${temp.dir}/caarray.ear/META-INF" includes="*.xml" excludes="jboss-service.xml" />
             <fileset dir="${temp.dir}/caarray.ear">
                 <include name="*" />
