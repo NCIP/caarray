@@ -318,6 +318,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 			</fileset>
 		</copy> 
 
+        <!-- configure install.properties to point to the prod grid index service -->
+        <replace file="${caarray.dist.dir}/install.properties" token="grid.index.url=http://training03.cagrid.org:6080/wsrf/services/DefaultIndexService">
+            <replacevalue><![CDATA[#grid.index.url=http://training03.cagrid.org:6080/wsrf/services/DefaultIndexService
+grid.index.url=http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService]]></replacevalue>
+        </replace>
+
 		<!-- Rename install.xml to build.xml so manual installs will not need to include the -f optoin on ant, simplifying the install proces. -->
 		<move file="${caarray.dist.dir}/install.xml" tofile="${caarray.dist.dir}/build.xml"/>
 
