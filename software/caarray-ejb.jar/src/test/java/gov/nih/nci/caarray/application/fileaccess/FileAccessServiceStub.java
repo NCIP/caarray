@@ -125,6 +125,11 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
         return new File(caArrayFile.getName());
     }
 
+    public File createFile(String fileName) {
+        this.savedFileCount++;
+        return new File(fileName);
+    }
+
     public Set<File> getFiles(CaArrayFileSet fileSet) {
         Set<File> files = new HashSet<File>();
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
@@ -194,6 +199,13 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
      */
     public void closeFiles() {
         // nothing to do
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void delete(File file) {
+        this.removedFileCount++;
     }
 
     /**

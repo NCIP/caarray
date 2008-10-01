@@ -116,6 +116,8 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
 abstract class AbstractDataFileHandler {
 
+    static final String READ_FILE_ERROR_MESSAGE = "Couldn't read file";
+
     abstract QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(File file);
 
     final FileValidationResult validate(CaArrayFile caArrayFile, File file, ArrayDesignService arrayDesignService) {

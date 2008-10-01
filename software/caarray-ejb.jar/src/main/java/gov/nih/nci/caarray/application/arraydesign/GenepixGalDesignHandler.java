@@ -113,7 +113,7 @@ import org.apache.log4j.Logger;
  * Manages validation and loading of array designs described in the GenePix GAL
  * format.
  */
-@SuppressWarnings("PMD.TooManyMethods")
+@SuppressWarnings("PMD")
 final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
 
     private static final String LSID_AUTHORITY = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;
@@ -148,11 +148,15 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
     void createDesignDetails(ArrayDesign arrayDesign) {
         ArrayDesignDetails details = new ArrayDesignDetails();
         arrayDesign.setDesignDetails(details);
-        loadDesignDetails(details);
+        try {
+            loadDesignDetails(details);
+        } catch (IOException e) {
+            throw new IllegalStateException("Couldn't read file", e);
+        }
         getArrayDao().save(arrayDesign);
     }
 
-    private void loadDesignDetails(ArrayDesignDetails details) {
+    private void loadDesignDetails(ArrayDesignDetails details) throws IOException {
         ProbeGroup group = new ProbeGroup(details);
         details.getProbeGroups().add(group);
         DelimitedFileReader reader = getReader();
@@ -167,7 +171,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void loadHeaderInformation(DelimitedFileReader reader) {
+    private void loadHeaderInformation(DelimitedFileReader reader) throws IOException {
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
             if (isDataHeaderLine(values)) {
@@ -179,7 +183,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         setBlockColumnsAndRows(reader);
     }
 
-    private void setBlockColumnsAndRows(DelimitedFileReader reader) {
+    private void setBlockColumnsAndRows(DelimitedFileReader reader) throws IOException {
         if (!blockInfos.isEmpty()) {
             setBlockInfoFromHeaderData();
         } else {
@@ -187,7 +191,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void setBlockInfoFromDataRows(DelimitedFileReader reader) {
+    private void setBlockInfoFromDataRows(DelimitedFileReader reader) throws IOException {
         positionAtDataRecords(reader);
         short blockCount = 0;
         while (reader.hasNextLine()) {
@@ -292,10 +296,14 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
     void load(ArrayDesign arrayDesign) {
         arrayDesign.setName(FilenameUtils.getBaseName(getDesignFile().getName()));
         arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + arrayDesign.getName());
-        arrayDesign.setNumberOfFeatures(getNumberOfFeatures());
+        try {
+            arrayDesign.setNumberOfFeatures(getNumberOfFeatures());
+        } catch (IOException e) {
+            throw new IllegalStateException("Couldn't read file", e);
+        }
     }
 
-    private int getNumberOfFeatures() {
+    private int getNumberOfFeatures() throws IOException {
         DelimitedFileReader reader = getReader();
         try {
             positionAtDataRecords(reader);
@@ -310,7 +318,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void positionAtDataRecords(DelimitedFileReader reader) {
+    private void positionAtDataRecords(DelimitedFileReader reader) throws IOException {
         reset(reader);
         boolean isDataHeaderLine = false;
         List<String> values = null;
@@ -357,6 +365,8 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
             if (result.isValid()) {
                 validateData(reader, fileResult);
             }
+        } catch (IOException e) {
+            result.addMessage(getFile(), Type.ERROR, "Could not read file: " + e);
         } finally {
             reader.close();
         }
@@ -366,7 +376,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         validateFileNotEmpty(reader, result);
     }
 
-    private void validateDataRows(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateDataRows(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         reset(reader);
         int numberOfDataColumns = 0;
         while (reader.hasNextLine()) {
@@ -446,7 +456,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void validateFileHasRowHeader(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateFileHasRowHeader(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         reset(reader);
         while (reader.hasNextLine()) {
             if (isDataHeaderLine(reader.nextLine())) {
@@ -462,7 +472,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void validateHeader(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateHeader(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         reset(reader);
         validateFormatHeader(reader, result);
         if (result.isValid()) {
@@ -476,7 +486,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void validateFormatHeader(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateFormatHeader(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         reset(reader);
         List<String> values = reader.nextLine();
         if (values.size() < 2 || !"ATF".equals(values.get(0))) {
@@ -494,7 +504,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void validateHeaderFields(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateHeaderFields(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         reset(reader);
         reader.nextLine();
         reader.nextLine();
@@ -511,7 +521,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void validateBlockInformation(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateBlockInformation(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         reset(reader);
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
@@ -555,7 +565,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void validateData(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateData(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         validateDataRows(reader, result);
     }
 

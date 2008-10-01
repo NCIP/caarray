@@ -160,6 +160,24 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
         return file;
     }
 
+    /**
+     * Returns a temporary <code>java.io.File</code> with the given name.
+     * The client should eventually call delete() to allow the temporary file to be cleanded up.
+     * Throws FileAccessException if file could not be created.
+     *
+     * @param fileName the name of the file to be created
+     * @return the <code>java.io.File</code> pointing to the temporary file.
+     */
+    public File createFile(String fileName) {
+        try {
+            File file = new File(getSessionWorkingDirectory(), fileName);
+            file.createNewFile();
+            return file;
+        } catch (IOException e) {
+            throw new FileAccessException("Could not create temporary file " + fileName, e);
+        }
+    }
+
     private File getSessionWorkingDirectory() {
         if (this.sessionWorkingDirectory == null) {
             createSessionWorkingDirectory();
@@ -232,7 +250,11 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
         this.openFiles.remove(caarrayFile);
     }
 
-    private void delete(File file) {
+    /**
+     * Deletes the temporary file.
+     * @param file the temporary file to delete.
+     */
+    public void delete(File file) {
         LOG.debug("Deleting file: " + file.getAbsolutePath());
         if (!file.delete()) {
             LOG.warn("Couldn't delete file: " + file.getAbsolutePath());

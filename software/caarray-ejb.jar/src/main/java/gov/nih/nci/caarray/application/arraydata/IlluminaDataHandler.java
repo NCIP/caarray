@@ -122,12 +122,10 @@ import org.apache.log4j.Logger;
  * Handles reading of Illumina data.
  */
 class IlluminaDataHandler extends AbstractDataFileHandler {
-
     private static final String TARGET_ID = "TargetID";
     private static final String ARRAY_CONTENT_HEADER = "Array Content";
     private static final String LSID_AUTHORITY = "illumina.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
-
     private static final String GROUP_ID_HEADER = "GroupID";
     private static final Map<String, IlluminaExpressionQuantitationType> EXPRESSION_TYPE_MAP =
         new HashMap<String, IlluminaExpressionQuantitationType>();
@@ -166,23 +164,25 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
                         + " is not an Illumina genotyping or gene expression data file");
             }
             return descriptor;
+        } catch (IOException e) {
+            throw new IllegalStateException(AbstractDataFileHandler.READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
         }
     }
 
-    private boolean isExpressionFile(DelimitedFileReader reader) {
+    private boolean isExpressionFile(DelimitedFileReader reader) throws IOException {
         List<QuantitationTypeDescriptor> types = getTypeDescriptors(reader);
         return Arrays.asList(IlluminaExpressionQuantitationType.values()).containsAll(types);
     }
 
-    private boolean isGenotypingFile(DelimitedFileReader reader) {
+    private boolean isGenotypingFile(DelimitedFileReader reader) throws IOException {
         List<QuantitationTypeDescriptor> types = getTypeDescriptors(reader);
         return Arrays.asList(IlluminaGenotypingQuantitationType.values()).containsAll(types);
     }
 
     @SuppressWarnings("PMD.PositionLiteralsFirstInComparisons") // false report from PMD
-    private List<QuantitationTypeDescriptor> getTypeDescriptors(DelimitedFileReader reader) {
+    private List<QuantitationTypeDescriptor> getTypeDescriptors(DelimitedFileReader reader) throws IOException {
         List<String> headers = getHeaders(reader);
         if (TARGET_ID.equals(headers.get(0))) {
             return getExpressionTypeDescriptors(headers);
@@ -221,7 +221,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         return descriptors;
     }
 
-    private List<String> getHeaders(DelimitedFileReader reader) {
+    private List<String> getHeaders(DelimitedFileReader reader) throws IOException {
         reset(reader);
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
@@ -261,6 +261,8 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
             QuantitationTypeDescriptor[] descriptors =
                 getTypeDescriptors(reader).toArray(new QuantitationTypeDescriptor[] {});
             return descriptors;
+        } catch (IOException e) {
+            throw new IllegalStateException(AbstractDataFileHandler.READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
         }
@@ -278,12 +280,15 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
                 hybridizationNames =  getSampleNamesFromHeaders(headers);
             }
             return hybridizationNames;
+        } catch (IOException e) {
+            throw new IllegalStateException(AbstractDataFileHandler.READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
         }
     }
 
-    private List<String> getSampleNamesFromGroupId(List<String> headers, DelimitedFileReader reader) {
+    private List<String> getSampleNamesFromGroupId(List<String> headers, DelimitedFileReader reader)
+    throws IOException {
         Set<String> nameSet = new HashSet<String>();
         List<String> names = new ArrayList<String>();
         int position = headers.indexOf(GROUP_ID_HEADER);
@@ -316,13 +321,15 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         try {
             List<String> headers = getHeaders(reader);
             loadData(headers, reader, dataSet, types, arrayDesignService);
+        } catch (IOException e) {
+            throw new IllegalStateException(AbstractDataFileHandler.READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
         }
     }
 
     private void loadData(List<String> headers, DelimitedFileReader reader, DataSet dataSet,
-            List<QuantitationType> types, ArrayDesignService arrayDesignService) {
+            List<QuantitationType> types, ArrayDesignService arrayDesignService) throws IOException {
         prepareColumns(dataSet, types, getNumberOfDataRows(reader));
         if (dataSet.getDesignElementList() == null) {
             loadDesignElementList(dataSet, reader, headers, arrayDesignService);
@@ -343,7 +350,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     }
 
     private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, List<String> headers,
-            ArrayDesignService arrayDesignService) {
+            ArrayDesignService arrayDesignService) throws IOException {
         int indexOfTargetId = headers.indexOf(TARGET_ID);
         DesignElementList probeList = new DesignElementList();
         probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
@@ -391,7 +398,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         return null;
     }
 
-    private int getNumberOfDataRows(DelimitedFileReader reader) {
+    private int getNumberOfDataRows(DelimitedFileReader reader) throws IOException {
         int numberOfDataRows = 0;
         positionAtData(reader);
         while (reader.hasNextLine()) {
@@ -401,7 +408,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         return numberOfDataRows;
     }
 
-    private void positionAtData(DelimitedFileReader reader) {
+    private void positionAtData(DelimitedFileReader reader) throws IOException {
         getHeaders(reader);
     }
 
@@ -423,12 +430,14 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
             if (result.isValid()) {
                 validateData(reader, result);
             }
+        } catch (IOException e) {
+            throw new IllegalStateException(AbstractDataFileHandler.READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
         }
     }
 
-    private void validateHeaders(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateHeaders(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         validateHasArrayContentHeader(reader, result);
         List<String> headers = getHeaders(reader);
         if (headers == null) {
@@ -436,13 +445,14 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void validateHasArrayContentHeader(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateHasArrayContentHeader(DelimitedFileReader reader, FileValidationResult result)
+    throws IOException {
         if (getArrayContentValue(reader) == null) {
             result.addMessage(Type.ERROR, "Data file doesn not contain required header \"Array Content\"");
         }
     }
 
-    private String getArrayContentValue(DelimitedFileReader reader) {
+    private String getArrayContentValue(DelimitedFileReader reader) throws IOException {
         Map<String, String[]> fileHeaders = getFileHeaders(reader);
         String[] arrayContentValues = fileHeaders.get(ARRAY_CONTENT_HEADER);
         if (arrayContentValues == null || arrayContentValues.length == 0
@@ -453,7 +463,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private Map<String, String[]> getFileHeaders(DelimitedFileReader reader) {
+    private Map<String, String[]> getFileHeaders(DelimitedFileReader reader) throws IOException {
         reset(reader);
         Map<String, String[]> fileHeaders = new HashMap<String, String[]>();
         while (reader.hasNextLine()) {
@@ -484,7 +494,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void validateData(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateData(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         List<String> headers = getHeaders(reader);
         positionAtData(reader);
         while (reader.hasNextLine()) {
@@ -495,7 +505,8 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, DelimitedFileReader reader) {
+    private ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, DelimitedFileReader reader)
+    throws IOException {
         String illuminaFile = getArrayContentValue(reader);
         String designName = FilenameUtils.getBaseName(illuminaFile);
         return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, designName);
@@ -506,6 +517,8 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         DelimitedFileReader reader = getReader(file);
         try {
             return getArrayDesign(arrayDesignService, reader);
+        } catch (IOException e) {
+            throw new IllegalStateException(AbstractDataFileHandler.READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
         }

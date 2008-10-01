@@ -142,6 +142,8 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
                 }
             }
             flushAndClearSession();
+        } catch (IOException e) {
+            throw new IllegalStateException("Couldn't read file: ", e);
         } finally {
             reader.close();
         }
@@ -149,16 +151,20 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
 
     @Override
     void validate(ValidationResult result) {
-        if (getHandler() == null) {
+        try {
+            if (getHandler() == null) {
             result.addMessage(getFile(), Type.ERROR, "The file " + getFile().getName()
-                    + " is not a recognizable Illumina array annotation format.");
-        } else {
-            FileValidationResult fileResult = result.getFileValidationResult(getFile());
-            if (fileResult == null) {
-                fileResult = new FileValidationResult(getFile());
-                result.addFile(getFile(), fileResult);
-            }
+                        + " is not a recognizable Illumina array annotation format.");
+            } else {
+                FileValidationResult fileResult = result.getFileValidationResult(getFile());
+                if (fileResult == null) {
+                    fileResult = new FileValidationResult(getFile());
+                    result.addFile(getFile(), fileResult);
+                }
             doValidation(fileResult);
+            }
+        } catch (IOException e) {
+            result.addMessage(getFile(), ValidationMessage.Type.ERROR, "Unable to read file");
         }
     }
 
@@ -183,7 +189,8 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void validateContent(DelimitedFileReader reader, FileValidationResult result, List<String> headers) {
+    private void validateContent(DelimitedFileReader reader, FileValidationResult result, List<String> headers)
+    throws IOException {
         int expectedNumberOfFields = headers.size();
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
@@ -249,7 +256,7 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void validateHeader(List<String> headers, FileValidationResult result) {
+    private void validateHeader(List<String> headers, FileValidationResult result) throws IOException {
         Enum[] expectedHeaders = getHandler().getExpectedHeaders(headers);
         if (headers.size() != expectedHeaders.length) {
             result.addMessage(ValidationMessage.Type.ERROR,
@@ -264,7 +271,7 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private List<String> getHeaders(DelimitedFileReader reader) {
+    private List<String> getHeaders(DelimitedFileReader reader) throws IOException {
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
             if (getHandler().isHeaderLine(values)) {
@@ -278,10 +285,14 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
     void load(ArrayDesign arrayDesign) {
         arrayDesign.setName(FilenameUtils.getBaseName(getDesignFile().getName()));
         arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + arrayDesign.getName());
-        arrayDesign.setNumberOfFeatures(getNumberOfFeatures());
+        try {
+            arrayDesign.setNumberOfFeatures(getNumberOfFeatures());
+        } catch (IOException e) {
+            throw new IllegalStateException("Couldn't read file: ", e);
+        }
     }
 
-    private int getNumberOfFeatures() {
+    private int getNumberOfFeatures() throws IOException {
         DelimitedFileReader reader = getReader();
         try {
             positionAtAnnotation(reader);
@@ -298,7 +309,7 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void positionAtAnnotation(DelimitedFileReader reader) {
+    private void positionAtAnnotation(DelimitedFileReader reader) throws IOException {
         reset(reader);
         boolean isHeader = false;
         while (!isHeader && reader.hasNextLine()) {
@@ -336,14 +347,14 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private AbstractIlluminaDesignHandler getHandler() {
+    private AbstractIlluminaDesignHandler getHandler() throws IOException {
         if (handler == null) {
             handler = createHandler();
         }
         return handler;
     }
 
-    private AbstractIlluminaDesignHandler createHandler() {
+    private AbstractIlluminaDesignHandler createHandler() throws IOException {
         DelimitedFileReader reader = getReader();
         try {
             List<AbstractIlluminaDesignHandler> candidateHandlers = getCandidateHandlers();

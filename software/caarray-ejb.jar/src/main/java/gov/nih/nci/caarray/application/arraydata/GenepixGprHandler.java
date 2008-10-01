@@ -120,7 +120,6 @@ import org.apache.log4j.Logger;
  */
 @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength" })
 final class GenepixGprHandler extends AbstractDataFileHandler {
-
     private static final String LSID_AUTHORITY = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;
     private static final String LSID_NAMESPACE = AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE;
 
@@ -193,6 +192,8 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         DelimitedFileReader reader = getReader(file);
         try {
             return getQuantitationTypeDescriptors(reader);
+        } catch (IOException e) {
+            throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
         }
@@ -216,7 +217,7 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         return headerDescriptorMap;
     }
 
-    private List<String> getColumnHeaders(DelimitedFileReader reader) {
+    private List<String> getColumnHeaders(DelimitedFileReader reader) throws IOException {
         reset(reader);
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
@@ -239,11 +240,11 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         try {
             reader.reset();
         } catch (IOException e) {
-            throw new IllegalStateException("Couldn't read file", e);
+            throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
         }
     }
 
-    private QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(DelimitedFileReader reader) {
+    private QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(DelimitedFileReader reader) throws IOException {
         return getQuantitationTypeDescriptors(getColumnHeaders(reader));
     }
 
@@ -270,6 +271,8 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
                 addThreeAndFourColorNames(names, basename, headers.get(IMAGE_NAME_HEADER));
             }
             return names;
+        } catch (IOException e) {
+            throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
         }
@@ -281,7 +284,7 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         }
     }
 
-    private Map<String, String[]> getHeaders(DelimitedFileReader reader) {
+    private Map<String, String[]> getHeaders(DelimitedFileReader reader) throws IOException {
         reset(reader);
         Map<String, String[]> headers = new HashMap<String, String[]>();
         List<String> values = reader.nextLine();
@@ -319,13 +322,15 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
             for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
                 loadData(hybridizationData, descriptorSet, reader);
             }
+        } catch (IOException e) {
+            throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
         }
     }
 
     private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader,
-            ArrayDesignService arrayDesignService) {
+            ArrayDesignService arrayDesignService) throws IOException {
         DesignElementList probeList = new DesignElementList();
         probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
         dataSet.setDesignElementList(probeList);
@@ -349,7 +354,7 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     }
 
     private void loadData(HybridizationData hybridizationData, Set<QuantitationTypeDescriptor> descriptors,
-            DelimitedFileReader reader) {
+            DelimitedFileReader reader) throws IOException {
         List<String> headers = getColumnHeaders(reader);
         int rowIndex = 0;
         while (reader.hasNextLine()) {
@@ -368,7 +373,7 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         }
     }
 
-    private int getNumberOfDataRows(DelimitedFileReader reader) {
+    private int getNumberOfDataRows(DelimitedFileReader reader) throws IOException {
         int numberOfDataRows = 0;
         getColumnHeaders(reader);
         while (reader.hasNextLine()) {
@@ -387,12 +392,14 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
             if (result.isValid()) {
                 validateData(reader, result);
             }
+        } catch (IOException e) {
+            throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
         }
     }
 
-    private void validateData(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateData(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         List<String> headers = getColumnHeaders(reader);
         Map<String, QuantitationTypeDescriptor> headerToDescriptorMap = getHeaderToDescriptorMap(headers);
         while (reader.hasNextLine()) {
@@ -539,7 +546,7 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void validateHeader(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateHeader(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         validateAtfLine(reader, result);
         readAndValidateCountLine(reader, result);
         if (getColumnHeaders(reader) == null) {
@@ -549,7 +556,7 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void readAndValidateCountLine(DelimitedFileReader reader, FileValidationResult result) {
+    private void readAndValidateCountLine(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         String errorMessage = "GPR file must contain two tab-separated integer values on the second line "
             + "corresponding to the number of optional header records and data field columns";
         List<String> values = reader.nextLine();
@@ -569,7 +576,7 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void validateAtfLine(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateAtfLine(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         List<String> values = reader.nextLine();
         if (values.size() != 2 || !"ATF".equalsIgnoreCase(values.get(0)) || !values.get(1).startsWith("1")) {
             result.addMessage(Type.ERROR, "GPR file didn't start with \"ATF 1.0\" as required by ATF format");
@@ -590,7 +597,7 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void validateHasGalFile(DelimitedFileReader reader, FileValidationResult result) {
+    private void validateHasGalFile(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         if (getGalFile(reader) == null) {
             result.addMessage(Type.ERROR, "This file doesn't contain the required header entry \"GalFile\"");
         }
@@ -601,18 +608,21 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         DelimitedFileReader reader = getReader(file);
         try {
             return getArrayDesign(arrayDesignService, reader);
+        } catch (IOException e) {
+            throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
         }
     }
 
-    private ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, DelimitedFileReader reader) {
+    private ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, DelimitedFileReader reader)
+    throws IOException {
         String galFile = getGalFile(reader);
         String galName = FilenameUtils.getBaseName(galFile);
         return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, galName);
     }
 
-    private String getGalFile(DelimitedFileReader reader) {
+    private String getGalFile(DelimitedFileReader reader) throws IOException {
         Map<String, String[]> headers = getHeaders(reader);
         String[] galFileHeader = headers.get(GAL_FILE_HEADER);
         if (galFileHeader == null || galFileHeader.length == 0 || StringUtils.isEmpty(galFileHeader[0])) {

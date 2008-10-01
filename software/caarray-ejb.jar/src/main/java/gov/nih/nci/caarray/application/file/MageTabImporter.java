@@ -97,7 +97,7 @@ import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab.MageTabInputFileSet;
+import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -126,7 +126,7 @@ class MageTabImporter {
     void validateFiles(CaArrayFileSet fileSet) {
         LOG.info("Validating MAGE-TAB document set");
         updateFileStatus(fileSet, FileStatus.VALIDATING);
-        MageTabInputFileSet inputSet = getInputFileSet(fileSet);
+        MageTabFileSet inputSet = getInputFileSet(fileSet);
         try {
             updateFileStatus(fileSet, FileStatus.VALIDATED);
             handleResult(fileSet, MageTabParser.INSTANCE.validate(inputSet));
@@ -158,7 +158,7 @@ class MageTabImporter {
     void importFiles(Project targetProject, CaArrayFileSet fileSet) throws MageTabParsingException {
         LOG.info("Importing MAGE-TAB document set");
         updateFileStatus(fileSet, FileStatus.IMPORTING);
-        MageTabInputFileSet inputSet = getInputFileSet(fileSet);
+        MageTabFileSet inputSet = getInputFileSet(fileSet);
         MageTabDocumentSet documentSet;
         try {
             documentSet = MageTabParser.INSTANCE.parse(inputSet);
@@ -209,15 +209,15 @@ class MageTabImporter {
         || FileType.MAGE_TAB_SDRF.equals(file.getFileType());
     }
 
-    private MageTabInputFileSet getInputFileSet(CaArrayFileSet fileSet) {
-        MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+    private MageTabFileSet getInputFileSet(CaArrayFileSet fileSet) {
+        MageTabFileSet inputFileSet = new MageTabFileSet();
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
             addInputFile(inputFileSet, caArrayFile);
         }
         return inputFileSet;
     }
 
-    private void addInputFile(MageTabInputFileSet inputFileSet, CaArrayFile caArrayFile) {
+    private void addInputFile(MageTabFileSet inputFileSet, CaArrayFile caArrayFile) {
         FileType type = caArrayFile.getFileType();
         if (FileType.MAGE_TAB_IDF.equals(type)) {
             inputFileSet.addIdf(getFile(caArrayFile));
