@@ -91,17 +91,20 @@ import gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOptio
 import gov.nih.nci.caarray.application.file.InvalidFileException;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 
 import java.io.File;
@@ -1478,5 +1481,69 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     public void setFileStatusCountMap(
             EnumMap<FileStatus, Integer> fileStatusCountMap) {
         this.fileStatusCountMap = fileStatusCountMap;
+    }
+
+    /**
+     * Exports the content of the Experiment, constructing a MAGE-TAB file set describing
+     * the sample-data relationships and annotations.
+     *
+     * @return the result of performing the action
+     * @throws IOException if there is an error writing to the stream
+     */
+    @SkipValidation
+    public String exportToMageTab() throws IOException {
+        Experiment experiment = getExperiment();
+        HttpServletResponse response = ServletActionContext.getResponse();
+        FileInputStream fis = null;
+        try {
+            // Create temporary files to store the resulting MAGE-TAB.
+            String baseFileName = experiment.getPublicIdentifier();
+            String idfFileName = baseFileName + ".idf";
+            String sdrfFileName = baseFileName + ".sdrf";
+            TemporaryFileCache tempCache = TemporaryFileCacheLocator.getTemporaryFileCache();
+            File idfFile = tempCache.createFile(idfFileName);
+            File sdrfFile = tempCache.createFile(sdrfFileName);
+
+            // Translate the experiment and export to the temporary files.
+            MageTabExporter exporter = CaArrayActionHelper.getMageTabExporter();
+            exporter.exportToMageTab(getExperiment(), idfFile, sdrfFile);
+
+            // Zip up the temporary files and send as response.
+            fis = zipAndSendResponse(response, baseFileName, idfFile, sdrfFile);
+
+            // Delete temporary files.
+            tempCache.delete(idfFile);
+            tempCache.delete(sdrfFile);
+        } catch (Exception e) {
+            LOG.error("Error exporting to MAGE-TAB", e);
+            IOUtils.closeQuietly(fis);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        return Action.SUCCESS;
+    }
+
+    private FileInputStream zipAndSendResponse(HttpServletResponse response, String baseFileName,
+            File idfFile, File sdrfFile) throws IOException {
+        FileInputStream fis;
+        response.setContentType("application/zip");
+        response.addHeader("Content-disposition", "filename=\"" + baseFileName + ".magetab.zip" + "\"");
+        OutputStream outStream = response.getOutputStream();
+        ZipOutputStream zipOutStream = new ZipOutputStream(outStream);
+        fis = new FileInputStream(idfFile);
+        ZipEntry ze = new ZipEntry(idfFile.getName());
+        zipOutStream.putNextEntry(ze);
+        IOUtils.copy(fis, zipOutStream);
+        zipOutStream.closeEntry();
+        fis.close();
+        zipOutStream.flush();
+        fis = new FileInputStream(sdrfFile);
+        ze = new ZipEntry(sdrfFile.getName());
+        zipOutStream.putNextEntry(ze);
+        IOUtils.copy(fis, zipOutStream);
+        zipOutStream.closeEntry();
+        fis.close();
+        zipOutStream.flush();
+        zipOutStream.finish();
+        return fis;
     }
 }

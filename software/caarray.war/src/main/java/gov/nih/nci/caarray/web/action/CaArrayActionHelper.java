@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.registration.RegistrationService;
 import gov.nih.nci.caarray.application.state.StateService;
+import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
@@ -224,6 +225,14 @@ public final class CaArrayActionHelper {
      */
     public static BrowseService getBrowseService() {
         return (BrowseService) ServiceLocatorFactory.getLocator().lookup(BrowseService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the MAGE-TAB Exporter singleton service.
+     * @return the MAGE-TAB Exporter service
+     */
+    public static MageTabExporter getMageTabExporter() {
+        return (MageTabExporter) ServiceLocatorFactory.getLocator().lookup(MageTabExporter.JNDI_NAME);
     }
 
     /**

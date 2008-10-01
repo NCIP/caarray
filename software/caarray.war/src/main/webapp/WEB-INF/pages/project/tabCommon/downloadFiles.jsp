@@ -30,6 +30,9 @@
 <caarray:actions divclass="actionsthin">
     <caarray:action onclick="downloadMgr.resetDownloadInfo();" actionClass="cancel" text="Clear Download Queue" />
     <caarray:action onclick="showDownloadInProgress(); downloadMgr.doDownloadFiles();" actionClass="launch_download" text="Launch Download Job" />
+    <c:if test="${!empty exportUrl}">
+        <caarray:action url="${exportUrl}" actionClass="launch_download" text="Export Consolidated MAGE-TAB" />
+    </c:if>
 </caarray:actions>
 </caarray:tabPane>
 <script type="text/javascript">

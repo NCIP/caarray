@@ -145,12 +145,14 @@ public final class IlluminaExpressionDesignFixer extends AbstractMigrator implem
             }
             arrayDao.flushSession();
             arrayDao.clearSession();
+        } catch (IOException e) {
+            throw new MigrationStepFailedException("Couldn't read Illumina CSV file.", e);
         } finally {
             close(reader);
         }
     }
 
-    private void positionAtAnnotation(DelimitedFileReader reader) {
+    private void positionAtAnnotation(DelimitedFileReader reader) throws IOException {
         boolean isHeader = false;
         while (!isHeader && reader.hasNextLine()) {
             isHeader = isHeaderLine(reader.nextLine());
