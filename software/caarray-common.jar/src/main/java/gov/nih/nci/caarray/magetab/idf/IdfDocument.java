@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.magetab.idf;
 
-import com.fiveamsolutions.nci.commons.util.NCICommonsUtils;
-
 import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab.EntryHeading;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -96,6 +94,7 @@ import gov.nih.nci.caarray.magetab.TermSource;
 import gov.nih.nci.caarray.magetab.TermSourceable;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
+import gov.nih.nci.caarray.util.io.DelimitedWriter;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,7 +104,8 @@ import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+
+import com.fiveamsolutions.nci.commons.util.NCICommonsUtils;
 
 /**
  * Represents an Investigation Description Format (IDF) file - a tab-delimited file providing general information about
@@ -117,7 +117,6 @@ import org.apache.log4j.Logger;
 public final class IdfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 149154919398572572L;
-    private static final Logger LOG = Logger.getLogger(IdfDocument.class);
 
     private final Investigation investigation = new Investigation();
     private final List<TermSource> docTermSources = new ArrayList<TermSource>();
@@ -152,8 +151,8 @@ public final class IdfDocument extends AbstractMageTabDocument {
         DelimitedFileReader tabDelimitedReader = createTabDelimitedReader();
         // do two passes. first, process the term sources only, then process the other lines.
         // this is so we can accurately detect invalid term source references
-        parse(tabDelimitedReader, true);
         try {
+            parse(tabDelimitedReader, true);
             tabDelimitedReader.reset();
             parse(tabDelimitedReader, false);
             validateMatchingColumns();
@@ -164,12 +163,81 @@ public final class IdfDocument extends AbstractMageTabDocument {
         }
     }
 
-    private void parse(DelimitedFileReader tabDelimitedReader, boolean processingTermSources) {
+    private void parse(DelimitedFileReader tabDelimitedReader, boolean processingTermSources) throws IOException {
         while (tabDelimitedReader.hasNextLine()) {
             List<String> lineValues = tabDelimitedReader.nextLine();
             currentLineNumber = tabDelimitedReader.getCurrentLineNumber();
             handleLine(lineValues, processingTermSources);
         }
+    }
+
+    /**
+     * Exports the IDF elements into the file corresponding to this document.
+     */
+    @Override
+    protected void export() {
+        DelimitedWriter writer = createTabDelimitedWriter();
+
+        // Write experiment overview.
+        writeElement(IdfRowType.INVESTIGATION_TITLE, writer);
+        writeElement(IdfRowType.EXPERIMENT_DESCRIPTION, writer);
+
+        // Write term sources.
+        writeElement(IdfRowType.TERM_SOURCE_NAME, writer);
+        writeElement(IdfRowType.TERM_SOURCE_FILE, writer);
+        writeElement(IdfRowType.TERM_SOURCE_VERSION, writer);
+
+        // Write associated SDRF file names.
+        writeElement(IdfRowType.SDRF_FILE, writer);
+
+        //TODO Write other IDF rows.
+
+        writer.close();
+    }
+
+    private void writeElement(IdfRowType rowType, DelimitedWriter writer) {
+        List<String> currentRow = new ArrayList<String>();
+        currentRow.add(rowType.toString());
+        switch (rowType) {
+          case INVESTIGATION_TITLE:
+            currentRow.add(investigation.getTitle());
+            break;
+          case EXPERIMENT_DESCRIPTION:
+            currentRow.add(investigation.getDescription());
+            break;
+          case SDRF_FILE:
+            for (SdrfDocument sdrfDoc : sdrfDocuments) {
+              currentRow.add(sdrfDoc.getFile().getName());
+            }
+            break;
+          case TERM_SOURCE_NAME:
+              for (TermSource termSource : getDocumentSet().getTermSources()) {
+                  currentRow.add(termSource.getName());
+              }
+              break;
+          case TERM_SOURCE_FILE:
+              for (TermSource termSource : getDocumentSet().getTermSources()) {
+                  if (termSource.getFile() != null) {
+                      currentRow.add(termSource.getFile());
+                  } else {
+                      currentRow.add("");
+                  }
+              }
+              break;
+          case TERM_SOURCE_VERSION:
+              for (TermSource termSource : getDocumentSet().getTermSources()) {
+                  if (termSource.getVersion() != null) {
+                      currentRow.add(termSource.getVersion());
+                  } else {
+                      currentRow.add("");
+                  }
+              }
+              break;
+          default:
+              // Not yet implemented
+              break;
+        }
+        writeRow(currentRow, writer);
     }
 
     private void validateMatchingColumns() {

@@ -92,7 +92,7 @@ import java.util.Set;
 /**
  * An set of potentially interrelated MAGE-TAB document files to be validated or parsed.
  */
-public final class MageTabInputFileSet implements Serializable {
+public final class MageTabFileSet implements Serializable {
 
     private static final long serialVersionUID = 7824150081647257549L;
 

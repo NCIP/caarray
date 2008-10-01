@@ -54,12 +54,15 @@ import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
+import gov.nih.nci.caarray.util.io.DelimitedWriter;
+import gov.nih.nci.caarray.util.io.DelimitedWriterFactory;
 import gov.nih.nci.caarray.util.io.FileUtility;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -67,6 +70,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * Base class for all MAGE-TAB documents.
@@ -122,6 +127,11 @@ public abstract class AbstractMageTabDocument implements Serializable {
     protected abstract void parse() throws MageTabParsingException;
 
     /**
+     * Exports the MAGE-TAB object graph into the file corresponding to this document.
+     */
+    protected abstract void export();
+
+    /**
      * Instantiates a tab-delimited file reader to use to parse the contents.
      *
      * @return the reader.
@@ -132,6 +142,34 @@ public abstract class AbstractMageTabDocument implements Serializable {
             return DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(getFile());
         } catch (IOException e) {
             throw new MageTabParsingException("Couldn't create the tab-delimited file reader", e);
+        }
+    }
+
+    /**
+     * Instantiates a tab-delimited file writer to use for export.
+     *
+     * @return the writer.
+     */
+    protected final DelimitedWriter createTabDelimitedWriter() {
+        try {
+            OutputStream outStream = FileUtils.openOutputStream(file);
+            return DelimitedWriterFactory.getTabDelimitedWriter(outStream);
+        } catch (IOException e) {
+            throw new MageTabExportException(e);
+        }
+    }
+
+    /**
+     * Writes a row to a file.
+     *
+     * @param row a list of Strings to write in a row
+     * @param writer the writer
+     */
+    protected void writeRow(List<String> row, DelimitedWriter writer) {
+        try {
+            writer.writeLine(row);
+        } catch (IOException e) {
+            throw new MageTabExportException(e);
         }
     }
 

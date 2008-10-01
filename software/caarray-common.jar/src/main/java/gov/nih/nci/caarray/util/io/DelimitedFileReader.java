@@ -101,8 +101,9 @@ public interface DelimitedFileReader {
      * Returns the contents of the next line.
      *
      * @return the contents.
+     * @throws IOException of there was a problem reading the next line.
      */
-    List<String> nextLine();
+    List<String> nextLine() throws IOException;
 
     /**
      * Returns the line number of the current line read, i.e. from the last call

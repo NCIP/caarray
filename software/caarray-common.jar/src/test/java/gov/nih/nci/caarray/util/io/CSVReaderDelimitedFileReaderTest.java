@@ -22,7 +22,7 @@ public class CSVReaderDelimitedFileReaderTest extends AbstractCaarrayTest {
     }
 
     @Test
-    public void testNextLine() {
+    public void testNextLine() throws IOException {
         assertTrue(reader.hasNextLine());
         assertEquals(0, reader.getCurrentLineNumber());
         for (int line = 1; line <= NUMBER_OF_LINES; line++) {
@@ -33,7 +33,7 @@ public class CSVReaderDelimitedFileReaderTest extends AbstractCaarrayTest {
             assertEquals(line, reader.getCurrentLineNumber());
         }
     }
-    
+
     @Test
     public void testReset() throws IOException {
         assertEquals(0, reader.getCurrentLineNumber());

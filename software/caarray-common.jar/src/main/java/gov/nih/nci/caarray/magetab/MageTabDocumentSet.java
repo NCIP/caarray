@@ -122,7 +122,12 @@ public final class MageTabDocumentSet implements Serializable {
     private final Map<String, Protocol> protocolCache = new HashMap<String, Protocol>();
     private final ValidationResult validationResult = new ValidationResult();
 
-    MageTabDocumentSet(MageTabInputFileSet inputFileSet) {
+    /**
+     * Initialize the MAGE-TAB document set with the given files which will hold the exported contents.
+     *
+     * @param inputFileSet the set of files to hold the exported contents of the documents.
+     */
+    public MageTabDocumentSet(MageTabFileSet inputFileSet) {
         initializeFromFileSet(inputFileSet);
     }
 
@@ -170,6 +175,14 @@ public final class MageTabDocumentSet implements Serializable {
         return termSourceCache.values();
     }
 
+    /**
+     * Returns all <code>TermSources</code> used in the document set mapped to their names.
+     *
+     * @return the <code>TermSources</code> map.
+     */
+    public Map<String, TermSource> getTermSourceMap() {
+        return termSourceCache;
+    }
 
     /**
      * Returns all <code>Protocols</code> defined in the document set.
@@ -189,7 +202,7 @@ public final class MageTabDocumentSet implements Serializable {
         return termCache;
     }
 
-    private void initializeFromFileSet(MageTabInputFileSet inputFileSet) {
+    private void initializeFromFileSet(MageTabFileSet inputFileSet) {
         initializeIdfs(inputFileSet);
         initializeAdfs(inputFileSet);
         initializeSdrfs(inputFileSet);
@@ -197,32 +210,32 @@ public final class MageTabDocumentSet implements Serializable {
         initializeNativeDataFiles(inputFileSet);
     }
 
-    private void initializeIdfs(MageTabInputFileSet inputFileSet) {
+    private void initializeIdfs(MageTabFileSet inputFileSet) {
         for (File file : inputFileSet.getIdfFiles()) {
             idfDocuments.add(new IdfDocument(this, file));
         }
     }
 
-    private void initializeAdfs(MageTabInputFileSet inputFileSet) {
+    private void initializeAdfs(MageTabFileSet inputFileSet) {
         for (File file : inputFileSet.getAdfFiles()) {
             // TODO Implement initializeAdfs and remove placeholder line below
             FileUtility.checkFileExists(file);
         }
     }
 
-    private void initializeSdrfs(MageTabInputFileSet inputFileSet) {
+    private void initializeSdrfs(MageTabFileSet inputFileSet) {
         for (File file : inputFileSet.getSdrfFiles()) {
             sdrfDocuments.add(new SdrfDocument(this, file));
         }
     }
 
-    private void initializeDataMatrixes(MageTabInputFileSet inputFileSet) {
+    private void initializeDataMatrixes(MageTabFileSet inputFileSet) {
         for (File file : inputFileSet.getDataMatrixFiles()) {
             dataMatrixes.add(new DataMatrix(this, file));
         }
     }
 
-    private void initializeNativeDataFiles(MageTabInputFileSet inputFileSet) {
+    private void initializeNativeDataFiles(MageTabFileSet inputFileSet) {
         for (File file : inputFileSet.getNativeDataFiles()) {
             nativeDataFiles.add(new NativeDataFile(this, file));
         }
@@ -424,6 +437,18 @@ public final class MageTabDocumentSet implements Serializable {
         return fileNames;
     }
 
+    /**
+     * Exports the contents of the MAGE-TAB documents into files.
+     */
+    public void export() {
+        export(idfDocuments);
+        export(sdrfDocuments);
+    }
 
+    private void export(Set<? extends AbstractMageTabDocument> documents) {
+        for (AbstractMageTabDocument document : documents) {
+            document.export();
+        }
+    }
 
 }

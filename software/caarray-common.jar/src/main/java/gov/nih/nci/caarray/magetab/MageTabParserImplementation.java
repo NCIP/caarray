@@ -98,7 +98,7 @@ class MageTabParserImplementation implements MageTabParser {
     /**
      * {@inheritDoc}
      */
-    public ValidationResult validate(MageTabInputFileSet fileSet) throws MageTabParsingException {
+    public ValidationResult validate(MageTabFileSet fileSet) throws MageTabParsingException {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         ValidationResult result = null;
         result = doParse(fileSet).getValidationResult();
@@ -109,7 +109,7 @@ class MageTabParserImplementation implements MageTabParser {
     /**
      * {@inheritDoc}
      */
-    public MageTabDocumentSet parse(MageTabInputFileSet inputFileSet) throws MageTabParsingException,
+    public MageTabDocumentSet parse(MageTabFileSet inputFileSet) throws MageTabParsingException,
             InvalidDataException {
         LogUtil.logSubsystemEntry(LOG, inputFileSet);
         MageTabDocumentSet documentSet =  doParse(inputFileSet);
@@ -120,7 +120,7 @@ class MageTabParserImplementation implements MageTabParser {
         return documentSet;
     }
 
-    private MageTabDocumentSet doParse(MageTabInputFileSet inputFileSet) throws MageTabParsingException {
+    private MageTabDocumentSet doParse(MageTabFileSet inputFileSet) throws MageTabParsingException {
         MageTabDocumentSet documentSet = new MageTabDocumentSet(inputFileSet);
         documentSet.parse();
         return documentSet;

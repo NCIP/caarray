@@ -302,7 +302,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testValidate() throws MageTabParsingException {
-        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_ERROR_SPECIFICATION_INPUT_SET;
+        MageTabFileSet fileSet = TestMageTabSets.MAGE_TAB_ERROR_SPECIFICATION_INPUT_SET;
         ValidationResult result;
         result = parser.validate(fileSet);
         System.out.println("testValidate result: " + result);
@@ -316,7 +316,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testValidateIllegalUnitPlacement() throws MageTabParsingException {
-        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_GEDP_INPUT_SET;
+        MageTabFileSet fileSet = TestMageTabSets.MAGE_TAB_GEDP_INPUT_SET;
         ValidationResult result;
         result = parser.validate(fileSet);
         assertFalse(result.isValid());
@@ -325,14 +325,14 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testParseEmptySet() throws InvalidDataException, MageTabParsingException {
-        MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+        MageTabFileSet inputFileSet = new MageTabFileSet();
         MageTabDocumentSet documentSet = parser.parse(inputFileSet);
         assertNotNull(documentSet);
     }
 
     @Test
     public void testValidateMissingSdrf() throws MageTabParsingException {
-        MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+        MageTabFileSet inputFileSet = new MageTabFileSet();
         inputFileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         ValidationResult result = parser.validate(inputFileSet);
         assertNotNull(result);
@@ -350,7 +350,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testValidateProtocolWithoutType() throws MageTabParsingException {
-        MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+        MageTabFileSet inputFileSet = new MageTabFileSet();
         inputFileSet.addIdf(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
         inputFileSet.addSdrf(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
         ValidationResult result = parser.validate(inputFileSet);
@@ -359,7 +359,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testValidateMissingTermSources() throws MageTabParsingException {
-        MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+        MageTabFileSet inputFileSet = new MageTabFileSet();
         inputFileSet.addIdf(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
         inputFileSet.addSdrf(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
         ValidationResult result = parser.validate(inputFileSet);
@@ -369,7 +369,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testValidateMultipleIdfs() throws MageTabParsingException {
-        MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+        MageTabFileSet inputFileSet = new MageTabFileSet();
         inputFileSet.addIdf(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
         inputFileSet.addSdrf(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
         inputFileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
@@ -380,7 +380,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testValidateMissingDataFiles() throws MageTabParsingException {
-        MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+        MageTabFileSet inputFileSet = new MageTabFileSet();
         inputFileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         inputFileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
         ValidationResult result = parser.validate(inputFileSet);
@@ -398,7 +398,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testValidateMisplacedFactorValues() throws MageTabParsingException {
-        MageTabInputFileSet inputFileSet = TestMageTabSets.MAGE_TAB_MISPLACED_FACTOR_VALUES_INPUT_SET;
+        MageTabFileSet inputFileSet = TestMageTabSets.MAGE_TAB_MISPLACED_FACTOR_VALUES_INPUT_SET;
         ValidationResult result = parser.validate(inputFileSet);
         assertNotNull(result);
         assertFalse(result.isValid());
@@ -408,7 +408,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testParseTcgaBroadDocuments() throws MageTabParsingException, InvalidDataException {
-        MageTabInputFileSet fileSet = TestMageTabSets.TCGA_BROAD_INPUT_SET;
+        MageTabFileSet fileSet = TestMageTabSets.TCGA_BROAD_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
         assertEquals(1, documentSet.getIdfDocuments().size());
@@ -424,7 +424,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testDefect12537() throws MageTabParsingException, InvalidDataException {
-        MageTabInputFileSet fileSet = TestMageTabSets.DEFECT_12537_ERROR_INPUT_SET;
+        MageTabFileSet fileSet = TestMageTabSets.DEFECT_12537_ERROR_INPUT_SET;
         ValidationResult validationResult = parser.validate(fileSet);
         assertFalse(validationResult.isValid());
         List<ValidationMessage> errors = validationResult.getMessages(ValidationMessage.Type.ERROR);
@@ -455,7 +455,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testParseCarray1xDocuments() throws MageTabParsingException, InvalidDataException {
-        MageTabInputFileSet fileSet = TestMageTabSets.CAARRAY1X_INPUT_SET;
+        MageTabFileSet fileSet = TestMageTabSets.CAARRAY1X_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
         assertTrue(documentSet.getValidationResult().isValid());
@@ -652,7 +652,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testSourceDescriptionTranslation() throws InvalidDataException, MageTabParsingException {
-        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_UNSUPPORTED_DATA_INPUT_SET;
+        MageTabFileSet fileSet = TestMageTabSets.MAGE_TAB_UNSUPPORTED_DATA_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
         checkBioMaterialDescriptions(sdrfDocument.getAllSources(), "Source description ");
@@ -669,7 +669,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testParseSpecificationDocuments() throws MageTabParsingException, InvalidDataException {
-        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
+        MageTabFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
         checkTermSources(SPEC_EXPECTED_TERM_SOURCES, documentSet.getTermSources());
@@ -720,7 +720,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
      */
     @Test
     public void testParseDerivedData() throws Exception {
-        MageTabInputFileSet fileSet = TestMageTabSets.DERIVED_DATA_INPUT_SET;
+        MageTabFileSet fileSet = TestMageTabSets.DERIVED_DATA_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
         SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
@@ -754,7 +754,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testFeature13141() throws Exception {
-        MageTabInputFileSet fileSet = TestMageTabSets.VALID_FEATURE_13141_INPUT_SET;
+        MageTabFileSet fileSet = TestMageTabSets.VALID_FEATURE_13141_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
         assertEquals(2, documentSet.getSdrfDocuments().size());
@@ -779,7 +779,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testFeature13141VerifyCanParsesInvalidSdrf() throws Exception {
-        MageTabInputFileSet fileSet = TestMageTabSets.INVALID_FEATURE_13141_INPUT_SET;
+        MageTabFileSet fileSet = TestMageTabSets.INVALID_FEATURE_13141_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
         assertEquals(2, documentSet.getSdrfDocuments().size());

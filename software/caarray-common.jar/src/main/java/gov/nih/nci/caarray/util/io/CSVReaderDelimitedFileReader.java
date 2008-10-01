@@ -136,7 +136,7 @@ final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
     /**
      * {@inheritDoc}
      */
-    public List<String> nextLine() {
+    public List<String> nextLine() throws IOException {
         List<String> result = nextValues;
 
         try {
@@ -152,6 +152,7 @@ final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
             LOG.error("Error during nextLine: " + ioe.getMessage(), ioe);
             nextValues = null;
             reader.close();
+            throw ioe;
         }
         currentLineNumber++;
         return result;

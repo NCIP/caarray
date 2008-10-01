@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.magetab.sdrf;
 
 import gov.nih.nci.caarray.magetab.OntologyTerm;
+import gov.nih.nci.caarray.magetab.TermSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +104,50 @@ public abstract class AbstractBioMaterial extends AbstractSampleDataRelationship
      */
     public List<Characteristic> getCharacteristics() {
         return characteristics;
+    }
+
+    /**
+     * @return the characteristic value for a specific category
+     *
+     * @param category the category of the characteristic of interest.
+     */
+    public String getCharacteristicValue(String category) {
+        if (category == null) {
+            return null;
+        }
+        for (Characteristic characteristic : characteristics) {
+            OntologyTerm term = characteristic.getTerm();
+            if (term != null && category.equals(term.getCategory())) {
+                // Term-based characteristic
+                return term.getValue();
+            } else if (category.equals(characteristic.getCategory())) {
+                // Measurement-based characteristic
+                return characteristic.getValue();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return the characteristic's term source for a specific category
+     *
+     * @param category the category of the characteristic of interest.
+     */
+    public TermSource getCharacteristicTermSource(String category) {
+        if (category == null) {
+            return null;
+        }
+        for (Characteristic characteristic : characteristics) {
+            OntologyTerm term = characteristic.getTerm();
+            if (term != null && category.equals(term.getCategory())) {
+                // Term-based characteristic
+                return term.getTermSource();
+            } else if (category.equals(characteristic.getCategory())) {
+                // Measurement characteristic
+                return null;
+            }
+        }
+        return null;
     }
 
     /**

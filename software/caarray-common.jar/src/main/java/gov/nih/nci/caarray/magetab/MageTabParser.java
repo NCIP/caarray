@@ -104,7 +104,7 @@ public interface MageTabParser {
      * @return the validation result
      * @throws MageTabParsingException if I/O failed reading the MAGE-TAB file.
      */
-    ValidationResult validate(MageTabInputFileSet fileSet) throws MageTabParsingException;
+    ValidationResult validate(MageTabFileSet fileSet) throws MageTabParsingException;
 
     /**
      * Parses the content of the documents contained in the MAGE-TAB file set to produce
@@ -116,6 +116,6 @@ public interface MageTabParser {
      * @throws InvalidDataException if one or more of the MAGE-TAB documents are invalid.
      * @throws MageTabParsingException if I/O failed reading the MAGE-TAB file.
      */
-    MageTabDocumentSet parse(MageTabInputFileSet fileSet) throws InvalidDataException, MageTabParsingException;
+    MageTabDocumentSet parse(MageTabFileSet fileSet) throws InvalidDataException, MageTabParsingException;
 
 }
