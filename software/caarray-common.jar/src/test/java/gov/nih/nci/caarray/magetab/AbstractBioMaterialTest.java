@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.magetab;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial;
 import gov.nih.nci.caarray.magetab.sdrf.Characteristic;
@@ -100,6 +100,11 @@ import org.junit.Test;
  * @author Rashmi Srinivasa
  */
 public class AbstractBioMaterialTest extends AbstractCaarrayTest {
+    private static final String TERM_CHARACTERISTIC_CATEGORY = "ClinicalDiagnosis";
+    private static final String MEASUREMENT_CHARACTERISTIC_CATEGORY = "SurvivalTime";
+    private static final String TERM_CHARACTERISTIC_VALUE = "Glioblastoma";
+    private static final String MEASUREMENT_CHARACTERISTIC_VALUE = "14";
+
     private AbstractBioMaterial biomaterial;
 
     /**
@@ -111,18 +116,18 @@ public class AbstractBioMaterialTest extends AbstractCaarrayTest {
 
         // Term-based characteristic
         Characteristic termBasedCharacteristic = new Characteristic();
-        termBasedCharacteristic.setCategory("ClinicalDiagnosis");
+        termBasedCharacteristic.setCategory(TERM_CHARACTERISTIC_CATEGORY);
         OntologyTerm term = new OntologyTerm();
         TermSource mo = new TermSource("MGED Ontology");
-        term.setCategory("ClinicalDiagnosis");
-        term.setValue("Glioblastoma");
+        term.setCategory(TERM_CHARACTERISTIC_CATEGORY);
+        term.setValue(TERM_CHARACTERISTIC_VALUE);
         term.setTermSource(mo);
         termBasedCharacteristic.setTerm(term);
 
         // Measurement characteristic
         Characteristic measurementCharacteristic = new Characteristic();
-        measurementCharacteristic.setCategory("SurvivalTime");
-        measurementCharacteristic.setValue("14");
+        measurementCharacteristic.setCategory(MEASUREMENT_CHARACTERISTIC_CATEGORY);
+        measurementCharacteristic.setValue(MEASUREMENT_CHARACTERISTIC_VALUE);
         OntologyTerm unit = new OntologyTerm();
         unit.setCategory("TermUnit");
         unit.setValue("weeks");
@@ -147,17 +152,19 @@ public class AbstractBioMaterialTest extends AbstractCaarrayTest {
      */
     @Test
     public void testGetCharacteristicValue() {
-        assertEquals("Glioblastoma", biomaterial.getCharacteristicValue("ClinicalDiagnosis"));
-        assertEquals("14", biomaterial.getCharacteristicValue("SurvivalTime"));
+        assertEquals(TERM_CHARACTERISTIC_VALUE, biomaterial.getCharacteristicValue(TERM_CHARACTERISTIC_CATEGORY));
+        assertEquals(MEASUREMENT_CHARACTERISTIC_VALUE, biomaterial.getCharacteristicValue(MEASUREMENT_CHARACTERISTIC_CATEGORY));
     }
 
     /**
-     * Tests getting the term sources of term-based and measurement characteristics.
+     * Tests getting a term-based and a measurement characteristic.
      */
     @Test
-    public void testGetCharacteristicTermSource() {
-        TermSource termSource = biomaterial.getCharacteristicTermSource("ClinicalDiagnosis");
-        assertEquals("MGED Ontology", termSource.getName());
-        assertNull(biomaterial.getCharacteristicTermSource("SurvivalTime"));
+    public void testGetCharacteristic() {
+        Characteristic termBasedCharacteristic = biomaterial.getCharacteristic(TERM_CHARACTERISTIC_CATEGORY);
+        assertEquals(TERM_CHARACTERISTIC_VALUE, termBasedCharacteristic.getValue());
+        Characteristic measurementCharacteristic = biomaterial.getCharacteristic(MEASUREMENT_CHARACTERISTIC_CATEGORY);
+        assertEquals(MEASUREMENT_CHARACTERISTIC_VALUE, measurementCharacteristic.getValue());
+        assertNotNull(measurementCharacteristic.getUnit());
     }
 }

@@ -175,10 +175,10 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final Set<SdrfColumnType> allExtractColumns = new HashSet<SdrfColumnType>();
     private final Set<SdrfColumnType> allLabeledExtractColumns = new HashSet<SdrfColumnType>();
     // The ordering of the charcateristics in the SDRF. (Note: ListOrderedSet does not have a generic version.)
-    private final Set<String> allSourceCharacteristics = new ListOrderedSet();
-    private final Set<String> allSampleCharacteristics = new ListOrderedSet();
-    private final Set<String> allExtractCharacteristics = new ListOrderedSet();
-    private final Set<String> allLabeledExtractCharacteristics = new ListOrderedSet();
+    private final Set<SdrfCharacteristic> allSourceCharacteristics = new ListOrderedSet();
+    private final Set<SdrfCharacteristic> allSampleCharacteristics = new ListOrderedSet();
+    private final Set<SdrfCharacteristic> allExtractCharacteristics = new ListOrderedSet();
+    private final Set<SdrfCharacteristic> allLabeledExtractCharacteristics = new ListOrderedSet();
 
     /**
      * Creates a new SDRF from an existing file.
@@ -415,31 +415,39 @@ public final class SdrfDocument extends AbstractMageTabDocument {
                 addMaterialTypeColumn = true;
             }
             for (Characteristic characteristic : biomaterial.getCharacteristics()) {
-                if (characteristic.getTerm() != null) {
-                    String category = characteristic.getTerm().getCategory();
-                    boolean isNewCharacteristic = false;
-                    switch (nodeType) {
-                    case SOURCE:
-                        isNewCharacteristic = allSourceCharacteristics.add(category);
-                        break;
-                    case SAMPLE:
-                        isNewCharacteristic = allSampleCharacteristics.add(category);
-                        break;
-                    case EXTRACT:
-                        isNewCharacteristic = allExtractCharacteristics.add(category);
-                        break;
-                    case LABELED_EXTRACT:
-                        isNewCharacteristic = allLabeledExtractCharacteristics.add(category);
-                        break;
-                    default:
-                        // Should never get here.
-                        break;
-                    }
-                    // If it's a new category, add it to the headers.
-                    if (isNewCharacteristic) {
-                        String columnHeader = SdrfColumnType.CHARACTERISTICS.toString() + "[" + category + "]";
-                        headerRow.add(columnHeader);
+                String category = characteristic.getCategory();
+                SdrfCharacteristic sdrfCharacteristic = new SdrfCharacteristic(category);
+                boolean isNewCharacteristic = false;
+                switch (nodeType) {
+                case SOURCE:
+                    isNewCharacteristic = allSourceCharacteristics.add(sdrfCharacteristic);
+                    break;
+                case SAMPLE:
+                    isNewCharacteristic = allSampleCharacteristics.add(sdrfCharacteristic);
+                    break;
+                case EXTRACT:
+                    isNewCharacteristic = allExtractCharacteristics.add(sdrfCharacteristic);
+                    break;
+                case LABELED_EXTRACT:
+                    isNewCharacteristic = allLabeledExtractCharacteristics.add(sdrfCharacteristic);
+                    break;
+                default:
+                    // Should never get here.
+                    break;
+                }
+                // If it's a new category, add it to the headers.
+                if (isNewCharacteristic) {
+                    String columnHeader = SdrfColumnType.CHARACTERISTICS.toString() + "[" + category + "]";
+                    headerRow.add(columnHeader);
+                    if (characteristic.getTerm() != null) {
+                        // Term-based characteristic
                         headerRow.add(SdrfColumnType.TERM_SOURCE_REF.toString());
+                        sdrfCharacteristic.setType(false);
+                    } else {
+                        // Measurement characteristic
+                        headerRow.add(SdrfColumnType.UNIT.toString());
+                        headerRow.add(SdrfColumnType.TERM_SOURCE_REF.toString());
+                        sdrfCharacteristic.setType(true);
                     }
                 }
             }
@@ -502,7 +510,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private void addBiomaterialValues(List<String> row, AbstractBioMaterial biomaterial, SdrfNodeType nodeType) {
-        Set<String> allCharacteristics = null;
+        Set<SdrfCharacteristic> allCharacteristics = null;
         Set<SdrfColumnType> allColumns = null;
         switch (nodeType) {
         case SOURCE:
@@ -524,20 +532,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         default: // Should never get here.
             return;
         }
-        for (String category : allCharacteristics) {
-            String value = biomaterial.getCharacteristicValue(category);
-            if (value != null) {
-                row.add(value);
-            } else {
-                row.add("");
-            }
-            TermSource termSource = biomaterial.getCharacteristicTermSource(category);
-            if ((termSource == null) || StringUtils.isBlank(termSource.getName())) {
-                row.add("");
-            } else {
-                row.add(termSource.getName());
-            }
-        }
+        addCharacteristics(row, biomaterial, allCharacteristics);
         if (allColumns.contains(SdrfColumnType.MATERIAL_TYPE)) {
             OntologyTerm materialType = biomaterial.getMaterialType();
             if (materialType != null) {
@@ -552,6 +547,52 @@ public final class SdrfDocument extends AbstractMageTabDocument {
                 // Add empty material type and Term Source REF.
                 row.add("");
                 row.add("");
+            }
+        }
+    }
+
+    private void addCharacteristics(List<String> row, AbstractBioMaterial biomaterial,
+            Set<SdrfCharacteristic> allCharacteristics) {
+        for (SdrfCharacteristic sdrfCharacteristic : allCharacteristics) {
+            String category = sdrfCharacteristic.getCategory();
+            Characteristic characteristic = biomaterial.getCharacteristic(category);
+            if (sdrfCharacteristic.isMeasurementCharacteristic()) {
+                // Measurement characteristic: Add value, unit and the unit's term source.
+                if ((characteristic == null) || (characteristic.getValue() == null)) {
+                    row.add("");
+                    row.add("");
+                    row.add("");
+                } else {
+                    row.add(characteristic.getValue());
+                    OntologyTerm unit = characteristic.getUnit();
+                    if (unit == null) {
+                        row.add("");
+                        row.add("");
+                    } else {
+                        row.add(unit.getValue());
+                        TermSource termSource = unit.getTermSource();
+                        if ((termSource == null) || StringUtils.isBlank(termSource.getName())) {
+                            row.add("");
+                        } else {
+                            row.add(termSource.getName());
+                        }
+                    }
+                }
+            } else {
+                // Term-based characteristic: Add value and its term source.
+                if ((characteristic == null) || (characteristic.getTerm().getValue() == null)) {
+                    row.add("");
+                    row.add("");
+                } else {
+                    OntologyTerm term = characteristic.getTerm();
+                    row.add(term.getValue());
+                    TermSource termSource = term.getTermSource();
+                    if ((termSource == null) || StringUtils.isBlank(termSource.getName())) {
+                        row.add("");
+                    } else {
+                        row.add(termSource.getName());
+                    }
+                }
             }
         }
     }
@@ -1207,4 +1248,59 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         return fileNames;
     }
 
+    /**
+     * Encapsulates the defining attributes of a characteristic.
+     */
+    private class SdrfCharacteristic {
+        private String category;
+        private boolean isMeasurement = false;
+
+        SdrfCharacteristic(String categoryName) {
+            if (StringUtils.isBlank(categoryName)) {
+                throw new IllegalArgumentException("Characteristic should not have an empty category.");
+            }
+            category = categoryName;
+        }
+
+        String getCategory() {
+            return category;
+        }
+
+        void setType(boolean isMeasurementCharacteristic) {
+            this.isMeasurement = isMeasurementCharacteristic;
+        }
+
+        boolean isMeasurementCharacteristic() {
+            return isMeasurement;
+        }
+
+        /**
+         * Tests if the given object is equal to this object.
+         *
+         * @param otherObject the object to compare to this object.
+         * @return true if the 2 objects are equal, false otherwise.
+         */
+        @Override
+        public boolean equals(Object otherObject) {
+            if (!(otherObject instanceof SdrfCharacteristic)) {
+                return false;
+            }
+            SdrfCharacteristic otherCharacteristic = (SdrfCharacteristic) otherObject;
+            return (category.equals(otherCharacteristic.category));
+        }
+
+        /**
+         * Default hashCode works on category.
+         *
+         * @return the hashCode of this object
+         */
+        @Override
+        public int hashCode() {
+            if (StringUtils.isBlank(category)) {
+                return System.identityHashCode(this);
+            }
+
+            return category.hashCode();
+        }
+    }
 }

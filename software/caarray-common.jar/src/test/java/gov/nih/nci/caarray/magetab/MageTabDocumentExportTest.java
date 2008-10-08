@@ -146,6 +146,10 @@ public class MageTabDocumentExportTest extends AbstractCaarrayTest {
     private static final String LABEL_VALUE = "biotin";
     private static final String SPECIAL_CHARACTERISTIC_CATEGORY = "TestCharacteristicCategory";
     private static final String SPECIAL_CHARACTERISTIC_VALUE = "TestCharacteristicValue";
+    private static final String MEASUREMENT_CHARACTERISTIC_CATEGORY = "SurvivalTime";
+    private static final String MEASUREMENT_CHARACTERISTIC_VALUE = "14";
+    private static final String UNIT_CATEGORY = "TermUnit";
+    private static final String UNIT_VALUE = "weeks";
 
     /**
      * Temporary variables used while verifying correctness of generated MAGE-TAB.
@@ -159,6 +163,8 @@ public class MageTabDocumentExportTest extends AbstractCaarrayTest {
     private int currProviderIndex = -1;
     private int currSourceMaterialTypeIndex = -1;
     private int currSampleSpecialCharacteristicIndex = -1;
+    private int currMeasurementCharacteristicIndex = -1;
+    private int currCharacteristicUnitIndex = -1;
     private int currLabelIndex = -1;
 
     /**
@@ -281,7 +287,8 @@ public class MageTabDocumentExportTest extends AbstractCaarrayTest {
             materialType.setCategory(MageTabOntologyCategory.MATERIAL_TYPE.getCategoryName());
             source.setMaterialType(materialType);
 
-            // Set sample characteristic.
+            // Set sample characteristics.
+            // Term-based characteristic:
             OntologyTerm term = new OntologyTerm();
             term.setValue(SPECIAL_CHARACTERISTIC_VALUE);
             term.setCategory(SPECIAL_CHARACTERISTIC_CATEGORY);
@@ -290,6 +297,16 @@ public class MageTabDocumentExportTest extends AbstractCaarrayTest {
             characteristic.setTerm(term);
             characteristic.setCategory(SPECIAL_CHARACTERISTIC_CATEGORY);
             sample.getCharacteristics().add(characteristic);
+            // Measurement characteristic:
+            Characteristic measurementCharacteristic = new Characteristic();
+            measurementCharacteristic.setCategory(MEASUREMENT_CHARACTERISTIC_CATEGORY);
+            measurementCharacteristic.setValue(MEASUREMENT_CHARACTERISTIC_VALUE);
+            OntologyTerm unit = new OntologyTerm();
+            unit.setCategory(UNIT_CATEGORY);
+            unit.setValue(UNIT_VALUE);
+            unit.setTermSource(mo);
+            measurementCharacteristic.setUnit(unit);
+            sample.getCharacteristics().add(measurementCharacteristic);
 
             // Set labeled extract label.
             OntologyTerm label = new OntologyTerm();
@@ -353,20 +370,15 @@ public class MageTabDocumentExportTest extends AbstractCaarrayTest {
 
     private void getColumnNamesFromHeader(List<String> header) {
         currColumnNum = 0;
-        SdrfColumnType currNode = SdrfColumnType.SOURCE_NAME;
         for (String columnName : header) {
             if (SdrfColumnType.SOURCE_NAME.toString().equals(columnName)) {
                 currSourceIndex = currColumnNum;
-                currNode = SdrfColumnType.SOURCE_NAME;
             } else if (SdrfColumnType.SAMPLE_NAME.toString().equals(columnName)) {
                 currSampleIndex = currColumnNum;
-                currNode = SdrfColumnType.SAMPLE_NAME;
             } else if (SdrfColumnType.EXTRACT_NAME.toString().equals(columnName)) {
                 currExtractIndex = currColumnNum;
-                currNode = SdrfColumnType.EXTRACT_NAME;
             } else if (SdrfColumnType.LABELED_EXTRACT_NAME.toString().equals(columnName)) {
                 currLabeledExtractIndex = currColumnNum;
-                currNode = SdrfColumnType.LABELED_EXTRACT_NAME;
             } else if (SdrfColumnType.HYBRIDIZATION_NAME.toString().equals(columnName)) {
                 currHybridizationIndex = currColumnNum;
             } else if (SdrfColumnType.PROVIDER.toString().equals(columnName)) {
@@ -376,25 +388,13 @@ public class MageTabDocumentExportTest extends AbstractCaarrayTest {
                 currSourceMaterialTypeIndex = currColumnNum;
             } else if (columnName.startsWith(SdrfColumnType.CHARACTERISTICS.toString())) {
                 String categoryName = columnName.substring(columnName.indexOf('[')+1, columnName.length()-1);
-                    switch (currNode) {
-                    case SOURCE_NAME:
-                        // No characteristics expected here.
-                        break;
-                    case SAMPLE_NAME:
-                        if (SPECIAL_CHARACTERISTIC_CATEGORY.equals(categoryName)) {
-                            currSampleSpecialCharacteristicIndex = currColumnNum;
-                        }
-                        break;
-                    case EXTRACT_NAME:
-                        // No characteristics expected here.
-                        break;
-                    case LABELED_EXTRACT_NAME:
-                        // No characteristics expected here.
-                        break;
-                    default:
-                        // Do nothing
-                        break;
-                    }
+                if (SPECIAL_CHARACTERISTIC_CATEGORY.equals(categoryName)) {
+                    currSampleSpecialCharacteristicIndex = currColumnNum;
+                } else if (MEASUREMENT_CHARACTERISTIC_CATEGORY.equals(categoryName)) {
+                    currMeasurementCharacteristicIndex = currColumnNum;
+                }
+            } else if (SdrfColumnType.UNIT.toString().equals(columnName)) {
+                currCharacteristicUnitIndex = currColumnNum;
             } else if (SdrfColumnType.LABEL.toString().equals(columnName)) {
                 currLabelIndex = currColumnNum;
             }
@@ -414,8 +414,10 @@ public class MageTabDocumentExportTest extends AbstractCaarrayTest {
         assertEquals(PROVIDER_ORGANIZATION, line.get(currProviderIndex));
         assertEquals(MATERIAL_TYPE_VALUE, line.get(currSourceMaterialTypeIndex));
 
-        // Sample should have a special characteristic.
+        // Sample should have a special term-based characteristic and a measurement characteristic.
         assertEquals(SPECIAL_CHARACTERISTIC_VALUE, line.get(currSampleSpecialCharacteristicIndex));
+        assertEquals(MEASUREMENT_CHARACTERISTIC_VALUE, line.get(currMeasurementCharacteristicIndex));
+        assertEquals(UNIT_VALUE, line.get(currCharacteristicUnitIndex));
 
         // Extract should have no characteristics.
         // LabeledExtract should have label.
