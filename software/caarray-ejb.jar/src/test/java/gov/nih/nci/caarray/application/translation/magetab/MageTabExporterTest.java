@@ -12,6 +12,7 @@ import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
@@ -35,8 +36,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests the MAGE-TAB exporter by creating different experiment structures,
- * exporting to MAGE-TAB and verifying resulting IDF and/or SDRF.
+ * Tests the MAGE-TAB exporter by creating different experiment structures, exporting to MAGE-TAB and verifying
+ * resulting IDF and/or SDRF.
  *
  * @author Rashmi Srinivasa
  */
@@ -67,6 +68,10 @@ public class MageTabExporterTest extends AbstractCaarrayTest {
     private static final String LABEL_VALUE = "biotin";
     private static final String SPECIAL_CHARACTERISTIC_CATEGORY = "TestCharacteristicCategory";
     private static final String SPECIAL_CHARACTERISTIC_VALUE = "TestCharacteristicValue";
+    private static final String MEASUREMENT_CHARACTERISTIC_CATEGORY = "SurvivalTime";
+    private static final String MEASUREMENT_CHARACTERISTIC_VALUE = "14";
+    private static final String UNIT_CATEGORY = "TermUnit";
+    private static final String UNIT_VALUE = "weeks";
     private static final String MAGETAB_FILE_BASENAME = "MageTabExporterTest";
     private static final String IDF_FILE_SUFFIX = ".idf";
     private static final String SDRF_FILE_SUFFIX = ".sdrf";
@@ -88,6 +93,7 @@ public class MageTabExporterTest extends AbstractCaarrayTest {
     private int currSampleDiseaseStateIndex = -1;
     private int currSampleSpecialCharacteristicIndex = -1;
     private int currLabeledExtractSpecialCharacteristicIndex = -1;
+    private int currCharacteristicUnitIndex = -1;
     private int currLabelIndex = -1;
 
     /**
@@ -253,6 +259,7 @@ public class MageTabExporterTest extends AbstractCaarrayTest {
         for (Sample sample : experiment.getSamples()) {
             addPredefinedCharacteristics(sample, oneOntologyCategory);
             addSpecialCharacteristics(sample, true);
+            addMeasurementCharacteristic(sample);
         }
 
         // Leave Extracts with no characteristics.
@@ -477,7 +484,7 @@ public class MageTabExporterTest extends AbstractCaarrayTest {
         return term;
     }
 
-    // Create a special characteristic with our without a term source.
+    // Create a special characteristic with or without a term source.
     private void addSpecialCharacteristics(AbstractBioMaterial biomaterial, boolean useTermSource) {
         Term term = new Term();
         Category category = new Category();
@@ -492,6 +499,26 @@ public class MageTabExporterTest extends AbstractCaarrayTest {
             term.setSource(termSource);
         }
         AbstractCharacteristic characteristic = new TermBasedCharacteristic(category, term);
+        characteristic.setBioMaterial(biomaterial);
+        biomaterial.getCharacteristics().add(characteristic);
+    }
+
+    // Create a measurement characteristic.
+    private void addMeasurementCharacteristic(AbstractBioMaterial biomaterial) {
+        Term unit = new Term();
+        Category category = new Category();
+        category.setName(UNIT_CATEGORY);
+        unit.setValue(UNIT_VALUE);
+        unit.setCategory(category);
+        TermSource termSource = new TermSource();
+        termSource.setName(ExperimentOntology.MGED_ONTOLOGY.getOntologyName());
+        termSource.setVersion(ExperimentOntology.MGED_ONTOLOGY.getVersion());
+        category.setSource(termSource);
+        unit.setSource(termSource);
+        Category characteristicCategory = new Category();
+        characteristicCategory.setName(MEASUREMENT_CHARACTERISTIC_CATEGORY);
+        AbstractCharacteristic characteristic = new MeasurementCharacteristic(characteristicCategory,
+                Float.parseFloat(MEASUREMENT_CHARACTERISTIC_VALUE), unit);
         characteristic.setBioMaterial(biomaterial);
         biomaterial.getCharacteristics().add(characteristic);
     }
@@ -612,42 +639,44 @@ public class MageTabExporterTest extends AbstractCaarrayTest {
                 // Only Source's material type expected.
                 currSourceMaterialTypeIndex = currColumnNum;
             } else if (columnName.startsWith(SdrfColumnType.CHARACTERISTICS.toString())) {
-                String categoryName = columnName.substring(columnName.indexOf('[')+1, columnName.length()-1);
-                    switch (currNode) {
-                    case SOURCE_NAME:
-                        if (ExperimentOntologyCategory.MATERIAL_TYPE.getCategoryName().equals(categoryName)) {
-                            currSourceMaterialTypeIndex = currColumnNum;
-                        } else if (ExperimentOntologyCategory.CELL_TYPE.getCategoryName().equals(categoryName)) {
-                            currSourceCellTypeIndex = currColumnNum;
-                        } else if (ExperimentOntologyCategory.DISEASE_STATE.getCategoryName().equals(categoryName)) {
-                            currSourceDiseaseStateIndex = currColumnNum;
-                        } else if (ExperimentOntologyCategory.ORGANISM_PART.getCategoryName().equals(categoryName)) {
-                            currSourceTissueSiteIndex = currColumnNum;
-                        }
-                        break;
-                    case SAMPLE_NAME:
-                        if (ExperimentOntologyCategory.DISEASE_STATE.getCategoryName().equals(categoryName)) {
-                            currSampleDiseaseStateIndex = currColumnNum;
-                        } else if (SPECIAL_CHARACTERISTIC_CATEGORY.equals(categoryName)) {
-                            currSampleSpecialCharacteristicIndex = currColumnNum;
-                        }
-                        break;
-                    case EXTRACT_NAME:
-                        // No characteristics expected here.
-                        break;
-                    case LABELED_EXTRACT_NAME:
-                        if (SPECIAL_CHARACTERISTIC_CATEGORY.equals(categoryName)) {
-                            currLabeledExtractSpecialCharacteristicIndex = currColumnNum;
-                        }
-                        break;
-                    default:
-                        // Do nothing
-                        break;
+                String categoryName = columnName.substring(columnName.indexOf('[') + 1, columnName.length() - 1);
+                switch (currNode) {
+                case SOURCE_NAME:
+                    if (ExperimentOntologyCategory.MATERIAL_TYPE.getCategoryName().equals(categoryName)) {
+                        currSourceMaterialTypeIndex = currColumnNum;
+                    } else if (ExperimentOntologyCategory.CELL_TYPE.getCategoryName().equals(categoryName)) {
+                        currSourceCellTypeIndex = currColumnNum;
+                    } else if (ExperimentOntologyCategory.DISEASE_STATE.getCategoryName().equals(categoryName)) {
+                        currSourceDiseaseStateIndex = currColumnNum;
+                    } else if (ExperimentOntologyCategory.ORGANISM_PART.getCategoryName().equals(categoryName)) {
+                        currSourceTissueSiteIndex = currColumnNum;
                     }
+                    break;
+                case SAMPLE_NAME:
+                    if (ExperimentOntologyCategory.DISEASE_STATE.getCategoryName().equals(categoryName)) {
+                        currSampleDiseaseStateIndex = currColumnNum;
+                    } else if (SPECIAL_CHARACTERISTIC_CATEGORY.equals(categoryName)) {
+                        currSampleSpecialCharacteristicIndex = currColumnNum;
+                    }
+                    break;
+                case EXTRACT_NAME:
+                    // No characteristics expected here.
+                    break;
+                case LABELED_EXTRACT_NAME:
+                    if (SPECIAL_CHARACTERISTIC_CATEGORY.equals(categoryName)) {
+                        currLabeledExtractSpecialCharacteristicIndex = currColumnNum;
+                    }
+                    break;
+                default:
+                    // Do nothing
+                    break;
+                }
+            } else if (SdrfColumnType.UNIT.toString().equals(columnName)) {
+                currCharacteristicUnitIndex = currColumnNum;
             } else if (SdrfColumnType.LABEL.toString().equals(columnName)) {
                 currLabelIndex = currColumnNum;
             }
-            currColumnNum ++;
+            currColumnNum++;
         }
     }
 
@@ -669,6 +698,7 @@ public class MageTabExporterTest extends AbstractCaarrayTest {
         // Sample should have disease state and special characteristics with a term source.
         assertEquals(DISEASE_STATE_VALUE, line.get(currSampleDiseaseStateIndex));
         assertEquals(SPECIAL_CHARACTERISTIC_VALUE, line.get(currSampleSpecialCharacteristicIndex));
+        assertEquals(UNIT_VALUE, line.get(currCharacteristicUnitIndex));
 
         // Extract should have no characteristics.
         // LabeledExtract should have label and special characteristics without a term source.

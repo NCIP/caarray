@@ -92,10 +92,12 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
@@ -168,8 +170,8 @@ public class MageTabExporterBean implements MageTabExporter {
         new HashMap<gov.nih.nci.caarray.domain.vocabulary.TermSource, TermSource>();
 
     /**
-     * Takes an Experiment, constructs a MAGE-TAB IDF and SDRF describing the sample-data relationships
-     * and annotations, and exports the MAGE-TAB into files.
+     * Takes an Experiment, constructs a MAGE-TAB IDF and SDRF describing the sample-data relationships and
+     * annotations, and exports the MAGE-TAB into files.
      *
      * @param experiment the experiment whose content needs to be translated into MAGE-TAB files.
      * @param idfFile the File which will hold the IDF document.
@@ -207,8 +209,8 @@ public class MageTabExporterBean implements MageTabExporter {
     }
 
     /**
-     * Takes an Experiment and constructs a MAGE-TAB IDF and SDRF describing the sample-data relationships
-     * and annotations.
+     * Takes an Experiment and constructs a MAGE-TAB IDF and SDRF describing the sample-data relationships and
+     * annotations.
      *
      * @param experiment the experiment whose contents need to be translated into MAGE-TAB.
      * @return a MAGE-TAB SDRF.
@@ -242,7 +244,7 @@ public class MageTabExporterBean implements MageTabExporter {
         Investigation investigation = idfDocument.getInvestigation();
         investigation.setTitle(experiment.getTitle());
         investigation.setDescription(experiment.getDescription());
-        //TODO Translate other IDF elements.
+        // TODO Translate other IDF elements.
     }
 
     private void translateSdrfElements(Experiment experiment, SdrfDocument sdrfDocument) {
@@ -261,7 +263,7 @@ public class MageTabExporterBean implements MageTabExporter {
                 allDerivedArrayDataMatrixFiles);
         sdrfDocument.initializeNodes(sdrfDocumentNodes);
 
-        //TODO Translate other SDRF elements, i.e., measurement-based chars, units, protocols, exptal factors.
+        // TODO Translate other SDRF elements, i.e., protocols, experimental factors.
     }
 
     private void addSourceAttributes(Source source, AbstractSampleDataRelationshipNode sdrfNode) {
@@ -293,53 +295,67 @@ public class MageTabExporterBean implements MageTabExporter {
         }
 
         // Set all other characteristics.
-        Set<Term> allTerms = new HashSet<Term>();
-        addSpecialCharacteristics(biomaterial, allTerms);
+        addPredefinedCharacteristics(biomaterial, sdrfBiomaterial);
         for (AbstractCharacteristic characteristic : biomaterial.getCharacteristics()) {
+            String category = characteristic.getCategory().getName();
             if (characteristic.getClass() == TermBasedCharacteristic.class) {
-                allTerms.add(((TermBasedCharacteristic) characteristic).getTerm());
+                Term characteristicTerm = ((TermBasedCharacteristic) characteristic).getTerm();
+                OntologyTerm sdrfTerm = getSdrfTerm(characteristicTerm);
+                Characteristic sdrfTermBasedCharacteristic = createSdrfTermBasedCharacteristic(category, sdrfTerm);
+                sdrfBiomaterial.getCharacteristics().add(sdrfTermBasedCharacteristic);
+            } else if (characteristic.getClass() == MeasurementCharacteristic.class) {
+                float value = ((MeasurementCharacteristic) characteristic).getValue();
+                Term unit = ((MeasurementCharacteristic) characteristic).getUnit();
+                Characteristic sdrfMeasurementCharacteristic = createSdrfMeasurementCharacteristic(category, value,
+                        unit);
+                sdrfBiomaterial.getCharacteristics().add(sdrfMeasurementCharacteristic);
             }
         }
-        Set<OntologyTerm> sdrfTerms = getSdrfTerms(allTerms);
-        Set<Characteristic> sdrfCharacteristics = createSdrfTermCharacteristics(sdrfTerms);
-        sdrfBiomaterial.getCharacteristics().addAll(sdrfCharacteristics);
 
-        //TODO MeasurementCharacteristics, Organism and ProtocolApplications
+        // TODO Organism and ProtocolApplications
     }
 
-    private void addSpecialCharacteristics(AbstractBioMaterial biomaterial, Set<Term> allTerms) {
+    private void addPredefinedCharacteristics(AbstractBioMaterial biomaterial,
+            gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial sdrfBiomaterial) {
         Term term;
+        OntologyTerm sdrfTerm;
         term = biomaterial.getDiseaseState();
         if (term != null) {
-            allTerms.add(term);
+            sdrfTerm = getSdrfTerm(term);
+            Characteristic sdrfTermBasedCharacteristic = createSdrfTermBasedCharacteristic(
+                    ExperimentOntologyCategory.DISEASE_STATE.getCategoryName(), sdrfTerm);
+            sdrfBiomaterial.getCharacteristics().add(sdrfTermBasedCharacteristic);
         }
         term = biomaterial.getCellType();
         if (term != null) {
-            allTerms.add(term);
+            sdrfTerm = getSdrfTerm(term);
+            Characteristic sdrfTermBasedCharacteristic = createSdrfTermBasedCharacteristic(
+                    ExperimentOntologyCategory.CELL_TYPE.getCategoryName(), sdrfTerm);
+            sdrfBiomaterial.getCharacteristics().add(sdrfTermBasedCharacteristic);
         }
         term = biomaterial.getTissueSite();
         if (term != null) {
-            allTerms.add(term);
+            sdrfTerm = getSdrfTerm(term);
+            Characteristic sdrfTermBasedCharacteristic = createSdrfTermBasedCharacteristic(
+                    ExperimentOntologyCategory.ORGANISM_PART.getCategoryName(), sdrfTerm);
+            sdrfBiomaterial.getCharacteristics().add(sdrfTermBasedCharacteristic);
         }
     }
 
-    private Set<Characteristic> createSdrfTermCharacteristics(Set<OntologyTerm> sdrfTerms) {
-        Set<Characteristic> sdrfCharacteristics = new HashSet<Characteristic>();
-        for (OntologyTerm sdrfTerm : sdrfTerms) {
-            Characteristic sdrfCharacteristic = new Characteristic();
-            sdrfCharacteristic.setTerm(sdrfTerm);
-            sdrfCharacteristics.add(sdrfCharacteristic);
-        }
-        return sdrfCharacteristics;
+    private Characteristic createSdrfTermBasedCharacteristic(String category, OntologyTerm sdrfTerm) {
+        Characteristic sdrfCharacteristic = new Characteristic();
+        sdrfCharacteristic.setCategory(category);
+        sdrfCharacteristic.setTerm(sdrfTerm);
+        return sdrfCharacteristic;
     }
 
-    private Set<OntologyTerm> getSdrfTerms(Set<Term> terms) {
-        Set<OntologyTerm> sdrfTerms = new HashSet<OntologyTerm>();
-        for (Term term : terms) {
-            OntologyTerm sdrfTerm = getSdrfTerm(term);
-            sdrfTerms.add(sdrfTerm);
-        }
-        return sdrfTerms;
+    private Characteristic createSdrfMeasurementCharacteristic(String category, float value, Term unit) {
+        Characteristic sdrfCharacteristic = new Characteristic();
+        sdrfCharacteristic.setCategory(category);
+        sdrfCharacteristic.setValue(Float.toString(value));
+        OntologyTerm sdrfUnit = getSdrfTerm(unit);
+        sdrfCharacteristic.setUnit(sdrfUnit);
+        return sdrfCharacteristic;
     }
 
     private OntologyTerm getSdrfTerm(Term term) {
@@ -390,7 +406,7 @@ public class MageTabExporterBean implements MageTabExporter {
             sdrfSample.getPredecessors().add(sdrfSource);
             sdrfSource.getSuccessors().add(sdrfSample);
             addBiomaterialAttributes(sample, (gov.nih.nci.caarray.magetab.sdrf.Sample) sdrfSample);
-            //TODO Add external Sample ID
+            // TODO Add external Sample ID
             handleExtracts(sample, sdrfSample);
         }
     }
