@@ -3,7 +3,7 @@
 <caarray:tabPane>
     <div class="boxpad2">
         <fmt:message key="vocabulary.tabs.${category}" var="tabTitle"/>
-        <h3>Manage ${tabTitle}</h3>
+        <h3>Manage <c:out value="${tabTitle}"/></h3>
         <div class="addlink">
             <c:url value="/protected/ajax/vocabulary/edit.action" var="addTermUrl">
                 <c:param name="category" value="${category}" />
