@@ -5,7 +5,8 @@
 </c:if>
 <caarray:tabPane>
     <div class="boxpad2">
-        <h3>Manage <fmt:message key="vocabulary.tabs.${category}" /></h3>
+        <fmt:message key="vocabulary.tabs.${category}" var="tabTitle"/>
+        <h3>Manage <c:out value="${tabTitle}"/></h3>
     </div>
     <div class="boxpad">
         <p class="instructions">Required fields are marked with <span class="required">*asterisks*</span>.</p>
