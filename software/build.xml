@@ -61,6 +61,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <property name="jboss.dest.file" value="${tools.dist.dir}/${jboss.binaries.file}"/>
         <property name="grid.dest.file" value="${tools.dist.dir}/${jboss.grid-binaries.file}"/>
 
+	<property name="db.src.dir" value="${basedir}/${db.dist.relative.dir}" />
+	<property name="jboss-conf.target.dir" value="${caarray.dist.dir}/${jboss-conf.dist.relative.dir}" />
+
 
 	<!-- retrive ivy files then retrieve bda files and librarires -->
 	<mkdir dir="lib"/>
@@ -205,6 +208,20 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 		<copy file="${basedir}/caarray-client.jar/target/caarray-client.zip" tofile="${dist.dir}/${caarray.client-zip.zip.file}"/>
 	</target>
 
+	<target name="dist:gui-installer" description="Makes Gui-Installer distribution">
+		<gui-installer-prep target.dir="${basedir}/gui-installer/target" download.dir="${basedir}/gui-installer/target" bda-utils.dir="${bda-utils.dir}" izpack-custom.svn.dir="${basedir}/gui-installer/target/custom"
+			/>
+		<ant inheritAll="false" inheritRefs="false" 
+			antfile="install.xml"
+			target="build:installer"
+			dir="${basedir}/gui-installer"
+			>
+			<property name="compile.jar.dir" value="${basedir}/gui-installer/target/izpack-4.0.1"/>
+		</ant>
+	</target>
+
+
+
 	<target name="build:caarray">		
 		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="clean" dir="${basedir}"/>
 		<ant antfile="${basedir}/build/build.xml" inheritall="false" target="build" dir="${basedir}"/>
@@ -274,8 +291,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 		<copy todir="${caarray.dist.dir}/grid" file="${caarray.grid.target.dir}/cagrid_CaArraySvc.zip" overwrite="true" />
 		<copy todir="${caarray.dist.dir}/grid" file="${caarray.src.dir}/build/resources/deploy/jboss-globus-serverinstance-config.zip" />
 	</target>
-		<property name="db.src.dir" value="${basedir}/${db.dist.relative.dir}" />
-	<property name="jboss-conf.target.dir" value="${caarray.dist.dir}/${jboss-conf.dist.relative.dir}" />
+
 	<target name="dist:installer:prep" depends="copy-caarray2-application,dist:tools:retrieve">
 		<copy todir="${db.dist.relative.dir}" overwrite="true">
 			<fileset dir="${caarray.sql.target.dir}" includes="*.sql" />
