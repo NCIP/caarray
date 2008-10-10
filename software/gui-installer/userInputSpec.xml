@@ -155,14 +155,6 @@
 		<field type="text" variable="jboss.server.name">						
 			<spec txt="Application Server Name " id="text.label" size="15" set="default"/>
 		</field>
-
-		<field type="password" align="left" variable="jboss.web.password">
-			<spec>
-				<pwd txt="Application Jboss Web Password " size="15" set=""/>
-				<pwd txt="Confirm Jboss Web Password " size="15" set=""/>
-			</spec>
-			<validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="The Jboss Web passwords did not match"/>			
-		</field>
 		
 		<field type="text" variable="jboss.server.rmi.port">						
 			<spec txt="Application RMI Port Number " id="text.label" size="15" set="31098"/>
@@ -498,7 +490,7 @@
 		
 		
 		<field type="text" variable="domain.name">						
-			<spec txt="Externally Accessible URL " id="text.label" size="15" set="http://array.nci.nih.gov"/>
+			<spec txt="Externally Accessible Domain Name " id="text.label" size="15" set="array.nci.nih.gov"/>
 		</field>
 		<field type="text" variable="grid.index.url">						
 			<spec txt="Index Url" id="text.label" size="25" set="http://training03.cagrid.org:6080/wsrf/services/DefaultIndexService"/>
