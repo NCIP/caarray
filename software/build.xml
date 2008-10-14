@@ -171,8 +171,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         dist:upgrader,
         dist:src,
         dist:javadoc,
-        dist:caarray-client.zip"
-            />
+	dist:caarray-client.zip,
+	dist:gui-installer
+	"/>
 
 
     <!-- Creates the installer distribution used by automated or manual remote installations -->
