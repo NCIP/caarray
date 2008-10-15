@@ -176,6 +176,8 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
@@ -186,8 +188,10 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -515,46 +519,92 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
     }
 
     private void testGenepixValidation() {
-        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_3_0_6, GAL_DERISI_LSID_OBJECT_ID));
-        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_0_1, GAL_DERISI_LSID_OBJECT_ID));
-        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_1_1, GAL_DERISI_LSID_OBJECT_ID));
-        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_5_0_1, GAL_YEAST1_LSID_OBJECT_ID));
-        testInvalidFile(getGprCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, GAL_DERISI_LSID_OBJECT_ID));
+        List<File> fileList = new ArrayList<File>();
+        fileList.add(GenepixArrayDataFiles.GPR_3_0_6);
+        fileList.add(GenepixArrayDataFiles.GPR_4_0_1);
+        fileList.add(GenepixArrayDataFiles.GPR_4_1_1);
+        fileList.add(GenepixArrayDataFiles.GPR_5_0_1);
+        fileList.add(AffymetrixArrayDataFiles.TEST3_CEL);
+
+        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_3_0_6, GAL_DERISI_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_0_1, GAL_DERISI_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_1_1, GAL_DERISI_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_5_0_1, GAL_YEAST1_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testInvalidFile(getGprCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, GAL_DERISI_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
     }
 
 
     private void testIlluminaValidation() {
-        testValidFile(getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID));
+        List<File> fileList = new ArrayList<File>();
+        fileList.add(IlluminaArrayDataFiles.HUMAN_WG6);
+        testValidFile(getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
     }
 
-    private void testValidFile(CaArrayFile caArrayFile) {
+    private MageTabDocumentSet genMageTabDocSet(List<File> fl) {
+        MageTabFileSet mTabFiles = new MageTabFileSet();
+        for (File f : fl) {
+            mTabFiles.addNativeData(f);
+        }
+        MageTabDocumentSet mTabSet = new MageTabDocumentSet(mTabFiles);
+        return mTabSet;
+    }
+
+    private void testValidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) {
         assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
-        this.arrayDataService.validate(caArrayFile);
+        this.arrayDataService.validate(caArrayFile, mTabSet);
         if (FileStatus.VALIDATION_ERRORS.equals(caArrayFile.getFileStatus())) {
             System.out.println(caArrayFile.getValidationResult());
         }
         assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
     }
 
-    private void testInvalidFile(CaArrayFile caArrayFile) {
+    private void testInvalidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) {
         assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
-        this.arrayDataService.validate(caArrayFile);
+        this.arrayDataService.validate(caArrayFile, mTabSet);
         assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
     }
 
     private void testChpValidation() {
-        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CALVIN_CHP, AFFY_TEST3_LSID_OBJECT_ID));
-        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP, HG_FOCUS_LSID_OBJECT_ID));
-        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID));
-        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CHP, AFFY_TEST3_LSID_OBJECT_ID));
-        testInvalidFile(getChpCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF, AFFY_TEST3_LSID_OBJECT_ID));
+        List<File> fileList = new ArrayList<File>();
+        fileList.add(AffymetrixArrayDataFiles.TEST3_CALVIN_CHP);
+        fileList.add(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP);
+        fileList.add(AffymetrixArrayDataFiles.HG_FOCUS_CHP);
+        fileList.add(AffymetrixArrayDataFiles.TEST3_CHP);
+        fileList.add(AffymetrixArrayDesignFiles.TEST3_CDF);
+
+        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CALVIN_CHP, AFFY_TEST3_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP, HG_FOCUS_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CHP, AFFY_TEST3_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testInvalidFile(getChpCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF, AFFY_TEST3_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
     }
 
     private void testCelValidation() {
-        testValidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, AFFY_TEST3_LSID_OBJECT_ID));
-        testInvalidFile(getCelCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF, AFFY_TEST3_LSID_OBJECT_ID));
-        testInvalidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_DATA_CEL, AFFY_TEST3_LSID_OBJECT_ID));
-        testInvalidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_HEADER_CEL, AFFY_TEST3_LSID_OBJECT_ID));
+        List<File> fileList = new ArrayList<File>();
+        fileList.add(AffymetrixArrayDataFiles.TEST3_CEL);
+        fileList.add(AffymetrixArrayDesignFiles.TEST3_CDF);
+        fileList.add(AffymetrixArrayDataFiles.TEST3_INVALID_DATA_CEL);
+        fileList.add(AffymetrixArrayDataFiles.TEST3_INVALID_HEADER_CEL);
+
+        testValidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, AFFY_TEST3_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testInvalidFile(getCelCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF, AFFY_TEST3_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testInvalidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_DATA_CEL, AFFY_TEST3_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testInvalidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_HEADER_CEL, AFFY_TEST3_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
     }
 
     @Test

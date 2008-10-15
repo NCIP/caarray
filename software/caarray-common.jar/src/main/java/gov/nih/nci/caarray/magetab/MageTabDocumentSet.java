@@ -87,6 +87,8 @@ import gov.nih.nci.caarray.magetab.data.DataMatrix;
 import gov.nih.nci.caarray.magetab.data.NativeDataFile;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
+import gov.nih.nci.caarray.magetab.sdrf.Hybridization;
+import gov.nih.nci.caarray.magetab.sdrf.Sample;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.io.FileUtility;
 import gov.nih.nci.caarray.validation.ValidationMessage;
@@ -121,6 +123,8 @@ public final class MageTabDocumentSet implements Serializable {
     private final Map<String, ArrayDesign> arrayDesignCache = new HashMap<String, ArrayDesign>();
     private final Map<String, Protocol> protocolCache = new HashMap<String, Protocol>();
     private final ValidationResult validationResult = new ValidationResult();
+    private final Set<Hybridization> hybridizations = new HashSet<Hybridization>();
+    private final Set<Sample> samples = new HashSet<Sample>();
 
     /**
      * Initialize the MAGE-TAB document set with the given files which will hold the exported contents.
@@ -257,8 +261,11 @@ public final class MageTabDocumentSet implements Serializable {
         parse(sdrfDocuments);
         // DEVELOPER NOTE: DATA MATRIX documents currently not parsed
 
-        //check that the sdrf refs all data files
         checkSdrfRefDataFiles();
+
+        generateSdrfRefHybs();
+
+        generateSdrfRefSamples();
     }
 
     private void parse(Set<? extends AbstractMageTabDocument> documents) throws MageTabParsingException {
@@ -369,6 +376,22 @@ public final class MageTabDocumentSet implements Serializable {
     }
 
     /**
+     * Return a set of the hybridizations ref'd by the sdrf files.
+     * @return set of Hybs
+     */
+    public Set<Hybridization> getSdrfHybridizations() {
+        return this.hybridizations;
+    }
+
+    /**
+     * Return a set of the sample ref'd by the sdrf files.
+     * @return set of Samples
+     */
+    public Set<Sample> getSdrfSamples() {
+        return this.samples;
+    }
+
+    /**
      * Returns the <code>NativeDataFile</code> that matches the filename provided, or null if none match.
      *
      * @param filename locate <code>NativeDataFile</code> with this filename
@@ -421,6 +444,8 @@ public final class MageTabDocumentSet implements Serializable {
         }
     }
 
+
+
     private void addSdrfErrorMessage(String txt) {
         for (SdrfDocument sdrf : sdrfDocuments) {
             this.createValidationMessage(sdrf.getFile(),
@@ -435,6 +460,18 @@ public final class MageTabDocumentSet implements Serializable {
             fileNames.addAll(sdrf.getAllDataFiles());
         }
         return fileNames;
+    }
+
+    private void generateSdrfRefHybs() {
+        for (SdrfDocument sdrf : sdrfDocuments) {
+            hybridizations.addAll(sdrf.getAllHybridizations());
+        }
+    }
+
+    private void generateSdrfRefSamples() {
+        for (SdrfDocument sdrf : sdrfDocuments) {
+            samples.addAll(sdrf.getAllSamples());
+        }
     }
 
     /**

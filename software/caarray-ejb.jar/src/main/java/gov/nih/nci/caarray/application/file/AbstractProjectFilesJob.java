@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.sql.Connection;
@@ -123,7 +124,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     long getProjectId() {
         return this.projectId;
     }
-    
+
     MageTabTranslator getMageTabTranslator() {
         return (MageTabTranslator) ServiceLocatorFactory.getLocator().lookup(MageTabTranslator.JNDI_NAME);
     }
@@ -145,16 +146,16 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     }
 
     void doValidate(CaArrayFileSet fileSet) {
-        validateAnnotation(fileSet);
-        validateArrayData(fileSet);
+        MageTabDocumentSet mTabSet = validateAnnotation(fileSet);
+        validateArrayData(fileSet, mTabSet);
     }
 
-    private void validateAnnotation(CaArrayFileSet fileSet) {
-        getMageTabImporter().validateFiles(fileSet);
+    MageTabDocumentSet validateAnnotation(CaArrayFileSet fileSet) {
+        return getMageTabImporter().validateFiles(fileSet);
     }
 
-    private void validateArrayData(CaArrayFileSet fileSet) {
-        getArrayDataImporter().validateFiles(fileSet);
+    private void validateArrayData(CaArrayFileSet fileSet, MageTabDocumentSet mTabSet) {
+        getArrayDataImporter().validateFiles(fileSet, mTabSet);
     }
 
     ArrayDataImporter getArrayDataImporter() {

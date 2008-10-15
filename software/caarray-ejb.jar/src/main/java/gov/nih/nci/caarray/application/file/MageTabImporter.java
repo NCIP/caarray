@@ -123,15 +123,16 @@ class MageTabImporter {
         this.daoFactory = daoFactory;
     }
 
-    void validateFiles(CaArrayFileSet fileSet) {
+    MageTabDocumentSet validateFiles(CaArrayFileSet fileSet) {
         LOG.info("Validating MAGE-TAB document set");
+        MageTabDocumentSet documentSet = null;
         updateFileStatus(fileSet, FileStatus.VALIDATING);
         MageTabFileSet inputSet = getInputFileSet(fileSet);
         try {
             updateFileStatus(fileSet, FileStatus.VALIDATED);
             handleResult(fileSet, MageTabParser.INSTANCE.validate(inputSet));
             if (!fileSet.statusesContains(FileStatus.VALIDATION_ERRORS)) {
-                MageTabDocumentSet documentSet = MageTabParser.INSTANCE.parse(inputSet);
+                documentSet = MageTabParser.INSTANCE.parse(inputSet);
                 handleResult(fileSet, translator.validate(documentSet, fileSet));
             }
         } catch (MageTabParsingException e) {
@@ -140,6 +141,7 @@ class MageTabImporter {
             handleInvalidMageTab(fileSet, e);
         }
         this.daoFactory.getSearchDao().save(fileSet.getFiles());
+        return documentSet;
     }
 
     private void handleResult(CaArrayFileSet fileSet, ValidationResult result) {

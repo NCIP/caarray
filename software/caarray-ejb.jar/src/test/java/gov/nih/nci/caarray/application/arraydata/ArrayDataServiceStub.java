@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
@@ -118,7 +119,7 @@ public class ArrayDataServiceStub implements ArrayDataService {
         // no-op
     }
 
-    public FileValidationResult validate(CaArrayFile arrayDataFile) {
+    public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet) {
         return new FileValidationResult(new File(arrayDataFile.getName()));
     }
 

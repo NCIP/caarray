@@ -96,6 +96,8 @@ import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.sdrf.Sample;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -248,6 +250,18 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         return getQuantitationTypeDescriptors(getColumnHeaders(reader));
     }
 
+    private void checkSdrfSamples(FileValidationResult result, List<String> fileSampleNames, Set<Sample> sdrfSamples) {
+        // get collection of sample names from sdrf as strings
+        List<String> sdrfHybStrs = new ArrayList<String>();
+        for (Sample sam : sdrfSamples) {
+            sdrfHybStrs.add(sam.getName());
+        }
+
+        if (!sdrfHybStrs.containsAll(fileSampleNames)) {
+            result.addMessage(Type.ERROR, "Data file contains Sample names not referenced in the Sdrf document.");
+        }
+    }
+
     private DelimitedFileReader getReader(File file) {
         try {
             return DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(file);
@@ -384,11 +398,15 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
+    void validate(CaArrayFile caArrayFile, File file, MageTabDocumentSet mTabSet, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         DelimitedFileReader reader = getReader(file);
         try {
             validateHeader(reader, result);
+            if (mTabSet.getSdrfDocuments() != null && !mTabSet.getSdrfDocuments().isEmpty()) {
+                checkSdrfSamples(result, getSampleNames(file, null), mTabSet.getSdrfSamples());
+            }
+
             if (result.isValid()) {
                 validateData(reader, result);
             }

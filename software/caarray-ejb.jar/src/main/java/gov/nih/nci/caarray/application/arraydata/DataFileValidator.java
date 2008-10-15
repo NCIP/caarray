@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
@@ -99,18 +100,21 @@ final class DataFileValidator {
     private final CaArrayFile arrayDataFile;
     private final CaArrayDaoFactory daoFactory;
     private final ArrayDesignService arrayDesignService;
+    private final MageTabDocumentSet mTabSet;
 
-    DataFileValidator(CaArrayFile arrayDataFile, CaArrayDaoFactory daoFactory, ArrayDesignService arrayDesignService) {
+    DataFileValidator(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet,
+            CaArrayDaoFactory daoFactory, ArrayDesignService arrayDesignService) {
         this.arrayDataFile = arrayDataFile;
         this.daoFactory = daoFactory;
         this.arrayDesignService = arrayDesignService;
+        this.mTabSet = mTabSet;
     }
 
     void validate() {
         AbstractDataFileHandler handler =
             ArrayDataHandlerFactory.getInstance().getHandler(getArrayDataFile().getFileType());
         File file = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(arrayDataFile);
-        FileValidationResult result = handler.validate(arrayDataFile, file, arrayDesignService);
+        FileValidationResult result = handler.validate(arrayDataFile, file, mTabSet, arrayDesignService);
         getArrayDataFile().setValidationResult(result);
         if (result.isValid()) {
             getArrayDataFile().setFileStatus(handler.getValidatedStatus());

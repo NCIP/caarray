@@ -99,6 +99,7 @@ import gov.nih.nci.caarray.domain.data.ShortColumn;
 import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
@@ -120,10 +121,11 @@ abstract class AbstractDataFileHandler {
 
     abstract QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(File file);
 
-    final FileValidationResult validate(CaArrayFile caArrayFile, File file, ArrayDesignService arrayDesignService) {
+    final FileValidationResult validate(CaArrayFile caArrayFile, File file,
+            MageTabDocumentSet mTabSet, ArrayDesignService arrayDesignService) {
         FileValidationResult result = new FileValidationResult(file);
         try {
-            validate(caArrayFile, file, result, arrayDesignService);
+            validate(caArrayFile, file, mTabSet, result, arrayDesignService);
             if (result.isValid()) {
                 validateArrayDesignInExperiment(caArrayFile, file, result, arrayDesignService);
             }
@@ -147,10 +149,10 @@ abstract class AbstractDataFileHandler {
 
     abstract ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file);
 
-    abstract void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
+    abstract void validate(CaArrayFile caArrayFile, File file, MageTabDocumentSet mTabSet, FileValidationResult result,
             ArrayDesignService arrayDesignService);
 
-    abstract void loadData(DataSet dataSet, List<QuantitationType> types, File file, 
+    abstract void loadData(DataSet dataSet, List<QuantitationType> types, File file,
             ArrayDesignService arrayDesignService);
 
     void prepareColumns(DataSet dataSet, List<QuantitationType> types, int numberOfRows) {
@@ -175,6 +177,8 @@ abstract class AbstractDataFileHandler {
     List<String> getHybridizationNames(File dataFile) {
         return Collections.singletonList(FilenameUtils.getBaseName(dataFile.getName()));
     }
+
+
 
     List<String> getSampleNames(File dataFile, String hybridizationName) {
         return Collections.singletonList(hybridizationName);

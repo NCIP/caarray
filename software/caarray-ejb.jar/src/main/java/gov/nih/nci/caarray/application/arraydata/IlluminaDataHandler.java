@@ -97,6 +97,8 @@ import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.sdrf.Hybridization;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -349,6 +351,20 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         }
     }
 
+    private void checkSdrfHybridizations(FileValidationResult result,
+            List<String> fileHybNames, Set<Hybridization> sdrfHybs) {
+        // get collection of hyb names from sdrf as strings
+        List<String> sdrfHybStrs = new ArrayList<String>();
+        for (Hybridization hyb : sdrfHybs) {
+            sdrfHybStrs.add(hyb.getName());
+        }
+
+        if (!sdrfHybStrs.containsAll(fileHybNames)) {
+            result.addMessage(Type.ERROR,
+                    "Data file contains Hybridization names not referenced in the Sdrf document.");
+        }
+    }
+
     private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, List<String> headers,
             ArrayDesignService arrayDesignService) throws IOException {
         int indexOfTargetId = headers.indexOf(TARGET_ID);
@@ -422,11 +438,15 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
+    void validate(CaArrayFile caArrayFile, File file, MageTabDocumentSet mTabSet, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         DelimitedFileReader reader = getReader(file);
         try {
             validateHeaders(reader, result);
+            if (mTabSet.getSdrfDocuments() != null && !mTabSet.getSdrfDocuments().isEmpty()) {
+                checkSdrfHybridizations(result, getHybridizationNames(file), mTabSet.getSdrfHybridizations());
+            }
+
             if (result.isValid()) {
                 validateData(reader, result);
             }

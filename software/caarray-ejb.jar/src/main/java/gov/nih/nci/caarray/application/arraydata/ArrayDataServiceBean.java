@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -183,9 +184,9 @@ public class ArrayDataServiceBean implements ArrayDataService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public FileValidationResult validate(CaArrayFile arrayDataFile) {
+    public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet) {
         DataFileValidator dataFileValidator =
-            new DataFileValidator(arrayDataFile, getDaoFactory(), getArrayDesignService());
+            new DataFileValidator(arrayDataFile, mTabSet, getDaoFactory(), getArrayDesignService());
         dataFileValidator.validate();
         return arrayDataFile.getValidationResult();
     }

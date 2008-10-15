@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.util.HashSet;
@@ -155,18 +156,18 @@ final class ArrayDataImporter {
         return file.getFileType().isArrayData();
     }
 
-    void validateFiles(CaArrayFileSet fileSet) {
+    void validateFiles(CaArrayFileSet fileSet, MageTabDocumentSet mTabSet) {
         Set<CaArrayFile> dataFiles = getDataFiles(fileSet);
         int fileCount = 0;
         int totalNumberOfFiles = dataFiles.size();
         for (CaArrayFile file : dataFiles) {
             LOG.info("Validating data file [" + ++fileCount + "/" + totalNumberOfFiles + "]: " + file.getName());
-            validateFile(file);
+            validateFile(file, mTabSet);
         }
     }
 
 
-    private void validateFile(CaArrayFile file) {
-        this.arrayDataService.validate(file);
+    private void validateFile(CaArrayFile file, MageTabDocumentSet mTabSet) {
+        this.arrayDataService.validate(file, mTabSet);
     }
 }

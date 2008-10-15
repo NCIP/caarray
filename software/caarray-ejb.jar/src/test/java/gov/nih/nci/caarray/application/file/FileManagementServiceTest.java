@@ -79,6 +79,7 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
@@ -322,7 +323,7 @@ public class FileManagementServiceTest extends AbstractCaarrayTest {
     private static class LocalArrayDataServiceStub extends ArrayDataServiceStub {
 
         @Override
-        public FileValidationResult validate(CaArrayFile arrayDataFile) {
+        public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet) {
             if (arrayDataFile.getFileType().isParseableData()) {
                 arrayDataFile.setFileStatus(FileStatus.VALIDATED);
             } else {
