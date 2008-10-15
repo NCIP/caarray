@@ -104,15 +104,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.ajaxtags.xml.AjaxXmlBuilder;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
-import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
-import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * Action implementing the overview tab.
@@ -123,7 +119,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
 
     private Long manufacturerId;
-    private Set<AssayType> assayTypeValues;
+    private String assayTypeValue;
 
     private List<Organism> organisms = new ArrayList<Organism>();
     private List<Organization> manufacturers = new ArrayList<Organization>();
@@ -132,7 +128,6 @@ public class ProjectOverviewAction extends ProjectTabAction {
     private List<Term> materialTypes;
     private List<Term> cellTypes;
     private List<Term> diseaseState;
-    private Set<AssayType> assayTypes;
 
     /**
      * {@inheritDoc}
@@ -147,28 +142,20 @@ public class ProjectOverviewAction extends ProjectTabAction {
         this.manufacturers = arrayDesignService.getAllProviders();
         prepareArrayDesigns();
     }
+    
     /**
      * Method sets array designs to the list provided by the array design service
      * if either assay types or the provider is set.
      */
     private void prepareArrayDesigns() {
-        boolean containsAssayTypes = true;
-        if (getExperiment().getAssayTypes() == null  || getExperiment().getAssayTypes().isEmpty()
-                || getExperiment().getAssayTypes().toArray()[0] == null) {
-            containsAssayTypes = false;
-        }
-        if (containsAssayTypes) {
-            this.arrayDesigns =  getArrayDesignService().getImportedArrayDesigns(
-                    getExperiment().getManufacturer(), getExperiment().getAssayTypes());
-        } else if (getExperiment().getManufacturer() != null) {
-            //Struts puts a null into the list if no assay types are selected.  Pass
-            //null instead of a list with a null value
-            this.arrayDesigns =  getArrayDesignService().getImportedArrayDesigns(
-                    getExperiment().getManufacturer(), null);
+        if (getExperiment().getManufacturer() != null && getExperiment().getAssayTypeEnum() != null) {
+            this.arrayDesigns = getArrayDesignService().getImportedArrayDesigns(
+                    getExperiment().getManufacturer(), getExperiment().getAssayTypeEnum());
         } else {
             this.arrayDesigns.clear();
         }
     }
+
 
     /**
      * {@inheritDoc}
@@ -191,21 +178,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
     /**
      * {@inheritDoc}
      */
-    /**
-     * save a project.
-     *
-     * @return path String
-     */
     @Override
-    @Validations(
-            fieldExpressions = {
-                @FieldExpressionValidator(fieldName = "project.experiment.assayTypes",
-                    message = "You must select at least one assay type or provider.",
-                    expression = "project.experiment.manufacturer != null ||"
-                            + " !project.experiment.assayTypes.isEmpty")
-            }
-        )
-    @SuppressWarnings("PMD.UselessOverridingMethod")
     public String save() {
         prepareArrayDesigns();
         return super.save();
@@ -216,15 +189,11 @@ public class ProjectOverviewAction extends ProjectTabAction {
      */
     @SkipValidation
     public String retrieveArrayDesigns() {
-        if (this.assayTypeValues != null || this.manufacturerId != null) {
-            Organization provider = null;
-            if (this.manufacturerId != null) {
-                provider = getGenericDataService().getPersistentObject(Organization.class,
-                        this.manufacturerId);
-            }
-            this.arrayDesigns = getArrayDesignService().getImportedArrayDesigns(provider, this.assayTypeValues);
-        } else {
-            this.arrayDesigns.clear();
+        if (this.manufacturerId != null && this.assayTypeValue != null) {
+            Organization provider = getGenericDataService().getPersistentObject(Organization.class,
+                    this.manufacturerId);
+            this.arrayDesigns = getArrayDesignService().getImportedArrayDesigns(provider,
+                    AssayType.getByValue(assayTypeValue));
         }
         return "xmlArrayDesigns";
     }
@@ -274,15 +243,15 @@ public class ProjectOverviewAction extends ProjectTabAction {
     /**
      * @return the assayTypeValue
      */
-    public Set <AssayType>getAssayTypeValues() {
-        return this.assayTypeValues;
+    public String getAssayTypeValue() {
+        return assayTypeValue;
     }
 
     /**
-     * @param assayTypeValues the assayTypes to set
+     * @param assayTypeValue the assayType to set
      */
-    public void setAssayTypeValues(Set <AssayType>assayTypeValues) {
-        this.assayTypeValues = assayTypeValues;
+    public void setAssayTypeValue(String assayTypeValue) {
+        this.assayTypeValue = assayTypeValue;
     }
 
     /**
@@ -353,29 +322,6 @@ public class ProjectOverviewAction extends ProjectTabAction {
      */
     public void setDiseaseState(List<Term> diseaseState) {
         this.diseaseState = diseaseState;
-    }
-    /**
-     * Action is used for an ajax call by the list generator.
-     *
-     * @return the string indicating which result to follow.
-     */
-    @SkipValidation
-    public String generateAssayList() {
-        setAssayTypes(new TreeSet<AssayType>(getProjectManagementService().getAssayTypes()));
-        return "generateAssayList";
-    }
-    /**
-     * @return the assayTypes
-     */
-    public Set<AssayType> getAssayTypes() {
-        return assayTypes;
-    }
-
-    /**
-     * @param assayTypes the assayTypes to set
-     */
-    public void setAssayTypes(Set<AssayType> assayTypes) {
-        this.assayTypes = assayTypes;
     }
 
     /**

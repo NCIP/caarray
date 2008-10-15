@@ -130,7 +130,7 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
-    public List<ArrayDesign> getImportedArrayDesigns(Organization provider, Set<AssayType> assayTypes) {
+    public List<ArrayDesign> getImportedArrayDesigns(Organization provider, AssayType assayType) {
         return new ArrayList<ArrayDesign>();
     }
 

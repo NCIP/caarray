@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -176,12 +175,6 @@ public interface ProjectDao extends CaArrayDao {
     List<Term> getMaterialTypesForExperiment(Experiment experiment);
 
     /**
-     * Returns the list of all Assay Types.
-     * @return the List&lt;AssayType&gt; of assay types
-     */
-    List<AssayType> getAssayTypes();
-
-    /**
      * Get cell types for the experiment and category.
      * @param experiment the experiment
      * @return the list of terms
@@ -201,4 +194,5 @@ public interface ProjectDao extends CaArrayDao {
      * @return all samples persisted for project
      */
     Set<Sample> getUnfilteredSamplesForProject(Project project);
+    
 }

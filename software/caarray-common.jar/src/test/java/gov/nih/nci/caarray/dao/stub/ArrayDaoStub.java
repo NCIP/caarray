@@ -134,7 +134,14 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     /**
      * {@inheritDoc}
      */
-    public List<ArrayDesign> getArrayDesigns(Organization provider, Set<AssayType> assayTypes, boolean importedOnly) {
+    public List<ArrayDesign> getArrayDesignsForProvider(Organization provider, boolean importedOnly) {
+        return new ArrayList<ArrayDesign>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<ArrayDesign> getArrayDesigns(Organization provider, AssayType assayType, boolean importedOnly) {
         return new ArrayList<ArrayDesign>();
     }
 

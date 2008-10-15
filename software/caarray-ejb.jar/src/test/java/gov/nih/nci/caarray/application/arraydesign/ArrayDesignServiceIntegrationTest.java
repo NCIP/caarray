@@ -112,8 +112,6 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Transaction;
@@ -135,7 +133,6 @@ public class ArrayDesignServiceIntegrationTest extends AbstractCaarrayTest {
     private static Organism DUMMY_ORGANISM = new Organism();
     private static Term DUMMY_TERM = new Term();
     private static ArrayDesign DUMMY_ARRAY_DESIGN = new ArrayDesign();
-    private static AssayType DUMMY_ASSAY_TYPE = new AssayType("Gene Expression");
 
     @Before
     @SuppressWarnings("deprecation")
@@ -202,8 +199,7 @@ public class ArrayDesignServiceIntegrationTest extends AbstractCaarrayTest {
         design.setVersion("2.0");
         design.setProvider(DUMMY_ORGANIZATION);
         design.setLsidForEntity("authority:namespace:" + designFiles[0].getName());
-        Set <AssayType>assayTypes = new TreeSet<AssayType>();
-        assayTypes.add(DUMMY_ASSAY_TYPE);
+        design.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
         for (File designFile : designFiles) {
             design.addDesignFile(getCaArrayFile(designFile));
         }

@@ -86,7 +86,6 @@
    <ns2:SchemaElement className="Publication" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Publication" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace location="./gov.nih.nci.caarray.domain.project.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project" packageName="gov.nih.nci.caarray.domain.project" xsi:type="ns2:NamespaceType">
-   <ns2:SchemaElement className="AssayType" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AssayType" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Experiment" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Experiment" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="ExperimentContact" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ExperimentContact" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Factor" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Factor" xsi:type="ns2:SchemaElementType"/>
@@ -436,9 +435,6 @@
       </ns25:Packages>
 
           <ns25:Packages mappedNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project" name="gov.nih.nci.caarray.domain.project" xsi:type="ns25:CadsrPackage">
-
-           <ns25:CadsrClass className="AssayType" elementName="AssayType" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
-
            <ns25:CadsrClass className="ExperimentContact" elementName="ExperimentContact" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>
 
            <ns25:CadsrClass className="Experiment" elementName="Experiment" selected="true" targetable="true" xsi:type="ns25:ClassMapping"/>

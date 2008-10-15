@@ -348,8 +348,8 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.type("projectForm_project_experiment_title", title);
         // - Description
         selenium.type("projectForm_project_experiment_description", "desc");
-        // - Assay Types
-        selenium.keyPress("id=assayTypesSearchInput", TAB_KEY);
+        // - Assay Type
+        selenium.select("projectForm_project_experiment_assayType", "label=Gene Expression");
         // - Provider
         if (provider == null) {
             provider = AFFYMETRIX_PROVIDER; // default to Affy
@@ -462,7 +462,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         waitForText("Array Design Details");
         // assert the Use Case required fields are present
         assertArrayDesignMetaRequiredFields();
-        selenium.keyPress("id=assayTypesSearchInput", TAB_KEY);
+        selenium.select("arrayDesignForm_arrayDesign_assayType", "label=Gene Expression");
         if (arrayDesignProvider == null) {
             arrayDesignProvider = AFFYMETRIX_PROVIDER; // default to Affy
         }
@@ -552,7 +552,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             selenium.click("link=Manage Array Designs");
             waitForText("Edit");
             // done
-            String rowText = selenium.getTable("row." + row + ".9");
+            String rowText = selenium.getTable("row." + row + ".8");
             if (rowText.equalsIgnoreCase(IMPORTED)) {
                 return true;
             } else {

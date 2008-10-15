@@ -83,9 +83,6 @@
 package gov.nih.nci.caarray.domain.array;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.TreeSet;
-
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
@@ -96,24 +93,11 @@ import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.HibernateUtil;
 
-import org.hibernate.Transaction;
-import org.junit.Before;
 import org.junit.Test;
 
 @SuppressWarnings("PMD")
 public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_HibernateIntegrationTest {
-    private static AssayType DUMMY_ASSAY_TYPE;
-
-    @Before
-    public void setUp() {
-        //Initialize the dummy object needed for the tests.
-        DUMMY_ASSAY_TYPE = new AssayType("Gene Expression");
-        Transaction tx = HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().save(DUMMY_ASSAY_TYPE);
-        tx.commit();
-    }
 
     @Test
     @Override
@@ -153,8 +137,8 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         arrayDesign.getTechnologyType().setValue("testval4");
         arrayDesign.getTechnologyType().setCategory(cat);
         arrayDesign.getTechnologyType().setSource(ts);
-        arrayDesign.setAssayTypes(new TreeSet<AssayType>());;
-        arrayDesign.getAssayTypes().add(DUMMY_ASSAY_TYPE);
+        AssayType nextAssayType = getNextValue(AssayType.values(), arrayDesign.getAssayTypeEnum());
+        arrayDesign.setAssayType(nextAssayType.getValue());
         arrayDesign.setVersion(getUniqueStringValue());
         arrayDesign.setOrganism(new Organism());
         arrayDesign.getOrganism().setScientificName("Homo sapiens");
@@ -188,7 +172,7 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
     protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
         ArrayDesign original = (ArrayDesign) caArrayObject;
         ArrayDesign retrieved = (ArrayDesign) retrievedCaArrayObject;
-        assertEquals(original.getAssayTypes(), retrieved.getAssayTypes());
+        assertEquals(original.getAssayTypeEnum(), retrieved.getAssayTypeEnum());
         assertEquals(original.getDesignFiles().size(), retrieved.getDesignFiles().size());
         assertEquals(original.getDesignFiles().iterator().next().getName(), retrieved.getDesignFiles().iterator()
                 .next().getName());
@@ -200,7 +184,7 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         assertEquals(original.getSubstrateType(), retrieved.getSubstrateType());
         assertEquals(original.getSurfaceType(), retrieved.getSurfaceType());
         assertEquals(original.getTechnologyType(), retrieved.getTechnologyType());
-        assertEquals(original.getAssayTypes(), retrieved.getAssayTypes());
+        assertEquals(original.getAssayType(), retrieved.getAssayType());
         assertEquals(original.getVersion(), retrieved.getVersion());
         assertEquals(original.getDesignDetails(), retrieved.getDesignDetails());
         if (original.getDesignDetails() != null) {

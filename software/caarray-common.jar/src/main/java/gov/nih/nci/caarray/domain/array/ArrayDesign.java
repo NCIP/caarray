@@ -91,13 +91,9 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.security.AttributePolicy;
-import gov.nih.nci.caarray.security.SecurityPolicy;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -113,8 +109,6 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 import org.hibernate.validator.Size;
@@ -131,7 +125,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
 
     private String name;
     private String description;
-    private SortedSet<AssayType> assayTypes = new TreeSet<AssayType>();
+    private String assayType;
     private ProtocolApplication printing;
     private Term polymerType;
     private Integer numberOfFeatures;
@@ -161,7 +155,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
 
         this.name = arrayDesign.name;
         this.description = arrayDesign.description;
-        this.assayTypes.addAll(arrayDesign.assayTypes);
+        this.assayType = arrayDesign.assayType;
         this.printing = arrayDesign.printing;
         this.polymerType = arrayDesign.polymerType;
         this.numberOfFeatures = arrayDesign.numberOfFeatures;
@@ -447,26 +441,39 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the assay type for this Experiment.
-     *
-     * @return the assay type
+     * @return the type
      */
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "array_design")
-    @ForeignKey(name = "array_design_assaytypes_ad_fk", inverseName = "array_design_assaytypes_at_fk")
-    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
-    @Sort(type = SortType.NATURAL)
     @NotNull
-    @Size(min = 1)
-    public SortedSet<AssayType> getAssayTypes() {
-        return this.assayTypes;
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public String getAssayType() {
+        return assayType;
     }
 
     /**
-     * @param assayTypes the assayTypes to set
+     * @param assayType the assayType to set
      */
-    public void setAssayTypes(SortedSet<AssayType> assayTypes) {
-        this.assayTypes = assayTypes;
+    public void setAssayType(String assayType) {
+        AssayType.checkType(assayType);
+        this.assayType = assayType;
+    }
+
+    /**
+     * @return the assayType enum
+     */
+    @Transient
+    public AssayType getAssayTypeEnum() {
+        return AssayType.getByValue(getAssayType());
+    }
+
+    /**
+     * @param assayTypeEnum the assayTypeEnum to set
+     */
+    public void setAssayTypeEnum(AssayType assayTypeEnum) {
+        if (assayTypeEnum == null) {
+            setAssayType(null);
+        } else {
+            setAssayType(assayTypeEnum.getValue());
+        }
     }
 
     /**

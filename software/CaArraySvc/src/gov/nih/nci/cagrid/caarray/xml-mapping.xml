@@ -139,8 +139,8 @@
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
-    <field name="assayTypes" type="gov.nih.nci.caarray.domain.project.AssayType" collection="collection">
-      <bind-xml name="AssayType" type="gov.nih.nci.caarray.domain.project.AssayType" location="assayTypes" node="element" />
+    <field name="assayType" type="string">
+      <bind-xml name="assayType" node="attribute" />
     </field>
     <field name="description" type="string">
       <bind-xml name="description" node="attribute" />
@@ -388,8 +388,8 @@
     <field name="date" type="date">
       <bind-xml name="date" node="attribute" />
     </field>
-    <field name="assayTypes" type="gov.nih.nci.caarray.domain.project.AssayType" collection="collection">
-      <bind-xml name="AssayType" type="gov.nih.nci.caarray.domain.project.AssayType" location="assayTypes" node="element" />
+    <field name="assayType" type="string">
+      <bind-xml name="assayType" node="attribute" />
     </field>
     <field name="designDescription" type="string">
       <bind-xml name="designDescription" node="attribute" />
@@ -474,12 +474,6 @@
     </field>
     <field name="factor" type="gov.nih.nci.caarray.domain.project.Factor">
       <bind-xml name="Factor" type="gov.nih.nci.caarray.domain.project.Factor" location="factor" node="element" />
-    </field>
-  </class>
-  <class name="gov.nih.nci.caarray.domain.project.AssayType" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="AssayType" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project" />
-    <field name="name" type="string">
-      <bind-xml name="name" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.project.ExperimentContact" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">

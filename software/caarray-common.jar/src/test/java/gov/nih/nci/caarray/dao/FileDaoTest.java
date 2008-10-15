@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ServiceType;
@@ -170,6 +171,7 @@ public class FileDaoTest extends AbstractDaoTest {
     private static void setExperimentSummary() {
         DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
         DUMMY_EXPERIMENT_1.setDescription("DummyExperiment1Desc");
+        DUMMY_EXPERIMENT_1.setAssayTypeEnum(AssayType.ACGH);
         Date currDate = new Date();
         DUMMY_EXPERIMENT_1.setDate(currDate);
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);

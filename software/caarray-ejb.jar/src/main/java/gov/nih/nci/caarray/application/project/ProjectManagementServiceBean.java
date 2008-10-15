@@ -98,7 +98,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
-import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -139,7 +138,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -481,15 +479,11 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private void checkArrayDesignManufacturer(Project project) throws InconsistentProjectStateException {
         Set<ArrayDesign> designs = project.getExperiment().getArrayDesigns();
         for (ArrayDesign ad : designs) {
-            if ((project.getExperiment().getManufacturer() != null
-                    && project.getExperiment().getManufacturer() != ad.getProvider())
-                    || (!project.getExperiment().getAssayTypes().isEmpty()
-                            && !CollectionUtils.containsAny(ad.getAssayTypes(),
-                                    project.getExperiment().getAssayTypes()))) {
+            if (project.getExperiment().getAssayTypeEnum() != ad.getAssayTypeEnum()
+                    || project.getExperiment().getManufacturer() != ad.getProvider()) {
                 throw new InconsistentProjectStateException(Reason.ARRAY_DESIGNS_DONT_MATCH_MANUF_OR_TYPE,
                         new Object[] {});
             }
-
         }
     }
 
@@ -742,12 +736,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
         return getProjectDao().getMaterialTypesForExperiment(experiment);
     }
-    /**
-     * {@inheritDoc}
-     */
-    public List<AssayType> getAssayTypes() {
-        return getProjectDao().getAssayTypes();
-    }
 
     /**
      * {@inheritDoc}
@@ -824,4 +812,5 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private SearchDao getSearchDao() {
         return this.daoFactory.getSearchDao();
     }
+
 }

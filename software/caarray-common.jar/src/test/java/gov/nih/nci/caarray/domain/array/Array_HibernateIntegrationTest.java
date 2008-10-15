@@ -83,12 +83,6 @@
 package gov.nih.nci.caarray.domain.array;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
@@ -117,22 +111,18 @@ public class Array_HibernateIntegrationTest extends AbstractCaArrayEntity_Hibern
         Term term = new Term();
         term.setValue("term");
         term.setSource(ts);
-
+        
         ArrayDesign design = new ArrayDesign();
         design.setName(getUniqueStringValue());
         design.setTechnologyType(term);
         design.addDesignFile(new CaArrayFile());
         design.setVersion(getUniqueStringValue());
         design.setProvider(new Organization());
-        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
-        AssayType type = new AssayType();
-        save(type);
-        assayTypes.add(type);
-        design.setAssayTypes(assayTypes);
+        design.setAssayTypeEnum(getNextValue(AssayType.values(), design.getAssayTypeEnum()));
         design.setOrganism(new Organism());
         design.getOrganism().setScientificName(getUniqueStringValue());
         design.getOrganism().setTermSource(ts);
-
+        
         Array array = (Array) caArrayObject;
         array.setBatch(getUniqueStringValue());
         array.setSerialNumber(getUniqueStringValue());

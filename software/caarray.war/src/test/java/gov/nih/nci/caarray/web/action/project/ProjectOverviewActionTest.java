@@ -101,9 +101,6 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -162,9 +159,7 @@ public class ProjectOverviewActionTest extends AbstractCaarrayTest {
     @Test
     public void testRetrieveArrayDesigns() throws Exception {
         this.action.setManufacturerId(1L);
-        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
-        assayTypes.add(new AssayType("Gene Expression"));
-        this.action.setAssayTypeValues(assayTypes);
+        this.action.setAssayTypeValue(AssayType.GENE_EXPRESSION.getValue());
         assertEquals("xmlArrayDesigns", this.action.retrieveArrayDesigns());
         assertEquals(1, this.action.getArrayDesigns().size());
     }
@@ -206,16 +201,13 @@ public class ProjectOverviewActionTest extends AbstractCaarrayTest {
             return null;
         }
         @Override
-        public List<ArrayDesign> getImportedArrayDesigns(Organization provider, Set<AssayType> assayTypes) {
-            AssayType DUMMY_ASSAYTYPE_1 = new AssayType("Gene Expression");
+        public List<ArrayDesign> getImportedArrayDesigns(Organization provider, AssayType assayType) {
             if (provider != null && Long.valueOf(1L).equals(provider.getId()) &&
-                    assayTypes.contains(DUMMY_ASSAYTYPE_1)) {
+                    AssayType.GENE_EXPRESSION.equals(assayType)) {
                 List<ArrayDesign> designs = new ArrayList<ArrayDesign>();
                 ArrayDesign d1 = new ArrayDesign();
                 d1.setId(1L);
-                SortedSet <AssayType>dummyAssayTypes = new TreeSet<AssayType>();
-                dummyAssayTypes.add(DUMMY_ASSAYTYPE_1);
-                d1.setAssayTypes(dummyAssayTypes);
+                d1.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
                 designs.add(d1);
                 return designs;
             }
@@ -233,9 +225,7 @@ public class ProjectOverviewActionTest extends AbstractCaarrayTest {
                 Organization o = new Organization();
                 o.setId(1L);
                 p.getExperiment().setManufacturer(o);
-                SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
-                assayTypes.add(new AssayType("Gene Expression"));
-                p.getExperiment().setAssayTypes(assayTypes);
+                p.getExperiment().setAssayTypeEnum(AssayType.GENE_EXPRESSION);
             }
             return p;
         }

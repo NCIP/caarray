@@ -1,39 +1,34 @@
 package gov.nih.nci.caarray.domain.array;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import static org.junit.Assert.assertNull;
 import gov.nih.nci.caarray.domain.project.AssayType;
 
 import org.junit.Test;
 
 public class ArrayDesignTest {
-    private static AssayType DUMMY_ASSAY_TYPE1 = new AssayType("Gene Expression");
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testSetType() {
         ArrayDesign arrayDesign = new ArrayDesign();
-        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
-        assayTypes.add(DUMMY_ASSAY_TYPE1);
-        arrayDesign.setAssayTypes(assayTypes);
-        assertEquals(DUMMY_ASSAY_TYPE1.getName(), arrayDesign.getAssayTypes().first().getName());
-        assertEquals(DUMMY_ASSAY_TYPE1, arrayDesign.getAssayTypes().first());
-        assayTypes = new TreeSet<AssayType>();
-        assayTypes.add(new AssayType("illegal value"));
-        arrayDesign.setAssayTypes(assayTypes);
+        arrayDesign.setAssayType(AssayType.EXON.name());
+        assertEquals(AssayType.EXON.getValue(), arrayDesign.getAssayType());
+        assertEquals(AssayType.EXON, arrayDesign.getAssayTypeEnum());
+        arrayDesign.setAssayType(null);
+        assertNull(arrayDesign.getAssayTypeEnum());
+        assertNull(arrayDesign.getAssayType());
+        arrayDesign.setAssayType("illegal value");
     }
 
     @Test
     public void testSetArrayType() {
         ArrayDesign arrayDesign = new ArrayDesign();
-        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
-        assayTypes.add(DUMMY_ASSAY_TYPE1);
-        arrayDesign.setAssayTypes(assayTypes);
-        assertEquals(DUMMY_ASSAY_TYPE1.getName(), arrayDesign.getAssayTypes().first().getName());
-        assertEquals(DUMMY_ASSAY_TYPE1, arrayDesign.getAssayTypes().first());
+        arrayDesign.setAssayTypeEnum(AssayType.EXON);
+        assertEquals(AssayType.EXON.getValue(), arrayDesign.getAssayType());
+        assertEquals(AssayType.EXON, arrayDesign.getAssayTypeEnum());
+        arrayDesign.setAssayTypeEnum(null);
+        assertNull(arrayDesign.getAssayTypeEnum());
+        assertNull(arrayDesign.getAssayType());
     }
+
 }

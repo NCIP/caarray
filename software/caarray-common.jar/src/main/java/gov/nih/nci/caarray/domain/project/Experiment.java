@@ -247,7 +247,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private PaymentMechanism paymentMechanism;
     private String paymentNumber;
     private ServiceType serviceType = ServiceType.FULL;
-    private SortedSet<AssayType> assayTypes = new TreeSet<AssayType>();
+    private String assayType;
     private Organization manufacturer;
     private Organism organism;
     private Set<Factor> factors = new HashSet<Factor>();
@@ -504,20 +504,38 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the assay type
      */
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "experiment")
-    @ForeignKey(name = "experiment_assaytypes_exp_fk", inverseName = "experiment_assaytypes_at_fk")
+    @NotNull
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
-    @Sort(type = SortType.NATURAL)
-    public SortedSet<AssayType> getAssayTypes() {
-        return this.assayTypes;
+    public String getAssayType() {
+        return this.assayType;
     }
 
     /**
-     * @param assayTypes the assayTypes to set
+     * @param assayType the assayType to set
      */
-    public void setAssayTypes(SortedSet<AssayType> assayTypes) {
-        this.assayTypes = assayTypes;
+    public void setAssayType(String assayType) {
+        AssayType.checkType(assayType);
+        this.assayType = assayType;
+    }
+
+    /**
+     * @return the assayType enum
+     */
+    @Transient
+    public AssayType getAssayTypeEnum() {
+        return AssayType.getByValue(getAssayType());
+    }
+
+    /**
+     * @param assayTypeEnum the assayTypeEnum to set
+     */
+    public void setAssayTypeEnum(AssayType assayTypeEnum) {
+        if (assayTypeEnum == null) {
+            setAssayType(null);
+        } else {
+            setAssayType(assayTypeEnum.getValue());
+        }
     }
 
     /**
@@ -528,6 +546,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "experiment_manufacturer_fk")
+    @NotNull
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public Organization getManufacturer() {
         return this.manufacturer;

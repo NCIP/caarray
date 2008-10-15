@@ -107,6 +107,11 @@ public enum ProjectSortCriterion implements SortCriterion<Project> {
     ORGANISM("experiment.organism.scientificName"),
 
     /**
+     * Assay Type.
+     */
+    ASSAY_TYPE("experiment.assayType"),
+
+    /**
      * Workflow status.
      */
     STATUS("statusInternal"),

@@ -203,12 +203,11 @@ public class GridCqlSearchExperiment extends AbstractApiTest {
             //return false;
             //}
             // Check if retrieved experiment has mandatory fields.
-            if ((retrievedExperiment.getTitle() == null)
-                    || (retrievedExperiment.getAssayTypes() == null && retrievedExperiment.getManufacturer() == null)) {
+            if ((retrievedExperiment.getTitle() == null) || (retrievedExperiment.getAssayType() == null)) {
                 return false;
             }
-            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getAssayTypes(): "
-                    + retrievedExperiment.getAssayTypes());
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getAssayType(): "
+                    + retrievedExperiment.getAssayType());
         }
         return true;
     }

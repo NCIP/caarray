@@ -95,8 +95,6 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -126,8 +124,6 @@ public class BrowseDaoTest extends AbstractDaoTest {
     private static Experiment DUMMY_EXPERIMENT_4 = new Experiment();
     private static TermSource DUMMY_TERM_SOURCE = new TermSource();
     private static TermSource DUMMY_TERM_SOURCE2 = new TermSource();
-    private static AssayType DUMMY_ASSAYTYPE_1;
-    private static AssayType DUMMY_ASSAYTYPE_2;
 
     private static final BrowseDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getBrowseDao();
 
@@ -150,8 +146,6 @@ public class BrowseDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_4 = new Experiment();
         DUMMY_TERM_SOURCE = new TermSource();
         DUMMY_TERM_SOURCE2 = new TermSource();
-        DUMMY_ASSAYTYPE_1 = new AssayType("aCGH");
-        DUMMY_ASSAYTYPE_2 = new AssayType("Methylation");
         initializeProjects();
     }
 
@@ -175,24 +169,21 @@ public class BrowseDaoTest extends AbstractDaoTest {
 
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
         DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
-        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
-        assayTypes.add(DUMMY_ASSAYTYPE_1);
-        DUMMY_EXPERIMENT_1.setAssayTypes(assayTypes);
+        DUMMY_EXPERIMENT_1.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_1.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM_1);
         DUMMY_EXPERIMENT_1.setManufacturer(DUMMY_PROVIDER);
 
         DUMMY_PROJECT_2.setExperiment(DUMMY_EXPERIMENT_2);
         DUMMY_EXPERIMENT_2.setTitle("DummyExperiment2");
-        assayTypes = new TreeSet<AssayType>();
-        assayTypes.add(DUMMY_ASSAYTYPE_1);
-        assayTypes.add(DUMMY_ASSAYTYPE_2);
-        DUMMY_EXPERIMENT_2.setAssayTypes(assayTypes);
+        DUMMY_EXPERIMENT_2.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_2.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_2.setOrganism(DUMMY_ORGANISM_2);
+        DUMMY_EXPERIMENT_2.setManufacturer(DUMMY_PROVIDER);
 
         DUMMY_PROJECT_3.setExperiment(DUMMY_EXPERIMENT_3);
         DUMMY_EXPERIMENT_3.setTitle("DummyExperiment3");
+        DUMMY_EXPERIMENT_3.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_3.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM_1);
         DUMMY_EXPERIMENT_3.setManufacturer(DUMMY_PROVIDER);
@@ -264,8 +255,6 @@ public class BrowseDaoTest extends AbstractDaoTest {
     private void saveProjects() {
         Transaction tx = HibernateUtil.beginTransaction();
         Session session = HibernateUtil.getCurrentSession();
-        session.save(DUMMY_ASSAYTYPE_1);
-        session.save(DUMMY_ASSAYTYPE_2);
         session.save(DUMMY_ORGANISM_1);
         session.save(DUMMY_ORGANISM_2);
         session.save(DUMMY_PROJECT_1);
