@@ -105,4 +105,11 @@ public class OrganismDaoStub extends AbstractDaoStub implements OrganismDao {
     public List<Organism> getAllOrganisms() {
         return new ArrayList<Organism>();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Organism> searchForOrganismNames(String keyword) {
+        return new ArrayList<Organism>();
+    }
 }

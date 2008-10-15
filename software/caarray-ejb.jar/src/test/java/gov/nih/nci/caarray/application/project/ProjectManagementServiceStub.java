@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.project;
 
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -92,11 +93,16 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
+import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.io.File;
@@ -373,6 +379,9 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return files.size();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Sample getSampleByExternalId(Project project, String externalSampleId) {
         Sample s = new Sample();
         s.setExternalSampleId(externalSampleId);
@@ -380,4 +389,66 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return s;
     }
 
-}
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.business.vocabulary.VocabularyService#countSamplesByCharacteristicCategory(gov.nih.nci.caarray.domain.vocabulary.Category, java.lang.String)
+     */
+    public int countSamplesByCharacteristicCategory(Category c, String keyword) {
+        return 10;
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.business.vocabulary.VocabularyService#countSourcesByCharacteristicCategory(gov.nih.nci.caarray.domain.vocabulary.Category, java.lang.String)
+     */
+    public int countSourcesByCharacteristicCategory(Category c, String keyword) {
+        return 10;
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.business.vocabulary.VocabularyService#searchByCategory(com.fiveamsolutions.nci.commons.data.search.PageSortParams, java.lang.String, gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory[])
+     */
+    public <T extends AbstractBioMaterial> List<T> searchByCategory(PageSortParams<T> params, String keyword,
+            BiomaterialSearchCategory... categories) {
+
+        if (categories[0] instanceof SearchSampleCategory) {
+            List<T> returnVal = new ArrayList<T>();
+            returnVal.add((T)new Sample());
+            returnVal.add((T)new Sample());
+            returnVal.add((T)new Sample());
+            returnVal.add((T)new Sample());
+            return returnVal;
+        } else if (categories[0] instanceof SearchSourceCategory) {
+            List<T> returnVal = new ArrayList<T>();
+            returnVal.add((T)new Source());
+            returnVal.add((T)new Source());
+            returnVal.add((T)new Source());
+            returnVal.add((T)new Source());
+            return returnVal;
+        }
+
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.business.vocabulary.VocabularyService#searchCount(java.lang.String, gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory[])
+     */
+    public int searchCount(String keyword, BiomaterialSearchCategory... categories) {
+        return 4;
+    }
+
+
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.business.vocabulary.VocabularyService#searchSamplesByCharacteristicCategory(gov.nih.nci.caarray.domain.vocabulary.Category, java.lang.String)
+     */
+    public List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword) {
+        return new ArrayList<Sample>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Source> searchSourcesByCharacteristicCategory(Category c, String keyword) {
+        return new ArrayList<Source>();
+    }
+
+  }

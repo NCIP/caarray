@@ -91,11 +91,14 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.io.File;
@@ -423,5 +426,65 @@ public interface ProjectManagementService {
      * @return the sample with given external identifier, or null if there is no sample with that public identifier
      */
     Sample getSampleByExternalId(Project project, String externalSampleId);
+
+    /**
+     * Performs a query for samples and sources by text matching for the given keyword.
+     *
+     * Note that this method currently only supports SortCriterions that are either simple properties of the target
+     * class or required single-valued associations from it. If a non-required association is used in the sort
+     * criterion, then any instances for which that association is null will not be included in the results (as an inner
+     * join is used)
+     *
+     * @param <T> child of AbstractBioMaterial
+     * @param params paging and sorting parameters
+     * @param keyword text to search for
+     * @param categories Indicates which categories to search. Passing null will search all categories.
+     * @return a list of matching experiments
+     */
+    <T extends AbstractBioMaterial>List<T>  searchByCategory(PageSortParams<T> params, String keyword,
+            BiomaterialSearchCategory... categories);
+
+
+    /**
+     * Performs a query for all samples which contain a characteristic and category supplied.
+     * @param c category
+     * @param keyword text keyword
+     * @return a list if samples with characteristic matching keyword and category matching c
+     */
+    List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword);
+
+    /**
+     * Performs a query for all sources which contain a characteristic and category supplied.
+     * @param c category
+     * @param keyword text
+     * @return a list of sources
+     */
+    List<Source> searchSourcesByCharacteristicCategory(Category c, String keyword);
+
+    /**
+     * Count of samples matching category and term value.
+     * @param c category
+     * @param keyword text
+     * @return number of samples
+     */
+    int countSamplesByCharacteristicCategory(Category c, String keyword);
+
+    /**
+     * Count of sources matching category and term value.
+     * @param c category
+     * @param keyword text
+     * @return nmumber of sources
+     */
+    int countSourcesByCharacteristicCategory(Category c, String keyword);
+
+    /**
+     * Gets the count of search results matching the given keyword.
+     *
+     * @param keyword keyword to search for
+     * @param categories categories to search
+     * @return number of results
+     */
+    int searchCount(String keyword, BiomaterialSearchCategory... categories);
+
 
 }

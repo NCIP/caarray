@@ -13,9 +13,17 @@
             <s:iterator value="tabs.entrySet()" status="myStatus">
                 <c:url value="/ajax/search/${key}.action" var="tabUrl">
                     <c:param name="keyword" value="${keyword}"/>
-                    <c:param name="category" value="${category}"/>
+                    <c:param name="searchType" value="${searchType}"/>
+                    <c:param name="categoryExp" value="${categoryExp}"/>
+                    <c:param name="categorySample" value="${categorySample}"/>
+                    <c:param name="categoryCombo" value="${categoryCombo}"/>
                     <c:param name="location" value="${location}"/>
-                    <c:param name="resultCount" value="${value}"/>                
+                    <c:param name="resultExpCount" value="${value}"/>
+                    <c:param name="resultSampleCount" value="${value}"/>
+                    <c:param name="resultSourceCount" value="${value}"/>
+                    <c:param name="sampleResults" value="${value}"/>
+                    <c:param name="sourceResults" value="${value}"/>
+                    <c:param name="selectedCategory" value="${selectedCategory.id}"/>
                 </c:url>
                 <fmt:message key="search.tab.${key}" var="tabTitle">
                     <fmt:param>${value}</fmt:param>

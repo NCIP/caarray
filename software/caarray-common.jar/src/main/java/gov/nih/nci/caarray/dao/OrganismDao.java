@@ -105,4 +105,12 @@ public interface OrganismDao extends CaArrayDao {
      * @return List of the array designs
      */
     List<Organism> getAllOrganisms();
+
+    /**
+     * Returns a list of organisms starting with keyword.
+     * @param keyword the keyword
+     * @return list of Organisms
+     */
+    List<Organism> searchForOrganismNames(String keyword);
+
 }

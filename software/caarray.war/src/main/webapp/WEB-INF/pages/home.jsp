@@ -2,6 +2,88 @@
 <html>
 <head>
     <meta name="showLoginSidebar" content="true"/>
+    <script type="text/javascript">
+
+            populateCategory = function() {
+
+                if ($('searchTypeSEARCH_BY_SAMPLE').checked == true) {
+
+                    $('selectSampleCat').show();
+                    $('selectExpCat').hide();
+                    checkSampleCategorySelection();
+                } else if ($('searchTypeSEARCH_BY_EXPERIMENT').checked == true) {
+
+                    $('selectExpCat').show();
+                    $('selectSampleCat').hide();
+                    hideFilterBox('filterCharBox');
+                    checkExpCategorySelection();
+                } else {
+
+                    $('selectExpCat').hide();
+                    $('selectSampleCat').hide();
+                    hideFilterBox('filterCharBox');
+                }
+
+            }
+
+            checkSampleCategorySelection = function() {
+
+                if ($('selectSampleCat').value == 'OTHER_CHARACTERISTICS') {
+
+                    showFilterBox('filterCharBox');
+                    hideFilterBox('filterOrgBox');
+                    showKeywordTxtBox();
+                } else if ($('selectSampleCat').value == 'SAMPLE_ORGANISM') {
+
+                    hideKeywordTxtBox();
+                    showFilterBox('filterOrgBox');
+                    hideFilterBox('filterCharBox');
+                } else {
+                    showKeywordTxtBox();
+                    hideFilterBox('filterCharBox');
+                    hideFilterBox('filterOrgBox');
+                }
+            }
+
+            checkExpCategorySelection = function() {
+
+                if ($('selectExpCat').value == 'ORGANISM') {
+                    hideKeywordTxtBox();
+                    showFilterBox('filterOrgBox');
+                    hideFilterBox('filterCharBox');
+                } else {
+                    showKeywordTxtBox();
+                    hideFilterBox('filterCharBox');
+                    hideFilterBox('filterOrgBox');
+                }
+            }
+
+            showFilterBox = function(boxname) {
+                var filterBoxL = boxname+'OuterDivLabel';
+                var filterBoxB = boxname+'OuterDivBody';
+                $(filterBoxL).show();
+                $(filterBoxB).show();
+            }
+
+            hideFilterBox = function(boxname) {
+                var filterBoxL = boxname+'OuterDivLabel';
+                var filterBoxB = boxname+'OuterDivBody';
+                $(filterBoxL).hide();
+                $(filterBoxB).hide();
+            }
+
+            showKeywordTxtBox = function() {
+                $('keyword').show();
+                $('keywordlabel').show();
+            }
+
+            hideKeywordTxtBox = function() {
+                $('keyword').hide();
+                $('keywordlabel').hide();
+            }
+
+    </script>
+
 </head>
 <body>
     <div class="homebanner"><img src="<c:url value="/images/banner_caarray.jpg"/>" width="598" height="140" alt="" /></div>
@@ -46,17 +128,67 @@
                 </table>
             </div>
         </div>
-        <div id="searchboxhome">
+        <div id="searchboxhome" >
             <h2 class="tanbar">Search caArray</h2>
             <div class="boxpad">
                 <s:form id="searchform" action="/search/basicSearch.action" cssClass="alttable">
-                    <s:textfield name="keyword" key="search.keyword"/>
-                    <s:select name="category" key="search.category"
-                              list="@gov.nih.nci.caarray.web.action.SearchAction@getSearchCategories()" listValue="%{getText(label)}"
-                              listKey="value" value="EXPERIMENT_ID"/>
-                    <s:select name="location" key="search.location"
-                              list="#{'NCICB':'NCICB'}"
-                              headerKey="" headerValue="(All Locations)"/>
+                    <tr>
+                        <td align="right">
+                            <s:label theme="simple"><b><fmt:message key="search.type"/>:</b></s:label>
+                        </td>
+                        <td>
+                            <s:radio id="searchType" name="searchType" key="search.type"
+                            list="@gov.nih.nci.caarray.web.action.SearchAction@getSearchTypeSelection()"
+                            listValue="%{getText(label)}"
+                            listKey="value"
+                            value="@gov.nih.nci.caarray.domain.search.SearchTypeSelection@SEARCH_BY_EXPERIMENT"
+                            onchange="populateCategory()" theme="simple"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            <s:label theme="simple"><b><fmt:message key="search.category"/>:</b></s:label>
+                        </td>
+                        <td>
+                            <s:select id="selectExpCat" name="categoryExp"
+                            list="@gov.nih.nci.caarray.web.action.SearchAction@getSearchCategories()" listValue="%{getText(label)}"
+                            listKey="value" value="EXPERIMENT_ID" theme="simple" onchange="checkExpCategorySelection()" />
+
+                            <s:select id="selectSampleCat" name="categorySample"
+                            list="@gov.nih.nci.caarray.web.action.SearchAction@getSearchBiometricCategories()" listValue="%{getText(label)}"
+                            listKey="value" value="SAMPLE_NAME"  cssStyle="display:none;" theme="simple" onchange="checkSampleCategorySelection()"/>
+                        </td>
+                    </tr>
+                            <c:url var="autocompleteUrl" value="/ajax/search/searchForCharacteristicCategories.action" />
+                            <c:set var="editMode" value="true" scope="request"/>
+                            <caarray:listSelector baseId="filterCharBox" listField="${selectedCategory}" listLabel="Characteristics"
+                                listFieldName="selectedCategory" tabIndex="3" required="true" multiple="false"
+                                hideAddButton="true"
+                                filterFieldName="filterInput" objectLabel="name" objectValue="id"
+                                autocompleteUrl="${autocompleteUrl}" divstyle="display:none;"/>
+                     <tr>
+                        <td align="right">
+                            <div id="keywordlabel"><b><fmt:message key="search.keyword"/>:</b></div>
+                        </td>
+                        <td>
+                            <s:textfield id="keyword" name="keyword" key="search.keyword" theme="simple"/>
+                        </td>
+                     </tr>
+                            <c:url var="autoOrgCompleteUrl" value="/ajax/search/searchForOrganismNames.action" />
+                            <caarray:listSelector baseId="filterOrgBox" listField="${selectedOganism}" listLabel="Keyword"
+                                listFieldName="selectedOrganism" tabIndex="5" required="true" multiple="false"
+                                hideAddButton="true"
+                                filterFieldName="filterKeyword" objectLabel="scientificName" objectValue="id"
+                                autocompleteUrl="${autoOrgCompleteUrl}" divstyle="display:none;"/>
+                    <tr>
+                        <td align="right">
+                            <s:label theme="simple"><b><fmt:message key="search.location"/>:</b></s:label>
+                        </td>
+                        <td>
+                            <s:select name="location" list="#{'NCICB':'NCICB'}"
+                                      headerKey="" headerValue="(All Locations)" theme="simple" />
+                        </td>
+                    </tr>
                     <tr>
                         <td colspan="2" class="centered">
                     <del class="btnwrapper">
@@ -73,5 +205,5 @@
         </div>
     </div>
     <div class="clear"></div>
-</body>
+    </body>
 </html>

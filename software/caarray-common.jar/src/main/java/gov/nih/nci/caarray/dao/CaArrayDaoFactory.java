@@ -172,4 +172,10 @@ public interface CaArrayDaoFactory {
      * @return a <code>BrowseDao</code>.
      */
     BrowseDao getBrowseDao();
+
+    /**
+     * @return a <code>SampleDao</code>.
+     */
+    SampleDao getSampleDao();
+
 }

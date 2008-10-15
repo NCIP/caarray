@@ -98,6 +98,7 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.validation.InvalidNumberOfArgsException;
 import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
@@ -303,35 +304,53 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         getArrayDao().save(arrayDesign);
     }
 
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     private AbstractArrayDesignHandler getHandler(Set<CaArrayFile> designFiles) {
         CaArrayFile designFile = designFiles.iterator().next();
         FileType type = designFile.getFileType();
         if (type == null) {
             throw new IllegalArgumentException("FileType was null");
-        } else if (FileType.AFFYMETRIX_CDF.equals(type) && designFiles.size() == 1) {
+        } else if (FileType.AFFYMETRIX_CDF.equals(type)
+                && throwInvalidNumOfArgsExc(FileType.AFFYMETRIX_CDF.toString(), designFiles.size(), 1)) {
             return new AffymetrixCdfHandler(getVocabularyService(), daoFactory, designFile);
         } else if (FileType.AFFYMETRIX_CLF.equals(type) || FileType.AFFYMETRIX_PGF.equals(type)
-                && designFiles.size() == 2) {
+                && throwInvalidNumOfArgsExc(FileType.AFFYMETRIX_CLF.toString(), designFiles.size(), 2)) {
             return new AffymetrixPgfClfDesignHandler(getVocabularyService(), daoFactory, designFiles);
-        } else if (FileType.ILLUMINA_DESIGN_CSV.equals(type) && designFiles.size() == 1) {
+        } else if (FileType.ILLUMINA_DESIGN_CSV.equals(type)
+                && throwInvalidNumOfArgsExc(FileType.ILLUMINA_DESIGN_CSV.toString(), designFiles.size(), 1)) {
             return new IlluminaCsvDesignHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.GENEPIX_GAL.equals(type) && designFiles.size() == 1) {
+        } else if (FileType.GENEPIX_GAL.equals(type)
+                && throwInvalidNumOfArgsExc(FileType.GENEPIX_GAL.toString(), designFiles.size(), 1)) {
             return new GenepixGalDesignHandler(getVocabularyService(), daoFactory, designFile);
         } else if ((FileType.AGILENT_CSV.equals(type) || FileType.AGILENT_XML.equals(type))
-                && designFiles.size() == 1) {
+                && throwInvalidNumOfArgsExc(FileType.AGILENT_CSV.toString(), designFiles.size(), 1)) {
             return new AgilentUnsupportedDesignHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.IMAGENE_TPL.equals(type) && designFiles.size() == 1) {
+        } else if (FileType.IMAGENE_TPL.equals(type)
+                && throwInvalidNumOfArgsExc(FileType.IMAGENE_TPL.toString(), designFiles.size(), 1)) {
             return new ImageneTplHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.UCSF_SPOT_SPT.equals(type) && designFiles.size() == 1) {
+        } else if (FileType.UCSF_SPOT_SPT.equals(type)
+            && throwInvalidNumOfArgsExc(FileType.IMAGENE_TPL.toString(), designFiles.size(), 1)) {
             return new UcsfSpotSptHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.NIMBLEGEN_NDF.equals(type) && designFiles.size() == 1) {
+        } else if (FileType.NIMBLEGEN_NDF.equals(type)
+            && throwInvalidNumOfArgsExc(FileType.UCSF_SPOT_SPT.toString(), designFiles.size(), 1)) {
             return new NimbleGenNdfHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.MAGE_TAB_ADF.equals(type) && designFiles.size() == 1) {
+        } else if (FileType.MAGE_TAB_ADF.equals(type)
+            && throwInvalidNumOfArgsExc(FileType.MAGE_TAB_ADF.toString(), designFiles.size(), 1)) {
             return new MageTabAdfHandler(getVocabularyService(), daoFactory, designFile);
         } else {
-            throw new IllegalArgumentException("Unsupported array design file type: "
-                    + type + " or number of files provided is unsupported.");
+            throw new InvalidNumberOfArgsException(InvalidNumberOfArgsException.UNSUPPORTED_ARRAY_DESIGN);
         }
+    }
+
+    private boolean throwInvalidNumOfArgsExc(String type, int numberOfDesigns, int numberAllowed) {
+        if (numberOfDesigns != numberAllowed) {
+            InvalidNumberOfArgsException inv =
+                new InvalidNumberOfArgsException(InvalidNumberOfArgsException.NUMBER_OF_ARGS);
+            inv.addArg(type);
+            throw inv;
+        }
+
+        return true;
     }
 
     /**

@@ -280,9 +280,12 @@ public class Sample extends AbstractBioMaterial implements Protectable, Comparab
      * @return result of comparison
      */
     public int compareTo(Sample o) {
-        if (o == null) {
+        if (o == null || o.getName() == null) {
             return 1;
+        } else if (this.getName() == null) {
+            return -1;
         }
+
         return this.getName().compareToIgnoreCase(o.getName());
     }
 }

@@ -250,4 +250,21 @@ public interface VocabularyService {
      * with the same version as the given source; null if no matching terms are found
      */
     Term findTermInAllTermSourceVersions(TermSource termSource, String value);
+
+    /**
+     * Performs a query for characteristic categories.
+     *
+     * @param keyword text to search for
+     * @return a list of matching categores
+     */
+    List<Category> searchForCharacteristicCategory(String keyword);
+
+    /**
+     * Performs a query for organism names.
+     *
+     * @param keyword text to search for
+     * @return a list of matching categores
+     */
+    List<Organism> searchForOrganismNames(String keyword);
+
 }

@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -130,19 +131,26 @@ public class VocabularyDaoStub extends AbstractDaoStub implements VocabularyDao 
     public Term getTermById(Long id) {
         return null;
     }
-   
+
     /**
      * {@inheritDoc}
      */
     public Term getTerm(TermSource source, String value) {
         return null;
     }
-    
+
     public Organism getOrganism(TermSource source, String scientificName) {
         return null;
     }
-    
+
     public Term findTermInAllTermSourceVersions(TermSource termSource, String value) {
         return null;
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.dao.SampleDao#searchForCharacteristicCategory(java.lang.String)
+     */
+    public List<Category> searchForCharacteristicCategory(String keyword) {
+        return Collections.EMPTY_LIST;
     }
 }

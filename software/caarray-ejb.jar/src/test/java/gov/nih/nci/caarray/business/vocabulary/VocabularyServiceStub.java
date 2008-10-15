@@ -85,6 +85,12 @@ package gov.nih.nci.caarray.business.vocabulary;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
+import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
+import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -93,6 +99,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * Basic stub for tests.
@@ -114,7 +122,7 @@ public class VocabularyServiceStub implements VocabularyService {
         }
         return terms;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -135,7 +143,7 @@ public class VocabularyServiceStub implements VocabularyService {
         source.setVersion(version);
         return source;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -145,7 +153,7 @@ public class VocabularyServiceStub implements VocabularyService {
         result.add(ts);
         return result;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -179,7 +187,7 @@ public class VocabularyServiceStub implements VocabularyService {
         org.setId(id);
         return org;
     }
-    
+
     public Organism getOrganism(TermSource source, String scientificName) {
         Organism org = new Organism();
         org.setTermSource(source);
@@ -244,8 +252,36 @@ public class VocabularyServiceStub implements VocabularyService {
     public Protocol getProtocol(String name, TermSource source) {
         return null;
     }
-    
+
     public Term findTermInAllTermSourceVersions(TermSource termSource, String value) {
         return null;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Category> searchForCharacteristicCategory(String keyword) {
+        return new ArrayList<Category>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Organism> searchForOrganismNames(String keyword) {
+        return new ArrayList<Organism>();
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+

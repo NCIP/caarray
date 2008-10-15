@@ -191,5 +191,12 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
     public BrowseDao getBrowseDao() {
         return new BrowseDaoImpl();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SampleDao getSampleDao() {
+        return new SampleDaoImpl();
+    }
 }
 

@@ -1,0 +1,46 @@
+<%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+<ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
+    <display:table class="searchresults" cellspacing="0" list="${sourceResults}" requestURI="${sortUrl}" id="row" style="clear: none;">
+        <c:set var="canReadExp" value="${caarrayfn:canRead(row.experiment.project, caarrayfn:currentUser())}"/>
+        <caarray:displayTagProperties/>
+        <display:column titleKey="experiment.sources.name" sortable="true" sortProperty="NAME">
+            <c:url var="viewSourceUrl" value="/ajax/project/listTab/Sources/view.action">
+                <c:param name="project.id" value="${row.experiment.project.id}"/>
+                <c:param name="currentSource.id" value="${row.id}"/>
+            </c:url>
+            <c:url var="projectUrl" value="/project/details.action">
+                <c:param name="project.id" value="${row.experiment.project.id}"/>
+                <c:param name="initialTab" value="annotations"/>
+                <c:param name="initialTab2" value="sources"/>
+                <c:param name="initialTab2Url" value="${viewSourceUrl}"/>
+             </c:url>
+             <a href="${projectUrl}"><caarray:abbreviate value="${row.name}" maxWidth="30"/></a>
+        </display:column>
+        <display:column property="description" titleKey="experiment.sources.description" />
+        <display:column property="experiment.organism.scientificName" sortProperty="ORGANISM" titleKey="search.result.organism" sortable="true"/>
+        <display:column property="diseaseState.value" sortProperty="DISEASESTATE" titleKey="search.result.diseaseState" sortable="true"/>
+        <display:column property="tissueSite.value" sortProperty="TISSUESITE" titleKey="search.result.tissueSite" sortable="true"/>
+        <display:column property="materialType.value" sortProperty="MATERIALTYPE" titleKey="search.result.materialType" sortable="true"/>
+        <display:column property="cellType.value" sortProperty="CELLTYPE" titleKey="search.result.cellType" sortable="true"/>
+        <display:column titleKey="search.result.provider" sortProperty="PROVIDER_NAME" sortable="true">
+            <c:forEach items="${row.providers}" var="curProvider" varStatus="status">
+                ${curProvider.name}<c:if test="${!status.last}">,<br></c:if>
+            </c:forEach>
+        </display:column>
+        <display:column titleKey="search.result.experimentTitle" sortable="true" sortProperty="TITLE">
+             <c:choose>
+                <c:when test="${canReadExp}">
+                     <c:url var="viewExpUrl" value="/project/details.action">
+                        <c:param name="project.id" value="${row.experiment.project.id}"/>
+                     </c:url>
+                     <a title="View experiment ${row.experiment.title} in read only mode" href="${viewExpUrl}">${row.experiment.title}</a>
+                </c:when>
+                <c:otherwise>
+                    ${row.experiment.title}
+                </c:otherwise>
+            </c:choose>
+        </display:column>
+        <s:set name="showDownloadGroups" value="%{@gov.nih.nci.caarray.web.action.project.AbstractProjectProtocolAnnotationListTabAction@isWillPerformDownloadByGroups(#attr.row.getAllDataFiles())}"/>
+        <caarray:projectListTabDownloadColumn entityName="Source" itemId="${row.id}" showDownloadGroups="${showDownloadGroups}"/>
+    </display:table>
+</ajax:displayTag>

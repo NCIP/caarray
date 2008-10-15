@@ -23,6 +23,7 @@
 <%@ attribute name="autocompleteParamValues" required="false" type="java.lang.String" description="Additional parameter values to pass to the autocomplete filter (comma-separated list)" %>
 <%@ attribute name="allowReordering" required="false" type="java.lang.String" description="true to allow reordering of the selected items, false otherwise.  only relevant if multipe = true" %>
 <%@ attribute name="displayResourceValue" required="false" type="java.lang.String" description="true to call getText() on the list field in order to display the resource value"%>
+<%@ attribute name="divstyle" required="false" type="java.lang.String" description="style for the outer most div"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -50,11 +51,27 @@
     </td>
 </tr>
 </s:if>
+
+
 <tr>
-    <td class="tdLabel"><label class="label">${listLabel}<c:if test="${required == 'true'}"><span class="required">*</span></c:if>:</label></td>
+    <td class="tdLabel">
+        <s:if test="${divstyle != null}">
+            <div id="${baseId}OuterDivLabel" style="${divstyle}">
+                <label class="label">${listLabel}<c:if test="${required == 'true'}"><span class="required">*</span></c:if>:</label>
+            </div>
+        </s:if>
+        <s:else>
+            <label class="label">${listLabel}<c:if test="${required == 'true'}"><span class="required">*</span></c:if>:</label>
+        </s:else>
+    </td>
     <td>
         <s:if test="${editMode}">
-            <div class="selectListWrapper">
+            <s:if test="${divstyle != null}">
+               <div id="${baseId}OuterDivBody" class="selectListWrapper" style="${divstyle}">
+            </s:if>
+            <s:else>
+               <div class="selectListWrapper">
+            </s:else>
                 <div class="selectListSide">
                     <div class="selectListHeader">
                         <c:if test="${showFilter == 'true'}">
@@ -166,3 +183,4 @@
         </s:else>
     </td>
 </tr>
+

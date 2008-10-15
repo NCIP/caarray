@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -100,7 +101,7 @@ public interface VocabularyDao extends CaArrayDao {
      * Gets all the <code>Terms</code> belonging to the given category only (and not its subcategories).
      *
      * @param category the category for which to retrieve terms
-     * @return <code>List&lt;Term></code> of all terms belonging directly to the given category, or an empty 
+     * @return <code>List&lt;Term></code> of all terms belonging directly to the given category, or an empty
      * <code>List</code> if no matches.
      */
     Set<Term> getTerms(Category category);
@@ -111,7 +112,7 @@ public interface VocabularyDao extends CaArrayDao {
      * terms whose value starts with the given prefix.
      *
      * @param category the category for which to retrieve terms
-     * @param valuePrefix if not null, only return terms whose value starts with this. 
+     * @param valuePrefix if not null, only return terms whose value starts with this.
      * @return all matching terms or an empty <code>Set</code> if no matches.
      */
     Set<Term> getTermsRecursive(Category category, String valuePrefix);
@@ -139,7 +140,7 @@ public interface VocabularyDao extends CaArrayDao {
      * @return the Term with given id or null if none found
      */
     Term getTermById(Long id);
-    
+
     /**
      * Get the organism with given name in the given term source.
      * @param source the source the organism must have.
@@ -147,17 +148,25 @@ public interface VocabularyDao extends CaArrayDao {
      * @return the organism matching the above, or null if no matches
      */
     Organism getOrganism(TermSource source, String scientificName);
-    
+
     /**
      * Given a term value and a term source, searches for a term with that value in
      * all term sources in the database which are considered
      * to be other versions of the same term source. Two TermSources are considered
      * to be versions of the same term source if they have the same name or the same url.
      * @param termSource the term source whose other versions to retrieve. If any matches exist,
-     * returns the match from the term source with the latest (using alphabetical ordering) version 
+     * returns the match from the term source with the latest (using alphabetical ordering) version
      * @param value value of the term to find (case insensitive)
      * @return a Term with given value from the Term Source with latest version from among all term sources
      * with the same version as the given source; null if no matching terms are found
-     */ 
+     */
     Term findTermInAllTermSourceVersions(TermSource termSource, String value);
+
+    /**
+     * Performs a query for abstract characteristic categories by text prefix matching for the given keyword.
+     *
+     * @param keyword text to search for
+     * @return a list of matching experiments
+     */
+    List<Category> searchForCharacteristicCategory(String keyword);
 }

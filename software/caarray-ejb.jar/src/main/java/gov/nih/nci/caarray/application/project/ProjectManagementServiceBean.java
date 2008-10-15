@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.application.project.InconsistentProjectStateException
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.dao.SampleDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -108,7 +109,9 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
@@ -168,6 +171,10 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
     private FileDao getFileDao() {
         return this.daoFactory.getFileDao();
+    }
+
+    private SampleDao getSampleDao() {
+        return this.daoFactory.getSampleDao();
     }
 
     /**
@@ -766,6 +773,53 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         }
         return samples.get(0);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends AbstractBioMaterial>List<T>  searchByCategory(PageSortParams<T> params, String keyword,
+            BiomaterialSearchCategory... categories) {
+        return getSampleDao().searchByCategory(params, keyword, categories);
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword) {
+        return getSampleDao().searchSamplesByCharacteristicCategory(c, keyword);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Source> searchSourcesByCharacteristicCategory(Category c, String keyword) {
+        return getSampleDao().searchSourcesByCharacteristicCategory(c, keyword);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int countSamplesByCharacteristicCategory(Category c, String keyword) {
+        return getSampleDao().countSamplesByCharacteristicCategory(c, keyword);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int countSourcesByCharacteristicCategory(Category c, String keyword) {
+        return getSampleDao().countSourcesByCharacteristicCategory(c, keyword);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public int searchCount(String keyword, BiomaterialSearchCategory... categories) {
+        return getSampleDao().searchCount(keyword, categories);
+    }
+
 
     private SearchDao getSearchDao() {
         return this.daoFactory.getSearchDao();

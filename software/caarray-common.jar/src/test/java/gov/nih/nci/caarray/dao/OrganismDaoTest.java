@@ -113,11 +113,11 @@ public class OrganismDaoTest extends AbstractDaoTest {
         TermSource t = new TermSource();
         t.setName("testtermsource");
         o.setTermSource(t);
-        
+
         AdditionalOrganismName additionalName = new AdditionalOrganismName();
         additionalName.setValue("additional name");
         o.getAdditionalOrganismNameCollection().add(additionalName);
-        
+
         s.save(o);
         tx.commit();
 
@@ -129,6 +129,29 @@ public class OrganismDaoTest extends AbstractDaoTest {
         assertEquals("testscientificname", retrieved.getScientificName());
         assertEquals(1, retrieved.getAdditionalOrganismNameCollection().size());
         assertEquals("additional name", retrieved.getAdditionalOrganismNameCollection().iterator().next().getValue());
+        tx.commit();
+    }
+
+    @Test
+    public void testGetMatchingNames() {
+        Transaction tx = HibernateUtil.beginTransaction();
+        assertEquals(0, DAO_OBJECT.getAllOrganisms().size());
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        Session s = HibernateUtil.getCurrentSession();
+        Organism o = new Organism();
+        o.setScientificName("searchscientificname");
+        TermSource t = new TermSource();
+        t.setName("testtermsource");
+        o.setTermSource(t);
+
+        s.save(o);
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        s = HibernateUtil.getCurrentSession();
+        assertEquals(1, DAO_OBJECT.searchForOrganismNames("search").size());
         tx.commit();
     }
 }

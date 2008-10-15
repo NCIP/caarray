@@ -237,6 +237,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         return ((Number) q.uniqueResult()).intValue();
     }
 
+
+
     private Query getSearchQuery(boolean count, PageSortParams<Project> params, String keyword,
             SearchCategory... categories) {
         SortCriterion<Project> sortCrit = params != null ? params.getSortCriterion() : null;
@@ -350,4 +352,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         };
         return (Set<Sample>) HibernateUtil.doUnfiltered(unfilteredCallback);
     }
+
+
+
 }

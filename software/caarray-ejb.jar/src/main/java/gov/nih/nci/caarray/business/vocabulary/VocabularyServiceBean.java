@@ -261,6 +261,20 @@ public class VocabularyServiceBean implements VocabularyService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public List<Category> searchForCharacteristicCategory(String keyword) {
+        return getVocabularyDao().searchForCharacteristicCategory(keyword);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Organism> searchForOrganismNames(String keyword) {
+        return getOrganismDao().searchForOrganismNames(keyword);
+    }
+
+    /**
      *
      * @return VocabularyDao
      */

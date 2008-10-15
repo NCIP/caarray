@@ -229,4 +229,12 @@ public class FileDaoTest extends AbstractDaoTest {
         DAO_OBJECT.deleteHqlBlobsByProjectId(DUMMY_PROJECT_1.getId());
         tx.commit();
     }
+
+    @Test
+    public void testUnknownProjectIds() {
+        Transaction tx = HibernateUtil.beginTransaction();
+        DAO_OBJECT.deleteHqlBlobsByProjectId(new Long(12345678));
+        DAO_OBJECT.deleteSqlBlobsByProjectId(new Long(12345678));
+        tx.commit();
+    }
 }

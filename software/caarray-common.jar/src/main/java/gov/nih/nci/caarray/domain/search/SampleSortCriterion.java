@@ -97,6 +97,28 @@ public enum SampleSortCriterion implements SortCriterion<Sample> {
     NAME("name"),
 
     /**
+     * Experiment title.
+     */
+    TITLE("experiment.title"),
+
+    /**
+     * Organism.
+     */
+    ORGANISM("experiment.organism.scientificName"),
+
+    /**
+     * tissuesite.
+     */
+    TISSUESITE("tissueSite.value"),
+
+    /**
+     * diseasestate.
+     */
+    DISEASESTATE("diseaseState.value"),
+
+
+
+    /**
      * description.
      */
     DESCRIPTION("description");

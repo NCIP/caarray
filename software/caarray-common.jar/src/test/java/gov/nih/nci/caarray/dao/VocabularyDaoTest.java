@@ -88,6 +88,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -124,6 +125,8 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     private static TermSource DUMMY_SOURCE_2 = new TermSource();
     private static Organism DUMMY_ORGANISM_1 = new Organism();
     private static Organism DUMMY_ORGANISM_2 = new Organism();
+    private static Term DUMMY_MATERIAL_TYPE = new Term();
+    private static TermBasedCharacteristic DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
 
     private static final VocabularyDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
 
@@ -176,6 +179,15 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         DUMMY_TERM_3.setDescription("DummyTestTerm3");
         DUMMY_TERM_3.setCategory(DUMMY_CATEGORY_4);
         DUMMY_TERM_3.setSource(DUMMY_SOURCE_2);
+
+        DUMMY_MATERIAL_TYPE = new Term();
+        DUMMY_MATERIAL_TYPE.setValue("Dummy Material Type");
+        DUMMY_MATERIAL_TYPE.setSource(DUMMY_SOURCE_1);
+        DUMMY_MATERIAL_TYPE.setCategory(DUMMY_CATEGORY_1);
+
+        DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
+        DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY_1);
+        DUMMY_CHARACTERISTIC.setTerm(DUMMY_MATERIAL_TYPE);
 
         DUMMY_ORGANISM_1 = new Organism();
         DUMMY_ORGANISM_1.setScientificName("name1");
@@ -540,6 +552,34 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         DAO_OBJECT.save(DUMMY_TERM_1);
         DAO_OBJECT.save(DUMMY_TERM_2);
         DAO_OBJECT.save(DUMMY_TERM_3);
+    }
+
+    /**
+     * Tests retrieving the <code>Characteristic</code> with the given name.
+     */
+    @Test
+    public void testGetCharacteristicCategoryNoKeyword() {
+        Transaction tx = null;
+
+        try {
+
+            tx = HibernateUtil.beginTransaction();
+            DAO_OBJECT.save(DUMMY_CHARACTERISTIC);
+            DAO_OBJECT.save(DUMMY_CATEGORY_1);
+            tx.commit();
+
+            tx = HibernateUtil.beginTransaction();
+
+            List<Category> all_chars = DAO_OBJECT.searchForCharacteristicCategory(null);
+
+            assertEquals(1 , all_chars.size());
+
+            tx.commit();
+
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            throw e;
+        }
     }
 
     @Test

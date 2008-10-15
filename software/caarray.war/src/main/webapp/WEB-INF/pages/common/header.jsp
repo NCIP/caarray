@@ -13,21 +13,25 @@
                 <table>
                     <tr>
                         <td colspan="3" class="alignright">
-                            <!-- <a href="search_advanced.htm">advanced search</a> -->
-                            &nbsp;
+                            <s:hidden name="searchType" value="COMBINATION_SEARCH"/>&nbsp;
                         </td>
                     </tr>
                     <tr>
                         <td><s:textfield name="keyword"/></td>
                         <td>
-                            <s:select name="category" key="search.category"
-                              list="@gov.nih.nci.caarray.web.action.SearchAction@getSearchCategories()" listValue="%{getText(label)}"
-                              listKey="value" value="EXPERIMENT_ID"/>
+                            <s:select name="categoryCombo" headerKey="-1" headerValue="Please Select..." list="#{}">
+                                  <s:optgroup label="Search Experiments"
+                                        list="@gov.nih.nci.caarray.web.action.SearchAction@getSearchCategories()"
+                                        listValue="%{getText(label)}" listKey="value" />
+                                  <s:optgroup label="Search Samples"
+                                        list="@gov.nih.nci.caarray.web.action.SearchAction@getSearchSimpleBiometricCategories()"
+                                        listValue="%{getText(label)}" listKey="value" />
+                            </s:select>
                         </td>
                         <td><s:submit value="Search"/></td>
                     </tr>
                 </table>
-            </s:form>
+                </s:form>
         </div>
     </c:if>
 </div>

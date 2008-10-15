@@ -51,6 +51,7 @@
 package gov.nih.nci.caarray.dao;
 
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -78,6 +79,9 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
     private static final String VALUE_COLUMN_NAME = "value";
     private static final Logger LOG = Logger.getLogger(VocabularyDaoImpl.class);
     private static final String UNCHECKED = "unchecked";
+    private static final String SELECT_DISTINCT = " SELECT DISTINCT ";
+    private static final String KEYWORD_SUB = "keyword";
+    private static final String FROM_KEYWORD = " FROM ";
 
     /**
      * {@inheritDoc}
@@ -162,7 +166,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
     public Term getTermById(Long id) {
         return (Term) getCurrentSession().load(Term.class, id);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -181,7 +185,34 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
         List<Term> terms = criteria.list();
         return terms.isEmpty() ? null : terms.get(0);
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public List<Category> searchForCharacteristicCategory(String keyword) {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append(SELECT_DISTINCT);
+        sb.append(" c.category");
+        sb.append(FROM_KEYWORD);
+        sb.append(TermBasedCharacteristic.class.getName());
+        sb.append(" c");
+        if (keyword != null) {
+            sb.append(" WHERE c.category.name like :");
+            sb.append(KEYWORD_SUB);
+        }
+        sb.append(" ORDER BY c.category.name");
+
+        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+
+        if (keyword != null) {
+            q.setString(KEYWORD_SUB, keyword + "%");
+        }
+
+        return q.list();
+    }
+
     @Override
     Logger getLog() {
         return LOG;

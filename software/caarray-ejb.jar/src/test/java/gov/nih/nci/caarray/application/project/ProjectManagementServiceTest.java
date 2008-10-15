@@ -117,6 +117,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
+import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
@@ -131,6 +132,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -605,6 +607,39 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         assertNotNull(sampleByExternalId);
         assertSame(project.getExperiment(), sampleByExternalId.getExperiment());
     }
+
+    @Test
+    public void testSearchByCategory() {
+        assertEquals(0, this.projectManagementService.searchByCategory(null, "test",
+            SearchSampleCategory.values()).size());
+
+    }
+
+    @Test
+    public void testSearchSamplesByCharacteristicCategory() {
+        assertEquals(Collections.EMPTY_LIST, this.projectManagementService.searchSamplesByCharacteristicCategory(null, "test"));
+    }
+
+    @Test
+    public void testSearchSourcesByCharacteristicCategory() {
+        assertEquals(Collections.EMPTY_LIST, this.projectManagementService.searchSourcesByCharacteristicCategory(null, "test"));
+    }
+
+    @Test
+    public void countSamplesByCharacteristicCategory() {
+        assertEquals(0, this.projectManagementService.countSamplesByCharacteristicCategory(null, "test"));
+    }
+
+    @Test
+    public void testCountSourcesByCharacteristicCategory() {
+        assertEquals(0, this.projectManagementService.countSourcesByCharacteristicCategory(null, "test"));
+    }
+
+    @Test
+    public void testSearchCount() {
+        assertEquals(0, this.projectManagementService.searchCount("test", SearchSampleCategory.values()));
+    }
+
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
 

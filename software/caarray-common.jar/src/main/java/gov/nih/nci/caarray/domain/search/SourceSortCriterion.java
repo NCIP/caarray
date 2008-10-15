@@ -97,6 +97,42 @@ public enum SourceSortCriterion implements SortCriterion<Source> {
     NAME("name"),
 
     /**
+     * Experiment title.
+     */
+    TITLE("experiment.title"),
+
+    /**
+     * Organism.
+     */
+    ORGANISM("experiment.organism.scientificName"),
+
+    /**
+     * tissuesite.
+     */
+    TISSUESITE("tissuesite"),
+
+    /**
+     * diseasestate.
+     */
+    DISEASESTATE("diseasestate"),
+
+    /**
+     * material type.
+     */
+    MATERIALTYPE("materialType"),
+
+    /**
+     * cell type.
+     */
+    CELLTYPE("cellType"),
+
+    /**
+     * provider name.
+     */
+    PROVIDER_NAME("provider.name"),
+
+
+    /**
      * description.
      */
     DESCRIPTION("description");
