@@ -87,8 +87,6 @@ import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -131,13 +129,6 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
         // - Import files
         importData(MAGE_TAB);
-
-        // - hit the refresh button until files are imported
-        waitForImport("Nothing found to display");
-
-        // - click on the Imported data tab and re-click until data
-        // - can be found
-        reClickForText("15 items found", "link=Imported Data", 4, 60000);
 
         // - validate the status
         checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);

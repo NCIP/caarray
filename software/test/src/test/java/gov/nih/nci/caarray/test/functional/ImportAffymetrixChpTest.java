@@ -130,9 +130,6 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         // - Import files
         importData(AUTOCREATE_ANNOTATION_SET);
 
-        // - hit the refresh button until files are imported
-        waitForImport("Nothing found to display");
-
         reClickForText("One item found", "link=Imported Data", 4, 10000);
 
         // - validate the status

@@ -87,8 +87,6 @@ import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.text.DateFormat;
 import java.util.Date;
 

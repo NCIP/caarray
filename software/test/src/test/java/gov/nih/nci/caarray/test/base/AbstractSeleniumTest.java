@@ -85,6 +85,9 @@ package gov.nih.nci.caarray.test.base;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import com.thoughtworks.selenium.SeleneseTestCase;
 
@@ -102,7 +105,6 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected static int RECORD_TIMEOUT_SECONDS = 240;
     protected static int FIFTEEN_MINUTES = 900;
     protected static final int PAGE_SIZE = 20;
-    protected static final String REFRESH_BUTTON = "//a[7]/span/span";
     private static final String UPLOAD_BUTTON = "//ul/a[3]/span/span";
     protected static final String ZERO_COLUMN = "0";
     protected static final String FIRST_COLUMN = "1";
@@ -164,6 +166,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.type("j_username", userid);
         selenium.type("j_password", "caArray2!");
         clickAndWait(LOGIN_BUTTON);
+        pause(1000);
     }
 
     protected void loginAs(String userid, String password) {
@@ -171,6 +174,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.type("j_username", userid);
         selenium.type("j_password", password);
         clickAndWait(LOGIN_BUTTON);
+        pause(1000);
     }
 
     protected void loginAsPrincipalInvestigator() {
@@ -178,6 +182,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.type("j_username", "caarrayadmin");
         selenium.type("j_password", "caArray2!");
         clickAndWait(LOGIN_BUTTON);
+        pause(1000);
     }
 
     protected void upload(File file) throws IOException {
@@ -306,6 +311,9 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         return createExperiment(title, arrayDesignName, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
     }
 
+    protected String createExperiment(String title, List<String> arrayDesignNames) throws InterruptedException {
+        return createExperiment(title, arrayDesignNames, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
+    }
     /**
      * Create an experiment without an array design and the default Afftmetrix provider and human organism
      * 
@@ -317,7 +325,13 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         String arrayDesignName = null;
         return createExperiment(title, arrayDesignName, AFFYMETRIX_PROVIDER, HOMO_SAPIENS_ORGANISM);
     }
-
+    protected String createExperiment(String title, String arrayDesignName, String provider, String organism) throws InterruptedException {
+        List<String> arrayDesignNames = new ArrayList<String>();
+        if (arrayDesignName != null){
+            arrayDesignNames.add(arrayDesignName);
+        }
+        return createExperiment(title, arrayDesignNames, provider, organism);
+    }
     /**
      * Create an experiment
      * 
@@ -325,7 +339,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
      * @throws InterruptedException
      * @return String Experiment Identifier of the experiment e.g. admin-002
      */
-    protected String createExperiment(String title, String arrayDesignName, String provider, String organism)
+    protected String createExperiment(String title, List<String> arrayDesignName, String provider, String organism)
             throws InterruptedException {
         String experimentId;
         selenium.click("link=Create/Propose Experiment");
@@ -340,10 +354,6 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         if (provider == null) {
             provider = AFFYMETRIX_PROVIDER; // default to Affy
         }
-        // selenium.select("projectForm_project_experiment_manufacturer", "label=" + provider);
-        // ** Neither of the following would wait properly for the list of Array Designs to fill **
-        // Thread.sleep(1000);
-        // waitForElementWithId("progressMsg");
         selectArrayDesign(arrayDesignName, provider);
 
         // - Organism
@@ -367,22 +377,26 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
      * @param arrayDesignName
      * @param provider
      */
-    private void selectArrayDesign(String arrayDesignName, String provider) {
+    private void selectArrayDesign(List<String> arrayDesignName, String provider) {
         String[] values;
         boolean found = false;
         selenium.select("projectForm_project_experiment_manufacturer", "label=" + provider);
 
-        if (arrayDesignName == null) {
+        if (arrayDesignName.isEmpty()) {
             return;
         }
-
-        for (int second = 1;; second++) {
+        for (int second = 1;second < 30; second++) {
             values = selenium.getSelectOptions("projectForm_project_experiment_arrayDesigns");
             // - find the array design in the list of values
             for (int i = 0; i < values.length; i++) {
-                if (values[i].equalsIgnoreCase(arrayDesignName)) {
-                    selenium.addSelection("projectForm_project_experiment_arrayDesigns", "label=" + arrayDesignName);
-                    found = true;
+                for (Iterator iter = arrayDesignName.iterator(); iter.hasNext();) {
+                    String element = (String) iter.next();
+                    if (values[i].equalsIgnoreCase(element)) {
+                        selenium.addSelection("projectForm_project_experiment_arrayDesigns", "label=" + element);
+                        found = true;
+                        break;
+                    }
+                    
                 }
             }
 
@@ -398,9 +412,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                 selenium.select("projectForm_project_experiment_manufacturer", "label=" + provider);
                 System.out.println("Reselected provider " + provider);
             }
-            if (second > 30) {
-                fail("Unable to find the array design " + arrayDesignName + " after " + second + " seconds");
-            }
+           
         }
     }
 
@@ -436,14 +448,9 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             // we must click on the OKAY box to close the popup.
             selenium.selectWindow(null);
             selenium.waitForPageToLoad("30000");
-            // - click on the array designs list and re-click until data
-            // - can be found
-            System.out.println("reclick Manage Array Designs");
-            //reClickForText(arrayDesignName, "link=Manage Array Designs", 30, 60000);
             // get the array design row so we do not find the wrong Imported text
             int column = getExperimentRow(arrayDesignName, ZERO_COLUMN);
             // wait for array design to be imported
-            System.out.println("waiting for array design to import");
             waitForArrayDesignImport(FOURTY_MINUTES, column);
         }
     }
@@ -471,7 +478,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.click("link=Next");
         waitForText("New Array Design (Step 2)");
         assertArrayDesignFileRequiredFields();
-        selenium.type("arrayDesignForm_upload", arrayDesign.toString());
+        selenium.type("upload0", arrayDesign.toString());
         selenium.click("link=Save");
         // we should now be at the
         // all-good page
@@ -540,9 +547,9 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
      * @throws Exception
      */
     protected boolean waitForArrayDesignImport(int seconds, int row) throws Exception {
+        pause(2000);
         for (int loop = 1; loop < seconds; loop++) {
             selenium.click("link=Manage Array Designs");
-            pause(2000);
             waitForText("Edit");
             // done
             String rowText = selenium.getTable("row." + row + ".9");
@@ -570,9 +577,14 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected int getExperimentRow(String text, String column) {
         String tblValue = null;
         for (int loop = 1;; loop++) {
+            tblValue = null;
             try {
                 tblValue = selenium.getTable("row." + loop + "." + column);
-            } catch (RuntimeException e) {
+             } catch (RuntimeException e) {
+                 if (tblValue == null){
+                     // there are no rows on the page
+                     return -1;
+                 }
                 System.out.println("problem looking for " + text + " at (" + loop + "," + column + ") Stopped at : " + tblValue);
                 throw e;
             }
@@ -611,7 +623,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         }
     }
 
-    protected boolean waitForImport(String textToWaitFor) {
+    private boolean waitForImport(String textToWaitFor) {
         int ten_minutes = 60;
         for (int time = 1;; time++) {
             if (time == ten_minutes) {
@@ -624,7 +636,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             if (selenium.isTextPresent("Import Failed")) {
                 fail("Import Failed");
             }
-            selenium.click(REFRESH_BUTTON);
+            selenium.click("link=Manage Data");
             if (selenium.isTextPresent(textToWaitFor)) {
                 // done
                 return true;
@@ -715,6 +727,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         case MAGE_TAB: // mage tab import
             pause(1000); // allow time for the confirmation to popup
             if (selenium.isConfirmationPresent()) {
+                System.out.println("Confirmation found during import");
                 assertTrue(selenium
                         .getConfirmation()
                         .matches(
@@ -732,5 +745,26 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         waitForAction();
         // - hit the refresh button until files are imported
         waitForImport("Nothing found to display");
+    }
+    /**
+     * 
+     * @param groupName
+     */
+    protected void createCollaborationGroup(String groupName) {
+        selenium.click("link=Manage Collaboration Groups");
+        waitForText("Group Members");
+        selenium.click("link=Add a New Collaboration Group");
+        waitForText("Choose a name for the group.");
+        selenium.type("newGroupForm_groupName", groupName);
+        selenium.click("link=Save");
+        selenium.waitForPageToLoad("30000");
+        // - find the added group and click the edit icon
+        int row = getExperimentRow(groupName, ZERO_COLUMN);
+        // edit icon to add members
+        selenium.click("//tr[" + row + "]/td[3]/a/img");
+        waitForText("Remove");
+        selenium.click("link=Add a New Group Member");
+        waitForText("Search for users by choosing filter criteria");
+        // add all the users
     }
 }

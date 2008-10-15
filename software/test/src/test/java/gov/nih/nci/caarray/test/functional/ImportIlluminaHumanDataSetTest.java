@@ -117,8 +117,7 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         importArrayDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV, TestProperties.getIlluminaDesignName(),PROVIDER, ORGANISM);
 
         // Create project
-        createExperiment(title, TestProperties.getIlluminaDesignName(), PROVIDER, ORGANISM);
-        String experimentId = selenium.getText("//tr[4]/td[2]");
+        String experimentId = createExperiment(title, TestProperties.getIlluminaDesignName(), PROVIDER, ORGANISM);
 
         // - go to the data tab
         selenium.click("link=Data");
@@ -129,7 +128,7 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // change the file type to "Illumina CSV Data File".
-        selenium.click("selectFilesForm_selectedFileIds");
+        selenium.click("selectAllCheckbox");
         selenium.click("link=Change File Type");
         waitForText("Required fields are marked");
         selenium.select("projectForm_changeToFileType", "label=Illumina Data CSV");

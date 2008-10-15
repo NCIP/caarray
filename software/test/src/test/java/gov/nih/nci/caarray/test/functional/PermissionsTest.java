@@ -95,60 +95,82 @@ import org.junit.Test;
 public class PermissionsTest extends AbstractSeleniumTest {
     private final String ADD_USER_BUTTON = "//img[@alt='Add']";
     private final String FILTER_BUTON = "//li[2]/a/span/span";
-
+    private final String EDIT_ACCESS_CONTROL_BUTTON = "//form[@id='collaborators_form']/a/span/span";
+    private final String SAVE_BUTTON = "//ul[@id='btnrow']/li[2]/a/span/span";
     @Test
-    public void testCollaborators() throws Exception {
+    public void testPermissions() throws Exception {
         String groupName = "fellows " + System.currentTimeMillis();
-        // - Login
+        String experimentName = "Permission Test"+ System.currentTimeMillis();
+        
+        // - Login and create an experiment
         loginAsPrincipalInvestigator();
+        String experimentId = createExperiment(experimentName);
+        
+        logout();
+        loginAs("caarrayuser");
 
-        // - Create a Collaboration Group
+        // makes sure the experiment cannot be viewed by other users
+        int row = getExperimentRow(experimentId, ZERO_COLUMN);
+       // String value = selenium.is
+        assertTrue("Experiment " + experimentId +" was found",row == -1);
+        
+        logout();
+        // log back in as PI and submit the experiment and set permissions
+        loginAsPrincipalInvestigator();
+        
+        row = getExperimentRow(experimentId, ZERO_COLUMN);
+        // click the edit icon
+        selenium.click("//table[@id='row']/tbody/tr[" + row + "]/td[7]/a/img");
+        waitForText("Overall Experiment Characteristics");
+        submitExperiment();
+        
         createCollaborationGroup(groupName);
-
-        // - logout
-        selenium.click("link=Logout");
-        waitForText("Browse caArray");
-
-    }
-
-    /**
-     * @param string
-     */
-    private void createCollaborationGroup(String groupName) {
-        selenium.click("link=Manage Collaboration Groups");
-        waitForText("Group Members");
-        selenium.click("link=Add a New Collaboration Group");
-        waitForText("Choose a name for the group.");
-        selenium.type("newGroupForm_groupName", groupName);
-        selenium.click("link=Save");
-        selenium.waitForPageToLoad("30000");
-        // -  find the added group and click the edit icon
-        int row = getExperimentRow(groupName, ZERO_COLUMN);
-        // edit icon to add members
-        selenium.click("//tr[" + row + "]/td[3]/a/img");
-        waitForText("Remove");
-        selenium.click("link=Add a New Group Member");
-        waitForText("Search for users by choosing filter criteria");
-        // filter - shows all users
-        clickAndWait(FILTER_BUTON);
-        // add all the users
         addUsers();
-
+        
+        // set the new group on the experiment
+        selenium.click("link=My Experiment Workspace");
+        waitForText("Work Queue*");
+        row = getExperimentRow(experimentId, ZERO_COLUMN);
+        // click the permission icon
+        pause(1000);
+        selenium.click("//table[@id='row']/tbody/tr["+row+"]/td[6]/a/img");
+        waitForText("Experiment Permissions");
+        // select the collaboration group for the experiment
+        selenium.select("collaborators_form_collaboratorGroup_id", "label=" + groupName);
+        pause(1000);
+        
+        // set the permission
+        selenium.click(EDIT_ACCESS_CONTROL_BUTTON); 
+        pause(1000);
+        // Experiment Access ddw
+        selenium.select("profileForm_accessProfile_securityLevel", "label=Read"); 
+        selenium.click(SAVE_BUTTON); 
+    
+        logout();
+        loginAs("caarrayuser");
+        
+        // makes sure the experiment can be viewed by other users
+        row = getExperimentRow(experimentId, ZERO_COLUMN);
+        assertTrue("Experiment " + experimentId +" was found",row != -1);
+        
+        // the permission is read only so ensure the edit icon is not avaliable
+       // selenium.getTable("//table[@id='row']/tbody/tr[5]/td[7]");
+       // selenium.click("//table[@id='row']/tbody/tr[5]/td[7]/a/img");
+        logout();
     }
+
+
+    private void logout() {
+        selenium.click("link=Logout");
+        waitForText("Browse caArray");    }
+
 
     private void addUsers() {
-        for (int i = 0;; i++) {
-            clickAndWait(ADD_USER_BUTTON);
-            selenium.waitForPageToLoad("30000");
-            if ("Nothing found to display.".equalsIgnoreCase(selenium.getTable("row.1.0"))) {
-                return;
-            }
-            // safety catch
-            if (i > 50) {
-                fail("attempted to add more than 50 users");
-            }
-        }
+        selenium.type("targetUserLastName", "user");
+        selenium.type("targetUserFirstName", "caarray");
+        clickAndWait(FILTER_BUTON);
+        clickAndWait(ADD_USER_BUTTON);
+        waitForText("caArray User (caarrayuser) successfully added to group");
     }
-
 
 }

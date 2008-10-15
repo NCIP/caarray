@@ -90,7 +90,7 @@ import org.junit.Test;
 public class DeleteFileTest extends AbstractSeleniumTest {
 
     @Test
-    public void testNew() throws Exception {
+    public void testDeleteFile() throws Exception {
         String title = "test" + System.currentTimeMillis();
 
         loginAsPrincipalInvestigator();

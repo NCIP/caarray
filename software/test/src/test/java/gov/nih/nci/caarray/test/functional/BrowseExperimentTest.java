@@ -98,7 +98,7 @@ import org.junit.Test;
 public class BrowseExperimentTest extends AbstractSeleniumTest {
 
     
-    public void ntestBrowsing() throws Exception {
+    public void testBrowsing() throws Exception {
         String title = "browsable " + System.currentTimeMillis();
         // - Login
         loginAsPrincipalInvestigator();
@@ -184,10 +184,10 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         
         selenium.click("link=My Experiment Workspace");
         waitForText("Work Queue");
-        assertEquals("Status", selenium.getText("link=Status"));
-        assertEquals("Permissions", selenium.isTextPresent("Permissions"));
-        assertEquals("Edit", selenium.isTextPresent("Edit"));
-        assertEquals("Delete", selenium.isTextPresent("Delete"));
+//        assertEquals("Status", selenium.getText("link=Status"));
+//        assertEquals("Permissions", selenium.isTextPresent("Permissions"));
+//        assertEquals("Edit", selenium.isTextPresent("Edit"));
+//        assertEquals("Delete", selenium.isTextPresent("Delete"));
 
         int row = getExperimentRow(experimentId, ZERO_COLUMN);
         assertTrue(selenium.isElementPresent("//table[@id='row']/tbody/tr[" + row + "]/td[8]/a/img"));
@@ -212,7 +212,6 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
     private void assertColumnHeaders() {
         verifyEquals("Experiment ID", selenium.getText("link=Experiment ID"));
         verifyEquals("Experiment Title", selenium.getText("link=Experiment Title"));
-        verifyEquals("Assay Type", selenium.getText("link=Assay Type"));
         assertTrue("Primary Contact header not found", selenium.isTextPresent("Primary Contact"));
         verifyEquals("Organism", selenium.getText("link=Organism"));
         assertTrue("Condition/Disease State header not found", selenium.isTextPresent("Condition/Disease State"));
