@@ -38,7 +38,7 @@
 	<target name="build:installer" depends="prepare:installer">
 		<delete>
 			<fileset dir="${dist.location}">
-				<include name="${caarray.install.name}${caarray.version}*.jar"/>
+				<include name="${caarray.install.name}_${caarray.version}*.jar"/>
 			</fileset>
 		</delete>
 		<tstamp>
