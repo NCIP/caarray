@@ -36,7 +36,16 @@
 	</target>
 	
 	<target name="build:installer" depends="prepare:installer">
-		<IzPack output="${dist.location}/${caarray.install.name}_${caarray.version}.jar"
+		<delete>
+			<fileset dir="${dist.location}">
+				<include name="${caarray.install.name}${caarray.version}*.jar"/>
+			</fileset>
+		</delete>
+		<tstamp>
+			<format property="build.time" pattern="yyyyMMddHHmm" />
+		</tstamp>
+
+		<IzPack output="${dist.location}/${caarray.install.name}_${caarray.version}-${build.time}.jar"
 			installerType="standard"
 			basedir="."
 			IzPackDir="${compile.jar.dir}/">
