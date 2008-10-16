@@ -19,6 +19,16 @@ For local install, using the default ports of theBDA installer:
 > cd F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client_zip
 > ant -Dhostname=localhost -Djndi.port=31099 -Dgrid.port=18080
 
+For LSD-32:
+> E:
+> cd F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client_zip
+> ant -Dhostname=cbapp-s1003 -Djndi.port=31099 -Dgrid.port=18080
+
+For LSD-64:
+> E:
+> cd F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client_zip
+> ant -Dhostname=cbapp-s1002 -Djndi.port=31099 -Dgrid.port=18080
+
 For QA-WM:
 > E:
 > cd F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client_zip
