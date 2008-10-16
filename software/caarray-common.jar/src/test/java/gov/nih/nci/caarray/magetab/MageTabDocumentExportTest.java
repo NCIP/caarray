@@ -209,6 +209,17 @@ public class MageTabDocumentExportTest extends AbstractCaarrayTest {
     }
 
     /**
+     * Tests MAGE-TAB export of one-to-one biomaterial-data chains.
+     *
+     * @throws IOException
+     */
+    @Test(expected = MageTabExportException.class)
+    public void testUnitializedSdrfNodes() throws IOException {
+        initializeWithOneToOneChain(false, false);
+    }
+
+
+    /**
      * Tests MAGE-TAB export of various biomaterial characteristics.
      *
      * @throws IOException
@@ -241,6 +252,10 @@ public class MageTabDocumentExportTest extends AbstractCaarrayTest {
     }
 
     private void initializeWithOneToOneChain(boolean includeCharacteristics) {
+        initializeWithOneToOneChain(includeCharacteristics, true);
+    }
+
+    private void initializeWithOneToOneChain(boolean includeCharacteristics, boolean initializeSdrf) {
         Source source = new Source();
         source.setName(SOURCE_BASENAME);
         Sample sample = new Sample();
@@ -319,9 +334,11 @@ public class MageTabDocumentExportTest extends AbstractCaarrayTest {
         // Initialize the SDRF document with all the object graph nodes.
         SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
         SdrfDocumentNodes sdrfDocumentNodes = new SdrfDocumentNodes();
-        sdrfDocumentNodes.initNonDataNodes(allSources, allSamples, allExtracts, allLabeledExtracts, allHybridizations);
-        sdrfDocumentNodes.initDataNodes(allArrayDataFiles, allArrayDataMatrixFiles, allDerivedArrayDataFiles,
-                allDerivedArrayDataMatrixFiles);
+        if (initializeSdrf) {
+            sdrfDocumentNodes.initNonDataNodes(allSources, allSamples, allExtracts, allLabeledExtracts, allHybridizations);
+            sdrfDocumentNodes.initDataNodes(allArrayDataFiles, allArrayDataMatrixFiles, allDerivedArrayDataFiles,
+                    allDerivedArrayDataMatrixFiles);
+        }
         sdrfDocument.initializeNodes(sdrfDocumentNodes);
     }
 

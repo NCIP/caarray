@@ -157,7 +157,4 @@ public interface SampleDao extends CaArrayDao {
      */
     int countSourcesByCharacteristicCategory(Category c, String keyword);
 
-
-
-
 }

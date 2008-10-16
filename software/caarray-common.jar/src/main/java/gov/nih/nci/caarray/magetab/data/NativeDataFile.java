@@ -82,11 +82,11 @@
  */
 package gov.nih.nci.caarray.magetab.data;
 
-import java.io.File;
-
 import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
+
+import java.io.File;
 
 /**
  * A raw or derived data file in original, native format.
@@ -109,7 +109,7 @@ public final class NativeDataFile extends AbstractMageTabDocument {
      * {@inheritDoc}
      */
     @Override
-    protected void parse() throws MageTabParsingException {
+    protected void parse(boolean reimportingMagetab) throws MageTabParsingException {
         // TODO Auto-generated method stub
     }
 

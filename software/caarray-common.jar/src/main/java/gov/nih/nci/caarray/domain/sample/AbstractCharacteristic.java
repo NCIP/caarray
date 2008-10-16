@@ -176,6 +176,5 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
      */
     @Transient
     public abstract String getDisplayValue();
+
 }
-
-

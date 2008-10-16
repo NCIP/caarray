@@ -254,7 +254,7 @@ public final class TestMageTabSets {
 
     private static MageTabDocumentSet getSet(MageTabFileSet inputSet) {
         try {
-            return MageTabParser.INSTANCE.parse(inputSet);
+            return MageTabParser.INSTANCE.parse(inputSet, false);
         } catch (MageTabParsingException e) {
             e.printStackTrace(System.err);
             return null;

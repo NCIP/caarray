@@ -82,11 +82,11 @@
  */
 package gov.nih.nci.caarray.magetab.adf;
 
-import java.io.File;
-
 import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
+
+import java.io.File;
 
 /**
  * Represents an Array Design Format (ADF) file - a tab-delimited file defining each array
@@ -114,7 +114,7 @@ public final class AdfDocument extends AbstractMageTabDocument {
      * {@inheritDoc}
      */
     @Override
-    protected void parse() throws MageTabParsingException {
+    protected void parse(boolean reimportingMagetab) throws MageTabParsingException {
         // unimplemented
     }
 

@@ -94,6 +94,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -215,5 +217,32 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
      */
     public void setAddress(final Address addressVal) {
         this.address = addressVal;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (!(object instanceof AbstractContact)) {
+            return false;
+        }
+        AbstractContact rhs = (AbstractContact) object;
+        return new EqualsBuilder().append(this.phone, rhs.phone).append(this.address, rhs.address).append(this.url,
+                rhs.url).append(this.email, rhs.email).append(this.fax, rhs.fax).isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        // CHECKSTYLE:OFF
+        return new HashCodeBuilder(77196439, 410917995).append(this.phone).append(this.address).append(this.url)
+                .append(this.email).append(this.fax).toHashCode();
+        // CHECKSTYLE:ON
     }
 }

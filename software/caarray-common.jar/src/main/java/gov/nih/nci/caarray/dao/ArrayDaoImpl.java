@@ -126,7 +126,7 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  *
  * @author Rashmi Srinivasa
  */
-@SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity" })
+@SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
 
     private static final Logger LOG = Logger.getLogger(ArrayDaoImpl.class);

@@ -100,7 +100,7 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
     private static final Logger LOG = Logger.getLogger(ProjectFilesImportJob.class);
 
     private final DataImportOptions dataImportOptions;
-    
+
     ProjectFilesImportJob(String username, Project targetProject, CaArrayFileSet fileSet,
             DataImportOptions dataImportOptions) {
         super(username, targetProject, fileSet);
@@ -124,7 +124,7 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
     private void importAnnotation(CaArrayFileSet fileSet) {
         try {
-            getMageTabImporter().importFiles(getProject(), fileSet);
+            getMageTabImporter().importFiles(getProject(), fileSet, isReimportingMagetab());
         } catch (MageTabParsingException e) {
             LOG.error(e.getMessage(), e);
         }

@@ -125,20 +125,20 @@ final class MageTabTranslationResult implements CaArrayTranslationResult {
         return arrayDesigns;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.application.translation.CaArrayTranslationResult#getInvestigations()
+    /**
+     * {@inheritDoc}
      */
     public Collection<Experiment> getInvestigations() {
         return investigations;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.application.translation.CaArrayTranslationResult#getTerms()
+    /**
+     * {@inheritDoc}
      */
     public Collection<Term> getTerms() {
         return termMap.values();
     }
-    
+
     public Collection<Category> getCategories() {
         return categoryMap.values();
     }
@@ -154,11 +154,11 @@ final class MageTabTranslationResult implements CaArrayTranslationResult {
     Category getCategory(String name) {
         return categoryMap.get(StringUtils.upperCase(name));
     }
-    
+
     void addCategory(String name, Category cat) {
         categoryMap.put(StringUtils.upperCase(name), cat);
     }
-    
+
     /**
      * Punt organism terms from the cache of translated terms (since they
      * will be saved as Organism instances instead.

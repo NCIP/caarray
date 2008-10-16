@@ -84,7 +84,10 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
@@ -194,5 +197,36 @@ public interface ProjectDao extends CaArrayDao {
      * @return all samples persisted for project
      */
     Set<Sample> getUnfilteredSamplesForProject(Project project);
-    
+
+    /**
+     * Get a Source from an Experiment, based on its name.
+     * @param experiment experiment to look in
+     * @param sourceName name of Source to retrieve
+     * @return matching Source or null if not found
+     */
+    Source getSourceForExperiment(Experiment experiment, String sourceName);
+
+    /**
+     * Get a Sample from an Experiment, based on its name.
+     * @param experiment experiment to look in
+     * @param sampleName name of Sample to retrieve
+     * @return matching Sample or null if not found
+     */
+    Sample getSampleForExperiment(Experiment experiment, String sampleName);
+
+    /**
+     * Get an Extract from an Experiment, based on its name.
+     * @param experiment experiment to look in
+     * @param extractName name of Extract to retrieve
+     * @return matching Extract or null if not found
+     */
+    Extract getExtractForExperiment(Experiment experiment, String extractName);
+
+    /**
+     * Get a LabeledExtract from an Experiment, based on its name.
+     * @param experiment experiment to look in
+     * @param labeledExtractName name of LabeledExtract to retrieve
+     * @return matching LabeledExtract or null if not found
+     */
+    LabeledExtract getLabeledExtractForExperiment(Experiment experiment, String labeledExtractName);
 }

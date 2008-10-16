@@ -179,4 +179,5 @@ public class MeasurementCharacteristic extends AbstractCharacteristic {
         }
         return new DecimalFormat(NUMBER_FORMAT).format(this.value.doubleValue()) + " " + this.unit.getValue();
     }
+
 }

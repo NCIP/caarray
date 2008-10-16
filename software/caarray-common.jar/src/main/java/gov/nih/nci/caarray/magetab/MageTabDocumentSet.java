@@ -126,6 +126,8 @@ public final class MageTabDocumentSet implements Serializable {
     private final Set<Hybridization> hybridizations = new HashSet<Hybridization>();
     private final Set<Sample> samples = new HashSet<Sample>();
 
+    private final boolean reimportingMagetab;
+
     /**
      * Initialize the MAGE-TAB document set with the given files which will hold the exported contents.
      *
@@ -133,6 +135,19 @@ public final class MageTabDocumentSet implements Serializable {
      */
     public MageTabDocumentSet(MageTabFileSet inputFileSet) {
         initializeFromFileSet(inputFileSet);
+        reimportingMagetab = false;
+    }
+
+    /**
+     * Initialize the MAGE-TAB document set with the given files which will hold the exported contents.
+     *
+     * @param inputFileSet the set of files to hold the exported contents of the documents.
+     * @param reimportingMagetab true if this document set is being used to re-import additional MAGE-TAB documents,
+     *        false if this document set contains the initial MAGE-TAB files for an experiment
+     */
+    public MageTabDocumentSet(MageTabFileSet inputFileSet, boolean reimportingMagetab) {
+        initializeFromFileSet(inputFileSet);
+        this.reimportingMagetab = reimportingMagetab;
     }
 
     /**
@@ -270,7 +285,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     private void parse(Set<? extends AbstractMageTabDocument> documents) throws MageTabParsingException {
         for (AbstractMageTabDocument document : documents) {
-            document.parse();
+            document.parse(reimportingMagetab);
         }
     }
 
@@ -421,11 +436,11 @@ public final class MageTabDocumentSet implements Serializable {
         return getValidationResult().addMessage(file, type, message);
     }
 
+    /**
+     * Check that all native data files are mentioned in the sdrf.
+     */
     private void checkSdrfRefDataFiles() {
-        // check that all native data files are mentioned in the sdrf
-        // get all the file names
-
-        List<String> fileNames = generateSdrfRefFileNames();
+        List<String> fileNames = getSdrfReferencedFileNames();
 
         checkFileNames(fileNames);
 
@@ -448,13 +463,12 @@ public final class MageTabDocumentSet implements Serializable {
 
     private void addSdrfErrorMessage(String txt) {
         for (SdrfDocument sdrf : sdrfDocuments) {
-            this.createValidationMessage(sdrf.getFile(),
-                    Type.ERROR, "SDRF file does not reference "
-                    + txt + " being validated.");
+            this.createValidationMessage(sdrf.getFile(), Type.ERROR, "SDRF file does not reference " + txt
+                    + " being validated.");
         }
     }
 
-    private List<String> generateSdrfRefFileNames() {
+    private List<String> getSdrfReferencedFileNames() {
         List<String> fileNames = new ArrayList<String>();
         for (SdrfDocument sdrf : sdrfDocuments) {
             fileNames.addAll(sdrf.getAllDataFiles());
@@ -486,6 +500,13 @@ public final class MageTabDocumentSet implements Serializable {
         for (AbstractMageTabDocument document : documents) {
             document.export();
         }
+    }
+
+    /**
+     * @return the reimportingMagetab
+     */
+    public boolean isReimportingMagetab() {
+        return reimportingMagetab;
     }
 
 }

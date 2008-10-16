@@ -142,12 +142,10 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     /**
-     * Parses the MAGE-TAB document, creating the object graph of entities.
-     *
-     * @throws MageTabParsingException if the document couldn't be read.
+     * {@inheritDoc}
      */
     @Override
-    protected void parse() throws MageTabParsingException {
+    protected void parse(boolean reimportingMagetab) throws MageTabParsingException {
         DelimitedFileReader tabDelimitedReader = createTabDelimitedReader();
         // do two passes. first, process the term sources only, then process the other lines.
         // this is so we can accurately detect invalid term source references

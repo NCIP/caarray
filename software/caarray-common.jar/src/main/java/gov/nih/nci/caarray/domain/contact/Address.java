@@ -88,14 +88,16 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * 
+ *
  */
 @Entity
 public class Address extends AbstractCaArrayEntity {
-    
+
     private static final long serialVersionUID = 1234567890L;
 
     private String street1;
@@ -201,5 +203,32 @@ public class Address extends AbstractCaArrayEntity {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (!(object instanceof Address)) {
+            return false;
+        }
+        Address rhs = (Address) object;
+        return new EqualsBuilder().append(this.street2, rhs.street2).append(this.zipCode, rhs.zipCode).append(
+                this.street1, rhs.street1).append(this.state, rhs.state).append(this.city, rhs.city).isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        // CHECKSTYLE:OFF
+        return new HashCodeBuilder(-2071693803, -723842543).append(this.street2).append(this.zipCode).append(
+                this.street1).append(this.state).append(this.city).toHashCode();
+        // CHECKSTYLE:ON
     }
 }

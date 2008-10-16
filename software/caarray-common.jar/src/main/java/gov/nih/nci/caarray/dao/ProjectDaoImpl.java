@@ -87,7 +87,11 @@ import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
@@ -328,7 +332,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         }
         return new ArrayList<Term>(types);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -342,4 +346,47 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         };
         return (Set<Sample>) HibernateUtil.doUnfiltered(unfilteredCallback);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Source getSourceForExperiment(Experiment experiment, String sourceName) {
+        return getBioMaterialForExperiment(experiment, sourceName, Source.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Sample getSampleForExperiment(Experiment experiment, String sampleName) {
+        return getBioMaterialForExperiment(experiment, sampleName, Sample.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Extract getExtractForExperiment(Experiment experiment, String extractName) {
+        return getBioMaterialForExperiment(experiment, extractName, Extract.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public LabeledExtract getLabeledExtractForExperiment(Experiment experiment, String labeledExtractName) {
+        return getBioMaterialForExperiment(experiment, labeledExtractName, LabeledExtract.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends AbstractBioMaterial> T getBioMaterialForExperiment(Experiment experiment, String bioMaterialName,
+            Class<T> bioMaterialClass) {
+        if (experiment == null) {
+            return null;
+        }
+        String queryString = "from " + bioMaterialClass.getName()
+                + " b where b.experiment = :experiment and b.name = :name";
+        Query query = HibernateUtil.getCurrentSession().createQuery(queryString);
+        query.setParameter("experiment", experiment);
+        query.setString("name", bioMaterialName);
+        return (T) query.uniqueResult();
+    }
+
 }

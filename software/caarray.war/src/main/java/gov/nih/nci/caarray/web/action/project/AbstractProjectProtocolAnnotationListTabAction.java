@@ -205,6 +205,16 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
      * {@inheritDoc}
      */
     @Override
+    @SkipValidation
+    public String view() {
+        setSelectedProtocols(getCurrentProtocols());
+        return super.view();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     @SuppressWarnings("PMD.CyclomaticComplexity")
     public String save() {
         ProtocolApplicable protApplicable = (ProtocolApplicable) getItem();

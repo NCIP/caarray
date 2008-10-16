@@ -99,17 +99,13 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 
-  /**
-
-   */
+/**
+ * @author Rashmi Srinivasa
+ */
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 public class FactorValue extends AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
     private static final long serialVersionUID = 1234567890L;
-
 
     private Factor factor;
     private Term unit;

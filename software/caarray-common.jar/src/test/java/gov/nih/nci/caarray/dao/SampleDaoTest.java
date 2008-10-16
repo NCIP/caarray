@@ -299,7 +299,6 @@ public class SampleDaoTest  extends AbstractDaoTest {
         }
     }
 
-
     /**
      * Compare 2 samples to check if they are the same.
      *

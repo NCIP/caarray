@@ -110,7 +110,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  *
  * @author Rashmi Srinivasa
  */
-@SuppressWarnings("PMD.CyclomaticComplexity")
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
 
     private static final String UNABLE_TO_RETRIEVE_ENTITY_MESSAGE = "Unable to retrieve entity";

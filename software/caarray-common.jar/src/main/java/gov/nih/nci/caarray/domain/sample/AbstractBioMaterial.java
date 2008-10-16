@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
@@ -371,7 +372,14 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode i
         }
         return files;
     }
-    
+
+    /**
+     * Get the experiment to which this bio material belongs.
+     * @return the experiment to which this bio material belongs
+     */
+    @Transient
+    public abstract Experiment getExperiment();
+
     /**
      * Attribute filter for characteristics under the TCGA Policy.
      *

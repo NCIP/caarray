@@ -96,6 +96,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -119,7 +121,7 @@ public class Person extends AbstractContact {
      * Default constructor.
      */
     public Person() {
-        // intentially empty
+        // intentionally empty
     }
 
     /**
@@ -233,5 +235,33 @@ public class Person extends AbstractContact {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (!(object instanceof Person)) {
+            return false;
+        }
+        Person rhs = (Person) object;
+        return new EqualsBuilder().appendSuper(super.equals(object)).append(this.middleInitials, rhs.middleInitials)
+                .append(this.affiliations, rhs.affiliations).append(this.firstName, rhs.firstName).append(
+                        this.lastName, rhs.lastName).isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        // CHECKSTYLE:OFF
+        return new HashCodeBuilder(2030047093, 905760599).appendSuper(super.hashCode()).append(this.middleInitials)
+                .append(this.affiliations).append(this.firstName).append(this.lastName).toHashCode();
+        // CHECKSTYLE:ON
     }
 }

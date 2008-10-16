@@ -155,23 +155,8 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         this.translator = mageTabTranslatorBean;
     }
 
-    /**
-     * Test method for
-     * {@link gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator#translate(gov.nih.nci.caarray.magetab.MageTabDocumentSet)}
-     * .
-     */
     @Test
-    public void testTranslate() {
-        testSpecificationDocuments();
-        testSpecificationTermCaseSensitivityDocuments();
-        testSpecificationDocumentsNoArrayDesignRef();
-        testSpecificationDocumentsNoExpDesc();
-        testTcgaBroadDocuments();
-        testGskTestDocuments();
-        testSpecificationDocumentsWithDerivedData();
-    }
-
-    private void testSpecificationDocuments() {
+    public void testSpecificationDocuments() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
         CaArrayTranslationResult result = this.translator
                 .translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET, fileSet);
@@ -193,7 +178,8 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
     }
 
     @SuppressWarnings("unchecked")
-    private void testSpecificationTermCaseSensitivityDocuments() {
+    @Test
+    public void testSpecificationTermCaseSensitivityDocuments() {
         CaArrayFileSet fileSet = TestMageTabSets
                 .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_SET);
         MageTabTranslationResult result = (MageTabTranslationResult) this.translator.translate(
@@ -212,7 +198,8 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         }
     }
 
-    private void testSpecificationDocumentsNoExpDesc() {
+    @Test
+    public void testSpecificationDocumentsNoExpDesc() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_SET);
         CaArrayTranslationResult result = this.translator.translate(
                 TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_SET, fileSet);
@@ -231,7 +218,8 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         }
     }
 
-    private void testSpecificationDocumentsNoArrayDesignRef() {
+    @Test
+    public void testSpecificationDocumentsNoArrayDesignRef() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET);
         CaArrayTranslationResult result = this.translator.translate(
                 TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET, fileSet);
@@ -252,7 +240,8 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         }
     }
 
-    private void testSpecificationDocumentsWithDerivedData() {
+    @Test
+    public void testSpecificationDocumentsWithDerivedData() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.DERIVED_DATA_SET);
         CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.DERIVED_DATA_SET, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
@@ -290,7 +279,8 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
 
     }
 
-    private void testTcgaBroadDocuments() {
+    @Test
+    public void testTcgaBroadDocuments() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET);
         CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.TCGA_BROAD_SET, fileSet);
         Set<Term> terms = new HashSet<Term>();
@@ -329,7 +319,8 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         assertEquals(26, investigation.getLabeledExtracts().size());
     }
 
-    private void testGskTestDocuments() {
+    @Test
+    public void testGskTestDocuments() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.GSK_TEST_SET);
         CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.GSK_TEST_SET, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();

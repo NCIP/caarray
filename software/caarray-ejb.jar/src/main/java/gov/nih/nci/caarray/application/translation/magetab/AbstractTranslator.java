@@ -94,7 +94,6 @@ import gov.nih.nci.caarray.magetab.OntologyTerm;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -146,9 +145,7 @@ abstract class AbstractTranslator {
             return null;
         }
         Set<CaArrayFile> files = fileSet.getFiles();
-        Iterator<CaArrayFile> i = files.iterator();
-        while (i.hasNext()) {
-            CaArrayFile caArrayFile = i.next();
+        for (CaArrayFile caArrayFile : files) {
             if (name.equals(caArrayFile.getName())) {
                 return caArrayFile;
             }

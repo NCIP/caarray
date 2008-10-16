@@ -482,25 +482,19 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertEquals(size + 1, DAO_OBJECT.getProjectCountForCurrentUser(false));
             tx.commit();
 
+            tx = HibernateUtil.beginTransaction();
+            retrievedProject = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+            DAO_OBJECT.remove(retrievedProject);
+            tx.commit();
 
-            // We should be able to delete the project here, but for some reason, the combination of deleting the
-            // project here and running the testTcgaPolicy test causes later tests to hang.
-            // See Dev Team Change Request #13263
-
-            // tx = HibernateUtil.beginTransaction();
-            // retrievedProject = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
-            // DAO_OBJECT.remove(retrievedProject);
-            // tx.commit();
-            //
-            // tx = HibernateUtil.beginTransaction();
-            // Project deletedProject = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
-            // assertNull(deletedProject);
-            // assertEquals(size, DAO_OBJECT.getProjectCountForCurrentUser(false));
-            // tx.commit();
+            tx = HibernateUtil.beginTransaction();
+            Project deletedProject = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+            assertNull(deletedProject);
+            assertEquals(size, DAO_OBJECT.getProjectCountForCurrentUser(false));
+            tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             throw e;
-            // fail("DAO exception during save and retrieve of project: " + e.getMessage());
         }
     }
 
@@ -1070,7 +1064,6 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
     @Test
     public void testInitialProjectPermissions() {
-
         // create project
         Transaction tx = HibernateUtil.beginTransaction();
         saveSupportingObjects();
@@ -1108,7 +1101,6 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                 SecurityUtils.BROWSE_ROLE))));
         tx.commit();
-
     }
 
     @Test
@@ -1304,16 +1296,49 @@ public class ProjectDaoTest extends AbstractDaoTest {
             e.setOrganism(org);
             DAO_OBJECT.save(e);
             assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
-            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
-            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
-            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
+            assertEquals(0, DAO_OBJECT.getDiseaseStatesForExperiment(e).size());
+            assertEquals(0, DAO_OBJECT.getTissueSitesForExperiment(e).size());
+            assertEquals(0, DAO_OBJECT.getMaterialTypesForExperiment(e).size());
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
-            e.printStackTrace();
-            fail("DAO exception during save of accession collection: " + e.getMessage());
+            throw e;
         }
     }
+
+    @Test
+    public void testGetBioMaterialForExperiment() throws Exception {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.beginTransaction();
+            saveSupportingObjects();
+            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            tx.commit();
+
+            tx = HibernateUtil.beginTransaction();
+            assertNull(DAO_OBJECT.getSourceForExperiment(null, "DummySource"));
+            assertNull(DAO_OBJECT.getSampleForExperiment(null, "DummySample"));
+            assertNull(DAO_OBJECT.getExtractForExperiment(null, "DummyExtract"));
+            assertNull(DAO_OBJECT.getLabeledExtractForExperiment(null, "DummyLabeledExtract"));
+
+            assertNull(DAO_OBJECT.getSourceForExperiment(DUMMY_EXPERIMENT_1, "NonExistentName"));
+            assertNull(DAO_OBJECT.getSampleForExperiment(DUMMY_EXPERIMENT_1, "NonExistentName"));
+            assertNull(DAO_OBJECT.getExtractForExperiment(DUMMY_EXPERIMENT_1, "NonExistentName"));
+            assertNull(DAO_OBJECT.getLabeledExtractForExperiment(DUMMY_EXPERIMENT_1, "NonExistentName"));
+
+            assertNotNull(DAO_OBJECT.getSourceForExperiment(DUMMY_EXPERIMENT_1, "DummySource"));
+            assertNotNull(DAO_OBJECT.getSampleForExperiment(DUMMY_EXPERIMENT_1, "DummySample"));
+            assertNotNull(DAO_OBJECT.getExtractForExperiment(DUMMY_EXPERIMENT_1, "DummyExtract"));
+            assertNotNull(DAO_OBJECT.getLabeledExtractForExperiment(DUMMY_EXPERIMENT_1, "DummyLabeledExtract"));
+
+            assertEquals(1, DAO_OBJECT.getUnfilteredSamplesForProject(DUMMY_PROJECT_1).size());
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            throw e;
+        }
+    }
+
 
     private static class HasRolePredicate implements Predicate {
         private final String role;

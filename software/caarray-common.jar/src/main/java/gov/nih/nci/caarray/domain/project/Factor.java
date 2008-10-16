@@ -92,6 +92,7 @@ import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -115,6 +116,7 @@ public class Factor extends AbstractCaArrayEntity {
     private String description;
     private Term type;
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
+    private Experiment experiment;
 
     /**
      * Gets the name.
@@ -195,10 +197,29 @@ public class Factor extends AbstractCaArrayEntity {
     }
 
     /**
+     * @return the experiment
+     */
+    @ManyToOne
+    @JoinColumn(name = "experiment", insertable = false, updatable = false)
+    @ForeignKey(name = "factor_experiment_fk")
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
+    /**
+     * @param experiment
+     *            the experiment to set
+     */
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
+
 }

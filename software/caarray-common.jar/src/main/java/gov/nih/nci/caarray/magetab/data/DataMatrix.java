@@ -82,11 +82,11 @@
  */
 package gov.nih.nci.caarray.magetab.data;
 
-import java.io.File;
-
 import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
+
+import java.io.File;
 
 /**
  * Base class for MAGE-TAB data matrix files.
@@ -118,7 +118,7 @@ public class DataMatrix extends AbstractMageTabDocument {
      * {@inheritDoc}
      */
     @Override
-    protected void parse() throws MageTabParsingException {
+    protected void parse(boolean reimportingMagetab) throws MageTabParsingException {
         // TODO Implement parsing
     }
 

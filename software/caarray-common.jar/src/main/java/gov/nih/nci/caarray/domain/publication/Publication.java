@@ -91,6 +91,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -102,7 +104,6 @@ import org.hibernate.validator.Length;
  */
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
-@SuppressWarnings("PMD.TooManyFields") // All fields are required
 public class Publication extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
@@ -120,7 +121,7 @@ public class Publication extends AbstractCaArrayEntity {
     private String year;
     private Term status;
     private Term type;
-    @SuppressWarnings("PMD")
+    @SuppressWarnings("PMD.AvoidFieldNameMatchingTypeName")
     private String publication;
 
 
@@ -368,5 +369,37 @@ public class Publication extends AbstractCaArrayEntity {
      */
     public void setPublication(String publication) {
         this.publication = publication;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (!(object instanceof Publication)) {
+            return false;
+        }
+        Publication rhs = (Publication) object;
+        return new EqualsBuilder().append(this.volume, rhs.volume).append(this.publication, rhs.publication).append(
+                this.doi, rhs.doi).append(this.title, rhs.title).append(this.type, rhs.type).append(this.publisher,
+                rhs.publisher).append(this.status, rhs.status).append(this.authors, rhs.authors).append(this.editor,
+                rhs.editor).append(this.issue, rhs.issue).append(this.year, rhs.year).append(this.pages, rhs.pages)
+                .append(this.uri, rhs.uri).append(this.pubMedId, rhs.pubMedId).isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        // CHECKSTYLE:OFF
+        return new HashCodeBuilder(-770675283, -1229233691).append(this.volume).append(this.publication).append(
+                this.doi).append(this.title).append(this.type).append(this.publisher).append(this.status).append(
+                this.authors).append(this.editor).append(this.issue).append(this.year).append(this.pages).append(
+                this.uri).append(this.pubMedId).toHashCode();
+        // CHECKSTYLE:ON
     }
 }

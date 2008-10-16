@@ -293,7 +293,4 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         return LOG;
     }
 
-
-
-
 }

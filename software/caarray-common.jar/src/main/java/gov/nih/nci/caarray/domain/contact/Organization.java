@@ -87,6 +87,8 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -140,5 +142,32 @@ public class Organization extends AbstractContact {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (!(object instanceof Organization)) {
+            return false;
+        }
+        Organization rhs = (Organization) object;
+        return new EqualsBuilder().appendSuper(super.equals(object)).append(this.provider, rhs.provider).append(
+                this.name, rhs.name).isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        // CHECKSTYLE:OFF
+        return new HashCodeBuilder(1753948321, 1917926501).appendSuper(super.hashCode()).append(this.provider).append(
+                this.name).toHashCode();
+        // CHECKSTYLE:ON
     }
 }

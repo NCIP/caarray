@@ -107,7 +107,6 @@ public class TermBasedCharacteristic extends AbstractCharacteristic {
 
     private Term term;
 
-
     /**
      * Hibernate-only constructor.
      */
@@ -156,4 +155,5 @@ public class TermBasedCharacteristic extends AbstractCharacteristic {
     public String getDisplayValue() {
         return this.term != null ? this.term.getValue() : null;
     }
+
 }

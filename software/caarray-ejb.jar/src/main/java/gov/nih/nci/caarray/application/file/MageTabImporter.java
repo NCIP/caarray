@@ -94,6 +94,7 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
+import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -105,12 +106,15 @@ import gov.nih.nci.caarray.validation.InvalidDataException;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 /**
  * Responsible for importing parsed MAGE-TAB data into caArray.
  */
+@SuppressWarnings("PMD.TooManyMethods")
 class MageTabImporter {
 
     private static final Logger LOG = Logger.getLogger(MageTabImporter.class);
@@ -123,16 +127,16 @@ class MageTabImporter {
         this.daoFactory = daoFactory;
     }
 
-    MageTabDocumentSet validateFiles(CaArrayFileSet fileSet) {
+    MageTabDocumentSet validateFiles(CaArrayFileSet fileSet, boolean reimportingMagetab) {
         LOG.info("Validating MAGE-TAB document set");
         MageTabDocumentSet documentSet = null;
         updateFileStatus(fileSet, FileStatus.VALIDATING);
         MageTabFileSet inputSet = getInputFileSet(fileSet);
         try {
             updateFileStatus(fileSet, FileStatus.VALIDATED);
-            handleResult(fileSet, MageTabParser.INSTANCE.validate(inputSet));
+            handleResult(fileSet, MageTabParser.INSTANCE.validate(inputSet, reimportingMagetab));
             if (!fileSet.statusesContains(FileStatus.VALIDATION_ERRORS)) {
-                documentSet = MageTabParser.INSTANCE.parse(inputSet);
+                documentSet = MageTabParser.INSTANCE.parse(inputSet, reimportingMagetab);
                 handleResult(fileSet, translator.validate(documentSet, fileSet));
             }
         } catch (MageTabParsingException e) {
@@ -157,13 +161,14 @@ class MageTabImporter {
         }
     }
 
-    void importFiles(Project targetProject, CaArrayFileSet fileSet) throws MageTabParsingException {
+    void importFiles(Project targetProject, CaArrayFileSet fileSet, boolean reimportingMagetab)
+            throws MageTabParsingException {
         LOG.info("Importing MAGE-TAB document set");
         updateFileStatus(fileSet, FileStatus.IMPORTING);
         MageTabFileSet inputSet = getInputFileSet(fileSet);
         MageTabDocumentSet documentSet;
         try {
-            documentSet = MageTabParser.INSTANCE.parse(inputSet);
+            documentSet = MageTabParser.INSTANCE.parse(inputSet, reimportingMagetab);
             CaArrayTranslationResult translationResult = translator.translate(documentSet, fileSet);
             save(targetProject, translationResult);
             updateFileStatus(fileSet, FileStatus.IMPORTED);
@@ -269,20 +274,51 @@ class MageTabImporter {
         originalExperiment.getArrayDesigns().addAll(translatedExperiment.getArrayDesigns());
         originalExperiment.setDate(translatedExperiment.getDate());
         originalExperiment.setDescription(translatedExperiment.getDescription());
-        originalExperiment.getExtracts().addAll(translatedExperiment.getExtracts());
-        originalExperiment.getFactors().addAll(translatedExperiment.getFactors());
-        originalExperiment.getHybridizations().addAll(translatedExperiment.getHybridizations());
-        originalExperiment.getLabeledExtracts().addAll(translatedExperiment.getLabeledExtracts());
+        mergeFactors(originalExperiment, translatedExperiment);
         originalExperiment.getExperimentDesignTypes().addAll(translatedExperiment.getExperimentDesignTypes());
         originalExperiment.getNormalizationTypes().addAll(translatedExperiment.getNormalizationTypes());
         originalExperiment.getPublications().addAll(translatedExperiment.getPublications());
         originalExperiment.getQualityControlTypes().addAll(translatedExperiment.getQualityControlTypes());
         originalExperiment.getReplicateTypes().addAll(translatedExperiment.getReplicateTypes());
-        originalExperiment.getSamples().addAll(translatedExperiment.getSamples());
+        mergeExperimentContacts(originalExperiment, translatedExperiment);
+
         originalExperiment.getSources().addAll(translatedExperiment.getSources());
-        originalExperiment.getExperimentContacts().addAll(translatedExperiment.getExperimentContacts());
-        for (ExperimentContact ec : translatedExperiment.getExperimentContacts()) {
-            ec.setExperiment(originalExperiment);
+        originalExperiment.getSamples().addAll(translatedExperiment.getSamples());
+        originalExperiment.getExtracts().addAll(translatedExperiment.getExtracts());
+        originalExperiment.getLabeledExtracts().addAll(translatedExperiment.getLabeledExtracts());
+        originalExperiment.getHybridizations().addAll(translatedExperiment.getHybridizations());
+    }
+
+    private void mergeExperimentContacts(Experiment originalExperiment, Experiment translatedExperiment) {
+        for (ExperimentContact translatedEc : translatedExperiment.getExperimentContacts()) {
+            List<ExperimentContact> originalExperimentContacts = originalExperiment.getExperimentContacts();
+            boolean isNewEc = true;
+            for (ExperimentContact originalEc : originalExperimentContacts) {
+                if (originalEc.equalsBaseContact(translatedEc)) {
+                    isNewEc = false;
+                    break;
+                }
+            }
+            if (isNewEc) {
+                translatedEc.setExperiment(originalExperiment);
+                originalExperimentContacts.add(translatedEc);
+            }
+        }
+    }
+
+    private void mergeFactors(Experiment originalExperiment, Experiment translatedExperiment) {
+        for (Factor translatedFactor : translatedExperiment.getFactors()) {
+            boolean isNewFactor = true;
+            Set<Factor> originalFactors = originalExperiment.getFactors();
+            for (Factor originalFactor : originalFactors) {
+                if (originalFactor.getName().equals(translatedFactor.getName())) {
+                    isNewFactor = false;
+                    break;
+                }
+            }
+            if (isNewFactor) {
+                originalFactors.add(translatedFactor);
+            }
         }
     }
 

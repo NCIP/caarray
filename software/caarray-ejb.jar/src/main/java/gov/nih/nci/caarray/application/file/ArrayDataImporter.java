@@ -166,8 +166,8 @@ final class ArrayDataImporter {
         }
     }
 
-
     private void validateFile(CaArrayFile file, MageTabDocumentSet mTabSet) {
         this.arrayDataService.validate(file, mTabSet);
     }
+
 }

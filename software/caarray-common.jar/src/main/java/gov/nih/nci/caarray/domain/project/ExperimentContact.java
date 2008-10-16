@@ -345,4 +345,14 @@ public class ExperimentContact extends AbstractCaArrayEntity {
             return roleValue.equals(role.getValue());
         }
     }
+
+    /**
+     * Returns true if the underlying contact information is the same, ignoring the roles and Experiment.
+     * @param experimentContact contact to compare to
+     * @return true if contact info is equal
+     */
+    public boolean equalsBaseContact(ExperimentContact experimentContact) {
+        return this.contact.equals(experimentContact.contact);
+    }
+
 }

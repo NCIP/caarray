@@ -76,6 +76,7 @@ import org.apache.commons.io.FileUtils;
 /**
  * Base class for all MAGE-TAB documents.
  */
+@SuppressWarnings("PMD.TooManyMethods")
 public abstract class AbstractMageTabDocument implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -122,9 +123,10 @@ public abstract class AbstractMageTabDocument implements Serializable {
     /**
      * Parses the MAGE-TAB document, creating the object graph of entities.
      *
+     * @param reimportingMagetab true if the document is being parsed for re-import, false if it's the initial import
      * @throws MageTabParsingException if I/O failed reading the MAGE-TAB file.
      */
-    protected abstract void parse() throws MageTabParsingException;
+    protected abstract void parse(boolean reimportingMagetab) throws MageTabParsingException;
 
     /**
      * Exports the MAGE-TAB object graph into the file corresponding to this document.

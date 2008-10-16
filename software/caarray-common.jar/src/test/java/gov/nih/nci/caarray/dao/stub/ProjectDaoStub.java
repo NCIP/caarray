@@ -85,7 +85,10 @@ package gov.nih.nci.caarray.dao.stub;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
@@ -163,6 +166,34 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
 
     public Set<Sample> getUnfilteredSamplesForProject(Project project) {
         return new HashSet<Sample>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Source getSourceForExperiment(Experiment experiment, String sourceName) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Sample getSampleForExperiment(Experiment experiment, String sampleName) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Extract getExtractForExperiment(Experiment experiment, String extractName) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public LabeledExtract getLabeledExtractForExperiment(Experiment experiment, String labeledExtractName) {
+        return null;
     }
 
 }

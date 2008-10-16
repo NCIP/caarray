@@ -168,10 +168,10 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private boolean publicIdLocked = false;
 
     /**
-     * Hibernate and castor constructor.
+     * Hibernate and caster constructor.
      */
     public Project() {
-        // hibernate & castor-only constructor
+        // hibernate & caster-only constructor
         this.publicProfile.setProjectForPublicProfile(this);
         this.hostProfile.setProjectForHostProfile(this);
     }
