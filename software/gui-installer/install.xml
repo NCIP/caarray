@@ -71,7 +71,7 @@
 				The gui preferences indication.
 				Sets the installer window to 640x480. It will not be able to change the size.
 				-->
-				<guiprefs width="640" height="480" resizable="no">
+				<guiprefs width="640" height="480" resizable="yes">
 					<modifier key="useButtonIcons" value="no"/>
 					<modifier key="useLabelIcons" value="no"/>
 					<modifier key="allYGap" value="3"/>
@@ -186,9 +186,9 @@
 					<panel classname="UserInputPanel"  id="UserInputPanel.5" condition="custom.installation"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.6" condition="custom.installation"/>					
 					<panel classname="UserInputPanel"  id="UserInputPanel.7" condition="upgrade"/>
-					<panel classname="UserInputPanel"  id="UserInputPanel.8"  />
-					<panel classname="UserInputPanel"  id="UserInputPanel.9" />
-					<panel classname="UserInputPanel"  id="UserInputPanel.10" condition="install"/>
+					<panel classname="UserInputPanel"  id="UserInputPanel.8" />
+					<panel classname="UserInputPanel"  id="UserInputPanel.9" condition="install"/>
+					<panel classname="UserInputPanel"  id="UserInputPanel.10" condition="custom.installation"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.11" condition="ldap.setup"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.12" condition="install"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.13" condition="custom.installation"/>

@@ -50,6 +50,13 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use" id="error.label">
             </validator>
         </field>
+	<field type="password" align="left" variable="jboss.web.password">
+		<spec>
+			<pwd txt="Application Jboss Web Password " size="15" set=""/>
+			<pwd txt="Confirm Jboss Web Password " size="15" set=""/>
+		</spec>
+		<validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="The jboss web password passwords did not match"/>			
+	</field>
         <field type="text" variable="jboss.server.name">
             <spec txt="Application Server Name " id="text.label" size="15" set="default"/>
         </field>
@@ -114,83 +121,35 @@
             </validator>
         </field>
 
-
-        <field type="text" variable="jboss.ejbinvoker.port">
-            <spec txt="Application ejbinvoker Port Number " id="text.label" size="15" set="13873"/>
-            <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The ejbinvoker port number is already in use" id="error.label">
-            </validator>
-        </field>
-
-        <field type="text" variable="jboss.hajrmi.port">
-            <spec txt="Application hajrmi Port Number " id="text.label" size="15" set="31101"/>
-            <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The hajrmi port number is already in use" id="error.label">
-            </validator>
-        </field>
     </panel>
 
     <panel order="3">
         <field type="title" txt="Application Installation Jboss Port Details" bold="true" size="1" />
         <field type="divider" align="top"/>
-        <field type="text" align="left" variable="jboss.server.hostname">
-            <spec txt="Application Host Name " size="15" set="localhost"/>
-            <validator
-                class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid Jboss Host name or the Host is not reachable" id="jbosshostname.label">
-            </validator>
-        </field>
 
-        <field type="text" variable="jboss.server.port">
-            <spec txt="Application HTTP Port Number " id="text.label" size="15" set="38080"/>
-            <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The http port number is already in use" id="error.label">
-            </validator>
-        </field>
-        <field type="text" variable="jboss.server.jndi.port">
-            <spec txt="Application JNDI Port Number " id="text.label" size="15" set="31099"/>
-            <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use" id="error.label">
-            </validator>
-        </field>
-        <field type="text" variable="jboss.server.name">
-            <spec txt="Application Server Name " id="text.label" size="15" set="default"/>
-        </field>
-
-        <field type="text" variable="jboss.server.rmi.port">
-            <spec txt="Application RMI Port Number " id="text.label" size="15" set="31098"/>
-            <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The JNDI port number is already in use" id="error.label">
-            </validator>
-        </field>
-
-        <field type="text" align="left" variable="grid.server.hostname">
-            <spec txt="Grid Server Host Name " size="15" set="localhost"/>
-            <validator
-                class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid Grid Host name or the Host is not reachable" id="gridhostname.label">
-            </validator>
-        </field>
-        <field type="text" variable="grid.server.port">
-            <spec txt="Grid Server HTTP Port Number " id="text.label" size="15" set="18080"/>
-            <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The HTTP port number is already in use" id="error.label">
-            </validator>
-        </field>
-        <field type="text" variable="grid.server.jndi.port">
-            <spec txt="Grid Server JNDI Port Number " id="text.label" size="15" set="11099"/>
-            <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The JNDI port number is already in use" id="error.label">
-            </validator>
-        </field>
-        <field type="text" variable="grid.server.name">
-            <spec txt="Grid Server Name " id="text.label" size="15" set="default"/>
-        </field>
-        <field type="text" variable="grid.server.rmi.port">
-            <spec txt="Grid Server RMI Port Number " id="text.label" size="15" set="11098"/>
-            <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The RMI port number is already in use" id="error.label">
-            </validator>
-        </field>
-
+	<field type="password" align="left" variable="jboss.web.password">
+		<spec>
+			<pwd txt="Application Jboss Web Password " size="15" set=""/>
+			<pwd txt="Confirm Jboss Web Password " size="15" set=""/>
+		</spec>
+		<validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="The jboss web passwords did not match"/>			
+	</field>
+	<field type="space" /> 
+	<field type="password" align="left" variable="grid.web.password">
+		<spec>
+			<pwd txt="Grid Jboss Web Password " size="15" set=""/>
+			<pwd txt="Confirm Jboss Web Password " size="15" set=""/>
+		</spec>
+		<validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="The grid web passwords did not match"/>			
+	</field>	 
+   
+       
+    
+	<variable name="jboss.server.hostname" value="localhost"/>
+	<variable name="jboss.server.port" value="38080"/>
+	<variable name="jboss.server.jndi.port" value="31099"/>
+	<variable name="jboss.server.name" value="default"/>
+	<variable name="jboss.server.rmi.port" value="31098"/>
 
         <variable name="jboss.ejbinvoker.port" value="33873"/>
         <variable name="jboss.cobraorb.port" value="33528"/>
@@ -209,6 +168,13 @@
         <variable name="jboss.web.service.port" value="38083"/>
         <variable name="jboss.server.ajp.port" value="38009"/>
         <variable name="jboss.cluster.rmi.port" value="39000"/>
+     
+     	<variable name="grid.server.hostname" value="localhost"/>
+     	<variable name="grid.server.port" value="18080"/>
+     	<variable name="grid.server.jndi.port" value="11099"/>
+     	<variable name="grid.server.name" value="default"/>
+     	<variable name="grid.server.rmi.port" value="11098"/>
+
         <variable name="grid.ejbinvoker.port" value="13873"/>
         <variable name="grid.cobraorb.port" value="13528"/>
         <variable name="grid.hajndi.port" value="11100"/>
@@ -229,11 +195,27 @@
         <variable name="min.pool.size" value="5"/>
         <variable name="max.pool.size" value="30"/>
         <variable name="idle.timeout.minutes" value="300"/>
+        <variable name="ldap.authentication.disabled" value="false"/>
+        
     </panel>
 
     <panel order="4">
         <field type="title" txt="Application Installation Jboss Port Details Cont.." bold="true" size="1" />
         <field type="divider" align="top"/>
+
+        <field type="text" variable="jboss.ejbinvoker.port">
+            <spec txt="Application ejbinvoker Port Number " id="text.label" size="15" set="13873"/>
+            <validator
+                class="com.izforge.izpack.util.PortValidator" txt="The ejbinvoker port number is already in use" id="error.label">
+            </validator>
+        </field>
+
+        <field type="text" variable="jboss.hajrmi.port">
+            <spec txt="Application hajrmi Port Number " id="text.label" size="15" set="31101"/>
+            <validator
+                class="com.izforge.izpack.util.PortValidator" txt="The hajrmi port number is already in use" id="error.label">
+            </validator>
+        </field>
 
         <field type="text" variable="jboss.pooledha.port">
             <spec txt="Enter the pooledha port number for the installation:" id="text.label" size="15" set="34448"/>
@@ -303,6 +285,13 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use" id="error.label">
             </validator>
         </field>
+	<field type="password" align="left" variable="grid.web.password">
+		<spec>
+			<pwd txt="Grid Jboss Web Password " size="15" set=""/>
+			<pwd txt="Confirm Jboss Web Password " size="15" set=""/>
+		</spec>
+	<validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="The grid web passwords did not match"/>			
+	</field>
         <field type="text" variable="grid.server.name">
             <spec txt="Grid Server Name" id="text.label" size="15" set="default"/>
         </field>
@@ -367,6 +356,12 @@
             </validator>
         </field>
 
+    </panel>
+
+
+    <panel order="6">
+        <field type="title" txt="Application Installation Grid Port Details Cont.." bold="true" size="1" />
+        <field type="divider" align="top"/>
 
         <field type="text" variable="grid.ejbinvoker.port">
             <spec txt="Grid Server ejbinvoker Port Number " id="text.label" size="15" set="13873"/>
@@ -381,14 +376,6 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The hajrmi port number is already in use" id="error.label">
             </validator>
         </field>
-
-    </panel>
-
-
-    <panel order="6">
-        <field type="title" txt="Application Installation Grid Port Details Cont.." bold="true" size="1" />
-        <field type="divider" align="top"/>
-
 
         <field type="text" variable="grid.pooledha.port">
             <spec txt="Grid Server pooledha Port Number " id="text.label" size="15" set="14448"/>
@@ -441,7 +428,7 @@
         <field type="divider" align="top"/>
 
         <field type="dir" align="left" variable="existing.installation.home">
-            <spec txt="Select the Location of Caarray Application" size="15" set="$INSTALL_PATH"/>
+            <spec txt="Select the Previous Installation of Caarray Application" size="25" set="$SYSTEM_user_home/apps/caarray-app"/>
         </field>
         <field type="text" align="left" variable="jboss.server.hostname">
             <spec txt="Application Host Name " size="15" set="localhost"/>
@@ -557,7 +544,7 @@
 
         <field type="text" variable="database.server">
             <spec txt="Database Server "
-                id="dbhostname.label" size="25" set="localhost"/>
+                id="dbhostname.label" size="25" set="REPLACE_ME"/>
             <validator
                 class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid Host name or the Host is not reachable" id="dbhostname.label">
             </validator>
