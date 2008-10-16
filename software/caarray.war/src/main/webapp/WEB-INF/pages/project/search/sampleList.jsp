@@ -1,12 +1,12 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <display:table class="searchresults" cellspacing="0" list="${sampleResults}" requestURI="${sortUrl}" id="row" style="clear: none;">
-        <c:set var="canReadRow" value="${caarrayfn:canRead(row, caarrayfn:currentUser())}"/>
         <caarray:displayTagProperties/>
         <display:setProperty name="pagination.sort.param" value="sampleResults.sortCriterion" />
         <display:setProperty name="pagination.sortdirection.param" value="sampleResults.sortDirection" />
         <display:setProperty name="pagination.pagenumber.param" value="sampleResults.pageNumber" />
         <display:column titleKey="experiment.samples.name" sortable="true" sortProperty="NAME">
+            <c:set var="canReadRow" value="${caarrayfn:canRead(row, caarrayfn:currentUser())}"/>
             <c:choose>
                 <c:when test="${canReadRow}">
                      <c:url var="viewSampleUrl" value="/ajax/project/listTab/Samples/view.action">

@@ -21,8 +21,6 @@
                     <c:param name="resultExpCount" value="${value}"/>
                     <c:param name="resultSampleCount" value="${value}"/>
                     <c:param name="resultSourceCount" value="${value}"/>
-                    <c:param name="sampleResults" value="${value}"/>
-                    <c:param name="sourceResults" value="${value}"/>
                     <c:param name="selectedCategory" value="${selectedCategory.id}"/>
                 </c:url>
                 <fmt:message key="search.tab.${key}" var="tabTitle">

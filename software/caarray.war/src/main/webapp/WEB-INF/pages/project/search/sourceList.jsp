@@ -1,7 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <display:table class="searchresults" cellspacing="0" list="${sourceResults}" requestURI="${sortUrl}" id="row" style="clear: none;">
-        <c:set var="canReadExp" value="${caarrayfn:canRead(row.experiment.project, caarrayfn:currentUser())}"/>
         <caarray:displayTagProperties/>
         <display:column titleKey="experiment.sources.name" sortable="true" sortProperty="NAME">
             <c:url var="viewSourceUrl" value="/ajax/project/listTab/Sources/view.action">
@@ -28,6 +27,7 @@
             </c:forEach>
         </display:column>
         <display:column titleKey="search.result.experimentTitle" sortable="true" sortProperty="TITLE">
+            <c:set var="canReadRow" value="${caarrayfn:canRead(row, caarrayfn:currentUser())}"/>
              <c:choose>
                 <c:when test="${canReadExp}">
                      <c:url var="viewExpUrl" value="/project/details.action">
