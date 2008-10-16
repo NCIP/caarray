@@ -5,36 +5,28 @@
     <script type="text/javascript">
 
             populateCategory = function() {
-
                 if ($('searchTypeSEARCH_BY_SAMPLE').checked == true) {
-
                     $('selectSampleCat').show();
                     $('selectExpCat').hide();
                     checkSampleCategorySelection();
                 } else if ($('searchTypeSEARCH_BY_EXPERIMENT').checked == true) {
-
                     $('selectExpCat').show();
                     $('selectSampleCat').hide();
                     hideFilterBox('filterCharBox');
                     checkExpCategorySelection();
                 } else {
-
                     $('selectExpCat').hide();
                     $('selectSampleCat').hide();
                     hideFilterBox('filterCharBox');
                 }
-
             }
 
             checkSampleCategorySelection = function() {
-
                 if ($('selectSampleCat').value == 'OTHER_CHARACTERISTICS') {
-
                     showFilterBox('filterCharBox');
                     hideFilterBox('filterOrgBox');
                     showKeywordTxtBox();
                 } else if ($('selectSampleCat').value == 'SAMPLE_ORGANISM') {
-
                     hideKeywordTxtBox();
                     showFilterBox('filterOrgBox');
                     hideFilterBox('filterCharBox');
@@ -46,7 +38,6 @@
             }
 
             checkExpCategorySelection = function() {
-
                 if ($('selectExpCat').value == 'ORGANISM') {
                     hideKeywordTxtBox();
                     showFilterBox('filterOrgBox');
@@ -73,12 +64,12 @@
             }
 
             showKeywordTxtBox = function() {
-                $('keyword').show();
+                $('keywordTxtField').show();
                 $('keywordlabel').show();
             }
 
             hideKeywordTxtBox = function() {
-                $('keyword').hide();
+                $('keywordTxtField').hide();
                 $('keywordlabel').hide();
             }
 
@@ -142,7 +133,7 @@
                             listValue="%{getText(label)}"
                             listKey="value"
                             value="@gov.nih.nci.caarray.domain.search.SearchTypeSelection@SEARCH_BY_EXPERIMENT"
-                            onchange="populateCategory()" theme="simple"/>
+                            onclick="populateCategory()" theme="simple"/>
                         </td>
                     </tr>
                     <tr>
@@ -171,7 +162,7 @@
                             <div id="keywordlabel"><b><fmt:message key="search.keyword"/>:</b></div>
                         </td>
                         <td>
-                            <s:textfield id="keyword" name="keyword" key="search.keyword" theme="simple"/>
+                            <s:textfield id="keywordTxtField" name="keyword" key="search.keyword" theme="simple"/>
                         </td>
                      </tr>
                             <c:url var="autoOrgCompleteUrl" value="/ajax/search/searchForOrganismNames.action" />
