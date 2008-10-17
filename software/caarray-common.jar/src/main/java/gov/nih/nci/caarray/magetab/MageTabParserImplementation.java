@@ -101,8 +101,7 @@ class MageTabParserImplementation implements MageTabParser {
     public ValidationResult validate(MageTabFileSet fileSet, boolean reimportingMagetab)
             throws MageTabParsingException {
         LogUtil.logSubsystemEntry(LOG, fileSet);
-        ValidationResult result = null;
-        result = doParse(fileSet, reimportingMagetab).getValidationResult();
+        ValidationResult result = doParse(fileSet, reimportingMagetab).getValidationResult();
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -113,7 +112,7 @@ class MageTabParserImplementation implements MageTabParser {
     public MageTabDocumentSet parse(MageTabFileSet inputFileSet, boolean reimportingMagetab)
             throws MageTabParsingException, InvalidDataException {
         LogUtil.logSubsystemEntry(LOG, inputFileSet);
-        MageTabDocumentSet documentSet =  doParse(inputFileSet, reimportingMagetab);
+        MageTabDocumentSet documentSet = doParse(inputFileSet, reimportingMagetab);
         if (!documentSet.getValidationResult().isValid()) {
             throw new InvalidDataException(documentSet.getValidationResult());
         }

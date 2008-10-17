@@ -109,6 +109,7 @@ import java.util.Set;
  * A set of parsed, interrelated MAGE-TAB documents. This class provides access to the files and the entities defined
  * within them.
  */
+@SuppressWarnings("PMD.TooManyMethods")
 public final class MageTabDocumentSet implements Serializable {
 
     private static final long serialVersionUID = -2836359210806454994L;
@@ -391,8 +392,8 @@ public final class MageTabDocumentSet implements Serializable {
     }
 
     /**
-     * Return a set of the hybridizations ref'd by the sdrf files.
-     * @return set of Hybs
+     * Return a set of the hybridizations referenced by the sdrf files.
+     * @return set of Hybridization
      */
     public Set<Hybridization> getSdrfHybridizations() {
         return this.hybridizations;
@@ -458,8 +459,6 @@ public final class MageTabDocumentSet implements Serializable {
             }
         }
     }
-
-
 
     private void addSdrfErrorMessage(String txt) {
         for (SdrfDocument sdrf : sdrfDocuments) {

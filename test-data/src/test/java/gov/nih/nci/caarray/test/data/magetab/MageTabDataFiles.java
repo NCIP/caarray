@@ -292,29 +292,61 @@ public class MageTabDataFiles {
 
     public static final File FEATURE_13141_DIRECTORY = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id").getFile());
-    
+
     public static final File FEATURE_13141_ZIP = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/valid.zip").getFile());
-    
-    public static final File FEATURE_13141_IDF = new File(MageTabDataFiles.class 
+
+    public static final File FEATURE_13141_IDF = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/valid.idf").getFile());
-    
+
     public static final File FEATURE_13141_SDRF = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/valid1.sdrf").getFile());
-            
+
     public static final File FEATURE_13141_SDRF2 = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/valid2.sdrf").getFile());
-    
+
     public static final File FEATURE_13141_INVALID_ZIP = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/invalid.zip").getFile());
-    
-    public static final File FEATURE_13141_INVALID_IDF = new File(MageTabDataFiles.class 
+
+    public static final File FEATURE_13141_INVALID_IDF = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/invalid.idf").getFile());
-    
+
     public static final File FEATURE_13141_INVALID_SDRF = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/invalid1.sdrf").getFile());
-    
+
     public static final File FEATURE_13141_INVALID_SDRF2 = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/invalid2.sdrf").getFile());
 
+    public static final File SPECIFICATION_UPDATE_ANNOTATIONS_DIRECTORY = new File(MageTabDataFiles.class
+            .getResource("/magetab/specification_update_annotations").getFile());
+
+    public static final File SPECIFICATION_UPDATE_ANNOTATIONS_ZIP = new File(MageTabDataFiles.class
+            .getResource("/magetab/specification_update_annotations/specification_update_annotations.zip").getFile());
+
+    public static final File SPECIFICATION_UPDATE_ANNOTATIONS_IDF = new File(MageTabDataFiles.class
+            .getResource("/magetab/specification_update_annotations/e-mexp-428_v1.0-update_annotations.idf").getFile());
+
+    public static final File SPECIFICATION_UPDATE_ANNOTATIONS_SDRF = new File(MageTabDataFiles.class
+            .getResource("/magetab/specification_update_annotations/e-mexp-428_v1.0-update_annotations.sdrf").getFile());
+
+    public static final File SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_DIRECTORY = new File(MageTabDataFiles.class
+            .getResource("/magetab/specification_update_annotations_add_new_bm").getFile());
+
+    public static final File SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_ZIP = new File(MageTabDataFiles.class
+            .getResource("/magetab/specification_update_annotations_add_new_bm/specification_update_annotations_add_new_bm.zip").getFile());
+
+    public static final File SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_IDF = new File(MageTabDataFiles.class
+            .getResource("/magetab/specification_update_annotations_add_new_bm/e-mexp-428_v1.0-update_annotations_add_new_bm.idf").getFile());
+
+    public static final File SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_SDRF = new File(MageTabDataFiles.class
+            .getResource("/magetab/specification_update_annotations_add_new_bm/e-mexp-428_v1.0-update_annotations_add_new_bm.sdrf").getFile());
+
+    public static final File SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_DATA_MATRIX_FILE = new File(MageTabDataFiles.class
+            .getResource("/magetab/specification_update_annotations_add_new_bm/e-mexp-428data_v2.0.data").getFile());
+
+    public static final File SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_DATA_FILE1 = new File(MageTabDataFiles.class
+            .getResource("/magetab/specification_update_annotations_add_new_bm/H_TK6 neo replicate 5.CEL").getFile());
+
+    public static final File SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_DATA_FILE2 = new File(MageTabDataFiles.class
+            .getResource("/magetab/specification_update_annotations_add_new_bm/H_TK6 neo replicate 6.CEL").getFile());
 }

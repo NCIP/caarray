@@ -246,15 +246,40 @@ public final class TestMageTabSets {
      * MAGE-TAB input set containing valid usage of Characteristics[ExternalSampleId] for Sample(s).
      */
     public static final MageTabFileSet INVALID_FEATURE_13141_INPUT_SET = getInvalidFeature13141InputSet();
-
     /**
      * Document set parsed ...
      */
     public static final MageTabDocumentSet INVALID_FEATURE_13141_DATA_SET = getSet(INVALID_FEATURE_13141_INPUT_SET);
 
+    /**
+     * MAGE-TAB input set based on the base specification set with some changes.
+     */
+    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET = getSpecificationUpdateAnnotationsInputSet();
+    /**
+     * Parse MAGE-TAB document set for updating annotations.
+     */
+    public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_SET = getSetForReimport(MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET);
+
+    /**
+     * MAGE-TAB input set based on the base specification set with some changes, as well as an additional biomaterial chain.
+     */
+    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_INPUT_SET = getSpecificationUpdateAnnotationsAddBmInputSet();
+    /**
+     * Parse MAGE-TAB document set for updating annotations and adding a new biomaterial chain.
+     */
+    public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_SET = getSetForReimport(MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_INPUT_SET);
+
     private static MageTabDocumentSet getSet(MageTabFileSet inputSet) {
+        return getSet(inputSet, false);
+    }
+
+    private static MageTabDocumentSet getSetForReimport(MageTabFileSet inputSet) {
+        return getSet(inputSet, true);
+    }
+
+    private static MageTabDocumentSet getSet(MageTabFileSet inputSet, boolean isReimporting) {
         try {
-            return MageTabParser.INSTANCE.parse(inputSet, false);
+            return MageTabParser.INSTANCE.parse(inputSet, isReimporting);
         } catch (MageTabParsingException e) {
             e.printStackTrace(System.err);
             return null;
@@ -449,6 +474,22 @@ public final class TestMageTabSets {
         fileSet.addAdf(MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_ADF);
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_DIRECTORY);
         addChpFiles(fileSet, MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_DIRECTORY);
+        return fileSet;
+    }
+
+    private static MageTabFileSet getSpecificationUpdateAnnotationsInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_IDF);
+        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_SDRF);
+        return fileSet;
+    }
+
+    private static MageTabFileSet getSpecificationUpdateAnnotationsAddBmInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_IDF);
+        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_SDRF);
+        addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_DIRECTORY);
+        fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_DATA_MATRIX_FILE);
         return fileSet;
     }
 
