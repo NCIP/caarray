@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
-import gov.nih.nci.security.authorization.domainobjects.Group;
 
 import java.util.List;
 
@@ -109,7 +108,7 @@ public class CollaboratorGroupDaoImpl extends AbstractCaArrayDaoImpl implements 
      */
     @SuppressWarnings("unchecked")
     public List<CollaboratorGroup> getAll() {
-        return getCurrentSession().createQuery("SELECT cg FROM " + CollaboratorGroup.class.getName() + " cg, "
-                + Group.class.getName() + " g" +  " WHERE cg.groupId = g.groupId order by g.groupName").list();
+        return getCurrentSession().createQuery("FROM " + CollaboratorGroup.class.getName()).list();
     }
+
 }

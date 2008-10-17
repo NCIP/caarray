@@ -108,8 +108,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -137,8 +135,6 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
@@ -262,7 +258,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Publication> publications = new HashSet<Publication>();
     private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
     private Set<Source> sources = new HashSet<Source>();
-    private SortedSet<Sample> samples = new TreeSet<Sample>();
+    private Set<Sample> samples = new HashSet<Sample>();
     private Set<Extract> extracts = new HashSet<Extract>();
     private Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
     private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
@@ -699,8 +695,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @Filter(name = "Project1", condition = SAMPLES_ALIAS_FILTER)
-    @Sort(type = SortType.NATURAL)
-    public SortedSet<Sample> getSamples() {
+    public Set<Sample> getSamples() {
         return this.samples;
     }
 
@@ -718,7 +713,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param samplesVal the sources
      */
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setSamples(final SortedSet<Sample> samplesVal) {
+    private void setSamples(final Set<Sample> samplesVal) {
         this.samples = samplesVal;
     }
 

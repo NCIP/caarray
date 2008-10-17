@@ -107,7 +107,7 @@ public enum SampleSecurityLevel implements ResourceBasedEnum {
     private final boolean allowsWrite;
     private String resourceKey;
 
-    private SampleSecurityLevel(boolean availableToPublic, boolean allowsRead, boolean allowsWrite,
+    private SampleSecurityLevel(boolean availableToPublic, boolean allowsRead, boolean allowsWrite, 
             String resourceKey) {
         this.availableToPublic = availableToPublic;
         this.allowsRead = allowsRead;
