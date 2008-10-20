@@ -63,11 +63,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 
 
     <!-- retrive ivy files then retrieve bda files and librarires -->
-    <mkdir dir="lib"/>
-    <ant inheritAll="false" inheritRefs="false" antfile="bda-ivy-build.xml"
-        target="retrieve-bda">
-        <property name="bda-utils.dir" value="${bda-utils.dir}"/>
-        <property name="lib.dir" value="${lib.dir}"/>
+    <property name="bda-download.file" value="bda-ivy-build.xml" />
+
+    <ant inheritAll="false" inheritRefs="false" antfile="${bda-download.file}" target="retrieve-bda">
+	    <property name="bda.version" value="${bda.version}" />
+	    <property name="bda-utils.dir" location="${bda-utils.dir}" />
+	    <property name="lib.dir" location="${lib.dir}" />
+	    <property name="software.dir" location="." />
     </ant>
 
     <!-- Paths -->
@@ -168,7 +170,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         dist:upgrader,
         dist:src,
         dist:javadoc,
-        dist:caarray-client.zip"
+        dist:caarray-client.zip,
+        dist:gui-installer"
             />
 
 
@@ -204,6 +207,20 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <delete file="${dist.dir}/${caarray.client-zip.zip.file}" />
         <copy file="${basedir}/caarray-client.jar/target/caarray-client.zip" tofile="${dist.dir}/${caarray.client-zip.zip.file}"/>
     </target>
+
+    <target name="dist:gui-installer" description="Makes Gui-Installer distribution">
+        <mkdir dir="${basedir}/gui-installer/target"/>
+        <gui-installer-prep target.dir="${basedir}/gui-installer/target" download.dir="${basedir}/gui-installer/target" bda-utils.dir="${bda-utils.dir}" izpack-custom.svn.dir="${basedir}/gui-installer/target/custom"
+            />
+        <ant inheritAll="false" inheritRefs="false"
+            antfile="install.xml"
+            target="build:installer"
+            dir="${basedir}/gui-installer"
+            >
+            <property name="compile.jar.dir" value="${basedir}/gui-installer/target/izpack-4.0.1"/>
+        </ant>
+    </target>
+
 
     <target name="build:caarray">
         <ant antfile="${basedir}/build/build.xml" inheritall="false" target="clean" dir="${basedir}"/>
