@@ -107,11 +107,11 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.set.ListOrderedSet;
 import org.apache.commons.lang.StringUtils;
 
 import com.fiveamsolutions.nci.commons.util.NCICommonsUtils;
@@ -174,11 +174,11 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final Set<SdrfColumnType> allSampleColumns = new HashSet<SdrfColumnType>();
     private final Set<SdrfColumnType> allExtractColumns = new HashSet<SdrfColumnType>();
     private final Set<SdrfColumnType> allLabeledExtractColumns = new HashSet<SdrfColumnType>();
-    // The ordering of the characteristics in the SDRF. (Note: ListOrderedSet does not have a generic version.)
-    private final Set<SdrfCharacteristic> allSourceCharacteristics = new ListOrderedSet();
-    private final Set<SdrfCharacteristic> allSampleCharacteristics = new ListOrderedSet();
-    private final Set<SdrfCharacteristic> allExtractCharacteristics = new ListOrderedSet();
-    private final Set<SdrfCharacteristic> allLabeledExtractCharacteristics = new ListOrderedSet();
+    // The ordering of the characteristics in the SDRF.
+    private final Set<SdrfCharacteristic> allSourceCharacteristics = new LinkedHashSet<SdrfCharacteristic>();
+    private final Set<SdrfCharacteristic> allSampleCharacteristics = new LinkedHashSet();
+    private final Set<SdrfCharacteristic> allExtractCharacteristics = new LinkedHashSet();
+    private final Set<SdrfCharacteristic> allLabeledExtractCharacteristics = new LinkedHashSet();
 
     private boolean reimportingMagetab = false;
 
