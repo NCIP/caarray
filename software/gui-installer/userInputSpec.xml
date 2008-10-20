@@ -606,18 +606,6 @@
             <spec txt="Database Name "
                 id="text.label" size="25" set="caarray_db"/>
         </field>
-        <field type="text" variable="database.system.user">
-            <spec txt="Database User Name with Administative Privileges:" id="text.label" size="25" set="root"/>
-        </field>
-        <field type="password" align="left" variable="database.system.password">
-            <spec>
-                 <pwd txt="Password for the above-named User:" id="pwd.label" size="25" set=""/>
-            </spec>
-            <validator
-                class="com.izforge.izpack.util.DBConnectionValidator" txt="The root password did not match" id="error.label">
-                <param name="systemUser" value="true" />
-            </validator>
-        </field>
         <field type="text" variable="database.user">
             <spec txt="Database User Name for caArray Application:" id="text.label"
                 size="25" set="caarrayuser"/>
