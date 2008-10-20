@@ -2,14 +2,14 @@
     <!-- Install -->
     <panel order="0">
         <field type="title" txt="Installation Mode" bold="true" size="1" />
-        <field type="staticText" align="left" txt="Choose Install if you haven't installed caArray on this machine before. Choose Upgrade if caArray has previously been installed. WARNING: When choosing Install, the installer will remove any previous application server or databases installed based on the information you provide."/>
+        <field type="staticText" align="left" txt="Choose Install if you haven't installed caArray on this machine before. Choose Upgrade if caArray has previously been installed. WARNING: When choosing Install, the installer will remove any previously installed application servers (using caBIG installers) or databases installed based on the information you provide, so be sure to backup your application server and database instance if they exist. For detailed descriptions on each of the properties in this installer, see https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="divider" align="top"/>
         <field type="radio" variable="setup.type">
             <description align="left" txt="Select the type of installation"
             id="installation.radio"/>
             <spec>
-                <choice txt="install" id="setup.type.install" value="install" set="true" />
-                <choice txt="upgrade" id="setup.type.upgrade" value="upgrade" />
+                <choice txt="Install" id="setup.type.install" value="install" set="true" />
+                <choice txt="Upgrade" id="setup.type.upgrade" value="upgrade" />
             </spec>
         </field>
     </panel>
@@ -23,8 +23,8 @@
             <description align="left" txt="Select the type of installation"
             id="type.radio"/>
             <spec>
-                <choice txt="typical" id="install.type.typical" value="typical" set="true" />
-                <choice txt="custom" id="install.type.custom" value="custom" />
+                <choice txt="Typical" id="install.type.typical" value="typical" set="true" />
+                <choice txt="Custom" id="install.type.custom" value="custom" />
             </spec>
         </field>
     </panel>
@@ -33,7 +33,7 @@
     <panel order="2">
         <field type="title" txt="Configure your JBoss application server" bold="true" size="1" />
         <field type="divider" align="top"/>
-	<field type="staticText" align="left" txt="As part of this installtion, JBoss will be installed in ${UserPathPanelVariable}/${jboss.binaries.relative.dir}.  It will be configured based on the values you enter below.  NOTE: The Hostname below (and on other panels of this installer) is the host name accesible from this machine and others on the local network. To access this JBoss application server from the Internet, you may need to provide the JBoss HTTP Port to your Network administrator to allow access through the firewall."/>
+	<field type="staticText" align="left" txt="As part of this installtion, JBoss will be installed in ${UserPathPanelVariable}.  It will be configured based on the values you enter below.  NOTE: The Hostname below (and on other panels of this installer) is the host name accesible from this machine and others on the local network. To access this JBoss application server from the Internet, you may need to provide the JBoss HTTP Port to your Network administrator to allow access through the firewall."/>
 	<field type="space"/>
         <field type="text" align="left" variable="jboss.server.hostname">
             <spec txt="Application Host Name" size="15" set="localhost"/>
@@ -42,7 +42,7 @@
 			class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Host Name is a  required field">
 		</validator>
 		<validator
-			class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid Jboss Host name or the Host is not reachable" id="jbosshostname.label">
+			class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid JBoss Host name or the Host is not reachable" id="jbosshostname.label">
 		</validator>
         </field>
 
@@ -66,8 +66,8 @@
         </field>
 	<field type="password" align="left" variable="jboss.web.password">
 		<spec>
-			<pwd txt="Application Jboss Web Password " size="15" set=""/>
-			<pwd txt="Confirm Jboss Web Password " size="15" set=""/>
+			<pwd txt="Application JBoss Web Password " size="15" set=""/>
+			<pwd txt="Confirm JBoss Web Password " size="15" set=""/>
 		</spec>
 		<validator 
 			class="com.izforge.izpack.util.NotEmptyValidator" txt="JBoss Web Console Passwords are required fields" id="webconsole.label">
@@ -147,22 +147,22 @@
 
 	<field type="password" align="left" variable="jboss.web.password">
 		<spec>
-			<pwd txt="Application Jboss Web Password " size="15" set=""/>
-			<pwd txt="Confirm Jboss Web Password " size="15" set=""/>
+			<pwd txt="Application JBoss Web Password " size="15" set=""/>
+			<pwd txt="Confirm JBoss Web Password " size="15" set=""/>
 		</spec>
 		<validator 
-			class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Jboss Web Password are required fields">
+			class="com.izforge.izpack.util.NotEmptyValidator" txt="Application JBoss Web Password are required fields">
 		</validator>		
 		<validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords." id="key for the error text"/>			
 	</field>
 	<field type="space" /> 
 	<field type="password" align="left" variable="grid.web.password">
 		<spec>
-			<pwd txt="Grid Jboss Web Password " size="15" set=""/>
-			<pwd txt="Confirm Jboss Web Password " size="15" set=""/>
+			<pwd txt="Grid JBoss Web Password " size="15" set=""/>
+			<pwd txt="Confirm JBoss Web Password " size="15" set=""/>
 		</spec>
 		<validator 
-			class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid Jboss Web Password are required fields">
+			class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid JBoss Web Password are required fields">
 		</validator>		
 		<validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="The grid web passwords did not match"/>			
 	</field>	 
@@ -226,7 +226,7 @@
     <panel order="4">
         <field type="title" txt="Additional JBoss installation options" bold="true" size="1" />
         <field type="divider" align="top"/>
-        
+        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="text" variable="jboss.hajndi.port">
             <spec txt="Application hajndi Port Number " id="text.label" size="15" set="31100"/>
 		<validator 
@@ -348,7 +348,7 @@
     <panel order="5">
         <field type="title" txt="Configure your Grid application server" bold="true" size="1" />
         <field type="divider" align="top"/>
-
+	<field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="text" align="left" variable="grid.server.hostname">
             <spec txt="Grid Server Host Name" size="15" set="localhost"/>
 		<validator 
@@ -378,11 +378,11 @@
         </field>
 	<field type="password" align="left" variable="grid.web.password">
 		<spec>
-			<pwd txt="Grid Jboss Web Password " size="15" set=""/>
-			<pwd txt="Confirm Jboss Web Password " size="15" set=""/>
+			<pwd txt="Grid JBoss Web Password " size="15" set=""/>
+			<pwd txt="Confirm JBoss Web Password " size="15" set=""/>
 		</spec>
 		<validator 
-			class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid Jboss Web Password are required fields">
+			class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid JBoss Web Password are required fields">
 		</validator>	
 	<validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your Grid Web Console passwords"/>			
 	</field>
@@ -456,7 +456,7 @@
     <panel order="6">
         <field type="title" txt="Additional Grid installation options" bold="true" size="1" />
         <field type="divider" align="top"/>
-
+	<field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="text" variable="grid.hajndi.port">
             <spec txt="Grid Server hajndi Port Number " id="text.label" size="15" set="11100"/>
 		<validator 
@@ -577,8 +577,8 @@
     <!-- upgrade -->
     <panel order="7">
         <field type="title" txt="Configure your existing JBoss application server" bold="true" size="1" />
-        <field type="divider" align="top"/>
-
+        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
+        <field type="divider" align="top"/>	
         <field type="dir" align="left" variable="existing.installation.home">
             <spec txt="Select the Previous Installation of Caarray Application" size="25" set="$SYSTEM_user_home/apps/caarray-app"/>
         </field>
@@ -588,7 +588,7 @@
 		    class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Host Name is a required field" id="indexurl.label">
 		</validator>
             <validator
-                class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid Jboss Host name or the Host is not reachable" id="jbosshostname.label">
+                class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid JBoss Host name or the Host is not reachable" id="jbosshostname.label">
             </validator>
         </field>
         <field type="text" variable="jboss.server.port">
@@ -653,6 +653,7 @@
 
         <field type="text" variable="grid.static.hostname">
             <spec txt="Externally Accessible Hostname/IP Address " id="text.label" size="15" set=""/>
+            <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Externally Accessible Hostname/IP Address is a required field" />
         </field>
         <field type="text" variable="grid.index.url">
             <spec txt="Index Url" id="text.label" size="25" set="http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService"/>
@@ -752,15 +753,16 @@
     <panel order="9">
 
         <field type="title" txt="Configuring your MySQL database connection " bold="true" size="1" />
-        <field type="staticText" align="left" txt="The information you enter below will connect you to an existing MySQL database. localhost is NOT a recommended value for Database Host Name. The 'Database User' must have full access to 'Database Name'. It's highly recommended you contact your database administrator to obtain this information. NOTE: All database objects for 'Database Name' will be dropped and recreated during the installation process. For detailed descriptions on each of the properties below, see the Database Settings section at https://wiki.nci.nih.gov/x/Caml"/>
+        <field type="staticText" align="left" txt="The information you enter below will connect you to an existing MySQL database. localhost is NOT a recommended value for Database Host Name. The 'Database User' must have full access to 'Database Name'. It's highly recommended you contact your database administrator to obtain this information. NOTE: All database objects for 'Database Name' will be dropped and recreated during the installation process. For detailed descriptions on each of the properties below, see the Database Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="divider" align="top"/>
 
         <variable name="install.path" value="$INSTALL_PATH"/>
         <variable name="baseDir" value="$INSTALL_PATH"/>
 
         <field type="text" variable="database.server">
-            <spec txt="Database Server "
+            <spec txt="Database Host Name "
                 id="dbhostname.label" size="25" set=""/>
+            <validator class="com.izforge.izpack.util.NotEmptyValidator" txt=" Database Host Name is a required field" />
             <validator
                 class="com.izforge.izpack.util.HostNameValidator" txt="Database Server is a required field or the Server is not reachable" id="dbhostname.label">
             </validator>
@@ -768,14 +770,16 @@
         <field type="text" variable="database.port">
             <spec txt="Database Port "
                 id="dbport.label" size="25" set="3306"/>
-
+	    <validator class="com.izforge.izpack.util.NotEmptyValidator" txt=" Database Port is a required field" />
         </field>
         <field type="text" variable="database.name">
             <spec txt="Database Name "
                 id="text.label" size="25" set="caarray_db"/>
+                <validator class="com.izforge.izpack.util.NotEmptyValidator" txt=" Database Name is a required field" />
         </field>
         <field type="text" variable="database.system.user">
             <spec txt="Database User Name with Administative Privileges:" id="text.label" size="25" set="root"/>
+            <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Database System User is a required field" />
         </field>
         <field type="password" align="left" variable="database.system.password">
             <spec>
@@ -789,13 +793,14 @@
         <field type="text" variable="database.user">
             <spec txt="Database User Name for caArray Application:" id="text.label"
                 size="25" set="caarrayuser"/>
+             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt=" Database Application User is a required field" />
         </field>
         <field type="password" align="left" variable="database.password">
             <spec>
                  <pwd txt="Password for the above-named user:" id="pwd.label" size="25" set=""/>
             </spec>
             <validator
-                class="com.izforge.izpack.util.DBConnectionValidator" txt="The database user and password did not match" id="error.label">
+                class="com.izforge.izpack.util.DBConnectionValidator" txt="Unable to connect to this database with the Database Application User and Password you have entered." id="error.label">
             </validator>
         </field>
     </panel>
@@ -808,7 +813,7 @@
             <description align="left" txt="Chose the type of Authentication?"
             id="ldap.radio"/>
             <spec>
-                <choice txt="database" id="ldap.install.false" value="false" set="true" />
+                <choice txt="Database" id="ldap.install.false" value="false" set="true" />
                 <choice txt="LDAP" id="ldap.install" value="true" />                
             </spec>
         </field>
@@ -820,53 +825,58 @@
         <field type="divider" align="top"/>
         <field type="text" variable="ldap.hostname">
             <spec txt="LDAP Host Name " id="text.label" size="25" set="ldaps://localhost:636"/>
+            <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="LDAP Host Name is a required field" />
         </field>
         <field type="text" variable="ldap.search.base">
-            <spec txt="LDAP Search Base:" id="text.label" size="25" set=""/>
+            <spec txt="LDAP Search Base" id="text.label" size="25" set=""/>
+            <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="LDAP Search Base is a required field" />
         </field>
         <field type="text" variable="ldap.search.prefix">
-            <spec txt="LDAP Search Prefix:" id="text.label" size="25" set=""/>
+            <spec txt="LDAP Search Prefix" id="text.label" size="25" set=""/>
+            <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="LDAP Search Prefix is a required field" />
         </field>
     </panel>
 
     <panel order="12">
         <field type="title" txt="Configure Global Settings" bold="true" size="1" />
+        <field type="staticText" align="left" txt="The information you enter below will connect you to an existing Index Server.The Externally Accessible Hostname is the Hostname or the Domain name for the installation machine. UPT URL is where the UPT application is being installed. For detailed descriptions on each of the properties below, see the Global Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="divider" align="top"/>
         <field type="text" variable="grid.index.url">
-            <spec txt="Index Url " id="text.label" size="25" set="http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService"/>
+            <spec txt="Index URL " id="text.label" size="35" set="http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService"/>
+	    <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Index URL is a required field" />	
             <validator
                 class="com.izforge.izpack.util.URLCheckValidator" txt="Index Url is a required field or the Index Server can not be reached. Please check your firewall or the proxy setting" id="indexurl.label">
-            </validator>
+            </validator>            
         </field>
        <field type="text" variable="grid.static.hostname">
-            <spec txt="Externally Accessible Hostname/IP Address " id="text.label" size="15" set=""/>     
+            <spec txt="Externally Accessible Hostname/IP Address " id="text.label" size="25" set=""/>
+            <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Externally Accessible Hostname/IP Address is a required field" />
         </field>
         <field type="text" variable="upt.url">
-            <spec txt="UPT url " id="text.label" size="25" set="http://upt-dev.nci.nih.gov/upt/"/>
-            <validator
-                class="com.izforge.izpack.util.URLCheckValidator" txt="UPT Url is a required field or the Index Server can not be reached. Please check your firewall or the proxy setting" id="upturl.label">
-            </validator>
+            <spec txt="UPT URL " id="text.label" size="25" set=""/>
         </field>
     </panel>
 
 
     <panel order="13">
         <field type="title" txt="Database Configuration " bold="true" size="1" />
+        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="divider" align="top"/>
         <field type="text" variable="min.pool.size">
-            <spec txt="Minimum Pool Size:" id="text.label" size="25" set="5"/>
+            <spec txt="Minimum Pool Size:" id="text.label" size="15" set="5"/>
         </field>
         <field type="text" variable="max.pool.size">
-            <spec txt="Maximum Pool Size:" id="text.label" size="25" set="30"/>
+            <spec txt="Maximum Pool Size:" id="text.label" size="15" set="30"/>
         </field>
         <field type="text" variable="idle.timeout.minutes">
-            <spec txt="Idle Time Out Mimutes:" id="text.label" size="25" set="300"/>
+            <spec txt="Idle Time Out Mimutes:" id="text.label" size="15" set="300"/>
         </field>
     </panel>
 
 
     <panel order="14">
         <field type="title" txt="Mail Server Configuration" bold="true" size="1" />
+        <field type="staticText" align="left" txt="Mail Server Hostname and Mail Server Port Number is the hostname where the mail server is being configured.For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="divider" align="top"/>
 
         <field type="text" variable="mail.smtp.host">

@@ -233,7 +233,7 @@
 
 					<pack name="parse-install" required="no" preselected="no" condition="install">
 					    <description>parse the input values</description>
-					    <parsable targetfile="$SYSTEM_user_home/@{installer.dir}/@{application_installer}/install.properties" type="plain" />		    
+					    <parsable targetfile="$SYSTEM_user_home/@{installer.dir}/@{application_installer}/install.properties" type="plain" />
 					</pack>
 
 					<pack name="parse-update" required="no" preselected="no" condition="upgrade">
