@@ -23,6 +23,7 @@
 <%@ attribute name="autocompleteParamValues" required="false" type="java.lang.String" description="Additional parameter values to pass to the autocomplete filter (comma-separated list)" %>
 <%@ attribute name="allowReordering" required="false" type="java.lang.String" description="true to allow reordering of the selected items, false otherwise.  only relevant if multipe = true" %>
 <%@ attribute name="divstyle" required="false" type="java.lang.String" description="style for the outer most div"%>
+<%@ attribute name="displayResourceValue" required="false" type="java.lang.String" description="true to call getText() on the list field in order to display the resource value"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -76,6 +77,9 @@
                         <c:if test="${showFilter == 'true'}">
                             <span class="selectListFilterLabel">Filter:</span> <s:textfield id="${baseId}SearchInput" name="${filterFieldName}" theme="simple" size="10" tabindex="${tabIndex}" cssStyle="align:left;" value=""/>
                         </c:if>
+                        <c:if test="${showFilter == 'false'}">
+                            <s:hidden id="${baseId}SearchInput" name="${filterFieldName}" value=""/>
+                        </c:if>
                         <span id="${baseId}ProgressMsg" style="display: none"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /></span>
                         <c:if test="${hideAddButton != 'true'}">
                         <span style="position: relative; left: 15px; margin-top: -24px; float: right;">
@@ -88,16 +92,49 @@
                 <div class="selectionside">
                     <h4>Selected ${listLabel}</h4>
                     <div>
-                        <input name="${listFieldName}" type="hidden" value=""/>
+                        <span style="display: none">
+                            <c:choose>
+                                <c:when test="${multiple != 'true' && !empty listField}">
+                                    <select id="${baseId}SelectedItemValues" name="${listFieldName}">
+                                        <option value=""></option>
+                                        <option selected="selected" value="<s:property value='#attr.listField.${objectValue}'/>"><s:property value='#attr.listField.${objectValue}'/></option>
+                                    </select>
+                                </c:when>
+                                <c:otherwise>
+                                    <select id="${baseId}SelectedItemValues" name="${listFieldName}" multiple="true">
+                                        <option value=""></option>
+                                        <c:forEach items="${listField}" var="currentItem">
+                                            <option selected="selected" value="<s:property value='#attr.currentItem.${objectValue}'/>"><s:property value='#attr.currentItem.${objectValue}'/></option>
+                                        </c:forEach>
+                                    </select>
+                                </c:otherwise>
+                            </c:choose>
+                        </span>
                         <ul id="${baseId}SelectedItemDiv" class="selectedItemList">
                             <c:choose>
                                 <c:when test="${multiple != 'true' && !empty listField}">
-                                    <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker); "><input name="${listFieldName}" type="hidden" value="<s:property value='#attr.listField.${objectValue}'/>"/><s:property value="#attr.listField.${objectLabel}"/></li>
+                                    <c:choose>
+                                        <c:when test="${displayResourceValue != 'true'}">
+                                            <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}');"><s:property value="#attr.listField.${objectLabel}"/></li>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}');"><s:property value="getText(#attr.listField.${objectLabel})"/></li>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </c:when>
                                 <c:otherwise>
-                                    <c:forEach items="${listField}" var="currentItem">
-                                        <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker);" id="${baseId}_<s:property value='#attr.currentItem.${objectValue}'/>"><input name="${listFieldName}" type="hidden" value="<s:property value='#attr.currentItem.${objectValue}'/>"/><s:property value="#attr.currentItem.${objectLabel}"/></li>
-                                    </c:forEach>
+                                    <c:choose>
+                                        <c:when test="${displayResourceValue != 'true'}">
+                                            <c:forEach items="${listField}" var="currentItem">
+                                                <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}');" id="${baseId}_<s:property value='#attr.currentItem.${objectValue}'/>"><s:property value="#attr.currentItem.${objectLabel}"/></li>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:forEach items="${listField}" var="currentItem">
+                                                <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}');" id="${baseId}_<s:property value='#attr.currentItem.${objectValue}'/>"><s:property value="getText(#attr.currentItem.${objectLabel})"/></li>
+                                            </c:forEach>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </c:otherwise>
                             </c:choose>
                         </ul>
@@ -118,12 +155,29 @@
         <s:else>
             <c:choose>
                 <c:when test="${multiple != 'true'}">
-                    <s:property value="#attr.listField.${objectLabel}"/><br>
+                    <c:choose>
+                        <c:when test="${displayResourceValue != 'true'}">
+                            <s:property value="#attr.listField.${objectLabel}"/><br>
+                        </c:when>
+                        <c:otherwise>
+                            <s:property value="getText(#attr.listField.${objectLabel})"/><br>
+                        </c:otherwise>
+                    </c:choose>
                 </c:when>
                 <c:otherwise>
-                    <c:forEach items="${listField}" var="currentItem" varStatus="status">
-                        <c:if test="${!status.first}">, </c:if><s:property value="#attr.currentItem.${objectLabel}"/>
-                    </c:forEach>
+                    <c:choose>
+                        <c:when test="${displayResourceValue != 'true'}">
+                            <c:forEach items="${listField}" var="currentItem" varStatus="status">
+                                <c:if test="${!status.first}">, </c:if><s:property value="#attr.currentItem.${objectLabel}"/>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <c:forEach items="${listField}" var="currentItem" varStatus="status">
+                                <c:if test="${!status.first}">, </c:if><s:property value="getText(#attr.currentItem.${objectLabel})"/>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
+
                 </c:otherwise>
             </c:choose>
         </s:else>
