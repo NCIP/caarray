@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.validation.UniqueConstraint;
 import gov.nih.nci.caarray.validation.UniqueConstraintField;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -103,6 +104,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -113,11 +115,11 @@ import org.hibernate.validator.Length;
    */
 @Entity
 @DiscriminatorValue("SA")
-@UniqueConstraint(fields = {
-        @UniqueConstraintField(name = "externalSampleId"),
-        @UniqueConstraintField(name = "experiment", nullsEqual = false) },
+@UniqueConstraint(fields = { 
+        @UniqueConstraintField(name = "externalSampleId"), 
+        @UniqueConstraintField(name = "experiment", nullsEqual = false) }, 
         generateDDLConstraint = false, message = "{sample.externalSampleId.uniqueConstraint}")
-public class Sample extends AbstractBioMaterial implements Protectable, Comparable<Sample> {
+public class Sample extends AbstractBioMaterial implements Protectable {
     /**
      * The serial version UID for serialization.
      */
@@ -227,7 +229,7 @@ public class Sample extends AbstractBioMaterial implements Protectable, Comparab
         }
         return hybs;
     }
-
+    
     /**
      * {@inheritDoc}
      */
@@ -254,7 +256,7 @@ public class Sample extends AbstractBioMaterial implements Protectable, Comparab
     public Set<? extends AbstractExperimentDesignNode> getDirectSuccessors() {
         return getExtracts();
     }
-
+    
     /**
      * {@inheritDoc}
      */
@@ -274,18 +276,17 @@ public class Sample extends AbstractBioMaterial implements Protectable, Comparab
         getExtracts().add(extract);
         extract.getSamples().add(this);
     }
-    /**
-     * Compares samples by name.
-     * @param o other sample to compare to
-     * @return result of comparison
-     */
-    public int compareTo(Sample o) {
-        if (o == null || o.getName() == null) {
-            return 1;
-        } else if (this.getName() == null) {
-            return -1;
-        }
 
-        return this.getName().compareToIgnoreCase(o.getName());
+    /**
+     * Comparator for samples by name. 
+     */
+    public static class ByNameComparator implements Comparator<Sample> {
+        /**
+         * Compares samples by name.
+         * {@inheritDoc}
+         */
+        public int compare(Sample s1, Sample s2) {
+            return new CompareToBuilder().append(s1.getName(), s2.getName()).toComparison();
+        }
     }
 }

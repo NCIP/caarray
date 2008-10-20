@@ -54,7 +54,9 @@
             <tbody id="access_profile_samples" 
                 <c:if test="${!accessProfile.securityLevel.sampleLevelPermissionsAllowed}">style="display:none"</c:if>
             >
-            <c:forEach items="${project.experiment.samples}" var="sample">
+			<jsp:useBean id="sampleComparator" class="gov.nih.nci.caarray.domain.sample.Sample$ByNameComparator"/>
+			<s:sort comparator="#attr.sampleComparator" source="project.experiment.samples" id="sortedSamples"/>
+            <c:forEach items="${sortedSamples}" var="sample">
                 <c:set var="sampleSecLevel" value="${accessProfile.sampleSecurityLevels[sample]}"/>
                 <tr class="odd">
                     <td>
