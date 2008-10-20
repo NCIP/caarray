@@ -753,7 +753,7 @@
     <panel order="9">
 
         <field type="title" txt="Configuring your MySQL database connection " bold="true" size="1" />
-        <field type="staticText" align="left" txt="The information you enter below will connect you to an existing MySQL database. localhost is NOT a recommended value for Database Host Name. The 'Database User' must have full access to 'Database Name'. It's highly recommended you contact your database administrator to obtain this information. NOTE: All database objects for 'Database Name' will be dropped and recreated during the installation process. For detailed descriptions on each of the properties below, see the Database Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
+        <field type="staticText" align="left" txt="The information you enter below will connect you to an existing MySQL database. It's highly recommended that 'Database Host Name' NOT be the machine from which you are currently installing. The 'Database User' must have full access to 'Database Name'. It's highly recommended you contact your database administrator to obtain this information. NOTE: All database objects for 'Database Name' will be dropped and recreated during the installation process. For detailed descriptions on each of the properties below, see the Database Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="divider" align="top"/>
 
         <variable name="install.path" value="$INSTALL_PATH"/>
