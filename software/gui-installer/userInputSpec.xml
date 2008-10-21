@@ -36,7 +36,7 @@
 	<field type="staticText" align="left" txt="As part of this installtion, JBoss will be installed in ${UserPathPanelVariable}.  It will be configured based on the values you enter below.  NOTE: The Hostname below (and on other panels of this installer) is the host name accesible from this machine and others on the local network. To access this JBoss application server from the Internet, you may need to provide the JBoss HTTP Port to your Network administrator to allow access through the firewall."/>
 	<field type="space"/>
         <field type="text" align="left" variable="jboss.server.hostname">
-            <spec txt="Application Host Name" size="15" set="localhost"/>
+            <spec txt="Application Host Name" size="15" set="$HOST_NAME"/>
 
 		<validator 
 			class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Host Name is a  required field">
@@ -169,7 +169,7 @@
    
        
     
-	<variable name="jboss.server.hostname" value="localhost"/>
+	<variable name="jboss.server.hostname" value="$HOST_NAME"/>
 	<variable name="jboss.server.port" value="38080"/>
 	<variable name="jboss.server.jndi.port" value="31099"/>
 	<variable name="jboss.server.name" value="default"/>
@@ -193,7 +193,7 @@
         <variable name="jboss.server.ajp.port" value="38009"/>
         <variable name="jboss.cluster.rmi.port" value="39000"/>
      
-     	<variable name="grid.server.hostname" value="localhost"/>
+     	<variable name="grid.server.hostname" value="$HOST_NAME"/>
      	<variable name="grid.server.port" value="18080"/>
      	<variable name="grid.server.jndi.port" value="11099"/>
      	<variable name="grid.server.name" value="default"/>
@@ -350,7 +350,7 @@
         <field type="divider" align="top"/>
 	<field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="text" align="left" variable="grid.server.hostname">
-            <spec txt="Grid Server Host Name" size="15" set="localhost"/>
+            <spec txt="Grid Server Host Name" size="15" set="$HOST_NAME"/>
 		<validator 
 			class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid Server Host Name is a required field">
 		</validator>
@@ -583,7 +583,7 @@
             <spec txt="Select the Previous Installation of Caarray Application" size="25" set="$SYSTEM_user_home/apps/caarray-app"/>
         </field>
         <field type="text" align="left" variable="jboss.server.hostname">
-            <spec txt="Application Host Name " size="15" set="localhost"/>
+            <spec txt="Application Host Name " size="15" set="$HOST_NAME"/>
 		<validator
 		    class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Host Name is a required field" id="indexurl.label">
 		</validator>
@@ -618,7 +618,7 @@
 
 
         <field type="text" align="left" variable="grid.server.hostname">
-            <spec txt="Grid Server Host Name " size="15" set="localhost"/>
+            <spec txt="Grid Server Host Name " size="15" set="$HOST_NAME"/>
 		<validator
 			    class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid Server Host Name is a required field" id="indexurl.label">
 		</validator>
@@ -645,18 +645,18 @@
             </validator>
         </field>
         <field type="text" align="left" variable="grid.server.name">
-            <spec txt="Grid Server Name " size="15" set="default"/>
+            <spec txt="Grid Server Name " size="25" set="default"/>
 		<validator
 		    class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid Server Name is a required field" id="indexurl.label">
 		</validator>
         </field>
 
         <field type="text" variable="grid.static.hostname">
-            <spec txt="Externally Accessible Hostname/IP Address " id="text.label" size="15" set=""/>
+            <spec txt="Externally Accessible Hostname/IP Address " id="text.label" size="25" set="$IP_ADDRESS"/>
             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Externally Accessible Hostname/IP Address is a required field" />
         </field>
         <field type="text" variable="grid.index.url">
-            <spec txt="Index Url" id="text.label" size="25" set="http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService"/>
+            <spec txt="Index Url" id="text.label" size="35" set="http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService"/>
             <validator
                 class="com.izforge.izpack.util.URLCheckValidator" txt="Please enter a valid Grid URL" id="indexurl.label">
             </validator>
@@ -824,7 +824,7 @@
         <field type="staticText" align="left" txt="Choose the URL for the LDAP server and the Base DN for authenticating users."/>
         <field type="divider" align="top"/>
         <field type="text" variable="ldap.hostname">
-            <spec txt="LDAP Host Name " id="text.label" size="25" set="ldaps://localhost:636"/>
+            <spec txt="LDAP Host Name " id="text.label" size="25" set="ldaps://$HOST_NAME:636"/>
             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="LDAP Host Name is a required field" />
         </field>
         <field type="text" variable="ldap.search.base">
@@ -849,7 +849,7 @@
             </validator>            
         </field>
        <field type="text" variable="grid.static.hostname">
-            <spec txt="Externally Accessible Hostname/IP Address " id="text.label" size="25" set=""/>
+            <spec txt="Externally Accessible Hostname/IP Address " id="text.label" size="25" set="$IP_ADDRESS"/>
             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Externally Accessible Hostname/IP Address is a required field" />
         </field>
         <field type="text" variable="upt.url">
