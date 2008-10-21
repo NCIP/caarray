@@ -38,14 +38,14 @@
 	<target name="build:installer" depends="prepare:installer">
 		<delete>
 			<fileset dir="${dist.location}">
-				<include name="${caarray.install.name}_${caarray.version}*.jar"/>
+				<include name="${caarray.gui-distribution.name}_${caarray.version}*.jar"/>
 			</fileset>
 		</delete>
 		<tstamp>
 			<format property="build.time" pattern="yyyyMMddHHmm" />
 		</tstamp>
 
-		<IzPack output="${dist.location}/${caarray.install.name}_${caarray.version}-${build.time}.jar"
+		<IzPack output="${dist.location}/${caarray.gui-distribution.name}_${caarray.version}-${build.time}.jar"
 			installerType="standard"
 			basedir="."
 			IzPackDir="${compile.jar.dir}/">
