@@ -140,7 +140,18 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
          Also you should include properties that are declared in this file, like database info below.
     -->
     <property name="resource.dir.temp" value="${working.dir}/tmp" />
-
+    <filterset id="filterset.pre">
+        <filter token="application.base.path" value="${application.base.path}"/>
+        <filter token="application.url" value="${application.url}"/>
+        <filter token="database.url" value="${database.url}"/>
+        <filter token="database.clm.url" value="${database.url}"/>
+        <filter token="database.system.url" value="${database.system.url}"/>
+        <filter token="jboss.home" value="${jboss.home}"/>
+        <!-- added internal properties that may be used in a filtered copy -->
+        <filter token="database.driver" value="${database.driver}"/>
+        <filter token="database.dialect" value="${database.dialect}"/>
+        <filter token="hibernate.cfg.file.path" value="${hibernate.cfg.file.path}"/>
+    </filterset>
 
 
     <!-- Start logging -->
@@ -164,32 +175,21 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
     <!-- Does directory management and copy some files with filtering to ensure token expansion -->
     <target name="install:init" description="Does directory management to initialize install">
-    
-	<filterset id="filterset.pre">
-		<filter token="application.base.path" value="${application.base.path}"/>
-		<filter token="application.url" value="${application.url}"/>
-		<filter token="jboss.home" value="${jboss.home}"/>
-		<filter token="database.url" value="${database.url}"/>
-		<filter token="database.user" value="${database.user}"/>
-		<filter token="database.password" value="${database.password}"/>
-		<filter token="database.system.url" value="${database.system.url}"/>
-		<!-- added internal properties that may be used in a filtered copy -->
-		<filter token="database.driver" value="${database.driver}"/>
-		<filter token="database.dialect" value="${database.dialect}"/>
-		<!-- added for liquibase -->
-		<filter token="db-upgrade.run.dir" value="${db-upgrade.dir.dest}/${database.type}"/>
-	</filterset>
-	
         <mkdir dir="${working.dir}" />
         <delete dir="${working.dir}"/>
         <mkdir dir="${working.dir}" />
         <mkdir dir="${resource.dir.temp}"/>
-
-        <copy todir="${common.dir.target}" filtering="true">
+        <!-- Copy files to ensure values containing variables are expanded, such properties are stored in filterset.pre -->
+        <copy todir="${resource.dir.temp}" filtering="true">
             <fileset dir="${common.dir.src}">
                 <include name="**/*"/>
             </fileset>
             <filterset refid="filterset.pre"/>
+        </copy>
+        <copy todir="${common.dir.target}" filtering="true">
+            <fileset dir="${resource.dir.temp}">
+                <include name="**/*"/>
+            </fileset>
             <filterset>
                 <filtersfile file="${properties.file}"/>
                 <filtersfile file="project.properties"/>
@@ -456,7 +456,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
     <target name="upgrade:carray-grid" description="Grouping of caArray Grid application targets"
         depends="install:grid:deploy,
-        -install:grid:configure:wsdl
+        -install:grid:configure:wsdl,
+        -install:grid:configure:serviceMetadataXml,
+        -install:grid:configure:webXml
     "/>
 
     <target name="install:grid:configure" description="Configure caarray" unless="exclude.jboss"
