@@ -17,7 +17,7 @@
 	<property name="dist.location" value="${software.location}/dist" />
 	<property name="installer.dir" value=".installer-carray"/>
 	<property name="bda-util.dir" value="${software.location}/bda-utils"/>
-	<property name="gui-installer.dist.base.name" value="${caarray.gui-distribution.name}_${caarray.version}.jar"/>
+	<property name="gui-installer.dist.base.name" value="${caarray.gui-distribution.name}_${caarray.version}"/>
 	<property name="install.zip.file" value="${caarray.install.zip.file}"/>
         <property name="upgrade.zip.file" value="${caarray.upgrade.zip.file}"/>
         
