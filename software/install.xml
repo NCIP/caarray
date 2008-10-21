@@ -451,7 +451,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
     <target name="upgrade:carray-grid" description="Grouping of caArray Grid application targets"
         depends="install:grid:deploy,
-        -install:grid:configure:wsdl
+        -install:grid:configure:wsdl,
+        -install:grid:configure:serviceMetadataXml,
+        -install:grid:configure:webXml
     "/>
 
     <target name="install:grid:configure" description="Configure caarray" unless="exclude.jboss"
