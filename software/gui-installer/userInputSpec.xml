@@ -786,7 +786,7 @@
                  <pwd txt="Password for the above-named User:" id="pwd.label" size="25" set=""/>
             </spec>
             <validator
-                class="com.izforge.izpack.util.DBConnectionValidator" txt="The root password did not match" id="error.label">
+                class="com.izforge.izpack.util.DBConnectionValidator" txt="Unable to login to the database server with the specified Administrative User and Password." id="error.label">
                 <param name="systemUser" value="true" />
             </validator>
         </field>
