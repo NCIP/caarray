@@ -237,6 +237,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         try {
             handleHeaderLine(getHeaderLine(tabDelimitedReader));
             if (minimumColumnCheck()) {
+                if (!validColumnOrderCheck()) {
+                    addErrorMessage("Term Source Ref is not preceded by valid data type");
+                }
                 while (tabDelimitedReader.hasNextLine()) {
                     List<String> values = tabDelimitedReader.nextLine();
                     currentLineNumber = tabDelimitedReader.getCurrentLineNumber();
@@ -625,6 +628,16 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         return nextLine;
     }
 
+    private boolean validColumnOrderCheck() {
+        boolean valid = true;
+        for (SdrfColumn aColumn : columns) {
+            if (aColumn.getType().equals(SdrfColumnType.TERM_SOURCE_REF)) {
+                valid = valid && termSrcRefPreceedingColValid(aColumn);
+            }
+        }
+        return valid;
+    }
+
     private boolean isComment(List<String> values) {
         return !values.isEmpty() && values.get(0).startsWith(COMMENT_CHARACTER);
     }
@@ -689,7 +702,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
     }
 
-    @SuppressWarnings("PMD.ExcessiveMethodLength")
+    @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
     private void handleValue(SdrfColumn column, String value) {
         if (isBlank(value)) {
             switch (column.getType()) {
@@ -699,6 +712,15 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             case LABELED_EXTRACT_NAME:
             case HYBRIDIZATION_NAME:
                 addError(column.getHeading() + " cannot be blank");
+                break;
+            case CHARACTERISTICS:
+            case PROTOCOL_REF:
+            case MATERIAL_TYPE:
+            case UNIT:
+            case LABEL:
+            case ARRAY_DESIGN_REF:
+            case PARAMETER_VALUE:
+                currentTermSourceable = null;
                 break;
             default:
                 return;
@@ -908,6 +930,20 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
     }
 
+    private SdrfColumn getPreviousColumn(SdrfColumn column) {
+        int previousColumnIndex = columns.indexOf(column) - 1;
+        if (previousColumnIndex > -1) {
+            return columns.get(previousColumnIndex);
+        } else {
+            return null;
+        }
+    }
+
+    private boolean termSrcRefPreceedingColValid(SdrfColumn column) {
+        SdrfColumn prevColumn = getPreviousColumn(column);
+        return prevColumn != null && prevColumn.getType().isTermSourceable();
+    }
+
     private void handleUnit(SdrfColumn column, String value, SdrfColumn nextColumn) {
         OntologyTerm unit = addOntologyTerm(column.getHeading().getQualifier(), value);
         unit.setValue(value);
@@ -932,7 +968,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         if (termSource == null) {
             addError("Term Source " + value + " is not defined in the IDF document");
         }
-        currentTermSourceable.setTermSource(termSource);
+        if (currentTermSourceable != null) {
+            currentTermSourceable.setTermSource(termSource);
+        }
     }
 
     private void handleCharacteristic(String value, SdrfColumn currentColumn, SdrfColumn nextColumn) {
@@ -1060,9 +1098,6 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             return;
         }
         String[] providerNames = value.split(";");
-        if (providerNames == null) {
-            return;
-        }
         int numProviders = providerNames.length;
         for (int i = 0; i < numProviders; i++) {
             Provider provider = new Provider();

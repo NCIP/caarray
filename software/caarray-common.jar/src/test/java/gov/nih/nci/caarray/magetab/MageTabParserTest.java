@@ -307,7 +307,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
         result = parser.validate(fileSet, false);
         System.out.println("testValidate result: " + result);
         assertFalse(result.isValid());
-        assertEquals(99, result.getMessages().size());
+        assertEquals(100, result.getMessages().size());
         // check for the fix to gforge defect 12541
         assertTrue(result.getMessages().toString().contains("ERROR: Referenced Factor Name EF1 was not found in the IDF"));
         assertTrue(result.getMessages().toString().contains("ERROR: Experimental Factors must have a non-empty name"));
@@ -346,6 +346,21 @@ public class MageTabParserTest extends AbstractCaarrayTest {
         assertEquals(2, message.getColumn());
         assertTrue(message.getMessage().startsWith("Referenced SDRF file "));
         assertTrue(message.getMessage().endsWith(" was not included in the MAGE-TAB document set"));
+    }
+
+    @Test
+    public void testValidateMissingIdf() throws MageTabParsingException {
+        MageTabFileSet inputFileSet = new MageTabFileSet();
+        inputFileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+        ValidationResult result = parser.validate(inputFileSet, false);
+        assertNotNull(result);
+        assertFalse(result.isValid());
+        assertEquals(1, result.getFileValidationResults().size());
+        FileValidationResult fileValidationResult = result.getFileValidationResults().get(0);
+        assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF, fileValidationResult.getFile());
+        assertEquals(1, fileValidationResult.getMessages().size());
+        ValidationMessage message = fileValidationResult.getMessages().get(0);
+        assertTrue(message.getMessage().equals("This SDRF file is not referenced by an IDF file."));
     }
 
     @Test
@@ -793,5 +808,19 @@ public class MageTabParserTest extends AbstractCaarrayTest {
         verifyFeature13141Sample(sdrfDocument.getAllSamples().get(0), "Sample D", "123");
         verifyFeature13141Sample(sdrfDocument.getAllSamples().get(1), "Sample E", "234");
         verifyFeature13141Sample(sdrfDocument.getAllSamples().get(2), "Sample F", "345");
+    }
+
+    @Test
+    public void testDefect16421() throws Exception {
+        MageTabFileSet fileSet = TestMageTabSets.DEFECT_16421;
+        ValidationResult validationResult = parser.validate(fileSet, false);
+        assertTrue(validationResult.isValid());
+
+        MageTabFileSet fileSet2 = TestMageTabSets.DEFECT_16421_2;
+        ValidationResult validationResult2 = parser.validate(fileSet2, false);
+        List<ValidationMessage> errors = validationResult2.getMessages(ValidationMessage.Type.ERROR);
+        for (ValidationMessage error : errors) {
+            assertTrue(error.getMessage().contains("Term Source Ref is not preceded by valid data type"));
+        }
     }
 }

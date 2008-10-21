@@ -317,6 +317,24 @@ public class MageTabDataFiles {
     public static final File FEATURE_13141_INVALID_SDRF2 = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/invalid2.sdrf").getFile());
 
+    public static final File DEFECT_16421_SDRF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/blankCharacteristics/rembrandt_snp_NOB_batch5.sdrf").getFile());
+
+    public static final File DEFECT_16421_IDF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/blankCharacteristics/rembrandr_snp_NOB_batch5.idf").getFile());
+
+    public static final File DEFECT_16421_CEL = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/blankCharacteristics").getFile());
+
+    public static final File DEFECT_16421_2_SDRF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/invalidColumnOrder/rembrandt_snp_NOB_batch5.sdrf").getFile());
+
+    public static final File DEFECT_16421_2_IDF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/invalidColumnOrder/rembrandr_snp_NOB_batch5.idf").getFile());
+
+    public static final File DEFECT_16421_2_CEL = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/invalidColumnOrder").getFile());
+
     public static final File SPECIFICATION_UPDATE_ANNOTATIONS_DIRECTORY = new File(MageTabDataFiles.class
             .getResource("/magetab/specification_update_annotations").getFile());
 

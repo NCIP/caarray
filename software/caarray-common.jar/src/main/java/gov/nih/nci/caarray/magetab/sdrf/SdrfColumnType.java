@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf;
 
+import java.util.EnumSet;
+
 import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.magetab.ParameterValue;
 import gov.nih.nci.caarray.magetab.TermSource;
@@ -228,6 +230,9 @@ public enum SdrfColumnType {
      */
     COMMENT (Comment.class, "Comment");
 
+    private static final EnumSet<SdrfColumnType> TERM_SOURCEABLES = EnumSet.of(PROTOCOL_REF, CHARACTERISTICS, 
+            MATERIAL_TYPE, UNIT, LABEL, ARRAY_DESIGN_REF, PARAMETER_VALUE);
+
     private final Class<?> nodeClass;
     private final String displayName;
 
@@ -258,6 +263,13 @@ public enum SdrfColumnType {
 
     Class<?> getNodeClass() {
         return nodeClass;
+    }
+
+    /**
+     * @return whether a column of this type can be followed by a Term Source REF column.
+     */
+    public boolean isTermSourceable() {
+        return TERM_SOURCEABLES.contains(this);
     }
 
     /**

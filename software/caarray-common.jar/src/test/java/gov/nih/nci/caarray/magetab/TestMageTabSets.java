@@ -252,6 +252,16 @@ public final class TestMageTabSets {
     public static final MageTabDocumentSet INVALID_FEATURE_13141_DATA_SET = getSet(INVALID_FEATURE_13141_INPUT_SET);
 
     /**
+     * Document set parsed ...
+     */
+    public static final MageTabFileSet DEFECT_16421 = getDefect16421ErrorInputSet();
+
+    /**
+     * Document set parsed ...
+     */
+    public static final MageTabFileSet DEFECT_16421_2 = getDefect16421ErrorInputSet2();
+
+    /**
      * MAGE-TAB input set based on the base specification set with some changes.
      */
     public static final MageTabFileSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET = getSpecificationUpdateAnnotationsInputSet();
@@ -490,6 +500,22 @@ public final class TestMageTabSets {
         fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_SDRF);
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_DIRECTORY);
         fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_DATA_MATRIX_FILE);
+        return fileSet;
+    }
+
+    private static MageTabFileSet getDefect16421ErrorInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.DEFECT_16421_IDF);
+        fileSet.addSdrf(MageTabDataFiles.DEFECT_16421_SDRF);
+        addCelFiles(fileSet, MageTabDataFiles.DEFECT_16421_CEL);
+        return fileSet;
+    }
+
+    private static MageTabFileSet getDefect16421ErrorInputSet2() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.DEFECT_16421_2_IDF);
+        fileSet.addSdrf(MageTabDataFiles.DEFECT_16421_2_SDRF);
+        addCelFiles(fileSet, MageTabDataFiles.DEFECT_16421_2_CEL);
         return fileSet;
     }
 
