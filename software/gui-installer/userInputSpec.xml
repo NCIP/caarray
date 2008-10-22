@@ -219,7 +219,7 @@
         <variable name="min.pool.size" value="5"/>
         <variable name="max.pool.size" value="30"/>
         <variable name="idle.timeout.minutes" value="300"/>
-        <variable name="ldap.authentication.disabled" value="false"/>
+        <variable name="ldap.authentication.disabled" value="true"/>
         
     </panel>
 
@@ -813,8 +813,8 @@
             <description align="left" txt="Chose the type of Authentication?"
             id="ldap.radio"/>
             <spec>
-                <choice txt="Database" id="ldap.install.false" value="false" set="true" />
-                <choice txt="LDAP" id="ldap.install" value="true" />                
+                <choice txt="Database" id="ldap.install.false" value="true" set="true" />
+                <choice txt="LDAP" id="ldap.install" value="false" />                
             </spec>
         </field>
     </panel>

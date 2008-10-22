@@ -131,7 +131,7 @@
 					</condition>
 					<condition type="variable" id="ldap.setup">
 						<name>ldap.authentication.disabled</name>
-						<value>true</value>
+						<value>false</value>
 					</condition>
 					<condition type="variable" id="custom.installation.type">
 						<name>install.type</name>
@@ -149,6 +149,11 @@
 						<condition type="ref" refid="install"/>
 						<condition type="ref" refid="typical.installation.type" />
 					</condition>
+					<condition type="or" id="custom.installation|upgrade">
+						<condition type="ref" refid="custom.installation"/>
+						<condition type="ref" refid="upgrade" />
+					</condition>	
+					
 				</conditions>
 
 				<!-- 
@@ -186,7 +191,7 @@
 					<panel classname="UserInputPanel"  id="UserInputPanel.7" condition="upgrade"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.8" />
 					<panel classname="UserInputPanel"  id="UserInputPanel.9" condition="install"/>
-					<panel classname="UserInputPanel"  id="UserInputPanel.10" condition="custom.installation"/>
+					<panel classname="UserInputPanel"  id="UserInputPanel.10" condition="custom.installation|upgrade"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.11" condition="ldap.setup"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.12" condition="install"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.13" condition="custom.installation"/>
