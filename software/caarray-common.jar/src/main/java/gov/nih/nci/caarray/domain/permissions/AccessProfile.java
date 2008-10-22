@@ -117,7 +117,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity" })
-public class AccessProfile implements PersistentObject, Serializable, Comparable<AccessProfile> {
+public class AccessProfile implements PersistentObject, Serializable {
 
     private static final long serialVersionUID = -7994016784349522735L;
 
@@ -343,19 +343,5 @@ public class AccessProfile implements PersistentObject, Serializable, Comparable
      */
     public void setGroup(CollaboratorGroup group) {
         this.group = group;
-    }
-    /**
-     * Compares Access Profiles by group name, putting "The Public" after Collaboration groups.
-     * @param profile other Access Profile to compare to
-     * @return result of comparison
-     */
-    public int compareTo(AccessProfile profile) {
-        if (this.isPublicProfile()) {
-            return 1;
-        } else if (profile.isPublicProfile()) {
-            return -1;
-        } else {
-            return this.getGroup().getGroup().getGroupName().compareTo(profile.getGroup().getGroup().getGroupName());
-        }
     }
 }
