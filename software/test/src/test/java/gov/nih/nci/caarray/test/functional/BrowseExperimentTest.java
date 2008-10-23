@@ -91,13 +91,12 @@ import org.junit.Test;
 
 /**
  *
- * Use Case UC#7231. Test Case #10320, #10321, #10324, #10325 Requirements: Browse by Experiments, Organism, Array
- * Providers, and Unique Array Designs
+ * Tests browsing experiments and deleting an experiment with cel files.
  *
  */
 public class BrowseExperimentTest extends AbstractSeleniumTest {
 
-    
+    @Test
     public void testBrowsing() throws Exception {
         String title = "browsable " + System.currentTimeMillis();
         // - Login
@@ -183,14 +182,15 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         importData(MAGE_TAB);
         
         selenium.click("link=My Experiment Workspace");
-        waitForText("Work Queue");
-//        assertEquals("Status", selenium.getText("link=Status"));
-//        assertEquals("Permissions", selenium.isTextPresent("Permissions"));
-//        assertEquals("Edit", selenium.isTextPresent("Edit"));
-//        assertEquals("Delete", selenium.isTextPresent("Delete"));
+        waitForTab();
+        pause(2000);
 
         int row = getExperimentRow(experimentId, ZERO_COLUMN);
-        assertTrue(selenium.isElementPresent("//table[@id='row']/tbody/tr[" + row + "]/td[8]/a/img"));
+        if (row == -1){
+            fail("Did not find experiment with id = " + experimentId);
+        }
+        pause(1000);
+        assertTrue("Delete icon is missing at row "+row+" column 8", selenium.isElementPresent("//table[@id='row']/tbody/tr[" + row + "]/td[8]/a/img"));
         selenium.chooseCancelOnNextConfirmation();
         selenium.click("//tr[" + row + "]/td[8]/a/img");
         assertTrue(selenium.getConfirmation().matches("^Are you sure you want to delete this experiment\\?$"));

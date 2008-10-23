@@ -130,6 +130,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         // - Import files
         importData(MAGE_TAB);
 
+        reClickForText("15 items found", "link=Imported Data", 10, 30000);
         // - validate the status
         checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
 

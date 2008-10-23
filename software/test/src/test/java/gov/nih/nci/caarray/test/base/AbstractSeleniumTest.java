@@ -449,9 +449,9 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             selenium.selectWindow(null);
             selenium.waitForPageToLoad("30000");
             // get the array design row so we do not find the wrong Imported text
-            int column = getExperimentRow(arrayDesignName, ZERO_COLUMN);
+            int row = getExperimentRow(arrayDesignName, ZERO_COLUMN);
             // wait for array design to be imported
-            waitForArrayDesignImport(FOURTY_MINUTES, column);
+            waitForArrayDesignImport(FOURTY_MINUTES, row);
         }
     }
 
@@ -484,6 +484,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         // all-good page
         waitForText("has been successfully uploaded.", FOURTY_MINUTES);
         selenium.click("link=Close Window and go to Manage Design Array");
+        selenium.waitForPageToLoad("30000");
     }
 
     /**
@@ -550,9 +551,12 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         pause(2000);
         for (int loop = 1; loop < seconds; loop++) {
             selenium.click("link=Manage Array Designs");
-            waitForText("Edit");
+            waitForPageToLoad();
             // done
-            String rowText = selenium.getTable("row." + row + ".8");
+            String rowText = selenium.getTable("row." + row + ".9");
+            if (rowText.equalsIgnoreCase("Import Failed")){
+                fail("Array Design import failed");
+            }
             if (rowText.equalsIgnoreCase(IMPORTED)) {
                 return true;
             } else {
@@ -576,23 +580,23 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     protected int getExperimentRow(String text, String column) {
         String tblValue = null;
-        for (int loop = 1;; loop++) {
+        for (int row = 1;; row++) {
             tblValue = null;
             try {
-                tblValue = selenium.getTable("row." + loop + "." + column);
+                tblValue = selenium.getTable("row." + row + "." + column);
              } catch (RuntimeException e) {
                  if (tblValue == null){
                      // there are no rows on the page
                      return -1;
                  }
-                System.out.println("problem looking for " + text + " at (" + loop + "," + column + ") Stopped at : " + tblValue);
+                System.out.println("problem looking for " + text + " at (" + row + "," + column + ") Stopped at : " + tblValue);
                 throw e;
             }
             if (text.equalsIgnoreCase(tblValue)) {
-                return loop;
+                return row;
             }
 
-            if (loop % PAGE_SIZE == 0) {
+            if (row % PAGE_SIZE == 0) {
                 // Moving to next page
                 // this will fail once there are no more pages and the text parameter is not found
                 try {
@@ -602,7 +606,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                 }
                 waitForDiv("loadingText");
                 pause(2000);
-                loop = 0;
+                row = 0;
             }
         }
     }
@@ -699,6 +703,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         String importButton = "//button[text()='Import']";
         String treeSourceIcon = "//img[@class='x-tree-ec-icon x-tree-elbow-plus']";
         String treeSouceCheckbox = "//*[@class='x-tree-node-cb']";
+        String textToFind = "Nothing found to display";
 
         selenium.click("selectAllCheckbox");
         selenium.click("link=Import");
@@ -727,14 +732,14 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         case MAGE_TAB: // mage tab import
             pause(1000); // allow time for the confirmation to popup
             if (selenium.isConfirmationPresent()) {
-                System.out.println("Confirmation found during import");
                 assertTrue(selenium
                         .getConfirmation()
                         .matches(
                                 "^1 Array Design\\(s\\) cannot not imported\\.  Please use Manage Array Designs\\.\nWould you like to continue importing the remaining 15 file\\(s\\)[\\s\\S]$"));
-                // switch to the import data tab to check for a successfull import
-                reClickForText("idf", "link=Imported Data", 20, 8000);
-                return;
+                // Once the Unpack Archive button is back on the page the import is complete.
+                textToFind = "Unpack Archive";
+                selenium.click("link=Manage Data");
+                waitForTab();
             }
             break;
         default:
@@ -744,7 +749,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
         waitForAction();
         // - hit the refresh button until files are imported
-        waitForImport("Nothing found to display");
+        waitForImport(textToFind);
     }
     /**
      * 

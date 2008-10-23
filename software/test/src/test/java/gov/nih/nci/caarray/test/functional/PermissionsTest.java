@@ -151,11 +151,12 @@ public class PermissionsTest extends AbstractSeleniumTest {
         
         // makes sure the experiment can be viewed by other users
         row = getExperimentRow(experimentId, ZERO_COLUMN);
+        
+        // experiment was found
         assertTrue("Experiment " + experimentId +" was found",row != -1);
         
         // the permission is read only so ensure the edit icon is not avaliable
-       // selenium.getTable("//table[@id='row']/tbody/tr[5]/td[7]");
-       // selenium.click("//table[@id='row']/tbody/tr[5]/td[7]/a/img");
+        assertFalse(selenium.isElementPresent("//table[@id='row']/tbody/tr[" + row + "]/td[7]/a/img"));
         logout();
     }
 
