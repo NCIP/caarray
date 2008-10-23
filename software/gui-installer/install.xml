@@ -195,7 +195,9 @@
 					<panel classname="UserInputPanel"  id="UserInputPanel.11" condition="ldap.setup"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.12" condition="install"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.13" condition="custom.installation"/>
-					<panel classname="UserInputPanel"  id="UserInputPanel.14" condition="install"/>					
+					<panel classname="UserInputPanel"  id="UserInputPanel.14" condition="install"/>
+					<panel classname="UserInputPanel"  id="UserInputPanel.15" condition="install"/>
+					<panel classname="UserInputPanel"  id="UserInputPanel.16" condition="upgrade"/>
 					<panel classname="InstallationGroupPanel"/>
 					<panel classname="SummaryPanel"/>
 					<panel classname="ExtendedInstallPanel"/>
