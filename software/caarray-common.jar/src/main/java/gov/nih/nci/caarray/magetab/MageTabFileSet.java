@@ -176,4 +176,18 @@ public final class MageTabFileSet implements Serializable {
         return this.sdrfFiles;
     }
 
+    /**
+     * Get all the files in this file set.
+     * @return all files
+     */
+    public Set<File> getAllFiles() {
+        Set<File> files = new HashSet<File>();
+        files.addAll(this.adfFiles);
+        files.addAll(this.dataMatrixFiles);
+        files.addAll(this.idfFiles);
+        files.addAll(this.nativeDataFiles);
+        files.addAll(this.sdrfFiles);
+        return files;
+    }
+
 }

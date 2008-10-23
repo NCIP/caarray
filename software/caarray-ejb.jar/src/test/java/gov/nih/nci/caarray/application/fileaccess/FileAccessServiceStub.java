@@ -151,7 +151,6 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
         }
     }
 
-
     public void save(CaArrayFile caArrayFile) {
         this.savedFileCount++;
     }

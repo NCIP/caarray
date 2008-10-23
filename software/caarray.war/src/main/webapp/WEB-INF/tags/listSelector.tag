@@ -82,9 +82,9 @@
                         </c:if>
                         <span id="${baseId}ProgressMsg" style="display: none"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /></span>
                         <c:if test="${hideAddButton != 'true'}">
-                        <span style="position: relative; left: 15px; margin-top: -24px; float: right;">
-                            <caarray:linkButton actionClass="add" text="Add" url="${addButtonUrl}" onclick="return TabUtils.confirmNavigateFromForm()"/>
-                        </span>
+                            <span style="position: relative; left: 15px; margin-top: -24px; float: right;">
+                                <caarray:linkButton actionClass="add" text="Add" url="${addButtonUrl}" onclick="return TabUtils.confirmNavigateFromForm()"/>
+                            </span>
                         </c:if>
                     </div>
                     <div id="${baseId}AutocompleteDiv"></div>

@@ -496,9 +496,11 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @TransactionTimeout(DELETE_ARRAY_DELETE_TIMEOUT_SECONDS)
     public void deleteArrayDesign(ArrayDesign arrayDesign) throws ArrayDesignDeleteException {
+        LOG.info("Deleting array design " + arrayDesign.getName());
         Long id = arrayDesign.getId();
         boolean designLocked = (id != null && isArrayDesignLocked(id));
         if (arrayDesign.getDesignFileSet().getStatus() == FileStatus.IMPORTING || designLocked) {
+            LOG.info("Array design " + arrayDesign.getName() + " is in a state that does not allow it to be deleted");
             throw new ArrayDesignDeleteException(
                     "You cannot delete an array design that is currently being "
                     + "imported or that is associated with one or more experiments.");
@@ -507,9 +509,11 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         if (getArrayDao().getArrayDesigns(arrayDesign.getDesignDetails()).size() > 1) {
             // if there's more than one array design for the design details, we don't want to delete the details
             // or the files, just the array design itself, because other array designs share the files and details.
+            LOG.debug("Deleting just the array design object");
             arrayDesign.getDesignFiles().clear();
             arrayDesign.setDesignDetails(null);
         } else {
+            LOG.debug("Deleting the array design and the array design details");
             getArrayDao().deleteArrayDesignDetails(arrayDesign);
         }
         getArrayDao().remove(arrayDesign);

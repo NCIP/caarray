@@ -86,14 +86,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.AbstractCaarrayIntegrationTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
-import gov.nih.nci.caarray.dao.HibernateIntegrationTestCleanUpUtility;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
@@ -113,9 +112,7 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Transaction;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -123,7 +120,7 @@ import org.junit.Test;
  * Integration Test class for ArrayDesignService subsystem.
  */
 @SuppressWarnings("PMD")
-public class ArrayDesignServiceIntegrationTest extends AbstractCaarrayTest {
+public class ArrayDesignServiceIntegrationTest extends AbstractCaarrayIntegrationTest {
 
     private ArrayDesignService arrayDesignService;
     private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
@@ -159,22 +156,6 @@ public class ArrayDesignServiceIntegrationTest extends AbstractCaarrayTest {
         DUMMY_ARRAY_DESIGN.setOrganism(DUMMY_ORGANISM);
         DUMMY_ARRAY_DESIGN.addDesignFile(getCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         DUMMY_ARRAY_DESIGN.getDesignFileSet().updateStatus(null);
-        HibernateUtil.enableFilters(false);
-        HibernateUtil.openAndBindSession();
-    }
-
-    @After
-    public void tearDown() {
-        try {
-            Transaction tx = HibernateUtil.getCurrentSession().getTransaction();
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-        } catch (HibernateException e) {
-            // ok - there was no active transaction
-        }
-        HibernateUtil.unbindAndCleanupSession();
-        HibernateIntegrationTestCleanUpUtility.cleanUp();
     }
 
     private static ArrayDesignService createArrayDesignService(final FileAccessServiceStub fileAccessServiceStub,
@@ -182,7 +163,7 @@ public class ArrayDesignServiceIntegrationTest extends AbstractCaarrayTest {
         ArrayDesignServiceBean bean = new ArrayDesignServiceBean();
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
-        locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
+        locatorStub.addLookup(VocabularyService.JNDI_NAME, vocabularyServiceStub);
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
         TemporaryFileCacheLocator.resetTemporaryFileCache();
 
@@ -285,7 +266,6 @@ public class ArrayDesignServiceIntegrationTest extends AbstractCaarrayTest {
             assertEquals(15876, design.getNumberOfFeatures());
 
             // now try to re-import the design over itself
-            // this only works when the delete array design details has been hooked up!
             t = HibernateUtil.beginTransaction();
             this.arrayDesignService.importDesign(design);
             this.arrayDesignService.importDesignDetails(design);

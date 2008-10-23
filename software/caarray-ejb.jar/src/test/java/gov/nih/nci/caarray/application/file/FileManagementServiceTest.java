@@ -179,6 +179,33 @@ public class FileManagementServiceTest extends AbstractCaarrayTest {
         }
     }
 
+    @Test
+    public void testImportMageTabFiles() throws Exception {
+        Project project = getMageTabSpecProject();
+        this.fileManagementService.importFiles(project, project.getFileSet(), null);
+        for (CaArrayFile file : project.getFiles()) {
+            assertEquals(FileStatus.IMPORTED, file.getFileStatus());
+        }
+    }
+
+    @Test
+    public void testUpdateAnnotationsFromMageTabFiles() throws Exception {
+        Project project = getMageTabSpecProject();
+        CaArrayFileSet newFiles = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_SET);
+        addFiles(project, newFiles.getFiles());
+        this.fileManagementService.importFiles(project, newFiles, null);
+        // import should fail on update_annotations sdrf, but all original spec files should still be uploaded
+        for (CaArrayFile file : project.getFiles()) {
+            if (file.getName().equals(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_SDRF.getName())) {
+                assertEquals(FileStatus.VALIDATION_ERRORS, file.getFileStatus());
+            } else if (file.getName().equals(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_IDF.getName())) {
+                assertEquals(FileStatus.VALIDATED, file.getFileStatus());
+            } else {
+                assertEquals(FileStatus.UPLOADED, file.getFileStatus());
+            }
+        }
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testImportIllegalState() {
         Project project = getTgaBroadTestProject();
@@ -213,6 +240,32 @@ public class FileManagementServiceTest extends AbstractCaarrayTest {
         saveFiles(project.getFiles());
         assertEquals(29, project.getFiles().size());
         return project;
+    }
+
+    private Project getMageTabSpecProject() throws Exception {
+        ArrayDesign design = importArrayDesign("design name", AffymetrixArrayDesignFiles.TEST3_CDF, FileType.AFFYMETRIX_CDF);
+
+        Project project = new Project();
+        project.getExperiment().getArrayDesigns().add(design);
+        this.daoFactoryStub.searchDaoStub.save(project);
+        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET).getFiles());
+        assertEquals(15, project.getFiles().size());
+        return project;
+    }
+
+    private ArrayDesign importArrayDesign(String designName, File designFile, FileType designFileType)
+            throws InvalidDataFileException, IllegalAccessException {
+        ArrayDesign design = new ArrayDesign();
+        design.setName(designName);
+        this.daoFactoryStub.searchDaoStub.save(design);
+        CaArrayFile caArrayFile = this.fileAccessServiceStub.add(designFile);
+        caArrayFile.setFileType(designFileType);
+        design.addDesignFile(caArrayFile);
+        CaArrayFileSet fileSet = new CaArrayFileSet();
+        fileSet.add(caArrayFile);
+        this.fileManagementService.saveArrayDesign(design, fileSet);
+        this.fileManagementService.importArrayDesignDetails(design);
+        return design;
     }
 
     private void addFiles(Project project, Set<CaArrayFile> files) {
@@ -459,6 +512,10 @@ public class FileManagementServiceTest extends AbstractCaarrayTest {
                 return new File(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_DIRECTORY, caArrayFile.getName());
             } else if (new File(AffymetrixArrayDesignFiles.TEST3_CDF.getParentFile(), caArrayFile.getName()).exists()) {
                 return new File(AffymetrixArrayDesignFiles.TEST3_CDF.getParentFile(), caArrayFile.getName());
+            } else if (new File(MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY, caArrayFile.getName()).exists()) {
+                return new File(MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY, caArrayFile.getName());
+            } else if (new File(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_DIRECTORY, caArrayFile.getName()).exists()) {
+                return new File(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_DIRECTORY, caArrayFile.getName());
             } else {
                 throw new IllegalArgumentException("Don't know location of " + caArrayFile.getName());
             }

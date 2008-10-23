@@ -100,6 +100,8 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceBean;
 import gov.nih.nci.caarray.application.registration.RegistrationService;
 import gov.nih.nci.caarray.application.registration.RegistrationServiceBean;
+import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
+import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorBean;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceBean;
 
@@ -131,7 +133,7 @@ public final class ServiceLocatorStub implements ServiceLocator {
     }
 
     public static ServiceLocatorStub registerEmptyLocator() {
-        ServiceLocatorStub locatorStub = new ServiceLocatorStub();        
+        ServiceLocatorStub locatorStub = new ServiceLocatorStub();
         ServiceLocatorFactory.setLocator(locatorStub);
         return locatorStub;
     }
@@ -148,6 +150,7 @@ public final class ServiceLocatorStub implements ServiceLocator {
         locatorStub.addLookup(RegistrationService.JNDI_NAME, new RegistrationServiceBean());
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceBean());
         locatorStub.addLookup(BrowseService.JNDI_NAME, new BrowseServiceBean());
+        locatorStub.addLookup(MageTabTranslator.JNDI_NAME, new MageTabTranslatorBean());
         ServiceLocatorFactory.setLocator(locatorStub);
         return locatorStub;
     }

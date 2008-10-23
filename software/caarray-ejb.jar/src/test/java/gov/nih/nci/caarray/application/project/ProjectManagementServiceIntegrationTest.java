@@ -82,23 +82,19 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.AbstractCaarrayIntegrationTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
-import gov.nih.nci.caarray.dao.HibernateIntegrationTestCleanUpUtility;
 import gov.nih.nci.caarray.domain.contact.Address;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -108,29 +104,25 @@ import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.project.ServiceType;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Date;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 /**
- * Integration Test class for ArrayDesignService subsystem.
+ * Integration Test class for ProjectManagementService subsystem.
  */
 @SuppressWarnings("PMD")
-public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayTest {
+public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayIntegrationTest {
 
     private ProjectManagementService projectManagementService;
     private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();
@@ -149,19 +141,12 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayTest
     private static Person DUMMY_PERSON = new Person();
     private static Organization DUMMY_ORGANIZATION = new Organization();
 
-
-
     private static CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
     private static CaArrayFile DUMMY_FILE_2 = new CaArrayFile();
 
-
     @Before
     public void setUp() {
-        UsernameHolder.setUser("caarrayadmin");
         this.projectManagementService = createProjectManagementService(fileAccessService, this.genericDataService);
-
-        HibernateUtil.enableFilters(false);
-        HibernateUtil.openAndBindSession();
 
         // Experiment
         DUMMY_ORGANISM = new Organism();
@@ -182,7 +167,6 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayTest
 
         // Initialize all the dummy objects needed for the tests.
         initializeProjects();
-
     }
 
     /**
@@ -225,21 +209,6 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayTest
         DUMMY_EXPERIMENT_1.getExperimentContacts().add(DUMMY_EXPERIMENT_CONTACT);
     }
 
-    @After
-    public void tearDown() {
-        try {
-            Transaction tx = HibernateUtil.getCurrentSession().getTransaction();
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-        } catch (HibernateException e) {
-            // ok - there was no active transaction
-        }
-        HibernateUtil.unbindAndCleanupSession();
-        HibernateIntegrationTestCleanUpUtility.cleanUp();
-
-    }
-
     private static ProjectManagementService createProjectManagementService(final FileAccessServiceStub fileAccessServiceStub,
             GenericDataService genericDataServiceStub) {
         ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
@@ -258,7 +227,6 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayTest
 
         return bean;
     }
-
 
     @Test
     public void testDeleteProject() throws Exception {
@@ -310,8 +278,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayTest
             if (t != null && t.isActive()) {
                 t.rollback();
             }
-            e.printStackTrace();
-            fail("unexpected error: " + e);
+            throw e;
         }
     }
 

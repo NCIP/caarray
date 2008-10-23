@@ -1222,7 +1222,7 @@
     </target>
 
     <target name="test:cobertura-check">
-        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="69" totallinerate="77" />
+        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="70" totallinerate="78" />
     </target>
 
     <!-- Functional (Selenium) Test Targets -->

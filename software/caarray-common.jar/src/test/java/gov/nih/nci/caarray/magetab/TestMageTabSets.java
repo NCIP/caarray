@@ -158,11 +158,6 @@ public final class TestMageTabSets {
     public static final MageTabFileSet PERFORMANCE_TEST_10_INPUT_SET = getPerformanceTest10InputSet();
 
     /**
-     * Error Document set parsed from the MAGE-TAB specification example files.
-     */
-    public static final MageTabDocumentSet MAGE_TAB_ERROR_SPECIFICATION_SET = getSet(MAGE_TAB_ERROR_SPECIFICATION_INPUT_SET);
-
-    /**
      * Document set parsed from the MAGE-TAB specification example files.
      */
     public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_SET = getSet(MAGE_TAB_SPECIFICATION_INPUT_SET);

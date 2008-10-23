@@ -135,10 +135,10 @@ public class MageTabDataFiles {
             "/magetab/specification_case_sensitivity").getFile());
 
     public static final File UNSUPPORTED_DATA_EXAMPLE_IDF = new File(MageTabDataFiles.class.getResource(
-            "/magetab/unsupported_data/e-mexp-428_v1.0.idf").getFile());
+            "/magetab/unsupported_data/e-mexp-428_v1.0-unsupported.idf").getFile());
 
     public static final File UNSUPPORTED_DATA_EXAMPLE_SDRF = new File(MageTabDataFiles.class.getResource(
-            "/magetab/unsupported_data/e-mexp-428_v1.0.sdrf").getFile());
+            "/magetab/unsupported_data/e-mexp-428_v1.0-unsupported.sdrf").getFile());
 
     public static final File UNSUPPORTED_DATA_EXAMPLE_ADF = new File(MageTabDataFiles.class.getResource(
             "/magetab/unsupported_data/a-mexp-58f_excerpt_v1.0.adf").getFile());
