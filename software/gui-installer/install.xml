@@ -17,35 +17,33 @@
 	<property name="dist.location" value="${software.location}/dist" />
 	<property name="installer.dir" value=".installer-carray"/>
 	<property name="bda-util.dir" value="${software.location}/bda-utils"/>
-	
-<echo message="compile.jar.dir ::: ${compile.jar.dir}"/>
-<echo message="this.dir ::: ${this.dir}"/>
-<echo message="bda-utils.dir ::: ${bda-utils.dir}"/>
-<echo message="dist.location ::: ${dist.location}"/>
-
+	<property name="gui-installer.dist.base.name" value="${caarray.gui-distribution.name}_${caarray.version}"/>
+	<property name="install.zip.file" value="${caarray.install.zip.file}"/>
+        <property name="upgrade.zip.file" value="${caarray.upgrade.zip.file}"/>
+        
 
 	<taskdef name="IzPack" classpath="${compile.jar.dir}/lib/compiler.jar" classname="com.izforge.izpack.ant.IzPackTask"/>
 
 	<target name="prepare:installer">
-		<replaceregexp file="${this.dir}/build.xml" byline="true"
-				match="^(.*property name=.*application_installer_zip.*)(value=.)(.*)(.zip.*)"
-				replace="\1\2${caarray.install.name}_${caarray.version}\4"/>	
-		<replaceregexp file="${this.dir}/build.xml" byline="true"
-				match="^(.*property name=.*application_upgrader_zip.*)(value=.)(.*)(.zip.*)"
-				replace="\1\2${caarray.upgrade.name}_${caarray.version}\4"/>	
+                <replaceregexp file="${this.dir}/build.xml" byline="true"
+                                match="^(.*property name=.*application_installer_zip.*value=&quot;)[^&quot;]+(&quot;.*)"
+                                replace="\1${install.zip.file}\2"/>
+                <replaceregexp file="${this.dir}/build.xml" byline="true"
+                                match="^(.*property name=.*application_upgrader_.*value=&quot;)[^&quot;]+(&quot;.*)"
+                                replace="\1${upgrade.zip.file}\2"/>
 	</target>
 	
 	<target name="build:installer" depends="prepare:installer">
 		<delete>
 			<fileset dir="${dist.location}">
-				<include name="${caarray.install.name}_${caarray.version}*.jar"/>
+				<include name="${gui-installer.dist.base.name}*.jar"/>
 			</fileset>
 		</delete>
 		<tstamp>
 			<format property="build.time" pattern="yyyyMMddHHmm" />
 		</tstamp>
 
-		<IzPack output="${dist.location}/${caarray.install.name}_${caarray.version}-${build.time}.jar"
+		<IzPack output="${dist.location}/${gui-installer.dist.base.name}-${build.time}.jar"
 			installerType="standard"
 			basedir="."
 			IzPackDir="${compile.jar.dir}/">
@@ -71,7 +69,7 @@
 				The gui preferences indication.
 				Sets the installer window to 640x480. It will not be able to change the size.
 				-->
-				<guiprefs width="640" height="480" resizable="yes">
+				<guiprefs width="1028" height="768" resizable="yes">
 					<modifier key="useButtonIcons" value="no"/>
 					<modifier key="useLabelIcons" value="no"/>
 					<modifier key="allYGap" value="3"/>
@@ -133,7 +131,7 @@
 					</condition>
 					<condition type="variable" id="ldap.setup">
 						<name>ldap.authentication.disabled</name>
-						<value>true</value>
+						<value>false</value>
 					</condition>
 					<condition type="variable" id="custom.installation.type">
 						<name>install.type</name>
@@ -151,6 +149,11 @@
 						<condition type="ref" refid="install"/>
 						<condition type="ref" refid="typical.installation.type" />
 					</condition>
+					<condition type="or" id="custom.installation|upgrade">
+						<condition type="ref" refid="custom.installation"/>
+						<condition type="ref" refid="upgrade" />
+					</condition>	
+					
 				</conditions>
 
 				<!-- 
@@ -188,7 +191,7 @@
 					<panel classname="UserInputPanel"  id="UserInputPanel.7" condition="upgrade"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.8" />
 					<panel classname="UserInputPanel"  id="UserInputPanel.9" condition="install"/>
-					<panel classname="UserInputPanel"  id="UserInputPanel.10" condition="custom.installation"/>
+					<panel classname="UserInputPanel"  id="UserInputPanel.10" condition="custom.installation|upgrade"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.11" condition="ldap.setup"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.12" condition="install"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.13" condition="custom.installation"/>
@@ -219,21 +222,21 @@
 				<packs>
 					<pack name="download_install" id="download_install" required="no" installGroups="caarray"  condition="install">
 					    <description>The base files</description>
-					    <file src="@{dist.location}/@{caarray.install.name}_@{caarray.version}.zip" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
+					    <file src="@{dist.location}/@{install.zip.file}" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
 					    <file src="@{this.dir}/build.xml" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
 					    <file src="@{this.dir}/property-template" defaultexcludes="yes" targetdir="$SYSTEM_user_home/@{installer.dir}"/>		    
 					</pack>	
 
 					<pack name="download_update" id="download_update" required="no" installGroups="caarray"  condition="upgrade">
 					    <description>The base files</description>
-					    <file src="@{dist.location}/@{caarray.upgrade.name}_@{caarray.version}.zip" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
+					    <file src="@{dist.location}/@{upgrade.zip.file}" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
 					    <file src="@{this.dir}/property-template" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
 					    <file src="@{this.dir}/build.xml" defaultexcludes="yes" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
 					</pack>	
 
 					<pack name="parse-install" required="no" preselected="no" condition="install">
 					    <description>parse the input values</description>
-					    <parsable targetfile="$SYSTEM_user_home/@{installer.dir}/@{application_installer}/install.properties" type="plain" />		    
+					    <parsable targetfile="$SYSTEM_user_home/@{installer.dir}/@{application_installer}/install.properties" type="plain" />
 					</pack>
 
 					<pack name="parse-update" required="no" preselected="no" condition="upgrade">

@@ -1,1 +1,1 @@
-${APPLICATIONS_DEFAULT_ROOT}/apps/caarray2-lsd
+apps\caarray-app
