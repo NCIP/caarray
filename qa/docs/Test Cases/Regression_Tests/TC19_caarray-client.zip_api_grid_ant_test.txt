@@ -8,6 +8,8 @@ E.g.,  Check out CAARRAY_R2_1_0_ALPHA3 to F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3
 	
 3. You now should have a file F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client.zip. For instance, for CAARRAY_R2_1_0_ALPHA3 it's 17,800 KB, and it has 359 files and folders. caarray-client.jar was 232 KB.
 
+3.5 You can also use the "pre-built" client zip files that are included in the BDA_installer Hudson Builds (e.g., caarray_client_2_1_1.zip from http://cbvapp-c1007.nci.nih.gov:48080/hudson/job/caarray2-lsd-gui-installer/)
+
 4. Unzip the F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.zip, e.g., to a newly created directory \software\caarray-client.jar\target\caarray-client_zip
 
 5. There is documentation at E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip\README.txt
