@@ -27,7 +27,7 @@
             </c:forEach>
         </display:column>
         <display:column titleKey="search.result.experimentTitle" sortable="true" sortProperty="TITLE">
-            <c:set var="canReadRow" value="${caarrayfn:canRead(row, caarrayfn:currentUser())}"/>
+            <c:set var="canReadExp" value="${caarrayfn:canRead(row.experiment.project, caarrayfn:currentUser())}"/>
              <c:choose>
                 <c:when test="${canReadExp}">
                      <c:url var="viewExpUrl" value="/project/details.action">

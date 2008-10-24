@@ -92,15 +92,19 @@ import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
+import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.sample</code> package.
@@ -134,16 +138,22 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
      */
     @SuppressWarnings(UNCHECKED)
     public List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword) {
+
+
+        StringBuffer tbs = new StringBuffer();
+        tbs.append("SELECT DISTINCT tbs");
+        tbs.append(generateTermByKeywordClause());
+        Query tbsq = HibernateUtil.getCurrentSession().createQuery(tbs.toString());
+        tbsq.setString(KEYWORD_SUB, "%" + keyword + "%");
+        List<TermBasedCharacteristic> tbsList = tbsq.list();
+
+        Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
         StringBuffer sb = new StringBuffer();
-
-        sb.append(SELECT_DISTINCT + "s");
-        sb.append(generateSamplesByCharacteristicCategoryClause());
-
+        sb.append("SELECT DISTINCT s");
+        sb.append(generateSamplesByCharacteristicCategoryClause(tbsList, idBlocks));
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
         q.setString(CATAGORY_SUB, c.getName());
-        q.setString(KEYWORD_SUB, "%" + keyword + "%");
-
-
+        HibernateHelper.bindInClauseParameters(q, idBlocks);
         return q.list();
     }
 
@@ -169,14 +179,21 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
      */
     @SuppressWarnings(UNCHECKED)
     public int countSamplesByCharacteristicCategory(Category c, String keyword) {
+
+        StringBuffer tbs = new StringBuffer();
+        tbs.append("SELECT DISTINCT tbs");
+        tbs.append(generateTermByKeywordClause());
+        Query tbsq = HibernateUtil.getCurrentSession().createQuery(tbs.toString());
+        tbsq.setString(KEYWORD_SUB, "%" + keyword + "%");
+        List<TermBasedCharacteristic> tbsList = tbsq.list();
+
+        Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
         StringBuffer sb = new StringBuffer();
-
         sb.append("SELECT count(DISTINCT s)");
-        sb.append(generateSamplesByCharacteristicCategoryClause());
-
+        sb.append(generateSamplesByCharacteristicCategoryClause(tbsList, idBlocks));
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
         q.setString(CATAGORY_SUB, c.getName());
-        q.setString(KEYWORD_SUB, "%" + keyword + "%");
+        HibernateHelper.bindInClauseParameters(q, idBlocks);
 
         return ((Number) q.uniqueResult()).intValue();
     }
@@ -198,7 +215,11 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         return ((Number) q.uniqueResult()).intValue();
     }
 
-    private String generateSamplesByCharacteristicCategoryClause() {
+    private String generateSamplesByCharacteristicCategoryClause(List<? extends Serializable> tbsList,
+            Map<String, List<? extends Serializable>> idBlocks) {
+
+        // need to break this up into blocks of 500 to get around bug
+        // http://opensource.atlassian.com/projects/hibernate/browse/HHH-2166
 
         String sb = FROM_KEYWORD
             + Sample.class.getName()
@@ -206,14 +227,24 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
             + " left join chr.category cat"
             + " left join s.sources src"
             + " left join src.characteristics schr"
-            + " left join schr.category scat, "
-            + TermBasedCharacteristic.class.getName() + " tbs left join tbs.term t "
-            + " WHERE t.value like :" + KEYWORD_SUB
-            + " AND ((cat.name = :" + CATAGORY_SUB + " AND chr.id = tbs.id )"
-            + " OR (scat.name = :" + CATAGORY_SUB + " AND schr.id = tbs.id ))";
+            + " left join schr.category scat "
+            + " WHERE (cat.name = :" + CATAGORY_SUB
+            + " AND " + HibernateHelper.buildInClause(tbsList, "chr", idBlocks) + " )"
+            + " OR (scat.name = :" + CATAGORY_SUB
+            + " AND " + HibernateHelper.buildInClause(tbsList, "schr", idBlocks) + " )";
 
         return sb;
     }
+
+    private String generateTermByKeywordClause() {
+        String sb = FROM_KEYWORD
+        + TermBasedCharacteristic.class.getName() + " tbs left join tbs.term t "
+        + " WHERE t.value like :" + KEYWORD_SUB;
+
+        return sb;
+
+    }
+
 
     private String generateSourcesByCharacteristicCategoryClause() {
 
