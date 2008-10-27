@@ -326,6 +326,15 @@ public class MageTabDataFiles {
     public static final File DEFECT_16421_CEL = new File(MageTabDataFiles.class.getResource(
             "/magetab/baddata/blankCharacteristics").getFile());
 
+    public static final File DEFECT_17200_SDRF = new File(MageTabDataFiles.class.getResource(
+        "/magetab/baddata/invalidFileRef/test_gpr.sdrf").getFile());
+
+    public static final File DEFECT_17200_IDF = new File(MageTabDataFiles.class.getResource(
+        "/magetab/baddata/invalidFileRef/test_gpr.idf").getFile());
+
+    public static final File DEFECT_17200_GPR = new File(MageTabDataFiles.class.getResource(
+        "/magetab/baddata/invalidFileRef/18258_wap3.gpr").getFile());
+
     public static final File DEFECT_16421_2_SDRF = new File(MageTabDataFiles.class.getResource(
             "/magetab/baddata/invalidColumnOrder/rembrandt_snp_NOB_batch5.sdrf").getFile());
 

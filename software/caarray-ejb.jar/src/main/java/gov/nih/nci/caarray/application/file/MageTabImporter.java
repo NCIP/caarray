@@ -130,20 +130,17 @@ class MageTabImporter {
 
     MageTabDocumentSet validateFiles(CaArrayFileSet fileSet, boolean reimportingMagetab) {
         LOG.info("Validating MAGE-TAB document set");
-        MageTabDocumentSet documentSet = null;
         updateFileStatus(fileSet, FileStatus.VALIDATING);
+        MageTabDocumentSet documentSet = null;
         MageTabFileSet inputSet = getInputFileSet(fileSet);
         try {
             updateFileStatus(fileSet, FileStatus.VALIDATED);
-            handleResult(fileSet, MageTabParser.INSTANCE.validate(inputSet, reimportingMagetab));
-            if (!fileSet.statusesContains(FileStatus.VALIDATION_ERRORS)) {
-                documentSet = MageTabParser.INSTANCE.parse(inputSet, reimportingMagetab);
-                handleResult(fileSet, translator.validate(documentSet, fileSet));
-            }
+            documentSet = MageTabParser.INSTANCE.parse(inputSet, reimportingMagetab);
+            handleResult(fileSet, translator.validate(documentSet, fileSet));
         } catch (MageTabParsingException e) {
             updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
         } catch (InvalidDataException e) {
-            handleInvalidMageTab(fileSet, e);
+            handleResult(fileSet, e.getValidationResult());
         }
         this.daoFactory.getSearchDao().save(fileSet.getFiles());
         return documentSet;
@@ -174,30 +171,9 @@ class MageTabImporter {
             save(targetProject, translationResult);
             updateFileStatus(fileSet, FileStatus.IMPORTED);
         } catch (InvalidDataException e) {
-            handleInvalidMageTab(fileSet, e);
+            handleResult(fileSet, e.getValidationResult());
         }
         this.daoFactory.getSearchDao().save(fileSet.getFiles());
-    }
-
-    private void handleInvalidMageTab(CaArrayFileSet fileSet, InvalidDataException e) {
-        ValidationResult validationResult = e.getValidationResult();
-        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
-            File file = getFile(caArrayFile);
-            FileValidationResult fileValidationResult = validationResult.getFileValidationResult(file);
-            if (fileValidationResult != null) {
-                handleValidationResult(caArrayFile, fileValidationResult);
-            }
-        }
-    }
-
-    private void handleValidationResult(CaArrayFile caArrayFile, FileValidationResult fileValidationResult) {
-        if (fileValidationResult.isValid()) {
-            caArrayFile.setFileStatus(FileStatus.VALIDATED);
-        } else {
-            caArrayFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
-        }
-        caArrayFile.setValidationResult(fileValidationResult);
-        daoFactory.getProjectDao().save(caArrayFile);
     }
 
     private void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {

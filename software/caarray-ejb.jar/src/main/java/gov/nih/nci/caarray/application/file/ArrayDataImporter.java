@@ -161,8 +161,10 @@ final class ArrayDataImporter {
         int fileCount = 0;
         int totalNumberOfFiles = dataFiles.size();
         for (CaArrayFile file : dataFiles) {
-            LOG.info("Validating data file [" + ++fileCount + "/" + totalNumberOfFiles + "]: " + file.getName());
-            validateFile(file, mTabSet);
+            if (file.getFileStatus() != FileStatus.VALIDATION_ERRORS) {
+                LOG.info("Validating data file [" + ++fileCount + "/" + totalNumberOfFiles + "]: " + file.getName());
+                validateFile(file, mTabSet);                
+            }
         }
     }
 

@@ -88,6 +88,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
@@ -102,7 +105,9 @@ import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
@@ -110,14 +115,22 @@ import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.MageTabFileSet;
+import gov.nih.nci.caarray.magetab.MageTabParser;
+import gov.nih.nci.caarray.magetab.MageTabParsingException;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
+import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataException;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -142,6 +155,7 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
     private MageTabTranslator translator;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
+    private FileAccessServiceStub fileAccessServiceStub;
 
     /**
      * Prepares the translator implementation, stubbing out dependencies.
@@ -151,8 +165,36 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         MageTabTranslatorBean mageTabTranslatorBean = new MageTabTranslatorBean();
         mageTabTranslatorBean.setDaoFactory(this.daoFactoryStub);
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        fileAccessServiceStub = new FileAccessServiceStub();
+        TemporaryFileCacheLocator
+                .setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
         locatorStub.addLookup(VocabularyService.JNDI_NAME, this.vocabularyServiceStub);
         this.translator = mageTabTranslatorBean;
+    }
+    
+    @Test
+    public void testDefect17200() throws InvalidDataException, MageTabParsingException {
+        MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_17200; 
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet, false);
+        assertTrue(docSet.getValidationResult().isValid());        
+        CaArrayFileSet fileSet = new CaArrayFileSet();
+        for (File file : mageTabSet.getAllFiles()) {
+            CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
+            caArrayFile.setFileStatus(FileStatus.UPLOADED);
+            fileSet.add(caArrayFile);
+        }
+        ValidationResult result = this.translator.validate(docSet, fileSet);
+        assertFalse(result.isValid());
+        FileValidationResult fileResult = result.getFileValidationResult(MageTabDataFiles.DEFECT_17200_GPR);
+        assertNotNull(fileResult);
+        assertFalse(result.isValid());
+        assertEquals(1, fileResult.getMessages().size());
+        assertTrue(fileResult.getMessages().get(0).getMessage().startsWith("This file is not correctly referenced"));
+        fileResult = result.getFileValidationResult(GenepixArrayDataFiles.GPR_3_0_6);
+        assertNotNull(fileResult);
+        assertFalse(result.isValid());
+        assertEquals(1, fileResult.getMessages().size());
+        assertTrue(fileResult.getMessages().get(0).getMessage().startsWith("This data file is not referenced from "));
     }
 
     @Test

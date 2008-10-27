@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.magetab;
 
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.InvalidDataException;
-import gov.nih.nci.caarray.validation.ValidationResult;
 
 import org.apache.log4j.Logger;
 
@@ -98,33 +97,15 @@ class MageTabParserImplementation implements MageTabParser {
     /**
      * {@inheritDoc}
      */
-    public ValidationResult validate(MageTabFileSet fileSet, boolean reimportingMagetab)
-            throws MageTabParsingException {
-        LogUtil.logSubsystemEntry(LOG, fileSet);
-        ValidationResult result = doParse(fileSet, reimportingMagetab).getValidationResult();
-        LogUtil.logSubsystemExit(LOG);
-        return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public MageTabDocumentSet parse(MageTabFileSet inputFileSet, boolean reimportingMagetab)
             throws MageTabParsingException, InvalidDataException {
         LogUtil.logSubsystemEntry(LOG, inputFileSet);
-        MageTabDocumentSet documentSet = doParse(inputFileSet, reimportingMagetab);
+        MageTabDocumentSet documentSet = new MageTabDocumentSet(inputFileSet, reimportingMagetab);
+        documentSet.parse();
         if (!documentSet.getValidationResult().isValid()) {
             throw new InvalidDataException(documentSet.getValidationResult());
         }
         LogUtil.logSubsystemExit(LOG);
         return documentSet;
     }
-
-    private MageTabDocumentSet doParse(MageTabFileSet inputFileSet, boolean reimportingMagetab)
-            throws MageTabParsingException {
-        MageTabDocumentSet documentSet = new MageTabDocumentSet(inputFileSet, reimportingMagetab);
-        documentSet.parse();
-        return documentSet;
-    }
-
 }

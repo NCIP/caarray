@@ -200,6 +200,22 @@ public final class ValidationResult implements Serializable {
     }
 
     /**
+     * Returns the <code>FileValidationResult</code> corresponding to the
+     * file with given , or null if non exists.
+     *
+     * @param filename get validation results for the file with this name
+     * @return the validation result.
+     */
+    public FileValidationResult getFileValidationResult(String filename) {
+        for (Map.Entry<File, FileValidationResult> resultEntry : fileValidationResults.entrySet()) {
+            if (resultEntry.getKey().getName().equals(filename)) {
+                return resultEntry.getValue();
+            }
+        }
+        return null;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

@@ -93,7 +93,6 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.io.FileUtility;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
-import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 import java.io.Serializable;
@@ -277,10 +276,7 @@ public final class MageTabDocumentSet implements Serializable {
         parse(sdrfDocuments);
         // DEVELOPER NOTE: DATA MATRIX documents currently not parsed
 
-        checkSdrfRefDataFiles();
-
         generateSdrfRefHybs();
-
         generateSdrfRefSamples();
     }
 
@@ -289,6 +285,43 @@ public final class MageTabDocumentSet implements Serializable {
             document.parse(reimportingMagetab);
         }
     }
+    
+    /**
+     * @return the list of names of all raw data files referenced by any
+     * SDRF in this document set.
+     */
+    public List<String> getSdrfReferencedRawFileNames() {
+        List<String> fileNames = new ArrayList<String>();
+        for (SdrfDocument sdrf : sdrfDocuments) {
+            fileNames.addAll(sdrf.getReferencedRawFileNames());
+        }
+        return fileNames;
+    }
+
+    /**
+     * @return the list of names of all derived data files referenced by any
+     * SDRF in this document set.
+     */
+    public List<String> getSdrfReferencedDerivedFileNames() {
+        List<String> fileNames = new ArrayList<String>();
+        for (SdrfDocument sdrf : sdrfDocuments) {
+            fileNames.addAll(sdrf.getReferencedDerivedFileNames());
+        }
+        return fileNames;
+    }
+    
+    /**
+     * @return the list of names of all data matrix files referenced by any
+     * SDRF in this document set.
+     */
+    public List<String> getSdrfReferencedDataMatrixFileNames() {
+        List<String> fileNames = new ArrayList<String>();
+        for (SdrfDocument sdrf : sdrfDocuments) {
+            fileNames.addAll(sdrf.getReferencedDataMatrixFileNames());
+        }
+        return fileNames;
+    }
+
 
     /**
      * Returns an <code>OntologyTerm</code> matching the category and name given. Reuses an existing matching
@@ -435,44 +468,6 @@ public final class MageTabDocumentSet implements Serializable {
 
     ValidationMessage createValidationMessage(File file, ValidationMessage.Type type, String message) {
         return getValidationResult().addMessage(file, type, message);
-    }
-
-    /**
-     * Check that all native data files are mentioned in the sdrf.
-     */
-    private void checkSdrfRefDataFiles() {
-        List<String> fileNames = getSdrfReferencedFileNames();
-
-        checkFileNames(fileNames);
-
-        if (this.getNativeDataFiles() != null && !this.getNativeDataFiles().isEmpty() && fileNames.isEmpty()) {
-            addSdrfErrorMessage("any files");
-        }
-    }
-
-    private void checkFileNames(List<String> fileNames) {
-        if (this.getNativeDataFiles() != null && !this.getNativeDataFiles().isEmpty() && !fileNames.isEmpty()) {
-            for (NativeDataFile ndf : this.getNativeDataFiles()) {
-                if (!fileNames.contains(ndf.getFile().getName())) {
-                    addSdrfErrorMessage(ndf.getFile().getName());
-                }
-            }
-        }
-    }
-
-    private void addSdrfErrorMessage(String txt) {
-        for (SdrfDocument sdrf : sdrfDocuments) {
-            this.createValidationMessage(sdrf.getFile(), Type.ERROR, "SDRF file does not reference " + txt
-                    + " being validated.");
-        }
-    }
-
-    private List<String> getSdrfReferencedFileNames() {
-        List<String> fileNames = new ArrayList<String>();
-        for (SdrfDocument sdrf : sdrfDocuments) {
-            fileNames.addAll(sdrf.getAllDataFiles());
-        }
-        return fileNames;
     }
 
     private void generateSdrfRefHybs() {

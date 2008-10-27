@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.magetab.adf.AdfDocument;
 import gov.nih.nci.caarray.magetab.data.DataMatrix;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
+import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.validation.InvalidDataException;
 
@@ -250,6 +251,11 @@ public final class TestMageTabSets {
      * Document set parsed ...
      */
     public static final MageTabFileSet DEFECT_16421 = getDefect16421ErrorInputSet();
+
+    /**
+     * Document set parsed ...
+     */
+    public static final MageTabFileSet DEFECT_17200 = getDefect17200InputSet();
 
     /**
      * Document set parsed ...
@@ -506,6 +512,15 @@ public final class TestMageTabSets {
         return fileSet;
     }
 
+    private static MageTabFileSet getDefect17200InputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.DEFECT_17200_IDF);
+        fileSet.addSdrf(MageTabDataFiles.DEFECT_17200_SDRF);
+        fileSet.addNativeData(MageTabDataFiles.DEFECT_17200_GPR);
+        fileSet.addNativeData(GenepixArrayDataFiles.GPR_3_0_6);
+        return fileSet;
+    }
+
     private static MageTabFileSet getDefect16421ErrorInputSet2() {
         MageTabFileSet fileSet = new MageTabFileSet();
         fileSet.addIdf(MageTabDataFiles.DEFECT_16421_2_IDF);
@@ -555,6 +570,8 @@ public final class TestMageTabSets {
             caArrayFile.setFileType(FileType.AFFYMETRIX_EXP);
         } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".chp")) {
             caArrayFile.setFileType(FileType.AFFYMETRIX_CHP);
+        } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".gpr")) {
+            caArrayFile.setFileType(FileType.GENEPIX_GPR);
         } else {
             throw new IllegalArgumentException("Unrecognized document file " + mageTabDocument.getFile());
         }

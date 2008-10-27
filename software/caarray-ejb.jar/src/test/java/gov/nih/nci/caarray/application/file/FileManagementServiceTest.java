@@ -364,9 +364,6 @@ public class FileManagementServiceTest extends AbstractCaarrayTest {
         for (CaArrayFile file : project.getFiles()) {
             if (expFile.equals(file)) {
                 assertEquals(FileStatus.VALIDATED_NOT_PARSED, file.getFileStatus());
-            } else if (FileType.MAGE_TAB_SDRF.equals(file.getFileType()) || FileType.MAGE_TAB_IDF.equals(file.getFileType())) {
-                // fix for unsupported mas5
-                assertEquals(FileStatus.VALIDATION_ERRORS, file.getFileStatus());
             } else {
                 assertEquals(FileStatus.VALIDATED, file.getFileStatus());
             }

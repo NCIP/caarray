@@ -1286,15 +1286,31 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     /**
-     * Get all data file names from array data, data matrix, derived data, and derived data matrix files.
+     * Get names of raw data files referenced by this sdrf.
      *
      * @return list of file names
      */
-    public List<String> getAllDataFiles() {
+    public List<String> getReferencedRawFileNames() {
+        return getFileNames(this.getAllArrayDataFiles());
+    }
+
+    /**
+     * Get names of derived data files referenced by this sdrf.
+     *
+     * @return list of file names
+     */
+    public List<String> getReferencedDerivedFileNames() {
+        return getFileNames(this.getAllDerivedArrayDataFiles());
+    }
+
+    /**
+     * Get names of data matrix files referenced by this sdrf.
+     *
+     * @return list of file names
+     */
+    public List<String> getReferencedDataMatrixFileNames() {
         List<String> fileNames = new ArrayList<String>();
-        fileNames.addAll(getFileNames(this.getAllArrayDataFiles()));
         fileNames.addAll(getFileNames(this.getAllArrayDataMatrixFiles()));
-        fileNames.addAll(getFileNames(this.getAllDerivedArrayDataFiles()));
         fileNames.addAll(getFileNames(this.getAllDerivedArrayDataMatrixFiles()));
         return fileNames;
     }

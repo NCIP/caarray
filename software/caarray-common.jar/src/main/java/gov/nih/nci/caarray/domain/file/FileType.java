@@ -347,6 +347,20 @@ public enum FileType implements Comparable<FileType> {
     public static Set<FileType> getArrayDesignFileTypes() {
         return ARRAY_DESIGN_FILE_TYPES;
     }
+    
+    /**
+     * @return if this file type has a derived variant, false otherwise.
+     */
+    public boolean hasRawVersion() {
+        return DERIVED_TO_RAW_MAP.get(this) != null;
+    }
+
+    /**
+     * @return if this file type has a derived version, false otherwise.
+     */
+    public boolean hasDerivedVersion() {
+        return DERIVED_TO_RAW_MAP.get(this) != null;
+    }
 
     /**
      * @return the raw version of this file type

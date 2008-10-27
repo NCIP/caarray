@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.magetab;
 
 import gov.nih.nci.caarray.validation.InvalidDataException;
-import gov.nih.nci.caarray.validation.ValidationResult;
 
 /**
  * Interface to MAGE-TAB validation and parsing functionality.
@@ -96,16 +95,6 @@ public interface MageTabParser {
      * Instance of the MAGE-TAB parsing subsystem.
      */
     MageTabParser INSTANCE = new MageTabParserImplementation();
-
-    /**
-     * Validates the documents contained in the MAGE-TAB file set.
-     *
-     * @param fileSet the documents to validate
-     * @param reimportingMagetab true if parsing additional MAGE-TAB files
-     * @return the validation result
-     * @throws MageTabParsingException if I/O failed reading the MAGE-TAB file.
-     */
-    ValidationResult validate(MageTabFileSet fileSet, boolean reimportingMagetab) throws MageTabParsingException;
 
     /**
      * Parses the content of the documents contained in the MAGE-TAB file set to produce

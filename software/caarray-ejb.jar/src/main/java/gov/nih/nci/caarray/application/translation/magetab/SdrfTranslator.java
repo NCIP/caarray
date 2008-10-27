@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
@@ -96,6 +97,7 @@ import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
@@ -125,9 +127,12 @@ import gov.nih.nci.caarray.magetab.sdrf.Characteristic;
 import gov.nih.nci.caarray.magetab.sdrf.Normalization;
 import gov.nih.nci.caarray.magetab.sdrf.Provider;
 import gov.nih.nci.caarray.magetab.sdrf.Scan;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfColumnType;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfNodeType;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -196,7 +201,46 @@ final class SdrfTranslator extends AbstractTranslator {
         for (SdrfDocument document : getDocumentSet().getSdrfDocuments()) {
             validateSdrf(document, externalSampleIds);
         }
+        validateFileReferences();
     }
+    
+    private void validateFileReferences() {
+        List<String> referencedRawFiles = getDocumentSet().getSdrfReferencedRawFileNames();
+        List<String> referencedDerivedFiles = getDocumentSet().getSdrfReferencedDerivedFileNames();
+        List<String> referencedDataMatrixFiles = getDocumentSet().getSdrfReferencedDataMatrixFileNames();
+        
+        for (CaArrayFile file : getFileSet().getFiles()) {
+            FileType fileType = file.getFileType();
+            boolean isRaw = fileType.isRawArrayData();
+            boolean hasRawVersion = fileType.hasRawVersion();
+            boolean referencedAsRaw = referencedRawFiles.contains(file.getName());            
+            boolean isDerived = fileType.isDerivedArrayData();
+            boolean hasDerivedVersion = fileType.hasDerivedVersion();
+            boolean referencedAsDerived = referencedDerivedFiles.contains(file.getName());
+            boolean isMatrix = fileType == FileType.MAGE_TAB_DATA_MATRIX;
+            boolean referencedAsMatrix = referencedDataMatrixFiles.contains(file.getName());
+            boolean referencedAsAny = referencedAsRaw || referencedAsDerived || referencedAsMatrix;
+            
+            if (isRaw && !referencedAsRaw && (!hasDerivedVersion || !referencedAsDerived)) {
+                addFileReferenceError(file, referencedAsAny, SdrfColumnType.ARRAY_DATA_FILE.getDisplayName());
+            } else if (isDerived && !referencedAsDerived && (!hasRawVersion || !referencedAsRaw)) {
+                addFileReferenceError(file, referencedAsAny, SdrfColumnType.DERIVED_ARRAY_DATA_FILE.getDisplayName());
+            } else if (isMatrix && !referencedAsMatrix) {
+                addFileReferenceError(file, referencedAsAny, SdrfColumnType.ARRAY_DATA_MATRIX_FILE.getDisplayName()
+                        + " or " + SdrfColumnType.DERIVED_ARRAY_DATA_MATRIX_FILE.getDisplayName());
+            }
+        }
+    }
+
+    private void addFileReferenceError(CaArrayFile caArrayFile, boolean referencedAsAny, String correctColumn) {
+        File file = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
+        String message = referencedAsAny ? "This file is not correctly referenced from an SDRF file. "
+                + "It should be referenced using an " + correctColumn + " column"
+                : "This data file is not referenced from an SDRF file.";
+        getDocumentSet().getValidationResult().addMessage(file, Type.ERROR, message);
+    }
+
+
 
     private void validateSdrf(SdrfDocument document, Set<String> externalSampleIds) {
         validateArrayDesigns(document);

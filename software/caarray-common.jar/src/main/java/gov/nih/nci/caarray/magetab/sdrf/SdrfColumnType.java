@@ -277,6 +277,13 @@ public enum SdrfColumnType {
      *
      * @return the display name of the column.
      */
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public String toString() {
         return displayName;
     }
