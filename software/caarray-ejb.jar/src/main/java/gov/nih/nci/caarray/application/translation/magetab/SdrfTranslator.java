@@ -197,6 +197,12 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     void validate() {
+        // if there are no sdrf docs in the set, then this a data-only import,
+        // so no mage-tab specific validation to perform
+        if (getDocumentSet().getSdrfDocuments().isEmpty()) {
+            return;
+        }        
+
         Set<String> externalSampleIds = getExistingSampleExternalIdsForCurrentExperiment();
         for (SdrfDocument document : getDocumentSet().getSdrfDocuments()) {
             validateSdrf(document, externalSampleIds);

@@ -195,6 +195,15 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         assertFalse(result.isValid());
         assertEquals(1, fileResult.getMessages().size());
         assertTrue(fileResult.getMessages().get(0).getMessage().startsWith("This data file is not referenced from "));
+
+        mageTabSet = new MageTabFileSet();
+        mageTabSet.addNativeData(MageTabDataFiles.DEFECT_17200_GPR);
+        fileSet = new CaArrayFileSet();
+        fileSet.add(fileAccessServiceStub.add(MageTabDataFiles.DEFECT_17200_GPR));
+        docSet = MageTabParser.INSTANCE.parse(mageTabSet, false);
+        assertTrue(docSet.getValidationResult().isValid());        
+        result = this.translator.validate(docSet, fileSet);
+        assertTrue(result.isValid());        
     }
 
     @Test
