@@ -312,10 +312,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             />
     </target>
 
-    <target name="-install:jboss:configure:secure-console" description="Configure JBoss ports using bindings files" unless="exclude.jboss">
-	<secure-jboss-console/>
-    </target>
-
     <!-- Configure log4j settings based on contents of caarray/software/resrouces/deploy/log4j.block.xml -->
     <target name="-install:jboss:configure:log4j" unless="exclude.jboss">
         <!--
@@ -328,6 +324,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             match="(^.*\/log4j:configuration.)"
             replace="${xml.content}${line.separator}\1"/>
         -->
+    </target>
+
+    <target name="-install:jboss:configure:secure-console" description="Configure JBoss ports using bindings files" unless="exclude.jboss">
+        <secure-jboss-console/>
     </target>
 
     <!-- Calls to bda macros for basic functionality -->
@@ -430,6 +430,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:validation:pre-install,
         install:jboss:stop,
         install:jboss:caarray:re-configure,
+        -install:jboss:configure:secure-console,
         install:jboss:caarray,
         install:jboss:start
         " />
@@ -458,6 +459,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         depends="install:grid:deploy,
         -install:grid:configure:wsdl,
         -install:grid:configure:serviceMetadataXml,
+        -install:grid:configure:secure-console,
         -install:grid:configure:webXml
     "/>
 
@@ -479,7 +481,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <target name="-install:grid:configure:secure-console" description="Configure JBoss ports using bindings files" unless="exclude.jboss">
 	<secure-jboss-console jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.web.password="${grid.web.password}"/>
     </target>
-
 
     <target name="install:grid:deploy" description="Deploy Caarray2 application">
         <unzip dest="${temp.dir}/grid" src="${basedir}/grid/cagrid_CaArraySvc.zip" />
