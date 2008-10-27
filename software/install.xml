@@ -295,6 +295,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         depends="install:jboss:binaries,
         -install:jboss:configure:ports,
         -install:jboss:configure:log4j,
+        -install:jboss:configure:secure-console,
         -install:jboss:configure:update-shutdown,
         -install:jboss:configure:update-runconf
         "/>
@@ -323,6 +324,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             match="(^.*\/log4j:configuration.)"
             replace="${xml.content}${line.separator}\1"/>
         -->
+    </target>
+
+    <target name="-install:jboss:configure:secure-console" description="Configure JBoss ports using bindings files" unless="exclude.jboss">
+        <secure-jboss-console/>
     </target>
 
     <!-- Calls to bda macros for basic functionality -->
@@ -425,6 +430,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:validation:pre-install,
         install:jboss:stop,
         install:jboss:caarray:re-configure,
+        -install:jboss:configure:secure-console,
         install:jboss:caarray,
         install:jboss:start
         " />
@@ -453,6 +459,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         depends="install:grid:deploy,
         -install:grid:configure:wsdl,
         -install:grid:configure:serviceMetadataXml,
+        -install:grid:configure:secure-console,
         -install:grid:configure:webXml
     "/>
 
@@ -462,12 +469,17 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         -install:grid:configure:ports,
         -install:grid:configure:wsdl,
         -install:grid:configure:serviceMetadataXml,
+        -install:grid:configure:secure-console,
         -install:grid:configure:webXml
         "/>
 
 
     <target name="-install:grid:configure:update-shutdown">
         <jboss-update-shutdown jboss.home="${grid.home}" jboss.server.hostname="${grid.server.hostname}" jboss.server.jndi.port="${grid.server.jndi.port}" />
+    </target>
+
+    <target name="-install:grid:configure:secure-console" description="Configure JBoss ports using bindings files" unless="exclude.jboss">
+        <secure-jboss-console jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.web.password="${grid.web.password}"/>
     </target>
 
     <target name="install:grid:deploy" description="Deploy Caarray2 application">

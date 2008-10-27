@@ -33,21 +33,21 @@
     <panel order="2">
         <field type="title" txt="Configure your JBoss application server" bold="true" size="1" />
         <field type="divider" align="top"/>
-	<field type="staticText" align="left" txt="As part of this installtion, JBoss will be installed in ${UserPathPanelVariable}.  It will be configured based on the values you enter below.  NOTE: The Hostname below (and on other panels of this installer) is the host name accesible from this machine and others on the local network. To access this JBoss application server from the Internet, you may need to provide the JBoss HTTP Port to your Network administrator to allow access through the firewall."/>
-	<field type="space"/>
+    <field type="staticText" align="left" txt="As part of this installtion, JBoss will be installed in ${UserPathPanelVariable}.  It will be configured based on the values you enter below.  NOTE: The Hostname below (and on other panels of this installer) is the host name accesible from this machine and others on the local network. To access this JBoss application server from the Internet, you may need to provide the JBoss HTTP Port to your Network administrator to allow access through the firewall."/>
+    <field type="space"/>
         <field type="text" align="left" variable="jboss.server.hostname">
             <spec txt="Application Host Name" size="15" set="$HOST_NAME"/>
 
-		<validator
-			class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid JBoss Host name or the Host is not reachable" id="jbosshostname.label">
-		</validator>
+        <validator
+            class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid JBoss Host name or the Host is not reachable" id="jbosshostname.label">
+        </validator>
         </field>
 
         <field type="text" variable="jboss.server.port">
             <spec txt="Application HTTP Port Number " id="text.label" size="15" set="38080"/>
-		<validator
-			class="com.izforge.izpack.util.PortValidator" txt="The http port number is already in use" id="error.label">
-		</validator>
+        <validator
+            class="com.izforge.izpack.util.PortValidator" txt="The http port number is already in use" id="error.label">
+        </validator>
         </field>
         <field type="text" variable="jboss.server.jndi.port">
             <spec txt="Application JNDI Port Number " id="text.label" size="15" set="31099"/>
@@ -55,21 +55,21 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use" id="error.label">
             </validator>
         </field>
-	<field type="password" align="left" variable="jboss.web.password">
-		<spec>
-			<pwd txt="Application JBoss Web Password " size="15" set=""/>
-			<pwd txt="Confirm JBoss Web Password " size="15" set=""/>
-		</spec>
-		<validator 
-			class="com.izforge.izpack.util.NotEmptyValidator" txt="JBoss Web Console Passwords are required fields" id="webconsole.label">
-		</validator>
-		<validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords"/>
-	</field>
+    <field type="password" align="left" variable="jboss.web.password">
+        <spec>
+            <pwd txt="Application JBoss Web Password " size="15" set=""/>
+            <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
+        </spec>
+        <validator
+            class="com.izforge.izpack.util.NotEmptyValidator" txt="JBoss Web Console Passwords are required fields" id="webconsole.label">
+        </validator>
+        <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords"/>
+    </field>
         <field type="text" variable="jboss.server.name">
             <spec txt="Application Server Name " id="text.label" size="15" set="default"/>
-		<validator 
-			class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Server Name is a  required field">
-		</validator>
+        <validator
+            class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Server Name is a  required field">
+        </validator>
         </field>
         <field type="text" variable="jboss.server.rmi.port">
             <spec txt="Application RMI Port Number " id="text.label" size="15" set="31098"/>
@@ -118,35 +118,35 @@
         <field type="staticText" align="left" txt="The password you enter below is the password used to access the JBoss web console. This is a password you are creating, so you must keep track of this password for future use."/>
         <field type="divider" align="top"/>
 
-	<field type="password" align="left" variable="jboss.web.password">
-		<spec>
-			<pwd txt="Application JBoss Web Password " size="15" set=""/>
-			<pwd txt="Confirm JBoss Web Password " size="15" set=""/>
-		</spec>
-		<validator 
-			class="com.izforge.izpack.util.NotEmptyValidator" txt="Application JBoss Web Password are required fields">
-		</validator>		
-		<validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords." id="key for the error text"/>			
-	</field>
-	<field type="space" /> 
-	<field type="password" align="left" variable="grid.web.password">
-		<spec>
-			<pwd txt="Grid JBoss Web Password " size="15" set=""/>
-			<pwd txt="Confirm JBoss Web Password " size="15" set=""/>
-		</spec>
-		<validator 
-			class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid JBoss Web Password are required fields">
-		</validator>		
-		<validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="The grid web passwords did not match"/>			
-	</field>	 
-   
-       
-    
-	<variable name="jboss.server.hostname" value="$HOST_NAME"/>
-	<variable name="jboss.server.port" value="38080"/>
-	<variable name="jboss.server.jndi.port" value="31099"/>
-	<variable name="jboss.server.name" value="default"/>
-	<variable name="jboss.server.rmi.port" value="31098"/>
+    <field type="password" align="left" variable="jboss.web.password">
+        <spec>
+            <pwd txt="Application JBoss Web Password " size="15" set=""/>
+            <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
+        </spec>
+        <validator
+            class="com.izforge.izpack.util.NotEmptyValidator" txt="Application JBoss Web Password are required fields">
+        </validator>
+        <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords." id="key for the error text"/>
+    </field>
+    <field type="space" />
+    <field type="password" align="left" variable="grid.web.password">
+        <spec>
+            <pwd txt="Grid JBoss Web Password " size="15" set=""/>
+            <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
+        </spec>
+        <validator
+            class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid JBoss Web Password are required fields">
+        </validator>
+        <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="The grid web passwords did not match"/>
+    </field>
+
+
+
+    <variable name="jboss.server.hostname" value="$HOST_NAME"/>
+    <variable name="jboss.server.port" value="38080"/>
+    <variable name="jboss.server.jndi.port" value="31099"/>
+    <variable name="jboss.server.name" value="default"/>
+    <variable name="jboss.server.rmi.port" value="31098"/>
 
         <variable name="jboss.ejbinvoker.port" value="33873"/>
         <variable name="jboss.cobraorb.port" value="33528"/>
@@ -165,12 +165,12 @@
         <variable name="jboss.web.service.port" value="38083"/>
         <variable name="jboss.server.ajp.port" value="38009"/>
         <variable name="jboss.cluster.rmi.port" value="39000"/>
-     
-     	<variable name="grid.server.hostname" value="$HOST_NAME"/>
-     	<variable name="grid.server.port" value="18080"/>
-     	<variable name="grid.server.jndi.port" value="11099"/>
-     	<variable name="grid.server.name" value="default"/>
-     	<variable name="grid.server.rmi.port" value="11098"/>
+
+        <variable name="grid.server.hostname" value="$HOST_NAME"/>
+        <variable name="grid.server.port" value="18080"/>
+        <variable name="grid.server.jndi.port" value="11099"/>
+        <variable name="grid.server.name" value="default"/>
+        <variable name="grid.server.rmi.port" value="11098"/>
 
         <variable name="grid.ejbinvoker.port" value="13873"/>
         <variable name="grid.cobraorb.port" value="13528"/>
@@ -193,7 +193,7 @@
         <variable name="max.pool.size" value="30"/>
         <variable name="idle.timeout.minutes" value="300"/>
         <variable name="ldap.authentication.disabled" value="true"/>
-        
+
     </panel>
 
     <panel order="4">
@@ -244,7 +244,7 @@
         </field>
         <field type="text" variable="jboss.cobraorb.port">
             <spec txt="Application cobraorb Port Number " id="text.label" size="15" set="33528"/>
-  	    <validator
+        <validator
                 class="com.izforge.izpack.util.PortValidator" txt="The cobraorb port number is already in use" id="error.label">
             </validator>
         </field>
@@ -284,7 +284,7 @@
     <!-- Install -->
     <panel order="5">
         <field type="title" txt="Configure your Grid application server" bold="true" size="1" />
-	<field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
+    <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="divider" align="top"/>
         <field type="text" align="left" variable="grid.server.hostname">
             <spec txt="Grid Server Host Name" size="15" set="$HOST_NAME"/>
@@ -304,21 +304,21 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use" id="error.label">
             </validator>
         </field>
-	<field type="password" align="left" variable="grid.web.password">
-		<spec>
-			<pwd txt="Grid JBoss Web Password " size="15" set=""/>
-			<pwd txt="Confirm JBoss Web Password " size="15" set=""/>
-		</spec>
-		<validator 
-			class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid JBoss Web Password are required fields">
-		</validator>	
-	<validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your Grid Web Console passwords"/>			
-	</field>
+    <field type="password" align="left" variable="grid.web.password">
+        <spec>
+            <pwd txt="Grid JBoss Web Password " size="15" set=""/>
+            <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
+        </spec>
+        <validator
+            class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid JBoss Web Password are required fields">
+        </validator>
+    <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your Grid Web Console passwords"/>
+    </field>
         <field type="text" variable="grid.server.name">
             <spec txt="Grid Server Name" id="text.label" size="15" set="default"/>
-		<validator 
-			class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid Server Name is a required field">
-		</validator>
+        <validator
+            class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid Server Name is a required field">
+        </validator>
         </field>
         <field type="text" variable="grid.server.rmi.port">
             <spec txt="Grid Server RMI Port Number " id="text.label" size="15" set="11098"/>
@@ -366,7 +366,7 @@
     <panel order="6">
         <field type="title" txt="Additional Grid installation options" bold="true" size="1" />
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
-        <field type="divider" align="top"/>	
+        <field type="divider" align="top"/>
         <field type="text" variable="grid.hajndi.port">
             <spec txt="Grid Server hajndi Port Number " id="text.label" size="15" set="11100"/>
             <validator
@@ -391,7 +391,7 @@
 
         <field type="text" variable="grid.ejbinvoker.port">
             <spec txt="Grid Server ejbinvoker Port Number " id="text.label" size="15" set="13873"/>
-	   <validator
+       <validator
                 class="com.izforge.izpack.util.PortValidator" txt="The ejbinvoker port number is already in use" id="error.label">
             </validator>
         </field>
@@ -452,7 +452,7 @@
     <panel order="7">
         <field type="title" txt="Configure your existing JBoss application server" bold="true" size="1" />
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
-        <field type="divider" align="top"/>	
+        <field type="divider" align="top"/>
         <field type="dir" align="left" variable="existing.installation.home">
             <spec txt="Select the Previous Installation of Caarray Application" size="25" set="$SYSTEM_user_home/apps/caarray-app"/>
         </field>
@@ -474,11 +474,21 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use" id="error.label">
             </validator>
         </field>
+        <field type="password" align="left" variable="jboss.web.password">
+            <spec>
+                <pwd txt="Application JBoss Web Password " size="15" set=""/>
+                <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
+            </spec>
+            <validator
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="JBoss Web Console Passwords are required fields" id="webconsole.label">
+            </validator>
+            <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords"/>
+        </field>
         <field type="text" align="left" variable="jboss.server.name">
             <spec txt="Application Server Name " size="15" set="default"/>
-		<validator
-		    class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Server Name is a required field" id="indexurl.label">
-		</validator>
+        <validator
+            class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Server Name is a required field" id="indexurl.label">
+        </validator>
         </field>
 
 
@@ -500,11 +510,21 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The grid jndi port number is already in use" id="error.label">
             </validator>
         </field>
+        <field type="password" align="left" variable="grid.web.password">
+            <spec>
+                <pwd txt="Grid JBoss Web Password " size="15" set=""/>
+                <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
+            </spec>
+            <validator
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid JBoss Web Password are required fields">
+            </validator>
+            <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your Grid Web Console passwords"/>
+        </field>
         <field type="text" align="left" variable="grid.server.name">
             <spec txt="Grid Server Name " size="25" set="default"/>
-		<validator
-		    class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid Server Name is a required field" id="indexurl.label">
-		</validator>
+        <validator
+            class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid Server Name is a required field" id="indexurl.label">
+        </validator>
         </field>
 
         <field type="text" variable="grid.static.hostname">
@@ -529,7 +549,7 @@
             <spec txt="Research Center Display Name " id="text.label" size="25" set=""/>
             <validator
                 class="com.izforge.izpack.util.NotEmptyValidator" txt="Research Center Display Name is a required field" id="indexurl.label">
-            </validator>            
+            </validator>
         </field>
         <field type="text" variable="research.center.shortName">
             <spec txt="Research Center Short Name " id="text.label" size="25" set=""/>
@@ -626,7 +646,7 @@
         <field type="text" variable="database.port">
             <spec txt="Database Port "
                 id="dbport.label" size="25" set="3306"/>
-	    <validator class="com.izforge.izpack.util.NotEmptyValidator" txt=" Database Port is a required field" />
+        <validator class="com.izforge.izpack.util.NotEmptyValidator" txt=" Database Port is a required field" />
         </field>
         <field type="text" variable="database.name">
             <spec txt="Database Name "
@@ -670,7 +690,7 @@
             id="ldap.radio"/>
             <spec>
                 <choice txt="Database" id="ldap.install.false" value="true" set="true" />
-                <choice txt="LDAP" id="ldap.install" value="false" />                
+                <choice txt="LDAP" id="ldap.install" value="false" />
             </spec>
         </field>
     </panel>
@@ -701,7 +721,7 @@
             <spec txt="Index URL " id="text.label" size="35" set="http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService"/>
             <validator
                 class="com.izforge.izpack.util.URLCheckValidator" txt="Index Url is a required field or the Index Server can not be reached. Please check your firewall or the proxy setting" id="indexurl.label">
-            </validator>            
+            </validator>
         </field>
        <field type="text" variable="grid.static.hostname">
             <spec txt="Externally Accessible Hostname/IP Address " id="text.label" size="25" set="$IP_ADDRESS"/>
@@ -737,72 +757,72 @@
         <field type="text" variable="mail.smtp.host">
             <spec txt="Mail Server Hostname " id="text.label" size="25" set=""/>
             <validator
-		class="com.izforge.izpack.util.NotEmptyValidator" txt="Mail Server Hostname is a required field" id="indexurl.label">
-	    </validator>
+        class="com.izforge.izpack.util.NotEmptyValidator" txt="Mail Server Hostname is a required field" id="indexurl.label">
+        </validator>
         </field>
         <field type="text" variable="mail.smtp.port">
             <spec txt="Mail Server Port Number " id="text.label" size="25" set="25"/>
         </field>
     </panel>
 
-	<panel order="15">
-		<field type="title" txt="Installation Summary" bold="true" size="1" />
-		<field type="staticText" align="left" txt="Below are "/>
-		<field type="divider" align="top"/>
+    <panel order="15">
+        <field type="title" txt="Installation Summary" bold="true" size="1" />
+        <field type="staticText" align="left" txt="Below are "/>
+        <field type="divider" align="top"/>
 
-		<field type="staticText" align="left" txt="JBoss Home [${UserPathPanelVariable}/jboss-4.0.5.GA] - This is where JBoss is installed."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="JBoss Server Name [${jboss.server.hostname}] - This is the hostname where jboss is running.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="JBoss Server Port [${jboss.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="JBoss URL [http://${jboss.server.hostname}:${jboss.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="JBoss Log Dir [${UserPathPanelVariable}/jboss-4.0.5.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="Grid Home [${UserPathPanelVariable}/jboss-4.0.4.GA] - This is where Grid Server is installed."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="Grid Server Name [${grid.server.hostname}] - This is the hostname where jboss is running.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="Grid Server Port [${grid.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="Grid Log Dir [${UserPathPanelVariable}/jboss-4.0.4.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
+        <field type="staticText" align="left" txt="JBoss Home [${UserPathPanelVariable}/jboss-4.0.5.GA] - This is where JBoss is installed."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="JBoss Server Name [${jboss.server.hostname}] - This is the hostname where jboss is running.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="JBoss Server Port [${jboss.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="JBoss URL [http://${jboss.server.hostname}:${jboss.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="JBoss Log Dir [${UserPathPanelVariable}/jboss-4.0.5.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Grid Home [${UserPathPanelVariable}/jboss-4.0.4.GA] - This is where Grid Server is installed."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Grid Server Name [${grid.server.hostname}] - This is the hostname where jboss is running.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Grid Server Port [${grid.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Grid Log Dir [${UserPathPanelVariable}/jboss-4.0.4.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
 
 
-		<field type="space"/>
-		<field type="staticText" align="left" txt="Database URL [jdbc:mysql://${database.server}:${database.port}/${database.name}] "/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="Database User [${database.user}] "/>
-	</panel>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Database URL [jdbc:mysql://${database.server}:${database.port}/${database.name}] "/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Database User [${database.user}] "/>
+    </panel>
 
-	<panel order="16">
-		<field type="title" txt="Installation Summary" bold="true" size="1" />
-		<field type="staticText" align="left" txt="Below are "/>
-		<field type="divider" align="top"/>
+    <panel order="16">
+        <field type="title" txt="Installation Summary" bold="true" size="1" />
+        <field type="staticText" align="left" txt="Below are "/>
+        <field type="divider" align="top"/>
 
-		<field type="staticText" align="left" txt="JBoss Home [${existing.installation.home}/jboss-4.0.5.GA] - This is where JBoss is installed."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="JBoss Server Name [${jboss.server.hostname}] - This is the hostname where jboss is running.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="JBoss Server Port [${jboss.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="JBoss URL [http://${existing.installation.home}:${jboss.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="JBoss Log Dir [${existing.installation.home}/jboss-4.0.5.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="Grid Home [${existing.installation.home}/jboss-4.0.4.GA] - This is where Grid Server is installed."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="Grid Server Name [${grid.server.hostname}] - This is the hostname where jboss is running.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="Grid Server Port [${grid.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
-		<field type="space"/>
-		<field type="staticText" align="left" txt="Grid Log Dir [${existing.installation.home}/jboss-4.0.4.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
+        <field type="staticText" align="left" txt="JBoss Home [${existing.installation.home}/jboss-4.0.5.GA] - This is where JBoss is installed."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="JBoss Server Name [${jboss.server.hostname}] - This is the hostname where jboss is running.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="JBoss Server Port [${jboss.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="JBoss URL [http://${existing.installation.home}:${jboss.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="JBoss Log Dir [${existing.installation.home}/jboss-4.0.5.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Grid Home [${existing.installation.home}/jboss-4.0.4.GA] - This is where Grid Server is installed."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Grid Server Name [${grid.server.hostname}] - This is the hostname where jboss is running.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Grid Server Port [${grid.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Grid Log Dir [${existing.installation.home}/jboss-4.0.4.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
 
-	</panel>
+    </panel>
 
 
 </userInput>
