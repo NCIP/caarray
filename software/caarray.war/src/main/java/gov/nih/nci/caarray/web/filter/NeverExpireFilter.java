@@ -98,7 +98,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class NeverExpireFilter implements Filter {
 
-    private static final Long THREE_MONTHS_MILI = new Long("7776000000");
+    private static final Long THREE_MONTHS_MILI = 7776000000L;
 
     /**
      * {@inheritDoc}

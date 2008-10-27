@@ -124,6 +124,7 @@ import com.opensymphony.xwork2.Action;
  * @author Winston Cheng, Jevon Gill
  *
  */
+@SuppressWarnings("PMD")
 public class ProjectExperimentContactsActionTest extends AbstractCaarrayTest {
 
     private final ProjectExperimentContactsAction action = new ProjectExperimentContactsAction();

@@ -669,6 +669,7 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
     private ArrayDesign createDesign(Organization provider, Organism organism, AssayType assayType,
             CaArrayFile caArrayFile) {
         ArrayDesign arrayDesign = new ArrayDesign();
+        arrayDesign.setName("Dummy Design");
 
         if (provider == null) {
             provider = DUMMY_ORGANIZATION;

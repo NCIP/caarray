@@ -148,7 +148,7 @@ import org.apache.log4j.Logger;
 /**
  * Translates entities in SDRF documents into caArray entities.
  */
-@SuppressWarnings("PMD")
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods", "PMD.ExcessiveClassLength" })
 final class SdrfTranslator extends AbstractTranslator {
 
     private static final Logger LOG = Logger.getLogger(SdrfTranslator.class);
@@ -209,24 +209,24 @@ final class SdrfTranslator extends AbstractTranslator {
         }
         validateFileReferences();
     }
-    
+
     private void validateFileReferences() {
         List<String> referencedRawFiles = getDocumentSet().getSdrfReferencedRawFileNames();
         List<String> referencedDerivedFiles = getDocumentSet().getSdrfReferencedDerivedFileNames();
         List<String> referencedDataMatrixFiles = getDocumentSet().getSdrfReferencedDataMatrixFileNames();
-        
+
         for (CaArrayFile file : getFileSet().getFiles()) {
             FileType fileType = file.getFileType();
             boolean isRaw = fileType.isRawArrayData();
             boolean hasRawVersion = fileType.hasRawVersion();
-            boolean referencedAsRaw = referencedRawFiles.contains(file.getName());            
+            boolean referencedAsRaw = referencedRawFiles.contains(file.getName());
             boolean isDerived = fileType.isDerivedArrayData();
             boolean hasDerivedVersion = fileType.hasDerivedVersion();
             boolean referencedAsDerived = referencedDerivedFiles.contains(file.getName());
             boolean isMatrix = fileType == FileType.MAGE_TAB_DATA_MATRIX;
             boolean referencedAsMatrix = referencedDataMatrixFiles.contains(file.getName());
             boolean referencedAsAny = referencedAsRaw || referencedAsDerived || referencedAsMatrix;
-            
+
             if (isRaw && !referencedAsRaw && (!hasDerivedVersion || !referencedAsDerived)) {
                 addFileReferenceError(file, referencedAsAny, SdrfColumnType.ARRAY_DATA_FILE.getDisplayName());
             } else if (isDerived && !referencedAsDerived && (!hasRawVersion || !referencedAsRaw)) {
@@ -257,17 +257,14 @@ final class SdrfTranslator extends AbstractTranslator {
         for (gov.nih.nci.caarray.magetab.sdrf.Sample sdrfSample : document.getAllSamples()) {
             for (Characteristic sdrfCharacteristic : sdrfSample.getCharacteristics()) {
                 if (ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(
-                        sdrfCharacteristic.getCategory())) {
-                    if (sdrfCharacteristic.getTerm().getValue() != null
-                            && sdrfCharacteristic.getTerm().getValue().length() > 0) {
-                        boolean added = externalSampleIds.add(sdrfCharacteristic.getTerm().getValue());
-                        if (!added) {
-                            document
-                                    .addErrorMessage("[ExternalSampleId] value '"
-                                            + sdrfCharacteristic.getTerm().getValue()
-                                            + "' is referenced multiple times (ExternalSampleId must be unique). "
-                                            + "Please correct and try again.");
-                        }
+                        sdrfCharacteristic.getCategory())
+                        && sdrfCharacteristic.getTerm().getValue() != null
+                        && sdrfCharacteristic.getTerm().getValue().length() > 0) {
+                    boolean added = externalSampleIds.add(sdrfCharacteristic.getTerm().getValue());
+                    if (!added) {
+                        document.addErrorMessage("[ExternalSampleId] value '" + sdrfCharacteristic.getTerm().getValue()
+                                + "' is referenced multiple times (ExternalSampleId must be unique). "
+                                + "Please correct and try again.");
                     }
                 }
             }
@@ -281,13 +278,10 @@ final class SdrfTranslator extends AbstractTranslator {
         project.setId(getFileSet().getProjectId());
         Set<Sample> persistedSamples = getProjectDao().getUnfilteredSamplesForProject(project);
         for (Sample s : persistedSamples) {
-            if (s.getExternalSampleId() != null) {
-                if (!results.add(s.getExternalSampleId())) {
-                    throw new IllegalStateException("System contains samples with duplicate external sample id " + "("
-                            + s.getExternalSampleId()
-                            + ") already. Unable to continue, please correct"
-                            + " existing samples and try again.");
-                }
+            if (s.getExternalSampleId() != null && !results.add(s.getExternalSampleId())) {
+                throw new IllegalStateException("System contains samples with duplicate external sample id " + "("
+                        + s.getExternalSampleId() + ") already. Unable to continue, please correct"
+                        + " existing samples and try again.");
             }
         }
         return results;
@@ -456,10 +450,9 @@ final class SdrfTranslator extends AbstractTranslator {
                         getProtocolApplicationFromMageTabProtocolApplication(sdrfProtocolApp);
                     hybridization.addProtocolApplication(protocolApplication);
                 }
-
-                this.allHybridizations.add(hybridization);
-                this.nodeTranslations.put(sdrfHybridization, hybridization);
             }
+            this.allHybridizations.add(hybridization);
+            this.nodeTranslations.put(sdrfHybridization, hybridization);
         }
     }
 
@@ -816,15 +809,11 @@ final class SdrfTranslator extends AbstractTranslator {
             String baseGeneratedNodeName = ((AbstractBioMaterial) leftCaArrayNode).getName();
             List<ProtocolApplication> pas = ((AbstractBioMaterial) leftCaArrayNode).getProtocolApplications();
             linkBioMaterial(leftCaArrayNode, rightCaArrayNode, leftNodeType, rightNodeType, baseGeneratedNodeName, pas);
-        } else if (SdrfNodeType.HYBRIDIZATION.equals(leftNodeType) && leftCaArrayNode != null) {
-            // a hybridization may not have been translating if the SDRF is updating existing biomaterials,
-            // so leftCaArrayNode may be null
-            linkHybridizationToArrays((gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode,
-                    (Hybridization) leftCaArrayNode);
-            linkHybridizationToImages((gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode,
-                    (Hybridization) leftCaArrayNode);
-            linkHybridizationToArrayData((gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode,
-                    (Hybridization) leftCaArrayNode);
+        } else if (SdrfNodeType.HYBRIDIZATION.equals(leftNodeType)) {
+            Hybridization hybridization = (Hybridization) leftCaArrayNode;
+            linkHybridizationToArrays((gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode, hybridization);
+            linkHybridizationToImages((gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode, hybridization);
+            linkHybridizationToArrayData((gov.nih.nci.caarray.magetab.sdrf.Hybridization) leftNode, hybridization);
         } else {
             // Ignore other nodes - Image, Scan, Raw/Derived Data, Normalization; they've already been linked.
             return;
@@ -834,17 +823,31 @@ final class SdrfTranslator extends AbstractTranslator {
     private void linkHybridizationToArrays(gov.nih.nci.caarray.magetab.sdrf.Hybridization sdrfHybridization,
             Hybridization hybridization) {
         Array array = new Array();
-        if (sdrfHybridization.getArrayDesign() != null) {
-            array.setDesign(getArrayDesign(sdrfHybridization.getArrayDesign()));
+        Array currArray = hybridization.getArray();
+        // a new hyb should always have an array, even if the array isn't associated with a design
+        if (currArray == null) {
+            hybridization.setArray(array);
         }
-        hybridization.setArray(array);
+
+        // if the sdrf hyb has an array design, only associate it with the array if the current hyb
+        // doesn't have an array or if the new design is different from the old one
+        if (sdrfHybridization.getArrayDesign() != null) {
+            ArrayDesign sdrfArrayDesign = getArrayDesign(sdrfHybridization.getArrayDesign());
+            if (sdrfArrayDesign != null
+                    && (currArray == null || !currArray.getDesign().getLsid().equals(sdrfArrayDesign.getLsid()))) {
+                array.setDesign(sdrfArrayDesign);
+                hybridization.setArray(array);
+            }
+        }
     }
 
     private void linkHybridizationToImages(gov.nih.nci.caarray.magetab.sdrf.Hybridization sdrfHybridization,
             Hybridization hybridization) {
         for (gov.nih.nci.caarray.magetab.sdrf.Image sdrfImage : sdrfHybridization.getSuccessorImages()) {
             Image image = (Image) this.nodeTranslations.get(sdrfImage);
-            hybridization.getImages().add(image);
+            if (image != null) {
+                hybridization.getImages().add(image);
+            }
         }
     }
 
@@ -854,27 +857,35 @@ final class SdrfTranslator extends AbstractTranslator {
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile sdrfArrayData
                 : sdrfHybridization.getSuccessorArrayDataFiles()) {
             RawArrayData arrayData = (RawArrayData) this.nodeTranslations.get(sdrfArrayData);
-            arrayData.addHybridization(hybridization);
-            hybridization.addRawArrayData(arrayData);
+            if (arrayData != null) {
+                arrayData.addHybridization(hybridization);
+                hybridization.addRawArrayData(arrayData);
+            }
         }
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile sdrfArrayData
                 : sdrfHybridization.getSuccessorArrayDataMatrixFiles()) {
             RawArrayData arrayData = (RawArrayData) this.nodeTranslations.get(sdrfArrayData);
-            arrayData.addHybridization(hybridization);
-            hybridization.addRawArrayData(arrayData);
+            if (arrayData != null) {
+                arrayData.addHybridization(hybridization);
+                hybridization.addRawArrayData(arrayData);
+            }
         }
         // Link derived array data
         for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile sdrfArrayData
                 : sdrfHybridization.getSuccessorDerivedArrayDataFiles()) {
             DerivedArrayData arrayData = (DerivedArrayData) this.nodeTranslations.get(sdrfArrayData);
-            arrayData.getHybridizations().add(hybridization);
-            hybridization.getDerivedDataCollection().add(arrayData);
+            if (arrayData != null) {
+                arrayData.addHybridization(hybridization);
+                hybridization.getDerivedDataCollection().add(arrayData);
+            }
         }
         for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile sdrfArrayData
                 : sdrfHybridization.getSuccessorDerivedArrayDataMatrixFiles()) {
             DerivedArrayData arrayData = (DerivedArrayData) this.nodeTranslations.get(sdrfArrayData);
-            arrayData.getHybridizations().add(hybridization);
-            hybridization.getDerivedDataCollection().add(arrayData);
+            if (arrayData != null) {
+                arrayData.addHybridization(hybridization);
+                hybridization.getDerivedDataCollection().add(arrayData);
+            }
         }
     }
 

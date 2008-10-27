@@ -267,7 +267,7 @@ public final class TestMageTabSets {
      */
     public static final MageTabFileSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET = getSpecificationUpdateAnnotationsInputSet();
     /**
-     * Parse MAGE-TAB document set for updating annotations.
+     * Parsed MAGE-TAB document set for updating annotations.
      */
     public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_SET = getSetForReimport(MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET);
 
@@ -276,9 +276,34 @@ public final class TestMageTabSets {
      */
     public static final MageTabFileSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_INPUT_SET = getSpecificationUpdateAnnotationsAddBmInputSet();
     /**
-     * Parse MAGE-TAB document set for updating annotations and adding a new biomaterial chain.
+     * Parsed MAGE-TAB document set for updating annotations and adding a new biomaterial chain.
      */
     public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_SET = getSetForReimport(MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_INPUT_SET);
+
+    /**
+     * MAGE-TAB input set to use as the baseline for later changes to the biomaterial chain.
+     */
+    public static final MageTabFileSet UPDATE_BIO_MATERIAL_CHAIN_BASELINE_INPUT_SET = getUpdateBioMaterialChainBaselineInputSet();
+    /**
+     * Parsed MAGE-TAB document set to use as the baseline for later changes to the biomaterial chain.
+     */
+    public static final MageTabDocumentSet UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET = getSetForReimport(UPDATE_BIO_MATERIAL_CHAIN_BASELINE_INPUT_SET);
+    /**
+     * MAGE-TAB input set to use to update the biomaterial chain defined in UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET.
+     */
+    public static final MageTabFileSet UPDATE_BIO_MATERIAL_CHAIN_NEW_BIO_MATERIALS_INPUT_SET = getUpdateBioMaterialChainNewBioMaterialsInputSet();
+    /**
+     * Parsed MAGE-TAB document set to use to update the biomaterial chain defined in UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET.
+     */
+    public static final MageTabDocumentSet UPDATE_BIO_MATERIAL_CHAIN_NEW_BIO_MATERIALS_SET = getSetForReimport(UPDATE_BIO_MATERIAL_CHAIN_NEW_BIO_MATERIALS_INPUT_SET);
+    /**
+     * MAGE-TAB input set to use to add new data files to the biomaterial chain defined in UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET.
+     */
+    public static final MageTabFileSet UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_INPUT_SET = getUpdateBioMaterialChainNewDataFilesInputSet();
+    /**
+     * Parsed MAGE-TAB document set to use to add new data files to the biomaterial chain defined in UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET.
+     */
+    public static final MageTabDocumentSet UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_SET = getSetForReimport(UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_INPUT_SET);
 
     private static MageTabDocumentSet getSet(MageTabFileSet inputSet) {
         return getSet(inputSet, false);
@@ -526,6 +551,32 @@ public final class TestMageTabSets {
         fileSet.addIdf(MageTabDataFiles.DEFECT_16421_2_IDF);
         fileSet.addSdrf(MageTabDataFiles.DEFECT_16421_2_SDRF);
         addCelFiles(fileSet, MageTabDataFiles.DEFECT_16421_2_CEL);
+        return fileSet;
+    }
+
+    private static MageTabFileSet getUpdateBioMaterialChainBaselineInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_BASELINE_IDF);
+        fileSet.addSdrf(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_BASELINE_SDRF);
+        fileSet.addNativeData(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_2);
+        fileSet.addNativeData(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_1);
+        return fileSet;
+    }
+
+    private static MageTabFileSet getUpdateBioMaterialChainNewBioMaterialsInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_NEW_BIOMATERIALS_IDF);
+        fileSet.addSdrf(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_NEW_BIOMATERIALS_SDRF);
+        fileSet.addNativeData(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_3);
+        fileSet.addNativeData(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_4);
+        return fileSet;
+    }
+
+    private static MageTabFileSet getUpdateBioMaterialChainNewDataFilesInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_NEW_DATA_FILES_IDF);
+        fileSet.addSdrf(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_NEW_DATA_FILES_SDRF);
+        fileSet.addNativeData(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_1A);
         return fileSet;
     }
 

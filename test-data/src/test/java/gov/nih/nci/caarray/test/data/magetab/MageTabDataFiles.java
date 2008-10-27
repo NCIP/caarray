@@ -376,4 +376,49 @@ public class MageTabDataFiles {
 
     public static final File SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_DATA_FILE2 = new File(MageTabDataFiles.class
             .getResource("/magetab/specification_update_annotations_add_new_bm/H_TK6 neo replicate 6.CEL").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_DIRECTORY = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_chain").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_BASELINE_ZIP = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_chain/update_chain_baseline.zip").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_BASELINE_IDF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_chain/update_chain_baseline.idf").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_BASELINE_SDRF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_chain/update_chain_baseline.sdrf").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_1 = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_chain/BM1.CEL").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_1A = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_chain/BM1a.CEL").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_2 = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_chain/BM2.CEL").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_3 = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_chain/BM3.CEL").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_4 = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_chain/BM4.CEL").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_NEW_BIOMATERIALS_ZIP = new File(MageTabDataFiles.class
+            .getResource("/magetab/update_chain/update_chain_new_biomaterials.zip").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_NEW_BIOMATERIALS_IDF = new File(MageTabDataFiles.class
+            .getResource("/magetab/update_chain/update_chain_new_biomaterials.idf").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_NEW_BIOMATERIALS_SDRF = new File(MageTabDataFiles.class
+            .getResource("/magetab/update_chain/update_chain_new_biomaterials.sdrf").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_NEW_DATA_FILES_ZIP = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_chain/update_chain_new_data_files.zip").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_NEW_DATA_FILES_IDF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_chain/update_chain_new_data_files.idf").getFile());
+
+    public static final File UPDATE_BIOMATERIAL_CHAIN_NEW_DATA_FILES_SDRF = new File(MageTabDataFiles.class
+            .getResource("/magetab/update_chain/update_chain_new_data_files.sdrf").getFile());
 }

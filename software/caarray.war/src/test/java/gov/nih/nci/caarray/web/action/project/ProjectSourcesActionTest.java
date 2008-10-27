@@ -131,8 +131,8 @@ import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 
 /**
  * @author Winston Cheng
- *
  */
+@SuppressWarnings("PMD")
 public class ProjectSourcesActionTest extends AbstractCaarrayTest {
     private final ProjectSourcesAction action = new ProjectSourcesAction();
     private static Source DUMMY_SOURCE;

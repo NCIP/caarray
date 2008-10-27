@@ -125,6 +125,14 @@ public class DerivedArrayData extends AbstractArrayData {
     }
 
     /**
+     * Add a new hybridization to the collection of associated hybridizations.
+     * @param hybridization hybridization to add
+     */
+    public void addHybridization(Hybridization hybridization) {
+        hybridizations.add(hybridization);
+    }
+
+    /**
      * Sets the hybridizations.
      *
      * @param hybridizationsVal the hybridizations
