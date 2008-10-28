@@ -786,7 +786,7 @@
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid Server Port [${grid.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
+        <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/wsrf/services/cagrid/CaArraySvc] - This will be the url to reach your service when the install is finished."/>
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid Log Dir [${UserPathPanelVariable}/jboss-4.0.4.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
 
@@ -808,7 +808,7 @@
         <field type="space"/>
         <field type="staticText" align="left" txt="JBoss Server Port [${jboss.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="JBoss URL [http://${existing.installation.home}:${jboss.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
+        <field type="staticText" align="left" txt="JBoss URL [http://${jboss.server.hostname}:${jboss.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
         <field type="space"/>
         <field type="staticText" align="left" txt="JBoss Log Dir [${existing.installation.home}/jboss-4.0.5.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
         <field type="space"/>
@@ -818,7 +818,7 @@
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid Server Port [${grid.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
+        <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/wsrf/services/cagrid/CaArraySvc] - This will be the url to reach your service when the install is finished."/>
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid Log Dir [${existing.installation.home}/jboss-4.0.4.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
 
