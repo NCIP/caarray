@@ -199,8 +199,7 @@
 					<panel classname="UserInputPanel"  id="UserInputPanel.14" condition="install"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.15" condition="install"/>
 					<panel classname="UserInputPanel"  id="UserInputPanel.16" condition="upgrade"/>
-					<panel classname="InstallationGroupPanel"/>
-					<panel classname="SummaryPanel"/>
+					<panel classname="InstallationGroupPanel"/>					
 					<panel classname="ExtendedInstallPanel"/>
 					<panel classname="FinishPanel"/>
 				</panels>
