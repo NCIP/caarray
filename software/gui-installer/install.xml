@@ -163,7 +163,7 @@
 				<resources>
 					<res id="Installer.image"  src="@{this.dir}/logotype.png"/>
 					<res id="AntActionsSpec.xml" src="@{this.dir}/antActionSpec.xml" />
-					<res id="LicencePanel.licence" src="@{this.dir}/Licence.txt"/>
+					<res id="LicencePanel.licence" src="@{this.dir}/Licence.html"/>
 					<res id="InfoPanel.info" src="@{this.dir}/Readme.txt"/>
 					<res id="userInputSpec.xml" src="@{this.dir}/userInputSpec.xml" />	
 					<res id="CustomActionsLang.xml_eng" src="@{this.dir}/custom_eng.xml"/>
