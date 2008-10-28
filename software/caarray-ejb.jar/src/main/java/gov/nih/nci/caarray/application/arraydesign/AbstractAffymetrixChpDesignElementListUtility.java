@@ -82,10 +82,12 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
+import gov.nih.nci.caarray.application.file.FileManagementMDB;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.DesignElementType;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
 /**
  * Utility class used to generate and retrieve the singleton <code>DesignElementList</code> to be used for all parsed
@@ -97,6 +99,7 @@ public abstract class AbstractAffymetrixChpDesignElementListUtility {
     private static final String LSID_OBJECT_ID_ELEMENT_LIST_PREFIX = "LogicalProbes";
 
     static final int BATCH_SIZE = 500;
+    static final int TRANSACTION_SIZE = 5000;
 
     private final ArrayDesign design;
     private final ArrayDao arrayDao;
@@ -152,6 +155,20 @@ public abstract class AbstractAffymetrixChpDesignElementListUtility {
 
     private static String getDesignElementListObjectId(ArrayDesign design) {
         return LSID_OBJECT_ID_ELEMENT_LIST_PREFIX + "." + design.getLsidObjectId();
+    }
+
+    void flushAndCommitTransaction() {
+        getArrayDao().flushSession();
+        getArrayDao().clearSession();
+
+        FileManagementMDB currentMDB = FileManagementMDB.getCurrentMDB();
+        if (currentMDB != null) {
+            currentMDB.commitTransaction();
+            currentMDB.beginTransaction();
+        } else {
+            HibernateUtil.getCurrentSession().getTransaction().commit();
+            HibernateUtil.getCurrentSession().beginTransaction();
+        }
     }
 
     ArrayDao getArrayDao() {

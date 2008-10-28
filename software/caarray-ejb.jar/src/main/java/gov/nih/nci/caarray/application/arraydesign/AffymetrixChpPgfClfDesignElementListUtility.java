@@ -131,6 +131,10 @@ public final class AffymetrixChpPgfClfDesignElementListUtility extends AbstractA
             LOG.info("Saving " + BATCH_SIZE + " probe names starting with #" + batch.getIndex());
             getArrayDao().createDesignElementListEntries(designElementList, batch.getIndex(), orderedProbeSetIds);
             batch.setIndex(batch.getIndex() + BATCH_SIZE);
+            if (batch.getIndex() % TRANSACTION_SIZE == 0) {
+                LOG.info("Committing design element list");
+                flushAndCommitTransaction();
+            }
             LOG.info("Retrieving " + BATCH_SIZE + " probe names starting with #" + batch.getIndex());
             orderedProbeSetIds = getArrayDao().getLogicalProbeIds(getDesign(), batch);
         }
