@@ -201,7 +201,7 @@ final class SdrfTranslator extends AbstractTranslator {
         // so no mage-tab specific validation to perform
         if (getDocumentSet().getSdrfDocuments().isEmpty()) {
             return;
-        }        
+        }
 
         Set<String> externalSampleIds = getExistingSampleExternalIdsForCurrentExperiment();
         for (SdrfDocument document : getDocumentSet().getSdrfDocuments()) {
@@ -663,36 +663,31 @@ final class SdrfTranslator extends AbstractTranslator {
     private void translateRawArrayData(SdrfDocument document) {
         // Translate native raw data files.
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile sdrfData : document.getAllArrayDataFiles()) {
-            String fileName = sdrfData.getName();
-            CaArrayFile dataFile = getFile(fileName);
-            if (dataFile != null) {
-                // if updating existing bio materials, the data files wouldn't be uploaded
-                RawArrayData caArrayData = new RawArrayData();
-                caArrayData.setName(fileName);
-                dataFile.setFileType(dataFile.getFileType().getRawType());
-                caArrayData.setDataFile(dataFile);
-                // Associate Scan with the raw data.
-                for (Scan scan : sdrfData.getPredecessorScans()) {
-                    associateScanWithData(caArrayData, scan);
-                }
-                this.nodeTranslations.put(sdrfData, caArrayData);
-            }
+            translateIndividualRawArrayDataFile(sdrfData, false);
         }
         // Translate MAGE-TAB raw data matrix files.
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile sdrfData : document.getAllArrayDataMatrixFiles()) {
-            String fileName = sdrfData.getName();
-            CaArrayFile dataFile = getFile(fileName);
-            if (dataFile != null) {
-                // if updating existing bio materials, the data files wouldn't be uploaded
-                RawArrayData caArrayData = new RawArrayData();
-                caArrayData.setName(fileName);
-                caArrayData.setDataFile(dataFile);
-                // Associate Scan with the raw data.
-                for (Scan scan : sdrfData.getPredecessorScans()) {
-                    associateScanWithData(caArrayData, scan);
-                }
-                this.nodeTranslations.put(sdrfData, caArrayData);
+            translateIndividualRawArrayDataFile(sdrfData, true);
+        }
+    }
+
+    private void translateIndividualRawArrayDataFile(
+            gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode sdrfData, boolean isMatrix) {
+        String fileName = sdrfData.getName();
+        CaArrayFile dataFile = getFile(fileName);
+        // if updating existing bio materials, the data files wouldn't be uploaded
+        if (dataFile != null) {
+            RawArrayData caArrayData = new RawArrayData();
+            caArrayData.setName(fileName);
+            if (!isMatrix) {
+                dataFile.setFileType(dataFile.getFileType().getRawType());
             }
+            caArrayData.setDataFile(dataFile);
+            // Associate Scan with the raw data.
+            for (Scan scan : sdrfData.getPredecessorScans()) {
+                associateScanWithData(caArrayData, scan);
+            }
+            this.nodeTranslations.put(sdrfData, caArrayData);
         }
     }
 
@@ -708,43 +703,36 @@ final class SdrfTranslator extends AbstractTranslator {
     private void translateDerivedArrayData(SdrfDocument document) {
         // Translate native derived data files.
         for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile sdrfData : document.getAllDerivedArrayDataFiles()) {
-            String fileName = sdrfData.getName();
-            CaArrayFile dataFile = getFile(fileName);
-            if (dataFile != null) {
-                // if updating existing bio materials, the data files wouldn't be uploaded
-                DerivedArrayData caArrayData = new DerivedArrayData();
-                caArrayData.setName(fileName);
-                dataFile.setFileType(dataFile.getFileType().getDerivedType());
-                caArrayData.setDataFile(dataFile);
-                // Associate Normalization with the derived data.
-                for (Normalization normalization : sdrfData.getPredecessorNormalizations()) {
-                    associateNormalizationWithData(caArrayData, normalization);
-                }
-
-                // Associate array data from which this data was derived
-                setDerivedFromData(sdrfData, caArrayData);
-
-                this.nodeTranslations.put(sdrfData, caArrayData);
-            }
+            translateIndividualDerivedArrayDataFile(sdrfData, false);
         }
         // Translate MAGE-TAB derived data matrix files.
         for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile sdrfData
                 : document.getAllDerivedArrayDataMatrixFiles()) {
-            String fileName = sdrfData.getName();
-            CaArrayFile dataFile = getFile(fileName);
-            if (dataFile != null) {
-                // if updating existing bio materials, the data files wouldn't be uploaded
-                DerivedArrayData caArrayData = new DerivedArrayData();
-                caArrayData.setName(fileName);
-                caArrayData.setDataFile(dataFile);
-                // Associate Normalization with the derived data.
-                for (Normalization normalization : sdrfData.getPredecessorNormalizations()) {
-                    associateNormalizationWithData(caArrayData, normalization);
-                }
-                // Associate array data from which this data was derived
-                setDerivedFromData(sdrfData, caArrayData);
-                this.nodeTranslations.put(sdrfData, caArrayData);
+            translateIndividualDerivedArrayDataFile(sdrfData, true);
+        }
+    }
+
+    private void translateIndividualDerivedArrayDataFile(
+            gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode sdrfData, boolean isDataMatrix) {
+        String fileName = sdrfData.getName();
+        CaArrayFile dataFile = getFile(fileName);
+        // if updating existing bio materials, the data files wouldn't be uploaded
+        if (dataFile != null) {
+            DerivedArrayData caArrayData = new DerivedArrayData();
+            caArrayData.setName(fileName);
+            if (!isDataMatrix) {
+                dataFile.setFileType(dataFile.getFileType().getDerivedType());
             }
+            caArrayData.setDataFile(dataFile);
+            // Associate Normalization with the derived data.
+            for (Normalization normalization : sdrfData.getPredecessorNormalizations()) {
+                associateNormalizationWithData(caArrayData, normalization);
+            }
+
+            // Associate array data from which this data was derived
+            setDerivedFromData(sdrfData, caArrayData);
+
+            this.nodeTranslations.put(sdrfData, caArrayData);
         }
     }
 
