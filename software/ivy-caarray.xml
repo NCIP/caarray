@@ -29,7 +29,7 @@
 
         <dependency conf="project" name="activation" org="javax.activation" rev="1.1"/>
 
-        <dependency conf="project" name="jericho" org="html" rev="2.4"/>
+        <dependency conf="project" name="html" org="jericho" rev="2.4"/>
 
         <dependency conf="project" name="ajaxtags" org="ajax" rev="1.3-beta-rc7"/>
 
