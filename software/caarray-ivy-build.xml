@@ -1,0 +1,57 @@
+<project name="caarray-ivy" default="retrieve-caarray-dependencies" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <property name="lib.dir" value="${basedir}/lib"/>
+
+    <property name="caarray.dependencies.file" value="ivy-caarray.xml"/>
+
+    <property name="bda.ivy.build.file" value="${basedir}/bda-ivy-build.xml"/>
+
+    <property name="caarray.ivy.settings.file" value="ivy-caarray-settings.xml"/>
+
+    <property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
+
+    <target name="retrieve-caarray-dependencies" unless="caarray.dependencies.already.retrieved" description="This task retrieves caArray external dependencies.  It will download BDA-team utils during execution">
+        <antcall target="retrieve-bda" inheritAll="true" inheritrefs="true"/>
+        <path id="ivy.classpath">
+            <fileset dir="${lib.dir}">
+                <include name="ivy*.jar" />
+            </fileset>
+        </path>
+        <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.classpath"/>
+        <property name="ivy.resolver.default.check.modified" value="true"/>
+        <ivy:settings override="true" file="${caarray.ivy.settings.file}" />
+        <ivy:resolve file="${caarray.dependencies.file}" refresh="true" conf="*" />
+        <ivy:retrieve pattern="${lib.dir}/caarray-[conf]/[artifact]-[revision].[ext]" conf="*" />
+        <property name="caarray.dependencies.already.retrieved" value="true"/>
+    </target>
+
+    <target name="retrieve-bda" unless="bda.already.retrieved">
+        <ant antfile="${bda.ivy.build.file}" inheritAll="false" inheritRefs="false">
+            <property name="bda.version" value="${bda.version}" />
+            <property name="bda-utils.dir" location="${bda-utils.dir}" />
+            <property name="lib.dir" location="${lib.dir}" />
+            <property name="software.dir" location="." />
+        </ant>
+        <property name="bda.already.retrieved" value="true"/>
+    </target>
+
+    <target name="clean">
+        <ant antfile="${bda.ivy.build.file}" target="clean" inheritAll="false" inheritRefs="false">
+            <property name="bda.version" value="${bda.version}" />
+            <property name="bda-utils.dir" location="${bda-utils.dir}" />
+            <property name="lib.dir" location="${lib.dir}" />
+            <property name="software.dir" location="." />
+        </ant>
+        <path id="ivy.classpath">
+            <fileset dir="${lib.dir}">
+                <include name="ivy*.jar" />
+            </fileset>
+        </path>
+        <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.classpath"/>
+        <property name="ivy.resolver.default.check.modified" value="true"/>
+        <ivy:settings override="true" file="${caarray.ivy.settings.file}" />
+        <ivy:cleancache/>
+        <delete dir="${lib.dir}"/>
+    </target>
+
+</project>

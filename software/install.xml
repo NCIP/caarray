@@ -159,7 +159,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <tstamp>
         <format property="install.time" pattern="yyyy-MM-dd-HH-mm" />
     </tstamp>
-    <record name="${log.dir}/install-${install.time}.log" action="start"/>
+    <record loglevel="debug" name="${log.dir}/install-${install.time}.debug.log" action="start"/>
+    <record loglevel="info" name="${log.dir}/install-${install.time}.info.log" action="start"/>
 
 
     <!-- Installer section -->
@@ -203,8 +204,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:init
         ">
         <property name="caarraydb.sql.dir" value="${db.dir.target}" />
-
-        <ant antfile="${this.dir}/build-caarray-app.xml" target="database:recreate-database" />
 
         <ant antfile="${this.dir}/build-caarray-app.xml" target="database:execute-sql">
             <property name="drop-schema-sql.exists" value="true" />
@@ -280,7 +279,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <ear destfile="${temp.dir}/caarray.ear.to_deploy/${caarray.ear.file}" appxml="${temp.dir}/caarray.ear/META-INF/application.xml" update="false">
             <metainf dir="${temp.dir}/caarray.ear/META-INF" includes="*.xml" excludes="jboss-service.xml" />
             <fileset dir="${temp.dir}/caarray.ear">
-                <include name="*" />
+                <include name="**/*" />
             </fileset>
         </ear>
     </target>

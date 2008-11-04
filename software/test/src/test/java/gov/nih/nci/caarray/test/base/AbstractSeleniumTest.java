@@ -94,7 +94,7 @@ import com.thoughtworks.selenium.SeleneseTestCase;
 /**
  * Base class for all functional tests that use Selenium Remote Control. Provides proper set up in order to be called by
  * caArray's ant script.
- * 
+ *
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
@@ -301,7 +301,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     /**
      * Create an experiment with an array design and the default Afftmetrix provider and human organism
-     * 
+     *
      * @param title
      * @param arrayDesignName
      * @return String Experiment Identifier of the experiment e.g. admin-002
@@ -316,7 +316,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
     /**
      * Create an experiment without an array design and the default Afftmetrix provider and human organism
-     * 
+     *
      * @param title
      * @return String Experiment Identifier of the experiment e.g. admin-002
      * @throws InterruptedException
@@ -334,7 +334,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
     /**
      * Create an experiment
-     * 
+     *
      * @param title
      * @throws InterruptedException
      * @return String Experiment Identifier of the experiment e.g. admin-002
@@ -373,7 +373,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     /**
      * Waits for the list of Array Designs to fill before making the selection. Test fails if the array design is not in
      * the list
-     * 
+     *
      * @param arrayDesignName
      * @param provider
      */
@@ -396,7 +396,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                         found = true;
                         break;
                     }
-                    
+
                 }
             }
 
@@ -412,7 +412,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                 selenium.select("projectForm_project_experiment_manufacturer", "label=" + provider);
                 System.out.println("Reselected provider " + provider);
             }
-           
+
         }
     }
 
@@ -420,7 +420,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     /**
      * Import array design with default provider and organism
-     * 
+     *
      * @param arrayDesignFile
      * @param arrayDesignName
      * @throws Exception
@@ -431,7 +431,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     /**
      * Import the array design
-     * 
+     *
      * @param arrayDesignFile - file to be imported
      * @param arrayDesignName - name of array design
      * @param provider - array design provider
@@ -489,7 +489,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     /**
      * assert the required field for Array Designs conform to the use case
-     * 
+     *
      */
     private void assertArrayDesignMetaRequiredFields() {
         assertTrue(selenium.isTextPresent("Provider*"));
@@ -541,7 +541,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     /**
-     * 
+     *
      * @param seconds
      * @param row
      * @return
@@ -569,11 +569,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     /**
-     * 
+     *
      * @param text - value to seach for
      * @param column - Table column which contains the search text
      * @return int the row number
-     * 
+     *
      * Returns the row where the data resides in a particular column For example - find title "Exp 1" in column 1
      * (column 1 holds the experiment names)
      */
@@ -627,27 +627,41 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         }
     }
 
-    private boolean waitForImport(String textToWaitFor) {
-        int ten_minutes = 60;
-        for (int time = 1;; time++) {
-            if (time == ten_minutes) {
-                fail("Timeout waiting for Import");
-                return false;
-            }
+    private boolean waitForImport(final String textToWaitFor) {
+    	return waitForImport(textToWaitFor, 10);
+    }
+
+    private boolean waitForImport(final String textToWaitFor, final int specifiedTimeToWaitInMinutes) {
+        int tenMinutesOfSeconds = 600;
+        int tenSeconds = 10;
+        int oneThousandMilliseconds = 1000;
+        int timeToWaitInSeconds = specifiedTimeToWaitInMinutes * 60;
+        if (0 >= timeToWaitInSeconds) {
+        	timeToWaitInSeconds = tenMinutesOfSeconds;
+        }
+        boolean completedWithinTimeout = false;
+        for (int elapsedTimeInSeconds = 0; elapsedTimeInSeconds <= timeToWaitInSeconds; elapsedTimeInSeconds+=tenSeconds) {
             if (selenium.isTextPresent("Failed Validation")) {
                 fail("Validation Failed during Import");
+                break;
             }
-            if (selenium.isTextPresent("Import Failed")) {
+            else if (selenium.isTextPresent("Import Failed")) {
                 fail("Import Failed");
+                break;
             }
             selenium.click("link=Manage Data");
             if (selenium.isTextPresent(textToWaitFor)) {
-                // done
-                return true;
-            } else {
-                pause(10000);
+            	completedWithinTimeout = true;
+            	break;
+            }
+            else {
+                pause(tenSeconds * oneThousandMilliseconds);
             }
         }
+        if (!completedWithinTimeout) {
+        	fail("Timeout waiting for Import");
+        }
+        return completedWithinTimeout;
     }
 
     protected boolean doesArrayDesignExists(String arrayDesignName) {
@@ -693,10 +707,10 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected void importData(int type) {
         importData(type, DEFAULT_SOURCE_NAME);
     }
-    
+
     /**
      * Handles the 3 types of file import cases
-     * 
+     *
      * @param type the type of import
      */
     protected void importData(int type, String annotationName) {
@@ -749,10 +763,10 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
         waitForAction();
         // - hit the refresh button until files are imported
-        waitForImport(textToFind);
+        waitForImport(textToFind, 30);
     }
     /**
-     * 
+     *
      * @param groupName
      */
     protected void createCollaborationGroup(String groupName) {

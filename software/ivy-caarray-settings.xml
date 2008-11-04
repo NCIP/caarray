@@ -1,0 +1,39 @@
+<!--
+$Id: $
+$HeadURL: $
+
+This file is the is the settings file used by Ivy and the Ivy Eclipse plugin for caArray build dependencies.
+
+The settings define two resolvers:
+  1) An ncicb-ivy-repo resolver points to the NCICB Ivy Repository
+  2) Another resolver points to a local filesystem repository where temporary artifacts can be published as part
+     of a project or where you can test out your ivy definitions before they are added to official NCICB Ivy Repository.
+
+Users must explicitly set the software.dir property if local repository is to be used.
+-->
+
+<ivysettings>
+    <settings defaultResolver="ncicb-chain"/>
+
+    <!-- if using a local repository, you need to uncomment this property (and filesyste, resolver below)) and configure property value appropriately -->
+    <!--property name="software.dir" value="C:/dev/workspaces/caarray2_trunk/software"/-->
+    <property name="local.repo.dir" value="${software.dir}/local-ivy-repo" override="true"/>
+
+    <!-- defaultCacheDir causes the caarray to use it's own ivy cache directory -->
+    <!-- useOrigin causes avoiding the copy of local artifacts to the cache and use directly their original location -->
+    <caches defaultCacheDir="${user.home}/.ivy2-caarray-cache" useOrigin="true"/>
+    <resolvers>
+        <!-- this is where you read from -->
+        <chain name="ncicb-chain">
+            <url name="ncicb-ivy-repo">
+                <artifact pattern="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-repo/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
+                <ivy pattern="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-repo/[organisation]/[module]/[revision]/ivy.xml"/>
+            </url>
+            <!-- this is where you can publish to, either your own code or for testing new thirdparty files -->
+            <!--filesystem name="local-repo" local="true">
+                <artifact pattern="${local.repo.dir}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
+                <ivy pattern="${local.repo.dir}/[organisation]/[module]/[revision]/ivy.xml"/>
+            </filesystem-->
+        </chain>
+    </resolvers>
+</ivysettings>

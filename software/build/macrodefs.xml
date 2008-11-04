@@ -1,6 +1,6 @@
 <project name="macrodefs">
 
-    <macrodef name="run-junit-tests">
+    <macrodef name="caarray-run-junit-tests">
         <attribute name="test.src.dir" />
         <attribute name="xml.output.dir" />
         <attribute name="classpath" default="" />
@@ -11,19 +11,22 @@
 
         <sequential>
             <mkdir dir="@{xml.output.dir}" />
+            <property name="jdwp.port" value="8000"/>
+            <property name="should.suspend.vm.for.debugging" value="n"/>
             <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="once" maxmemory="512m">
+                <!--jvmarg value="-Xdebug"/>
+                <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jdwp.port},server=y,suspend=${should.suspend.vm.for.debugging}"/-->
                 <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.file}" />
                 <sysproperty key="server.hostname" value="${jboss.server.hostname}" />
                 <sysproperty key="server.port" value="${jboss.server.port}" />
                 <sysproperty key="server.jndi.port" value="${jboss.server.jndi.port}" />
                 <sysproperty key="selenium.server.port" value="${selenium.server.port}" />
-
                 <classpath>
                     <pathelement path="@{instrumented.classes}" />
                     <pathelement path="@{classpath}" />
-                    <path refid="cobertura.classpath" />
                 </classpath>
                 <classpath refid="@{classpathref.id}" />
+                <classpath refid="cobertura.dependencies.path" />
                 <formatter type="xml" />
                 <batchtest todir="@{xml.output.dir}">
                     <fileset dir="@{test.src.dir}">
@@ -34,7 +37,7 @@
             </junit>
         </sequential>
     </macrodef>
-    
+
     <macrodef name="display-properties">
         <attribute name="v" default="NOT SET" />
         <element name="some-tasks" optional="yes" />
@@ -56,9 +59,7 @@
         <attribute name="database.password" default="${database.password}" />
         <sequential>
             <sql driver="${database.driver}" url="@{database.url}" userid="@{database.user}" password="@{database.password}" src="@{sql.file}" onerror="@{onerror}" autocommit="true" delimiter="@{sql.delimiter}" delimitertype="@{sql.delimitertype}" keepformat="true">
-                <classpath>
-                    <pathelement location="${mysql-connector.jar}" />
-                </classpath>
+                <classpath refid="mysql-connector-java.jar.path"/>
             </sql>
         </sequential>
     </macrodef>
