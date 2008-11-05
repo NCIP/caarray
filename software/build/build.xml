@@ -836,6 +836,20 @@
     </path>
     <property name="concurrent.jar" refid="concurrent.jar.fileset" />
 
+    <path id="ncicb-ant.jar.path">
+        <fileset dir="${project.lib}" id="ncicb-ant.jar.fileset">
+            <include name="ncicb-ant-*.jar"/>
+        </fileset>
+    </path>
+    <property name="ncicb-ant.jar" refid="ncicb-ant.jar.fileset" />
+
+    <path id="xmlconfig.jar.path">
+        <fileset dir="${project.lib}" id="xmlconfig.jar.fileset">
+            <include name="xmlconfig-*.jar"/>
+        </fileset>
+    </path>
+    <property name="xmlconfig.jar" refid="xmlconfig.jar.fileset" />
+
     <path id="nci-commons-core.jar.path">
         <fileset dir="${project.lib}" id="nci-commons-core.jar.fileset">
             <include name="nci-commons-core-*.jar"/>
@@ -1121,6 +1135,12 @@
         </classpath>
     </taskdef>
 
+    <taskdef resource="svntask.properties" classpathref="svn.dependencies.path" />
+
+    <taskdef name="ncitask" classname="gov.nih.ncicb.anttasks.PropertyValidator" classpathref="project.jars.path"/>
+
+    <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="project.jars.path" />
+
 
     <!-- ******************************************************************* -->
     <!-- ** IMPORTS                                                       ** -->
@@ -1352,7 +1372,6 @@
     <!-- ** SVN TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
     <target name="svn:getinfo" description="obtain subversion revision info" unless="nosvn">
-        <taskdef resource="svntask.properties" classpathref="svn.dependencies.path" />
         <svn javahl="false">
             <status path="${root.dir}" revisionProperty="svn.revision" urlProperty="svn.url" />
         </svn>
@@ -2355,9 +2374,6 @@
     <property name="jboss.stop.sleep" value="30" />
 
     <target name="validate-properties">
-        <taskdef name="ncitask" classname="gov.nih.ncicb.anttasks.PropertyValidator">
-            <classpath refid="ncicb-ant.dependencies.path" />
-        </taskdef>
         <ncitask keyFile="${build.dir}/${property.template.file}" compareFile="${envpropertyfile}" />
     </target>
 
@@ -2375,7 +2391,6 @@
         <echo message="Configuring caarray-mysql database..." />
         <mkdir dir="${target.dir}" />
         <copy todir="${target.dir}/deploy/" file="${common.resources.jboss.conf.dir}/${mysql.datasource.file}" />
-        <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="project.classpath" />
         <xmlconfig in="${target.dir}/deploy/${mysql.datasource.file}" verbose="false">
             <update path="//datasources/local-tx-datasource/connection-url" value="jdbc:mysql://${database.server}:${database.port}/${database.name}" />
             <update path="//datasources/local-tx-datasource/user-name" value="${database.user}" />

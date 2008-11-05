@@ -41,6 +41,8 @@
 
         <dependency conf="project" name="ncicb-ant" org="ncicb" rev="1.0"/>
 
+        <dependency conf="project" name="xmlconfig" org="xmlconfig" rev="0.1.9"/>
+
         <dependency conf="asm_2.2.1" name="asm" org="objectweb" rev="2.2.1"/>
 
         <dependency conf="project" name="asm" org="objectweb" rev="1.5.3" force="true"/>
