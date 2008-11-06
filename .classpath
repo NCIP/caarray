@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="qa/docs/Test_Scripts"/>
+	<classpathentry kind="src" path="software/caarray-client.jar/src/distribution/java"/>
+	<classpathentry kind="src" path="software/caarray-client.jar/src/main/java"/>
+	<classpathentry kind="src" path="software/caarray-common.jar/src/main/java"/>
+	<classpathentry kind="src" path="software/caarray-common.jar/src/test/java"/>
+	<classpathentry kind="src" path="software/caarray-ejb.jar/src/main/java"/>
+	<classpathentry kind="src" path="software/caarray-ejb.jar/src/test/java"/>
+	<classpathentry kind="src" path="software/caarray.war/src/main/java"/>
+	<classpathentry kind="src" path="software/caarray.war/src/test/java"/>
+	<classpathentry kind="src" path="software/CaArraySvc/src"/>
+	<classpathentry kind="src" path="software/load-test/src/java"/>
+	<classpathentry kind="src" path="software/test/src/test/java"/>
+	<classpathentry kind="src" path="test-data/src/test/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=software%2Fivy-caarray.xml&amp;confs=project"/>
+	<classpathentry kind="lib" path="test-data/src/test/data"/>
+	<classpathentry kind="output" path="test-data/target/test-classes"/>
+</classpath>
