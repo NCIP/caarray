@@ -195,4 +195,14 @@ public enum SearchSampleCategory implements BiomaterialSearchCategory {
         return sb.toString();
     }
 
+    /**
+     * @return list of permission search categories
+     */
+    public static SearchSampleCategory[] getPermSearchCategories() {
+        return new SearchSampleCategory[]{SAMPLE_NAME, SAMPLE_EXTERNAL_ID,
+                SAMPLE_CELL_TYPE, SAMPLE_DISEASE_STATE, SAMPLE_MATERIAL_TYPE,
+                SAMPLE_ORGANISM, SAMPLE_PROVIDER, SAMPLE_TISSUE_SITE};
+    }
+
+
 }

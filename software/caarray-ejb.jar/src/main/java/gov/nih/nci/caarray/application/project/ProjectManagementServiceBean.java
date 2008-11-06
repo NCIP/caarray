@@ -110,6 +110,7 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -707,6 +708,13 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public List<Project> searchByCategory(PageSortParams<Project> params, String keyword,
             SearchCategory... categories) {
         return getProjectDao().searchByCategory(params, keyword, categories);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c) {
+        return getSampleDao().searchSamplesByExperimentAndCategory(keyword, e, c);
     }
 
     /**

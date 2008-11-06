@@ -438,4 +438,12 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return new ArrayList<Source>();
     }
 
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.application.project.ProjectManagementService#searchSamplesByExperimentAndCategory(java.lang.String, gov.nih.nci.caarray.domain.project.Experiment, gov.nih.nci.caarray.domain.search.SearchSampleCategory[])
+     */
+    public List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
   }

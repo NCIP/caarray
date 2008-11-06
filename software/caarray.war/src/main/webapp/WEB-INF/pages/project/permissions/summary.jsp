@@ -34,8 +34,8 @@
         <tr id="samples_${profile.id}" style="display:none"><td colspan="2">
             <table class="searchresults permissiontable">
             <tbody>
-			<jsp:useBean id="sampleComparator" class="gov.nih.nci.caarray.domain.sample.Sample$ByNameComparator"/>
-			<s:sort comparator="#attr.sampleComparator" source="project.experiment.samples">
+      <jsp:useBean id="sampleComparator" class="gov.nih.nci.caarray.domain.sample.Sample$ByNameComparator"/>
+      <s:sort comparator="#attr.sampleComparator" source="project.experiment.samples">
             <s:iterator id="sample">
                 <c:set var="sampleSecLevel" value="${profile.sampleSecurityLevels[sample]}"/>
                 <tr>
@@ -56,7 +56,7 @@
                     <td><fmt:message key="${sampleSecLevel.resourceKey}"/></td>
                 </tr>
             </s:iterator>
-			</s:sort>
+      </s:sort>
             </tbody>
             </table>
         </td></tr>

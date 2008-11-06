@@ -99,8 +99,8 @@
         <action name="ajax/uploadProgress" class="gov.nih.nci.caarray.web.fileupload.UploadProgress">
         </action>
 
-        <action name="home" class="gov.nih.nci.caarray.web.action.HomeAction">
-            <result name="input">/WEB-INF/pages/home.jsp</result>
+        <action name="home">
+            <result>/WEB-INF/pages/home.jsp</result>
         </action>
         <action name="logout" class="com.fiveamsolutions.nci.commons.web.struts2.action.LogoutAction" method="logout">
             <result name="success" type="redirect-action">

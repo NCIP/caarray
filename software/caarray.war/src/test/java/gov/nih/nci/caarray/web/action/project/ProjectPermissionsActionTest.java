@@ -202,7 +202,9 @@ public class ProjectPermissionsActionTest extends AbstractCaarrayTest {
     @Test
     public void testSaveAccessProfile() {
         action.setAccessProfile(DUMMY_PROFILE);
-        action.getSampleSecurityLevels().put(1L, SampleSecurityLevel.NONE);
+        action.getSampleSecurityLevels().add(1L);
+        action.setSecurityChoices(SampleSecurityLevel.NONE);
+        action.setActionButton("save");
         assertEquals(Action.SUCCESS, action.saveAccessProfile());
     }
 

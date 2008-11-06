@@ -1,18 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<script type="text/javascript">
-    selectAll = function(selectAllBox, theform) {
-       var state = selectAllBox.checked;
-       numElements = theform.elements.length;
-       for (i = 0; i < numElements; i++) {
-            var element = theform.elements[i];
-            if ("checkbox" == element.type) {
-                element.checked = state;
-            }
-        }
-    }
-</script>
-
 <c:set var="initTab" value="${sessionScope.initialTab2 == null ? param.initialTab2 : sessionScope.initialTab2}" />
 <c:remove var="initialTab2" scope="session" />
 

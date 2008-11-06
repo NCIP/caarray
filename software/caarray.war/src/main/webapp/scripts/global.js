@@ -45,6 +45,18 @@ function validateRequired(form) {
     return bValid;
 }
 
+function selectAll(selectAllBox, theform) {
+       var state = selectAllBox.checked;
+       numElements = theform.elements.length;
+       for (i = 0; i < numElements; i++) {
+            var element = theform.elements[i];
+            if ("checkbox" == element.type) {
+                element.checked = state;
+            }
+        }
+}
+
+
 function highlightFormElements() {
     // add input box highlighting
     addFocusHandlers(document.getElementsByTagName("input"));
@@ -375,6 +387,7 @@ var PermissionUtils = {
     PROFILE_SAVING_ID: 'access_profile_saving',
     PROFILE_DETAILS_ID: 'access_profile_details',
     PROFILE_FORM_ID: 'profileForm',
+    ACTION_BUTTON_ID: 'actionButton',
 
     changeExperimentAccess: function(theselect) {
         var selectVal = $F(theselect);
@@ -416,11 +429,18 @@ var PermissionUtils = {
     },
 
     cancelEditProfile: function() {
+      $(PermissionUtils.ACTION_BUTTON_ID).value = 'cancel';
         $(PermissionUtils.PROFILE_DETAILS_ID).update(this.oldDetails);
     },
 
     saveProfile: function() {
+      $(PermissionUtils.ACTION_BUTTON_ID).value = 'save';
         $(PermissionUtils.PROFILE_SAVING_ID).show();
+        Caarray.submitAjaxForm(PermissionUtils.PROFILE_FORM_ID, PermissionUtils.PROFILE_DETAILS_ID);
+    },
+
+    listSampleProfile: function() {
+        $(PermissionUtils.ACTION_BUTTON_ID).value = 'search';
         Caarray.submitAjaxForm(PermissionUtils.PROFILE_FORM_ID, PermissionUtils.PROFILE_DETAILS_ID);
     }
 }
@@ -482,10 +502,10 @@ DownloadMgr.prototype.doAddDownloadRow = function(id, highlightRow, tbl, showRem
   }
 
   if(showRemoveIcon) {
-	  var fileCell = $('fileRow' + file.id)
-	  if (fileCell) {
-	    fileCell.innerHTML = '<img id="rIcon'+ id +'" src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>';
-	  }
+    var fileCell = $('fileRow' + file.id)
+    if (fileCell) {
+      fileCell.innerHTML = '<img id="rIcon'+ id +'" src="'+ this.removeImageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + id + '); return false;"/>';
+    }
   }
 }
 
@@ -613,18 +633,18 @@ DownloadMgr.prototype.addAll = function() {
 }
 
 DownloadMgr.prototype.displayAllRemoveIcons = function() {
-	var icons = document.getElementById('datatable').getElementsByTagName('img');
-	for(i=0;i<icons.length;i++) {
-		if(icons[i].id.lastIndexOf("rIcon") != -1) {
-			icons[i].src = this.removeImageUrl;
-			icons[i].alt = "remove";
-			var dlMgr = this;
-			icons[i].onclick= function() {
-			  var fid = this.id.substring(5,this.id.length);
-			  dlMgr.removeRow(fid);return false;
-			};
-		}
-   	}
+  var icons = document.getElementById('datatable').getElementsByTagName('img');
+  for(i=0;i<icons.length;i++) {
+    if(icons[i].id.lastIndexOf("rIcon") != -1) {
+      icons[i].src = this.removeImageUrl;
+      icons[i].alt = "remove";
+      var dlMgr = this;
+      icons[i].onclick= function() {
+        var fid = this.id.substring(5,this.id.length);
+        dlMgr.removeRow(fid);return false;
+      };
+    }
+     }
 }
 
 DownloadMgr.prototype.reAddFromQueue = function() {

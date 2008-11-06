@@ -3,6 +3,7 @@ package gov.nih.nci.caarray.web.action.project;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getPermissionsManagementService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -10,15 +11,20 @@ import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
+import gov.nih.nci.caarray.web.util.LabelValue;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -39,8 +45,14 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     private CollaboratorGroup collaboratorGroup = new CollaboratorGroup();
     private Set<AccessProfile> accessProfiles = new TreeSet<AccessProfile>();
     private AccessProfile accessProfile = new AccessProfile(SecurityLevel.NONE);
-    private Map<Long, SampleSecurityLevel> sampleSecurityLevels = new TreeMap<Long, SampleSecurityLevel>();
+    private List<Long> sampleSecurityLevels = new ArrayList<Long>();
     private boolean useTcgaPolicy;
+    private String permSampleKeyword;
+    private String permSampleSearch;
+    private List<Sample> sampleResults = new ArrayList<Sample>();
+    private int sampleResultsCount;
+    private String actionButton;
+    private SampleSecurityLevel securityChoices;
 
     /**
      * {@inheritDoc}
@@ -113,7 +125,6 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     @SkipValidation
     public String loadPublicProfile() {
         this.accessProfile = getProject().getPublicProfile();
-        setupSamplePermissions();
         return "accessProfile";
     }
 
@@ -130,27 +141,45 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
             this.accessProfile.setGroup(this.collaboratorGroup);
             this.accessProfile.setProjectForGroupProfile(getProject());
         }
-        setupSamplePermissions();
         return "accessProfile";
-    }
-
-    private void setupSamplePermissions() {
-        for (Map.Entry<Sample, SampleSecurityLevel> sampleEntry : this.accessProfile.getSampleSecurityLevels()
-                                                                                    .entrySet()) {
-            this.sampleSecurityLevels.put(sampleEntry.getKey().getId(), sampleEntry.getValue());
-        }
     }
 
     private void saveSamplePermissions() {
         // if the new experiment-wide security level does not allow sample-level permissions
         // then any existing sample-level security levels get wiped
-        this.accessProfile.getSampleSecurityLevels().clear();
+
         if (this.accessProfile.getSecurityLevel().isSampleLevelPermissionsAllowed()) {
-            for (Map.Entry<Long, SampleSecurityLevel> sampleEntry : this.sampleSecurityLevels.entrySet()) {
-                Sample sample = getGenericDataService().getPersistentObject(Sample.class, sampleEntry.getKey());
-                if (this.accessProfile.getSecurityLevel().getSampleSecurityLevels().contains(sampleEntry.getValue())) {
-                    this.accessProfile.getSampleSecurityLevels().put(sample, sampleEntry.getValue());
-                }
+            checkSamplePermissions();
+            modifySamplePermissions();
+        } else {
+            this.accessProfile.getSampleSecurityLevels().clear();
+        }
+    }
+
+    private void checkSamplePermissions() {
+        // check whether this is the first time sample permissions are being set.
+        if (this.accessProfile.getSampleSecurityLevels() == null
+                || this.accessProfile.getSampleSecurityLevels().isEmpty()) {
+            Map<Sample, SampleSecurityLevel> samplePermissions = new HashMap<Sample, SampleSecurityLevel>();
+            for (Sample sam : getProject().getExperiment().getSamples()) {
+                samplePermissions.put(sam, SampleSecurityLevel.NONE);
+            }
+
+            this.accessProfile.getSampleSecurityLevels().putAll(samplePermissions);
+        }
+    }
+
+    private void modifySamplePermissions() {
+        for (Long sid : this.sampleSecurityLevels) {
+            // -1 is preloaded into the list of checkboxes to
+            // get around struts issues.
+            if (sid.intValue() == -1) {
+                continue;
+            }
+            Sample sample = getGenericDataService().getPersistentObject(Sample.class, sid);
+            if (this.accessProfile.getSecurityLevel().getSampleSecurityLevels().contains(this.securityChoices)) {
+                this.accessProfile.getSampleSecurityLevels().put(sample, this.securityChoices);
+
             }
         }
     }
@@ -162,25 +191,52 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
      */
     @SkipValidation
     public String saveAccessProfile() {
-        try {
-            if (this.accessProfile.getId() == null && this.collaboratorGroup != null) {
-                // must be a new access profile
-                AccessProfile newProfile =
-                        getProjectManagementService().addGroupProfile(getProject(), this.collaboratorGroup);
-                newProfile.setSecurityLevel(this.accessProfile.getSecurityLevel());
-                this.accessProfile = newProfile;
-                this.accessProfiles.add(newProfile);
+        if ("search".equals(this.actionButton)) {
+            return listSamples();
+        } else if ("save".equals(this.actionButton)) {
+            try {
+                if (this.accessProfile.getId() == null && this.collaboratorGroup != null) {
+                    // must be a new access profile
+                    AccessProfile newProfile =
+                            getProjectManagementService().addGroupProfile(getProject(), this.collaboratorGroup);
+                    newProfile.setSecurityLevel(this.accessProfile.getSecurityLevel());
+                    this.accessProfile = newProfile;
+                    this.accessProfiles.add(newProfile);
+                }
+                saveSamplePermissions();
+                getPermissionsManagementService().saveAccessProfile(this.accessProfile);
+                ActionHelper.saveMessage(getText("project.permissionsSaved"));
+                return SUCCESS;
+            } catch (ProposalWorkflowException e) {
+                List<String> args = new ArrayList<String>();
+                args.add(getProject().getExperiment().getTitle());
+                ActionHelper.saveMessage(getText("project.permissionsSaveProblem", args));
+                return INPUT;
             }
-            saveSamplePermissions();
-            getPermissionsManagementService().saveAccessProfile(this.accessProfile);
-            ActionHelper.saveMessage(getText("project.permissionsSaved"));
-            return SUCCESS;
-        } catch (ProposalWorkflowException e) {
-            List<String> args = new ArrayList<String>();
-            args.add(getProject().getExperiment().getTitle());
-            ActionHelper.saveMessage(getText("project.permissionsSaveProblem", args));
+        } else {
             return INPUT;
         }
+    }
+
+    private String listSamples() {
+        ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
+        SearchSampleCategory[] categories = new SearchSampleCategory[]{SearchSampleCategory.valueOf(permSampleSearch)};
+        sampleResults = pms.searchSamplesByExperimentAndCategory(permSampleKeyword,
+                getProject().getExperiment(), categories);
+        sampleResultsCount = sampleResults.size();
+
+        return "accessProfile";
+    }
+
+    /**
+     * @return list of label value beans.
+     */
+    public static List<LabelValue> getSearchSampleCategories() {
+        List<LabelValue> searchCats = new ArrayList<LabelValue>();
+        for (SearchSampleCategory cat : SearchSampleCategory.getPermSearchCategories()) {
+            searchCats.add(new LabelValue(cat.getResourceKey(), cat.name()));
+        }
+        return searchCats;
     }
 
     /**
@@ -221,14 +277,14 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     /**
      * @return the sampleSecurityLevels
      */
-    public Map<Long, SampleSecurityLevel> getSampleSecurityLevels() {
+    public List<Long> getSampleSecurityLevels() {
         return this.sampleSecurityLevels;
     }
 
     /**
      * @param sampleSecurityLevels the sampleSecurityLevels to set
      */
-    public void setSampleSecurityLevels(Map<Long, SampleSecurityLevel> sampleSecurityLevels) {
+    public void setSampleSecurityLevels(List<Long> sampleSecurityLevels) {
         this.sampleSecurityLevels = sampleSecurityLevels;
     }
 
@@ -251,5 +307,93 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
      */
     public List<CollaboratorGroup> getCollaboratorGroups() {
         return this.collaboratorGroups;
+    }
+
+    /**
+     * @return the permSampleKeyword
+     */
+    public String getPermSampleKeyword() {
+        return permSampleKeyword;
+    }
+
+    /**
+     * @param permSampleKeyword the permSampleKeyword to set
+     */
+    public void setPermSampleKeyword(String permSampleKeyword) {
+        try {
+            this.permSampleKeyword = URLDecoder.decode(permSampleKeyword, "ISO-8859-1");
+        } catch (UnsupportedEncodingException e) {
+            this.permSampleKeyword = permSampleKeyword;
+        }
+    }
+
+    /**
+     * @return the permSampleSearch
+     */
+    public String getPermSampleSearch() {
+        return permSampleSearch;
+    }
+
+    /**
+     * @param permSampleSearch the permSampleSearch to set
+     */
+    public void setPermSampleSearch(String permSampleSearch) {
+        this.permSampleSearch = permSampleSearch;
+    }
+
+    /**
+     * @return the sampleResults
+     */
+    public List<Sample> getSampleResults() {
+        return sampleResults;
+    }
+
+    /**
+     * @param sampleResults the sampleResults to set
+     */
+    public void setSampleResults(List<Sample> sampleResults) {
+        this.sampleResults = sampleResults;
+    }
+
+    /**
+     * @return the actionButton
+     */
+    public String getActionButton() {
+        return actionButton;
+    }
+
+    /**
+     * @param actionButton the actionButton
+     */
+    public void setActionButton(String actionButton) {
+        this.actionButton = actionButton;
+    }
+
+    /**
+     * @return the securityChoices
+     */
+    public SampleSecurityLevel getSecurityChoices() {
+        return securityChoices;
+    }
+
+    /**
+     * @param securityChoices the securityChoice to set
+     */
+    public void setSecurityChoices(SampleSecurityLevel securityChoices) {
+        this.securityChoices = securityChoices;
+    }
+
+    /**
+     * @return the sampleResultsCount
+     */
+    public int getSampleResultsCount() {
+        return sampleResultsCount;
+    }
+
+    /**
+     * @param sampleResultsCount the sampleResultsCount to set
+     */
+    public void setSampleResultsCount(int sampleResultsCount) {
+        this.sampleResultsCount = sampleResultsCount;
     }
 }

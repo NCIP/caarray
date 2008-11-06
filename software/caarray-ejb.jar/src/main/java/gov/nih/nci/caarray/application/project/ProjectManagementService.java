@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
@@ -410,16 +411,16 @@ public interface ProjectManagementService {
      * @return the list of terms
      */
     List<Term> getDiseaseStatesForExperiment(Experiment experiment);
-    
+
     /**
      * Returns the sample for a given project with the given public identifier.
-     * 
+     *
      * @param project the project to which the sample belongs
      * @param externalSampleId the sample's external identifier
      * @return the sample with given external identifier, or null if there is no sample with that public identifier
      */
     Sample getSampleByExternalId(Project project, String externalSampleId);
-    
+
     /**
      * Performs a query for samples and sources by text matching for the given keyword.
      *
@@ -447,7 +448,18 @@ public interface ProjectManagementService {
     List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword);
 
     /**
+     * Performs a query for all samples which are related to an experiment and also
+     * contain a match on category keyword.
+     * @param c category
+     * @param keyword text keyword
+     * @param e experiment
+     * @return a list if samples with experiment matching e and category matching c
+     */
+    List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c);
+
+    /**
      * Performs a query for all sources which contain a characteristic and category supplied.
+     * Keyword is matched on %keyword%.
      * @param c category
      * @param keyword text
      * @return a list of sources

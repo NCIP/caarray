@@ -82,10 +82,12 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
+import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 
 import java.util.List;
@@ -116,6 +118,16 @@ public interface SampleDao extends CaArrayDao {
      * @return a list if samples with characteristic matching keyword and category matching c
      */
     List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword);
+
+    /**
+     * Performs a query for all samples which are part of an experiment and
+     * contain a category keyword. The keyword is matched like %keyword%
+     * @param c category
+     * @param e experiment
+     * @param keyword text keyword
+     * @return a list if samples with characteristic matching keyword and category matching c
+     */
+    List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c);
 
     /**
      * Get number of results from query for all samples which contain a characteristic and category supplied.

@@ -31,7 +31,7 @@
         </c:url>
         <h2><span class="dark">Experiment:</span> ${project.experiment.title} (<a href="${detailsUrl}">Details</a>)</h2>
 
-        <div id="tabboxwrapper_notabs">
+        <div id="tabboxwrapper_notabs" style="height:650px;">
             <div class="boxpad">
                 <p class="instructions">
                     Assigning an Access Profile to this experiment allows you to control who gets access.

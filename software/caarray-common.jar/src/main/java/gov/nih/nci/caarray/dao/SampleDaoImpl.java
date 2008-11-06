@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
@@ -257,6 +258,26 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
             + " AND cat.name = :" + CATAGORY_SUB + " AND chr.id = tbs.id";
 
         return sb;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c) {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append(SELECT_DISTINCT + "s");
+        sb.append(FROM_KEYWORD + Sample.class.getName() + " s");
+        sb.append(getJoinClause(c));
+        sb.append(getWhereClause(c));
+        sb.append(" AND s.experiment = :exp order by s.name");
+        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        q.setEntity("exp", e);
+        q.setString(KEYWORD_SUB, "%" + keyword + "%");
+
+
+        return q.list();
     }
 
 

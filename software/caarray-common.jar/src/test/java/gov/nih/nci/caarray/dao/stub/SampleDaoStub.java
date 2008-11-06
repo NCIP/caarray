@@ -84,10 +84,12 @@ package gov.nih.nci.caarray.dao.stub;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.dao.SampleDao;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
+import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 
 import java.util.Collections;
@@ -100,59 +102,65 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  */
 public class SampleDaoStub extends AbstractDaoStub implements SampleDao {
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.SampleDao#countSamplesByCharacteristicCategory(gov.nih.nci.caarray.domain.vocabulary.Category, java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public int countSamplesByCharacteristicCategory(Category c, String keyword) {
         // TODO Auto-generated method stub
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.SampleDao#countSourcesByCharacteristicCategory(gov.nih.nci.caarray.domain.vocabulary.Category, java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public int countSourcesByCharacteristicCategory(Category c, String keyword) {
         // TODO Auto-generated method stub
         return 0;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.SampleDao#searchByCategory(com.fiveamsolutions.nci.commons.data.search.PageSortParams, java.lang.String, gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory[])
+    /**
+     * {@inheritDoc}
      */
     public <T extends AbstractBioMaterial> List<T> searchByCategory(PageSortParams<T> params, String keyword,
             BiomaterialSearchCategory... categories) {
         return Collections.EMPTY_LIST;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.SampleDao#searchCount(java.lang.String, gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory[])
+    /**
+     * {@inheritDoc}
      */
     public int searchCount(String keyword, BiomaterialSearchCategory... categories) {
         // TODO Auto-generated method stub
         return 0;
     }
 
-
-
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.SampleDao#searchSamplesByCharacteristicCategory(gov.nih.nci.caarray.domain.vocabulary.Category, java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword) {
         return Collections.EMPTY_LIST;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.SampleDao#searchSourcesByCharacteristicCategory(gov.nih.nci.caarray.domain.vocabulary.Category, java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public List<Source> searchSourcesByCharacteristicCategory(Category c, String keyword) {
         return Collections.EMPTY_LIST;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.SampleDao#searchSourcesByCharacteristicCategory(gov.nih.nci.caarray.domain.vocabulary.Category, java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public List<Organism> searchForOrganismNames(String keyword) {
         return Collections.EMPTY_LIST;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -228,41 +228,28 @@ SUP
 { margin:12px 12px 0 10px }
 #browsesearchwrapper
 { margin:15px auto; width:600px}
-#browseboxhome, #searchboxhome
-{ width:295px; height:1%; }
-#browseboxhome H2, #searchboxhome H2
-{ background:url("../images/bg_headerbar_tan.gif") repeat-x; font-size:125%; font-weight:bold; padding:5px; margin:0; color:#e3e6ec }
-#browseboxhome
-{ float:left; background:#dbd9d0 }
-#searchboxhome
-{ float:right; margin-left:10px; background:#e7e6e0 }
-#browseboxhome .boxpad, #searchboxhome .boxpad
+
+#browsetab .boxpad
 { padding:15px 0 }
-#browseboxhome .boxpad
-{ background:url("../images/bg_shadow_tanpanel_a.gif") repeat-x; }
-#searchboxhome .boxpad
-{ background:url("../images/bg_shadow_tanpanel.gif") repeat-x; }
 .alttable
-{ margin:auto }
+{ margin:auto; }
 .alttable TD
 { padding:3px; font-size:92% }
-#browseboxhome .alttable
-{ border:1px solid #e3f4ef; width:250px; border-collapse:separate;  }
-#browseboxhome .alttable TD
+#browsetab .alttable
+{ border:1px solid #e3f4ef; width:600px; border-collapse:separate;  }
+#browsetab .alttable TD
 { padding:4px; border:1px solid #e9e9e9; border-bottom:2px solid #b0b0b0; border-right:1px solid #b0b0b0;  }
-#browseboxhome .alttable TD A
+#browsetab .alttable TD A
 { display:block;  }
-#browseboxhome .alttable TD A:hover
-{  }
 .alttable TH
-{ background:#b0ac9a; padding:4px; text-align:center; color:#fff }
+{ background:#b0ac9a; padding:4px; color:#fff }
 .alttable TH SELECT
-{ font-size:11px; width:170px; font-weight:normal; }
+{ font-size:11px; font-weight:normal; }
 .alttable TR.odd
 { background:#d0cec4 }
-#browseboxhome .alttable TD.num
-{ border-left:0; text-align:right }
-#browseboxhome .alttable TD.label1
+#browsetab .alttable TD.num
+{ border-left:0; }
+#browsetab .alttable TD.label1
 { border-left:0; border-right:0; font-weight:bold; }
 
 

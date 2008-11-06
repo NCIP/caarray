@@ -83,11 +83,13 @@
 package gov.nih.nci.caarray.web.action;
 
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
@@ -130,6 +132,15 @@ public class SearchAction extends ActionSupport {
     protected static final String SAMPLES_TAB = "samples";
 
     /**
+     * name of the experiments tab, should have a method of the same name.
+     */
+    protected static final String BROWSE_TAB = "browse";
+    /**
+     * name of the samples tab, should have a method of the same name.
+     */
+    protected static final String BIOMATERIAL_SEARCH_TAB = "biomaterial_search";
+
+    /**
      * name of the samples tab, should have a method of the same name.
      */
     protected static final String SOURCES_TAB = "sources";
@@ -154,6 +165,7 @@ public class SearchAction extends ActionSupport {
      */
     public static final String COMBINATION_SEARCH = "COMBINATION_SEARCH";
 
+    private static final String TAB_FWD = "tab";
 
 
     // search parameters
@@ -172,6 +184,9 @@ public class SearchAction extends ActionSupport {
     private List<Organism> filterOrganisms = new ArrayList<Organism>();
     private Category selectedCategory;
     private Organism selectedOrganism;
+    private String searchField;
+
+
 
     // fields for displaying search results
     private String currentTab;
@@ -188,6 +203,61 @@ public class SearchAction extends ActionSupport {
     private Map<String, Integer> tabs;
 
 
+    /**
+     * This holds the name and count for each item in the browse box.
+     */
+    public class BrowseItems {
+        private final BrowseCategory category;
+        private final String resourceKey;
+        private final int count;
+
+        /**
+         * Constructor for a browse option.
+         * @param resourceKey label for this item
+         * @param count number of groups in this category
+         */
+        public BrowseItems(String resourceKey, int count) {
+            this.category = null;
+            this.resourceKey = resourceKey;
+            this.count = count;
+        }
+        /**
+         * Constructor for a browse option.
+         * @param category the browse category
+         * @param count number of groups in this category
+         */
+        public BrowseItems(BrowseCategory category, int count) {
+            this.category = category;
+            this.resourceKey = category.getResourceKey();
+            this.count = count;
+        }
+        /**
+         * @return the browse category
+         */
+        public BrowseCategory getCategory() {
+            return category;
+        }
+        /**
+         * @return the resourceKey
+         */
+        public String getResourceKey() {
+            return resourceKey;
+        }
+        /**
+         * @return the count
+         */
+        public int getCount() {
+            return count;
+        }
+    }
+
+    private List<BrowseItems> browseItems;
+    /**
+     * @return the browse items
+     */
+    public List<BrowseItems> getBrowseItems() {
+        return browseItems;
+    }
 
     /**
      * @return the keyword
@@ -221,7 +291,9 @@ public class SearchAction extends ActionSupport {
      */
     public void setKeyword(String keyword) {
         try {
-            this.keyword = URLDecoder.decode(keyword, "ISO-8859-1");
+            if (keyword != null) {
+                this.keyword = URLDecoder.decode(keyword, "ISO-8859-1").trim();
+            }
         } catch (UnsupportedEncodingException e) {
             this.keyword = keyword;
         }
@@ -395,9 +467,12 @@ public class SearchAction extends ActionSupport {
      * @return success
      */
     public String basicExpSearch() {
-        if (SearchCategory.ORGANISM.toString().equals(categoryExp) && selectedOrganism != null) {
-            keyword = selectedOrganism.getScientificName();
+
+        if (!checkExpFields()) {
+            return Action.INPUT;
         }
+
+        checkExpOrganism();
 
         SearchCategory[] categories = (categoryExp.equals(SEARCH_EXPERIMENT_CATEGORY_ALL)) ? SearchCategory.values()
                 : new SearchCategory[] {SearchCategory.valueOf(categoryExp) };
@@ -409,18 +484,38 @@ public class SearchAction extends ActionSupport {
         return Action.SUCCESS;
     }
 
+    private void checkExpOrganism() {
+        if (!categoryExp.equals(categoryCombo)
+                && SearchCategory.ORGANISM.toString().equals(categoryExp)) {
+            keyword = selectedOrganism.getScientificName();
+        }
+    }
+
+    private boolean checkExpFields() {
+        if (!categoryExp.equals(categoryCombo)
+                && SearchCategory.ORGANISM.toString().equals(categoryExp)
+                && selectedOrganism == null) {
+            addActionError(getText("search.error.organism"));
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /**
      * This action queries for the result counts of each tab.
      * The tabs call other methods to return the actual data.
      * @return success
      */
     public String basicBiometricSearch() {
+        if (!checkSampleFields()) {
+            return Action.INPUT;
+        }
         tabs = new LinkedHashMap<String, Integer>();
         ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
-        if (SearchSampleCategory.SAMPLE_ORGANISM.toString().equals(categorySample)
-                && selectedOrganism != null) {
-            keyword = selectedOrganism.getScientificName();
-        }
+
+        checkSampleOrganism();
+
         SearchSampleCategory[] categories = (categorySample
                 .equals(SEARCH_SAMPLE_CATEGORY_ALL)) ? SearchSampleCategory.values()
                 : new SearchSampleCategory[] {SearchSampleCategory.valueOf(categorySample) };
@@ -445,24 +540,92 @@ public class SearchAction extends ActionSupport {
         return Action.SUCCESS;
     }
 
+    private void checkSampleOrganism() {
+        if (!categorySample.equals(categoryCombo)
+                && SearchSampleCategory.SAMPLE_ORGANISM.toString().equals(categorySample)
+                && selectedOrganism != null) {
+            keyword = selectedOrganism.getScientificName();
+        }
+    }
+
+    private boolean checkSampleFields() {
+        if (!categorySample.equals(categoryCombo)
+                && SearchSampleCategory.SAMPLE_ORGANISM.toString().equals(categorySample)
+                && selectedOrganism == null) {
+            addActionError(getText("search.error.organism"));
+        } else if (SearchSampleCategory.SAMPLE_EXTERNAL_ID.toString().equals(categorySample)
+                && (keyword == null || keyword.length() < 1)) {
+            addActionError(getText("search.error.extSampleIdTooShort"));
+        } else if (!SearchSampleCategory.SAMPLE_ORGANISM.toString().equals(categorySample)
+                && !SearchSampleCategory.SAMPLE_EXTERNAL_ID.toString().equals(categorySample)
+                && (keyword == null || keyword.length() < 3)) {
+            addActionError(getText("search.error.keywordTooShort"));
+        } else {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * This action queries for the result counts of each tab.
      * The tabs call other methods to return the actual data.
      * @return success
      */
     public String advBiometricSearch() {
-
+        if (!checkAdvSampleFields()) {
+            return Action.INPUT;
+        }
         tabs = new LinkedHashMap<String, Integer>();
         ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
-        int sampleCount = pms.countSamplesByCharacteristicCategory(selectedCategory, keyword);
-        tabs.put(SAMPLES_TAB, sampleCount);
-        setResultSampleCount(sampleCount);
+        if (selectedCategory != null) {
+            int sampleCount = pms.countSamplesByCharacteristicCategory(selectedCategory, keyword);
+            tabs.put(SAMPLES_TAB, sampleCount);
+            setResultSampleCount(sampleCount);
 
-        int sourceCount = pms.countSourcesByCharacteristicCategory(selectedCategory, keyword);
-        tabs.put(SOURCES_TAB, sourceCount);
-        setResultSourceCount(sourceCount);
+            int sourceCount = pms.countSourcesByCharacteristicCategory(selectedCategory, keyword);
+            tabs.put(SOURCES_TAB, sourceCount);
+            setResultSourceCount(sourceCount);
 
-        return Action.SUCCESS;
+            return Action.SUCCESS;
+        } else {
+            addFieldError("selectedCategory",
+                    getText("search.category.other.characteristics.required"));
+
+            return Action.INPUT;
+        }
+    }
+
+    private boolean checkAdvSampleFields() {
+        if (SEARCH_CATEGORY_OTHER_CHAR.equals(categorySample) && selectedCategory == null) {
+            addActionError(getText("search.error.otherchars"));
+            return false;
+        } else {
+            return true;
+        }
+
+
+    }
+    /**
+     * Shows the browse tab.
+     * @return tab
+     */
+    public String showSearchFieldsTab() {
+
+        if ("browse".equals(searchField)) {
+            currentTab = BROWSE_TAB;
+            BrowseService bs = CaArrayActionHelper.getBrowseService();
+            browseItems = new ArrayList<BrowseItems>();
+            for (BrowseCategory cat : BrowseCategory.values()) {
+                browseItems.add(new BrowseItems(cat, bs.countByBrowseCategory(cat)));
+            }
+            browseItems.add(new BrowseItems("browse.report.hybridizations", bs.hybridizationCount()));
+            browseItems.add(new BrowseItems("browse.report.users", bs.userCount()));
+        } else {
+            currentTab = BIOMATERIAL_SEARCH_TAB;
+        }
+        return TAB_FWD;
+
     }
 
     /**
@@ -477,7 +640,7 @@ public class SearchAction extends ActionSupport {
         List<Project> projects = pms.searchByCategory(this.results.getPageSortParams(), keyword, categories);
         results.setFullListSize(this.resultExpCount);
         results.setList(projects);
-        return "tab";
+        return TAB_FWD;
     }
 
     /**
@@ -501,7 +664,7 @@ public class SearchAction extends ActionSupport {
             sampleResults.setList(bioMats);
         }
 
-        return "tab";
+        return TAB_FWD;
 
     }
 
@@ -525,7 +688,7 @@ public class SearchAction extends ActionSupport {
             sourceResults.setFullListSize(this.resultSourceCount);
             sourceResults.setList(sources);
         }
-        return "tab";
+        return TAB_FWD;
     }
 
 
@@ -696,5 +859,19 @@ public class SearchAction extends ActionSupport {
      */
     public void setFilterKeyword(String filterKeyword) {
         this.filterKeyword = filterKeyword;
+    }
+
+    /**
+     * @return the searchField
+     */
+    public String getSearchField() {
+        return searchField;
+    }
+
+    /**
+     * @param searchField the searchField to set
+     */
+    public void setSearchField(String searchField) {
+        this.searchField = searchField;
     }
 }
