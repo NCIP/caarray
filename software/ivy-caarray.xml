@@ -65,11 +65,11 @@
 
         <dependency conf="project" name="cglib" org="cglib" rev="2.1_3"/>
 
-        <dependency conf="project" name="checkstyle-all" org="checkstyle" rev="4.3"/>
+        <dependency conf="project" name="checkstyle" org="checkstyle" rev="4.3"/>
 
         <dependency conf="project" name="cobertura" org="cobertura" rev="1.9"/>
 
-        <dependency conf="project" name="commons-beanutils" org="jakarta" rev="1.6"/>
+        <dependency conf="project" name="commons-beanutils" org="jakarta" rev="1.7.0"/>
 
         <dependency conf="project" name="commons-httpclient" org="jakarta" rev="3.0.1"/>
 

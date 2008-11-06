@@ -1122,7 +1122,13 @@
     <!-- ** TASKDEFS                                                      ** -->
     <!-- ******************************************************************* -->
 
-    <taskdef resource="checkstyletask.properties" classpathref="checkstyle.jar.path" />
+    <taskdef resource="checkstyletask.properties">
+        <classpath refid="checkstyle.jar.path"/>
+        <classpath refid="commons-beanutils.jar.path"/>
+        <classpath refid="antlr.jar.path"/>
+        <classpath refid="commons-collections.jar.path"/>
+        <classpath refid="commons-logging.jar.path"/>
+    </taskdef>
 
     <taskdef resource="tasks.properties" classpathref="cobertura.dependencies.path" />
 

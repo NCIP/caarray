@@ -10,7 +10,7 @@ import com.thoughtworks.selenium.SeleneseTestCase;
  * Base class for all functional tests that use Selenium Remote Control. Provides proper set up in order to be called by
  * caArray's ant script.
  *
- * @author tavelae 
+ * @author tavelae
  */
 
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
@@ -33,8 +33,8 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     private String toMillisecondsString(int seconds) {
         return String.valueOf(seconds * 1000);
     }
-    
-    
+
+
     protected void waitForText(String theText){
 	for (int second = 0;; second++) {
 		if (second >= 10) fail("timeout");
@@ -47,7 +47,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 		}
 	}
     }
-    
+
     protected void waitForPageToLoad() {
         selenium.waitForPageToLoad(toMillisecondsString(PAGE_TIMEOUT_SECONDS));
     }
@@ -64,13 +64,13 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.type("j_username", "caarrayadmin");
         selenium.type("j_password", "caArray2!");
         clickAndWait("//span/span");
-      
+
     }
 
     protected void  upload(File file) throws IOException, InterruptedException {
         upload(file, RECORD_TIMEOUT_SECONDS);
     }
-    
+
     protected void upload(File file, int timeoutSeconds) throws IOException, InterruptedException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         selenium.type("upload", filePath);
@@ -87,11 +87,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected void waitForElementWithId(String id) {
         waitForElementWithId(id, PAGE_TIMEOUT_SECONDS);
     }
-    
+
     protected void waitForAction() {
         waitForAction(PAGE_TIMEOUT_SECONDS);
     }
-    
+
     protected void waitForAction(int timeoutSeconds) {
         waitForDiv("submittingText", timeoutSeconds);
     }
@@ -99,7 +99,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected void waitForTab() {
         waitForTab(PAGE_TIMEOUT_SECONDS);
     }
-    
+
     protected void waitForTab(int timeoutSeconds) {
         waitForDiv("loadingText", timeoutSeconds);
     }
@@ -109,7 +109,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     protected void waitForDiv(String divId, int timeoutSeconds) {
-        selenium.waitForCondition("element = selenium.browserbot.getCurrentWindow().document.getElementById('" + 
+        selenium.waitForCondition("element = selenium.browserbot.getCurrentWindow().document.getElementById('" +
                 divId + "'); element != null && element.style.display == 'none';", toMillisecondsString(timeoutSeconds));
     }
 
@@ -128,7 +128,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
 
 
-protected void findTextOnPages(String theText) {`
+protected void findTextOnPages(String theText) {
     int row = 3;
     for (int i = 1; i < PAGE_SIZE; i++) {
         if (i % PAGE_SIZE == 20) {
