@@ -1859,8 +1859,7 @@
         </copy>
     </target>
 
-    <!--target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,configure-datasource-for-test,test:unpack-test-data"-->
-    <target name="test:junit-caarray.war">
+    <target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,configure-datasource-for-test,test:unpack-test-data">
         <!-- need to make sure there aren't duplicate struts.xml on classpath! -->
         <move file="${test.data.classes.dir}/struts.xml" tofile="${test.data.classes.dir}/struts.xml.renamed" failonerror="false" />
         <caarray-run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${caarray-ejb.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};" classpathref.id="war.test.dependencies.path" />
