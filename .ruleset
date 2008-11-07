@@ -2,6 +2,7 @@
 <ruleset name="pmd-rules">
 
     <description>5AM PMD Rules</description>
+    <exclude-pattern>.*/CaArraySvc/build/.*</exclude-pattern>
 
     <rule ref="rulesets/basic.xml" />
 
