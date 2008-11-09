@@ -746,7 +746,7 @@ var ListPickerUtils = {
             return;
         }
         if (multiple != 'true') {
-            if (selectedItemValues.length  > 1) {
+            if (selectedItemValues.length  >= 1) {
                 alert('Only one ' + listLabel + ' may be selected.');
                 return;
             }

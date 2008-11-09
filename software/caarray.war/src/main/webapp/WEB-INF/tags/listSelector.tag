@@ -96,13 +96,17 @@
                             <c:choose>
                                 <c:when test="${multiple != 'true' && !empty listField}">
                                     <select id="${baseId}SelectedItemValues" name="${listFieldName}">
-                                        <option value=""></option>
+                                        <c:if test="${empty listField}">
+                                            <option value=""></option>
+                                        </c:if>
                                         <option selected="selected" value="<s:property value='#attr.listField.${objectValue}'/>"><s:property value='#attr.listField.${objectValue}'/></option>
                                     </select>
                                 </c:when>
                                 <c:otherwise>
                                     <select id="${baseId}SelectedItemValues" name="${listFieldName}" multiple="true">
-                                        <option value=""></option>
+                                        <c:if test="${empty listField}">
+                                            <option value=""></option>
+                                        </c:if>
                                         <c:forEach items="${listField}" var="currentItem">
                                             <option selected="selected" value="<s:property value='#attr.currentItem.${objectValue}'/>"><s:property value='#attr.currentItem.${objectValue}'/></option>
                                         </c:forEach>
@@ -115,10 +119,10 @@
                                 <c:when test="${multiple != 'true' && !empty listField}">
                                     <c:choose>
                                         <c:when test="${displayResourceValue != 'true'}">
-                                            <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}');"><s:property value="#attr.listField.${objectLabel}"/></li>
+                                            <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}');" id="${baseId}_<s:property value='#attr.listField.${objectValue}'/>"><s:property value="#attr.listField.${objectLabel}"/></li>
                                         </c:when>
                                         <c:otherwise>
-                                            <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}');"><s:property value="getText(#attr.listField.${objectLabel})"/></li>
+                                            <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}');" id="${baseId}_<s:property value='#attr.listField.${objectValue}'/>"><s:property value="getText(#attr.listField.${objectLabel})"/></li>
                                         </c:otherwise>
                                     </c:choose>
                                 </c:when>
