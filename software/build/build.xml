@@ -2424,8 +2424,8 @@
     </target>
 
     <target name="-remote-jboss:copy-log4j-jar">
-        <echo message="Copying ${log4j.jar} to jboss lib folder at ${ssh.server.hostname}..." />
-        <remote-scp remoteScpFileToCopy="${log4j.jar}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/lib" />
+        <echo message="Copying ${project.lib}/${log4j.jar} to jboss lib folder at ${ssh.server.hostname}..." />
+        <remote-scp remoteScpFileToCopy="${project.lib}/${log4j.jar}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/lib" />
         <delete dir="${temp.dir}" />
     </target>
 
