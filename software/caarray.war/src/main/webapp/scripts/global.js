@@ -742,11 +742,21 @@ var ListPickerUtils = {
     processSelection : function(selectedItem, baseId, listLabel, listFieldName, multiple, allowReordering, autoUpdater) {
         var id = selectedItem.firstChild.value;
         var selectedItemValues = $(baseId + 'SelectedItemValues');
+        var currentCounter = 0;
+        var currentId = null;
         if (id == null || id == '') {
             return;
         }
+
         if (multiple != 'true') {
-            if (selectedItemValues.length  >= 1) {
+            for(var i = 0; i < selectedItemValues.length; i++) {
+                currentId = selectedItemValues.options[i].value;
+                if(currentId != null && currentId != '') {
+                    currentCounter++;
+                }
+            }
+
+            if (currentCounter  >= 1) {
                 alert('Only one ' + listLabel + ' may be selected.');
                 return;
             }
