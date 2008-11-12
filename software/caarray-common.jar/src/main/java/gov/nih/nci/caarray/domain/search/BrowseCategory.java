@@ -96,7 +96,7 @@ public enum BrowseCategory implements ResourceBasedEnum {
     /**
      * Organisms.
      */
-    ORGANISMS("browse.category.organisms", null, "p.experiment.organism"),
+    ORGANISMS("browse.category.organisms", null, "p.experiment.organism.scientificName"),
     /**
      * Array providers.
      */
