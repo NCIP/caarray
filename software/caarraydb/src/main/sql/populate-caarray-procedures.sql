@@ -1,5 +1,6 @@
 -- this script should be run with the delimiter set to "//"
 
+drop procedure if exists create_features;
 create procedure create_features (in rows int, in cols int, in design_details_id bigint)
 begin
     declare x int default 0;
