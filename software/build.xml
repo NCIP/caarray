@@ -43,7 +43,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 
     <!-- TODO: Update these to get dynamically from SVN -->
 
-    <property name="caarray.name.installer" value="caarray_distribution_" />
+    <property name="caarray.name.installer" value="caarray_install_" />
     <property name="caarray.name.upgrader" value="caarray_upgrade_" />
     <property name="dist.dir" value="${basedir}/dist" />
     <property name="caarray.lib.dir" value="${basedir}/lib" />

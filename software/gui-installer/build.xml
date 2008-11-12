@@ -2,7 +2,7 @@
 
 	<!-- Generic properties -->
 	<property name="application_installer" value="caarray_installer" />
-	<property name="application_installer_zip" value="caarray_distribution_2_2_0.zip" />
+	<property name="application_installer_zip" value="caarray_install_2_2_0.zip" />
 	<property name="application_upgrader_zip" value="caarray_upgrade_2_2_0.zip" />
 	
 	
