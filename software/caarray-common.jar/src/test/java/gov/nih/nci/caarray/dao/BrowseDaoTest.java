@@ -201,7 +201,7 @@ public class BrowseDaoTest extends AbstractDaoTest {
     public void testCountByBrowseCategory() {
         saveProjects();
         Transaction tx = HibernateUtil.beginTransaction();
-        assertEquals(3, DAO_OBJECT.countByBrowseCategory(BrowseCategory.ORGANISMS));
+        assertEquals(2, DAO_OBJECT.countByBrowseCategory(BrowseCategory.ORGANISMS));
         tx.commit();
     }
 
