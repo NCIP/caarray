@@ -2222,9 +2222,9 @@
     </target>
 
     <target name="database:drop-schema" depends="database:generate-drop-schema-sql" description="Drop DB schema">
-        <run-sql-script onerror="continue" sql.file="${caarraydb.sql.dir}/drop_schema.sql" />
-        <run-sql-script sql.file="${caarraydb.sql.dir}/drop-caarray-schema.sql" />
-        <run-sql-script sql.file="${caarraydb.sql.dir}/drop-csm-schema.sql" />
+        <run-sql-script database.user="${database.user}" database.password="${database.password}" onerror="continue" sql.file="${caarraydb.sql.dir}/drop_schema.sql" />
+        <run-sql-script database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/drop-caarray-schema.sql" />
+        <run-sql-script database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/drop-csm-schema.sql" />
     </target>
 
     <target name="database:create-schema" depends="database:generate-create-schema-sql" description="Create DB schema">
@@ -2253,6 +2253,7 @@
     </target>
 
     <target name="database:execute-sql" description="Run SQL scripts, skipping Hibernate code generation">
+        <antcall target="database:drop-schema" inheritAll="true" inheritRefs="true" />
         <antcall target="database:create-schema" inheritAll="true" inheritRefs="true" />
         <antcall target="database:populate" inheritAll="true" inheritRefs="true" />
         <antcall target="database:env-specific-sql" inheritAll="true" inheritRefs="true" />
