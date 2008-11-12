@@ -199,17 +199,22 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     </target>
 
     <!-- Wrapper install database target, depends on both MySQL and Oracle sub-targets, ifs should ensure only one is run.  Target path can be skipped by exlude.database also calls upgrade:database -->
-    <target name="install:database" description="Re-creates database and users from baseline and applys incremental database changes." unless="exclude.database"
-        depends="
-        install:init
-        ">
-        <property name="caarraydb.sql.dir" value="${db.dir.target}" />
-
+    <target name="install:database" description="Re-creates database and users from baseline and applys incremental database changes." unless="exclude.database" depends="install:init">
+        <property name="caarraydb.sql.dir" value="${db.dir.target}/tmp" />
+        <copy todir="${caarraydb.sql.dir}" filtering="true">
+            <fileset dir="${db.dir.target}">
+                <include name="**/*"/>
+            </fileset>
+            <filterset>
+                <filtersfile file="${properties.file}"/>
+                <filtersfile file="project.properties"/>
+            </filterset>
+        </copy>
         <ant antfile="${this.dir}/build-caarray-app.xml" target="database:execute-sql">
             <property name="drop-schema-sql.exists" value="true" />
             <property name="create-schema-sql.exists" value="true" />
         </ant>
-
+        <delete dir="${caarraydb.sql.dir}"/>
     </target>
 
     <target name="install:jboss:binaries" description="Unzip JBoss binary" unless="exclude.jboss">
@@ -478,7 +483,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     </target>
 
     <target name="-install:grid:configure:secure-console" description="Configure JBoss ports using bindings files" unless="exclude.jboss">
-	<secure-jboss-console jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.web.password="${grid.web.password}"/>
+    <secure-jboss-console jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.web.password="${grid.web.password}"/>
     </target>
 
     <target name="install:grid:deploy" description="Deploy Caarray2 application">

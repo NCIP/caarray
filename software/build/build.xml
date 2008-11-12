@@ -2228,20 +2228,20 @@
     </target>
 
     <target name="database:create-schema" depends="database:generate-create-schema-sql" description="Create DB schema">
-        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_schema.sql" />
-        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/init-caarray-schema.sql" />
-        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/init-csm-schema.sql" />
+        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/create_schema.sql" />
+        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/init-caarray-schema.sql" />
+        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/init-csm-schema.sql" />
     </target>
 
     <target name="database:initialize-schema" depends="database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
 
     <target name="database:populate" description="populates db with initial data">
         <antcall target="database:generate-mged-sql" inheritAll="true" inheritRefs="true" />
-        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm.sql" />
-        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm2.sql" />
-        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-mged.sql" />
-        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />
-        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-caarray-procedures.sql" sql.delimiter="//" />
+        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-csm.sql" />
+        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-csm2.sql" />
+        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-mged.sql" />
+        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />
+        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-caarray-procedures.sql" sql.delimiter="//" />
     </target>
 
     <target name="database:env-specific-sql" description="populates db with initial data">
@@ -2253,9 +2253,6 @@
     </target>
 
     <target name="database:execute-sql" description="Run SQL scripts, skipping Hibernate code generation">
-        <antcall target="database:recreate-database" inheritAll="true" inheritRefs="true" />
-        <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/assign-permissions.sql" />
-        <antcall target="database:drop-schema" inheritAll="true" inheritRefs="true" />
         <antcall target="database:create-schema" inheritAll="true" inheritRefs="true" />
         <antcall target="database:populate" inheritAll="true" inheritRefs="true" />
         <antcall target="database:env-specific-sql" inheritAll="true" inheritRefs="true" />
