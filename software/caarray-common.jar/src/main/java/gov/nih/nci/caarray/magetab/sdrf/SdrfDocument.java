@@ -105,6 +105,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -130,6 +131,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 1116542609494378874L;
     private static final String EMPTY_SYMBOL = "-&gt;";
+    private static final String EXPORT_EMPTY_SYMBOL = "->";
 
     private IdfDocument idfDocument;
     private final List<SdrfColumn> columns = new ArrayList<SdrfColumn>();
@@ -332,6 +334,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
                 break;
             }
         }
+        Collections.replaceAll(rowValues, EMPTY_SYMBOL, EXPORT_EMPTY_SYMBOL);
         writeRow(rowValues, writer);
     }
 

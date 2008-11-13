@@ -395,6 +395,7 @@ public class MageTabExporterBean implements MageTabExporter {
         if (sdrfTermSource == null) {
             sdrfTermSource = new TermSource(termSource.getName());
             sdrfTermSource.setVersion(term.getSource().getVersion());
+            sdrfTermSource.setFile(term.getSource().getUrl());
             termSourceMap.put(termSource, sdrfTermSource);
         }
         return sdrfTermSource;
