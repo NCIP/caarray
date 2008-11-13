@@ -649,9 +649,10 @@ DownloadMgr.prototype.displayAllRemoveIcons = function() {
 
 DownloadMgr.prototype.reAddFromQueue = function() {
     this.deleteTotalRow();
+    var tbl = $('downloadTbl');
     for (id in this.files) {
         if (this.downloadFiles[id]) {
-            this.doAddDownloadRow(id, false);
+            this.doAddDownloadRow(id, false, tbl, true);
         }
     }
     this.addTotalRow();
