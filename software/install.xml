@@ -246,10 +246,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <delete dir="${temp.dir}" />
         <mkdir dir="${temp.dir}/caarray.ear.to_deploy" />
         <mkdir dir="${temp.dir}/caarray.ear" />
-    <mkdir dir="${temp.dir}/caarray-common.jar" />
+        <mkdir dir="${temp.dir}/caarray-common.jar" />
         <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
-
         <unjar src="${temp.dir}/caarray.ear/caarray-common.jar" dest="${temp.dir}/caarray-common.jar"/>
+        <unjar src="${temp.dir}/caarray.ear/caarray.war" dest="${temp.dir}/caarray.war"/>
         <move file="${temp.dir}/caarray-common.jar/csm/caarray.csm.new.hibernate.cfg.xml" tofile="${temp.dir}/caarray-common.jar/csm/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
         <jar destfile="${temp.dir}/caarray.ear/caarray-common.jar" basedir="${temp.dir}/caarray-common.jar" update="false" manifest="${temp.dir}/caarray-common.jar/META-INF/MANIFEST.MF"/>
 
@@ -280,6 +280,16 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                 </xmlconfig>
             </else>
         </if>
+
+        <!-- set the UptUrl value -->
+        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/web.xml" match="uptUrl&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="uptUrl&lt;/param-name&gt;&lt;param-value&gt;${upt.url}&lt;/param-value&gt;" byline="false"/>
+
+        <!-- set the ldap.host value -->
+        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/web.xml" match="ldapHost&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="ldapHost&lt;/param-name&gt;&lt;param-value&gt;${ldap.host}&lt;/param-value&gt;" byline="false"/>
+
+        <war destfile="${temp.dir}/caarray.ear/caarray.war">
+            <fileset dir="${temp.dir}/caarray.war"/>
+        </war>
 
         <ear destfile="${temp.dir}/caarray.ear.to_deploy/${caarray.ear.file}" appxml="${temp.dir}/caarray.ear/META-INF/application.xml" update="false">
             <metainf dir="${temp.dir}/caarray.ear/META-INF" includes="*.xml" excludes="jboss-service.xml" />
