@@ -429,6 +429,20 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     /**
+     * @return the names of the files contained in this project.
+     */
+    @Transient
+    public Set<String> getFileNames() {
+        // create set of existing files
+        Set<String> existingFileNameSet = new HashSet<String>();
+        for (CaArrayFile file : getFiles()) {
+            existingFileNameSet.add(file.getName());
+        }
+        return existingFileNameSet;
+    }
+
+
+    /**
      * @return public access profile
      */
     @ManyToOne(cascade = {CascadeType.ALL }, fetch = FetchType.LAZY)

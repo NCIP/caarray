@@ -224,16 +224,11 @@ public class ProjectFilesActionTest extends AbstractCaarrayTest {
     @Test
     public void testZipUploadAndUnpack() throws Exception {
         assertEquals(LIST_UNIMPORTED, this.action.unpackFiles());
-        assertTrue(ActionHelper.getMessages().get(0).contains("0 file(s) extracted"));
+        assertTrue(ActionHelper.getMessages().get(0).contains("0 file(s) unpacked"));
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         CaArrayFile file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
-
-        selectedFiles.add(file);
-        this.action.setSelectedFiles(selectedFiles);
-        assertEquals(LIST_UNIMPORTED, this.action.unpackFiles());
-        assertEquals(1, projectManagementServiceStub.getFilesAddedCount());
     }
 
     @Test

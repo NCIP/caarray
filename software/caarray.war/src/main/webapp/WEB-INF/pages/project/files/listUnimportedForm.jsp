@@ -54,6 +54,17 @@
           </s:if>
         </c:forEach>
       </table>
+
+	  <br>
+      <table class="searchresults">
+        <tr>           
+          <th><fmt:message key="experiment.files.jobQueue"/></th>
+        </tr>
+        <tr>
+          <td><span id="jobSizeContent">0 Files, 0 KB</span></td>
+        </tr>
+      </table>
+
       </td>
     </tr>
   </table>

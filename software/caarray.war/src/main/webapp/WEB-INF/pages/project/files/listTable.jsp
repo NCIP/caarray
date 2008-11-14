@@ -11,10 +11,6 @@
         <c:set var="pageSize" value="-1" />
     </c:otherwise>
 </c:choose>
-<fmt:message key="experiment.files.selectAllCheckBox" var="checkboxAll">
-    <fmt:param value="selectAllCheckbox" />
-    <fmt:param value="'selectFilesForm'" />
-</fmt:message>
 
 <c:set var="canWriteProject" value="${caarrayfn:canWrite(project, caarrayfn:currentUser())}"/>
 <c:choose>
@@ -31,8 +27,10 @@
         requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id selectedFileIds __checkbox_selectedFileIds">
         <caarray:displayTagProperties/>
         <c:if test="${project.saveAllowed && canWriteProject}">
-            <display:column title="${checkboxAll}">
-                <s:checkbox id="chk${row.id}" name="selectedFileIds" disabled="${!(row.importable || row.validatable || row.deletable)}" fieldValue="${row.id}" value="false" theme="simple" />
+            <display:column title="<input type='checkbox' name='selectAllCheckbox' onclick='toggleAllFiles(this.checked, $(&quot;selectFilesForm&quot;));' >">
+                <s:checkbox id="chk${row.id}" name="selectedFileIds" disabled="${!(row.importable || row.validatable || row.deletable)}" 
+                   fieldValue="${row.id}" value="false" theme="simple" 
+                   onclick="toggleFileInJob(this.checked, this.value);"/>
             </display:column>
         </c:if>
         <display:column property="name" titleKey="experiment.files.name" sortable="true" />
@@ -63,6 +61,12 @@
                     </c:otherwise>
                 </c:choose>
             </ajax:anchors>
+        </display:column>
+        <display:column titleKey="experiment.files.compressedSize" sortProperty="compressedSize" sortable="true">
+            <caarray:formatFileSize value="${row.compressedSize}"/>
+        </display:column>
+        <display:column titleKey="experiment.files.uncompressedSize" sortProperty="uncompressedSize" sortable="true">
+          <caarray:formatFileSize value="${row.uncompressedSize}"/>
         </display:column>
     </display:table>
 </ajax:displayTag>

@@ -84,9 +84,7 @@ package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.GenericDataService;
-import gov.nih.nci.caarray.application.file.InvalidFileException;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.FileDao;
@@ -121,15 +119,10 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import javax.annotation.Resource;
 import javax.ejb.Local;
@@ -139,8 +132,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
@@ -201,119 +192,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @TransactionTimeout(UPLOAD_TIMEOUT)
-    public int unpackFiles(Project project, List<CaArrayFile> caFiles)
-        throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException {
-
-        int count = 0;
-        List<String> conflictingFiles = new ArrayList<String>();
-        // create set of existing files
-        Set<String> existingFileNameSet = existingFileNames(project);
-
-        for (CaArrayFile caArrayFile : caFiles) {
-            project.getFiles().remove(caArrayFile);
-
-            File f = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
-            count += unpackUploadedFile(project, f, existingFileNameSet, conflictingFiles);
-            TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(caArrayFile);
-
-            if (caArrayFile.isDeletable()) {
-                    getFileAccessService().remove(caArrayFile);
-            }
-        }
-
-        return count;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    @TransactionTimeout(UPLOAD_TIMEOUT)
-    public int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> fileNamesToUnpack,
-            List<String> conflictingFiles)
-        throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException {
-        // create set of existing files
-        Set<String> existingFileNameSet = existingFileNames(project);
-
-        int count = 0;
-        int index = 0;
-
-        for (File currentFile : files) {
-
-            if (fileNamesToUnpack != null && fileNamesToUnpack.contains(fileNames.get(index))) {
-                count += unpackUploadedFile(project, currentFile, existingFileNameSet, conflictingFiles);
-            } else {
-                count += processUploadedFile(project, currentFile, fileNames.get(index),
-                    existingFileNameSet, conflictingFiles);
-            }
-            index++;
-
-        }
-        return count;
-    }
-
-    private int processUploadedFile(Project project, File file, String fileName,
-            Set<String> existingFileNameSet, List<String> conflictingFiles)
-            throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException {
-        int count = 0;
-
-        if (StringUtils.isNotBlank(fileName)) {
-            if (existingFileNameSet.contains(fileName)) {
-                conflictingFiles.add(fileName);
-            } else {
-                InputStream in =  FileUtils.openInputStream(file);
-                doAddStream(project, in, fileName);
-                in.close();
-                existingFileNameSet.add(fileName);
-                count++;
-            }
-        }
-        return count;
-    }
-
-    private Set<String> existingFileNames(Project project) {
-        // create set of existing files
-        Set<String> existingFileNameSet = new HashSet<String>();
-        for (CaArrayFile file : project.getFiles()) {
-            existingFileNameSet.add(file.getName());
-        }
-
-        return existingFileNameSet;
-    }
-
-
-    private int unpackUploadedFile(Project project, File file,
-            Set<String> existingFileNameSet, List<String> conflictingFiles)
-            throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException {
-        int count = 0;
-        FileInputStream fis = new FileInputStream(file);
-        ZipInputStream zis = new ZipInputStream(fis);
-        ZipEntry entry = zis.getNextEntry();
-        while (entry != null && zis.available() > 0) {
-             String entryName = entry.getName();
-             if (entryName.indexOf('/') >= 0 || entryName.indexOf('\\') >= 0) {
-                 throw new InvalidFileException("Directories not supported", "directoriesNotSupported");
-             }
-             if (existingFileNameSet.contains(entryName)) {
-                 conflictingFiles.add(entryName);
-             } else {
-                 doAddStream(project, zis, entryName);
-                 existingFileNameSet.add(entryName);
-                 count++;
-             }
-             entry = zis.getNextEntry();
-        }
-        zis.close();
-        fis.close();
-        return count;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public CaArrayFile addFile(Project project, File file) throws ProposalWorkflowException,
             InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project, file);
@@ -327,6 +205,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    @TransactionTimeout(UPLOAD_TIMEOUT)
     public CaArrayFile addFile(Project project, File file, String filename) throws ProposalWorkflowException,
             InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project, file);
@@ -336,8 +215,22 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return caArrayFile;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    @TransactionTimeout(UPLOAD_TIMEOUT)
+    public CaArrayFile addFile(Project project, InputStream data, String filename) throws ProposalWorkflowException,
+            InconsistentProjectStateException {
+        LogUtil.logSubsystemEntry(LOG, project);
+        checkIfProjectSaveAllowed(project);
+        CaArrayFile caArrayFile = doAddStream(project, data, filename);
+        LogUtil.logSubsystemExit(LOG);
+        return caArrayFile;
+    }
+
     private CaArrayFile doAddStream(Project project, InputStream stream, String filename)
-            throws ProposalWorkflowException, InconsistentProjectStateException, IOException  {
+            throws ProposalWorkflowException, InconsistentProjectStateException  {
         checkIfProjectSaveAllowed(project);
         CaArrayFile caArrayFile = getFileAccessService().add(stream, filename);
         addCaArrayFileToProject(project, caArrayFile);

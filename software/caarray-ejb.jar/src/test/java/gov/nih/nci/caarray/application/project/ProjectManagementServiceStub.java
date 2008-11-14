@@ -106,6 +106,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -214,6 +215,11 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return null;
     }
 
+    public CaArrayFile addFile(Project project, InputStream data, String filename) throws ProposalWorkflowException,
+            InconsistentProjectStateException {
+        this.filesAddedCount++;
+        return null;
+    }
     public Project setUseTcgaPolicy(long projectId, boolean useTcgaPolicy) throws ProposalWorkflowException {
         return null;
     }
@@ -346,24 +352,6 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         t1.setId(1L);
         terms.add(t1);
         return terms;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> filesToUnpack, List<String> conflictingFiles)
-            throws ProposalWorkflowException, IOException {
-        this.filesAddedCount += files.size();
-        return files.size();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int unpackFiles(Project project, List<CaArrayFile> files)
-            throws ProposalWorkflowException, IOException {
-        this.filesAddedCount += files.size();
-        return files.size();
     }
 
     /**

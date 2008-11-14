@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import gov.nih.nci.caarray.application.file.InvalidFileException;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
@@ -102,7 +101,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -136,41 +135,6 @@ public interface ProjectManagementService {
     Project getProjectByPublicId(String publicId);
 
     /**
-     * Handle uploaded files.
-     *
-     * @param project the project the files are being uploaded in to.
-     * @param files the files being uploaded.
-     * @param fileNames the file names to use.
-     * @param filesToUnpack the file names to unpack.
-     * @param conflictingFiles out param for files that conflict with existing files in the project.
-     * @return the count of imported files.
-     * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status
-     * @throws IOException if there is an error handling the files.
-     * @throws InconsistentProjectStateException if the project cannot currently be modified because its state is not
-     * internally consistent
-     * @throws InvalidFileException if the file is invalid
-     */
-    int uploadFiles(Project project, List<File> files, List<String> fileNames, List<String> filesToUnpack,
-            List<String> conflictingFiles)
-            throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException;
-
-    /**
-     * Handle uploaded files.
-     *
-     * @param project the project the files are being uploaded in to.
-     * @param files the files being uploaded.
-     * @return the count of imported files.
-     * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status
-     * @throws IOException if there is an error handling the files.
-     * @throws InconsistentProjectStateException if the project cannot currently be modified because its state is not
-     * internally consistent
-     * @throws InvalidFileException if the file is invalid
-     */
-    int unpackFiles(Project project, List<CaArrayFile> files)
-            throws ProposalWorkflowException, IOException, InconsistentProjectStateException, InvalidFileException;
-
-
-    /**
      * Associates a single file with a project. After calling this method, clients can expect a new
      * <code>CaArrayFile</code> to be associated with the project.
      *
@@ -198,6 +162,21 @@ public interface ProjectManagementService {
      * internally consistent
      */
     CaArrayFile addFile(Project project, File file, String filename) throws ProposalWorkflowException,
+            InconsistentProjectStateException;
+
+    /**
+     * Associates a single file with a project. After calling this method, clients can expect a new
+     * <code>CaArrayFile</code> to be associated with the project.
+     *
+     * @param project project to add the file to
+     * @param data the input stream which will provide the file data
+     * @param filename the filename to use for the file
+     * @return the new <code>CaArrayFile</code>.
+     * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status
+     * @throws InconsistentProjectStateException if the project cannot currently be modified because its state is not
+     * internally consistent
+     */
+    CaArrayFile addFile(Project project, InputStream data, String filename) throws ProposalWorkflowException,
             InconsistentProjectStateException;
 
     /**

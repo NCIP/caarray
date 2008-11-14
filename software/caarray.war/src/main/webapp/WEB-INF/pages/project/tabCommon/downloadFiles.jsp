@@ -19,7 +19,7 @@
           </tr>
           <tr>
             <td>
-              Job Size: 0 KB
+              Job Size: 0 Files, 0 KB
             </td>
           </tr>
         </table>

@@ -173,6 +173,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         locatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
         projectManagementServiceBean.setSessionContext(this.sessionContextStub);
         this.projectManagementService = projectManagementServiceBean;
+        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectManagementService);
         HibernateUtil.enableFilters(false);
         transaction = HibernateUtil.beginTransaction();
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessService));
@@ -215,7 +216,6 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
     @Test
     public void testUploadFiles() throws Exception {
         Project project = this.projectManagementService.getProject(123L);
-        List<String> conflicts = new ArrayList<String>();
         List<String> fileNames = new ArrayList<String>();
         List<File> files = new ArrayList<File>();
         List<String> filesToUnpack = new ArrayList<String>();
@@ -236,25 +236,24 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         // this should cause a conflict
         files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         fileNames.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        int count = this.projectManagementService.uploadFiles(project, files, fileNames, filesToUnpack, conflicts);
-        assertEquals(12, count);
+        FileProcessingResult result = FileUploadUtils.uploadFiles(project, files, fileNames, filesToUnpack);
+        assertEquals(12, result.getCount());
         assertEquals(12, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
         assertContains(project.getFiles(), "Test1.zip");
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
-        assertEquals(1, conflicts.size());
-        assertTrue(conflicts.contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
-        conflicts = new ArrayList<String>();
+        assertEquals(1, result.getConflictingFiles().size());
+        assertTrue(result.getConflictingFiles().contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
         // attempt to re-upload a bunch of the files that were just uploaded to get
         // to get back nothing, showing that if a file has the same name, we do not add it.
-        count = this.projectManagementService.uploadFiles(project, files, fileNames, filesToUnpack, conflicts);
-        assertEquals(0, count);
+        result = FileUploadUtils.uploadFiles(project, files, fileNames, filesToUnpack);
+        assertEquals(0, result.getCount());
         assertEquals(12, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
         assertContains(project.getFiles(), "Test1.zip");
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
-        assertEquals(13, conflicts.size());
-        assertTrue(conflicts.contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
+        assertEquals(12, result.getConflictingFiles().size());
+        assertTrue(result.getConflictingFiles().contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
     }
 
     @Test
@@ -263,7 +262,6 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         // the zip file does not contain the txt file.
         // the txt file should be unknown.
         Project project = this.projectManagementService.getProject(123L);
-        List<String> conflicts = new ArrayList<String>();
         List<String> fileNames = new ArrayList<String>();
         List<File> files = new ArrayList<File>();
         files.add(MageTabDataFiles.SPECIFICATION_ZIP);
@@ -274,8 +272,8 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
 
         List<String> filesToUnpack = new ArrayList<String>();
         filesToUnpack.add("specification.zip");
-        int count = this.projectManagementService.uploadFiles(project, files, fileNames, filesToUnpack, conflicts);
-        assertEquals(17, count);
+        FileProcessingResult result = FileUploadUtils.uploadFiles(project, files, fileNames, filesToUnpack);
+        assertEquals(17, result.getCount());
         assertEquals(17, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
         assertContains(project.getFiles(), "Test1.txt");
@@ -302,9 +300,9 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         List<CaArrayFile> cFileList = new ArrayList<CaArrayFile>();
         cFileList.add(myFile);
 
-        int count = this.projectManagementService.unpackFiles(project, cFileList);
+        FileProcessingResult result = FileUploadUtils.unpackFiles(project, cFileList);
         // the unpack should have added 10 files and removed the zip archive
-        assertEquals(16, count);
+        assertEquals(16, result.getCount());
         assertEquals(15, project.getFiles().size() - this.fileAccessService.getRemovedFileCount());
         assertNotNull(project.getFiles().iterator().next().getProject());
         assertNotContains(project.getFiles(), "specification.zip");

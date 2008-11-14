@@ -18,12 +18,44 @@
 <script type="text/javascript">
     fileTypeLookup = new Object();
     fileNameLookup = new Object();
+    fileSizeLookup = new Object();
+    jobSize = 0;
+    jobNumFiles = 0;
+    MAX_JOB_SIZE = <s:property value="@gov.nih.nci.caarray.web.action.project.ProjectFilesAction@MAX_IMPORT_TOTAL_SIZE"/>;
     SDRF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileType@MAGE_TAB_SDRF"/>';
     IDF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileType@MAGE_TAB_IDF"/>';
     <c:forEach items="${files}" var="file">
     fileTypeLookup['${file.id}'] = '${file.fileType}';
     fileNameLookup['${file.id}'] = '${caarrayfn:escapeJavaScript(file.name)}';
+    fileSizeLookup['${file.id}'] = ${file.uncompressedSize};
     </c:forEach>
+
+    toggleAllFiles = function(checked, theform) {
+        numElements = theform.elements.length;
+        for (i = 0; i < numElements; i++) {
+             var element = theform.elements[i];
+             if ("checkbox" == element.type && element.checked != checked && element.id.indexOf('chk') >= 0) {
+                 element.checked = checked;
+                 toggleFileInJob(checked, element.value);
+             }
+        }
+    }
+    
+    toggleFileInJob = function(checked, id) {
+        var size = fileSizeLookup[id];
+		if (checked) {
+			jobNumFiles++;
+			jobSize += size;
+		} else {
+			jobNumFiles--;
+			jobSize -= size;
+		}
+		updateJobSummary();
+    }
+
+    updateJobSummary = function() {
+		$('jobSizeContent').innerHTML= jobNumFiles + " Files, " +formatFileSize(jobSize);
+    }
 
     unimportedFilterCallBack = function() {
         TabUtils.hideLoadingText();
@@ -72,6 +104,8 @@
     importFiles = function(importUrl) {
         if (!checkAnyFilesSelected()) {
             alert("At least one file must be selected");
+        } else if (jobSize >= MAX_JOB_SIZE) {
+            alert("<fmt:message key='project.fileImport.error.jobTooLarge'/> - " + jobSize + ", " + MAX_JOB_SIZE);
         } else if (isMageTabImport()) {
             doImportFiles(importUrl);
         } else {
@@ -337,10 +371,8 @@
                 <caarray:linkButton actionClass="import" text="Unpack Archive" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${unpackUrl}', 'tabboxlevel2wrapper');" />
                 <c:url value="/protected/ajax/project/files/editFiles.action" var="editUrl" />
                 <caarray:linkButton actionClass="edit" text="Change File Type" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${editUrl}', 'tabboxlevel2wrapper');" />
-            </c:if>
-            <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />
-            <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
-            <c:if test="${(!project.importingData)}">
+	            <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />
+    	        <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
                 <c:url value="/protected/ajax/project/files/importFiles.action" var="importUrl"/>
                 <caarray:linkButton actionClass="import" text="Import" onclick="importFiles('${importUrl}');" />
                 <c:url value="/protected/ajax/project/files/addSupplementalFiles.action" var="supplementalUrl"/>

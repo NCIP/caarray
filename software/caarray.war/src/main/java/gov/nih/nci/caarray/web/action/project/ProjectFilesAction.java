@@ -85,12 +85,13 @@ package gov.nih.nci.caarray.web.action.project;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileAccessService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManagementService;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption;
 import gov.nih.nci.caarray.application.file.InvalidFileException;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.project.FileProcessingResult;
+import gov.nih.nci.caarray.application.project.FileUploadUtils;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -126,7 +127,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
@@ -151,14 +151,19 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * @author Scott Miller
- *
+ * 
  */
 @SuppressWarnings({"unchecked", "PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity", "PMD.TooManyFields" })
 @Validation
-@Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
+@Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.", 
         expression = "selectedFiles.size() > 0"))
 public class ProjectFilesAction extends AbstractBaseProjectAction implements Preparable {
     private static final Logger LOG = Logger.getLogger(ProjectFilesAction.class);
+
+    /**
+     * The maximum allowable size of an import job (defined as sum of uncompressed sizes of files in the job).
+     */
+    public static final long MAX_IMPORT_TOTAL_SIZE = 3221225472L;
 
     /**
      * Object to keep count of errors and generate error messages.
@@ -245,10 +250,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         setFiles(new HashSet<CaArrayFile>());
         for (CaArrayFile f : getProject().getImportedFiles()) {
             if (getFileType() == null
-                        || (f.getFileType() != null
-                                && f.getFileType().toString().equals(getFileType())
-                        || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null)
-                        || (UNKNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() == null))) {
+                    || (f.getFileType() != null && f.getFileType().toString().equals(getFileType())
+                            || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null) || (UNKNOWN_FILE_TYPE
+                            .equals(getFileType()) && f.getFileType() == null))) {
                 getFiles().add(f);
             }
         }
@@ -258,7 +262,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     *
+     * 
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -271,13 +275,11 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private void setFilesMatchingTypeAndStatus(SortedSet<CaArrayFile> fileSet) {
         setFiles(new HashSet<CaArrayFile>());
         for (CaArrayFile f : fileSet) {
-            boolean fileStatusMatch = (getFileStatus() == null
-                    || getFileStatus().equals(f.getFileStatus().name()));
-            boolean fileTypeMatch = (getFileType() == null
-                        || (f.getFileType() != null
-                                && f.getFileType().toString().equals(getFileType())
-                        || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null)
-                        || (UNKNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() == null)));
+            boolean fileStatusMatch = (getFileStatus() == null || getFileStatus().equals(f.getFileStatus().name()));
+            boolean fileTypeMatch = (getFileType() == null || (f.getFileType() != null
+                    && f.getFileType().toString().equals(getFileType())
+                    || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null) || (UNKNOWN_FILE_TYPE
+                    .equals(getFileType()) && f.getFileType() == null)));
             if (fileStatusMatch && fileTypeMatch) {
                 getFiles().add(f);
             }
@@ -313,7 +315,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     *
+     * 
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -323,7 +325,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     *
+     * 
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -334,7 +336,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     *
+     * 
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -345,7 +347,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     *
+     * 
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -356,7 +358,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     *
+     * 
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -366,7 +368,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of supplemental files.
-     *
+     * 
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -376,7 +378,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     *
+     * 
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -387,7 +389,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     *
+     * 
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -398,7 +400,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Ajax-only call to handle changing the filter extension.
-     *
+     * 
      * @return success.
      */
     @SkipValidation
@@ -408,7 +410,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Ajax-only call to handle sorting.
-     *
+     * 
      * @return success
      */
     @SkipValidation
@@ -418,7 +420,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to delete files.
-     *
+     * 
      * @return the string representing the UI to display.
      */
     public String deleteFiles() {
@@ -428,7 +430,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to delete files that have been imported.
-     *
+     * 
      * @return the string representing the UI to display.
      */
     public String deleteImportedFiles() {
@@ -438,17 +440,32 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to unpack files.
-     *
+     * 
      * @return the string representing the UI to display.
      */
     public String unpackFiles() {
-        doFileUnpacking();
+        try {
+            FileProcessingResult result = FileUploadUtils.unpackFiles(getProject(), this.getSelectedFiles());
+
+            for (String conflict : result.getConflictingFiles()) {
+                ActionHelper.saveMessage(getText("experiment.files.unpack.filename.exists", new String[] {conflict }));
+            }
+            ActionHelper.saveMessage(result.getCount() + " file(s) unpacked.");
+        } catch (InvalidFileException ue) {
+            ActionHelper.saveMessage(getText("errors.unpackingErrorWithZip", 
+                    new String[] {ue.getFile(), getText(ue.getResourceKey())}));
+        } catch (Exception e) {
+            String msg = "Unable to unpack file: " + e.getMessage();
+            LOG.error(msg, e);
+            ActionHelper.saveMessage(getText("errors.unpacking"));
+        }
+
         return prepListUnimportedPage();
     }
 
     /**
      * Method to delete supplemental files.
-     *
+     * 
      * @return the string representing the UI to display.
      */
     public String deleteSupplementalFiles() {
@@ -473,32 +490,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         }
     }
 
-    private boolean doFileUnpacking() {
-        boolean returnVal = false;
-
-        int count = 0;
-        try {
-            count = getProjectManagementService().unpackFiles(getProject(), this.getSelectedFiles());
-
-            ActionHelper.saveMessage(count + " file(s) extracted.");
-
-            returnVal = true;
-        } catch (ZipException e) {
-            ActionHelper.saveMessage(getText("errorUnpackingZip"));
-        } catch (InvalidFileException ue) {
-            ActionHelper.saveMessage(getText(ue.getMessage()));
-        } catch (Exception e) {
-            String msg = "Unable to unpack file: " + e.getMessage();
-            LOG.error(msg, e);
-            ActionHelper.saveMessage(getText("errorUploading"));
-        }
-
-        return returnVal;
-    }
-
     /**
      * load files for editing.
-     *
+     * 
      * @return the string matching the result to follow
      */
     public String editFiles() {
@@ -507,7 +501,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Save the selected files.
-     *
+     * 
      * @return the string matching the result to follow
      */
     public String saveFiles() {
@@ -526,7 +520,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Save the selected files with a new file type.
-     *
+     * 
      * @return the string matching the result to follow
      */
     public String changeFileType() {
@@ -540,7 +534,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to validate the files.
-     *
+     * 
      * @return the string matching the result to follow
      */
     @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
@@ -584,7 +578,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * AJAX call to determine if all selected files can be imported.
-     *
+     * 
      * @return null
      */
     @SkipValidation
@@ -614,41 +608,45 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to import the files.
-     *
+     * 
      * @return the string matching the result to follow
      */
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     @Validations(expressions = {
-            @ExpressionValidator(message = "You must select at least one biomaterial or hybridization.",
+            @ExpressionValidator(message = "You must select at least one biomaterial or hybridization.", 
                     expression = "targetNodeIds.size() > 0 || targetAnnotationOption != "
                     + "@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@ASSOCIATE_TO_NODES"),
-            @ExpressionValidator(message = "You must enter a new annotation name.",
+            @ExpressionValidator(message = "You must enter a new annotation name.", 
                     expression = "newAnnotationName != null && "
                     + " newAnnotationName.length() > 0 || targetAnnotationOption != "
-                    + "@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@AUTOCREATE_SINGLE")
-                    })
+                    + "@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@AUTOCREATE_SINGLE"
+                    ) })
     public String importFiles() {
         ErrorCounts errors = new ErrorCounts();
         CaArrayFileSet fileSet = checkImportFiles(errors);
-        if (!fileSet.getFiles().isEmpty()) {
-            List<Long> entityIds = new ArrayList<Long>(this.targetNodeIds);
-            ExperimentDesignNodeType targetNodeType = (this.nodeType == null ? null : this.nodeType.getNodeType());
-            DataImportOptions dataImportOptions = DataImportOptions.getDataImportOptions(this.targetAnnotationOption,
-                    this.newAnnotationName, targetNodeType, entityIds);
-            getFileManagementService().importFiles(getProject(), fileSet, dataImportOptions);
+        if (fileSet.getTotalUncompressedSize() > MAX_IMPORT_TOTAL_SIZE) {
+            ActionHelper.saveMessage(getText("project.fileImport.error.jobTooLarge"));
+        } else {
+            if (!fileSet.getFiles().isEmpty()) {
+                List<Long> entityIds = new ArrayList<Long>(this.targetNodeIds);
+                ExperimentDesignNodeType targetNodeType = (this.nodeType == null ? null : this.nodeType.getNodeType());
+                DataImportOptions dataImportOptions = DataImportOptions.getDataImportOptions(
+                        this.targetAnnotationOption, this.newAnnotationName, targetNodeType, entityIds);
+                getFileManagementService().importFiles(getProject(), fileSet, dataImportOptions);
+            }
+            ActionHelper.saveMessage(getText("project.fileImport.success", new String[] {String.valueOf(fileSet
+                    .getFiles().size()) }));
+            for (String msg : errors.getMessages()) {
+                ActionHelper.saveMessage(msg);
+            }
+            refreshProject();
         }
-        ActionHelper.saveMessage(getText("project.fileImport.success", new String[] {String.valueOf(fileSet.getFiles()
-                .size()) }));
-        for (String msg : errors.getMessages()) {
-            ActionHelper.saveMessage(msg);
-        }
-        refreshProject();
         return prepListUnimportedPage();
     }
 
     /**
      * Checks on which of the selected files can be imported, and stores counts of those that cannot be.
-     *
+     * 
      * @param errors object that stores the error counts
      * @return the set of importable files
      */
@@ -670,7 +668,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Adds supplemental data files to the system.
-     *
+     * 
      * @return the string matching the result to follow
      */
     public String addSupplementalFiles() {
@@ -695,7 +693,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * View the validation messages for the selected files.
-     *
+     * 
      * @return the string matching the result to use.
      */
     public String validationMessages() {
@@ -704,45 +702,42 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * uploads file.
-     *
+     * 
      * @return the string matching the result to follow
-     * @throws IOException on i/o
      */
     @SkipValidation
-    public String upload() throws IOException {
-        if (!validateUpload()) {
-            return UPLOAD_INPUT;
-        }
-        List<String> conflictingFiles = new ArrayList<String>();
-        int count = 0;
-        try {
-            count = getProjectManagementService().uploadFiles(getProject(), getUpload(), getUploadFileName(),
-                    fileNamesToUnpack(), conflictingFiles);
-        } catch (ZipException e) {
-            ActionHelper.saveMessage(getText("errorUploadingZip"));
-            return UPLOAD_INPUT;
-        } catch (InvalidFileException ue) {
-            ActionHelper.saveMessage(getText(ue.getMessage()));
-            return UPLOAD_INPUT;
-        } catch (Exception e) {
-            String msg = "Unable to upload file: " + e.getMessage();
-            LOG.error(msg, e);
-            ActionHelper.saveMessage(getText("errorUploading"));
-            return UPLOAD_INPUT;
-        }
+    public String upload() {
+        if (validateUpload()) {
+            try {
+                FileProcessingResult uploadResult = FileUploadUtils.uploadFiles(getProject(), getUpload(),
+                        getUploadFileName(), fileNamesToUnpack());
 
-        for (String conflict : conflictingFiles) {
-            ActionHelper.saveMessage(getText("experiment.files.upload.filename.exists", new String[] {conflict }));
+                for (String conflict : uploadResult.getConflictingFiles()) {
+                    ActionHelper.saveMessage(getText("experiment.files.upload.filename.exists",
+                            new String[] {conflict }));
+                }
+                ActionHelper.saveMessage(uploadResult.getCount() + " file(s) uploaded.");
+            } catch (InvalidFileException ue) {
+                String errorKey = fileNamesToUnpack().contains(ue.getFile()) ? "errors.uploadingErrorWithZip"
+                        : "errors.uploadingErrorWithAdding";
+                ActionHelper
+                        .saveMessage(getText(errorKey, new String[] {ue.getFile(), getText(ue.getResourceKey()) }));
+                ActionHelper.saveMessage(getText("errors.unpackingErrorWithZip", new String[] {ue.getFile(),
+                        getText(ue.getResourceKey()) }));
+            } catch (Exception e) {
+                String msg = "Unable to upload file: " + e.getMessage();
+                LOG.error(msg, e);
+                ActionHelper.saveMessage(getText("errors.uploading"));
+            } finally {
+                MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
+            }
         }
-
-        ActionHelper.saveMessage(count + " file(s) uploaded.");
-        MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
         return UPLOAD_INPUT;
     }
 
     /**
      * Implements file download. Writes a zip of the selected files to the servlet output stream
-     *
+     * 
      * @return null - the result is written to the servlet output stream
      * @throws IOException if there is an error writing to the stream
      */
@@ -763,7 +758,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     /**
      * This method will download a group of files if the group number is specified or if there is only one download
      * group.
-     *
+     * 
      * @param project the project
      * @param files all selected files
      * @param groupNumber identifies the group to download
@@ -793,7 +788,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Divides the files into download groups.
-     *
+     * 
      * @param files the files to put into download groups
      * @return a list of download file groups
      */
@@ -811,7 +806,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * Add given file to the download groups. The goal is to find the best possible group to put it, such that the total
      * number of groups will be minimized. the algorithm is to put it in the group which will then have the closest to
      * max allowable size without going over
-     *
+     * 
      * @param file the file to add
      */
     private static void addToDownloadGroups(CaArrayFile file, List<DownloadGroup> downloadGroups) {
@@ -834,7 +829,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     /**
      * Zips the selected files and writes the result to the servlet output stream. Also sets content type and
      * disposition appropriately.
-     *
+     * 
      * @param project the project to whicb the files belong
      * @param files the files to zip and send
      * @param filename the filename to use for the zip file. This filename will be set as the Content-disposition header
@@ -874,7 +869,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Returns the filename for a zip of files for the given project, assuming that the download will not be grouped.
-     *
+     * 
      * @param project the project whose files are downloaded
      * @return the filename
      */
@@ -886,7 +881,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * validates user permissions and required file for upload.
-     *
+     * 
      * @return true if validation passes
      */
     private boolean validateUpload() {
@@ -904,7 +899,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * validates user permissions.
-     *
+     * 
      * @return true if validation passes
      */
     private boolean validatePermissions() {
@@ -921,7 +916,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Returns the filename for a zip of files for the given project, when the download is grouped.
-     *
+     * 
      * @param project the project whose files are downloaded
      * @param groupNumber the number of the group whose files are downloaded
      * @param numberOfGroups the total number of groups
@@ -935,7 +930,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Calculates and returns the JSON for the nodes that are the children of the passed in node. in the experiment tree
-     *
+     * 
      * @return null - the JSON is written directly to the response stream
      */
     @SkipValidation
@@ -1013,7 +1008,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         jsonArray.element(json);
     }
 
-    private void addJsonForBiomaterialSamplesRoot(JSONArray jsonArray, AbstractBioMaterial parent,
+    private void addJsonForBiomaterialSamplesRoot(JSONArray jsonArray, AbstractBioMaterial parent, 
             String nodeIdPrefix) {
         JSONObject json = new JSONObject();
         json = new JSONObject();
@@ -1026,7 +1021,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         jsonArray.element(json);
     }
 
-    private void addJsonForBiomaterialExtractsRoot(JSONArray jsonArray, AbstractBioMaterial parent,
+    private void addJsonForBiomaterialExtractsRoot(JSONArray jsonArray, AbstractBioMaterial parent, 
             String nodeIdPrefix) {
         JSONObject json = new JSONObject();
         json.element(ID_PROPERTY, nodeIdPrefix + "_Extracts");
@@ -1079,8 +1074,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             if (newNodesType == ExperimentDesignTreeNodeType.SOURCE) {
                 addJsonForBiomaterialSamplesRoot(associatedRoots, (AbstractBioMaterial) node, newNodeId);
             }
-            if (EnumSet.of(ExperimentDesignTreeNodeType.SOURCE, ExperimentDesignTreeNodeType.SAMPLE).
-                    contains(newNodesType)) {
+            if (EnumSet.of(ExperimentDesignTreeNodeType.SOURCE, ExperimentDesignTreeNodeType.SAMPLE).contains(
+                    newNodesType)) {
                 addJsonForBiomaterialExtractsRoot(associatedRoots, (AbstractBioMaterial) node, newNodeId);
             }
             if (EnumSet.range(ExperimentDesignTreeNodeType.SOURCE, ExperimentDesignTreeNodeType.EXTRACT).contains(
@@ -1102,17 +1097,20 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Action for displaying the upload in background form.
-     *
+     * 
      * @return the string matching the result to follow
      */
     @SkipValidation
     public String uploadInBackground() {
-        return "uploadInBackground";
+        if (getProject().isImportingData()) {
+            ActionHelper.saveMessage(getText("project.inconsistentState.importing_files"));
+        }
+        return "uploadInBackground";            
     }
 
     /**
      * uploaded file.
-     *
+     * 
      * @return uploads uploaded files
      */
     public List<File> getUpload() {
@@ -1121,7 +1119,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * sets file uploads.
-     *
+     * 
      * @param inUploads List
      */
     public void setUpload(List<File> inUploads) {
@@ -1130,7 +1128,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * returns uploaded file name.
-     *
+     * 
      * @return uploadFileNames
      */
     public List<String> getUploadFileName() {
@@ -1139,7 +1137,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * sets uploaded file names.
-     *
+     * 
      * @param inUploadFileNames List
      */
     public void setUploadFileName(List<String> inUploadFileNames) {
@@ -1306,9 +1304,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Returns the names of the files selected to be unpacked.
-     *
+     * 
      * @return fileNamesToUnpack
-     *
+     * 
      */
     private List<String> fileNamesToUnpack() {
         List<String> fileNamesToUnpack = null;
@@ -1422,20 +1420,18 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Computes a file status count for each type of file status.
-     *
+     * 
      * @return Map, map contains key value pair (status, count)
      */
     public EnumMap<FileStatus, Integer> computeFileStatusCounts() {
-        EnumMap<FileStatus, Integer> countMap = new EnumMap<FileStatus, Integer>(
-                FileStatus.class);
+        EnumMap<FileStatus, Integer> countMap = new EnumMap<FileStatus, Integer>(FileStatus.class);
 
         for (FileStatus f : FileStatus.values()) {
             countMap.put(f, 0);
         }
 
         for (CaArrayFile f : getFiles()) {
-            countMap.put(FileStatus.valueOf(f.getStatus()), countMap
-                    .get(FileStatus.valueOf(f.getStatus())) + 1);
+            countMap.put(FileStatus.valueOf(f.getStatus()), countMap.get(FileStatus.valueOf(f.getStatus())) + 1);
         }
         return countMap;
     }
@@ -1478,15 +1474,14 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     /**
      * @param fileStatusCountMap the fileStatusCountMap to set
      */
-    public void setFileStatusCountMap(
-            EnumMap<FileStatus, Integer> fileStatusCountMap) {
+    public void setFileStatusCountMap(EnumMap<FileStatus, Integer> fileStatusCountMap) {
         this.fileStatusCountMap = fileStatusCountMap;
     }
 
     /**
-     * Exports the content of the Experiment, constructing a MAGE-TAB file set describing
-     * the sample-data relationships and annotations.
-     *
+     * Exports the content of the Experiment, constructing a MAGE-TAB file set describing the sample-data relationships
+     * and annotations.
+     * 
      * @return the result of performing the action
      * @throws IOException if there is an error writing to the stream
      */
@@ -1522,8 +1517,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         return Action.SUCCESS;
     }
 
-    private FileInputStream zipAndSendResponse(HttpServletResponse response, String baseFileName,
-            File idfFile, File sdrfFile) throws IOException {
+    private FileInputStream zipAndSendResponse(HttpServletResponse response, String baseFileName, File idfFile,
+            File sdrfFile) throws IOException {
         FileInputStream fis;
         response.setContentType("application/zip");
         response.addHeader("Content-disposition", "filename=\"" + baseFileName + ".magetab.zip" + "\"");

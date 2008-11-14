@@ -267,4 +267,26 @@ public final class CaArrayFileSet implements Serializable {
         }
         return null;
     }
+    
+    /**
+     * @return the combined compressed size of the files in this fileset
+     */
+    public long getTotalCompressedSize() {
+        long size = 0;
+        for (CaArrayFile file : files) {
+            size += file.getCompressedSize();
+        }
+        return size;
+    }
+
+    /**
+     * @return the combined uncompressed size of the files in this fileset
+     */
+    public long getTotalUncompressedSize() {
+        long size = 0;
+        for (CaArrayFile file : files) {
+            size += file.getUncompressedSize();
+        }
+        return size;
+    }
 }
