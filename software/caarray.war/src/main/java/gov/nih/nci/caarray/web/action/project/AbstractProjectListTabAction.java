@@ -86,8 +86,12 @@ import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataS
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
+import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -189,6 +193,11 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
         if (checkResult != null) {
             return checkResult;
         }
+
+        if (!checkBioMaterialName()) {
+            return edit();
+        }
+
         if (this.getItem().getId() == null) {
             getCollection().add(getItem());
             ActionHelper.saveMessage(getText("experiment.items.created", new String[] {getItemName()}));
@@ -198,6 +207,33 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
         String result = super.save();
         updatePagedList();
         return result;
+    }
+
+    private boolean checkBioMaterialName() {
+        // validate biomaterial name
+        if (getItem() instanceof AbstractExperimentDesignNode) {
+            AbstractExperimentDesignNode bio = (AbstractExperimentDesignNode) getItem();
+            for (Object obj : getCollection()) {
+                    AbstractExperimentDesignNode abm = (AbstractExperimentDesignNode) obj;
+                    if (bio.getName().equals(abm.getName())
+                            && bio.getId() != abm.getId()) {
+                        String errorField = "current" + getBioMaterialType(bio) + ".name";
+                        List<String> strList = new ArrayList<String>();
+                        strList.add(getBioMaterialType(bio));
+                        strList.add(bio.getName());
+                        addFieldError(errorField, getText("experiment.annotations.bioname.duplicate", strList));
+                        return false;
+                    }
+            }
+        }
+
+        return true;
+    }
+
+    private String getBioMaterialType(AbstractExperimentDesignNode bio) {
+        String className = bio.getClass().getName()
+            .substring(bio.getClass().getName().lastIndexOf(".") + 1);
+        return getText("experiment." + className.toLowerCase(Locale.getDefault()));
     }
 
     /**

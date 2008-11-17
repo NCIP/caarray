@@ -157,7 +157,9 @@ public class ProjectSamplesActionTest extends AbstractCaarrayTest {
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
         DUMMY_SAMPLE = new Sample();
         DUMMY_SAMPLE.setId(1L);
+        DUMMY_SAMPLE.setName("Dummy Sample");
         DUMMY_SOURCE = new Source();
+        DUMMY_SOURCE.setName("Dummy Source");
         ServletActionContext.setRequest(new MockHttpServletRequest());
         mockResponse = new MockHttpServletResponse();
         ServletActionContext.setResponse(mockResponse);
@@ -173,12 +175,14 @@ public class ProjectSamplesActionTest extends AbstractCaarrayTest {
         // valid current sample id
         Sample sample = new Sample();
         sample.setId(1L);
+        sample.setName("sample1");
         action.setCurrentSample(sample);
         action.prepare();
         assertEquals(DUMMY_SAMPLE, action.getCurrentSample());
 
         //valid sample external id
         sample = new Sample();
+        sample.setName("sample2");
         sample.setExternalSampleId("abc");
         action.setCurrentSample(sample);
         action.prepare();
@@ -187,6 +191,7 @@ public class ProjectSamplesActionTest extends AbstractCaarrayTest {
         // invalid current sample id
         sample = new Sample();
         sample.setId(2L);
+        sample.setName("sample3");
         action.setCurrentSample(sample);
         try {
             action.prepare();
@@ -204,6 +209,7 @@ public class ProjectSamplesActionTest extends AbstractCaarrayTest {
 
         //valid sample external id
         Sample sample = new Sample();
+        sample.setName("sample4");
         sample.setExternalSampleId("abc");
         action.setCurrentSample(sample);
         action.prepare();
@@ -211,6 +217,7 @@ public class ProjectSamplesActionTest extends AbstractCaarrayTest {
 
         // invalid current sample id
         sample = new Sample();
+        sample.setName("sample5");
         sample.setExternalSampleId("def");
         action.setCurrentSample(sample);
         try {
@@ -293,10 +300,12 @@ public class ProjectSamplesActionTest extends AbstractCaarrayTest {
 
         // update associations
         Source toAdd = new Source();
+        toAdd.setName("source1_to_add");
         List<Source> addList = new ArrayList<Source>();
         addList.add(toAdd);
         action.setItemsToAssociate(addList);
         Source toRemove = new Source();
+        toRemove.setName("source_to_remove");
         toRemove.getSamples().add(DUMMY_SAMPLE);
         List<Source> removeList = new ArrayList<Source>();
         removeList.add(toRemove);
@@ -344,6 +353,51 @@ public class ProjectSamplesActionTest extends AbstractCaarrayTest {
         assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
         assertEquals(1, DUMMY_SAMPLE.getProtocolApplications().size());
         assertEquals(p3, DUMMY_SAMPLE.getProtocolApplications().get(0).getProtocol());
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testSaveDuplicate() {
+
+        action.getProject().getExperiment().getSamples().add(DUMMY_SAMPLE);
+
+        // add a sample, with duplicate name
+        Sample sam = new Sample();
+        sam.setName(DUMMY_SAMPLE.getName());
+        sam.getSources().add(DUMMY_SOURCE);
+
+        // try to save dup.
+        action.setCurrentSample(sam);
+        assertEquals(Action.INPUT, action.save());
+        assertEquals(1, action.getFieldErrors().size());
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testEditSampleRenameAsDuplicate() {
+
+        action.getProject().getExperiment().getSamples().add(DUMMY_SAMPLE);
+
+        // add another sample, with valid name
+        Sample sam = new Sample();
+        sam.setId(2L);
+        sam.setName("test_name");
+        sam.getSources().add(DUMMY_SOURCE);
+
+        action.getProject().getExperiment().getSamples().add(sam);
+
+
+        // try to edit sam w/ valid name.
+        sam.setName("name_is_valid");
+        action.setCurrentSample(sam);
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
+        assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
+
+        // try to edit sam with invalid name
+        sam.setName(DUMMY_SAMPLE.getName());
+        action.setCurrentSample(sam);
+        assertEquals(Action.INPUT, action.save());
+        assertEquals(1, action.getFieldErrors().size());
     }
 
     @Test
