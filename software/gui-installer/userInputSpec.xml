@@ -142,11 +142,11 @@
 
 
 
-    <variable name="jboss.server.hostname" value="$HOST_NAME"/>
-    <variable name="jboss.server.port" value="38080"/>
-    <variable name="jboss.server.jndi.port" value="31099"/>
-    <variable name="jboss.server.name" value="default"/>
-    <variable name="jboss.server.rmi.port" value="31098"/>
+        <variable name="jboss.server.hostname" value="$HOST_NAME"/>
+        <variable name="jboss.server.port" value="38080"/>
+        <variable name="jboss.server.jndi.port" value="31099"/>
+        <variable name="jboss.server.name" value="default"/>
+        <variable name="jboss.server.rmi.port" value="31098"/>
 
         <variable name="jboss.ejbinvoker.port" value="33873"/>
         <variable name="jboss.cobraorb.port" value="33528"/>
@@ -454,7 +454,7 @@
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="divider" align="top"/>
         <field type="dir" align="left" variable="existing.installation.home">
-            <spec txt="Select the Previous Installation of Caarray Application" size="25" set="$SYSTEM_user_home/apps/caarray-app"/>
+            <spec txt="Select the Previous Installation of Caarray Application" size="25" set="$SYSTEM_user_home"/>
         </field>
         <field type="text" align="left" variable="jboss.server.hostname">
             <spec txt="Application Host Name " size="15" set="$HOST_NAME"/>
@@ -791,7 +791,7 @@
         <field type="space"/>
         <field type="staticText" align="left" txt="JBoss URL [http://${jboss.server.hostname}:${jboss.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="JBoss Log Dir [${UserPathPanelVariable}/jboss-4.0.5.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
+        <field type="staticText" align="left" txt="JBoss Log Dir [${UserPathPanelVariable}/jboss-4.0.5.GA/server/${jboss.server.name}/log] - This is where the logs can be found."/>
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid Home [${UserPathPanelVariable}/jboss-4.0.4.GA] - This is where Grid Server is installed."/>
         <field type="space"/>
@@ -799,9 +799,9 @@
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid Server Port [${grid.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
+        <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/wsrf/services/cagrid/CaArraySvc] - This will be the url the grid index service uses to communicate with your caArray grid service."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="Grid Log Dir [${UserPathPanelVariable}/jboss-4.0.4.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
+        <field type="staticText" align="left" txt="Grid Log Dir [${UserPathPanelVariable}/jboss-4.0.4.GA/server/${jboss.server.name}/log] - This is where the caArray grid service logs can be found."/>
 
 
         <field type="space"/>
@@ -821,9 +821,9 @@
         <field type="space"/>
         <field type="staticText" align="left" txt="JBoss Server Port [${jboss.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="JBoss URL [http://${existing.installation.home}:${jboss.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
+        <field type="staticText" align="left" txt="JBoss URL [http://${jboss.server.hostname}:${jboss.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="JBoss Log Dir [${existing.installation.home}/jboss-4.0.5.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
+        <field type="staticText" align="left" txt="JBoss Log Dir [${existing.installation.home}/jboss-4.0.5.GA/server/${jboss.server.name}/log] - This is where the logs can be found."/>
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid Home [${existing.installation.home}/jboss-4.0.4.GA] - This is where Grid Server is installed."/>
         <field type="space"/>
@@ -831,9 +831,9 @@
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid Server Port [${grid.server.port}] - This is the HTTP port for JBoss.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
+        <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/wsrf/services/cagrid/CaArraySvc] - This will be the url the grid index service uses to communicate with your caArray grid service."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="Grid Log Dir [${existing.installation.home}/jboss-4.0.4.GA/server/${jboss.server.name}] - This is where the logs can be found."/>
+        <field type="staticText" align="left" txt="Grid Log Dir [${existing.installation.home}/jboss-4.0.4.GA/server/${jboss.server.name}/log] - This is where the caArray grid service logs can be found."/>
 
     </panel>
 

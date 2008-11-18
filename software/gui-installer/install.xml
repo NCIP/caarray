@@ -63,6 +63,7 @@
                     </authors>
                     <url>http://www.cancer.org/</url>
                     <javaversion>1.5</javaversion>
+                    <uninstaller write="no"/>
                 </info>
 
                 <!--
@@ -199,9 +200,8 @@
                     <panel classname="UserInputPanel"  id="UserInputPanel.15" condition="install"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.16" condition="upgrade"/>
                     <panel classname="InstallationGroupPanel"/>
-                    <panel classname="SummaryPanel"/>
                     <panel classname="ExtendedInstallPanel"/>
-                    <panel classname="FinishPanel"/>
+                    <panel classname="SimpleFinishPanel"/>
                 </panels>
 
                 <listeners>
