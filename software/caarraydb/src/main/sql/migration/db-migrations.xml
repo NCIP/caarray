@@ -46,6 +46,6 @@
         <sql-script>migrate-2.1.1.rc1-to-2.2.0.alpha1.sql</sql-script>
     </migration>
     <migration fromVersion="2.2.0.alpha1" toVersion="2.2.0.rc1">
-        <migrator-class>gov.nih.nci.caarray.web.upgrade.MergeDuplicateBiomaterialsMigrator</migrator-class>
+        <migrator-class renameHybridizations="true">gov.nih.nci.caarray.web.upgrade.MergeDuplicateBiomaterialsMigrator</migrator-class>
     </migration>
 </migrations>

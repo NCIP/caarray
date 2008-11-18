@@ -86,6 +86,7 @@ package gov.nih.nci.caarray.domain.hybridization;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -148,6 +149,7 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
     private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
     private Experiment experiment;
+    private Set<HybridizationData> hybridizationData = new HashSet<HybridizationData>();
 
     /**
      * Gets the name.
@@ -422,6 +424,21 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
     }
 
     /**
+     * @return the hybridizationData
+     */
+    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
+    public Set<HybridizationData> getHybridizationData() {
+        return hybridizationData;
+    }
+
+    /**
+     * @param hybridizationData the hybridizationData to set
+     */
+    public void setHybridizationData(Set<HybridizationData> hybridizationData) {
+        this.hybridizationData = hybridizationData;
+    }
+
+    /**
      * @return all the data files related to this hybridization (raw or derived)
      */
     @Transient
@@ -513,6 +530,7 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
         super.merge(hyb);
         mergeSimpleHybridizationProperties(hyb);
         mergeArrayData(hyb);
+        mergeHybridizationData(hyb);
         mergeArray(hyb);
         mergeImages(hyb);
         mergeFactorValues(hyb);
@@ -563,4 +581,10 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
         hyb.getDerivedDataCollection().clear();
     }
 
+    private void mergeHybridizationData(Hybridization hyb) {
+        for (HybridizationData data : hyb.getHybridizationData()) {
+            data.setHybridization(this);
+        }
+        hyb.getHybridizationData().clear();
+    }
 }

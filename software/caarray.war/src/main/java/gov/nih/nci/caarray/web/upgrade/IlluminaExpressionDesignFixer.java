@@ -219,4 +219,5 @@ public final class IlluminaExpressionDesignFixer extends AbstractMigrator implem
             && FileType.ILLUMINA_DESIGN_CSV.equals(design.getFirstDesignFile().getFileType())
             && AssayType.GENE_EXPRESSION.equals(design.getAssayTypeEnum());
     }
+
 }

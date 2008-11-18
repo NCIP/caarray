@@ -82,11 +82,12 @@
  */
 package gov.nih.nci.caarray.web.upgrade;
 
+
 /**
  * @author Winston Cheng
  *
  */
-public class TestMigrator implements Migrator {
+public class TestMigrator extends AbstractMigrator implements Migrator {
     private static boolean migrated;
 
     public void migrate() throws MigrationStepFailedException {
@@ -106,4 +107,5 @@ public class TestMigrator implements Migrator {
     public static void setMigrated(boolean migrated) {
         TestMigrator.migrated = migrated;
     }
+
 }

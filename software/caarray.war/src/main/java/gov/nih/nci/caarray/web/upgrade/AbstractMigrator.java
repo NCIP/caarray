@@ -82,13 +82,16 @@
  */
 package gov.nih.nci.caarray.web.upgrade;
 
-import affymetrix.fusion.chp.FusionCHPGenericData;
-import affymetrix.fusion.chp.FusionCHPLegacyData;
-import affymetrix.fusion.chp.FusionCHPTilingData;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+
+import org.w3c.dom.Element;
+
+import affymetrix.fusion.chp.FusionCHPGenericData;
+import affymetrix.fusion.chp.FusionCHPLegacyData;
+import affymetrix.fusion.chp.FusionCHPTilingData;
 
 /**
  * Base class with useful resources for migrators.
@@ -139,6 +142,13 @@ public abstract class AbstractMigrator implements Migrator {
      */
     protected final ArrayDesignService getDesignService() {
         return designService;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setElement(Element element) {
+        // no-op
     }
 
 }

@@ -91,8 +91,10 @@ import org.w3c.dom.Element;
 class ClassBasedMigrationStep extends AbstractMigrationStep {
 
     private final String className;
+    private final Element element;
 
     ClassBasedMigrationStep(Element element) {
+        this.element = element;
         this.className = getContent(element);
     }
 
@@ -104,6 +106,7 @@ class ClassBasedMigrationStep extends AbstractMigrationStep {
             Object migratorObject = migratorClass.newInstance();
             if (migratorObject instanceof Migrator) {
                 Migrator migrator = (Migrator) migratorObject;
+                migrator.setElement(element);
                 migrator.migrate();
             } else {
                 throw new MigrationStepFailedException("Configured migration class "

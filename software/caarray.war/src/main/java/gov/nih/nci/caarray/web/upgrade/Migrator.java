@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.web.upgrade;
 
+import org.w3c.dom.Element;
+
 /**
  * Interface to be implemented by any migration utility classes.
  */
@@ -93,4 +95,9 @@ interface Migrator {
      */
     void migrate() throws MigrationStepFailedException;
 
+    /**
+     * Set the XML element used to define this Migrator.
+     * @param element the XML element to set
+     */
+    void setElement(Element element);
 }

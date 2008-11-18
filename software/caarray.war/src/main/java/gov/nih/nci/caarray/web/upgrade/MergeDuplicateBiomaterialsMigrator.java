@@ -93,8 +93,10 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.List;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
+import org.w3c.dom.Element;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
@@ -106,6 +108,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.CyclomaticComplexity" })
 public class MergeDuplicateBiomaterialsMigrator extends AbstractMigrator {
     private static final Logger LOG = Logger.getLogger(MergeDuplicateBiomaterialsMigrator.class);
+    private Element element;
 
     /**
      * {@inheritDoc}
@@ -144,7 +147,7 @@ public class MergeDuplicateBiomaterialsMigrator extends AbstractMigrator {
     }
 
     private void mergeHybs() {
-        boolean alwaysMerge = false;
+        boolean renameHybs = BooleanUtils.toBoolean(element.getAttribute("renameHybridizations"));
         List<Hybridization> hybs = findDuplicateHybs();
         LOG.debug(hybs.size() + " matching hybs");
         Hybridization currentHyb = null;
@@ -160,19 +163,19 @@ public class MergeDuplicateBiomaterialsMigrator extends AbstractMigrator {
                 continue;
             }
 
-            if (alwaysMerge) {
-                currentHyb.merge(hyb);
-                remove(hyb);
-            } else {
+            if (renameHybs) {
                 Experiment e = hyb.getExperiment();
                 while (e.getHybridizationByName(hyb.getName() + "-" + suffix) != null) {
                     suffix++;
                 }
                 hyb.setName(hyb.getName() + "-" + suffix);
                 save(hyb);
+            } else {
+                currentHyb.merge(hyb);
+                remove(hyb);
             }
         }
-        if (currentHyb != null && alwaysMerge) {
+        if (currentHyb != null && !renameHybs) {
             save(currentHyb);
         }
     }
@@ -210,6 +213,14 @@ public class MergeDuplicateBiomaterialsMigrator extends AbstractMigrator {
 
     private void remove(PersistentObject persistentObject) {
         getDaoFactory().getSampleDao().remove(persistentObject);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setElement(Element element) {
+        this.element = element;
     }
 
 }
