@@ -597,7 +597,7 @@ public class SearchAction extends ActionSupport {
     }
 
     private boolean checkAdvSampleFields() {
-        if (SEARCH_CATEGORY_OTHER_CHAR.equals(categorySample) && selectedCategory == null) {
+        if (SEARCH_CATEGORY_OTHER_CHAR.equals(categorySample) && (selectedCategory == null || keyword.length() < 3)) {
             addActionError(getText("search.error.otherchars"));
             return false;
         } else {

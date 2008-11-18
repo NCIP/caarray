@@ -188,6 +188,10 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         tbsq.setString(KEYWORD_SUB, "%" + keyword + "%");
         List<TermBasedCharacteristic> tbsList = tbsq.list();
 
+        if (tbsList.isEmpty()) {
+            return 0;
+        }
+
         Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
         StringBuffer sb = new StringBuffer();
         sb.append("SELECT count(DISTINCT s)");

@@ -83,7 +83,8 @@
                 }
                 else if ($('searchTypeSEARCH_BY_SAMPLE').checked == true &&
                   $('selectSampleCat').value == 'OTHER_CHARACTERISTICS' &&
-                    ($('filterCharBoxSelectedItemDiv').lastChild == null || $('filterCharBoxSelectedItemDiv').lastChild.id == null)) {
+                    ($('filterCharBoxSelectedItemDiv').lastChild == null
+                      || $('filterCharBoxSelectedItemDiv').lastChild.id == null)) {
                         alert('A characteristic must be selected.');
                         return false;
                 }
@@ -93,7 +94,6 @@
                     alert('An external sample id must be at least 1 character long.');
                     return false;
                 } else if ($('searchTypeSEARCH_BY_SAMPLE').checked == true &&
-                    $('selectSampleCat').value != 'OTHER_CHARACTERISTICS' &&
                     $('selectSampleCat').value != 'SAMPLE_ORGANISM' &&
                     $('selectSampleCat').value != 'SAMPLE_EXTERNAL_ID' &&
                     $('keywordTxtField').value.length < 3 ) {
