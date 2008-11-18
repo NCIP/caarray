@@ -105,7 +105,7 @@
         if (!checkAnyFilesSelected()) {
             alert("At least one file must be selected");
         } else if (jobSize >= MAX_JOB_SIZE) {
-            alert("<fmt:message key='project.fileImport.error.jobTooLarge'/> - " + jobSize + ", " + MAX_JOB_SIZE);
+            alert("<fmt:message key='project.fileImport.error.jobTooLarge'/>");
         } else if (isMageTabImport()) {
             doImportFiles(importUrl);
         } else {
@@ -167,14 +167,12 @@
         // when new nodes are loaded, disable them if a different node type is selected
         // also add a handler to each to handle disabling different node types if checked
         treeLoader.on("load", function(tl, node) {
-            console.log("onload for node " + node.id);
             if (ExtTreeUtils.hasCheckedNodes(node.getOwnerTree())) {
                 disableNodesWithOtherNodeType(node, getCheckedNodeType(node.getOwnerTree().getRootNode()));
             }
             node.childNodes.each(function(childNode) {
                 childNode.on("checkchange", function(nd, checked) {
                     if (checked) {
-                        console.log("disabling nodes without node type " + nd.attributes.nodeType);
                         disableNodesWithOtherNodeType(nd.getOwnerTree().getRootNode(), nd.attributes.nodeType);
                     } else if (!ExtTreeUtils.hasCheckedNodes(nd.getOwnerTree())) {
                         ExtTreeUtils.setEnabledStatus(nd.getOwnerTree().getRootNode(), true);
