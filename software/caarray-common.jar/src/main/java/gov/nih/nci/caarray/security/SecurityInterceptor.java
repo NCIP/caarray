@@ -158,7 +158,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
     }
 
     private void onCollectionChange(Object collection) {
-        if (isEnabled() && collection instanceof PersistentCollection) {
+        if (collection instanceof PersistentCollection) {
             PersistentCollection pc = (PersistentCollection) collection;
 
             if (pc.getOwner() instanceof AccessProfile) {
@@ -173,7 +173,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
                 Experiment experiment = (Experiment) pc.getOwner();
                 saveEntityForProcessing(BIOMATERIAL_CHANGES, new ArrayList<Project>(), experiment.getProject());
             }
-        }    
+        }
     }
 
     /**
@@ -184,15 +184,15 @@ public class SecurityInterceptor extends EmptyInterceptor {
     @Override
     public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 
-        if (isEnabled() && entity instanceof Protectable) {
+        if (entity instanceof Protectable) {
             saveEntityForProcessing(NEWOBJS, new ArrayList<Protectable>(), (Protectable) entity);
         }
 
-        if (isEnabled() && entity instanceof AccessProfile) {
+        if (entity instanceof AccessProfile) {
             saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), (AccessProfile) entity);
         }
 
-        if (isEnabled() && entity instanceof CaArrayFile) {
+        if (entity instanceof CaArrayFile) {
             saveEntityForProcessing(FILES, new ArrayList<CaArrayFile>(), (CaArrayFile) entity);
         }
 
@@ -206,11 +206,11 @@ public class SecurityInterceptor extends EmptyInterceptor {
      */
     @Override
     public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
-        if (isEnabled() && entity instanceof Protectable) {
+        if (entity instanceof Protectable) {
             verifyWritePrivilege((Protectable) entity, UsernameHolder.getCsmUser());
             saveEntityForProcessing(DELETEDOBJS, new ArrayList<Protectable>(), (Protectable) entity);
         }
-        if (isEnabled() && entity instanceof ProtectableDescendent) {
+        if (entity instanceof ProtectableDescendent) {
             verifyWritePrivilege((ProtectableDescendent) entity, UsernameHolder.getCsmUser());
         }
     }
@@ -224,13 +224,13 @@ public class SecurityInterceptor extends EmptyInterceptor {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
             String[] propertyNames, Type[] types) {
-        if (isEnabled() && entity instanceof Protectable) {
+        if (entity instanceof Protectable) {
             verifyWritePrivilege((Protectable) entity, UsernameHolder.getCsmUser());
         }
-        if (isEnabled() && entity instanceof ProtectableDescendent) {
+        if (entity instanceof ProtectableDescendent) {
             verifyWritePrivilege((ProtectableDescendent) entity, UsernameHolder.getCsmUser());
         }
-        if (isEnabled() && entity instanceof AccessProfile) {
+        if (entity instanceof AccessProfile) {
             saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), (AccessProfile) entity);
         }
 
@@ -255,14 +255,14 @@ public class SecurityInterceptor extends EmptyInterceptor {
     }
 
     /**
-     * Checks whether the given user has WRITE privilege to given object, and if not, throws a
+     * If enabled, checks whether the given user has WRITE privilege to given object, and if not, throws a
      * PermissionDeniedException.
      *
      * @param o the Object to check
      * @param user the user to check
      */
     private static void verifyWritePrivilege(PersistentObject o, User user) {
-        if (!SecurityUtils.canWrite(o, user)) {
+        if (isEnabled() && !SecurityUtils.canWrite(o, user)) {
             throw new CallbackException("Attempted operation not allowed by security", new PermissionDeniedException(
                     o, SecurityUtils.WRITE_PRIVILEGE, user.getLoginName()));
         }
@@ -300,7 +300,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
             SecurityUtils.handleNewProtectables(NEWOBJS.get());
             SecurityUtils.handleBiomaterialChanges(BIOMATERIAL_CHANGES.get(), NEWOBJS.get());
             SecurityUtils.handleDeleted(DELETEDOBJS.get());
-            SecurityUtils.handleAccessProfiles(PROFILES.get());            
+            SecurityUtils.handleAccessProfiles(PROFILES.get());
         } finally {
             clear();
         }
@@ -329,7 +329,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
         FILES.set(null);
     }
 
-    private boolean isEnabled() {
+    private static boolean isEnabled() {
         return !SecurityUtils.isPrivilegedMode();
     }
 }

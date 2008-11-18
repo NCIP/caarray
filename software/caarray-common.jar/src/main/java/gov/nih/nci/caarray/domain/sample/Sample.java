@@ -84,6 +84,8 @@
 package gov.nih.nci.caarray.domain.sample;
 
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.permissions.AccessProfile;
+import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
@@ -115,9 +117,9 @@ import org.hibernate.validator.Length;
    */
 @Entity
 @DiscriminatorValue("SA")
-@UniqueConstraint(fields = { 
-        @UniqueConstraintField(name = "externalSampleId"), 
-        @UniqueConstraintField(name = "experiment", nullsEqual = false) }, 
+@UniqueConstraint(fields = {
+        @UniqueConstraintField(name = "externalSampleId"),
+        @UniqueConstraintField(name = "experiment", nullsEqual = false) },
         generateDDLConstraint = false, message = "{sample.externalSampleId.uniqueConstraint}")
 public class Sample extends AbstractBioMaterial implements Protectable {
     /**
@@ -229,7 +231,7 @@ public class Sample extends AbstractBioMaterial implements Protectable {
         }
         return hybs;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -256,7 +258,7 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     public Set<? extends AbstractExperimentDesignNode> getDirectSuccessors() {
         return getExtracts();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -278,7 +280,7 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     }
 
     /**
-     * Comparator for samples by name. 
+     * Comparator for samples by name.
      */
     public static class ByNameComparator implements Comparator<Sample> {
         /**
@@ -287,6 +289,30 @@ public class Sample extends AbstractBioMaterial implements Protectable {
          */
         public int compare(Sample s1, Sample s2) {
             return new CompareToBuilder().append(s1.getName(), s2.getName()).toComparison();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void merge(AbstractExperimentDesignNode node) {
+        Sample sample = (Sample) node;
+        super.merge(sample);
+        if (this.getExternalSampleId() == null) {
+            this.setExternalSampleId(sample.getExternalSampleId());
+        }
+
+        for (AccessProfile profile : this.getExperiment().getProject().getAllAccessProfiles()) {
+            SampleSecurityLevel thisLevel = profile.getSampleSecurityLevels().get(this);
+            SampleSecurityLevel otherLevel = profile.getSampleSecurityLevels().get(sample);
+            boolean replaceSecLevel = (thisLevel == null && otherLevel != null)
+                    || (thisLevel != null && otherLevel != null
+                            && thisLevel.compareTo(profile.getSampleSecurityLevels().get(sample)) > 0);
+            if (replaceSecLevel) {
+                profile.getSampleSecurityLevels().put(this, otherLevel);
+            }
+            profile.getSampleSecurityLevels().remove(sample);
         }
     }
 }

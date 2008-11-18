@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -95,9 +96,9 @@ import org.hibernate.annotations.ForeignKey;
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-  /**
-
-   */
+/**
+ * @author Rashmi Srinivasa
+ */
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 public class ParameterValue extends AbstractCaArrayEntity {
@@ -110,6 +111,24 @@ public class ParameterValue extends AbstractCaArrayEntity {
     private String value;
     private Parameter parameter;
     private ProtocolApplication protocolApplication;
+
+    /**
+     * Default constructor.
+     */
+    public ParameterValue() {
+        // needed by hibernate
+    }
+
+    /**
+     * Constructs a new ParameterValue based on an existing one.
+     * @param other other ParameterValue to copy
+     */
+    public ParameterValue(ParameterValue other) {
+        this.unit = other.unit;
+        this.value = other.value;
+        this.parameter = other.parameter;
+        this.protocolApplication = other.protocolApplication;
+    }
 
     /**
      * Gets the unit.
@@ -193,4 +212,15 @@ public class ParameterValue extends AbstractCaArrayEntity {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
+
+    /**
+     * Checks if two ParameterValues are the same, ignoring ProtocolApplications.
+     * @param other other ParameterValue to compare to
+     * @return true if they match
+     */
+    public boolean matches(final ParameterValue other) {
+        return new EqualsBuilder().append(parameter, other.parameter).append(value, other.value).append(unit,
+                other.unit).isEquals();
+    }
+
 }

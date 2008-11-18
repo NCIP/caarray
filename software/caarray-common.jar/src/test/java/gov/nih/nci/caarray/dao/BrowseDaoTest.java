@@ -193,8 +193,6 @@ public class BrowseDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_3.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM_3);
         DUMMY_EXPERIMENT_3.setManufacturer(DUMMY_PROVIDER);
-
-
     }
 
     @Test

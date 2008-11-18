@@ -64,8 +64,6 @@ import gov.nih.nci.caarray.dao.stub.OrganismDaoStub;
 import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
-import gov.nih.nci.caarray.domain.sample.Source;
-import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;

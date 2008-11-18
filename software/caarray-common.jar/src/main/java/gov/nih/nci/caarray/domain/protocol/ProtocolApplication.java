@@ -118,6 +118,29 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     private Set<ParameterValue> values = new HashSet<ParameterValue>();
 
     /**
+     * Default constructor.
+     */
+    public ProtocolApplication() {
+        // needed for hibernate
+    }
+
+    /**
+     * Constructs a new ProtocolApplication based on another.
+     * @param other other ProtocolApplication to make a copy of
+     */
+    public ProtocolApplication(ProtocolApplication other) {
+        this.protocol = other.protocol;
+        this.image = other.image;
+        this.arrayData = other.arrayData;
+        this.notes = other.notes;
+        for (ParameterValue pv : other.values) {
+            ParameterValue newPv = new ParameterValue(pv);
+            newPv.setProtocolApplication(this);
+            values.add(newPv);
+        }
+    }
+
+    /**
      * Gets the protocol.
      *
      * @return the protocol

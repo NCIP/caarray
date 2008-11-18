@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;

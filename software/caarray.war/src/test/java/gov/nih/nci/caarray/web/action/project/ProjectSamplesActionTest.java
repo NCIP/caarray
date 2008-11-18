@@ -353,6 +353,7 @@ public class ProjectSamplesActionTest extends AbstractCaarrayTest {
         assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
         assertEquals(1, DUMMY_SAMPLE.getProtocolApplications().size());
         assertEquals(p3, DUMMY_SAMPLE.getProtocolApplications().get(0).getProtocol());
+
     }
 
     @Test

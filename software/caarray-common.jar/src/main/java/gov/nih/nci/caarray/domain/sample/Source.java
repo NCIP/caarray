@@ -85,8 +85,8 @@ package gov.nih.nci.caarray.domain.sample;
 
 import gov.nih.nci.caarray.domain.contact.AbstractContact;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 
 import java.util.Collections;
@@ -176,7 +176,7 @@ public class Source extends AbstractBioMaterial {
     }
 
     /**
-     * @return the experiment to which this source belongs
+     * {@inheritDoc}
      */
     @ManyToOne
     @JoinTable(name = "experimentsource",
@@ -202,7 +202,7 @@ public class Source extends AbstractBioMaterial {
             .append("providers", providers)
             .toString();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -214,7 +214,7 @@ public class Source extends AbstractBioMaterial {
         }
         return hybs;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -241,7 +241,7 @@ public class Source extends AbstractBioMaterial {
     public Set<? extends AbstractExperimentDesignNode> getDirectSuccessors() {
         return getSamples();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -258,5 +258,15 @@ public class Source extends AbstractBioMaterial {
         Sample sample = (Sample) successor;
         getSamples().add(sample);
         sample.getSources().add(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void merge(AbstractExperimentDesignNode node) {
+        Source source = (Source) node;
+        super.merge(source);
+        this.getProviders().addAll(source.getProviders());
     }
 }

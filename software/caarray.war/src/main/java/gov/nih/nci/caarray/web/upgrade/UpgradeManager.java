@@ -174,7 +174,7 @@ public final class UpgradeManager {
         }
         return currentVersion;
     }
-    
+
     private void computeUpgradeList() {
         String version = getCurrentVersion();
         Migration migration;
@@ -189,7 +189,7 @@ public final class UpgradeManager {
      */
     public void performUpgrades() {
         computeUpgradeList();
-        
+
         if (!isUpgradeRequired()) {
             return;
         }

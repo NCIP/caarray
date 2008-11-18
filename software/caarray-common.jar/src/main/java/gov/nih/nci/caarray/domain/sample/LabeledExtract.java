@@ -84,8 +84,8 @@
 package gov.nih.nci.caarray.domain.sample;
 
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.Protectable;
@@ -116,7 +116,6 @@ import org.hibernate.annotations.ForeignKey;
 @DiscriminatorValue("LA")
 public class LabeledExtract extends AbstractBioMaterial implements ProtectableDescendent {
     private static final long serialVersionUID = 1234567890L;
-
 
     private Term label;
     private Set<Extract> extracts = new HashSet<Extract>();
@@ -239,7 +238,7 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
             .append("label", label)
             .toString();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -266,7 +265,7 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
     public Set<? extends AbstractExperimentDesignNode> getDirectSuccessors() {
         return getHybridizations();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -285,5 +284,18 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
         Hybridization hyb = (Hybridization) successor;
         getHybridizations().add(hyb);
         hyb.getLabeledExtracts().add(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void merge(AbstractExperimentDesignNode node) {
+        LabeledExtract labeledExtract = (LabeledExtract) node;
+        super.merge(labeledExtract);
+
+        if (this.getLabel() == null) {
+            this.setLabel(labeledExtract.getLabel());
+        }
     }
 }

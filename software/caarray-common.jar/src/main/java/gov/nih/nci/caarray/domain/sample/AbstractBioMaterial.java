@@ -1,5 +1,4 @@
 /**
- * The software subject to this notice and license includes both human readable
  * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
@@ -88,10 +87,8 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
-import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.AttributeMutator;
@@ -137,7 +134,7 @@ import org.hibernate.validator.NotNull;
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "discriminator", discriminatorType = DiscriminatorType.STRING)
-public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode implements ProtocolApplicable {
+public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
     private static final long serialVersionUID = 1234567890L;
 
     private Term tissueSite;
@@ -374,12 +371,58 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode i
     }
 
     /**
-     * Get the experiment to which this bio material belongs.
-     * @return the experiment to which this bio material belongs
+     * {@inheritDoc}
      */
-    @Transient
-    public abstract Experiment getExperiment();
+    @Override
+    public void merge(AbstractExperimentDesignNode node) {
+        AbstractBioMaterial bm = (AbstractBioMaterial) node;
+        super.merge(bm);
 
+        mergeBioMaterialTerms(bm);
+        if (this.getDescription() == null) {
+            this.setDescription(bm.getDescription());
+        }
+        if (this.getOrganism() == null) {
+            this.setOrganism(bm.getOrganism());
+        }
+
+        mergeCharacteristics(bm);
+    }
+
+    private void mergeBioMaterialTerms(AbstractBioMaterial bm) {
+        if (this.getTissueSite() == null) {
+            this.setTissueSite(bm.getTissueSite());
+        }
+        if (this.getMaterialType() == null) {
+            this.setMaterialType(bm.getMaterialType());
+        }
+        if (this.getCellType() == null) {
+            this.setCellType(bm.getCellType());
+        }
+        if (this.getDiseaseState() == null) {
+            this.setDiseaseState(bm.getDiseaseState());
+        }
+    }
+
+    private void mergeCharacteristics(AbstractBioMaterial bm) {
+        Set<AbstractCharacteristic> newChars = new HashSet<AbstractCharacteristic>();
+        for (AbstractCharacteristic characteristic : bm.getCharacteristics()) {
+            boolean foundCategory = false;
+            for (AbstractCharacteristic currCharacteristic : this.getCharacteristics()) {
+                if (characteristic.getCategory().equals(currCharacteristic.getCategory())) {
+                    foundCategory = true;
+                    break;
+                }
+            }
+            if (!foundCategory) {
+                newChars.add(characteristic);
+                characteristic.setBioMaterial(this);
+            }
+        }
+        this.getCharacteristics().addAll(newChars);
+        bm.getCharacteristics().removeAll(newChars);
+
+    }
     /**
      * Attribute filter for characteristics under the TCGA Policy.
      *

@@ -156,4 +156,5 @@ public enum SampleSecurityLevel implements ResourceBasedEnum {
     public boolean isAllowsWrite() {
         return allowsWrite;
     }
+
 }

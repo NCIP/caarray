@@ -96,7 +96,6 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.util.ArrayList;

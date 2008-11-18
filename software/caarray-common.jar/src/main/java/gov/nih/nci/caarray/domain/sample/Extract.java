@@ -83,8 +83,8 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
@@ -119,11 +119,8 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
      */
     private static final long serialVersionUID = 1234567890L;
 
-
-    /**
-     * The samples set.
-     */
     private Set<Sample> samples = new HashSet<Sample>();
+    private Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
     private Experiment experiment;
 
     /**
@@ -146,11 +143,6 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
     private void setSamples(final Set<Sample> samplesVal) {
         this.samples = samplesVal;
     }
-
-    /**
-     * The labeledExtracts set.
-     */
-    private Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
 
     /**
      * Gets the labeledExtracts.
@@ -240,7 +232,7 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
     public Set<? extends AbstractExperimentDesignNode> getDirectSuccessors() {
         return getLabeledExtracts();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -259,5 +251,14 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
         LabeledExtract le = (LabeledExtract) successor;
         getLabeledExtracts().add(le);
         le.getExtracts().add(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void merge(AbstractExperimentDesignNode node) {
+        Extract extract = (Extract) node;
+        super.merge(extract);
     }
 }

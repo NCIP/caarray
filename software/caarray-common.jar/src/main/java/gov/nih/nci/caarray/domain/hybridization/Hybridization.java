@@ -89,11 +89,10 @@ import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.FactorValue;
-import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -132,8 +131,8 @@ import org.hibernate.validator.NotNull;
  */
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
-@SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class Hybridization extends AbstractExperimentDesignNode implements ProtectableDescendent, ProtocolApplicable {
+@SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.TooManyMethods" })
+public class Hybridization extends AbstractExperimentDesignNode implements ProtectableDescendent {
     private static final long serialVersionUID = 1234567890L;
     private static final String MAPPED_BY = "hybridization";
 
@@ -148,6 +147,7 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
     private List<ProtocolApplication> protocolApplications = new ArrayList<ProtocolApplication>();
     private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
+    private Experiment experiment;
 
     /**
      * Gets the name.
@@ -368,6 +368,22 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
     /**
      * {@inheritDoc}
      */
+    @ManyToOne
+    @JoinColumn(name = "experiment", insertable = false, updatable = false)
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
+    /**
+     * @param experiment the experiment to set
+     */
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return new ToStringBuilder(this).append(this.name).toString();
@@ -451,7 +467,7 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
     public ExperimentDesignNodeType getNodeType() {
         return ExperimentDesignNodeType.HYBRIDIZATION;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -460,7 +476,7 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
     public Set<? extends AbstractExperimentDesignNode> getDirectPredecessors() {
         return getLabeledExtracts();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -469,7 +485,7 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
     public Set<? extends AbstractExperimentDesignNode> getDirectSuccessors() {
         return Collections.emptySet();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -487,4 +503,64 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
     protected void doAddDirectSuccessor(AbstractExperimentDesignNode successor) {
         throw new IllegalArgumentException("Should never be called as sources don't have predecessors");
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void merge(AbstractExperimentDesignNode node) {
+        Hybridization hyb = (Hybridization) node;
+        super.merge(hyb);
+        mergeSimpleHybridizationProperties(hyb);
+        mergeArrayData(hyb);
+        mergeArray(hyb);
+        mergeImages(hyb);
+        mergeFactorValues(hyb);
+    }
+
+    private void mergeArray(Hybridization hyb) {
+        if (this.getArray() == null || this.getArray().getDesign() == null) {
+            this.setArray(hyb.getArray());
+            hyb.setArray(null);
+        }
+    }
+
+    private void mergeFactorValues(Hybridization hyb) {
+        for (FactorValue fv : hyb.getFactorValues()) {
+            fv.setHybridization(this);
+        }
+        this.getFactorValues().addAll(hyb.getFactorValues());
+        hyb.getFactorValues().clear();
+    }
+
+    private void mergeSimpleHybridizationProperties(Hybridization hyb) {
+        if (this.getDescription() == null) {
+            this.setDescription(hyb.getDescription());
+        }
+        if (this.getAmountOfMaterialUnit() == null) {
+            this.setAmountOfMaterialUnit(hyb.getAmountOfMaterialUnit());
+        }
+    }
+
+    private void mergeImages(Hybridization hyb) {
+        for (Image image : hyb.getImages()) {
+            image.setHybridization(this);
+        }
+        this.getImages().addAll(hyb.getImages());
+        hyb.getImages().clear();
+    }
+
+    private void mergeArrayData(Hybridization hyb) {
+        for (RawArrayData rad : hyb.getRawDataCollection()) {
+            rad.getHybridizations().remove(hyb);
+            rad.getHybridizations().add(this);
+        }
+        hyb.getRawDataCollection().clear();
+        for (DerivedArrayData dad : hyb.getDerivedDataCollection()) {
+            dad.getHybridizations().remove(hyb);
+            dad.getHybridizations().add(this);
+        }
+        hyb.getDerivedDataCollection().clear();
+    }
+
 }

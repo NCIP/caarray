@@ -89,7 +89,7 @@ import gov.nih.nci.security.authorization.domainobjects.User;
  * Holds the name of the currently-logged in user in a ThreadLocal.  If the
  * value is unset, return the username for the 'anonymous' user.
  *
- * @see gov.nih.nci.caarray.security.SecurityInterceptor#ANONYMOUS_USERNAME
+ * @see gov.nih.nci.caarray.security.SecurityUtils#ANONYMOUS_USERNAME
  */
 public final class UsernameHolder extends com.fiveamsolutions.nci.commons.util.UsernameHolder {
 
