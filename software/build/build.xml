@@ -1620,10 +1620,12 @@
                     <var name="security-config-file" value="security-config.xml" />
                 </else>
             </if>
-            <copy file="${caarray-ear.resources.dir}/${security-config-file}" tofile="${caarray-ear.target.dir}/xml/security-config.xml">
-                <!-- 2 filter sets here because the database.url line has substitutions that otherwise wouldn't be applied -->
+            <copy file="${caarray-ear.resources.dir}/${security-config-file}" tofile="${caarray-ear.target.dir}/xml/security-config.xml" overwrite="true">
+                <!-- 2 filter sets here because the database-related lines have substitutions that otherwise wouldn't be applied when developers run "deploy" target -->
                 <filterset>
                     <filter token="database.url" value="${database.url}" />
+                    <filter token="database.user" value="${database.user}" />
+                    <filter token="database.password" value="${database.password}" />
                 </filterset>
                 <filterset refid="caarray.filterset" />
             </copy>
