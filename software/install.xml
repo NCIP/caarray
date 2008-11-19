@@ -281,6 +281,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </else>
         </if>
 
+        <!-- set the mergeDuplicateBiomaterialsMigrator.renameHybridizations value (default it to false as it is not set in GUI "fresh" install, upgrade installer sets the value so) -->
+        <property name="mergeDuplicateBiomaterialsMigrator.renameHybridizations" value="true"/>
+        <xmlconfig in="${temp.dir}/caarray.war/WEB-INF/classes/db-migrations.xml" verbose="false">
+            <update path="//migrator-class/@renameHybridizations" value="${mergeDuplicateBiomaterialsMigrator.renameHybridizations}" />
+        </xmlconfig>
+
         <!-- set the UptUrl value -->
         <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/web.xml" match="uptUrl&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="uptUrl&lt;/param-name&gt;&lt;param-value&gt;${upt.url}&lt;/param-value&gt;" byline="false"/>
 

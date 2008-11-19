@@ -669,11 +669,24 @@
     </panel>
 
     <panel order="10">
+        <field type="title" txt="Duplicate Hybridizations Behavior" bold="true" size="1" />
+        <field type="staticText" align="left" txt="Please indicate whether duplicate hybridizations should be merged or renamed."/>
+        <field type="divider" align="top"/>
+        <field type="radio" variable="mergeDuplicateBiomaterialsMigrator.renameHybridizations">
+            <description align="left" txt="Duplicate hybridizations behavior preference:" id="duplicate.hybridizations.radio"/>
+            <spec>
+                <choice txt="Rename Duplicates" id="rename.duplicates" value="true" set="true" />
+                <choice txt="Merge Duplicates" id="merge.duplicates" value="false" />
+            </spec>
+        </field>
+    </panel>
+
+    <panel order="11">
         <field type="title" txt="Authentication Type" bold="true" size="1" />
         <field type="staticText" align="left" txt="There are two types of ways to authenticate users: against database or using an LDAP server. To connect to LDAP, you must have an LDAP server available in your network."/>
         <field type="divider" align="top"/>
         <field type="radio" variable="ldap.authentication.disabled">
-            <description align="left" txt="Chose the type of Authentication?"
+            <description align="left" txt="Type of Authentication:"
             id="ldap.radio"/>
             <spec>
                 <choice txt="Database" id="ldap.install.false" value="true" set="true" />
@@ -682,7 +695,7 @@
         </field>
     </panel>
 
-    <panel order="11">
+    <panel order="12">
         <field type="title" txt="LDAP Configuration" bold="true" size="1" />
         <field type="staticText" align="left" txt="Choose the URL for the LDAP server and the Base DN for authenticating users."/>
         <field type="divider" align="top"/>
@@ -700,7 +713,7 @@
         </field>
     </panel>
 
-    <panel order="12">
+    <panel order="13">
         <field type="title" txt="Configure Global Settings" bold="true" size="1" />
         <field type="staticText" align="left" txt="The information you enter below will connect you to an existing Index Server. The Externally Accessible Hostname is the Hostname or the Domain name for the installation machine. This hostname must be accessible by the 'Index URL'. UPT URL is where the UPT application is being installed. For detailed descriptions on each of the properties below, see the Global Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="divider" align="top"/>
@@ -727,7 +740,7 @@
     </panel>
 
 
-    <panel order="13">
+    <panel order="14">
         <field type="title" txt="Database Configuration " bold="true" size="1" />
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="divider" align="top"/>
@@ -743,7 +756,7 @@
     </panel>
 
 
-    <panel order="14">
+    <panel order="15">
         <field type="title" txt="Mail Server Configuration" bold="true" size="1" />
         <field type="staticText" align="left" txt="Mail Server Hostname and Mail Server Port Number is the hostname where the mail server is being configured.For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
         <field type="divider" align="top"/>
@@ -778,7 +791,7 @@
         </field>
     </panel>
 
-    <panel order="15">
+    <panel order="16">
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
         <field type="divider" align="top"/>
@@ -810,7 +823,7 @@
         <field type="staticText" align="left" txt="Database User [${database.user}] "/>
     </panel>
 
-    <panel order="16">
+    <panel order="17">
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
         <field type="divider" align="top"/>
