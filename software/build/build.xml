@@ -2280,6 +2280,12 @@
             <fileset refid="log4j.jar.fileset" />
             <fileset refid="mysql-connector-java.jar.fileset"/>
         </copy>
+        <delete>
+            <fileset dir="${jboss.deploy.dir}/jbossweb-tomcat55.sar/jsf-libs" includes="commons-collections*.jar"/>
+        </delete>
+        <copy todir="${jboss.deploy.dir}/jbossweb-tomcat55.sar/jsf-libs" overwrite="true" flatten="true">
+            <fileset refid="commons-collections.jar.fileset" />
+        </copy>
         <copy file="${common.resources.jboss.conf.dir}/${jboss-mail-service.file}" todir="${jboss.deploy.dir}">
             <filterset refid="caarray.filterset" />
         </copy>
@@ -2429,6 +2435,11 @@
         <delete dir="${temp.dir}" />
     </target>
 
+    <target name="-remote-jboss:copy-commons-collections-jar">
+        <remote-ssh remotesshcommand="rm -rf ${jboss.home}/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-collections*.jar" />
+        <remote-scp remoteScpFileToCopy="${project.lib}/${commons-collections.jar}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/deploy/jbossweb-tomcat55.sar/jsf-libs" />
+    </target>
+
     <target name="-remote-jboss:deploy-caarray-temp">
         <echo message="Copying caarray EAR to jboss temp folder ${jboss.temp.dir} at ${ssh.server.hostname}..." />
         <remote-scp remoteScpFileToCopy="${caarray.ear}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}" />
@@ -2453,6 +2464,7 @@
         <antcall target="-remote-jboss:copy-jboss-config" inheritAll="true" inheritRefs="true" />
         <antcall target="remote-jboss:copy-jboss-mailservice" inheritAll="true" inheritRefs="true" />
         <antcall target="-remote-jboss:copy-log4j-jar" inheritAll="true" inheritRefs="true" />
+        <antcall target="-remote-jboss:copy-commons-collections-jar" inheritAll="true" inheritRefs="true" />
         <antcall target="remote-jboss:start" inheritAll="true" inheritRefs="true" />
     </target>
 

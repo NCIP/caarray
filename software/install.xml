@@ -311,13 +311,14 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     </target>
 
     <!-- Wrapper target to configure jboss container, not deployed application -->
-    <target name="install:jboss:configure" description="Configure caarray" unless="exclude.jboss"
+    <target name="install:jboss:configure" description="Configure caArray JBoss installation" unless="exclude.jboss"
         depends="install:jboss:binaries,
         -install:jboss:configure:ports,
         -install:jboss:configure:log4j,
         -install:jboss:configure:secure-console,
         -install:jboss:configure:update-shutdown,
-        -install:jboss:configure:update-runconf
+        -install:jboss:configure:update-runconf,
+        -install:jboss:configure:replace-conflicting-dependency-jars
         "/>
 
     <!-- Configure ports used by JBOSS (either bindings or editing jboss config.files) -->
@@ -407,6 +408,22 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
      <target name="-install:jboss:configure:update-runconf" description="Updates run.conf JAVA_OPTS and sets to property">
          <jboss-update-runconf/>
+    </target>
+
+    <target name="-install:jboss:configure:replace-conflicting-dependency-jars" description="Replace dependency jars that ship with JBoss but which conflict with caArray dependencies of same type.">
+        <delete file="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-collections.jar"/>
+        <mkdir dir="${basedir}/temp_dependencies_staging"/>
+        <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${install.path}/caarray_installer/temp_dependencies_staging">
+            <patternset>
+                <include name="lib/commons-collections-*.jar"/>
+            </patternset>
+        </unzip>
+        <copy todir="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/jsf-libs" flatten="true" overwrite="true">
+            <fileset dir="${basedir}/temp_dependencies_staging">
+                <include name="**/commons-collections-*.jar"/>
+            </fileset>
+        </copy>
+        <delete dir="${basedir}/temp_dependencies_staging"/>
     </target>
 
 
