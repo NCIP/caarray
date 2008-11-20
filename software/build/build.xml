@@ -1379,9 +1379,9 @@
     <!-- ** SVN TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
     <target name="svn:getinfo" description="obtain subversion revision info" unless="nosvn">
-        <!--svn javahl="false">
+        <svn javahl="false">
             <status path="${root.dir}" revisionProperty="svn.revision" urlProperty="svn.url" />
-        </svn-->
+        </svn>
         <!--
           Note that if you explicitly define caarray.version it will take
           precedence over the one obtained from SVN
