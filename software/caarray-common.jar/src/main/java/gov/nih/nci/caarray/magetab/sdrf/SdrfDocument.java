@@ -110,6 +110,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -1140,13 +1141,14 @@ public final class SdrfDocument extends AbstractMageTabDocument {
                 return false;
             } else {
                 NodeKey nodeKey = (NodeKey) obj;
-                return nodeClass.equals(nodeKey.nodeClass) && nodeName.equals(nodeKey.nodeName);
+                return nodeClass.equals(nodeKey.nodeClass) && nodeName.equalsIgnoreCase(nodeKey.nodeName);
             }
         }
 
         @Override
         public int hashCode() {
-            return nodeClass.hashCode() + nodeName.hashCode();
+            // PMD is erroneously complaining about the call to toLowerCase, even though a Locale is used
+            return nodeClass.hashCode() + nodeName.toLowerCase(Locale.getDefault()).hashCode(); // NOPMD
         }
 
     }

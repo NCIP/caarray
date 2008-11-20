@@ -112,8 +112,7 @@ import com.fiveamsolutions.nci.commons.util.NCICommonsUtils;
  * the investigation, including its name, a brief description, the investigator’s contact details, bibliographic
  * references, and free text descriptions of the protocols used in the investigation.
  */
-@SuppressWarnings("PMD")
-// warning suppressed due to long switch statement
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength", "PMD.TooManyMethods" })
 public final class IdfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 149154919398572572L;

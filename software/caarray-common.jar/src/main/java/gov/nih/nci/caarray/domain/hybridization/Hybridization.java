@@ -115,7 +115,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
@@ -131,6 +133,7 @@ import org.hibernate.validator.NotNull;
  * The act of hybridizing extracted genetic material to the probes on a microarray.
  */
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "experiment" }) })
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.TooManyMethods" })
 public class Hybridization extends AbstractExperimentDesignNode implements ProtectableDescendent {

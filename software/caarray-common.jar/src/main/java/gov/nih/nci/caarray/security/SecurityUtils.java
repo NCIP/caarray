@@ -137,7 +137,7 @@ public final class SecurityUtils {
     private static final long serialVersionUID = -2071964672876972370L;
 
     private static final String CSM_HIBERNATE_CONFIG_PREFIX = "/csm/*";
-    
+
     /** The username of the synthetic user for anonymous access permissions. */
     public static final String ANONYMOUS_USERNAME = "__anonymous__";
     /** The name of the group for anonymous access permissions. */
@@ -176,7 +176,7 @@ public final class SecurityUtils {
     // hidden constructor for static utility class
     private SecurityUtils() {
     }
-    
+
     static {
         try {
             Resource csmHibernateConfig = getCsmHibernateConfig();
@@ -186,7 +186,7 @@ public final class SecurityUtils {
             throw new IllegalStateException("Could not initialize CSM: " + e.getMessage(), e);
         } catch (CSConfigurationException e) {
             LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
-        }         
+        }
     }
 
     /**
@@ -201,11 +201,11 @@ public final class SecurityUtils {
             throw new IllegalStateException("Could not retrieve caarray application or anonymous user", e);
         }
     }
-    
+
     private static Resource getCsmHibernateConfig() throws IOException {
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         Resource[] resources = resolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
-                + CSM_HIBERNATE_CONFIG_PREFIX + Constants.FILE_NAME_SUFFIX); 
+                + CSM_HIBERNATE_CONFIG_PREFIX + Constants.FILE_NAME_SUFFIX);
         if (resources.length == 0) {
             throw new IllegalStateException("Could not locate a CSM hibernate configuration");
         }
@@ -312,7 +312,7 @@ public final class SecurityUtils {
 
                 if (p instanceof Project) {
                     handleNewProject((Project) p, pg);
-                } 
+                }
             } catch (CSObjectNotFoundException e) {
                 LOG.warn("Could not find the " + caarrayAppName + " application: " + e.getMessage(), e);
             } catch (CSTransactionException e) {
@@ -349,7 +349,7 @@ public final class SecurityUtils {
             handleSampleSecurity(targetGroup, sample, sampleSecLevel);
         }
     }
-    
+
     private static Group getTargetGroup(AccessProfile ap) {
         if (ap.isHostProfile()) {
             // not supporting host profiles for now
@@ -362,12 +362,12 @@ public final class SecurityUtils {
             throw new IllegalStateException("Unsupported access profile type: " + ap);
         }
     }
-    
+
     private static SampleSecurityLevel getSampleSecurityLevel(AccessProfile ap, Sample s) {
         SampleSecurityLevel sampleSecLevel = SampleSecurityLevel.NONE;
         if (ap.getSecurityLevel().isSampleLevelPermissionsAllowed()) {
             if (ap.getSampleSecurityLevels().containsKey(s)) {
-                sampleSecLevel = ap.getSampleSecurityLevels().get(s);                
+                sampleSecLevel = ap.getSampleSecurityLevels().get(s);
             }
         } else {
             switch (ap.getSecurityLevel()) {
@@ -386,7 +386,7 @@ public final class SecurityUtils {
                 throw new IllegalStateException("Encountered unknown project security level: "
                         + ap.getSecurityLevel());
             }
-        }        
+        }
         return sampleSecLevel;
     }
 
@@ -518,7 +518,7 @@ public final class SecurityUtils {
 
         for (User u : p.getOwners()) {
             if (!u.equals(csmUser)) {
-                addOwner(pg, u);                
+                addOwner(pg, u);
             }
         }
 
