@@ -360,27 +360,39 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
 
         switch (chainStartNodeType) {
         case SOURCE:
-            Source source = new Source();
-            source.setName(newAnnotationName);
-            experiment.getSources().add(source);
+            Source source = experiment.getSourceByName(newAnnotationName);
+            if (source == null) {
+                source = new Source();
+                source.setName(newAnnotationName);
+                experiment.getSources().add(source);
+            }
             fillInAnnotationChain(hybridization, source, newAnnotationName);
             return source;
         case SAMPLE:
-            Sample sample = new Sample();
-            sample.setName(newAnnotationName);
-            experiment.getSamples().add(sample);
+            Sample sample = experiment.getSampleByName(newAnnotationName);
+            if (sample == null) {
+                sample = new Sample();
+                sample.setName(newAnnotationName);
+                experiment.getSamples().add(sample);
+            }
             fillInAnnotationChain(hybridization, sample, newAnnotationName);
             return sample;
         case EXTRACT:
-            Extract extract = new Extract();
-            extract.setName(newAnnotationName);
-            experiment.getExtracts().add(extract);
+            Extract extract = experiment.getExtractByName(newAnnotationName);
+            if (extract == null) {
+                extract = new Extract();
+                extract.setName(newAnnotationName);
+                experiment.getExtracts().add(extract);
+            }
             fillInAnnotationChain(hybridization, extract, newAnnotationName);
             return extract;
         case LABELED_EXTRACT:
-            LabeledExtract labeledExtract = new LabeledExtract();
-            labeledExtract.setName(newAnnotationName);
-            experiment.getLabeledExtracts().add(labeledExtract);
+            LabeledExtract labeledExtract = experiment.getLabeledExtractByName(newAnnotationName);
+            if (labeledExtract == null) {
+                labeledExtract = new LabeledExtract();
+                labeledExtract.setName(newAnnotationName);
+                experiment.getLabeledExtracts().add(labeledExtract);
+            }
             fillInAnnotationChain(hybridization, labeledExtract, newAnnotationName);
             return labeledExtract;
         default:

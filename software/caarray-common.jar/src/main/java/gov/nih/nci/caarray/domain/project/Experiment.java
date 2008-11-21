@@ -1012,21 +1012,72 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Return the hybridization with given name in this experiment. if there is more than one hybridization
-     * with this name, return a random one from among them. if there are none, return null.
+     * Return the source with given name in this experiment. If there is none, return null.
+     * @param sourceName name of source to find in this experiment
+     * @return the source with given name or null if there is none.
+     */
+    public Source getSourceByName(final String sourceName) {
+       return (Source) CollectionUtils.find(getSources(), new ExperimentDesignNodeNamePredicate(sourceName));
+    }
+
+    /**
+     * Return the sample with given name in this experiment. If there is none, return null.
+     * @param sampleName name of sample to find in this experiment
+     * @return the sample with given name or null if there is none.
+     */
+    public Sample getSampleByName(final String sampleName) {
+        return (Sample) CollectionUtils.find(getSamples(), new ExperimentDesignNodeNamePredicate(sampleName));
+     }
+
+    /**
+     * Return the extract with given name in this experiment. If there is none, return null.
+     * @param extractName name of extract to find in this experiment
+     * @return the extract with given name or null if there is none.
+     */
+    public Extract getExtractByName(final String extractName) {
+       return (Extract) CollectionUtils.find(getExtracts(), new ExperimentDesignNodeNamePredicate(extractName));
+    }
+
+    /**
+     * Return the labeled extract with given name in this experiment. If there is none, return null.
+     * @param labeledExtractName name of labeled extract to find in this experiment
+     * @return the labeledExtract with given name or null if there is none.
+     */
+    public LabeledExtract getLabeledExtractByName(final String labeledExtractName) {
+        return (LabeledExtract) CollectionUtils.find(getLabeledExtracts(), new ExperimentDesignNodeNamePredicate(
+                labeledExtractName));
+     }
+
+    /**
+     * Return the hybridization with given name in this experiment. If there is none, return null.
      * @param hybridizationName name of hybridization to find in this experiment
-     * @return the hybridization with given name (if multiple matches, then some random one from among the matches),
-     * or null if there are none.
+     * @return the hybridization with given name or null if there is none.
      */
     public Hybridization getHybridizationByName(final String hybridizationName) {
-       return (Hybridization) CollectionUtils.find(getHybridizations(), new Predicate() {
-            /**
-             * {@inheritDoc}
-             */
-            public boolean evaluate(Object o) {
-                Hybridization hyb = (Hybridization) o;
-                return hybridizationName.equalsIgnoreCase(hyb.getName());
-            }
-        });
+        return (Hybridization) CollectionUtils.find(getHybridizations(), new ExperimentDesignNodeNamePredicate(
+                hybridizationName));
+     }
+
+    /**
+     * Predicate to match biomaterial/hybridization names.
+     */
+    private class ExperimentDesignNodeNamePredicate implements Predicate {
+        private final String nameToMatch;
+
+        /**
+         * Constructor.
+         */
+        public ExperimentDesignNodeNamePredicate(String nameToMatch) {
+            this.nameToMatch = nameToMatch;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public boolean evaluate(Object o) {
+            AbstractExperimentDesignNode node = (AbstractExperimentDesignNode) o;
+            return nameToMatch.equalsIgnoreCase(node.getName());
+        }
     }
+
 }
