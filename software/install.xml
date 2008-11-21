@@ -297,7 +297,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             <fileset dir="${temp.dir}/caarray.war"/>
         </war>
 
-        <ear destfile="${temp.dir}/caarray.ear.to_deploy/${caarray.ear.file}" appxml="${temp.dir}/caarray.ear/META-INF/application.xml" update="false">
+        <ear destfile="${temp.dir}/caarray.ear.to_deploy/${caarray.ear.file}" appxml="${temp.dir}/caarray.ear/META-INF/application.xml" update="false" duplicate="preserve">
             <metainf dir="${temp.dir}/caarray.ear/META-INF" includes="*.xml" excludes="jboss-service.xml" />
             <fileset dir="${temp.dir}/caarray.ear">
                 <include name="**/*" />
