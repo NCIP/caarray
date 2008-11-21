@@ -670,13 +670,13 @@
 
     <panel order="10">
         <field type="title" txt="Duplicate Hybridizations Behavior" bold="true" size="1" />
-        <field type="staticText" align="left" txt="Please indicate whether duplicate hybridizations should be merged or renamed."/>
+        <field type="staticText" align="left" txt="Prior to caArray 2.2.0, it was possible to create two distinct hybridizations with the same name within a single experiment. As of 2.2.0, this behavior has been changed, and hybridization names are guaranteed to be unique within an experiment. By default, duplicate hybridizations in your existing (pre-2.2.0) experiments will be renamed to be distinct. If, for any reason, you prefer to override this default strategy, you can choose to merge duplicate hybridizations into a single hybridization instead. Please be warned that if you choose to override the default strategy, you will not be able to undo the change."/>
         <field type="divider" align="top"/>
         <field type="radio" variable="mergeDuplicateBiomaterialsMigrator.renameHybridizations">
             <description align="left" txt="Duplicate hybridizations behavior preference:" id="duplicate.hybridizations.radio"/>
             <spec>
-                <choice txt="Rename Duplicates" id="rename.duplicates" value="true" set="true" />
-                <choice txt="Merge Duplicates" id="merge.duplicates" value="false" />
+                <choice txt="Rename Duplicates (recommended)" id="rename.duplicates" value="true" set="true" />
+                <choice txt="Merge Duplicates (no undo)" id="merge.duplicates" value="false" />
             </spec>
         </field>
     </panel>
