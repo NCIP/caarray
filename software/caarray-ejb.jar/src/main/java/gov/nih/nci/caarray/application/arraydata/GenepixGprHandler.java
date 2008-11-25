@@ -110,6 +110,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -138,6 +139,7 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     private static final String Y_HEADER = "Y";
     private static final String DIA_HEADER = "Dia.";
     private static final String ERROR_INDICATOR = "Error";
+    private static final String NOT_APPLICATBLE_INDICATOR = "n/a";
 
     private static final Logger LOG = Logger.getLogger(GenepixGprHandler.class);
     private static final Map<String, QuantitationTypeDescriptor> NAME_TO_TYPE_MAP;
@@ -273,16 +275,15 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     @Override
     List<String> getSampleNames(File dataFile, String hybridizationName) {
         List<String> names = new ArrayList<String>();
-        String basename = FilenameUtils.getBaseName(dataFile.getName());
         DelimitedFileReader reader = getReader(dataFile);
         try {
             Map<String, String[]> headers = getHeaders(reader);
-            names.add(basename + "-635");
-            names.add(basename + "-532");
+            names.add("635");
+            names.add("532");
             if (headers.containsKey(WAVELENGTHS_HEADER) && headers.get(WAVELENGTHS_HEADER).length > 2) {
-                addThreeAndFourColorNames(names, basename, headers.get(WAVELENGTHS_HEADER));
+                addThreeAndFourColorNames(names, headers.get(WAVELENGTHS_HEADER));
             } else if (headers.containsKey(IMAGE_NAME_HEADER) && headers.get(IMAGE_NAME_HEADER).length > 2) {
-                addThreeAndFourColorNames(names, basename, headers.get(IMAGE_NAME_HEADER));
+                addThreeAndFourColorNames(names, headers.get(IMAGE_NAME_HEADER));
             }
             return names;
         } catch (IOException e) {
@@ -292,9 +293,11 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void addThreeAndFourColorNames(List<String> names, String basename, String[] values) {
+    private void addThreeAndFourColorNames(List<String> names, String[] values) {
         for (int i = 2; i < values.length; i++) {
-            names.add(basename + "-" + values[i].replace(' ', '_'));
+            if (!values[i].trim().toLowerCase(Locale.getDefault()).equals(NOT_APPLICATBLE_INDICATOR)) {
+                names.add(values[i].replace(' ', '_'));
+            }
         }
     }
 

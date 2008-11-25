@@ -138,30 +138,6 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
      * {@inheritDoc}
      */
     @SuppressWarnings(UNCHECKED)
-    public List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword) {
-
-
-        StringBuffer tbs = new StringBuffer();
-        tbs.append("SELECT DISTINCT tbs");
-        tbs.append(generateTermByKeywordClause());
-        Query tbsq = HibernateUtil.getCurrentSession().createQuery(tbs.toString());
-        tbsq.setString(KEYWORD_SUB, "%" + keyword + "%");
-        List<TermBasedCharacteristic> tbsList = tbsq.list();
-
-        Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
-        StringBuffer sb = new StringBuffer();
-        sb.append("SELECT DISTINCT s");
-        sb.append(generateSamplesByCharacteristicCategoryClause(tbsList, idBlocks));
-        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
-        q.setString(CATAGORY_SUB, c.getName());
-        HibernateHelper.bindInClauseParameters(q, idBlocks);
-        return q.list();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings(UNCHECKED)
     public List<Source> searchSourcesByCharacteristicCategory(Category c, String keyword) {
         StringBuffer sb = new StringBuffer();
 
@@ -173,34 +149,6 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         q.setString(KEYWORD_SUB, "%" + keyword + "%");
 
         return q.list();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings(UNCHECKED)
-    public int countSamplesByCharacteristicCategory(Category c, String keyword) {
-
-        StringBuffer tbs = new StringBuffer();
-        tbs.append("SELECT DISTINCT tbs");
-        tbs.append(generateTermByKeywordClause());
-        Query tbsq = HibernateUtil.getCurrentSession().createQuery(tbs.toString());
-        tbsq.setString(KEYWORD_SUB, "%" + keyword + "%");
-        List<TermBasedCharacteristic> tbsList = tbsq.list();
-
-        if (tbsList.isEmpty()) {
-            return 0;
-        }
-
-        Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
-        StringBuffer sb = new StringBuffer();
-        sb.append("SELECT count(DISTINCT s)");
-        sb.append(generateSamplesByCharacteristicCategoryClause(tbsList, idBlocks));
-        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
-        q.setString(CATAGORY_SUB, c.getName());
-        HibernateHelper.bindInClauseParameters(q, idBlocks);
-
-        return ((Number) q.uniqueResult()).intValue();
     }
 
     /**
@@ -220,6 +168,68 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         return ((Number) q.uniqueResult()).intValue();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public int countSamplesByCharacteristicCategory(Category c, String keyword) {
+
+        Query q = createQueryForSamplesByCharacteristicCategory("SELECT count(DISTINCT s)", c, keyword);
+
+        if (q == null) {
+            return 0;
+        }
+
+        return  ((Number) q.uniqueResult()).intValue();
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword) {
+
+        Query q = createQueryForSamplesByCharacteristicCategory(SELECT_DISTINCT + "s", c, keyword);
+        return q.list();
+    }
+
+    @SuppressWarnings(UNCHECKED)
+    private Query createQueryForSamplesByCharacteristicCategory(String selectClause, Category c, String keyword) {
+        Query returnVal = null;
+        if (keyword != null && !keyword.equals("")) {
+
+            StringBuffer tbs = new StringBuffer();
+            tbs.append("SELECT DISTINCT tbs");
+            tbs.append(generateTermByKeywordClause());
+            Query tbsq = HibernateUtil.getCurrentSession().createQuery(tbs.toString());
+            tbsq.setString(KEYWORD_SUB, "%" + keyword + "%");
+            List<TermBasedCharacteristic> tbsList = tbsq.list();
+
+            if (!tbsList.isEmpty()) {
+
+                Map<String, List<? extends Serializable>> idBlocks =
+                    new HashMap<String, List<? extends Serializable>>();
+                StringBuffer sb = new StringBuffer();
+                sb.append(selectClause);
+                sb.append(generateSamplesByCharacteristicCategoryClause(tbsList, idBlocks));
+                returnVal = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+                returnVal.setString(CATAGORY_SUB, c.getName());
+                HibernateHelper.bindInClauseParameters(returnVal, idBlocks);
+            }
+
+        } else {
+
+            StringBuffer sb = new StringBuffer();
+            sb.append(selectClause);
+            sb.append(generateSamplesByCharacteristicCategoryClause());
+            returnVal = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+            returnVal.setString(CATAGORY_SUB, c.getName());
+        }
+
+        return returnVal;
+    }
+
     private String generateSamplesByCharacteristicCategoryClause(List<? extends Serializable> tbsList,
             Map<String, List<? extends Serializable>> idBlocks) {
 
@@ -237,6 +247,21 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
             + " AND " + HibernateHelper.buildInClause(tbsList, "chr", idBlocks) + " )"
             + " OR (scat.name = :" + CATAGORY_SUB
             + " AND " + HibernateHelper.buildInClause(tbsList, "schr", idBlocks) + " )";
+
+        return sb;
+    }
+
+    private String generateSamplesByCharacteristicCategoryClause() {
+
+        String sb = FROM_KEYWORD
+            + Sample.class.getName()
+            + " s left join s.characteristics chr"
+            + " left join chr.category cat"
+            + " left join s.sources src"
+            + " left join src.characteristics schr"
+            + " left join schr.category scat "
+            + " WHERE cat.name = :" + CATAGORY_SUB
+            + " OR scat.name = :" + CATAGORY_SUB;
 
         return sb;
     }

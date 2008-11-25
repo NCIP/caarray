@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
             <div class="boxpad" style="background:url('../images/bg_shadow_tanpanel_a.gif') repeat-x;">
-                <s:form id="searchform" action="/search/basicSearch.action" cssClass="alttable">
+                <s:form id="searchform" action="/search/basicSearch.action" cssClass="alttable" onsubmit="checkFields()">
                     <tr>
                         <td class="tdLabel">
                             <s:label theme="simple"><b><fmt:message key="search.type"/>:</b></s:label>

@@ -106,11 +106,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
@@ -166,6 +167,15 @@ public class SearchAction extends ActionSupport {
     public static final String COMBINATION_SEARCH = "COMBINATION_SEARCH";
 
     private static final String TAB_FWD = "tab";
+    /**
+     * regexp for checking keyword in action.
+     */
+    public static final String KEYWORD_REGEX = "^[\\w\\s\\-\\.]*$";
+
+    /**
+     * regexp for checking keyword in javascript.
+     */
+    public static final String KEYWORD_REGEX_WEB = "^[\\\\w\\\\s\\\\-\\\\.]*$";
 
 
     // search parameters
@@ -262,7 +272,6 @@ public class SearchAction extends ActionSupport {
     /**
      * @return the keyword
      */
-    @RegexFieldValidator(expression = "[\\w \\-\\.]*", key = "search.error.keyword", message = "")
     public String getKeyword() {
         return keyword;
     }
@@ -270,7 +279,6 @@ public class SearchAction extends ActionSupport {
     /**
      * @return the search type
      */
-    @RegexFieldValidator(expression = "[\\w \\-\\.]*", key = "search.error.type", message = "")
     public String getSearchType() {
         return searchType;
     }
@@ -420,6 +428,10 @@ public class SearchAction extends ActionSupport {
      */
     public String basicSearch() {
 
+        if (this.keyword != null && !checkKeyword()) {
+            return Action.INPUT;
+        }
+
         if (COMBINATION_SEARCH.equals(searchType)) {
            return comboSearch();
         } else if (SearchTypeSelection.SEARCH_BY_EXPERIMENT.name().equals(searchType)) {
@@ -429,6 +441,17 @@ public class SearchAction extends ActionSupport {
                 ? advBiometricSearch() : basicBiometricSearch();
         } else {
             return Action.INPUT;
+        }
+    }
+
+    private boolean checkKeyword() {
+        Pattern p = Pattern.compile(KEYWORD_REGEX);
+        Matcher m = p.matcher(this.keyword);
+        if (!m.matches()) {
+            addActionError(getText("search.error.keyword"));
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -597,7 +620,7 @@ public class SearchAction extends ActionSupport {
     }
 
     private boolean checkAdvSampleFields() {
-        if (SEARCH_CATEGORY_OTHER_CHAR.equals(categorySample) && (selectedCategory == null || keyword.length() < 3)) {
+        if (SEARCH_CATEGORY_OTHER_CHAR.equals(categorySample) && selectedCategory == null) {
             addActionError(getText("search.error.otherchars"));
             return false;
         } else {
