@@ -75,6 +75,17 @@
 
             checkFields = function() {
 
+                var trimmedKeyword = trim($('keywordTxtField').value);
+
+                if (trimmedKeyword.length > 0) {
+                  var re = new RegExp('<s:property value="@gov.nih.nci.caarray.web.action.SearchAction@KEYWORD_REGEX_WEB"/>', 'g');
+                  var OK = re.exec(trimmedKeyword);
+                  if (OK == null) {
+                      alert('Cannot use special characters in search keyword.');
+                      return false;
+                  }
+                }
+
                 if ( (($('searchTypeSEARCH_BY_EXPERIMENT').checked == true && $('selectExpCat').value == 'ORGANISM') ||
                      ($('searchTypeSEARCH_BY_SAMPLE').checked == true && $('selectSampleCat').value == 'SAMPLE_ORGANISM')) &&
                      ($('filterOrgBoxSelectedItemDiv').lastChild == null || $('filterOrgBoxSelectedItemDiv').lastChild.id == null)) {
@@ -90,16 +101,19 @@
                 }
                 else if ($('searchTypeSEARCH_BY_SAMPLE').checked == true &&
                     $('selectSampleCat').value == 'SAMPLE_EXTERNAL_ID' &&
-                    $('keywordTxtField').value.length < 1 ) {
+                    trimmedKeyword.length < 1 ) {
                     alert('An external sample id must be at least 1 character long.');
                     return false;
                 } else if ($('searchTypeSEARCH_BY_SAMPLE').checked == true &&
+                    $('selectSampleCat').value != 'OTHER_CHARACTERISTICS' &&
                     $('selectSampleCat').value != 'SAMPLE_ORGANISM' &&
                     $('selectSampleCat').value != 'SAMPLE_EXTERNAL_ID' &&
-                    $('keywordTxtField').value.length < 3 ) {
+                    trimmedKeyword.length < 3 ) {
                     alert('Keyword must be at least 3 characters long.');
                     return false;
                 }
+
+
 
                 $('searchform').submit();
 
@@ -114,6 +128,7 @@
     <caarray:helpPrint/>
     <p><strong>caArray</strong> is an open-source, web and programmatically accessible array data management system. caArray guides the annotation and exchange of array data using a federated model of local installations whose results are shareable across the cancer Biomedical Informatics Grid (caBIG™). caArray furthers translational cancer research through acquisition, dissemination and aggregation of semantically interoperable array data to support subsequent analysis by tools and services on and off the Grid. As array technology advances and matures, caArray will extend its logical library of assay management.</p>
     <div id="browsesearchwrapper" class="padme">
+         <s:actionerror/>
          <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"
                 postFunction="TabUtils.setSelectedTab" preFunction="TabUtils.showLoadingText">
                 <c:url value="/ajax/search/showSearchFieldsTab.action" var="tabExpUrl">
