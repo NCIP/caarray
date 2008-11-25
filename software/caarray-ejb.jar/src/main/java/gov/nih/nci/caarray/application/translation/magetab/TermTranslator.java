@@ -137,8 +137,9 @@ final class TermTranslator extends AbstractTranslator {
         }
         // if the source is present then it must have been translated
         TermSource ts = getTranslationResult().getSource(mageTabSource);
-        if (ts == null) {     
-            throw new IllegalStateException("A term is referencing an untranslated term source: " + mageTabSource);
+        if (ts == null) {
+            throw new IllegalStateException("A term is referencing an untranslated term source: "
+                    + mageTabSource.getName());
         }
         return ts;
     }
@@ -173,7 +174,7 @@ final class TermTranslator extends AbstractTranslator {
         Term term = null;
         if (source.getId() != null) {
             term = this.service.getTerm(source, value);
-        }        
+        }
         if (term == null) {
             term = this.service.findTermInAllTermSourceVersions(source, value);
         }
@@ -202,14 +203,14 @@ final class TermTranslator extends AbstractTranslator {
     Logger getLog() {
         return LOG;
     }
-    
+
     /**
      * Key class for looking up terms in the cache by the Term natural key.
      */
     private static final class TermKey {
         private final String value;
         private final gov.nih.nci.caarray.domain.vocabulary.TermSource termSource;
-                
+
         public TermKey(String name, gov.nih.nci.caarray.domain.vocabulary.TermSource termSource) {
             this.value = name;
             this.termSource = termSource;
@@ -231,7 +232,7 @@ final class TermTranslator extends AbstractTranslator {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#hashCode()
          */
         @Override
@@ -241,7 +242,7 @@ final class TermTranslator extends AbstractTranslator {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#equals(java.lang.Object)
          */
         @Override

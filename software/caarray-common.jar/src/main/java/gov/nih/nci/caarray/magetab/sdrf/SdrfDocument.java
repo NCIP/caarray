@@ -725,7 +725,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             case ARRAY_DESIGN_REF:
             case PARAMETER_VALUE:
                 currentTermSourceable = null;
-                break;
+                // intentional fall-through
             default:
                 return;
             }
@@ -825,7 +825,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private boolean isBlank(String value) {
-        return StringUtils.isBlank(value) || EMPTY_SYMBOL.equals(value);
+        return StringUtils.isBlank(value) || EMPTY_SYMBOL.equals(value) || EXPORT_EMPTY_SYMBOL.equals(value);
     }
 
     private void handleHybridization(SdrfColumn column, String value) {
