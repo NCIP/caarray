@@ -29,9 +29,9 @@
             <ul class="caarraymenu">
                 <li><a href="<c:url value="/home.action" />">Browse</a></li>
                 <c:if test="${pageContext.request.remoteUser == null}">
-                        <li><a href="<c:url value="/protected/project/workspace.action" />">Login</a></li>
+                    <li><a href="<c:url value="/protected/project/workspace.action" />">Login</a></li>
+                    <li><a href="<c:url value="/registration/input.action"/>">Register</a></li>
                 </c:if>
-                <li><a href="<c:url value="/registration/input.action"/>">Register</a></li>
             </ul>
         </c:otherwise>
     </c:choose>

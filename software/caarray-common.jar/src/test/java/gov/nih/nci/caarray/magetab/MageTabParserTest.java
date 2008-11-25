@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.magetab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
@@ -304,12 +305,12 @@ public class MageTabParserTest extends AbstractCaarrayTest {
             throws MageTabParsingException {
         try {
             MageTabDocumentSet docSet = parser.parse(fileSet, reimportingMagetab);
-            return docSet.getValidationResult();            
+            return docSet.getValidationResult();
         } catch (InvalidDataException e) {
             return e.getValidationResult();
         }
     }
-    
+
     @Test
     public void testValidate() throws MageTabParsingException {
         MageTabFileSet fileSet = TestMageTabSets.MAGE_TAB_ERROR_SPECIFICATION_INPUT_SET;
@@ -704,8 +705,15 @@ public class MageTabParserTest extends AbstractCaarrayTest {
         assertEquals(idfDocument, sdrfDocument.getIdfDocument());
         assertEquals(6, sdrfDocument.getLeftmostNodes().size());
         assertEquals(SIX, sdrfDocument.getAllSources().size());
-        assertEquals(-1, sdrfDocument.getAllSources().get(0).getName().indexOf("<"));
-        assertEquals(-1, sdrfDocument.getAllSources().get(0).getName().indexOf(">"));
+        Source firstSource = sdrfDocument.getAllSources().get(0);
+        assertEquals(-1, firstSource.getName().indexOf("<"));
+        assertEquals(-1, firstSource.getName().indexOf(">"));
+
+        // check issue 16421 - skip blank characteristics
+        assertNull(firstSource.getCharacteristic("CellType"));
+        assertEquals("B_lymphoblast", sdrfDocument.getAllSources().get(1).getCharacteristic("CellType").getTerm()
+                .getValue());
+
         assertEquals(SIX, sdrfDocument.getAllSamples().size());
         assertEquals(SIX, sdrfDocument.getAllExtracts().size());
         assertEquals(SIX, sdrfDocument.getAllHybridizations().size());
