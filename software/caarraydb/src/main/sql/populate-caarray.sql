@@ -92,6 +92,7 @@ insert into contact(discriminator, name, provider) values ('O', 'Agilent', true)
 insert into contact(discriminator, name, provider) values ('O', 'UCSF Spot', true);
 insert into contact(discriminator, name, provider) values ('O', 'ImaGene', true);
 insert into contact(discriminator, name, provider) values ('O', 'Nimblegen', true);
+insert into contact(discriminator, name, provider) values ('O', 'ScanArray', true);
 
 insert into country (code, name, printable_name, iso3, numcode) values ('AF','AFGHANISTAN','Afghanistan','AFG','004');
 insert into country (code, name, printable_name, iso3, numcode) values ('AL','ALBANIA','Albania','ALB','008');

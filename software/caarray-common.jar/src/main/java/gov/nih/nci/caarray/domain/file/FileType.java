@@ -247,7 +247,22 @@ public enum FileType implements Comparable<FileType> {
     /**
      * The UCSF Spot SPT array design file type.
      */
-    UCSF_SPOT_SPT;
+    UCSF_SPOT_SPT,
+
+    /**
+     * Gene Expression Omnibus (GEO) SOFT format data type.
+     */
+    GEO_SOFT,
+
+    /**
+     * Gene Expression Omnibus (GEO) GSM format data type.
+     */
+    GEO_GSM,
+
+    /**
+     * ScanArray CSV format data type.
+     */
+    SCANARRAY_CSV;
 
     private static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = new LinkedHashSet<FileType>();
     private static final Set<FileType> PARSEABLE_ARRAY_DESIGN_FILE_TYPES = new HashSet<FileType>();
@@ -273,6 +288,9 @@ public enum FileType implements Comparable<FileType> {
         RAW_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_IDAT);
         RAW_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
         RAW_ARRAY_DATA_FILE_TYPES.add(AGILENT_RAW_TXT);
+        RAW_ARRAY_DATA_FILE_TYPES.add(GEO_SOFT);
+        RAW_ARRAY_DATA_FILE_TYPES.add(GEO_GSM);
+        RAW_ARRAY_DATA_FILE_TYPES.add(SCANARRAY_CSV);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_EXP);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_TXT);
@@ -347,7 +365,7 @@ public enum FileType implements Comparable<FileType> {
     public static Set<FileType> getArrayDesignFileTypes() {
         return ARRAY_DESIGN_FILE_TYPES;
     }
-    
+
     /**
      * @return if this file type has a derived variant, false otherwise.
      */
