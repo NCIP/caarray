@@ -21,7 +21,7 @@
                     headerValue="(All)"
                     onchange="Caarray.submitAjaxForm('fileTypeForm', 'downloadFilesList')"/>
             </td>
-            <td>${filterByTypeLabel}:
+            <td>${filterByStatusLabel}:
                 <s:select label="Filter By File Status"
                     name="fileStatus"
                     list="#attr.fileStatuses"
