@@ -122,7 +122,7 @@ public enum SearchSampleCategory implements BiomaterialSearchCategory {
      * Organism.
      */
     SAMPLE_ORGANISM ("search.category.organism",
-            new String[]{"s.experiment e", "e.organism o"},
+            new String[]{"s.organism o"},
             new String[]{"o.commonName", "o.scientificName"}),
 
     /**

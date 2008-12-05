@@ -5,13 +5,13 @@
                         <td class="tdLabel">
                             <s:label theme="simple"><b><fmt:message key="search.type"/>:</b></s:label>
                         </td>
-                        <td>
+                        <td style="white-space:nowrap">
                             <s:radio id="searchType" name="searchType" key="search.type"
-                            list="@gov.nih.nci.caarray.web.action.SearchAction@getSearchTypeSelection()"
-                            listValue="%{getText(label)}"
-                            listKey="value"
-                            value="@gov.nih.nci.caarray.domain.search.SearchTypeSelection@SEARCH_BY_EXPERIMENT"
-                            onclick="populateCategory()" theme="simple"/>
+                                     list="@gov.nih.nci.caarray.web.action.SearchAction@getSearchTypeSelection()"
+                                     listValue="%{getText(label)}"
+                                     listKey="value"
+                                     value="@gov.nih.nci.caarray.domain.search.SearchTypeSelection@SEARCH_BY_EXPERIMENT"
+                                     onclick="populateCategory()" theme="simple"/>
                         </td>
                     </tr>
                     <tr>
