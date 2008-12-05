@@ -3,14 +3,6 @@
     <c:param name="project.id" value="${project.id}" />
 </c:url>
 <c:set var="listingImported" value="${listAction == 'listImported'}"/>
-<c:choose>
-    <c:when test="${listingImported}">
-        <c:set var="pageSize" value="20" />
-    </c:when>
-    <c:otherwise>
-        <c:set var="pageSize" value="-1" />
-    </c:otherwise>
-</c:choose>
 
 <c:set var="canWriteProject" value="${caarrayfn:canWrite(project, caarrayfn:currentUser())}"/>
 <c:choose>
@@ -23,13 +15,13 @@
 </c:choose>
 
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
-    <display:table class="searchresults" cellspacing="0" defaultsort="${defaultSortVal}" list="${files}" pagesize="${pageSize}"
-        requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id selectedFileIds __checkbox_selectedFileIds">
+    <display:table class="searchresults" cellspacing="0" defaultsort="${defaultSortVal}" list="${files}" requestURI="${sortUrl}"
+        sort="list" id="row" excludedParams="project.id selectedFileIds __checkbox_selectedFileIds">
         <caarray:displayTagProperties/>
         <c:if test="${project.saveAllowed && canWriteProject}">
             <display:column title="<input type='checkbox' name='selectAllCheckbox' onclick='toggleAllFiles(this.checked, $(&quot;selectFilesForm&quot;));' >">
-                <s:checkbox id="chk${row.id}" name="selectedFileIds" disabled="${!(row.importable || row.validatable || row.deletable)}" 
-                   fieldValue="${row.id}" value="false" theme="simple" 
+                <s:checkbox id="chk${row.id}" name="selectedFileIds" disabled="${!(row.importable || row.validatable || row.deletable)}"
+                   fieldValue="${row.id}" value="false" theme="simple"
                    onclick="toggleFileInJob(this.checked, this.value);"/>
             </display:column>
         </c:if>
