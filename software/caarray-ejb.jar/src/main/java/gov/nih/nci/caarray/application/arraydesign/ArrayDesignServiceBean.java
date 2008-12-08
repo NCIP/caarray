@@ -226,7 +226,6 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             getDaoFactory().getArrayDao().getArrayDesignsForProvider(arrayDesign.getProvider(), false);
         for (ArrayDesign providerDesign : providerDesigns) {
             if (!arrayDesign.equals(providerDesign)
-//                    if (!providerDesign.getId().equals(arrayDesign.getId())
                     && arrayDesign.getName().equalsIgnoreCase(providerDesign.getName())) {
                 return true;
             }

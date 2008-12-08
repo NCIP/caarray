@@ -157,6 +157,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     }
 
     private void checkSamplePermissions() {
+        LOG.debug("Checking sample perms");
         // check whether this is the first time sample permissions are being set.
         if (this.accessProfile.getSampleSecurityLevels() == null
                 || this.accessProfile.getSampleSecurityLevels().isEmpty()) {
@@ -167,9 +168,11 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
 
             this.accessProfile.getSampleSecurityLevels().putAll(samplePermissions);
         }
+        LOG.debug("Done checking sample perms");
     }
 
     private void modifySamplePermissions() {
+        LOG.debug("Modifying sample perms");
         for (Long sid : this.sampleSecurityLevels) {
             // -1 is preloaded into the list of checkboxes to
             // get around struts issues.
@@ -179,9 +182,9 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
             Sample sample = getGenericDataService().getPersistentObject(Sample.class, sid);
             if (this.accessProfile.getSecurityLevel().getSampleSecurityLevels().contains(this.securityChoices)) {
                 this.accessProfile.getSampleSecurityLevels().put(sample, this.securityChoices);
-
             }
         }
+        LOG.debug("Done modifying sample perms");
     }
 
     /**
@@ -195,6 +198,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
             return listSamples();
         } else if ("save".equals(this.actionButton)) {
             try {
+                LOG.debug("Saving access profile for project " + getProject().getId());
                 if (this.accessProfile.getId() == null && this.collaboratorGroup != null) {
                     // must be a new access profile
                     AccessProfile newProfile =
@@ -205,6 +209,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
                 }
                 saveSamplePermissions();
                 getPermissionsManagementService().saveAccessProfile(this.accessProfile);
+                LOG.debug("Done saving access profile for project " + getProject().getId());
                 ActionHelper.saveMessage(getText("project.permissionsSaved"));
                 return SUCCESS;
             } catch (ProposalWorkflowException e) {

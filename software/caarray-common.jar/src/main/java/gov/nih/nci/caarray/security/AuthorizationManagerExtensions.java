@@ -84,23 +84,39 @@ package gov.nih.nci.caarray.security;
 
 import gov.nih.nci.logging.api.logger.hibernate.HibernateSessionFactoryHelper;
 import gov.nih.nci.security.authorization.domainobjects.Application;
+import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
+import gov.nih.nci.security.authorization.domainobjects.Role;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 import gov.nih.nci.security.system.ApplicationSessionFactory;
 import gov.nih.nci.security.util.StringUtilities;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
+
+import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 
 /**
  * Class with methods supplementing missing AuthorizationManager APIs. We expect these to eventually be implemented by
@@ -328,6 +344,156 @@ public final class AuthorizationManagerExtensions {
                     + " and Protection Element " + className + "|");
         }
         return test;
+    }
+
+    /**
+     * Removes all roles from a Protection Group for a particular user group.
+     * @param group user group
+     * @param protectionGroups protection group from which to remove roles
+     * @param application the application to which the instance belongs
+     * @throws CSException on error
+     */
+    // Note: not directly adapted from existing CSM code but follows the conventions of other CSM code
+    public static void clearProtectionGroupRoles(Group group, Collection<ProtectionGroup> protectionGroups,
+            Application application) throws CSException {
+        LOG.debug("Authorization|||clearProtectionGroupRoles|Start|Starting to clear protection group roles|");
+        Session s = null;
+        Transaction t = null;
+
+        try {
+            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory(application
+                    .getApplicationName()));
+            t = s.beginTransaction();
+            String queryString = "delete from " + UserGroupRoleProtectionGroup.class.getName()
+                    + " where group = :group and (";
+            Map<String, List<? extends Serializable>> blocks = new HashMap<String, List<? extends Serializable>>();
+            List<Long> protectionGroupIds = new ArrayList<Long>();
+            for (ProtectionGroup pg : protectionGroups) {
+                protectionGroupIds.add(pg.getProtectionGroupId());
+            }
+            queryString += HibernateHelper.buildInClause(protectionGroupIds, "protectionGroup.id", blocks);
+            queryString += ")";
+
+            Query q = s.createQuery(queryString);
+            q.setParameter("group", group);
+            HibernateHelper.bindInClauseParameters(q, blocks);
+
+            q.executeUpdate();
+
+            s.flush();
+            t.commit();
+        } catch (Exception ex) {
+            LOG.error(ex);
+            try {
+                t.rollback();
+            } catch (Exception ex3) {
+                LOG.debug("Authorization|||clearProtectionGroupRoles|Failure|Error in Rolling Back Transaction|"
+                        + ex3.getMessage());
+            }
+            LOG.debug("Authorization|||clearProtectionGroupRoles|Failure|Error in clearing protection group roles|");
+            throw new CSTransactionException("An error occured in clearing protection group roles\n"
+                    + ex.getMessage(), ex);
+        } finally {
+            try {
+                s.close();
+            } catch (Exception ex2) {
+                LOG.debug("Authorization|||clearProtectionGroupRoles|Failure|Error in Closing Session |"
+                        + ex2.getMessage());
+            }
+        }
+        LOG.debug("Authorization|||clearProtectionGroupRoles|Success|Successful in clearing protection group roles|");
+
+    }
+
+
+    /**
+     * Add roles to a protection group for a group.  Adapted from
+     * {@link gov.nih.nci.security.dao.AuthorizationDAO#assignGroupRoleToProtectionGroup(String, String, String[])}
+     * but can be used if the Group and ProtectionGroup have already been loaded.
+     * @param protectionGroup protection group to which to add roles
+     * @param group group for which to add roles
+     * @param roles roles to add
+     * @param application the application to which the instance belongs
+     * @throws CSTransactionException on error
+     */
+    // adapted from CSM code
+    @SuppressWarnings("unchecked")
+    public static void assignGroupRoleToProtectionGroup(ProtectionGroup protectionGroup, Group group, List<Role> roles,
+            Application application) throws CSTransactionException {
+        Session s = null;
+        Transaction t = null;
+        String[] roleIds = new String[roles.size()];
+        int indx = 0;
+        for (Role role : roles) {
+            roleIds[indx++] = role.getId().toString();
+        }
+        try {
+
+            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory(application
+                    .getApplicationName()));
+
+            Criteria criteria = s.createCriteria(UserGroupRoleProtectionGroup.class);
+            criteria.add(Restrictions.eq("protectionGroup", protectionGroup));
+            criteria.add(Restrictions.eq("group", group));
+
+            List<UserGroupRoleProtectionGroup> list = criteria.list();
+            t = s.beginTransaction();
+            for (int k = 0; k < list.size(); k++) {
+                UserGroupRoleProtectionGroup ugrpg = list.get(k);
+                Role r = ugrpg.getRole();
+                if (!roles.contains(r)) {
+                    s.delete(ugrpg);
+                } else {
+                    roles.remove(r);
+                }
+            }
+
+            for (int j = 0; j < roles.size(); j++) {
+                Role leftOverRole = roles.get(j);
+                UserGroupRoleProtectionGroup toBeSaved = new UserGroupRoleProtectionGroup();
+                toBeSaved.setGroup(group);
+                toBeSaved.setProtectionGroup(protectionGroup);
+                toBeSaved.setRole(leftOverRole);
+                toBeSaved.setUpdateDate(new Date());
+                s.save(toBeSaved);
+            }
+            t.commit();
+            s.flush();
+            LOG.info("Assigning Roles to Group " + group.getGroupName() + " for Protection Group "
+                    + protectionGroup.getProtectionGroupName());
+        } catch (Exception ex) {
+            LOG.error(ex);
+            try {
+                t.rollback();
+            } catch (Exception ex3) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Authorization|||assignGroupsToUser|Failure|Error in Rolling Back Transaction|"
+                            + ex3.getMessage());
+                }
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Authorization|||assignGroupRoleToProtectionGroup|Failure|Error Occured in assigning Roles "
+                        + StringUtilities.stringArrayToString(roleIds) + " to Group "
+                        + group.getGroupId() + " and Protection Group" + protectionGroup.getProtectionGroupId() + "|"
+                        + ex.getMessage());
+            }
+            throw new CSTransactionException("An error occurred in assigning Protection Group and Roles to a Group\n"
+                    + ex.getMessage(), ex);
+        } finally {
+            try {
+                s.close();
+            } catch (Exception ex2) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Authorization|||assignGroupRoleToProtectionGroup|Failure|Error in Closing Session |"
+                            + ex2.getMessage());
+                }
+            }
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Authorization|||assignGroupRoleToProtectionGroup|Success|Successful in assigning Roles "
+                    + StringUtilities.stringArrayToString(roleIds) + " to Group "
+                    + group.getGroupId() + " and Protection Group" + protectionGroup.getProtectionGroupId() + "|");
+        }
     }
 
     /**
