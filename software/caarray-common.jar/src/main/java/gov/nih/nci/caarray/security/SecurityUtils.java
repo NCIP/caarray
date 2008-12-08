@@ -113,8 +113,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -336,18 +338,45 @@ public final class SecurityUtils {
 
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     private static void handleAccessProfile(AccessProfile ap) {
+        LOG.debug("Handling access profile");
         // to populate inverse properties
-
         Group targetGroup = getTargetGroup(ap);
         if (targetGroup == null) {
             return;
         }
 
         handleProjectSecurity(targetGroup, ap.getProject(), ap.getSecurityLevel());
+
+        Map<Long, ProtectionGroup> samplesToProjectionGroups = new HashMap<Long, ProtectionGroup>();
+
+        for (Sample sample : ap.getProject().getExperiment().getSamples()) {
+            ProtectionGroup sampleProtectionGroup = getProtectionGroup(sample);
+            samplesToProjectionGroups.put(sample.getId(), sampleProtectionGroup);
+        }
+
+        if (!samplesToProjectionGroups.isEmpty()) {
+            try {
+                LOG.debug("clearing existing sample-level security");
+                    AuthorizationManagerExtensions.clearProtectionGroupRoles(targetGroup, samplesToProjectionGroups
+                            .values(), getApplication());
+                LOG.debug("done clearing existing sample-level security");
+            } catch (CSException e) {
+                LOG.error("Exception clearing roles from protection groups", e);
+            }
+        }
+
+        LOG.debug("setting new sample-level security");
+        Role readRole = getRoleByName(READ_ROLE);
+        Role writeRole = getRoleByName(WRITE_ROLE);
         for (Sample sample : ap.getProject().getExperiment().getSamples()) {
             SampleSecurityLevel sampleSecLevel = getSampleSecurityLevel(ap, sample);
-            handleSampleSecurity(targetGroup, sample, sampleSecLevel);
+
+            if (sampleSecLevel.isAllowsRead() || sampleSecLevel.isAllowsWrite()) {
+                ProtectionGroup pg = samplesToProjectionGroups.get(sample.getId());
+                handleSampleSecurity(targetGroup, pg, sampleSecLevel, readRole, writeRole);
+            }
         }
+        LOG.debug("Done handling access profile");
     }
 
     private static Group getTargetGroup(AccessProfile ap) {
@@ -411,23 +440,18 @@ public final class SecurityUtils {
         }
     }
 
-    private static void handleSampleSecurity(Group targetGroup, Sample sample, SampleSecurityLevel securityLevel) {
-        ProtectionGroup pg = getProtectionGroup(sample);
-        handleSampleSecurity(targetGroup, pg, securityLevel);
-    }
-
     private static void handleSampleSecurity(Group targetGroup, ProtectionGroup samplePg,
-            SampleSecurityLevel securityLevel) {
-        List<String> roleIds = new ArrayList<String>();
+            SampleSecurityLevel securityLevel, Role readRole, Role writeRole) {
+        List<Role> roles = new ArrayList<Role>();
         if (securityLevel.isAllowsRead()) {
-            roleIds.add(getRoleByName(READ_ROLE).getId().toString());
+            roles.add(readRole);
         }
         if (securityLevel.isAllowsWrite()) {
-            roleIds.add(getRoleByName(WRITE_ROLE).getId().toString());
+            roles.add(writeRole);
         }
         try {
-            authMgr.assignGroupRoleToProtectionGroup(samplePg.getProtectionGroupId().toString(), targetGroup
-                    .getGroupId().toString(), roleIds.toArray(ArrayUtils.EMPTY_STRING_ARRAY));
+            AuthorizationManagerExtensions.assignGroupRoleToProtectionGroup(samplePg, targetGroup, roles,
+                    getApplication());
         } catch (CSTransactionException e) {
             LOG.warn("Could not assign sample group roles corresponding to profile " + e.getMessage(), e);
         }
@@ -522,13 +546,15 @@ public final class SecurityUtils {
             }
         }
 
+        Role readRole = getRoleByName(READ_ROLE);
+        Role writeRole = getRoleByName(WRITE_ROLE);
         for (AccessProfile ap : p.getAllAccessProfiles()) {
             Group targetGroup = getTargetGroup(ap);
             if (targetGroup == null) {
                 continue;
             }
             SampleSecurityLevel sampleSecLevel = getSampleSecurityLevel(ap, s);
-            handleSampleSecurity(targetGroup, pg, sampleSecLevel);
+            handleSampleSecurity(targetGroup, pg, sampleSecLevel, readRole, writeRole);
         }
     }
 
@@ -574,11 +600,9 @@ public final class SecurityUtils {
     }
 
     private static ProtectionGroup getProtectionGroup(Protectable p) {
-        String queryString =
-                "SELECT pg FROM " + ProtectionGroup.class.getName() + " pg, " + ProtectionElement.class.getName()
-                        + " pe " + "WHERE pe in elements(pg.protectionElements) " + "  AND pe.objectId = :objectId "
-                        + "  AND pe.attribute = 'id' " + "  AND pe.value = :value "
-                        + "  AND pg.protectionGroupName LIKE 'PE(%) group'";
+        String queryString = "SELECT pg FROM " + ProtectionGroup.class.getName() + " pg join pg.protectionElements pe"
+                + " WHERE pg.protectionGroupName LIKE 'PE(%) group' AND pe.objectId = :objectId "
+                + "  AND pe.attribute = 'id' AND pe.value = :value";
         try {
             Query q =
                     HibernateSessionFactoryHelper.getAuditSession(
