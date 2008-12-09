@@ -139,8 +139,12 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     public List<?> query(final CQLQuery cqlQuery) {
         try {
             String s = CQL2HQL.translate(cqlQuery, false, true);
+            if (cqlQuery.getQueryModifier() == null) {
+                // ensure results are distinct
+                s = "select distinct " + CQL2HQL.TARGET_ALIAS + " " + s;
+            }
             Query hqlquery = HibernateUtil.getCurrentSession().createQuery(s);
-            return hqlquery.list();
+            return hqlquery.list();            
         } catch (QueryProcessingException e) {
             getLog().error("Unable to parse CQL query", e);
             throw new DAOException("Unable to parse CQL query", e);
