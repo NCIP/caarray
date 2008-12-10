@@ -76,7 +76,7 @@ SUP
 #caarraylogo
 { padding:2px 0 0 4px; float:left; width:172px; }
 #userarea
-{ background:url("../images/bg_user.jpg") no-repeat left 0; height:30px; width:27.5em; margin-top:14px; padding:8px 0 0 12px; float:right; color:#bfd5d5; font-size:92%; font-weight:bold; }
+{ height:30px; width:27.5em; margin-top:14px; padding:8px 0 0 12px; float:right; color:#bfd5d5; font-size:92%; font-weight:bold; }
 #infobar A
 { text-decoration:underline; color:#fff; font-weight:normal; }
 #infobar
@@ -118,7 +118,7 @@ SUP
 #leftnav
 { float:left; font-size:85%; width:175px; text-transform:uppercase; font-weight:bold  }
 #leftnav UL A
-{ color:#333; background:#e9e9e9 url("../images/bg_caarraymenu.gif") repeat-y right; border-bottom:1px solid #fff; display:block; width:149px; min-height:.1%; padding:4px 8px 3px 18px; line-height:1.2em; text-decoration:none }
+{ color:#333; background:#e9e9e9; border-bottom:1px solid #fff; display:block; width:149px; min-height:.1%; padding:4px 8px 3px 18px; line-height:1.2em; text-decoration:none }
 #leftnav UL A.selected
 { background:#fff url("../images/ico_arrow.gif") no-repeat 7px 7px }
 #leftnav UL A:hover
@@ -175,7 +175,6 @@ SUP
 #home #content UL
 { padding-left:10px }
 #content UL LI
-/*{ background:url("../images/ico_arrow2.gif") no-repeat 0 4px; padding-left:8px; padding-bottom:10px }*/
 .intro
 { font-size:120%; padding-right:20px; line-height:1.3em }
 .small

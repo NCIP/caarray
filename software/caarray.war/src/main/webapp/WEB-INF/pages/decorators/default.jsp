@@ -24,8 +24,6 @@
         // for help script
            var contextPath = "<%=request.getContextPath()%>";
     </script>
-        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/help.js'/>"></script>
-        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/print.js'/>"></script>
         <decorator:head/>
     </head>
 
