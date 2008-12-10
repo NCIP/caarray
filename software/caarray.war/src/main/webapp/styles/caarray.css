@@ -76,7 +76,7 @@ SUP
 #caarraylogo
 { padding:2px 0 0 4px; float:left; width:172px; }
 #userarea
-{ background:url("../images/bg_user.jpg") no-repeat left 0; height:30px; width:27.5em; margin-top:14px; padding:8px 0 0 12px; float:right; color:#bfd5d5; font-size:92%; font-weight:bold; }
+{ height:30px; width:27.5em; margin-top:14px; padding:8px 0 0 12px; float:right; color:#bfd5d5; font-size:92%; font-weight:bold; }
 #infobar A
 { text-decoration:underline; color:#fff; font-weight:normal; }
 #infobar
@@ -175,7 +175,6 @@ SUP
 #home #content UL
 { padding-left:10px }
 #content UL LI
-/*{ background:url("../images/ico_arrow2.gif") no-repeat 0 4px; padding-left:8px; padding-bottom:10px }*/
 .intro
 { font-size:120%; padding-right:20px; line-height:1.3em }
 .small

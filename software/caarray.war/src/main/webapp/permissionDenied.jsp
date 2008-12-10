@@ -9,7 +9,7 @@
 <html>
 <head>
     <title>Permission Denied</title>
-    <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/theme.css'/>" />
+    <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/caarray.css'/>" />
 </head>
 
 <body id="error">
