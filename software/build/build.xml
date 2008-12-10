@@ -13,7 +13,6 @@
     <property name="docs.dir" value="${root.dir}/docs" />
     <property name="build.dir" value="${basedir}/build" />
     <property name="lib.dir" value="${basedir}/lib" />
-    <property file="${basedir}/project.properties"/>
     <property name="resource.dir" value="${build.dir}/resources" />
     <property name="target.dir" value="${build.dir}/target" />
     <property name="site.dir" value="${build.dir}/site" />
@@ -86,7 +85,7 @@
     <property name="caarray-svc.dir" value="${basedir}/CaArraySvc" />
 
     <property name="bda-utils.dir" value="${basedir}/bda-utils" />
-
+    <property name="bda.version" value="0.6.1" />
 
     <!-- ******************************************************************* -->
     <!-- ** 3RD PARTY DEPENDENCY MANAGMENT                                ** -->
