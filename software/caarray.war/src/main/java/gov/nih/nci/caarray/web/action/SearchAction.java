@@ -83,13 +83,10 @@
 package gov.nih.nci.caarray.web.action;
 
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
-import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
@@ -131,15 +128,6 @@ public class SearchAction extends ActionSupport {
      * name of the samples tab, should have a method of the same name.
      */
     protected static final String SAMPLES_TAB = "samples";
-
-    /**
-     * name of the experiments tab, should have a method of the same name.
-     */
-    protected static final String BROWSE_TAB = "browse";
-    /**
-     * name of the samples tab, should have a method of the same name.
-     */
-    protected static final String BIOMATERIAL_SEARCH_TAB = "biomaterial_search";
 
     /**
      * name of the samples tab, should have a method of the same name.
@@ -190,8 +178,6 @@ public class SearchAction extends ActionSupport {
     private String categoryCombo;
     private String filterInput;
     private String filterKeyword;
-    private List<Category> filterCategories = new ArrayList<Category>();
-    private List<Organism> filterOrganisms = new ArrayList<Organism>();
     private Category selectedCategory;
     private Organism selectedOrganism;
     private String searchField;
@@ -212,62 +198,6 @@ public class SearchAction extends ActionSupport {
 
     private Map<String, Integer> tabs;
 
-
-    /**
-     * This holds the name and count for each item in the browse box.
-     */
-    public class BrowseItems {
-        private final BrowseCategory category;
-        private final String resourceKey;
-        private final int count;
-
-        /**
-         * Constructor for a browse option.
-         * @param resourceKey label for this item
-         * @param count number of groups in this category
-         */
-        public BrowseItems(String resourceKey, int count) {
-            this.category = null;
-            this.resourceKey = resourceKey;
-            this.count = count;
-        }
-        /**
-         * Constructor for a browse option.
-         * @param category the browse category
-         * @param count number of groups in this category
-         */
-        public BrowseItems(BrowseCategory category, int count) {
-            this.category = category;
-            this.resourceKey = category.getResourceKey();
-            this.count = count;
-        }
-        /**
-         * @return the browse category
-         */
-        public BrowseCategory getCategory() {
-            return category;
-        }
-        /**
-         * @return the resourceKey
-         */
-        public String getResourceKey() {
-            return resourceKey;
-        }
-        /**
-         * @return the count
-         */
-        public int getCount() {
-            return count;
-        }
-    }
-
-    private List<BrowseItems> browseItems;
-    /**
-     * @return the browse items
-     */
-    public List<BrowseItems> getBrowseItems() {
-        return browseItems;
-    }
 
     /**
      * @return the keyword
@@ -629,27 +559,6 @@ public class SearchAction extends ActionSupport {
 
 
     }
-    /**
-     * Shows the browse tab.
-     * @return tab
-     */
-    public String showSearchFieldsTab() {
-
-        if ("browse".equals(searchField)) {
-            currentTab = BROWSE_TAB;
-            BrowseService bs = CaArrayActionHelper.getBrowseService();
-            browseItems = new ArrayList<BrowseItems>();
-            for (BrowseCategory cat : BrowseCategory.values()) {
-                browseItems.add(new BrowseItems(cat, bs.countByBrowseCategory(cat)));
-            }
-            browseItems.add(new BrowseItems("browse.report.hybridizations", bs.hybridizationCount()));
-            browseItems.add(new BrowseItems("browse.report.users", bs.userCount()));
-        } else {
-            currentTab = BIOMATERIAL_SEARCH_TAB;
-        }
-        return TAB_FWD;
-
-    }
 
     /**
      * Search action for the experiments tab.
@@ -767,25 +676,6 @@ public class SearchAction extends ActionSupport {
         return searchCats;
     }
 
-
-    /**
-     * @return list of label value beans.
-     */
-    public String searchForCharacteristicCategories() {
-        VocabularyService voc = CaArrayActionHelper.getVocabularyService();
-        this.setFilterCategories(voc.searchForCharacteristicCategory(this.filterInput));
-        return "categoryAutoCompleterValues";
-    }
-
-    /**
-     * @return list of strings.
-     */
-    public String searchForOrganismNames() {
-        VocabularyService voc = CaArrayActionHelper.getVocabularyService();
-        this.setFilterOrganisms(voc.searchForOrganismNames(this.filterKeyword));
-        return "organismAutoCompleterValues";
-    }
-
     /**
      * @return the categoryCombo
      */
@@ -815,20 +705,6 @@ public class SearchAction extends ActionSupport {
     }
 
     /**
-     * @return the categories
-     */
-    public List<Category> getFilterCategories() {
-        return filterCategories;
-    }
-
-    /**
-     * @param categories the categories to set
-     */
-    public void setFilterCategories(List<Category> categories) {
-        this.filterCategories = categories;
-    }
-
-    /**
      * @return the selectedCategory
      */
     public Category getSelectedCategory() {
@@ -840,20 +716,6 @@ public class SearchAction extends ActionSupport {
      */
     public void setSelectedCategory(Category selectedCategory) {
         this.selectedCategory = selectedCategory;
-    }
-
-    /**
-     * @return the filterOrganisms
-     */
-    public List<Organism> getFilterOrganisms() {
-        return filterOrganisms;
-    }
-
-    /**
-     * @param filterOrganisms the filterOrganisms to set
-     */
-    public void setFilterOrganisms(List<Organism> filterOrganisms) {
-        this.filterOrganisms = filterOrganisms;
     }
 
     /**

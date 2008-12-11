@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common.jar
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common.jar Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common.jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common.jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common.jar Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,62 +80,113 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.web.action;
 
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.application.browse.BrowseService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.domain.search.BrowseCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
+import com.opensymphony.xwork2.Action;
 
 /**
- * DAO for Organism entities .
- *
- * @author Dan Kokotov
+ * Action for displaying the home page.
+ * @author Winston Cheng
  */
-class OrganismDaoImpl extends AbstractCaArrayDaoImpl implements OrganismDao {
-    private static final Logger LOG = Logger.getLogger(OrganismDaoImpl.class);
-    private static final String UNCHECKED = "unchecked";
-
+public class HomeAction {
     /**
-     * {@inheritDoc}
+     * This holds the name and count for each item in the browse box.
      */
-    public Organism getOrganism(long id) {
-        return (Organism) getCurrentSession().get(Organism.class, id);
-    }
+    public class BrowseItems {
+        private final BrowseCategory category;
+        private final String resourceKey;
+        private final int count;
 
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    public List<Organism> getAllOrganisms() {
-        String query = "from " + Organism.class.getName() + " o order by o.scientificName asc";
-        return getCurrentSession().createQuery(query).list();
-    }
-
-    @Override
-    Logger getLog() {
-        return LOG;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings(UNCHECKED)
-    public List<Organism> searchForOrganismNames(String keyword) {
-        String sb = "SELECT DISTINCT o FROM " + Organism.class.getName()
-            + " o"
-            + (keyword == null ?"" : " WHERE o.scientificName like :keyword OR o.commonName like :keyword")
-            + " ORDER BY o.scientificName";
-
-        Query q = HibernateUtil.getCurrentSession().createQuery(sb);
-
-        if (keyword != null) {
-            q.setString("keyword", keyword + "%");
+        /**
+         * Constructor for a browse option.
+         * @param resourceKey label for this item
+         * @param count number of groups in this category
+         */
+        public BrowseItems(String resourceKey, int count) {
+            this.category = null;
+            this.resourceKey = resourceKey;
+            this.count = count;
         }
+        /**
+         * Constructor for a browse option.
+         * @param category the browse category
+         * @param count number of groups in this category
+         */
+        public BrowseItems(BrowseCategory category, int count) {
+            this.category = category;
+            this.resourceKey = category.getResourceKey();
+            this.count = count;
+        }
+        /**
+         * @return the browse category
+         */
+        public BrowseCategory getCategory() {
+            return category;
+        }
+        /**
+         * @return the resourceKey
+         */
+        public String getResourceKey() {
+            return resourceKey;
+        }
+        /**
+         * @return the count
+         */
+        public int getCount() {
+            return count;
+        }
+    }
 
-        return q.list();
+    private List<BrowseItems> browseItems;
+    private List<Category> categories = new ArrayList<Category>();
+    private List<Organism> organisms = new ArrayList<Organism>();
+    
+    /**
+     * @return the browse items
+     */
+    public List<BrowseItems> getBrowseItems() {
+        return browseItems;
+    }
+
+    /**
+     * @return the categories
+     */
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    /**
+     * @return the filterOrganisms
+     */
+    public List<Organism> getOrganisms() {
+        return organisms;
+    }
+
+    /**
+     * @return input
+     */
+    public String execute() {
+        BrowseService bs = CaArrayActionHelper.getBrowseService();
+        browseItems = new ArrayList<BrowseItems>();
+        for (BrowseCategory cat : BrowseCategory.values()) {
+            browseItems.add(new BrowseItems(cat, bs.countByBrowseCategory(cat)));
+        }
+        browseItems.add(new BrowseItems("browse.report.hybridizations", bs.hybridizationCount()));
+        browseItems.add(new BrowseItems("browse.report.users", bs.userCount()));
+        
+        VocabularyService voc = CaArrayActionHelper.getVocabularyService();
+        this.categories = voc.searchForCharacteristicCategory("");
+        this.organisms = voc.getOrganisms();
+
+        return Action.INPUT;
     }
 }

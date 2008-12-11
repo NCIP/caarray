@@ -175,7 +175,13 @@ UL.selectedItemList LI:hover
 }
 
 #browsesearchwrapper
-{ width:700px }
+{ width:598px }
+
+#browseboxhome
+{ width:294px }
+
+#searchboxhome
+{ width:294px }
 
 A.btn SPAN.btn_img
 { background:transparent url("../images/bg_btn_left.gif") no-repeat; display:block; line-height:17px; padding:5px 0 2px 9px; }

@@ -84,8 +84,6 @@ package gov.nih.nci.caarray.web.action;
 
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
-import gov.nih.nci.caarray.application.browse.BrowseService;
-import gov.nih.nci.caarray.application.browse.BrowseServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
@@ -94,7 +92,6 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
-import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
@@ -103,7 +100,6 @@ import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
 import gov.nih.nci.caarray.domain.search.SearchTypeSelection;
 import gov.nih.nci.caarray.domain.search.SourceSortCriterion;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-import gov.nih.nci.caarray.web.action.SearchAction.BrowseItems;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,30 +120,17 @@ public class SearchActionTest extends AbstractCaarrayTest {
     private final SearchAction searchAction = new SearchAction();
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
     private final VocabularyService vocabServiceStub = new VocabularyServiceStub();
-    private final LocalBrowseServiceStub browseServiceStub = new LocalBrowseServiceStub();
     private static final int NUM_PROJECTS = 4;
     private static final int NUM_PROJECTS_BY_ORGANISM = 2;
     private static final int NUM_SAMPLES_BY_ORGANISM = 4;
 
-    private static class LocalBrowseServiceStub extends BrowseServiceStub { }
 
     @Before
     public void setUp() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, this.vocabServiceStub);
-        locatorStub.addLookup(BrowseService.JNDI_NAME, this.browseServiceStub);
     }
-
-    @Test
-    public void testBrowse() throws Exception {
-        searchAction.setSearchField("browse");
-        String result = searchAction.showSearchFieldsTab();
-        List<BrowseItems> browseItems = searchAction.getBrowseItems();
-        assertEquals(BrowseCategory.values().length+2, browseItems.size());
-        assertEquals("tab", result);
-    }
-
 
     @Test
     public void testBasicSearch() throws Exception {
