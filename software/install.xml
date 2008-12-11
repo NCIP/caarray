@@ -318,8 +318,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         -install:jboss:configure:secure-console,
         -install:jboss:configure:update-shutdown,
         -install:jboss:configure:update-runconf,
-        -install:jboss:configure:update-runscripts,
-        -install:jboss:configure:replace-conflicting-dependency-jars
+        -install:jboss:configure:update-runscripts
         "/>
 
     <!-- Configure ports used by JBOSS (either bindings or editing jboss config.files) -->
@@ -419,23 +418,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </fileset>
         </replaceregexp>
     </target>
-
-    <target name="-install:jboss:configure:replace-conflicting-dependency-jars" description="Replace dependency jars that ship with JBoss but which conflict with caArray dependencies of same type.">
-        <delete file="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-collections.jar"/>
-        <mkdir dir="${basedir}/temp_dependencies_staging"/>
-        <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${install.path}/caarray_installer/temp_dependencies_staging">
-            <patternset>
-                <include name="lib/commons-collections-*.jar"/>
-            </patternset>
-        </unzip>
-        <copy todir="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/jsf-libs" flatten="true" overwrite="true">
-            <fileset dir="${basedir}/temp_dependencies_staging">
-                <include name="**/commons-collections-*.jar"/>
-            </fileset>
-        </copy>
-        <delete dir="${basedir}/temp_dependencies_staging"/>
-    </target>
-
 
     <!-- Wrapper target to deploy JBOSS container -->
     <target name="install:jboss" unless="exclude.jboss"
