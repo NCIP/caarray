@@ -99,8 +99,8 @@
         <action name="ajax/uploadProgress" class="gov.nih.nci.caarray.web.fileupload.UploadProgress">
         </action>
 
-        <action name="home">
-            <result>/WEB-INF/pages/home.jsp</result>
+        <action name="home" class="gov.nih.nci.caarray.web.action.HomeAction">
+            <result name="input">/WEB-INF/pages/home.jsp</result>
         </action>
         <action name="logout" class="com.fiveamsolutions.nci.commons.web.struts2.action.LogoutAction" method="logout">
             <result name="success" type="redirect-action">
@@ -117,8 +117,6 @@
         </action>
         <action name="ajax/search/*" class="gov.nih.nci.caarray.web.action.SearchAction" method="{1}">
             <result name="tab">/WEB-INF/pages/project/search/searchTab.jsp</result>
-            <result name="categoryAutoCompleterValues">/WEB-INF/pages/project/search/categoryAutoCompleterValues.jsp</result>
-            <result name="organismAutoCompleterValues">/WEB-INF/pages/project/search/organismAutoCompleterValues.jsp</result>
             <result name="success">/WEB-INF/pages/project/search/searchResults.jsp</result>
             <result name="input" type="chain">home</result>
         </action>
