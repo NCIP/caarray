@@ -455,6 +455,10 @@
         <field type="divider" align="top"/>
         <field type="dir" align="left" variable="existing.installation.home">
             <spec txt="Select the Previous Installation of Caarray Application" size="25" set="$SYSTEM_user_home"/>
+            <validator class="com.izforge.izpack.util.ArtifactExistsRelativeToDirValidator" txt="It does not appear that caArray is installed at the specified location as the jboss-4.0.5.GA folder not found." id="jbosshostname.label">
+                <param name="artifactPathRelativeToText" value="jboss-4.0.5.GA"/>
+                <param name="isDir" value="true"/>
+            </validator>
         </field>
         <field type="text" align="left" variable="jboss.server.hostname">
             <spec txt="Application Host Name " size="15" set="$HOST_NAME"/>
