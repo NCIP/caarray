@@ -97,6 +97,7 @@
                                 </ajax:anchors>
                             </c:if>
                         </display:column>
+                      <caarray:arrayDesignListDownloadColumn itemId="${row.id}"/>
                     </display:table>
                 </ajax:displayTag>
             </div>

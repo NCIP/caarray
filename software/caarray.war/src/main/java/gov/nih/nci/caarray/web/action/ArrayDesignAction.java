@@ -106,9 +106,12 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.InvalidNumberOfArgsException;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
+import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -365,6 +368,49 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         }
         editMode = true;
         return "metaValid";
+    }
+
+    /**
+     * download all of the data for this sample.
+     * @return download
+     * @throws IOException on file error
+     */
+    @SkipValidation
+    public String download() throws IOException {
+        Collection<CaArrayFile> files = getAllDataFiles();
+        if (files.isEmpty()) {
+            ActionHelper.saveMessage(getText("arrayDesign.noDataToDownload"));
+            return "list";
+        }
+
+        DownloadHelper.downloadFiles(files, determineDownloadFileName());
+        return null;
+    }
+
+
+   /**
+    * Returns the filename for a zip of files for the given project, assuming that the download will not be grouped.
+    *
+    * @return the filename
+    */
+   private String determineDownloadFileName() {
+       StringBuilder name = new StringBuilder("caArray_").append(arrayDesign.getName())
+               .append("_file.zip");
+       return name.toString();
+   }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected Collection<CaArrayFile> getAllDataFiles() {
+        Collection<CaArrayFile> returnVal = null;
+        if (getArrayDesign() != null) {
+            returnVal = getArrayDesign().getDesignFiles();
+        } else {
+            returnVal = new ArrayList<CaArrayFile>();
+        }
+
+        return returnVal;
     }
 
     /**

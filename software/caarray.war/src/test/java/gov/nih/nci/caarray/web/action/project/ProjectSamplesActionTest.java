@@ -88,7 +88,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
@@ -115,6 +114,8 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractDownloadTest;
+import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -140,7 +141,7 @@ import com.opensymphony.xwork2.Action;
  * @author Winston Cheng
  *
  */
-public class ProjectSamplesActionTest extends AbstractCaarrayTest {
+public class ProjectSamplesActionTest extends AbstractDownloadTest {
     private final ProjectSamplesAction action = new ProjectSamplesAction();
 
     private static Sample DUMMY_SAMPLE = new Sample();
@@ -260,7 +261,7 @@ public class ProjectSamplesActionTest extends AbstractCaarrayTest {
         action.setCurrentSample(s);
         action.setProject(p);
         List<CaArrayFile> files = new ArrayList<CaArrayFile>(s.getAllDataFiles());
-        Collections.sort(files, ProjectFilesAction.CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
+        Collections.sort(files, DownloadHelper.CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
         assertEquals(2, files.size());
         assertEquals("missing_term_source.idf", files.get(0).getName());
         assertEquals("missing_term_source.sdrf", files.get(1).getName());

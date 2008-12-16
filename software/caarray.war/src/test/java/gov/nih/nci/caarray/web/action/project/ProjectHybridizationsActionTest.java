@@ -88,7 +88,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
@@ -109,6 +108,8 @@ import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractDownloadTest;
+import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -131,7 +132,7 @@ import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
  * @author Winston Cheng
  *
  */
-public class ProjectHybridizationsActionTest extends AbstractCaarrayTest {
+public class ProjectHybridizationsActionTest extends AbstractDownloadTest {
     private final ProjectHybridizationsAction action = new ProjectHybridizationsAction();
 
     private static Hybridization DUMMY_HYBRIDIZATION = new Hybridization();
@@ -203,11 +204,11 @@ public class ProjectHybridizationsActionTest extends AbstractCaarrayTest {
         action.setCurrentHybridization(h1);
         action.setProject(p);
         List<CaArrayFile> files = new ArrayList<CaArrayFile>(h1.getAllDataFiles());
-        Collections.sort(files, ProjectFilesAction.CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
+        Collections.sort(files, DownloadHelper.CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
         assertEquals(1, files.size());
         assertEquals("missing_term_source.idf", files.get(0).getName());
         files = new ArrayList<CaArrayFile>(h2.getAllDataFiles());
-        Collections.sort(files, ProjectFilesAction.CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
+        Collections.sort(files, DownloadHelper.CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
         assertEquals(1, files.size());
         assertEquals("missing_term_source.sdrf", files.get(0).getName());
 

@@ -87,7 +87,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
@@ -99,6 +98,7 @@ import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractDownloadTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -110,7 +110,7 @@ import com.opensymphony.xwork2.Action;
  * @author Winston Cheng
  *
  */
-public class ProjectFactorsActionTest extends AbstractCaarrayTest {
+public class ProjectFactorsActionTest extends AbstractDownloadTest {
     private final ProjectFactorsAction action = new ProjectFactorsAction();
     private static final Factor DUMMY_FACTOR = new Factor();
 

@@ -87,7 +87,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignDeleteException;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
@@ -95,6 +94,8 @@ import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -104,19 +105,26 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.file.UnsupportedAffymetrixCdfFiles;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
+import gov.nih.nci.caarray.web.AbstractDownloadTest;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
@@ -126,13 +134,13 @@ import com.opensymphony.xwork2.Action;
  *
  */
 @SuppressWarnings("PMD")
-public class ArrayDesignActionTest extends AbstractCaarrayTest {
+public class ArrayDesignActionTest extends AbstractDownloadTest {
     private final ArrayDesignAction arrayDesignAction = new ArrayDesignAction();
     private final LocalArrayDesignServiceStub arrayDesignServiceStub = new LocalArrayDesignServiceStub();
     private final LocalVocabularyServiceStub vocabularyServiceStub = new LocalVocabularyServiceStub();
     private final LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
     private final LocalFileManagementServiceStub fileManagementServiceStub = new LocalFileManagementServiceStub();
-
+    private MockHttpServletResponse mockResponse;
     private static final int NUM_DESIGNS = 3;
     private static final Long DESIGN_ID = 1L;
 
@@ -143,6 +151,9 @@ public class ArrayDesignActionTest extends AbstractCaarrayTest {
         locatorStub.addLookup(VocabularyService.JNDI_NAME, this.vocabularyServiceStub);
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(FileManagementService.JNDI_NAME, this.fileManagementServiceStub);
+        ServletActionContext.setRequest(new MockHttpServletRequest());
+        mockResponse = new MockHttpServletResponse();
+        ServletActionContext.setResponse(mockResponse);
     }
 
     @SuppressWarnings("deprecation")
@@ -241,6 +252,39 @@ public class ArrayDesignActionTest extends AbstractCaarrayTest {
         assertEquals(Action.SUCCESS, arrayDesignAction.saveMeta());
         assertTrue(ActionHelper.getMessages().contains("arraydesign.saved"));
         arrayDesignAction.clearErrorsAndMessages();
+    }
+
+    @Test
+    public void testDownload() throws Exception {
+        assertEquals("list", arrayDesignAction.download());
+
+        FileAccessServiceStub fas = new FileAccessServiceStub();
+        TemporaryFileCacheLocator.resetTemporaryFileCache();
+        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
+        fas.add(AffymetrixArrayDesignFiles.TEST3_CDF);
+
+        ArrayDesign arrayDesign = new ArrayDesign();
+        arrayDesign.setName("Test3");
+
+        CaArrayFile rawFile = new CaArrayFile();
+        rawFile.setName("Test3.CDF");
+        CaArrayFileSet designFileSet = new CaArrayFileSet();
+        designFileSet.add(rawFile);
+        arrayDesign.setDesignFileSet(designFileSet);
+
+        arrayDesignAction.setArrayDesign(arrayDesign);
+
+        arrayDesignAction.download();
+
+        assertEquals("application/zip", mockResponse.getContentType());
+        assertEquals("filename=\"caArray_Test3_file.zip\"", mockResponse.getHeader("Content-disposition"));
+
+        ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
+        ZipEntry ze = zis.getNextEntry();
+        assertNotNull(ze);
+        assertEquals("Test3.CDF", ze.getName());
+        assertNull(zis.getNextEntry());
+        IOUtils.closeQuietly(zis);
     }
 
     @Test

@@ -86,7 +86,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.file.FileManagementService;
@@ -111,6 +110,7 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
+import gov.nih.nci.caarray.web.AbstractDownloadTest;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -148,7 +148,7 @@ import com.opensymphony.xwork2.Action;
  *
  */
 @SuppressWarnings("PMD")
-public class ProjectFilesActionTest extends AbstractCaarrayTest {
+public class ProjectFilesActionTest extends AbstractDownloadTest {
 
     private static final String LIST_IMPORTED = "listImported";
     private static final String LIST_UNIMPORTED = "listUnimported";
