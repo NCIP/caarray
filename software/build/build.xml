@@ -1086,6 +1086,44 @@
         <fileset refid="grid.dependencies.caarray-svc.lib.fileset" />
     </path>
 
+    <path id="caarray-client.dependencies.path">
+        <fileset dir="${project.lib}" id="caarray-client.dependencies.fileset">
+            <include name="${axis.jar}" />
+            <include name="${caGrid-data-stubs.jar}" />
+            <include name="${caGrid-cql.jar}"/>
+            <include name="${commons-collections.jar}" />
+            <include name="${commons-lang.jar}" />
+            <include name="${commons-io.jar}" />
+            <include name="${commons-logging.jar}" />
+            <include name="${csmapi.jar}" />
+            <include name="${ejb3-persistence.jar}" />
+            <include name="${hibernate.jar}" />
+            <include name="${hibernate-annotations.jar}" />
+            <include name="${log4j.jar}" />
+            <include name="${javassist.jar}" />
+            <include name="${jboss-ejb3-client.jar}" />
+            <include name="${jboss-ejb3x.jar}" />
+            <include name="${jbossall-client.jar}" />
+            <include name="${jboss-aspect-client.jar}" />
+            <include name="${jboss-aop-client.jar}" />
+            <include name="${nci-commons-core.jar}" />
+        </fileset>
+    </path>
+
+    <path id="grid.dependencies.lib.path">
+        <fileset dir="${project.lib}" id="grid.dependencies.lib.fileset">
+            <include name="${addressing.jar}" />
+            <include name="${cog-axis.jar}" />
+            <include name="${cog-jglobus.jar}" />
+            <include name="${commons-discovery.jar}" />
+            <include name="${jce.jar}" />
+            <include name="${wsrf_core_enum.jar}"/>
+            <include name="${wsrf_core_stubs_enum.jar}"/>
+            <include name="${wss4j.jar}" />
+            <include name="${xercesImpl.jar}" />
+        </fileset>
+    </path>
+
     <!-- Datasource-configuration-related properties -->
     <property name="jta.transaction.factory" value="hibernate.transaction.factory_class org.hibernate.transaction.JTATransactionFactory" />
     <property name="jta.transaction.manager" value="hibernate.transaction.manager_lookup_class org.hibernate.transaction.JBossTransactionManagerLookup" />
@@ -1440,13 +1478,11 @@
         <zip destfile="${caarray-client.target.dir}/caarray-client.zip">
             <fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
             <fileset dir="${caarray-client.dir}/src/distribution/resources" />
-            <zipfileset prefix="lib" refid="common.compile.dependencies.fileset" />
+            <zipfileset prefix="lib" refid="caarray-client.dependencies.fileset" />
             <zipfileset dir="${caarray-client.target.dir}" includes="docs/**" />
-            <zipfileset prefix="docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_client_model.eap" />
-            <zipfileset prefix="example/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/*.java" />
             <zipfileset prefix="grid/etc" dir="${caarray-svc.dir}/src/gov/nih/nci/cagrid/caarray/client" includes="client-config.wsdd" />
             <zipfileset prefix="grid/etc" dir="${caarray-svc.dir}/etc" includes="domainModel.xml" />
-            <zipfileset prefix="grid/lib" refid="grid.compile.dependencies.fileset" />
+            <zipfileset prefix="grid/lib" refid="grid.dependencies.lib.fileset" />
             <zipfileset prefix="grid/lib" refid="grid.dependencies.caarray-svc.lib.fileset" />
             <zipfileset prefix="grid/lib" refid="grid.dependencies.caarray-svc.build.fileset" />
             <zipfileset prefix="grid/schema" dir="${caarray-svc.dir}/schema/CaArraySvc" />
