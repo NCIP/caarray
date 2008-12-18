@@ -173,9 +173,6 @@ public final class EntityPruner {
             }
 
             try {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Calling method: " + accessor.setter().getName());
-                }
                 accessor.set(val, param);
             } catch (Exception e) {
                 // We catch here, rather than re-throwing. This is a violation of our standard
