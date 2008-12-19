@@ -293,6 +293,23 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <!-- set the ldap.host value -->
         <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/web.xml" match="ldapHost&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="ldapHost&lt;/param-name&gt;&lt;param-value&gt;${ldap.host}&lt;/param-value&gt;" byline="false"/>
 
+        <!-- make sure migration sql scripts get filtered to get property values (insert registration email, etc.) -->
+        <copy todir="${temp.dir}/caarray.war/WEB-INF/classes/temp" filtering="true" overwrite="true">
+            <fileset dir="${temp.dir}/caarray.war/WEB-INF/classes">
+                <include name="*.sql"/>
+            </fileset>
+            <filterset>
+                <filtersfile file="${properties.file}"/>
+                <filtersfile file="project.properties"/>
+            </filterset>
+        </copy>
+        <copy todir="${temp.dir}/caarray.war/WEB-INF/classes" overwrite="true">
+            <fileset dir="${temp.dir}/caarray.war/WEB-INF/classes/temp">
+                <include name="*.sql"/>
+            </fileset>
+        </copy>
+        <delete dir="${temp.dir}/caarray.war/WEB-INF/classes/temp"/>
+
         <war destfile="${temp.dir}/caarray.ear/caarray.war">
             <fileset dir="${temp.dir}/caarray.war"/>
         </war>
@@ -411,7 +428,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     </target>
 
     <target name="-install:jboss:configure:update-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
-        <replaceregexp match="(org.jboss.Main) (?!--host=)" replace="org.jboss.Main --host=${grid.static.hostname}" byline="true">
+        <replaceregexp match="(org.jboss.Main) (?!--host=)" replace="org.jboss.Main --host=${grid.static.hostname} " byline="true">
             <fileset dir="${jboss.home}/bin">
                 <include name="run.bat"/>
                 <include name="run.sh"/>

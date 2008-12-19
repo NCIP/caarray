@@ -541,6 +541,12 @@
                 class="com.izforge.izpack.util.URLCheckValidator" txt="Please enter a valid Grid URL" id="indexurl.label">
             </validator>
         </field>
+        <field type="text" variable="upt.url">
+            <spec txt="UPT URL " id="text.label" size="25" set=""/>
+        </field>
+       <field type="text" variable="user.admin.email.address">
+            <spec txt="UPT Admin Email Address " id="text.label" size="25" set=""/>
+        </field>
     </panel>
 
 

@@ -51,4 +51,7 @@
     <migration fromVersion="2.2.0.rc1" toVersion="2.2.0.rc2">
         <sql-script>migrate-2.2.0.rc1-to-2.2.0.rc2.sql</sql-script>
     </migration>
+    <migration fromVersion="2.2.0.rc2" toVersion="2.2.0.rc3">
+        <sql-script>migrate-2.2.0.rc2-to-2.2.0.rc3.sql</sql-script>
+    </migration>
 </migrations>
