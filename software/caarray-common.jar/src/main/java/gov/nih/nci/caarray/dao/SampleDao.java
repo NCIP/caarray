@@ -113,11 +113,12 @@ public interface SampleDao extends CaArrayDao {
 
     /**
      * Performs a query for all samples which contain a characteristic and category supplied.
+     * @param params sort params
      * @param c category
      * @param keyword text keyword
      * @return a list if samples with characteristic matching keyword and category matching c
      */
-    List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword);
+    List<Sample> searchSamplesByCharacteristicCategory(PageSortParams<Sample> params, Category c, String keyword);
 
     /**
      * Performs a query for all samples which are part of an experiment and
@@ -155,11 +156,12 @@ public interface SampleDao extends CaArrayDao {
 
     /**
      * Performs a query for all sources which contain a characteristic and category supplied.
+     * @param params sort params
      * @param c category
      * @param keyword text keyword
      * @return a list if samples with characteristic matching keyword and category matching c
      */
-    List<Source> searchSourcesByCharacteristicCategory(Category c, String keyword);
+    List<Source> searchSourcesByCharacteristicCategory(PageSortParams<Source> params, Category c, String keyword);
 
     /**
      * Get number of results from query for all sources which contain a characteristic and category supplied.

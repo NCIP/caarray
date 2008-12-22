@@ -671,20 +671,20 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return getSampleDao().searchByCategory(params, keyword, categories);
     }
 
-
-
     /**
      * {@inheritDoc}
      */
-    public List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword) {
-        return getSampleDao().searchSamplesByCharacteristicCategory(c, keyword);
+    public List<Sample> searchSamplesByCharacteristicCategory(PageSortParams<Sample> params,
+            Category c, String keyword) {
+        return getSampleDao().searchSamplesByCharacteristicCategory(params, c, keyword);
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<Source> searchSourcesByCharacteristicCategory(Category c, String keyword) {
-        return getSampleDao().searchSourcesByCharacteristicCategory(c, keyword);
+    public List<Source> searchSourcesByCharacteristicCategory(PageSortParams<Source> params,
+            Category c, String keyword) {
+        return getSampleDao().searchSourcesByCharacteristicCategory(params, c, keyword);
     }
 
     /**

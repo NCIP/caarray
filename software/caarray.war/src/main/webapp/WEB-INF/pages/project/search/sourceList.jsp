@@ -2,6 +2,9 @@
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <display:table class="searchresults" cellspacing="0" list="${sourceResults}" requestURI="${sortUrl}" id="row" style="clear: none;">
         <caarray:displayTagProperties/>
+        <display:setProperty name="pagination.sort.param" value="sourceResults.sortCriterion" />
+        <display:setProperty name="pagination.sortdirection.param" value="sourceResults.sortDirection" />
+        <display:setProperty name="pagination.pagenumber.param" value="sourceResults.pageNumber" />
         <display:column titleKey="experiment.sources.name" sortable="true" sortProperty="NAME">
             <c:url var="viewSourceUrl" value="/ajax/project/listTab/Sources/view.action">
                 <c:param name="project.id" value="${row.experiment.project.id}"/>

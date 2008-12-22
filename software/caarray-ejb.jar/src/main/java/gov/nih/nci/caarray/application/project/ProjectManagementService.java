@@ -420,11 +420,12 @@ public interface ProjectManagementService {
 
     /**
      * Performs a query for all samples which contain a characteristic and category supplied.
+     * @param params sort params
      * @param c category
      * @param keyword text keyword
      * @return a list if samples with characteristic matching keyword and category matching c
      */
-    List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword);
+    List<Sample> searchSamplesByCharacteristicCategory(PageSortParams<Sample> params, Category c, String keyword);
 
     /**
      * Performs a query for all samples which are related to an experiment and also
@@ -439,11 +440,12 @@ public interface ProjectManagementService {
     /**
      * Performs a query for all sources which contain a characteristic and category supplied.
      * Keyword is matched on %keyword%.
+     * @param params sort params
      * @param c category
      * @param keyword text
      * @return a list of sources
      */
-    List<Source> searchSourcesByCharacteristicCategory(Category c, String keyword);
+    List<Source> searchSourcesByCharacteristicCategory(PageSortParams<Source> params, Category c, String keyword);
 
     /**
      * Count of samples matching category and term value.
