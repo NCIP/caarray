@@ -585,7 +585,8 @@ public class SearchAction extends ActionSupport {
             ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
             List<Sample> bioMats = null;
             if (SEARCH_CATEGORY_OTHER_CHAR.equals(categorySample)) {
-                bioMats = pms.searchSamplesByCharacteristicCategory(selectedCategory, keyword);
+                bioMats = pms.searchSamplesByCharacteristicCategory(
+                        this.sampleResults.getPageSortParams(), selectedCategory, keyword);
             } else {
                 SearchSampleCategory[] categories = (categorySample
                         .equals(SEARCH_SAMPLE_CATEGORY_ALL)) ? SearchSampleCategory.values()
@@ -610,7 +611,8 @@ public class SearchAction extends ActionSupport {
             ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
             List<Source> sources = null;
             if (SEARCH_CATEGORY_OTHER_CHAR.equals(categorySample)) {
-                sources = pms.searchSourcesByCharacteristicCategory(selectedCategory, keyword);
+                sources = pms.searchSourcesByCharacteristicCategory(
+                        this.sourceResults.getPageSortParams(), selectedCategory, keyword);
             } else {
                 SearchSourceCategory[] scategories = (categorySample
                         .equals(SEARCH_SAMPLE_CATEGORY_ALL)) ? SearchSourceCategory.values()

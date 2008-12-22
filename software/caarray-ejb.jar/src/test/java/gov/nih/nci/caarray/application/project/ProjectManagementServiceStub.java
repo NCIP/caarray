@@ -108,6 +108,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -167,7 +168,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      * {@inheritDoc}
      */
     public List<Project> getMyProjects(boolean showPublic, PageSortParams<Project> pageSortParams) {
-        return new ArrayList<Project>();
+        return Collections.EMPTY_LIST;
     }
 
 
@@ -363,22 +364,22 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return s;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.business.vocabulary.VocabularyService#countSamplesByCharacteristicCategory(gov.nih.nci.caarray.domain.vocabulary.Category, java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public int countSamplesByCharacteristicCategory(Category c, String keyword) {
         return 10;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.business.vocabulary.VocabularyService#countSourcesByCharacteristicCategory(gov.nih.nci.caarray.domain.vocabulary.Category, java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public int countSourcesByCharacteristicCategory(Category c, String keyword) {
         return 10;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.business.vocabulary.VocabularyService#searchByCategory(com.fiveamsolutions.nci.commons.data.search.PageSortParams, java.lang.String, gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory[])
+    /**
+     * {@inheritDoc}
      */
     public <T extends AbstractBioMaterial> List<T> searchByCategory(PageSortParams<T> params, String keyword,
             BiomaterialSearchCategory... categories) {
@@ -402,35 +403,35 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.business.vocabulary.VocabularyService#searchCount(java.lang.String, gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory[])
+    /**
+     * {@inheritDoc}
      */
     public int searchCount(String keyword, BiomaterialSearchCategory... categories) {
         return 4;
     }
 
-
-
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.business.vocabulary.VocabularyService#searchSamplesByCharacteristicCategory(gov.nih.nci.caarray.domain.vocabulary.Category, java.lang.String)
+    /**
+     * {@inheritDoc}
      */
-    public List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword) {
-        return new ArrayList<Sample>();
+    public List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c) {
+        return Collections.EMPTY_LIST;
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<Source> searchSourcesByCharacteristicCategory(Category c, String keyword) {
-        return new ArrayList<Source>();
+    public List<Sample> searchSamplesByCharacteristicCategory(
+            PageSortParams<Sample> params, Category c, String keyword) {
+        return Collections.EMPTY_LIST;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.application.project.ProjectManagementService#searchSamplesByExperimentAndCategory(java.lang.String, gov.nih.nci.caarray.domain.project.Experiment, gov.nih.nci.caarray.domain.search.SearchSampleCategory[])
+    /**
+     * {@inheritDoc}
      */
-    public List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c) {
-        // TODO Auto-generated method stub
-        return null;
+    public List<Source> searchSourcesByCharacteristicCategory(
+            PageSortParams<Source> params, Category c, String keyword) {
+        return Collections.EMPTY_LIST;
+
     }
 
   }

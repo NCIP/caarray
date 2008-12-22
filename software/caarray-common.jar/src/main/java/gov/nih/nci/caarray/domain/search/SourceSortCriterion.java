@@ -109,27 +109,27 @@ public enum SourceSortCriterion implements SortCriterion<Source> {
     /**
      * tissuesite.
      */
-    TISSUESITE("tissuesite"),
+    TISSUESITE("tissueSite.value"),
 
     /**
      * diseasestate.
      */
-    DISEASESTATE("diseasestate"),
+    DISEASESTATE("diseaseState.value"),
 
     /**
      * material type.
      */
-    MATERIALTYPE("materialType"),
+    MATERIALTYPE("materialType.value"),
 
     /**
      * cell type.
      */
-    CELLTYPE("cellType"),
+    CELLTYPE("cellType.value"),
 
     /**
      * provider name.
      */
-    PROVIDER_NAME("provider.name"),
+    PROVIDER_NAME("providers.name"),
 
 
     /**

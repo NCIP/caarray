@@ -615,12 +615,12 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
 
     @Test
     public void testSearchSamplesByCharacteristicCategory() {
-        assertEquals(Collections.EMPTY_LIST, this.projectManagementService.searchSamplesByCharacteristicCategory(null, "test"));
+        assertEquals(Collections.EMPTY_LIST, this.projectManagementService.searchSamplesByCharacteristicCategory(null, null, "test"));
     }
 
     @Test
     public void testSearchSourcesByCharacteristicCategory() {
-        assertEquals(Collections.EMPTY_LIST, this.projectManagementService.searchSourcesByCharacteristicCategory(null, "test"));
+        assertEquals(Collections.EMPTY_LIST, this.projectManagementService.searchSourcesByCharacteristicCategory(null, null, "test"));
     }
 
     @Test

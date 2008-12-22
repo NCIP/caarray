@@ -112,6 +112,16 @@ public enum SampleSortCriterion implements SortCriterion<Sample> {
     TISSUESITE("tissueSite.value"),
 
     /**
+     * material type.
+     */
+    MATERIALTYPE("materialType.value"),
+
+    /**
+     * cell type.
+     */
+    CELLTYPE("cellType.value"),
+
+    /**
      * diseasestate.
      */
     DISEASESTATE("diseaseState.value"),

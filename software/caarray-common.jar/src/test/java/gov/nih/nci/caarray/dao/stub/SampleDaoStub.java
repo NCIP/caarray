@@ -159,8 +159,17 @@ public class SampleDaoStub extends AbstractDaoStub implements SampleDao {
      * {@inheritDoc}
      */
     public List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c) {
-        // TODO Auto-generated method stub
-        return null;
+        return Collections.EMPTY_LIST;
+    }
+
+    public List<Sample> searchSamplesByCharacteristicCategory(
+            PageSortParams<Sample> params, Category c, String keyword) {
+        return Collections.EMPTY_LIST;
+    }
+
+    public List<Source> searchSourcesByCharacteristicCategory(
+            PageSortParams<Source> params, Category c, String keyword) {
+        return Collections.EMPTY_LIST;
     }
 
 }

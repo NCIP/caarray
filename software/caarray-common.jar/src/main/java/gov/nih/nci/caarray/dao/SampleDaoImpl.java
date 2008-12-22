@@ -121,7 +121,8 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
     private static final String SELECT_DISTINCT = " SELECT DISTINCT ";
     private static final String KEYWORD_SUB = "keyword";
     private static final String CATAGORY_SUB = "mycat";
-
+    private static final String ORDER_BY = " ORDER BY s.";
+    private static final String LEFT_JOIN = " LEFT JOIN ";
     /**
      * {@inheritDoc}
      */
@@ -138,16 +139,24 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
      * {@inheritDoc}
      */
     @SuppressWarnings(UNCHECKED)
-    public List<Source> searchSourcesByCharacteristicCategory(Category c, String keyword) {
+     public List<Source> searchSourcesByCharacteristicCategory(PageSortParams<Source> params,
+             Category c, String keyword) {
+
+        SortCriterion<Source> sortCrit = params != null ? params.getSortCriterion() : null;
         StringBuffer sb = new StringBuffer();
 
         sb.append(SELECT_DISTINCT + "s");
-        sb.append(generateSourcesByCharacteristicCategoryClause());
+        sb.append(generateSourcesByCharacteristicCategoryClause(sortCrit, keyword));
 
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
         q.setString(CATAGORY_SUB, c.getName());
-        q.setString(KEYWORD_SUB, "%" + keyword + "%");
 
+        if (keyword != null && !keyword.equals("")) {
+            q.setString(KEYWORD_SUB, "%" + keyword + "%");
+        }
+
+        q.setFirstResult(params.getIndex());
+        q.setMaxResults(params.getPageSize());
         return q.list();
     }
 
@@ -159,11 +168,13 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         StringBuffer sb = new StringBuffer();
 
         sb.append("SELECT count(DISTINCT s)");
-        sb.append(generateSourcesByCharacteristicCategoryClause());
+        sb.append(generateSourcesByCharacteristicCategoryClause(null, keyword));
 
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
         q.setString(CATAGORY_SUB, c.getName());
-        q.setString(KEYWORD_SUB, "%" + keyword + "%");
+        if (keyword != null && !keyword.equals("")) {
+            q.setString(KEYWORD_SUB, "%" + keyword + "%");
+        }
 
         return ((Number) q.uniqueResult()).intValue();
     }
@@ -174,7 +185,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
     @SuppressWarnings(UNCHECKED)
     public int countSamplesByCharacteristicCategory(Category c, String keyword) {
 
-        Query q = createQueryForSamplesByCharacteristicCategory("SELECT count(DISTINCT s)", c, keyword);
+        Query q = createQueryForSamplesByCharacteristicCategory("SELECT count(DISTINCT s)", null, c, keyword);
 
         if (q == null) {
             return 0;
@@ -188,14 +199,18 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
      * {@inheritDoc}
      */
     @SuppressWarnings(UNCHECKED)
-    public List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword) {
-
-        Query q = createQueryForSamplesByCharacteristicCategory(SELECT_DISTINCT + "s", c, keyword);
+    public List<Sample> searchSamplesByCharacteristicCategory(PageSortParams<Sample> params,
+            Category c, String keyword) {
+        SortCriterion<Sample> sortCrit = params != null ? params.getSortCriterion() : null;
+        Query q = createQueryForSamplesByCharacteristicCategory(SELECT_DISTINCT + "s", sortCrit, c, keyword);
+        q.setFirstResult(params.getIndex());
+        q.setMaxResults(params.getPageSize());
         return q.list();
     }
 
     @SuppressWarnings(UNCHECKED)
-    private Query createQueryForSamplesByCharacteristicCategory(String selectClause, Category c, String keyword) {
+    private Query createQueryForSamplesByCharacteristicCategory(
+            String selectClause, SortCriterion<Sample> sortCrit, Category c, String keyword) {
         Query returnVal = null;
         if (keyword != null && !keyword.equals("")) {
 
@@ -212,7 +227,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
                     new HashMap<String, List<? extends Serializable>>();
                 StringBuffer sb = new StringBuffer();
                 sb.append(selectClause);
-                sb.append(generateSamplesByCharacteristicCategoryClause(tbsList, idBlocks));
+                sb.append(generateSamplesByCharacteristicCategoryClause(tbsList, sortCrit, idBlocks));
                 returnVal = HibernateUtil.getCurrentSession().createQuery(sb.toString());
                 returnVal.setString(CATAGORY_SUB, c.getName());
                 HibernateHelper.bindInClauseParameters(returnVal, idBlocks);
@@ -222,7 +237,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
 
             StringBuffer sb = new StringBuffer();
             sb.append(selectClause);
-            sb.append(generateSamplesByCharacteristicCategoryClause());
+            sb.append(generateSamplesByCharacteristicCategoryClause(null, sortCrit, null));
             returnVal = HibernateUtil.getCurrentSession().createQuery(sb.toString());
             returnVal.setString(CATAGORY_SUB, c.getName());
         }
@@ -231,62 +246,74 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
     }
 
     private String generateSamplesByCharacteristicCategoryClause(List<? extends Serializable> tbsList,
-            Map<String, List<? extends Serializable>> idBlocks) {
+            SortCriterion<Sample> sortCrit, Map<String, List<? extends Serializable>> idBlocks) {
 
         // need to break this up into blocks of 500 to get around bug
         // http://opensource.atlassian.com/projects/hibernate/browse/HHH-2166
 
-        String sb = FROM_KEYWORD
-            + Sample.class.getName()
-            + " s left join s.characteristics chr"
-            + " left join chr.category cat"
-            + " left join s.sources src"
-            + " left join src.characteristics schr"
-            + " left join schr.category scat "
-            + " WHERE (cat.name = :" + CATAGORY_SUB
-            + " AND " + HibernateHelper.buildInClause(tbsList, "chr", idBlocks) + " )"
-            + " OR (scat.name = :" + CATAGORY_SUB
-            + " AND " + HibernateHelper.buildInClause(tbsList, "schr", idBlocks) + " )";
+        StringBuffer sb = new StringBuffer();
+        sb.append(FROM_KEYWORD);
+        sb.append(Sample.class.getName());
+        sb.append(" s " + LEFT_JOIN + " s.characteristics chr " + LEFT_JOIN + " chr.category cat"
+            + LEFT_JOIN + " s.sources src left join src.characteristics schr"
+            + LEFT_JOIN + " schr.category scat ");
+        if (sortCrit != null) {
+            sb.append(getJoinForOrderBy(sb, sortCrit.getOrderField(), 0));
+        }
 
-        return sb;
-    }
+        if (tbsList != null) {
+            sb.append(" WHERE (cat.name = :" + CATAGORY_SUB
+                + " AND " + HibernateHelper.buildInClause(tbsList, "chr", idBlocks) + " )"
+                + " OR (scat.name = :" + CATAGORY_SUB
+                + " AND " + HibernateHelper.buildInClause(tbsList, "schr", idBlocks) + " )");
+        } else {
+            sb.append(" WHERE cat.name = :" + CATAGORY_SUB
+                + " OR scat.name = :" + CATAGORY_SUB);
+        }
 
-    private String generateSamplesByCharacteristicCategoryClause() {
+        if (sortCrit != null) {
+            sb.append(ORDER_BY + sortCrit.getOrderField());
+        }
 
-        String sb = FROM_KEYWORD
-            + Sample.class.getName()
-            + " s left join s.characteristics chr"
-            + " left join chr.category cat"
-            + " left join s.sources src"
-            + " left join src.characteristics schr"
-            + " left join schr.category scat "
-            + " WHERE cat.name = :" + CATAGORY_SUB
-            + " OR scat.name = :" + CATAGORY_SUB;
-
-        return sb;
+        return sb.toString();
     }
 
     private String generateTermByKeywordClause() {
-        String sb = FROM_KEYWORD
-        + TermBasedCharacteristic.class.getName() + " tbs left join tbs.term t "
-        + " WHERE t.value like :" + KEYWORD_SUB;
+        StringBuffer sb = new StringBuffer();
+        sb.append(FROM_KEYWORD);
+        sb.append(TermBasedCharacteristic.class.getName());
+        sb.append(" tbs " + LEFT_JOIN + " tbs.term t WHERE t.value like :" + KEYWORD_SUB);
 
-        return sb;
+        return sb.toString();
 
     }
 
 
-    private String generateSourcesByCharacteristicCategoryClause() {
+    private String generateSourcesByCharacteristicCategoryClause(SortCriterion<Source> sortCrit, String keyword) {
 
-        String sb = FROM_KEYWORD
-            + Source.class.getName()
-            + " s left join s.characteristics chr"
-            + " left join chr.category cat, "
-            + TermBasedCharacteristic.class.getName() + " tbs left join tbs.term t "
-            + " WHERE t.value like :" + KEYWORD_SUB
-            + " AND cat.name = :" + CATAGORY_SUB + " AND chr.id = tbs.id";
+        StringBuffer sb = new StringBuffer();
+        sb.append(FROM_KEYWORD);
+        sb.append(Source.class.getName());
+        sb.append(" s " + LEFT_JOIN + " s.characteristics chr ");
 
-        return sb;
+        if (sortCrit != null) {
+            sb.append(getJoinForOrderBy(sb, sortCrit.getOrderField(), 0));
+        }
+
+        sb.append(LEFT_JOIN + " chr.category cat, "
+            + TermBasedCharacteristic.class.getName() + " tbs " + LEFT_JOIN + " tbs.term t "
+            + " WHERE cat.name = :" + CATAGORY_SUB + " AND chr.id = tbs.id");
+
+        if (keyword != null && !keyword.equals("")) {
+            sb.append(" AND t.value like :" + KEYWORD_SUB);
+        }
+
+
+        if (sortCrit != null) {
+            sb.append(ORDER_BY + sortCrit.getOrderField());
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -300,7 +327,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         sb.append(FROM_KEYWORD + Sample.class.getName() + " s");
         sb.append(getJoinClause(c));
         sb.append(getWhereClause(c));
-        sb.append(" AND s.experiment = :exp order by s.name");
+        sb.append(" AND s.experiment = :exp" + ORDER_BY + "name");
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
         q.setEntity("exp", e);
         q.setString(KEYWORD_SUB, "%" + keyword + "%");
@@ -327,18 +354,11 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         } else {
             sb.append(SELECT_DISTINCT + "s");
         }
-        sb.append(FROM_KEYWORD);
-        if (categories[0] instanceof SearchSourceCategory) {
-            sb.append(Source.class.getName()).append(" s");
-        } else if (categories[0] instanceof SearchSampleCategory) {
-            sb.append(Sample.class.getName()).append(" s");
-        }
 
-        sb.append(getJoinClause(categories));
-        sb.append(getWhereClause(categories));
+        sb.append(generateSearchClause(count, sortCrit, categories));
 
         if (!count && sortCrit != null) {
-            sb.append(" ORDER BY s.").append(sortCrit.getOrderField());
+            sb.append(ORDER_BY).append(sortCrit.getOrderField());
             if (params.isDesc()) {
                 sb.append(" desc");
             }
@@ -348,6 +368,48 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         return q;
     }
 
+    private String generateSearchClause(boolean count, SortCriterion<? extends AbstractBioMaterial> sortCrit,
+            BiomaterialSearchCategory... categories) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(FROM_KEYWORD);
+        if (categories[0] instanceof SearchSourceCategory) {
+            sb.append(Source.class.getName()).append(" s");
+        } else if (categories[0] instanceof SearchSampleCategory) {
+            sb.append(Sample.class.getName()).append(" s");
+        }
+
+        sb.append(getJoinClause(categories));
+
+        if (!count && sortCrit != null) {
+            sb.append(getJoinForOrderBy(sb, sortCrit.getOrderField(), 0));
+        }
+
+        sb.append(getWhereClause(categories));
+        return sb.toString();
+
+    }
+
+    private static String getJoinForOrderBy(StringBuffer sb, String orderByField, int stipDot) {
+        // check whether this is a ref table
+
+        StringBuffer returnVal = new StringBuffer();
+        int dotPosition = orderByField.indexOf('.', stipDot);
+        if (dotPosition != -1) {
+            String tableName = orderByField.substring(0, dotPosition);
+            String toAdd = LEFT_JOIN + "s." + tableName;
+            String nextAdd = getJoinForOrderBy(sb, orderByField, dotPosition + 1);
+            // make sure we are not re-adding tables already in the join list.
+            if (sb.indexOf(toAdd) != -1) {
+                returnVal.append(nextAdd);
+            } else {
+                returnVal.append(toAdd);
+                returnVal.append(nextAdd);
+            }
+        }
+
+        return returnVal.toString();
+    }
+
     private static String getJoinClause(BiomaterialSearchCategory... categories) {
         LinkedHashSet<String> joins = new LinkedHashSet<String>();
         for (BiomaterialSearchCategory category : categories) {
@@ -355,7 +417,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         }
         StringBuffer sb = new StringBuffer();
         for (String table : joins) {
-            sb.append(" LEFT JOIN ").append(table);
+            sb.append(LEFT_JOIN).append(table);
         }
         return sb.toString();
     }
