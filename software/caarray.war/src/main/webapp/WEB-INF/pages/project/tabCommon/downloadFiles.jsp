@@ -1,5 +1,18 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<caarray:tabPane paneTitleKey="project.tabs.downloadData" subtab="true">
+<script type="text/javascript">
+    downloadMgr.resetDownloadInfo();
+
+    showDownloadInProgress = function() {
+        if (Object.values(downloadMgr.downloadFiles).length > 0) {
+            $('downloadInProgressMsg').show();
+            setTimeout("hideMsg()",5000);
+        }
+    }
+
+    hideMsg = function() {
+        $('downloadInProgressMsg').hide();
+    }
+</script>
 <div class="tableboxpad" style="overflow:auto; max-height:500px">
 <table class="searchresults">
   <tr>
@@ -34,18 +47,4 @@
         <caarray:action url="${exportUrl}" actionClass="launch_download" text="Export Consolidated MAGE-TAB" />
     </c:if>
 </caarray:actions>
-</caarray:tabPane>
-<script type="text/javascript">
-    downloadMgr.resetDownloadInfo();
 
-    showDownloadInProgress = function() {
-        if (Object.values(downloadMgr.downloadFiles).length > 0) {
-            $('downloadInProgressMsg').show();
-            setTimeout("hideMsg()",5000);
-        }
-    }
-
-    hideMsg = function() {
-        $('downloadInProgressMsg').hide();
-    }
-</script>
