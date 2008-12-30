@@ -236,7 +236,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
      * <code>Source</code>.
      */
     @Test
-    public void testGetSampleByCategory() {
+    public void testGetSampleByCategoryNoKeyword() {
         Transaction tx = null;
 
         try {
@@ -252,6 +252,40 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
 
             List<Source> retrievedSamples = DAO_SAMPLE_OBJECT.searchByCategory
                 (ALL_SOURCE_BY_NAME, "", categories);
+
+            tx.commit();
+
+            assertEquals(sampleCount , retrievedSamples.size());
+            assertEquals(1 , sampleCount);
+
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            throw e;
+        }
+    }
+
+    /**
+     * Tests retrieving the <code>Sample</code> with the given category.
+     * Test encompasses save and delete.
+     * <code>Source</code>.
+     */
+    @Test
+    public void testGetSampleByCategory() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.beginTransaction();
+            saveSupportingObjects();
+            int size = DAO_OBJECT.getProjectCountForCurrentUser(false);
+            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            tx.commit();
+
+            tx = HibernateUtil.beginTransaction();
+            SearchSampleCategory[] categories = SearchSampleCategory.values();
+            int sampleCount = DAO_SAMPLE_OBJECT.searchCount("", categories);
+
+            List<Source> retrievedSamples = DAO_SAMPLE_OBJECT.searchByCategory
+                (ALL_SOURCE_BY_NAME, DUMMY_SAMPLE.getName(), categories);
 
             tx.commit();
 
@@ -294,6 +328,49 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             List<Source> retrievedSamples = DAO_SAMPLE_OBJECT
                 .searchSourcesByCharacteristicCategory(sortByOrganism,
                         DUMMY_CATEGORY, DUMMY_REPLICATE_TYPE.getValue());
+
+            assertEquals(sourceCount , retrievedSamples.size());
+
+            tx.commit();
+
+            assertEquals(DUMMY_SOURCE , retrievedSamples.get(0));
+
+
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            throw e;
+        }
+    }
+
+    @Test
+    public void testGetSourceByCharacteristicCategoryAll() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.beginTransaction();
+            DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
+            DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY);
+            DUMMY_CHARACTERISTIC.setTerm(DUMMY_REPLICATE_TYPE);
+            DUMMY_CHARACTERISTIC.setBioMaterial(DUMMY_SOURCE);
+
+            DUMMY_SOURCE.getCharacteristics().add(DUMMY_CHARACTERISTIC);
+
+            saveSupportingObjects();
+            int size = DAO_OBJECT.getProjectCountForCurrentUser(false);
+            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            tx.commit();
+
+            tx = HibernateUtil.beginTransaction();
+
+            List<Category> all_chars = VOCABULARY_DAO.searchForCharacteristicCategory(DUMMY_CATEGORY.getName());
+            int sourceCount = DAO_SAMPLE_OBJECT
+                .countSourcesByCharacteristicCategory(all_chars.get(0), DUMMY_REPLICATE_TYPE.getValue());
+            PageSortParams<Source> sortByOrganism =
+                new PageSortParams<Source>(10000, 0, SourceSortCriterion.NAME, false);
+            sortByOrganism.setSortCriterion(SourceSortCriterion.ORGANISM);
+            List<Source> retrievedSamples = DAO_SAMPLE_OBJECT
+                .searchSourcesByCharacteristicCategory(sortByOrganism,
+                        DUMMY_CATEGORY, "");
 
             assertEquals(sourceCount , retrievedSamples.size());
 

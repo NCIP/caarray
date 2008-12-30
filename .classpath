@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="qa/docs/Test_Scripts"/>
-	<classpathentry kind="src" path="software/gui-installer/target/izpack-4.0.1/src/lib"/>
-	<classpathentry kind="src" path="software/gui-installer/target/custom"/>
 	<classpathentry kind="src" path="software/caarray-client.jar/src/distribution/java"/>
 	<classpathentry kind="src" path="software/caarray-client.jar/src/main/java"/>
 	<classpathentry kind="src" path="software/caarray-common.jar/src/main/java"/>
