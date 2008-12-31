@@ -24,6 +24,8 @@
     <iframe id='target_upload' name='target_upload' src='' style='display: none'> </iframe>
     <div id="uploadFileDiv">
         <div class="boxpad2extend">
+			<p>Due to browser limitations, the combined size of the files you upload must be less than 2 GB. If you need to upload more data,
+			   please do so in multiple steps.</p>
             <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
                 <s:form action="project/files/upload" id="uploadForm" namespace="" enctype="multipart/form-data" method="post"  target="target_upload">
                     <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
@@ -85,6 +87,7 @@
     var fileCount =1;
     var lastItemNumber = 0;
     var lastCalcItemNumber = 0;
+    var noProgressCount = 0;
 
    function moreUploads() {
         formTable = $('uploadFileDiv').getElementsByTagName('table')[0];
@@ -125,6 +128,15 @@
         // time to process will be sent to this method. the total
         // itemNumber reflects both file inputs and other inputs from the
         // page, including hidden fields and checkboxes.
+        
+        // itemNumber < 0 means that there is no matching upload in progress on the server. 
+        // this could be because the upload never began due to the 2GB max upload issue. to check,
+        // we allow a grace period of 5 refreshes, and then display an error message.
+        if (itemNumber < 0 && lastItemNumber == 0 && noProgressCount++ >= 5) {
+			pbPoller.stop();		
+			uploadFinished("Your files could not be uploaded. Please check whether the files you selected had a combined size of more than 2 GB", 
+					"Your files could not be uploaded");
+        }
 
         // if itemNumber is less than 2 it means that no files were selected to upload
         if (itemNumber < 2) {
@@ -199,12 +211,14 @@
 
     }
 
-    function uploadFinished(messages) {
+    function uploadFinished(messages, alertMessages) {
         processingFinished = true;
         $("uploadingMessage").innerHTML = messages;
         $("uploadProgressFileList").style.display = "none";
         $("closeWindow").style.display = "";
-        if (messages.match("not uploaded")) {
+        if (alertMessages) {
+			alert(alertMessages);
+        } else if (messages.match("not uploaded")) {
             alert('Your file upload is complete, but there were errors. Not all files may have been uploaded successfully.');
         } else if (messages.match("at least 1 file")) {
             // do nothing.
