@@ -10,7 +10,7 @@
     </c:if>
 
     <caarray:accessProfileDetails accessProfile="${accessProfile}" readOnly="false"/>
-    <table class="searchresults permissiontable" cellspacing="0">
+    <table class="searchresults permissiontable" cellspacing="0" style="height: auto; width: 400px; overflow-x: hidden">
         <tr>
             <td>
                 <caarray:actions divclass="actionsthin">
