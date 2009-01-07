@@ -24,6 +24,7 @@
     </caarray:projectListTabItemForm>
 
     <s:if test="${!editMode}">
+    <div id="tabHeader" class="boxpad2"><h3>Download Data</h3></div>
     <%@ include file="/WEB-INF/pages/project/tabCommon/downloadFiles.jsp" %>
     </s:if>
 </caarray:tabPane>

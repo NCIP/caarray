@@ -3,5 +3,5 @@
         body-content="empty"%>
 <%@ attribute name="formId" required="true"%>
 <script type="text/javascript">
-	Form.focusFirstElement("${formId}");
+    Caarray.focusFirstElement("${formId}");
 </script>

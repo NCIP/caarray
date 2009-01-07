@@ -114,7 +114,18 @@ var Caarray = {
         }
         var url = options.url || $(formId).action;
         new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true, insertion: options.insertion, onComplete: options.onComplete} );
-    }
+    },
+
+    focusFirstElement: function(form) {
+      var form = $(form);
+      if (form) {
+        var elt = form.findFirstElement();
+        if (elt) {
+          elt.activate();
+        }
+      }
+      return form;
+  }
 }
 
 var ExtTreeUtils = {

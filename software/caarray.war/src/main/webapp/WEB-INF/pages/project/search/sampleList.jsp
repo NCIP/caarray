@@ -28,7 +28,7 @@
         </display:column>
         <display:column property="externalSampleId" titleKey="search.result.externalSampleId" />
         <display:column property="description" titleKey="experiment.samples.description" />
-        <display:column property="experiment.organism.scientificName" sortProperty="ORGANISM" titleKey="search.result.organism" sortable="true"/>
+        <display:column property="organism.scientificName" sortProperty="ORGANISM" titleKey="search.result.organism" sortable="true"/>
         <display:column property="diseaseState.value" sortProperty="DISEASESTATE" titleKey="search.result.diseaseState" sortable="true"/>
         <display:column property="tissueSite.value" sortProperty="TISSUESITE" titleKey="search.result.tissueSite" sortable="true"/>
         <display:column property="materialType.value" sortProperty="MATERIALTYPE" titleKey="search.result.materialType" sortable="true"/>
