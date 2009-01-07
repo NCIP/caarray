@@ -28,8 +28,8 @@
     <fmt:param value="selectAllCheckbox" />
     <fmt:param value="'profileForm'" />
 </fmt:message>
-
-    <table class="searchresults" cellspacing="0">
+   <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
+    <table class="searchresults" cellspacing="0" style="height: auto; width: 400px; overflow-x: hidden">
         <tr>
             <th>Control Access to Specific Content for ${profileOwnerName}</th>
         </tr>
@@ -53,7 +53,7 @@
     </table>
 
     <div class="datatable" style="padding-bottom: 0px">
-        <div class="scrolltable" style="height: auto; max-height: 500px; overflow-x: hidden">
+        <div class="scrolltable" style="height: auto; max-height: 500px; width: 400px; overflow-x: hidden">
         <table class="searchresults permissiontable" cellspacing="0">
             <tbody id="access_profile_samples"
                 <c:if test="${!accessProfile.securityLevel.sampleLevelPermissionsAllowed}">style="display:none"</c:if>
@@ -94,8 +94,11 @@
         </tr>
         <tr>
             <td colspan="3">
-            <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${sampleResults}" pagesize="10" id="row">
+            <c:url value="/protected/ajax/project/permissions/saveAccessProfile.action" var="pagingUrl"/>
+
+            <display:table class="searchresults" cellspacing="0" list="${sampleResults}" requestURI="${pagingUrl}" id="row" pagesize="10">
             <caarray:displayTagProperties/>
+            <display:setProperty name="paging.banner.group_size" value="3"/>
             <display:column title="${checkboxAll}">
                 <s:checkbox id="chk${row.id}" name="sampleSecurityLevels" fieldValue="${row.id}" value="false" theme="simple" />
             </display:column>
@@ -110,11 +113,9 @@
                             <c:param name="initialTab2" value="samples"/>
                             <c:param name="initialTab2Url" value="${sampleUrl}"/>
                         </c:url>
-                        <a href="${projectUrl}"><caarray:abbreviate value="${row.name}" maxWidth="30"/></a>
+                        <a href="${projectUrl}"><caarray:abbreviate value="${row.name}" maxWidth="20" title="${row.description}" /></a>
             </display:column>
-            <display:column titleKey="experiment.samples.description">
-                        ${row.description}
-            </display:column>
+
             <display:column titleKey="project.permissions.selectSecLevel">
                     <c:choose>
                         <c:when test="${!empty accessProfile.sampleSecurityLevels &&
@@ -128,11 +129,14 @@
                     </c:choose>
             </display:column>
             </display:table>
+
             </td>
         </tr>
         </c:if>
 
         </tbody>
         </table>
+
         </div>
     </div>
+    </ajax:displayTag>
