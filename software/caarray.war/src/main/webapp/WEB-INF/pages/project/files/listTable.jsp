@@ -11,7 +11,7 @@
         <c:set var="pageSize" value="-1" />
     </c:otherwise>
 </c:choose>
-
+<c:set var="listSelected" value="${selectedFileIds}"/>
 <c:set var="canWriteProject" value="${caarrayfn:canWrite(project, caarrayfn:currentUser())}"/>
 <c:choose>
     <c:when test="${project.saveAllowed && canWriteProject}">
@@ -27,10 +27,17 @@
         requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id selectedFileIds __checkbox_selectedFileIds">
         <caarray:displayTagProperties/>
         <c:if test="${project.saveAllowed && canWriteProject}">
-            <display:column title="<input type='checkbox' name='selectAllCheckbox' onclick='toggleAllFiles(this.checked, $(&quot;selectFilesForm&quot;));' >">
-                <s:checkbox id="chk${row.id}" name="selectedFileIds" disabled="${!(row.importable || row.validatable || row.deletable)}" 
-                   fieldValue="${row.id}" value="false" theme="simple" 
+           <display:column title="<input type='checkbox' name='selectAllCheckbox' onclick='toggleAllFiles(this.checked, $(&quot;selectFilesForm&quot;));' >">
+             <c:set var="boxvalue" value="false"/>
+             <c:forEach items="${selectedFileIds}" var="sid">
+              <c:if test="${sid == row.id}">
+                <c:set var="boxvalue" value="true"/>
+              </c:if>
+            </c:forEach>
+            <s:checkbox id="chk${row.id}" name="selectedFileIds" disabled="${!(row.importable || row.validatable || row.deletable)}"
+                   fieldValue="${row.id}" value="${boxvalue}" theme="simple"
                    onclick="toggleFileInJob(this.checked, this.value);"/>
+
             </display:column>
         </c:if>
         <display:column property="name" titleKey="experiment.files.name" sortable="true" />

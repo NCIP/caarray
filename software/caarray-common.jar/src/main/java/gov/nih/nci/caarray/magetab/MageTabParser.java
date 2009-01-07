@@ -110,4 +110,17 @@ public interface MageTabParser {
     MageTabDocumentSet parse(MageTabFileSet fileSet, boolean reimportingMagetab) throws InvalidDataException,
             MageTabParsingException;
 
+    /**
+     * Parses the content of the IDF doc to find the SDRF documents contained in the MAGE-TAB file set to produce
+     * an object model representation of the SDRF documents and the entities referenced by
+     * them.
+     *
+     * @param sdrfFileSet the SDRF documents to parse
+     * @return the parsed result.
+     * @throws InvalidDataException if one or more of the MAGE-TAB documents are invalid.
+     * @throws MageTabParsingException if I/O failed reading the MAGE-TAB file.
+     */
+    MageTabDocumentSet parseDataFileNames(MageTabFileSet sdrfFileSet) throws InvalidDataException,
+            MageTabParsingException;
+
 }

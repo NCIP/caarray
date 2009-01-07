@@ -84,9 +84,12 @@ package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
+
+import java.util.List;
 
 /**
  * Provides file storage, validation and import services to the caArray application.
@@ -141,5 +144,17 @@ public interface FileManagementService {
      * @param arrayDesign the array design object
      */
     void importArrayDesignDetails(ArrayDesign arrayDesign);
+
+    /**
+     * Takes a idf file(s), and all files associated to the project,
+     * finds the sdrf file associated with the idf from the list,
+     * and parses the sdrf to find all files that are referenced in
+     * the sdrf and returns their names.
+     *
+     * @param idfFile the CaArrayFile which holds the IDF document.
+     * @param project the project with the file set which contain the sdrfs
+     * @return list of selected file names.
+     */
+    List<String> findIdfRefFileNames(CaArrayFile idfFile, Project project);
 
 }

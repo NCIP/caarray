@@ -146,6 +146,22 @@ class MageTabImporter {
         return documentSet;
     }
 
+    MageTabDocumentSet selectRefFiles(CaArrayFileSet idfFileSet) {
+        MageTabDocumentSet documentSet = null;
+        MageTabFileSet inputSet = getInputFileSet(idfFileSet);
+        try {
+
+            documentSet = MageTabParser.INSTANCE.parseDataFileNames(inputSet);
+
+        } catch (MageTabParsingException e) {
+            updateFileStatus(idfFileSet, FileStatus.VALIDATION_ERRORS);
+        } catch (InvalidDataException e) {
+            handleResult(idfFileSet, e.getValidationResult());
+        }
+
+        return documentSet;
+    }
+
     private void handleResult(CaArrayFileSet fileSet, ValidationResult result) {
         for (FileValidationResult fileValidationResult : result.getFileValidationResults()) {
             CaArrayFile caArrayFile = fileSet.getFile(fileValidationResult.getFile());

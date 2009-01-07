@@ -229,8 +229,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private List<Long> targetNodeIds = new ArrayList<Long>();
     private String newAnnotationName;
     private EnumMap<FileStatus, Integer> fileStatusCountMap = new EnumMap<FileStatus, Integer>(FileStatus.class);
+    private boolean clearCheckboxes = true;
 
     private String prepListUnimportedPage() {
+        if (clearCheckboxes) {
+            this.selectedFileIds.clear();
+        }
         setListAction(ACTION_UNIMPORTED);
         setFilesMatchingTypeAndStatus(getProject().getUnImportedFiles());
         setFileTypeNamesAndStatuses(getProject().getUnImportedFiles());
@@ -558,6 +562,57 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             ActionHelper.saveMessage(msg);
         }
         return prepListUnimportedPage();
+    }
+
+    /**
+     * Method to select all files that ref an sdrf.
+     *
+     * @return the string matching the result to follow
+     */
+    public String findRefFiles() {
+        // we are only interested in an IDF selected and all SDRFs in the project files
+
+        // check that there is only 1 file and that it is the idf file
+        if (getSelectedFiles().size() > 1) {
+            ActionHelper.saveMessage(getText("project.selectRefFile.error.moreThanOneFile"));
+        } else if (!getSelectedFiles().get(0).getFileType().equals(FileType.MAGE_TAB_IDF)) {
+            ActionHelper.saveMessage(getText("project.selectRefFile.error.notIdf"));
+        } else {
+            generateRefFileList(getSelectedFiles().get(0));
+        }
+
+        ActionHelper.saveMessage(getText("project.selectRefFile.success", new String[] {String.valueOf(selectedFiles
+                .size()) }));
+
+        this.clearCheckboxes = false;
+        return prepListUnimportedPage();
+    }
+
+    private void generateRefFileList(CaArrayFile idfFile) {
+
+        this.selectedFiles.clear();
+
+        if (idfFile != null) {
+
+            selectedFiles.add(idfFile);
+            // find files ref'ing sdrf file.
+            List<String> filenames = getFileManagementService().findIdfRefFileNames(idfFile, getProject());
+            if (!filenames.isEmpty()) {
+                findFilesByName(filenames);
+            }
+        }
+
+        for (CaArrayFile caf : selectedFiles) {
+            selectedFileIds.add(caf.getId());
+        }
+    }
+
+    private void findFilesByName(List<String> thesefiles) {
+        for (CaArrayFile caf : getProject().getFiles()) {
+            if (thesefiles.contains(caf.getName())) {
+                selectedFiles.add(caf);
+            }
+        }
     }
 
     private boolean includesType(List<CaArrayFile> fileList, FileType type) {
@@ -1487,4 +1542,5 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         zipOutStream.finish();
         return fis;
     }
+
 }

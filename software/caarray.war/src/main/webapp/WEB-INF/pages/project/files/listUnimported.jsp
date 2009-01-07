@@ -29,6 +29,11 @@
     fileNameLookup['${file.id}'] = '${caarrayfn:escapeJavaScript(file.name)}';
     fileSizeLookup['${file.id}'] = ${file.uncompressedSize};
     </c:forEach>
+    <c:forEach items="${selectedFileIds}" var="sid">
+      if(${sid}) {
+        toggleFileInJob(true, ${sid});
+      }
+    </c:forEach>
 
     toggleAllFiles = function(checked, theform) {
         numElements = theform.elements.length;
@@ -40,21 +45,21 @@
              }
         }
     }
-    
+
     toggleFileInJob = function(checked, id) {
         var size = fileSizeLookup[id];
-		if (checked) {
-			jobNumFiles++;
-			jobSize += size;
-		} else {
-			jobNumFiles--;
-			jobSize -= size;
-		}
-		updateJobSummary();
+    if (checked) {
+      jobNumFiles++;
+      jobSize += size;
+    } else {
+      jobNumFiles--;
+      jobSize -= size;
+    }
+    updateJobSummary();
     }
 
     updateJobSummary = function() {
-		$('jobSizeContent').innerHTML= jobNumFiles + " Files, " +formatFileSize(jobSize);
+    $('jobSizeContent').innerHTML= jobNumFiles + " Files, " +formatFileSize(jobSize);
     }
 
     unimportedFilterCallBack = function() {
@@ -92,7 +97,7 @@
     getSelectedFileNames = function() {
         var formElts = document.getElementById('datatable').getElementsByTagName('input');
         return $A(formElts).select(function(elt) {
-        	if(elt.id.lastIndexOf('chk') < 0) {
+          if(elt.id.lastIndexOf('chk') < 0) {
              return false;
             }
             return elt.checked;
@@ -369,8 +374,10 @@
                 <caarray:linkButton actionClass="import" text="Unpack Archive" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${unpackUrl}', 'tabboxlevel2wrapper');" />
                 <c:url value="/protected/ajax/project/files/editFiles.action" var="editUrl" />
                 <caarray:linkButton actionClass="edit" text="Change File Type" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${editUrl}', 'tabboxlevel2wrapper');" />
-	            <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />
-    	        <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
+                <c:url value="/protected/ajax/project/files/findRefFiles.action" var="findRefUrl" />
+                <caarray:linkButton actionClass="validate" text="Select Referenced Files" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${findRefUrl}', 'tabboxlevel2wrapper');" />
+                <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />
+                <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
                 <c:url value="/protected/ajax/project/files/importFiles.action" var="importUrl"/>
                 <caarray:linkButton actionClass="import" text="Import" onclick="importFiles('${importUrl}');" />
                 <c:url value="/protected/ajax/project/files/addSupplementalFiles.action" var="supplementalUrl"/>

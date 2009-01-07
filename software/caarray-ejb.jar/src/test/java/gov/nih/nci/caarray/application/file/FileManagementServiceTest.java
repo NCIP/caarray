@@ -50,6 +50,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -189,9 +190,86 @@ public class FileManagementServiceTest extends AbstractCaarrayTest {
     }
 
     @Test
+    public void testFindRefFiles() throws Exception {
+        Project project = getMageTabSpecProject();
+
+        // add some random file to project
+        CaArrayFile nonRelatedFile = new CaArrayFile();
+        nonRelatedFile.setName("NonRelatedFile.CEL");
+        nonRelatedFile.setFileType(FileType.AFFYMETRIX_CEL);
+        nonRelatedFile.setFileStatus(FileStatus.UPLOADED);
+        nonRelatedFile.setProject(project);
+        project.getFiles().add(nonRelatedFile);
+
+        // find a non idf file
+        CaArrayFile nonIdfFile = null;
+        for (CaArrayFile caf : project.getFileSet().getFiles()) {
+            if (!FileType.MAGE_TAB_IDF.equals(caf.getFileType())) {
+                nonIdfFile = caf;
+                break;
+            }
+        }
+
+        // nothing should be selected
+        try {
+            this.fileManagementService
+                .findIdfRefFileNames(nonIdfFile, project);
+            fail("non IDF file selected but did not give error.");
+        } catch (IllegalArgumentException iae) {
+            // do nothing
+        }
+
+
+        // find the idf
+        CaArrayFile idfFile = null;
+        for (CaArrayFile caf : project.getFileSet().getFiles()) {
+            if (FileType.MAGE_TAB_IDF.equals(caf.getFileType())) {
+                idfFile = caf;
+                break;
+            }
+        }
+
+        List<String> filenames =
+            this.fileManagementService.findIdfRefFileNames(idfFile, project);
+        // 15 in all minus original idf = 14
+        assertEquals(14, filenames.size());
+        assertTrue(!filenames.contains("NonRelatedFile.CEL"));
+    }
+
+
+    @Test
+    public void testMultidfRefFiles() throws Exception {
+        Project project = new Project();
+        // combine two sets of idf and ref files
+        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET).getFiles());
+        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET).getFiles());
+
+        // find the idf related to the spec file set
+        CaArrayFile idfFile = null;
+        for (CaArrayFile caf : project.getFileSet().getFiles()) {
+            if (FileType.MAGE_TAB_IDF.equals(caf.getFileType())
+                    && MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()
+                    .equals(caf.getName())) {
+                idfFile = caf;
+                break;
+            }
+        }
+        assertNotNull(idfFile);
+        List<String> filenames =
+            this.fileManagementService.findIdfRefFileNames(idfFile, project);
+        // 15 in all minus original idf = 14
+        assertEquals(14, filenames.size());
+        // only the sdrf associated with the idf submitted should be present.
+        assertTrue(!filenames.contains(MageTabDataFiles.TCGA_BROAD_SDRF.getName()));
+    }
+
+
+
+    @Test
     public void testUpdateAnnotationsFromMageTabFiles() throws Exception {
         Project project = getMageTabSpecProject();
-        CaArrayFileSet newFiles = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_SET);
+        CaArrayFileSet newFiles = TestMageTabSets
+            .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_SET);
         addFiles(project, newFiles.getFiles());
         this.fileManagementService.importFiles(project, newFiles, null);
         // import should fail on update_annotations sdrf, but all original spec files should still be uploaded

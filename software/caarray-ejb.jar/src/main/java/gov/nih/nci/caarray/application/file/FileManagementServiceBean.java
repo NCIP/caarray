@@ -85,17 +85,24 @@ package gov.nih.nci.caarray.application.file;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -136,6 +143,23 @@ public class FileManagementServiceBean implements FileManagementService {
             if (!caArrayFile.getFileStatus().isValidatable()) {
                 throw new IllegalArgumentException("Illegal attempt to validate file "
                         + caArrayFile.getName() + " with status " + caArrayFile.getFileStatus());
+            }
+        }
+    }
+
+    private void checkForFileType(CaArrayFile caArrayFile, FileType ft) {
+
+        if (!ft.equals(caArrayFile.getFileType())) {
+            throw new IllegalArgumentException("File "
+                    + caArrayFile.getName() + " must be an " + ft.getName() + " file type.");
+        }
+
+    }
+
+    private void addFilesToInputSet(CaArrayFileSet addTo, CaArrayFileSet addFrom, FileType ft) {
+        for (CaArrayFile caArrayFile : addFrom.getFiles()) {
+            if (ft.equals(caArrayFile.getFileType())) {
+                addTo.add(caArrayFile);
             }
         }
     }
@@ -268,4 +292,35 @@ public class FileManagementServiceBean implements FileManagementService {
         return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
     }
 
-}
+    /**
+     * {@inheritDoc}
+     */
+    public List<String> findIdfRefFileNames(CaArrayFile idfFile, Project project) {
+        List<String> filenames = new ArrayList<String>();
+        checkForFileType(idfFile, FileType.MAGE_TAB_IDF);
+        CaArrayFileSet inputFiles = new CaArrayFileSet(project);
+        inputFiles.add(idfFile);
+        addFilesToInputSet(inputFiles, project.getFileSet(), FileType.MAGE_TAB_SDRF);
+        MageTabTranslator mtt = (MageTabTranslator)
+            ServiceLocatorFactory.getLocator().lookup(MageTabTranslator.JNDI_NAME);
+        MageTabImporter mti = new MageTabImporter(mtt, getDaoFactory());
+        MageTabDocumentSet mTabSet = mti.selectRefFiles(inputFiles);
+        // we only care about the sdrf docs connected to the idf
+        for (SdrfDocument sdrfDoc : mTabSet.getIdfDocuments().iterator().next().getSdrfDocuments()) {
+            filenames.addAll(getRefFileNames(sdrfDoc));
+        }
+
+        return filenames;
+    }
+
+    private List<String> getRefFileNames(SdrfDocument sdrfDoc) {
+        List<String> filenames = new ArrayList<String>();
+        filenames.add(sdrfDoc.getFile().getName());
+        filenames.addAll(sdrfDoc.getReferencedDataMatrixFileNames());
+        filenames.addAll(sdrfDoc.getReferencedDerivedFileNames());
+        filenames.addAll(sdrfDoc.getReferencedRawFileNames());
+
+        return filenames;
+    }
+
+ }

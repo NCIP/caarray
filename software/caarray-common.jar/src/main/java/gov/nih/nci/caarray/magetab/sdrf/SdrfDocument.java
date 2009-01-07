@@ -231,6 +231,15 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
     }
 
+
+    /**
+     * Parses the sdrf w/out checking for idf being present.
+     * @throws MageTabParsingException when cannot parse.
+     */
+    public void parseNoIdfCheck() throws MageTabParsingException {
+        parseSdrf();
+    }
+
     private boolean checkHasIdf() {
         return getIdfDocument() != null;
     }

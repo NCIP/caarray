@@ -86,8 +86,12 @@ import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Simple stub with no functionality.
@@ -147,5 +151,18 @@ public class FileManagementServiceStub implements FileManagementService {
 
     public void importArrayDesignDetails(ArrayDesign arrayDesign) {
         // no-op
+    }
+
+    public List<String> findIdfRefFileNames(CaArrayFile idfFile,
+            Project project) {
+        List<String> filenames = new ArrayList<String>();
+        for (CaArrayFile caf : project.getFileSet().getFiles()) {
+            if (FileType.AFFYMETRIX_CEL.equals(caf.getFileType()) ||
+                    FileType.MAGE_TAB_SDRF.equals(caf.getFileType())) {
+                filenames.add(caf.getName());
+            }
+        }
+
+        return filenames;
     }
 }

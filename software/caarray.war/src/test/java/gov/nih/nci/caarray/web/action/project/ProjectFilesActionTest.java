@@ -325,6 +325,67 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
     }
 
     @Test
+    public void testSelectRefFiles() throws Exception {
+        List<CaArrayFile> projectFiles = new ArrayList<CaArrayFile>();
+        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        List<CaArrayFile> wrongFiles = new ArrayList<CaArrayFile>();
+
+        // load up the project
+
+        CaArrayFile file = new CaArrayFile();
+        file.setName("DummyFile1.CEL");
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADED);
+        file.setFileType(FileType.AFFYMETRIX_CEL);
+        projectFiles.add(file);
+
+        file = new CaArrayFile();
+        file.setName("DummyFile2.CEL");
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADED);
+        file.setFileType(FileType.AFFYMETRIX_CEL);
+        projectFiles.add(file);
+
+        file = new CaArrayFile();
+        file.setName("DummyFile3.CEL");
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADED);
+        file.setFileType(FileType.AFFYMETRIX_CEL);
+        projectFiles.add(file);
+
+        file = new CaArrayFile();
+        file.setName("DummyFile.sdrf");
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADED);
+        file.setFileType(FileType.MAGE_TAB_SDRF);
+        projectFiles.add(file);
+        wrongFiles.add(file);
+
+        file = new CaArrayFile();
+        file.setName("DummyFile.idf");
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADED);
+        file.setFileType(FileType.MAGE_TAB_IDF);
+        projectFiles.add(file);
+        selectedFiles.add(file);
+
+        this.action.getProject().getFiles().addAll(projectFiles);
+        this.action.getProject().getFileSet().addAll(projectFiles);
+
+        // after running selected files with sdrf
+        // nothing should be sellected.
+        this.action.setSelectedFiles(wrongFiles);
+        assertEquals(LIST_UNIMPORTED, this.action.findRefFiles());
+        assertEquals(1, this.action.getSelectedFiles().size());
+
+        // after running selected files with idf, 3 dummy cels and 1 sdrf
+        // should be selected.
+        this.action.setSelectedFiles(selectedFiles);
+        assertEquals(LIST_UNIMPORTED, this.action.findRefFiles());
+        assertEquals(5, this.action.getSelectedFiles().size());
+    }
+
+    @Test
     public void testDownloadGroups() throws Exception {
         FileAccessServiceStub fas = new FileAccessServiceStub();
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));

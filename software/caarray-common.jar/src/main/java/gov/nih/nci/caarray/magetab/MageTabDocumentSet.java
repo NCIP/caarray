@@ -279,13 +279,31 @@ public final class MageTabDocumentSet implements Serializable {
         generateSdrfRefHybs();
         generateSdrfRefSamples();
     }
+    /**
+     * Special parse method that skips adding validation results to files and does not generate
+     * hybs or samples. If More than 1 idf doc is encountered a runtime exception is thrown.
+     * @throws MageTabParsingException
+     */
+    void parseNoValidation() throws MageTabParsingException {
+        if (idfDocuments.size() > 1) {
+            throw new IllegalArgumentException("Only one IDF document can be present when parsing for data files.");
+        }
+
+        AbstractMageTabDocument idfDoc = idfDocuments.iterator().next();
+        idfDoc.parse(false);
+        IdfDocument idf = (IdfDocument) idfDoc;
+        for (SdrfDocument document : idf.getSdrfDocuments()) {
+                document.parseNoIdfCheck();
+        }
+
+    }
 
     private void parse(Set<? extends AbstractMageTabDocument> documents) throws MageTabParsingException {
         for (AbstractMageTabDocument document : documents) {
             document.parse(reimportingMagetab);
         }
     }
-    
+
     /**
      * @return the list of names of all raw data files referenced by any
      * SDRF in this document set.
@@ -309,7 +327,7 @@ public final class MageTabDocumentSet implements Serializable {
         }
         return fileNames;
     }
-    
+
     /**
      * @return the list of names of all data matrix files referenced by any
      * SDRF in this document set.

@@ -108,4 +108,13 @@ class MageTabParserImplementation implements MageTabParser {
         LogUtil.logSubsystemExit(LOG);
         return documentSet;
     }
+
+    public MageTabDocumentSet parseDataFileNames(MageTabFileSet idfFileSet)
+            throws InvalidDataException, MageTabParsingException {
+         LogUtil.logSubsystemEntry(LOG, idfFileSet);
+         MageTabDocumentSet documentSet = new MageTabDocumentSet(idfFileSet);
+         documentSet.parseNoValidation();
+         LogUtil.logSubsystemExit(LOG);
+         return documentSet;
+    }
 }

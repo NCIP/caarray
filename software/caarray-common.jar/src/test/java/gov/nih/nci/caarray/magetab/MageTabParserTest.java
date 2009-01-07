@@ -325,6 +325,15 @@ public class MageTabParserTest extends AbstractCaarrayTest {
     }
 
     @Test
+    public void testSelectRefFiles() throws MageTabParsingException, InvalidDataException{
+        MageTabFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
+        MageTabDocumentSet mTabDocSet = parser.parseDataFileNames(fileSet);
+        assertNotNull(mTabDocSet);
+        assertEquals(1, mTabDocSet.getSdrfDocuments().size());
+    }
+
+
+    @Test
     public void testValidateIllegalUnitPlacement() throws MageTabParsingException {
         MageTabFileSet fileSet = TestMageTabSets.MAGE_TAB_GEDP_INPUT_SET;
         ValidationResult result = validate(fileSet, false);
