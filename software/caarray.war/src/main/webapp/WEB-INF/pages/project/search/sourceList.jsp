@@ -24,7 +24,7 @@
         <display:column property="tissueSite.value" sortProperty="TISSUESITE" titleKey="search.result.tissueSite" sortable="true"/>
         <display:column property="materialType.value" sortProperty="MATERIALTYPE" titleKey="search.result.materialType" sortable="true"/>
         <display:column property="cellType.value" sortProperty="CELLTYPE" titleKey="search.result.cellType" sortable="true"/>
-        <display:column titleKey="search.result.provider" sortProperty="PROVIDER_NAME" sortable="true">
+        <display:column titleKey="search.result.provider" sortProperty="PROVIDER_NAME" sortable="false">
             <c:forEach items="${row.providers}" var="curProvider" varStatus="status">
                 ${curProvider.name}<c:if test="${!status.last}">,<br></c:if>
             </c:forEach>

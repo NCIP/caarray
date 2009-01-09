@@ -50,9 +50,8 @@
                             <c:param name="initialTab2" value="samples"/>
                             <c:param name="initialTab2Url" value="${sampleUrl}"/>
                         </c:url>
-                        <a href="${projectUrl}"><caarray:abbreviate value="${sample.name}" maxWidth="30"/></a>
+                        <a href="${projectUrl}"><caarray:abbreviate value="${sample.name}" title="${sample.description}" maxWidth="30"/></a>
                     </td>
-                    <td>${sample.description}</td>
                     <td><fmt:message key="${sampleSecLevel.resourceKey}"/></td>
                 </tr>
             </s:iterator>

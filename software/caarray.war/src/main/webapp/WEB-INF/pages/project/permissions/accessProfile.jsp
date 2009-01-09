@@ -9,7 +9,7 @@
         <s:hidden name="collaboratorGroup.id"/>
     </c:if>
 
-    <caarray:accessProfileDetails accessProfile="${accessProfile}" readOnly="false"/>
+   <%@ include file="/WEB-INF/pages/project/permissions/accessProfileDetails.jsp" %>
     <table class="searchresults permissiontable" cellspacing="0" style="height: auto; width: 400px; overflow-x: hidden">
         <tr>
             <td>

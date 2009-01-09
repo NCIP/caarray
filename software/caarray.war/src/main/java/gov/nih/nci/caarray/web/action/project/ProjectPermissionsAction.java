@@ -50,7 +50,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     private String permSampleKeyword;
     private String permSampleSearch;
     private List<Sample> sampleResults = new ArrayList<Sample>();
-    private int sampleResultsCount;
+    private Integer sampleResultsCount = null;
     private String actionButton;
     private SampleSecurityLevel securityChoices;
 
@@ -195,7 +195,8 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     @SkipValidation
     public String saveAccessProfile() {
         if ("search".equals(this.actionButton)) {
-            return listSamples();
+            searchForSamples();
+            return "accessProfile";
         } else if ("save".equals(this.actionButton)) {
             try {
                 LOG.debug("Saving access profile for project " + getProject().getId());
@@ -223,14 +224,24 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
         }
     }
 
-    private String listSamples() {
+    /**
+     * Lists samples based on search criteria.
+     *
+     * @return success
+     */
+    @SkipValidation
+    public String listSamples() {
+        searchForSamples();
+        return "list";
+    }
+
+    private void searchForSamples() {
         ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
         SearchSampleCategory[] categories = new SearchSampleCategory[]{SearchSampleCategory.valueOf(permSampleSearch)};
         sampleResults = pms.searchSamplesByExperimentAndCategory(permSampleKeyword,
                 getProject().getExperiment(), categories);
-        sampleResultsCount = sampleResults.size();
+        sampleResultsCount = Integer.valueOf(sampleResults.size());
 
-        return "accessProfile";
     }
 
     /**
@@ -391,14 +402,14 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     /**
      * @return the sampleResultsCount
      */
-    public int getSampleResultsCount() {
+    public Integer getSampleResultsCount() {
         return sampleResultsCount;
     }
 
     /**
      * @param sampleResultsCount the sampleResultsCount to set
      */
-    public void setSampleResultsCount(int sampleResultsCount) {
+    public void setSampleResultsCount(Integer sampleResultsCount) {
         this.sampleResultsCount = sampleResultsCount;
     }
 }
