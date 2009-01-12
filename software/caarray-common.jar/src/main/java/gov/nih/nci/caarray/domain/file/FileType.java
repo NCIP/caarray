@@ -273,6 +273,9 @@ public enum FileType implements Comparable<FileType> {
         RAW_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_IDAT);
         RAW_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
         RAW_ARRAY_DATA_FILE_TYPES.add(AGILENT_RAW_TXT);
+        RAW_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_DAT);
+        RAW_ARRAY_DATA_FILE_TYPES.add(AGILENT_TSV);
+        RAW_ARRAY_DATA_FILE_TYPES.add(IMAGENE_TIF);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_EXP);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_TXT);
@@ -347,7 +350,7 @@ public enum FileType implements Comparable<FileType> {
     public static Set<FileType> getArrayDesignFileTypes() {
         return ARRAY_DESIGN_FILE_TYPES;
     }
-    
+
     /**
      * @return if this file type has a derived variant, false otherwise.
      */
