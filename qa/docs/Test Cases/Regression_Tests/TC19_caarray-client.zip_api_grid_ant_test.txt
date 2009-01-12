@@ -1,3 +1,5 @@
+UNTIL 2.3 release use https://gforge.nci.nih.gov/frs/download.php/4676/caarray_client_2_1_0.zip
+
 1. Check out the released tag to SVN.
 E.g.,  Check out CAARRAY_R2_1_0_ALPHA3 to F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3
 
