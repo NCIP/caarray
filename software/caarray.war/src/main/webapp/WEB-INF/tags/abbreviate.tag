@@ -13,20 +13,27 @@
 </c:if>
 
 <c:choose>
-    <c:when test="${empty title}">
-        <span title="${value}">
+    <c:when test="${(empty maxWidth || maxWidth < 4) && (empty title)}">
+        ${value}
     </c:when>
-    <c:otherwise>
+    <c:when test="${!empty title && (empty maxWidth || maxWidth < 4)}">
         <span title="${title}">
-    </c:otherwise>
-</c:choose>
-
-<c:choose>
-    <c:when test="${empty maxWidth || maxWidth < 4}">
-        <c:out value="${value}" default="${defaultStr}" escapeXml="${escapeXml}"/>
+          <c:out value="${value}" default="${defaultStr}" escapeXml="${escapeXml}"/>
+        </span>
     </c:when>
-    <c:otherwise>
-      <c:out value="${caarrayfn:abbreviate(value, maxWidth)}" default="${defaultStr}" escapeXml="${escapeXml}"/>
-    </c:otherwise>
+    <c:when test="${!empty title && !empty maxWidth && maxWidth >= 4}">
+        <span title="${title}">
+          <c:out value="${caarrayfn:abbreviate(value, maxWidth)}" default="${defaultStr}" escapeXml="${escapeXml}"/>
+        </span>
+    </c:when>
+    <c:when test="${empty title && (empty maxWidth || maxWidth < 4)}">
+        <span title="${value}">
+          <c:out value="${value}" default="${defaultStr}" escapeXml="${escapeXml}"/>
+        </span>
+    </c:when>
+    <c:when test="${empty title && !empty maxWidth && maxWidth >= 4}">
+        <span title="${value}">
+          <c:out value="${caarrayfn:abbreviate(value, maxWidth)}" default="${defaultStr}" escapeXml="${escapeXml}"/>
+        </span>
+    </c:when>
 </c:choose>
-</span>
