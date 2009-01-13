@@ -20,7 +20,9 @@
     <property name="caarray.gui-distribution.name" value="caarray_gui_distribution"/>
     <property name="gui-installer.dist.base.name" value="${caarray.gui-distribution.name}_${caarray.version}"/>
     <property name="install.zip.file" value="${caarray.install.zip.file}"/>
-        <property name="upgrade.zip.file" value="${caarray.upgrade.zip.file}"/>
+    <property name="upgrade.zip.file" value="${caarray.upgrade.zip.file}"/>
+    <property name="installer.properties.wiki.page" value="https://wiki.nci.nih.gov/x/LRKy"/>
+    <property name="upgrade.properties.wiki.page" value="https://wiki.nci.nih.gov/x/MBKy"/>
 
 
     <taskdef name="IzPack" classpath="${compile.jar.dir}/lib/compiler.jar" classname="com.izforge.izpack.ant.IzPackTask"/>
@@ -87,6 +89,8 @@
                 <!-- Need to define ant properties we want to use during install as variables -->
                 <variables>
                     <variable name="installer.dir" value="@{installer.dir}"/>
+                    <variable name="installer.properties.wiki.page" value="@{installer.properties.wiki.page}"/>
+                    <variable name="upgrade.properties.wiki.page" value="@{upgrade.properties.wiki.page}"/>
                 </variables>
 
                 <!--

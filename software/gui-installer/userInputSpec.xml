@@ -2,7 +2,7 @@
     <!-- Install -->
     <panel order="0">
         <field type="title" txt="Installation Mode" bold="true" size="1" />
-        <field type="staticText" align="left" txt="Choose Install if you haven't installed caArray on this machine before. Choose Upgrade if caArray has previously been installed. WARNING: When choosing Install, the installer will remove any previously installed application servers (using caBIG installers) or databases installed based on the information you provide, so be sure to backup your application server and database instance if they exist. For detailed descriptions on each of the properties in this installer, see https://wiki.nci.nih.gov/x/B6ml"/>
+        <field type="staticText" align="left" txt="Choose Install if you haven't installed caArray on this machine before. Choose Upgrade if caArray has previously been installed. WARNING: When choosing Install, the installer will remove any previously installed application servers (using caBIG installers) or databases installed based on the information you provide, so be sure to backup your application server and database instance if they exist. For detailed descriptions on each of the properties in this installer, see ${installer.properties.wiki.page} (fresh install), or ${upgrade.properties.wiki.page} (upgrade install)."/>
         <field type="divider" align="top"/>
         <field type="radio" variable="setup.type">
             <description align="left" txt="Select the type of installation"
@@ -198,7 +198,7 @@
 
     <panel order="4">
         <field type="title" txt="Additional JBoss installation options" bold="true" size="1" />
-        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
+        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
         <field type="text" variable="jboss.hajndi.port">
             <spec txt="Application hajndi Port Number " id="text.label" size="15" set="31100"/>
@@ -284,7 +284,7 @@
     <!-- Install -->
     <panel order="5">
         <field type="title" txt="Configure your Grid application server" bold="true" size="1" />
-    <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
+    <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Grid Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
         <field type="text" align="left" variable="grid.server.hostname">
             <spec txt="Grid Server Host Name" size="15" set="$HOST_NAME"/>
@@ -365,7 +365,7 @@
 
     <panel order="6">
         <field type="title" txt="Additional Grid installation options" bold="true" size="1" />
-        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
+        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Grid Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
         <field type="text" variable="grid.hajndi.port">
             <spec txt="Grid Server hajndi Port Number " id="text.label" size="15" set="11100"/>
@@ -451,10 +451,14 @@
     <!-- upgrade -->
     <panel order="7">
         <field type="title" txt="Configure your existing JBoss application server" bold="true" size="1" />
-        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
+        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see ${upgrade.properties.wiki.page}"/>
         <field type="divider" align="top"/>
         <field type="dir" align="left" variable="existing.installation.home">
             <spec txt="Select the Previous Installation of Caarray Application" size="25" set="$SYSTEM_user_home"/>
+            <validator class="com.izforge.izpack.util.ArtifactExistsRelativeToDirValidator" txt="It does not appear that caArray is installed at the specified location as the jboss-4.0.5.GA folder not found." id="jbosshostname.label">
+                <param name="artifactPathRelativeToText" value="jboss-4.0.5.GA"/>
+                <param name="isDir" value="true"/>
+            </validator>
         </field>
         <field type="text" align="left" variable="jboss.server.hostname">
             <spec txt="Application Host Name " size="15" set="$HOST_NAME"/>
@@ -537,13 +541,19 @@
                 class="com.izforge.izpack.util.URLCheckValidator" txt="Please enter a valid Grid URL" id="indexurl.label">
             </validator>
         </field>
+        <field type="text" variable="upt.url">
+            <spec txt="UPT URL " id="text.label" size="25" set=""/>
+        </field>
+       <field type="text" variable="user.admin.email.address">
+            <spec txt="UPT Admin Email Address " id="text.label" size="25" set=""/>
+        </field>
     </panel>
 
 
 
     <panel order="8">
         <field type="title" txt="Configure research center contact information for Grid configuration" bold="true" size="1" />
-        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
+        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see Grid Settings section at ${installer.properties.wiki.page} (fresh install), or ${upgrade.properties.wiki.page} (upgrade install)."/>
         <field type="divider" align="top"/>
         <field type="text" variable="research.center.displayName">
             <spec txt="Research Center Display Name " id="text.label" size="25" set=""/>
@@ -630,7 +640,7 @@
     <panel order="9">
 
         <field type="title" txt="Configuring your MySQL database connection " bold="true" size="1" />
-        <field type="staticText" align="left" txt="The information you enter below will connect you to an existing MySQL database. It's highly recommended that 'Database Host Name' NOT be the machine from which you are currently installing. The 'Database User' must have full access to 'Database Name'. It's highly recommended you contact your database administrator to obtain this information. NOTE: All database objects for 'Database Name' will be dropped and recreated during the installation process. For detailed descriptions on each of the properties below, see the Database Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
+        <field type="staticText" align="left" txt="The information you enter below will connect you to an existing MySQL database. It's highly recommended that 'Database Host Name' NOT be the machine from which you are currently installing. The 'Database User' must have full access to 'Database Name'. It's highly recommended you contact your database administrator to obtain this information. NOTE: All database objects for 'Database Name' will be dropped and recreated during the installation process. For detailed descriptions on each of the properties below, see the Database Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
 
         <variable name="install.path" value="$INSTALL_PATH"/>
@@ -715,7 +725,7 @@
 
     <panel order="13">
         <field type="title" txt="Configure Global Settings" bold="true" size="1" />
-        <field type="staticText" align="left" txt="The information you enter below will connect you to an existing Index Server. The Externally Accessible Hostname is the Hostname or the Domain name for the installation machine. This hostname must be accessible by the 'Index URL'. UPT URL is where the UPT application is being installed. For detailed descriptions on each of the properties below, see the Global Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
+        <field type="staticText" align="left" txt="The information you enter below will connect you to an existing Index Server. The Externally Accessible Hostname is the Hostname or the Domain name for the installation machine. This hostname must be accessible by the 'Index URL'. UPT URL is where the UPT application is being installed. For detailed descriptions on each of the properties below, see the Global Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
         <field type="text" variable="grid.index.url">
             <spec txt="Index URL " id="text.label" size="35" set="http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService"/>
@@ -742,7 +752,7 @@
 
     <panel order="14">
         <field type="title" txt="Database Configuration " bold="true" size="1" />
-        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
+        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Database Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
         <field type="text" variable="min.pool.size">
             <spec txt="Minimum Pool Size:" id="text.label" size="15" set="5"/>
@@ -758,7 +768,7 @@
 
     <panel order="15">
         <field type="title" txt="Mail Server Configuration" bold="true" size="1" />
-        <field type="staticText" align="left" txt="Mail Server Hostname and Mail Server Port Number is the hostname where the mail server is being configured.For detailed descriptions on each of the properties below, see the Application Settings section at https://wiki.nci.nih.gov/x/B6ml"/>
+        <field type="staticText" align="left" txt="Mail Server Hostname and Mail Server Port Number is the hostname where the mail server is being configured.For detailed descriptions on each of the properties below, see the Mail Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
 
         <field type="text" variable="mail.smtp.host">
