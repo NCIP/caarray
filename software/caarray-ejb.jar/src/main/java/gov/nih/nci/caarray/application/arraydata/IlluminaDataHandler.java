@@ -360,8 +360,23 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         }
 
         if (!sdrfHybStrs.containsAll(fileHybNames)) {
-            result.addMessage(Type.ERROR,
-                    "Data file contains Hybridization names not referenced in the Sdrf document.");
+            StringBuilder sb =
+                new StringBuilder("This data file contains the following hybridization names"
+                        +  " that are not referenced in the SDRF document:");
+            int count = 0;
+            for (String name : fileHybNames) {
+                if (!sdrfHybStrs.contains(name)) {
+                    count++;
+                    if (count > 1) {
+                        sb.append(", ");
+                    } else {
+                        sb.append(" ");
+                    }
+                    sb.append(name);
+                }
+            }
+
+            result.addMessage(Type.ERROR, sb.toString());
         }
     }
 
