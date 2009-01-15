@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.security;
 
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.logging.api.logger.hibernate.HibernateSessionFactoryHelper;
 import gov.nih.nci.security.authorization.domainobjects.Application;
 import gov.nih.nci.security.authorization.domainobjects.Group;
@@ -96,10 +97,6 @@ import gov.nih.nci.security.system.ApplicationSessionFactory;
 import gov.nih.nci.security.util.StringUtilities;
 
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -112,6 +109,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
@@ -215,12 +213,6 @@ public final class AuthorizationManagerExtensions {
     // method adapted from CSM code
     public static boolean checkPermission(String userName, String className, String attributeName, String value,
             String privilegeName, Application application) throws CSException {
-        ResultSet rs = null;
-        PreparedStatement preparedStatement = null;
-        boolean test = false;
-        Session s = null;
-
-        Connection connection = null;
         if (StringUtilities.isBlank(userName)) {
             throw new CSException("user name can't be null!");
         }
@@ -228,8 +220,7 @@ public final class AuthorizationManagerExtensions {
             throw new CSException("objectId can't be null!");
         }
 
-        test = checkOwnership(userName, className, attributeName, value, application.getApplicationName());
-        if (test) {
+        if (checkOwnership(userName, className, attributeName, value, application.getApplicationName())) {
             return true;
         }
 
@@ -237,26 +228,31 @@ public final class AuthorizationManagerExtensions {
             return false;
         }
 
+        Session s = null;
         try {
+            s = HibernateUtil.getSessionFactory().openSession();
 
-            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory(
-                    application.getApplicationName()));
+            String sql = " select pe.protection_element_id from csm_protection_element pe "
+                    + "inner join csm_pg_pe pgpe on pe.protection_element_id = pgpe.protection_element_id "
+                    + "inner join csm_user_group_role_pg ugrpg on pgpe.protection_group_id = ugrpg.protection_group_id "
+                    + "inner join csm_role r on ugrpg.role_id = r.role_id "
+                    + "inner join csm_user_group ug on ugrpg.group_id = ug.group_id "
+                    + "inner join csm_role_privilege rp on r.role_id = rp.role_id "
+                    + "inner join csm_privilege p on rp.privilege_id = p.privilege_id "
+                    + "inner join csm_user u on ug.user_id = u.user_id "
+                    + "where pe.object_id = ? and pe.attribute= ? and pe.attribute_value = ? and u.login_name = ? "
+                    + "and p.privilege_name= ? and pe.application_id = ?";
+            SQLQuery query = s.createSQLQuery(sql);
+            int i = 0;
+            query.setString(i++, className);
+            query.setString(i++, attributeName);
+            query.setString(i++, value);
+            query.setString(i++, userName);
+            query.setString(i++, privilegeName);
+            query.setLong(i++, application.getApplicationId());
 
-            connection = s.connection();
-
-            preparedStatement =
-                    CaarrayQueries.getQueryForUserAndGroupForAttributeValue(userName, className, attributeName,
-                            value, privilegeName, application.getApplicationId().intValue(), connection);
-
-            rs = preparedStatement.executeQuery();
-
-            if (rs.next()) {
-                test = true;
-            }
-            rs.close();
-
-            preparedStatement.close();
-
+            List<?> results = query.list();
+            return !results.isEmpty();
         } catch (Exception ex) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Failed to get privileges for " + userName + "|" + ex.getMessage());
@@ -264,86 +260,56 @@ public final class AuthorizationManagerExtensions {
             throw new CSException("Failed to get privileges for " + userName + "|" + ex.getMessage(), ex);
         } finally {
             try {
-
                 s.close();
-                rs.close();
-                preparedStatement.close();
             } catch (Exception ex2) {
-                if (LOG.isDebugEnabled()) {
-                    LOG
-                            .debug("Authorization|||getPrivilegeMap|Failure|Error in Closing Session |"
-                                    + ex2.getMessage());
-                }
+                LOG.debug("Authorization|||clearProtectionGroupRoles|Failure|Error in Closing Session |"
+                        + ex2.getMessage());
             }
         }
-
-        return test;
     }
 
     @SuppressWarnings("PMD")
     // adapted from CSM code
     private static boolean checkOwnership(String userName, String className, String attribute,
-            String value, String appName) {
-        boolean test = false;
+            String value, String appName) throws CSException {
         Session s = null;
-        PreparedStatement preparedStatement = null;
-        Connection connection = null;
-        ResultSet rs = null;
-
         try {
-            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory(appName));
+            s = HibernateUtil.getSessionFactory().openSession();
+            String sql = "select pe.protection_element_id from csm_protection_element pe "
+                    + "inner join csm_user_pe upe on pe.protection_element_id = upe.protection_element_id "
+                    + "inner join csm_user u on upe.user_id = u.user_id "
+                    + "where pe.object_id = ? and pe.attribute= ? and pe.attribute_value = ? and u.login_name = ?";
+            SQLQuery query = s.createSQLQuery(sql);
+            int i = 0;
+            query.setString(i++, className);
+            query.setString(i++, attribute);
+            query.setString(i++, value);
+            query.setString(i++, userName);
 
-            connection = s.connection();
-
-            StringBuffer stbr = new StringBuffer();
-            stbr.append("select  user_protection_element_id from"
-                    + " csm_user_pe upe, csm_user u, csm_protection_element pe"
-                    + " where pe.object_id = ? and pe.attribute = ? and pe.attribute_value = ? and u.login_name = ?"
-                    + " and upe.protection_element_id=pe.protection_element_id" + " and upe.user_id = u.user_id");
-
-            preparedStatement = connection.prepareStatement(stbr.toString());
-            int i = 1;
-            preparedStatement.setString(i++, className);
-            preparedStatement.setString(i++, attribute);
-            preparedStatement.setString(i++, value);
-            preparedStatement.setString(i++, userName);
-
-            rs = preparedStatement.executeQuery();
-            if (rs.next()) {
-                test = true;
+            List<?> results = query.list();
+            
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Authorization||" + userName
+                        + "|checkOwnerShip|Success|Successful in checking ownership for user " + userName
+                        + " and Protection Element " + className + "|");
             }
-
+            
+            return !results.isEmpty();
         } catch (Exception ex) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Authorization||" + userName
                         + "|checkOwnerShip|Failure|Error in checking ownership for user " + userName
                         + " and Protection Element " + className + "|" + ex.getMessage());
             }
+            throw new CSException("Failed to get check ownership " + userName + "|" + ex.getMessage(), ex);
         } finally {
             try {
-                rs.close();
-                preparedStatement.close();
-
-            } catch (Exception ex2) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Authorization|||checkOwnerShip|Failure|Error in Closing Session |" + ex2.getMessage());
-                }
-            }
-
-            try {
                 s.close();
-            } catch (Exception ex) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Authorization|||checkOwnerShip|Failure|Error in Closing Session |" + ex.getMessage());
-                }
+            } catch (Exception ex2) {
+                LOG.debug("Authorization|||clearProtectionGroupRoles|Failure|Error in Closing Session |"
+                        + ex2.getMessage());
             }
         }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Authorization||" + userName
-                    + "|checkOwnerShip|Success|Successful in checking ownership for user " + userName
-                    + " and Protection Element " + className + "|");
-        }
-        return test;
     }
 
     /**
@@ -493,117 +459,6 @@ public final class AuthorizationManagerExtensions {
             LOG.debug("Authorization|||assignGroupRoleToProtectionGroup|Success|Successful in assigning Roles "
                     + StringUtilities.stringArrayToString(roleIds) + " to Group "
                     + group.getGroupId() + " and Protection Group" + protectionGroup.getProtectionGroupId() + "|");
-        }
-    }
-
-    /**
-     * Utility class to construct PreparedStatement queries, adapted from CSM.
-     */
-    @SuppressWarnings("PMD")
-    // method adopted from CSM
-    private static final class CaarrayQueries {
-        private CaarrayQueries() {
-        }
-
-        protected static PreparedStatement getQueryForUserAndGroupForAttributeValue(String loginName,
-                String objectId, String attribute, String value, String privilegeName, int applicationId,
-                Connection cn) throws SQLException {
-
-            StringBuffer stbr = new StringBuffer();
-            stbr.append("and pe.object_id=?");
-            stbr.append(" and pe.attribute=?");
-            stbr.append(" and pe.attribute_value=?");
-            stbr.append(" and u.login_name=?");
-            stbr.append(" and p.privilege_name=?");
-            stbr.append(" and pg.application_id=?");
-            stbr.append(" and pe.application_id=?");
-
-            StringBuffer sqlBfr = new StringBuffer();
-            sqlBfr.append(getStaticStringForUserAndGroupForAttribute());
-            sqlBfr.append(stbr.toString());
-            sqlBfr.append(" union ");
-            sqlBfr.append(getStaticStringForUserAndGroupForAttribute2());
-            sqlBfr.append(stbr.toString());
-
-            int i = 1;
-            PreparedStatement pstmt = cn.prepareStatement(sqlBfr.toString());
-            pstmt.setString(i++, objectId);
-            pstmt.setString(i++, attribute);
-            pstmt.setString(i++, value);
-            pstmt.setString(i++, loginName);
-            pstmt.setString(i++, privilegeName);
-            pstmt.setInt(i++, applicationId);
-            pstmt.setInt(i++, applicationId);
-
-            pstmt.setString(i++, objectId);
-            pstmt.setString(i++, attribute);
-            pstmt.setString(i++, value);
-            pstmt.setString(i++, loginName);
-            pstmt.setString(i++, privilegeName);
-            pstmt.setInt(i++, applicationId);
-            pstmt.setInt(i++, applicationId);
-
-            return pstmt;
-        }
-
-        @SuppressWarnings("PMD")
-        // method adopted from CSM
-        private static String getStaticStringForUserAndGroupForAttribute() {
-            StringBuffer stbr = new StringBuffer();
-            stbr.append("select 'X'");
-            stbr.append(" from csm_protection_group pg,");
-            stbr.append(" csm_protection_element pe,");
-            stbr.append(" csm_pg_pe pgpe,");
-            stbr.append(" csm_user_group_role_pg ugrpg,");
-            stbr.append(" csm_user u,");
-            stbr.append(" csm_role_privilege rp,");
-            stbr.append(" csm_role r,");
-            stbr.append(" csm_privilege p");
-            stbr.append(" where ugrpg.role_id = r.role_id and");
-            stbr.append(" ugrpg.user_id = u.user_id and");
-            stbr.append(" ugrpg.protection_group_id  = ANY");
-            stbr.append(" (select pg1.protection_group_id from csm_protection_group pg1 where");
-            stbr.append(" pg1.protection_group_id = pg.protection_group_id or pg1.protection_group_id = ");
-            stbr.append(" (select pg2.parent_protection_group_id from csm_protection_group pg2 where");
-            stbr.append(" pg2.protection_group_id = pg.protection_group_id)) and");
-            stbr.append(" pg.protection_group_id = pgpe.protection_group_id and");
-            stbr.append(" pgpe.protection_element_id = pe.protection_element_id and");
-            stbr.append(" r.role_id = rp.role_id and");
-            stbr.append(" rp.privilege_id = p.privilege_id ");
-
-            return stbr.toString();
-        }
-
-        @SuppressWarnings("PMD")
-        // method adopted from CSM
-        private static String getStaticStringForUserAndGroupForAttribute2() {
-            StringBuffer stbr = new StringBuffer();
-            stbr.append("select 'X'");
-            stbr.append(" from csm_protection_group pg,");
-            stbr.append(" csm_protection_element pe,");
-            stbr.append(" csm_pg_pe pgpe,");
-            stbr.append(" csm_user_group_role_pg ugrpg,");
-            stbr.append(" csm_user u,");
-            stbr.append(" csm_user_group ug,");
-            stbr.append(" csm_group g,");
-            stbr.append(" csm_role_privilege rp,");
-            stbr.append(" csm_role r,");
-            stbr.append(" csm_privilege p");
-            stbr.append(" where ugrpg.role_id = r.role_id and");
-            stbr.append(" ugrpg.group_id = g.group_id and");
-            stbr.append(" g.group_id = ug.group_id and");
-            stbr.append(" ug.user_id = u.user_id and");
-            stbr.append(" ugrpg.protection_group_id  = ANY");
-            stbr.append(" (select pg1.protection_group_id from csm_protection_group pg1 where");
-            stbr.append(" pg1.protection_group_id = pg.protection_group_id or pg1.protection_group_id = ");
-            stbr.append(" (select pg2.parent_protection_group_id from csm_protection_group pg2 where");
-            stbr.append(" pg2.protection_group_id = pg.protection_group_id)) and");
-            stbr.append(" pg.protection_group_id = pgpe.protection_group_id and");
-            stbr.append(" pgpe.protection_element_id = pe.protection_element_id and");
-            stbr.append(" r.role_id = rp.role_id and");
-            stbr.append(" rp.privilege_id = p.privilege_id ");
-
-            return stbr.toString();
         }
     }
 }

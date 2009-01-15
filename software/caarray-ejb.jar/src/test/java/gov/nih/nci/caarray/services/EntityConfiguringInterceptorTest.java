@@ -85,9 +85,15 @@ package gov.nih.nci.caarray.services;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.security.AttributePolicy;
+import gov.nih.nci.caarray.security.SecurityPolicy;
+import gov.nih.nci.caarray.security.SecurityPolicyMode;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -110,6 +116,7 @@ public class EntityConfiguringInterceptorTest extends AbstractCaarrayTest {
         EntityConfiguringInterceptor interceptor = new EntityConfiguringInterceptor();
         TestInvocationContext testContext = new TestInvocationContext();
         TestEntity entity = new TestEntity();
+        assertNotNull(entity.a.getFoo());
         testContext.returnValue = entity;
         interceptor.prepareReturnValue(testContext);
         checkEntity(entity);
@@ -124,8 +131,9 @@ public class EntityConfiguringInterceptorTest extends AbstractCaarrayTest {
     }
 
     private void checkEntity(TestEntity entity) {
-        assertNull(entity.a.getB());
         assertNotNull(entity.a.getId());
+        assertNull(entity.a.getFoo());
+        assertNull(entity.a.getB());
     }
 
     private static class TestInvocationContext implements InvocationContext {
@@ -172,15 +180,31 @@ public class EntityConfiguringInterceptorTest extends AbstractCaarrayTest {
 
     }
 
-    public static class A implements PersistentObject {
+    public static class A extends AbstractCaArrayObject {
 
         private static final long serialVersionUID = 1L;
         private B b = new B();
         private Long id = 1L;
+        private String foo = "Harrumph";
 
 
         public Long getId() {
             return id;
+        }
+
+        /**
+         * @return the foo
+         */
+        @AttributePolicy(deny = "TestPolicy")
+        public String getFoo() {
+            return foo;
+        }
+
+        /**
+         * @param foo the foo to set
+         */
+        public void setFoo(String foo) {
+            this.foo = foo;
         }
 
         public void setId(Long id) {
@@ -195,6 +219,10 @@ public class EntityConfiguringInterceptorTest extends AbstractCaarrayTest {
             this.b = b;
         }
 
+        @Override
+        public Set<SecurityPolicy> getRemoteApiSecurityPolicies(User currentUser) {
+            return Collections.singleton(new SecurityPolicy("TestPolicy", SecurityPolicyMode.BLACKLIST));
+        }
     }
 
     public static class B implements PersistentObject {

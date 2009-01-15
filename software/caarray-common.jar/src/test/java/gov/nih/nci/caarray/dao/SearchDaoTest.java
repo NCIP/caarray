@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ServiceType;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.sample.Source;
@@ -447,7 +446,6 @@ public class SearchDaoTest {
             Project project = new Project();
             project.getExperiment().setTitle("test experiment.");
             project.getExperiment().setAssayTypeEnum(AssayType.ACGH);
-            project.getExperiment().setServiceType(ServiceType.FULL);
             project.getExperiment().setOrganism(org);
             project.getExperiment().setManufacturer(new Organization());
             Source source = new Source();

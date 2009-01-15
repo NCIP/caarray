@@ -84,7 +84,14 @@ package gov.nih.nci.caarray.security;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 
 import org.junit.Test;
@@ -98,16 +105,38 @@ public class SecurityPolicyTest extends AbstractCaarrayTest {
     public void testSecurityPolicy() {
         TestClass test = new TestClass();
         assertEquals(SecurityPolicyMode.WHITELIST, SecurityPolicy.BROWSE.getMode());
-        assertTrue(SecurityPolicy.BROWSE.allowProperty(test, "foo"));
-        assertFalse(SecurityPolicy.BROWSE.allowProperty(test, "baz"));        
-        assertEquals(SecurityPolicyMode.BLACKLIST, SecurityPolicy.TCGA.getMode());
-        assertTrue(SecurityPolicy.TCGA.allowProperty(test, "foo"));
-        assertFalse(SecurityPolicy.TCGA.allowProperty(test, "baz"));        
+        SecurityPolicy.applySecurityPolicies(test, Collections.singleton(SecurityPolicy.BROWSE));
+        assertEquals("FOO", test.getFoo());
+        assertNull(test.getBaz());
+        assertNotNull(test.getBros());
+        assertTrue(test.getBros().contains("Bros"));
+        SecurityPolicy.applySecurityPolicies(test, Collections.singleton(SecurityPolicy.TCGA));
+        assertEquals("FOO", test.getFoo());
+        assertNull(test.getBaz());
+        assertNotNull(test.getBros());
+        assertFalse(test.getBros().contains("Bros"));
+        
     }
 
     private static class TestClass {
-        private String foo;
-        private String baz;
+        private String foo = "FOO";
+        private String baz = "BAZ";
+        private Set<String> bros = new HashSet<String>(Collections.singleton("Bros"));
+
+        /**
+         * @return the bros
+         */
+        @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME, deny = SecurityPolicy.TCGA_POLICY_NAME)
+        public Set<String> getBros() {
+            return bros;
+        }
+
+        /**
+         * @param bros the bros to set
+         */
+        public void setBros(Set<String> bros) {
+            this.bros = bros;
+        }
 
         /**
          * @return the foo

@@ -82,19 +82,18 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.MaxSerializableSize;
+import gov.nih.nci.caarray.security.SecurityPolicy;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -107,7 +106,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public final class EntityPruner {
-    private static final Logger LOG = Logger.getLogger(EntityPruner.class);
+    static final Logger LOG = Logger.getLogger(EntityPruner.class);
     private final Map<Class<?>, ReflectionHelper> classCache = new HashMap<Class<?>, ReflectionHelper>();
 
     /**
@@ -149,6 +148,7 @@ public final class EntityPruner {
             return;
         }
 
+        applySecurityPolicies(val);
         ReflectionHelper helper = getOrCreateHelper(val.getClass());
         boolean initialized = false;
         for (PropertyAccessor accessor : helper.getAccessors()) {
@@ -173,9 +173,6 @@ public final class EntityPruner {
             }
 
             try {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Calling method: " + accessor.setter().getName());
-                }
                 accessor.set(val, param);
             } catch (Exception e) {
                 // We catch here, rather than re-throwing. This is a violation of our standard
@@ -200,6 +197,7 @@ public final class EntityPruner {
             return;
         }
 
+        applySecurityPolicies(val);
         ReflectionHelper helper = getOrCreateHelper(val.getClass());
         for (PropertyAccessor accessor : helper.getAccessors()) {
             try {
@@ -226,7 +224,7 @@ public final class EntityPruner {
 
     private void handleCollection(Collection<?> curObj, PropertyAccessor accessor)
             throws MaxCollectionSizeExceeededException {
-        MaxSerializableSize maxSize = accessor.getter.getAnnotation(MaxSerializableSize.class);
+        MaxSerializableSize maxSize = accessor.getter().getAnnotation(MaxSerializableSize.class);
         if (maxSize != null && maxSize.value() < curObj.size()) {
             throw new MaxCollectionSizeExceeededException(
                     "Couldn't prepare result for serialization: collection too large for property "
@@ -250,7 +248,7 @@ public final class EntityPruner {
         // create a new map, and put the trimmed entries into the new map, and then set
         // the new map to be the value in the object.
 
-        MaxSerializableSize maxSize = accessor.getter.getAnnotation(MaxSerializableSize.class);
+        MaxSerializableSize maxSize = accessor.getter().getAnnotation(MaxSerializableSize.class);
         if (maxSize != null && maxSize.value() < curObj.size()) {
             throw new MaxCollectionSizeExceeededException(
                     "Couldn't prepare result for serialization: map too large for property "
@@ -265,163 +263,24 @@ public final class EntityPruner {
         }
         accessor.set(val, newMap);
     }
-
-    /**
-     * For each String bean property on o, if o is blank or empty,
-     * converts that property to null.
-     *
-     * @param o object to convert properties on.
-     */
-    public static void blankStringPropsToNull(Object o) {
-        if (o == null) {
-            return;
-        }
-
-        ReflectionHelper helper = createReflectionHelper(o.getClass());
-        for (PropertyAccessor accessor : helper.getAccessors()) {
-            if (accessor.getType().equals(String.class)) {
-                try {
-                    if (StringUtils.isBlank((String) accessor.get(o))) {
-                        accessor.set(o, null);
-                    }
-                } catch (IllegalArgumentException e) {
-                    LOG.debug(e.getMessage(), e);
-                } catch (IllegalAccessException e) {
-                    LOG.debug(e.getMessage(), e);
-                } catch (InvocationTargetException e) {
-                    LOG.debug(e.getMessage(), e);
-                }
+    
+    private void applySecurityPolicies(Object entity) {
+        if (entity instanceof AbstractCaArrayObject) {
+            AbstractCaArrayObject object = (AbstractCaArrayObject) entity;
+            Set<SecurityPolicy> policies = object.getRemoteApiSecurityPolicies(UsernameHolder.getCsmUser());
+            if (!policies.isEmpty()) {
+                SecurityPolicy.applySecurityPolicies(object, policies);
             }
         }
-    }
-
-    /**
-     * Finds getter/setter pairs.
-     *
-     * @param o object to inspect
-     * @return getter / setter pairs, as list
-     */
-    @SuppressWarnings("PMD")
-
-    private static ReflectionHelper createReflectionHelper(Class<?> clazz) {
-        List<PropertyAccessor> accessors = new ArrayList<PropertyAccessor>();
-
-        Class<?> currentClass = clazz;
-        while (currentClass != null) {
-            Method[] methods = currentClass.getDeclaredMethods();
-            for (Method getter : methods) {
-                if (getter.getName().startsWith("get") && getter.getParameterTypes().length == 0) {
-                    for (Method setter : methods) {
-                        if (setter.getName().equals('s' + getter.getName().substring(1))
-                                && setter.getParameterTypes().length == 1 && Void.TYPE.equals(setter.getReturnType())
-                                && getter.getReturnType().equals(setter.getParameterTypes()[0])) {
-                            getter.setAccessible(true);
-                            setter.setAccessible(true);
-                            accessors.add(new PropertyAccessor(getter, setter));
-                        }
-                    }
-                }
-            }
-
-            currentClass = currentClass.getSuperclass();
-        }
-
-        return new ReflectionHelper(accessors.toArray(new PropertyAccessor[accessors.size()]));
     }
 
     private ReflectionHelper getOrCreateHelper(Class<?> c) {
         ReflectionHelper helper = classCache.get(c);
         if (helper == null) {
-            helper = createReflectionHelper(c);
+            helper = CaArrayUtils.createReflectionHelper(c);
             classCache.put(c, helper);
         }
         return helper;
-    }
-
-    /**
-     * Utility class holding a set of PropertyAcessors for the properties of a class.
-     * @author dkokotov
-     */
-    @SuppressWarnings("PMD")
-    private static final class ReflectionHelper {
-        private final PropertyAccessor[] accessors;
-
-        /**
-         * @param accessors the set of accessors for the properties of a class
-         */
-        public ReflectionHelper(PropertyAccessor[] accessors) {
-            this.accessors = accessors;
-        }
-
-        /**
-         * @return the accessors
-         */
-        public PropertyAccessor[] getAccessors() {
-            return accessors;
-        }
-
-    }
-
-    /**
-     * Utility class representing the getter/setter pair for a property.
-     * @author dkokotov
-     */
-    @SuppressWarnings("PMD")
-    private static final class PropertyAccessor {
-        private final Method getter;
-        private final Method setter;
-
-        /**
-         * @param getter the getter method for the property
-         * @param setter the setter method for the property
-         */
-        public PropertyAccessor(Method getter, Method setter) {
-            this.getter = getter;
-            this.setter = setter;
-        }
-
-        /**
-         * @return the type of the property of this accessor
-         */
-        public Class<?> getType() {
-            return getter.getReturnType();
-        }
-
-        /**
-         * Set the value of the property of this accessor on the given object to the given value.
-         * @param target the target object
-         * @param val the value to set the property to
-         * @throws IllegalAccessException
-         * @throws InvocationTargetException
-         */
-        public void set(Object target, Object val) throws IllegalAccessException, InvocationTargetException {
-            setter.invoke(target, val);
-        }
-
-        /**
-         * Get the value of the property of this accessor from the given object.
-         * @param target the object from which to get the value of the property
-         * @return the property value
-         * @throws IllegalAccessException
-         * @throws InvocationTargetException
-         */
-        public Object get(Object target) throws IllegalAccessException, InvocationTargetException {
-            return getter.invoke(target);
-        }
-
-        /**
-         * @return the getter method for this property
-         */
-        public Method getter() {
-            return getter;
-        }
-
-        /**
-         * @return the setter method for this property
-         */
-        public Method setter() {
-            return setter;
-        }
     }
 
     /**

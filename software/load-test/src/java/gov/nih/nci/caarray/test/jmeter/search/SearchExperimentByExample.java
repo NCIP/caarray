@@ -209,12 +209,12 @@ public class SearchExperimentByExample extends CaArrayJmeterSampler implements J
         while (i.hasNext()) {
             Experiment retrievedExperiment = i.next();
             // Check if retrieved experiment matches requested search criteria.
-            if ((!manufacturer.equals(retrievedExperiment.getManufacturer().getName())) || (!organism.equals(retrievedExperiment.getOrganism().getCommonName()))) {
+            if ((!manufacturer.equals(retrievedExperiment.getManufacturer().getName()))
+                    || (!organism.equals(retrievedExperiment.getOrganism().getCommonName()))) {
                 return false;
             }
             // Check if retrieved experiment has mandatory fields.
-            if ((retrievedExperiment.getTitle() == null) || (retrievedExperiment.getServiceType() == null)
-                    || (retrievedExperiment.getAssayType() == null)) {
+            if (retrievedExperiment.getTitle() == null || retrievedExperiment.getAssayType() == null) {
                 return false;
             }
         }

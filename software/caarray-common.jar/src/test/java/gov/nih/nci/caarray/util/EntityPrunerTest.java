@@ -114,7 +114,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         u.setFirstName("");
         u.setLastName(" \t");
         u.setOrganization(" test ");
-        EntityPruner.blankStringPropsToNull(u);
+        CaArrayUtils.blankStringPropsToNull(u);
         assertNull(u.getFirstName());
         assertNull(u.getLastName());
         assertNotNull(u.getOrganization());

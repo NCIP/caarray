@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ServiceType;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -170,27 +169,23 @@ public class BrowseDaoTest extends AbstractDaoTest {
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
         DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
         DUMMY_EXPERIMENT_1.setAssayTypeEnum(AssayType.ACGH);
-        DUMMY_EXPERIMENT_1.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM_1);
         DUMMY_EXPERIMENT_1.setManufacturer(DUMMY_PROVIDER);
 
         DUMMY_PROJECT_2.setExperiment(DUMMY_EXPERIMENT_2);
         DUMMY_EXPERIMENT_2.setTitle("DummyExperiment2");
         DUMMY_EXPERIMENT_2.setAssayTypeEnum(AssayType.ACGH);
-        DUMMY_EXPERIMENT_2.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_2.setOrganism(DUMMY_ORGANISM_2);
         DUMMY_EXPERIMENT_2.setManufacturer(DUMMY_PROVIDER);
 
         DUMMY_PROJECT_3.setExperiment(DUMMY_EXPERIMENT_3);
         DUMMY_EXPERIMENT_3.setTitle("DummyExperiment3");
         DUMMY_EXPERIMENT_3.setAssayTypeEnum(AssayType.ACGH);
-        DUMMY_EXPERIMENT_3.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM_1);
         DUMMY_EXPERIMENT_3.setManufacturer(DUMMY_PROVIDER);
 
         DUMMY_PROJECT_4.setExperiment(DUMMY_EXPERIMENT_4);
         DUMMY_EXPERIMENT_3.setTitle("DummyExperiment4");
-        DUMMY_EXPERIMENT_3.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM_3);
         DUMMY_EXPERIMENT_3.setManufacturer(DUMMY_PROVIDER);
     }

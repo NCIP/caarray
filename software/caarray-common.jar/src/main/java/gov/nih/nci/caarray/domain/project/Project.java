@@ -676,21 +676,13 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     /**
-     * Returns the set of SecurityPolicies that apply to this project for the given user.
-     *
-     * @param user the user for whom to check the policies
-     * @return the set of policies that apply for that user for this project
+     * {@inheritDoc}
      */
-    @SuppressWarnings("PMD.CyclomaticComplexity")
-    public Set<SecurityPolicy> getApplicablePolicies(User user) {
-        Set<SecurityPolicy> policies = new HashSet<SecurityPolicy>();
+    public Set<SecurityPolicy> getRemoteApiSecurityPolicies(User user) {
         if (!SecurityUtils.canRead(this, user)) {
-            policies.add(SecurityPolicy.BROWSE);
+            return Collections.singleton(SecurityPolicy.BROWSE);
         }
-        if (useTcgaPolicy && !isOwner(user) && !isCollaborator(user)) {
-            policies.add(SecurityPolicy.TCGA);
-        }
-        return policies;
+        return Collections.emptySet();
     }
 
     /**

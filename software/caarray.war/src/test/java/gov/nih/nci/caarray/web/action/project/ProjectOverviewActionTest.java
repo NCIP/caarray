@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +148,7 @@ public class ProjectOverviewActionTest extends AbstractCaarrayTest {
 
     @Test
     public void testLoad() throws Exception {
-        this.action.setProject(projectManagementServiceStub.getProject(1L));
+        setProjectId(1L);
         assertEquals(Action.INPUT, this.action.load());
         assertEquals(projectManagementServiceStub.getTissueSitesForExperiment(null).size(), this.action.getTissueSites().size());
         assertEquals(projectManagementServiceStub.getDiseaseStatesForExperiment(null).size(), this.action.getDiseaseState().size());
@@ -165,8 +166,22 @@ public class ProjectOverviewActionTest extends AbstractCaarrayTest {
 
     @SuppressWarnings("deprecation")
     private void setProjectId(Long id) {
-        Project proj = new Project();
+        Project proj = new Project() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public boolean hasReadPermission(User user) {
+                return (this.getId() == 1l);
+            }
+
+            @Override
+            public boolean hasWritePermission(User user) {
+                return (this.getId() == 1l);
+            }
+
+        };
         proj.setId(id);
+        proj.getExperiment().setId(id);
         this.action.setProject(proj);
     }
 

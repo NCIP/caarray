@@ -101,7 +101,6 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
-import gov.nih.nci.caarray.domain.project.ServiceType;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -196,7 +195,6 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayInte
         DUMMY_EXPERIMENT_1.setDate(currDate);
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
         DUMMY_EXPERIMENT_1.setAssayTypeEnum(AssayType.ACGH);
-        DUMMY_EXPERIMENT_1.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
     }
 

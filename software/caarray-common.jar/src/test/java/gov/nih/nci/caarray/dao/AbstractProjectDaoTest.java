@@ -14,7 +14,6 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ServiceType;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -206,18 +205,15 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_1.setDate(currDate);
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
         DUMMY_EXPERIMENT_1.setAssayTypeEnum(AssayType.ACGH);
-        DUMMY_EXPERIMENT_1.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
 
         DUMMY_EXPERIMENT_2.setTitle("New DummyExperiment2");
         DUMMY_EXPERIMENT_2.setAssayTypeEnum(AssayType.ACGH);
-        DUMMY_EXPERIMENT_2.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_2.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_2.setManufacturer(DUMMY_PROVIDER);
 
         DUMMY_EXPERIMENT_3.setTitle("Ahab DummyExperiment3");
         DUMMY_EXPERIMENT_3.setAssayTypeEnum(AssayType.ACGH);
-        DUMMY_EXPERIMENT_3.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_3.setManufacturer(DUMMY_PROVIDER);
     }

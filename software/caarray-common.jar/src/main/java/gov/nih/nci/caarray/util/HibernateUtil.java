@@ -247,5 +247,4 @@ public final class HibernateUtil {
     public static void reinitializeCsmFilters() {
         getHibernateHelper().reinitializeCsmFilters(SecurityUtils.getAuthorizationManager());
     }
-
 }

@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.util;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -89,6 +92,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Utility classes for our project.
@@ -146,5 +151,66 @@ public final class CaArrayUtils {
             return string.substring(1, string.length() - 1);
         }
         return string;
+    }
+
+    /**
+     * For given class, returns a ReflectionHelper instance with property accessors for the class.
+     *
+     * @param clazz the class
+     * @return the ReflectionHelper
+     */
+    public static ReflectionHelper createReflectionHelper(Class<?> clazz) {
+        List<PropertyAccessor> accessors = new ArrayList<PropertyAccessor>();
+
+        Class<?> currentClass = clazz;
+        while (currentClass != null) {
+            Method[] methods = currentClass.getDeclaredMethods();
+            for (Method getter : methods) {
+                if (getter.getName().startsWith("get") && getter.getParameterTypes().length == 0) {
+                    for (Method setter : methods) {
+                        if (setter.getName().equals('s' + getter.getName().substring(1))
+                                && setter.getParameterTypes().length == 1 && Void.TYPE.equals(setter.getReturnType())
+                                && getter.getReturnType().equals(setter.getParameterTypes()[0])) {
+                            getter.setAccessible(true);
+                            setter.setAccessible(true);
+                            accessors.add(new PropertyAccessor(getter, setter));
+                        }
+                    }
+                }
+            }
+
+            currentClass = currentClass.getSuperclass();
+        }
+
+        return new ReflectionHelper(accessors.toArray(new PropertyAccessor[accessors.size()]));
+    }
+
+    /**
+     * For each String bean property on o, if o is blank or empty,
+     * converts that property to null.
+     *
+     * @param o object to convert properties on.
+     */
+    public static void blankStringPropsToNull(Object o) {
+        if (o == null) {
+            return;
+        }
+    
+        ReflectionHelper helper = createReflectionHelper(o.getClass());
+        for (PropertyAccessor accessor : helper.getAccessors()) {
+            if (accessor.getType().equals(String.class)) {
+                try {
+                    if (StringUtils.isBlank((String) accessor.get(o))) {
+                        accessor.set(o, null);
+                    }
+                } catch (IllegalArgumentException e) {
+                    EntityPruner.LOG.debug(e.getMessage(), e);
+                } catch (IllegalAccessException e) {
+                    EntityPruner.LOG.debug(e.getMessage(), e);
+                } catch (InvocationTargetException e) {
+                    EntityPruner.LOG.debug(e.getMessage(), e);
+                }
+            }
+        }
     }
 }

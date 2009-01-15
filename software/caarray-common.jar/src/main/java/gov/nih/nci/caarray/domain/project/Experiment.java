@@ -101,6 +101,7 @@ import gov.nih.nci.caarray.security.SecurityPolicy;
 import gov.nih.nci.caarray.util.CaarrayInnoDBDialect;
 import gov.nih.nci.caarray.validation.UniqueConstraint;
 import gov.nih.nci.caarray.validation.UniqueConstraintField;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -109,11 +110,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -234,15 +232,11 @@ public class Experiment extends AbstractCaArrayEntity {
         + "and s.id is null and s2.id is null and p.id in " + READABLE_PROJECT_CLAUSE + " or p.id in "
         + PROJECT_OWNER_CLAUSE + ")";
     private static final long serialVersionUID = 1234567890L;
-    private static final int PAYMENT_NUMBER_FIELD_LENGTH = 100;
 
     private String title;
     private String description;
     private Date date;
     private Date publicReleaseDate;
-    private PaymentMechanism paymentMechanism;
-    private String paymentNumber;
-    private ServiceType serviceType = ServiceType.FULL;
     private String assayType;
     private Organization manufacturer;
     private Organism organism;
@@ -264,6 +258,13 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
     private String publicIdentifier;
     private Project project;
+
+    /**
+     * {@inheritDoc}
+     */
+    public Set<SecurityPolicy> getRemoteApiSecurityPolicies(User user) {
+        return getProject().getRemoteApiSecurityPolicies(user);
+    }
 
     /**
      * Gets the date of this Experiment.
@@ -433,66 +434,6 @@ public class Experiment extends AbstractCaArrayEntity {
                 it.remove();
             }
         }
-    }
-
-    /**
-     * Gets the payment mechanism for this experiment.
-     *
-     * @return the payment mechanism
-     */
-    @ManyToOne(cascade = {CascadeType.ALL })
-    @ForeignKey(name = "experiment_payment_mechanism_fk")
-    public PaymentMechanism getPaymentMechanism() {
-        return this.paymentMechanism;
-    }
-
-    /**
-     * Set the payment mechanism for this experiment.
-     *
-     * @param paymentMechanism the payment mechanism to set
-     */
-    public void setPaymentMechanism(PaymentMechanism paymentMechanism) {
-        this.paymentMechanism = paymentMechanism;
-    }
-
-    /**
-     * Gets the payment number, i.e. invoice number.
-     *
-     * @return the payment number
-     */
-    @Column(length = PAYMENT_NUMBER_FIELD_LENGTH)
-    public String getPaymentNumber() {
-        return this.paymentNumber;
-    }
-
-    /**
-     * Sets the payment number, ie invoice number.
-     *
-     * @param paymentNumber the payment number to set
-     */
-    public void setPaymentNumber(String paymentNumber) {
-        this.paymentNumber = paymentNumber;
-    }
-
-    /**
-     * Gets the service type requested for this experiment.
-     *
-     * @return the service type
-     */
-    @Enumerated(EnumType.STRING)
-    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
-    @NotNull
-    public ServiceType getServiceType() {
-        return this.serviceType;
-    }
-
-    /**
-     * Sets the service type requested for this experiment.
-     *
-     * @param serviceType the service type to set
-     */
-    public void setServiceType(ServiceType serviceType) {
-        this.serviceType = serviceType;
     }
 
     /**

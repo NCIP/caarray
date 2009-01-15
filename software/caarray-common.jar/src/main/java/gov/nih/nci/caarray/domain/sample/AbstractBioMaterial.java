@@ -89,14 +89,17 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.AttributeMutator;
 import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.SecurityPolicy;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -281,6 +284,22 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
     private void setCharacteristics(final Set<AbstractCharacteristic> characteristicsVal) {
         this.characteristics = characteristicsVal;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("PMD.CyclomaticComplexity")
+    public Set<SecurityPolicy> getPostLoadSecurityPolicies(User user) {
+        if (getExperiment() != null && getExperiment().getProject() != null) {
+            Project p = getExperiment().getProject();
+            if (p.isUseTcgaPolicy() && !p.isOwner(user) && !p.isCollaborator(user)) {
+                return Collections.singleton(SecurityPolicy.TCGA);
+            }            
+        }
+        return Collections.emptySet();
+    }
+
+
 
     /**
      * {@inheritDoc}

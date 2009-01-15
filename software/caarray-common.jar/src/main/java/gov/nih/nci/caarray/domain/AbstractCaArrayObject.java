@@ -82,6 +82,13 @@
  */
 package gov.nih.nci.caarray.domain;
 
+import gov.nih.nci.caarray.security.AttributePolicy;
+import gov.nih.nci.caarray.security.SecurityPolicy;
+import gov.nih.nci.security.authorization.domainobjects.User;
+
+import java.util.Collections;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -123,6 +130,7 @@ public abstract class AbstractCaArrayObject implements PersistentObject {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public Long getId() {
         return id;
     }
@@ -136,6 +144,34 @@ public abstract class AbstractCaArrayObject implements PersistentObject {
     @Deprecated
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * Return the set of security policies that should be applied to this object at hibernate load time.
+     * These policies will be applied as port of a hibernate post-load event listener, so that by the time
+     * a query that results in the load of this object is finished and returns to the program, these policies
+     * will have been applied.
+     * 
+     * Note that because the policies will be applied while hibernate is in the middle of loading the objects
+     * from the database, unexpected behavior may occur. For example, asssociated objects and collections may not
+     * yet be loaded. The security policies must be designed carefully in awareness of this behavior.
+     * 
+     * @param currentUser the current user.
+     * @return the set of policies to apply to this object, given the current user.
+     */
+    public Set<SecurityPolicy> getPostLoadSecurityPolicies(User currentUser) {
+        return Collections.emptySet();
+    }
+
+    /**
+     * Return the set of security policies that should be applied to this object prior to it being returned
+     * as part of a return value for a remote API call.
+     * 
+     * @param currentUser the current user.
+     * @return the set of policies to apply to this object, given the current user.
+     */
+    public Set<SecurityPolicy> getRemoteApiSecurityPolicies(User currentUser) {
+        return Collections.emptySet();
     }
 
     /**

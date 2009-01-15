@@ -194,12 +194,9 @@ public class ApiSearchExperimentByExample extends AbstractApiTest {
                 return false;
             }
             // Check if retrieved experiment has mandatory fields.
-            if ((retrievedExperiment.getTitle() == null) || (retrievedExperiment.getServiceType() == null)
-                    || (retrievedExperiment.getAssayType() == null)) {
+            if (retrievedExperiment.getTitle() == null || retrievedExperiment.getAssayType() == null) {
                 return false;
             }
-            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getServiceType().getResourceKey(): "
-                    + retrievedExperiment.getServiceType().getResourceKey());
             logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getAssayType(): "
                     + retrievedExperiment.getAssayType());
         }

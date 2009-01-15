@@ -83,11 +83,21 @@
 package gov.nih.nci.caarray.example;
 
 import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
+import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlquery.QueryModifier;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
+import gov.nih.nci.cagrid.cqlresultset.TargetAttribute;
+import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
 
 import java.util.List;
+
+import org.apache.commons.lang.time.StopWatch;
 
 /**
  * A simple class that connects to the remote Java API of a caArray server and retrieves and
@@ -130,10 +140,25 @@ public class JavaApiExample {
         }
         try {
             CaArraySearchService searchService = server.getSearchService();
+
             QuantitationType searchType = new QuantitationType();
             searchType.setTypeClass(Integer.class);
             List<QuantitationType> types = searchService.search(searchType);
             System.out.println(types);
+
+            CQLQuery cqlQuery = new CQLQuery();
+
+            Object target = new Object();
+            cqlQuery.setTarget(target);
+
+            target.setName(Experiment.class.getName());
+            
+            List<Experiment> exps = (List<Experiment>) searchService.search(cqlQuery);
+            
+            for (Experiment exp : exps) {
+                System.out.println("Exp: " + exp.getPublicIdentifier() + " - " + exp.getDesignDescription());
+            }
+
             System.out.println("Successfully ran query");
         } catch (Throwable t) {
             System.out.println("Couldn't run query: likely RMI problem");
