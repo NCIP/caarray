@@ -113,6 +113,28 @@ Highlights of caArray 2.2.0 are:
 
 * Enhancements to the GUI installer to make more properties configurable.
 
+* Ivy Dependency Management Support:
+  * caArray uses the Ivy tool for dependency management. This means that,
+    rather than explicitly checking in all the third party libraries caArray
+    depends on, it expresses those dependencies using a declarative XML syntax.
+    The ivy tool then takes care of resolving those dependencies and retrieving
+    them from a repository. NCI maintains an Ivy repository with approved
+    versions of various tools, and caarray is configured to pull from this
+    repository. Retrieved dependencies are cached on each developer's machine,
+    so that for a given build, only changed dependencies neeed to be retrieved.
+    As a result, checkouts are significantly more compact. This process is
+    integrated with the ant-based build, and transparent to the developer.
+    The one exception is the grid service, which still uses a locally
+    checked-in set of libraries. This is due to the fact that the caGrid
+    authoring tools, namely Introduce, are not yet configured to produce
+    ivy-enabled service definitions.
+
+* API client jars:
+  * caArray 2.2.0 is backwards-compatible with programmatic API clients
+    using 2.1.0 jars. Please note that the API client libraries published
+    in this release are the same libraries that were published with
+    caArray 2.1.0. (caarray_client_2_1_0.zip and caarray_api_javadoc_2_1_0.zip)
+
 
 Known Issues/Defects
 ------------------------
@@ -139,6 +161,12 @@ https://gforge.nci.nih.gov/tracker/?group_id=305
   read-write permissions to the experiment.
 
 * The installer does not support configuring SSL support in JBoss.
+
+* After installing a local copy of caArray, you must go to
+  http://<IP_address_or_host_name>:<port>/caarray in order to test
+  your installation. Even if you are running the browser on the same
+  machine as your caArray installation, you cannot go to
+  http://localhost:<port>/caarray.
 
 * Image files referenced in a MAGE-TAB SDRF cannot be validated or
   imported.
