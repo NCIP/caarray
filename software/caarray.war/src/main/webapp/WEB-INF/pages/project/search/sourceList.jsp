@@ -19,12 +19,21 @@
              <a href="${projectUrl}"><caarray:abbreviate value="${row.name}" maxWidth="30"/></a>
         </display:column>
         <display:column property="description" titleKey="experiment.sources.description" />
-        <display:column property="organism.scientificName" sortProperty="ORGANISM" titleKey="search.result.organism" sortable="true"/>
+        <display:column sortProperty="ORGANISM" titleKey="search.result.organism" sortable="true">
+          <c:choose>
+            <c:when test="${empty row.organism}">
+              <c:out value="${row.experiment.organism.scientificName}" />
+            </c:when>
+            <c:otherwise>
+              <c:out value="${row.organism.scientificName}" />
+            </c:otherwise>
+          </c:choose>
+        </display:column>
         <display:column property="diseaseState.value" sortProperty="DISEASESTATE" titleKey="search.result.diseaseState" sortable="true"/>
         <display:column property="tissueSite.value" sortProperty="TISSUESITE" titleKey="search.result.tissueSite" sortable="true"/>
         <display:column property="materialType.value" sortProperty="MATERIALTYPE" titleKey="search.result.materialType" sortable="true"/>
         <display:column property="cellType.value" sortProperty="CELLTYPE" titleKey="search.result.cellType" sortable="true"/>
-        <display:column titleKey="search.result.provider" sortProperty="PROVIDER_NAME" sortable="false">
+        <display:column titleKey="search.result.provider" sortProperty="PROVIDER_NAME" sortable="true">
             <c:forEach items="${row.providers}" var="curProvider" varStatus="status">
                 ${curProvider.name}<c:if test="${!status.last}">,<br></c:if>
             </c:forEach>

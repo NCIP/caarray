@@ -88,12 +88,12 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
-import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
+import gov.nih.nci.caarray.domain.search.SampleJoinableSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
 import gov.nih.nci.caarray.domain.search.SearchTypeSelection;
-import gov.nih.nci.caarray.domain.search.SourceSortCriterion;
+import gov.nih.nci.caarray.domain.search.SourceJoinableSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
@@ -189,12 +189,12 @@ public class SearchAction extends ActionSupport {
     private final SortablePaginatedList<Project, ProjectSortCriterion> results =
         new SortablePaginatedList<Project, ProjectSortCriterion>(
             SEARCH_PAGE_SIZE, ProjectSortCriterion.PUBLIC_ID.name(), ProjectSortCriterion.class);
-    private final SortablePaginatedList<Sample, SampleSortCriterion> sampleResults =
-        new SortablePaginatedList<Sample, SampleSortCriterion>(
-                SEARCH_PAGE_SIZE, SampleSortCriterion.NAME.name(), SampleSortCriterion.class);
-    private final SortablePaginatedList<Source, SourceSortCriterion> sourceResults =
-        new SortablePaginatedList<Source, SourceSortCriterion>(
-                SEARCH_PAGE_SIZE, SourceSortCriterion.NAME.name(), SourceSortCriterion.class);
+    private final SortablePaginatedList<Sample, SampleJoinableSortCriterion> sampleResults =
+        new SortablePaginatedList<Sample, SampleJoinableSortCriterion>(
+                SEARCH_PAGE_SIZE, SampleJoinableSortCriterion.NAME.name(), SampleJoinableSortCriterion.class);
+    private final SortablePaginatedList<Source, SourceJoinableSortCriterion> sourceResults =
+        new SortablePaginatedList<Source, SourceJoinableSortCriterion>(
+                SEARCH_PAGE_SIZE, SourceJoinableSortCriterion.NAME.name(), SourceJoinableSortCriterion.class);
 
     private Map<String, Integer> tabs;
 
@@ -298,14 +298,14 @@ public class SearchAction extends ActionSupport {
     /**
      * @return the samples/sources
      */
-    public SortablePaginatedList<Sample, SampleSortCriterion> getSampleResults() {
+    public SortablePaginatedList<Sample, SampleJoinableSortCriterion> getSampleResults() {
         return sampleResults;
     }
 
     /**
      * @return the samples/sources
      */
-    public SortablePaginatedList<Source, SourceSortCriterion> getSourceResults() {
+    public SortablePaginatedList<Source, SourceJoinableSortCriterion> getSourceResults() {
         return sourceResults;
     }
 

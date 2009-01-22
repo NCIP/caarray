@@ -139,9 +139,10 @@ public enum SourceSortCriterion implements SortCriterion<Source> {
 
     private final String orderField;
 
-    SourceSortCriterion(String orderField) {
+    private SourceSortCriterion(String orderField) {
         this.orderField = orderField;
     }
+
 
     /**
      * {@inheritDoc}
@@ -149,4 +150,5 @@ public enum SourceSortCriterion implements SortCriterion<Source> {
     public String getOrderField() {
         return this.orderField;
     }
+
 }

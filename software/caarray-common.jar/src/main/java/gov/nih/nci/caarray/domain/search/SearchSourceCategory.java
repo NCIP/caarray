@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.domain.search;
 
+import org.apache.commons.lang.ArrayUtils;
+
 
 /**
  * @author mshestopalov
@@ -95,50 +97,62 @@ public enum SearchSourceCategory implements BiomaterialSearchCategory {
      * Disease State.
      */
     SAMPLE_DISEASE_STATE ("search.category.diseaseState",
-            new String[]{"s.diseaseState sds"},
+            new String[]{"this.diseaseState sds"},
             new String[]{"sds.value"}),
 
     /**
      * Tissue Site.
      */
     SAMPLE_TISSUE_SITE ("search.category.tissueSite",
-            new String[]{"s.tissueSite ts"},
-            new String[]{"ts.value"}),
+            new String[]{"this.tissueSite sts"},
+            new String[]{"sts.value"}),
 
     /**
      * Organism.
      */
-    SAMPLE_ORGANISM ("search.category.organism",
-            new String[]{"s.organism o"},
-            new String[]{"o.commonName", "o.scientificName"}),
+     SAMPLE_ORGANISM ("search.category.organism",
+             new String[]{"this.organism so", "this.experiment e", "e.organism eo"},
+             ArrayUtils.EMPTY_STRING_ARRAY) {
+
+             /**
+              * {@inheritDoc}
+              */
+             public String getWhereClause() {
+                 return "(so IS NOT NULL AND"
+                    + " (so.commonName like :keyword OR so.scientificName like :keyword)) OR"
+                    + " (eo IS NOT NULL AND"
+                    + " (eo.commonName like :keyword OR eo.scientificName like :keyword))";
+
+             }
+     },
 
     /**
      * Experiment title.
      */
     SAMPLE_EXPERIMENT_TITLE ("search.category.experimentTitle",
-            new String[]{"s.experiment e"},
+            new String[]{"this.experiment e"},
             "e.title"),
 
     /**
      * Material Type.
      */
     SAMPLE_MATERIAL_TYPE ("search.category.materialType",
-            new String[]{"s.materialType sms"},
+            new String[]{"this.materialType sms"},
             new String[]{"sms.value"}),
 
     /**
      * Cell Type.
      */
     SAMPLE_CELL_TYPE ("search.category.cellType",
-             new String[]{"s.cellType scs"},
+             new String[]{"this.cellType scs"},
              new String[]{"scs.value"}),
 
      /**
       * Source Provider.
       */
     SAMPLE_PROVIDER ("search.category.sourceProvider",
-            new String[]{"s.providers ps"},
-            new String[]{"ps.name"});
+            new String[]{"this.providers sps"},
+            new String[]{"sps.name"});
 
 
     private final String resourceKey;

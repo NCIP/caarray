@@ -93,12 +93,12 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
-import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
+import gov.nih.nci.caarray.domain.search.SampleJoinableSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
 import gov.nih.nci.caarray.domain.search.SearchTypeSelection;
-import gov.nih.nci.caarray.domain.search.SourceSortCriterion;
+import gov.nih.nci.caarray.domain.search.SourceJoinableSortCriterion;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.util.ArrayList;
@@ -184,7 +184,7 @@ public class SearchActionTest extends AbstractCaarrayTest {
         searchAction.setKeyword("keyword");
         this.searchAction.setResultSampleCount(NUM_PROJECTS);
         String result = this.searchAction.samples();
-        SortablePaginatedList<Sample, SampleSortCriterion> results = searchAction.getSampleResults();
+        SortablePaginatedList<Sample, SampleJoinableSortCriterion> results = searchAction.getSampleResults();
         assertEquals(SearchAction.SAMPLES_TAB, searchAction.getCurrentTab());
         assertEquals(NUM_PROJECTS, results.getFullListSize());
         assertEquals(NUM_PROJECTS, results.getList().size());
@@ -207,7 +207,7 @@ public class SearchActionTest extends AbstractCaarrayTest {
         searchAction.setKeyword("keyword");
         this.searchAction.setResultSourceCount(NUM_PROJECTS);
         String result = this.searchAction.sources();
-        SortablePaginatedList<Source, SourceSortCriterion> results = searchAction.getSourceResults();
+        SortablePaginatedList<Source, SourceJoinableSortCriterion> results = searchAction.getSourceResults();
         assertEquals(SearchAction.SOURCES_TAB, searchAction.getCurrentTab());
         assertEquals(NUM_PROJECTS, results.getFullListSize());
         assertEquals(NUM_PROJECTS, results.getList().size());

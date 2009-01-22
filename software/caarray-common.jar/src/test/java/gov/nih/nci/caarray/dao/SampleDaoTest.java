@@ -88,10 +88,10 @@ import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
-import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
+import gov.nih.nci.caarray.domain.search.SampleJoinableSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
-import gov.nih.nci.caarray.domain.search.SourceSortCriterion;
+import gov.nih.nci.caarray.domain.search.SourceJoinableSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -116,9 +116,9 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
 
     private static final SampleDao DAO_SAMPLE_OBJECT = CaArrayDaoFactory.INSTANCE.getSampleDao();
     private static final PageSortParams<Sample> ALL_BY_NAME =
-        new PageSortParams<Sample>(10000, 0, SampleSortCriterion.NAME, false);
+        new PageSortParams<Sample>(10000, 0, SampleJoinableSortCriterion.NAME, false);
     private static final PageSortParams<Source> ALL_SOURCE_BY_NAME =
-        new PageSortParams<Source>(10000, 0, SourceSortCriterion.NAME, false);
+        new PageSortParams<Source>(10000, 0, SourceJoinableSortCriterion.NAME, false);
 
     /**
      * Tests retrieving the <code>Sample</code> with the given id. Test encompasses save and delete of a
@@ -323,8 +323,8 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             int sourceCount = DAO_SAMPLE_OBJECT
                 .countSourcesByCharacteristicCategory(all_chars.get(0), DUMMY_REPLICATE_TYPE.getValue());
             PageSortParams<Source> sortByOrganism =
-                new PageSortParams<Source>(10000, 0, SourceSortCriterion.NAME, false);
-            sortByOrganism.setSortCriterion(SourceSortCriterion.ORGANISM);
+                new PageSortParams<Source>(10000, 0, SourceJoinableSortCriterion.NAME, false);
+            sortByOrganism.setSortCriterion(SourceJoinableSortCriterion.ORGANISM);
             List<Source> retrievedSamples = DAO_SAMPLE_OBJECT
                 .searchSourcesByCharacteristicCategory(sortByOrganism,
                         DUMMY_CATEGORY, DUMMY_REPLICATE_TYPE.getValue());
@@ -366,8 +366,8 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             int sourceCount = DAO_SAMPLE_OBJECT
                 .countSourcesByCharacteristicCategory(all_chars.get(0), DUMMY_REPLICATE_TYPE.getValue());
             PageSortParams<Source> sortByOrganism =
-                new PageSortParams<Source>(10000, 0, SourceSortCriterion.NAME, false);
-            sortByOrganism.setSortCriterion(SourceSortCriterion.ORGANISM);
+                new PageSortParams<Source>(10000, 0, SourceJoinableSortCriterion.NAME, false);
+            sortByOrganism.setSortCriterion(SourceJoinableSortCriterion.ORGANISM);
             List<Source> retrievedSamples = DAO_SAMPLE_OBJECT
                 .searchSourcesByCharacteristicCategory(sortByOrganism,
                         DUMMY_CATEGORY, "");

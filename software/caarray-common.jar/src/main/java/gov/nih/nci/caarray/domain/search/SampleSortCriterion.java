@@ -126,8 +126,6 @@ public enum SampleSortCriterion implements SortCriterion<Sample> {
      */
     DISEASESTATE("diseaseState.value"),
 
-
-
     /**
      * description.
      */
@@ -135,7 +133,7 @@ public enum SampleSortCriterion implements SortCriterion<Sample> {
 
     private final String orderField;
 
-    private SampleSortCriterion(String orderField, String... joins) {
+    private SampleSortCriterion(String orderField) {
         this.orderField = orderField;
     }
 
@@ -145,4 +143,5 @@ public enum SampleSortCriterion implements SortCriterion<Sample> {
     public String getOrderField() {
         return this.orderField;
     }
+
 }
