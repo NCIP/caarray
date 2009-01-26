@@ -9,9 +9,12 @@
         <conf name="asm_2.2.1"/>
         <conf name="asm_3.0"/>
         <conf name="project"/>
+        <conf name="bda-utils"/>
     </configurations>
 
     <dependencies>
+
+        <dependency conf="bda-utils" org="ncicb" name="bda-utils" rev="${bda.version}" force="true"/>
 
         <dependency conf="project" name="jmeter" org="apache" rev="2.3"/>
 

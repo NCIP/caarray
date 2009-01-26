@@ -65,23 +65,16 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <property name="jboss-conf.target.dir" value="${caarray.dist.dir}/${jboss-conf.dist.relative.dir}" />
 
 
-    <!-- retrive ivy files then retrieve bda files and librarires -->
-    <property name="bda-download.file" value="bda-ivy-build.xml" />
-
-    <ant inheritAll="false" inheritRefs="false" antfile="${bda-download.file}" target="retrieve-bda">
-	    <property name="bda.version" value="${bda.version}" />
-	    <property name="bda-utils.dir" location="${bda-utils.dir}" />
-	    <property name="lib.dir" location="${lib.dir}" />
-	    <property name="software.dir" location="." />
+    <!-- delegate retrieval of third-party dependencies -->
+    <ant antfile="${basedir}/build/build.xml" inheritall="false" target="init:dependencies" dir="${basedir}">
+        <property name="local.repo.dir" value="${local.repo.dir}"/>
+        <property name="clean.libs.and.ivy.cache" value="${clean.libs.and.ivy.cache}"/>
     </ant>
-
 
     <!-- Paths -->
     <path id="project.classpath">
         <fileset dir="${lib.dir}">
-            <include name="simian-2.2.24.jar" />
-            <include name="ivy-core-2.0.0-beta2.jar" />
-            <include name="ivy-2.0.0-beta2.jar" />
+            <include name="**/*.jar" />
         </fileset>
     </path>
 
@@ -101,11 +94,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     </taskdef>
     <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="bda-utils.classpath" />
     <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="project.classpath"/>
-    <taskdef name="for" classname="net.sf.antcontrib.logic.ForTask">
-        <classpath>
-            <pathelement location="${bda-utils.dir}/ant-contrib-1.0b3.jar"/>
-        </classpath>
-    </taskdef>
+    <taskdef name="for" classname="net.sf.antcontrib.logic.ForTask" classpathref="bda-utils.classpath"/>
 
     <!-- Includes- include BDA marcos -->
     <import file="${bda-utils.dir}/bda-build-utils-${bda.version}.xml" />
@@ -316,9 +305,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/ivy-caarray.xml" overwrite="true"/>
         <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/ivy-caarray-settings.xml" overwrite="true"/>
         <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/caarray-ivy-build.xml" overwrite="true"/>
-        <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/bda-ivy-build.xml" overwrite="true"/>
-        <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/ivy-bda-settings.xml" overwrite="true"/>
-        <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/ivy-bda.xml" overwrite="true"/>
 
 
         <copy todir="${caarray.dist.dir}/docs">
@@ -332,7 +318,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 
         <copy todir="${caarray.dist.dir}/lib" overwrite="true">
             <fileset dir="${caarray.src.dir}/lib">
-                <include name="*.jar" />
+                <include name="**/*.jar" />
             </fileset>
         </copy>
 

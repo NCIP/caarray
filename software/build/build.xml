@@ -2,7 +2,7 @@
 <!-- ** PROJECT:   caArray                                                ** -->
 <!-- *********************************************************************** -->
 
-<project name="caarray" default="continuous-integration" basedir="..">
+<project name="caarray" default="continuous-integration" basedir=".." xmlns:ivy="antlib:org.apache.ivy.ant">
 
     <!-- ******************************************************************* -->
     <!-- ** PROPERTIES                                                    ** -->
@@ -84,26 +84,43 @@
 
     <property name="caarray-svc.dir" value="${basedir}/CaArraySvc" />
 
-    <property name="bda-utils.dir" value="${basedir}/bda-utils" />
-    <property name="bda.version" value="0.6.1" />
-
     <!-- ******************************************************************* -->
     <!-- ** 3RD PARTY DEPENDENCY MANAGMENT                                ** -->
     <!-- ******************************************************************* -->
 
-    <!-- use ivy to retrieve dependencies -->
-    <ant antfile="caarray-ivy-build.xml" dir="${basedir}" inheritAll="true" inheritRefs="true">
-        <property name="bda.version" value="${bda.version}" />
-        <property name="bda-utils.dir" location="${bda-utils.dir}" />
-        <property name="lib.dir" location="${lib.dir}" />
-        <property name="software.dir" location="${basedir}" />
-    </ant>
-    <property name="caarray.dependencies.already.retrieved" value="true" />
+    <target name="init:dependencies" description="This target is just a placeholder to allow client scripts which require dependencies to make sure they get downloaded by ivy before setting up paths, etc."/>
 
-    <!-- properties to represent the lib for each retrieved ivy configuration -->
+    <property name="ivy.cache.dir" value="${user.home}/.ivy2-caarray-cache"/>
     <property name="asm.2.2.1.lib" value="${lib.dir}/caarray-asm_2.2.1" />
     <property name="asm.3.0.lib" value="${lib.dir}/caarray-asm_3.0" />
     <property name="project.lib" value="${lib.dir}/caarray-project" />
+    <property name="bda-utils.dir" value="${basedir}/bda-utils" />
+    <property name="bda.version" value="0.9.3" />
+    <property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
+
+    <condition property="do.ivy.retrieval" value="true">
+        <or>
+            <isset property="clean.libs.and.ivy.cache"/>
+            <isset property="force.ivy.retrieval"/>
+            <not>
+                <and>
+                    <available type="dir" file="${lib.dir}/caarray-asm_2.2.1"/>
+                    <available type="dir" file="${lib.dir}/caarray-asm_3.0"/>
+                    <available type="dir" file="${lib.dir}/caarray-project"/>
+                    <available type="dir" file="${bda-utils.dir}"/>
+                </and>
+            </not>
+        </or>
+    </condition>
+
+    <ant antfile="caarray-ivy-build.xml" dir="${basedir}" inheritAll="true" inheritRefs="true">
+        <property name="clean.lib.and.cache" value="${clean.libs.and.ivy.cache}"/>
+        <property name="local.repo.dir" value="${local.repo.dir}"/>
+        <property name="do.ivy.retrieval" value="${do.ivy.retrieval}" />
+        <property name="ivy.cache.dir" value="${ivy.cache.dir}"/>
+        <property name="lib.dir" location="${lib.dir}" />
+        <property name="bda-utils.dir" value="${bda-utils.dir}"/>
+    </ant>
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -1124,6 +1141,32 @@
         </fileset>
     </path>
 
+    <taskdef resource="checkstyletask.properties">
+        <classpath refid="checkstyle.jar.path"/>
+        <classpath refid="commons-beanutils.jar.path"/>
+        <classpath refid="antlr.jar.path"/>
+        <classpath refid="commons-collections.jar.path"/>
+        <classpath refid="commons-logging.jar.path"/>
+    </taskdef>
+
+    <taskdef resource="tasks.properties" classpathref="cobertura.dependencies.path" />
+
+    <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.dependencies.path" />
+
+    <taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask" classpathref="project.jars.path">
+        <classpath>
+            <pathelement location="${caarray-common.classes.dir}" />
+            <pathelement location="${caarray-common.resources.dir}" />
+        </classpath>
+    </taskdef>
+
+    <taskdef resource="svntask.properties" classpathref="svn.dependencies.path" />
+
+    <taskdef name="ncitask" classname="gov.nih.ncicb.anttasks.PropertyValidator" classpathref="project.jars.path"/>
+
+    <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="project.jars.path" />
+
+
     <!-- Datasource-configuration-related properties -->
     <property name="jta.transaction.factory" value="hibernate.transaction.factory_class org.hibernate.transaction.JTATransactionFactory" />
     <property name="jta.transaction.manager" value="hibernate.transaction.manager_lookup_class org.hibernate.transaction.JBossTransactionManagerLookup" />
@@ -1158,36 +1201,6 @@
 
 
     <!-- ******************************************************************* -->
-    <!-- ** TASKDEFS                                                      ** -->
-    <!-- ******************************************************************* -->
-
-    <taskdef resource="checkstyletask.properties">
-        <classpath refid="checkstyle.jar.path"/>
-        <classpath refid="commons-beanutils.jar.path"/>
-        <classpath refid="antlr.jar.path"/>
-        <classpath refid="commons-collections.jar.path"/>
-        <classpath refid="commons-logging.jar.path"/>
-    </taskdef>
-
-    <taskdef resource="tasks.properties" classpathref="cobertura.dependencies.path" />
-
-    <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.dependencies.path" />
-
-    <taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask" classpathref="project.jars.path">
-        <classpath>
-            <pathelement location="${caarray-common.classes.dir}" />
-            <pathelement location="${caarray-common.resources.dir}" />
-        </classpath>
-    </taskdef>
-
-    <taskdef resource="svntask.properties" classpathref="svn.dependencies.path" />
-
-    <taskdef name="ncitask" classname="gov.nih.ncicb.anttasks.PropertyValidator" classpathref="project.jars.path"/>
-
-    <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="project.jars.path" />
-
-
-    <!-- ******************************************************************* -->
     <!-- ** IMPORTS                                                       ** -->
     <!-- ******************************************************************* -->
 
@@ -1199,8 +1212,7 @@
     <!-- ** CLEAN TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
 
-    <target name="clean" depends="clean:dependencies,
-        clean:caarray-client.jar,
+    <target name="clean" depends="clean:caarray-client.jar,
         clean:caarray-common.jar,
         clean:caarray-ejb.jar,
         clean:caarray.war,
@@ -1211,15 +1223,6 @@
         clean:target.dir,
         clean:gridsvc,
         clean:caarraydb" description="Deletes all of the target directories" />
-
-    <target name="clean:dependencies">
-        <ant antfile="caarray-ivy-build.xml" dir="${basedir}" inheritAll="true" inheritRefs="true">
-            <property name="bda.version" value="${bda.version}" />
-            <property name="bda-utils.dir" location="${bda-utils.dir}" />
-            <property name="lib.dir" location="${lib.dir}" />
-            <property name="software.dir" location="${basedir}" />
-        </ant>
-    </target>
 
     <target name="clean:caarray-client.jar">
         <delete dir="${caarray-client.target.dir}" />
@@ -1270,14 +1273,7 @@
     <!-- ** MAIN TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-    <target name="continuous-integration" depends="build-tags">
-        <antcall target="clean" inheritAll="true" inheritRefs="true" />
-        <antcall target="database:reinitialize" inheritAll="true" inheritRefs="true" />
-        <antcall target="build" inheritAll="true" inheritRefs="true" />
-        <antcall target="check" inheritAll="true" inheritRefs="true" />
-        <antcall target="test" inheritAll="true" inheritRefs="true" />
-        <antcall target="javadoc" inheritAll="true" inheritRefs="true" />
-    </target>
+    <target name="continuous-integration" depends="build-tags,clean,database:reinitialize,build,check,test,javadoc"/>
 
 
     <target name="nightly-build" depends="continuous-integration,
@@ -1320,7 +1316,7 @@
                 toFile="${caarray-common.classes.dir}/csm/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
     </target>
 
-    <target name="configure-datasource-for-test">
+    <target name="configure-datasource-for-test" unless="schema.sql.exists">
         <copy todir="${caarray-common.test.classes.dir}" overwrite="true">
             <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml,MGEDOntology.owl" />
         </copy>
@@ -1362,7 +1358,7 @@
         </javac>
     </target>
 
-    <target name="compile:caarray-common.jar">
+    <target name="compile:caarray-common.jar" unless="schema.sql.exists">
         <mkdir dir="${caarray-common.classes.dir}" />
         <javac srcdir="${caarray-common.src.dir}" destdir="${caarray-common.classes.dir}" debug="true">
             <classpath>
@@ -1394,7 +1390,7 @@
         </javac>
     </target>
 
-    <target name="compile:caarray-svc" depends="compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar">
+    <target name="compile:caarray-svc" unless="noglobus" depends="compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar">
         <copy file="${caarray-svc.dir}/deploy.properties.orig" tofile="${caarray-svc.dir}/deploy.properties">
             <filterset>
                 <filter token="grid.index.url" value="${grid.index.url}" />
@@ -1585,14 +1581,14 @@
         </if>
     </target>
 
-
-    <target name="build:caarray.war:scriptsAndStyles">
+    <target name="build:caarray.war:scriptsAndStyles:copy-files">
         <mkdir dir="${caarray-war.target.webapp.dir}" />
         <copy todir="${caarray-war.target.webapp.dir}">
             <fileset dir="${caarray-war.webapp.dir}" />
         </copy>
-        <antcall target="build:caarray.war:scriptsAndStyles:minify" inheritAll="true" inheritRefs="true" />
     </target>
+
+    <target name="build:caarray.war:scriptsAndStyles" depends="build:caarray.war:scriptsAndStyles:copy-files,build:caarray.war:scriptsAndStyles:minify"/>
 
     <target name="build:caarray.war" depends="compile:caarray.war, prepare:caarray.war:onlinehelp,svn:getinfo,build:caarray.war:scriptsAndStyles">
         <mkdir dir="${caarray-war.target.dir}" />
@@ -1707,9 +1703,7 @@
         <build-caarray.ear />
     </target>
 
-    <target name="build:caarray-svc" unless="noglobus">
-        <antcall target="compile:caarray-svc" inheritAll="true" inheritRefs="true" />
-    </target>
+    <target name="build:caarray-svc" unless="noglobus" depends="compile:caarray-svc"/>
 
     <target name="build:caarray-svc-jars" depends="compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar">
         <ant dir="${caarray-svc.dir}" inheritall="false">
@@ -1722,13 +1716,11 @@
     <!-- ** TEST TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-    <target name="test" unless="notest" description="Executes the unit tests">
-        <antcall target="test:unit" inheritAll="true" inheritRefs="true" />
-    </target>
+    <target name="test" unless="notest" depends="test:unit" description="Executes the unit tests"/>
 
     <!-- Test Data Targets -->
 
-    <target name="test:copy-files-to-target-dir-and-unpack-test-data">
+    <target name="test:copy-files-to-target-dir-and-unpack-test-data" unless="notest">
         <copy todir="${test.data.target.dir}">
             <fileset dir="${test.data.files.dir}"/>
         </copy>
@@ -1742,7 +1734,7 @@
         </for>
     </target>
 
-    <target name="test:compile:test-data-classes">
+    <target name="test:compile:test-data-classes" unless="notest">
         <mkdir dir="${test.data.classes.dir}" />
         <javac srcdir="${test.data.src.dir}" destdir="${test.data.classes.dir}" debug="true">
         </javac>
@@ -1750,7 +1742,7 @@
 
     <!-- JUnit Test Targets -->
 
-    <target name="test:unit" depends="test:junit-caarray-client.jar,
+    <target name="test:unit" unless="notest" depends="test:junit-caarray-client.jar,
       test:junit-caarray-common.jar,
       test:junit-caarray-ejb.jar,
       test:junit-caarray.war,
@@ -1764,7 +1756,7 @@
 
     <!-- caarray-client.jar -->
 
-    <target name="test:instrument:caarray-client.jar" depends="compile:caarray-client.jar">
+    <target name="test:instrument:caarray-client.jar" unless="notest" depends="compile:caarray-client.jar">
         <cobertura-instrument todir="${caarray-client.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-client.classes.dir}">
                 <include name="gov/nih/nci/caarray/**" />
@@ -1772,7 +1764,7 @@
         </cobertura-instrument>
     </target>
 
-    <target name="test:instrument-functional:caarray-client.jar" depends="compile:caarray-client.jar">
+    <target name="test:instrument-functional:caarray-client.jar" unless="notest" depends="compile:caarray-client.jar">
         <cobertura-instrument todir="${caarray-client.instrumented.classes.dir}" datafile="${cobertura-functional.file}">
             <fileset dir="${caarray-client.classes.dir}">
                 <include name="gov/nih/nci/caarray/**" />
@@ -1780,7 +1772,7 @@
         </cobertura-instrument>
     </target>
 
-    <target name="test:compile:caarray-client.test.classes" depends="compile:caarray-client.jar,test:compile:test-data-classes">
+    <target name="test:compile:caarray-client.test.classes" unless="notest" depends="compile:caarray-client.jar,test:compile:test-data-classes">
         <mkdir dir="${caarray-client.test.classes.dir}" />
         <javac srcdir="${caarray-client.test.src.dir}" destdir="${caarray-client.test.classes.dir}" debug="true">
             <classpath>
@@ -1795,25 +1787,25 @@
         </javac>
     </target>
 
-    <target name="test:junit-caarray-client.jar" depends="test:compile:caarray-client.test.classes,test:instrument:caarray-client.jar">
+    <target name="test:junit-caarray-client.jar" unless="notest" depends="test:compile:caarray-client.test.classes,test:instrument:caarray-client.jar">
         <caarray-run-junit-tests test.src.dir="${caarray-client.test.src.dir}" xml.output.dir="${caarray-client.target.dir}/junit" instrumented.classes="${caarray-client.instrumented.classes.dir}" classpath="${caarray-client.test.classes.dir};${test.data.target.dir};${test.classes.dir};${caarray-client.test.files.dir};${caarray-client.classes.dir};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" />
     </target>
 
     <!-- caarray-common.jar -->
 
-    <target name="test:instrument:caarray-common.jar">
+    <target name="test:instrument:caarray-common.jar" unless="notest">
         <cobertura-instrument todir="${caarray-common.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-common.classes.dir}" />
         </cobertura-instrument>
     </target>
 
-    <target name="test:instrument-functional:caarray-common.jar" depends="build:caarray-common.jar">
+    <target name="test:instrument-functional:caarray-common.jar" unless="notest" depends="build:caarray-common.jar">
         <cobertura-instrument datafile="${cobertura-functional.file}">
             <fileset file="${caarray-common.jar}" />
         </cobertura-instrument>
     </target>
 
-    <target name="test:compile:caarray-common.test.classes" depends="compile:caarray-common.jar,test:compile:test-data-classes">
+    <target name="test:compile:caarray-common.test.classes" unless="notest" depends="compile:caarray-common.jar,test:compile:test-data-classes">
         <mkdir dir="${caarray-common.test.classes.dir}" />
         <javac srcdir="${caarray-common.test.src.dir}" destdir="${caarray-common.test.classes.dir}" debug="true">
             <classpath>
@@ -1826,25 +1818,25 @@
         </javac>
     </target>
 
-    <target name="test:junit-caarray-common.jar" depends="test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data">
+    <target name="test:junit-caarray-common.jar" unless="notest" depends="test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data">
         <caarray-run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};" classpathref.id="common.test.dependencies.path" />
     </target>
 
     <!-- caarray-ejb.jar -->
 
-    <target name="test:instrument:caarray-ejb.jar" depends="compile:caarray-ejb.jar">
+    <target name="test:instrument:caarray-ejb.jar" unless="notest" depends="compile:caarray-ejb.jar">
         <cobertura-instrument todir="${caarray-ejb.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-ejb.classes.dir}" />
         </cobertura-instrument>
     </target>
 
-    <target name="test:instrument-functional:caarray-ejb.jar" depends="build:caarray-ejb.jar">
+    <target name="test:instrument-functional:caarray-ejb.jar" unless="notest" depends="build:caarray-ejb.jar">
         <cobertura-instrument datafile="${cobertura-functional.file}">
             <fileset file="${caarray-ejb.jar}" />
         </cobertura-instrument>
     </target>
 
-    <target name="test:compile:caarray-ejb.test.classes" depends="compile:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:compile:caarray-common.test.classes,test:compile:test-data-classes">
+    <target name="test:compile:caarray-ejb.test.classes" unless="notest" depends="compile:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:compile:caarray-common.test.classes,test:compile:test-data-classes">
         <mkdir dir="${caarray-ejb.test.classes.dir}" />
         <javac srcdir="${caarray-ejb.test.src.dir}" destdir="${caarray-ejb.test.classes.dir}" debug="true">
             <classpath>
@@ -1859,13 +1851,13 @@
         </javac>
     </target>
 
-    <target name="test:junit-caarray-ejb.jar" depends="test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data">
+    <target name="test:junit-caarray-ejb.jar" unless="notest" depends="test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data">
         <caarray-run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path" />
     </target>
 
     <!-- caarray.war -->
 
-    <target name="test:instrument:caarray.war" depends="compile:caarray.war">
+    <target name="test:instrument:caarray.war" unless="notest" depends="compile:caarray.war">
         <cobertura-instrument todir="${caarray-war.instrumented.classes.dir}" datafile="${cobertura.file}">
             <!-- do not have good way of testing the upload handler via junit for the time being -->
             <fileset dir="${caarray-war.classes.dir}">
@@ -1875,13 +1867,13 @@
         </cobertura-instrument>
     </target>
 
-    <target name="test:instrument-functional:caarray.war" depends="build:caarray.war">
+    <target name="test:instrument-functional:caarray.war" unless="notest" depends="build:caarray.war">
         <cobertura-instrument datafile="${cobertura-functional.file}">
             <fileset file="${caarray.war}" />
         </cobertura-instrument>
     </target>
 
-    <target name="test:compile:caarray-war.test.classes" depends="compile:caarray.war,compile:caarray-common.jar,compile:caarray-ejb.jar,test:compile:caarray-ejb.test.classes,test:compile:caarray-common.test.classes,test:compile:test-data-classes">
+    <target name="test:compile:caarray-war.test.classes" unless="notest" depends="compile:caarray.war,compile:caarray-common.jar,compile:caarray-ejb.jar,test:compile:caarray-ejb.test.classes,test:compile:caarray-common.test.classes,test:compile:test-data-classes">
         <mkdir dir="${caarray-war.test.classes.dir}" />
         <javac srcdir="${caarray-war.test.src.dir}" destdir="${caarray-war.test.classes.dir}" debug="true">
             <classpath>
@@ -1900,13 +1892,13 @@
         </copy>
     </target>
 
-    <target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data">
+    <target name="test:junit-caarray.war" unless="notest" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data">
         <!-- need to make sure there aren't duplicate struts.xml on classpath! -->
         <move file="${test.data.classes.dir}/struts.xml" tofile="${test.data.classes.dir}/struts.xml.renamed" failonerror="false" />
         <caarray-run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${caarray-ejb.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};" classpathref.id="war.test.dependencies.path" />
     </target>
 
-    <target name="test:junit-report">
+    <target name="test:junit-report" unless="notest">
         <mkdir dir="${site.dir}/junit/unit" />
         <mkdir dir="${test.target.dir}/junit" />
         <junitreport todir="${site.dir}/junit/unit">
@@ -1927,7 +1919,7 @@
     </target>
 
     <!-- Cobertura Test Targets -->
-    <target name="test:cobertura-report">
+    <target name="test:cobertura-report" unless="notest">
         <cobertura-report format="xml" destdir="${site.dir}/cobertura/unit" datafile="${cobertura.file}">
             <fileset dir="${caarray-client.src.dir}" />
             <fileset dir="${caarray-common.src.dir}" />
@@ -1942,7 +1934,7 @@
         </cobertura-report>
     </target>
 
-    <target name="test:cobertura-check">
+    <target name="test:cobertura-check" unless="notest">
         <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="71" totallinerate="80" />
     </target>
 
@@ -1957,23 +1949,23 @@
         <fail if="junit.failure" message="There were functional test failures." />
     </target>
 
-    <target name="test:functional:instrument" depends="test:instrument-functional:caarray-client.jar,
+    <target name="test:functional:instrument" unless="notest" depends="test:instrument-functional:caarray-client.jar,
         test:instrument-functional:caarray-common.jar,
         test:instrument-functional:caarray-ejb.jar,
         test:instrument-functional:caarray.war"/>
 
-    <target name="test:functional:prepare" depends="test:functional:instrument">
+    <target name="test:functional:prepare" unless="notest" depends="test:functional:instrument">
         <copy tofile="${build.dir}/cobertura.ser" file="${cobertura-functional.file}" />
         <copy todir="${jboss.lib.dir}" overwrite="true" flatten="true">
             <fileset refid="cobertura.jar.fileset"/>
         </copy>
     </target>
 
-    <target name="test:functional:cobertura-report" depends="test:functional:cobertura-report-functional-only,
+    <target name="test:functional:cobertura-report" unless="notest" depends="test:functional:cobertura-report-functional-only,
         test:functional:cobertura-report-check-unit,
         test:functional:cobertura-report-merged" />
 
-    <target name="test:functional:cobertura-report-functional-only">
+    <target name="test:functional:cobertura-report-functional-only" unless="notest">
         <move file="${build.dir}/cobertura.ser" tofile="${cobertura-functional.file}" />
         <cobertura-report format="xml" destdir="${site.dir}/cobertura/functional" datafile="${cobertura-functional.file}">
             <fileset dir="${caarray-client.src.dir}" />
@@ -1989,11 +1981,11 @@
         </cobertura-report>
     </target>
 
-    <target name="test:functional:cobertura-report-check-unit">
+    <target name="test:functional:cobertura-report-check-unit" unless="notest">
         <available file="${cobertura.file}" property="cobertura.unit.exists" />
     </target>
 
-    <target name="test:functional:cobertura-report-merged" if="cobertura.unit.exists">
+    <target name="test:functional:cobertura-report-merged" if="cobertura.unit.exists" unless="notest">
         <cobertura-merge datafile="${cobertura-merged.file}">
             <fileset file="${cobertura-merged.file}" />
             <fileset file="${cobertura.file}" />
@@ -2012,11 +2004,11 @@
         </cobertura-report>
     </target>
 
-    <target name="test:check-functional-test-results">
+    <target name="test:check-functional-test-results" unless="notest">
         <fail if="junit.failure" message="There were functional test failures." />
     </target>
 
-    <target name="test:selenium:start-server">
+    <target name="test:selenium:start-server" unless="notest">
         <echo message="Starting Selenium RC server on port ${selenium.server.port}" />
         <property name="firefox.2x.executable.path" value="${env.ProgramFiles}\Mozilla Firefox\firefox.exe"/>
         <java jar="${project.lib}/${selenium-server.jar}" fork="true" spawn="true">
@@ -2029,15 +2021,15 @@
         </java>
     </target>
 
-    <target name="test:selenium:stop-server">
+    <target name="test:selenium:stop-server" unless="notest">
         <mkdir dir="${target.dir}/temp" />
         <get taskname="selenium-shutdown" src="http://localhost:${selenium.server.port}/selenium-server/driver/?cmd=shutDown" dest="${target.dir}/temp/selenium-shutdown-result.txt" ignoreerrors="true" />
         <echo taskname="selenium-shutdown" message="DGF Errors during shutdown are expected" />
     </target>
 
-    <target name="test:functional:compile-tests" depends="test:selenium:compile-tests,test:api:compile-tests,test:grid:compile-tests" />
+    <target name="test:functional:compile-tests" unless="notest" depends="test:selenium:compile-tests,test:api:compile-tests,test:grid:compile-tests" />
 
-    <target name="test:selenium:compile-tests" depends="compile:caarray-common.jar,compile:caarray-client.jar,compile:caarray-ejb.jar,test:compile:test-data-classes">
+    <target name="test:selenium:compile-tests" unless="notest" depends="compile:caarray-common.jar,compile:caarray-client.jar,compile:caarray-ejb.jar,test:compile:test-data-classes">
         <mkdir dir="${test.classes.dir}" />
         <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true">
             <classpath>
@@ -2052,7 +2044,7 @@
         </javac>
     </target>
 
-    <target name="test:api:compile-tests" depends="build:caarray-client.jar">
+    <target name="test:api:compile-tests" unless="notest" depends="build:caarray-client.jar">
         <mkdir dir="${test.classes.dir}" />
         <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true">
             <classpath>
@@ -2064,7 +2056,7 @@
         </javac>
     </target>
 
-    <target name="test:grid:compile-tests" depends="build:caarray-client.jar,jar:caarray-svc">
+    <target name="test:grid:compile-tests" unless="notest" depends="build:caarray-client.jar,jar:caarray-svc">
         <mkdir dir="${test.classes.dir}" />
         <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true">
             <classpath>
@@ -2076,9 +2068,9 @@
         </javac>
     </target>
 
-    <target name="test:functional:run-tests" depends="test:selenium:run-tests,test:api:run-tests" />
+    <target name="test:functional:run-tests" unless="notest" depends="test:selenium:run-tests,test:api:run-tests" />
 
-    <target name="test:functional:report">
+    <target name="test:functional:report" unless="notest">
         <mkdir dir="${site.dir}/junit/functional" />
         <junitreport todir="${site.dir}/junit/functional">
             <fileset dir="${test.target.dir}/junit/selenium">
@@ -2091,26 +2083,25 @@
         </junitreport>
     </target>
 
-
-    <target name="test:selenium:run-tests" depends="test:selenium:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data,build:caarray-client.jar">
-        <antcall target="test:selenium:start-server" inheritAll="true" inheritRefs="true" />
+    <target name="test:selenium:run-tests:do-run" unless="notest">
         <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/selenium" classpath="${test.classes.dir};${caarray-client.jar};${test.data.classes.dir};${test.data.target.dir};" classpathref.id="selenium.dependencies.path" />
-        <antcall target="test:selenium:stop-server" inheritAll="true" inheritRefs="true" />
     </target>
 
-    <target name="test:selenium:prepare-selenium-server.jar">
+    <target name="test:selenium:run-tests" unless="notest" depends="test:selenium:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data,build:caarray-client.jar,test:selenium:start-server,test:selenium:run-tests:do-run,test:selenium:stop-server"/>
+
+    <target name="test:selenium:prepare-selenium-server.jar" unless="notest">
         <jar update="true" jarfile="${selenium-server.jar}" basedir="${test.resources.dir}/selenium" />
     </target>
 
-    <target name="test:api:run-tests" depends="test:api:compile-tests,build:caarray-client.jar">
+    <target name="test:api:run-tests" unless="notest" depends="test:api:compile-tests,build:caarray-client.jar">
         <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/java" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" source.include="**/Api*.java" source.exclude="**/Abstract*.java" />
     </target>
 
-    <target name="test:dataset" depends="test:api:compile-tests,build:caarray-client.jar">
+    <target name="test:dataset" unless="notest" depends="test:api:compile-tests,build:caarray-client.jar">
         <java classname="gov.nih.nci.caarray.test.api.java.data.ApiDataSetDownloadClient" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref="client.test.dependencies.path" />
     </target>
 
-    <target name="test:grid:run-tests" depends="test:grid:compile-tests,build:caarray-client.jar,jar:caarray-svc">
+    <target name="test:grid:run-tests" unless="notest" depends="test:grid:compile-tests,build:caarray-client.jar,jar:caarray-svc">
         <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/grid" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref.id="test.grid.dependencies.path" source.include="**/Grid*.java" source.exclude="**/Abstract*.java" />
     </target>
 
@@ -2192,7 +2183,7 @@
     <!-- ** SQL TARGETS                                                   ** -->
     <!-- ******************************************************************* -->
 
-    <target name="database:init-sql">
+    <target name="database:init-sql" unless="schema.sql.exists">
         <mkdir dir="${caarraydb.sql.dir}" />
         <dependset>
             <srcfileset dir="${caarray-common.src.dir}">
@@ -2209,16 +2200,10 @@
             <filterset refid="caarray.filterset" />
             <fileset dir="${caarraydb.sql.src.dir}" includes="**/*.sql" />
         </copy>
-        <available property="drop-schema-sql.exists" file="${caarraydb.sql.dir}/sql/drop_schema.sql" />
-        <available property="create-schema-sql.exists" file="${caarraydb.sql.dir}/sql/create_schema.sql" />
+        <available property="schema.sql.exists" file="${caarraydb.sql.dir}/sql/drop_schema.sql" />
     </target>
 
-    <target name="database:generate-drop-schema-sql" unless="drop-schema-sql.exists">
-
-        <antcall target="compile:caarray-common.jar" inheritAll="true" inheritRefs="true" />
-        <antcall target="configure-datasource-for-test" inheritAll="true" inheritRefs="true" />
-        <antcall target="database:init-sql" inheritAll="true" inheritRefs="true" />
-
+    <target name="database:generate-drop-schema-sql" unless="schema.sql.exists" depends="compile:caarray-common.jar,configure-datasource-for-test,database:init-sql">
         <hibernatetool destdir="${caarraydb.sql.dir}">
             <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
             <hbm2ddl drop="true" create="false" export="false" outputfilename="drop_schema.sql" />
@@ -2230,12 +2215,7 @@
         </hibernatetool>
     </target>
 
-    <target name="database:generate-create-schema-sql" unless="create-schema-sql.exists">
-
-        <antcall target="configure-datasource-for-test" inheritAll="true" inheritRefs="true" />
-        <antcall target="compile:caarray-common.jar" inheritAll="true" inheritRefs="true" />
-        <antcall target="database:init-sql" inheritAll="true" inheritRefs="true" />
-
+    <target name="database:generate-create-schema-sql" unless="schema.sql.exists" depends="configure-datasource-for-test,compile:caarray-common.jar,database:init-sql">
         <hibernatetool destdir="${caarraydb.sql.dir}">
             <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
             <hbm2ddl drop="false" create="true" export="false" outputfilename="create_schema.sql" />
@@ -2249,9 +2229,7 @@
 
     <target name="database:generate-schema-sql" depends="database:generate-drop-schema-sql, database:generate-create-schema-sql" />
 
-    <target name="database:generate-mged-sql" unless="create-schema-sql.exists">
-        <antcall target="compile:caarray-common.jar" inheritAll="true" inheritRefs="true" />
-        <antcall target="database:init-sql" inheritAll="true" inheritRefs="true" />
+    <target name="database:generate-mged-sql" unless="schema.sql.exists" depends="compile:caarray-common.jar,database:init-sql">
         <java classname="gov.nih.nci.caarray.util.owlparser.ParseMgedOntology" failonerror="true">
             <arg value="${caarraydb.sql.dir}" />
             <classpath>
@@ -2262,13 +2240,13 @@
         </java>
     </target>
 
-    <target name="database:drop-schema" depends="database:generate-drop-schema-sql" description="Drop DB schema">
+    <target name="database:drop-schema" unless="nodbintegration" depends="database:generate-drop-schema-sql" description="Drop DB schema">
         <run-sql-script database.user="${database.user}" database.password="${database.password}" onerror="continue" sql.file="${caarraydb.sql.dir}/drop_schema.sql" />
         <run-sql-script database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/drop-caarray-schema.sql" />
         <run-sql-script database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/drop-csm-schema.sql" />
     </target>
 
-    <target name="database:create-schema" depends="database:generate-create-schema-sql" description="Create DB schema">
+    <target name="database:create-schema" unless="nodbintegration" depends="database:generate-create-schema-sql" description="Create DB schema">
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/create_schema.sql" />
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/init-caarray-schema.sql" />
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/init-csm-schema.sql" />
@@ -2276,8 +2254,7 @@
 
     <target name="database:initialize-schema" depends="database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
 
-    <target name="database:populate" description="populates db with initial data">
-        <antcall target="database:generate-mged-sql" inheritAll="true" inheritRefs="true" />
+    <target name="database:populate" unless="nodbintegration" depends="database:generate-mged-sql" description="populates db with initial data">
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-csm.sql" />
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-csm2.sql" />
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-mged.sql" />
@@ -2285,22 +2262,15 @@
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-caarray-procedures.sql" sql.delimiter="//" />
     </target>
 
-    <target name="database:env-specific-sql" description="populates db with initial data">
+    <target name="database:env-specific-sql" unless="nodbintegration" description="populates db with initial data">
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/${config.sql.file}" />
     </target>
 
-    <target name="database:reinitialize" depends="database:init-sql" unless="nodbintegration" description="Completely reset caarraydb by dropping database, recreating, and creating schema, and populating with initial data">
-        <antcall target="database:execute-sql" inheritAll="true" inheritRefs="true" />
-    </target>
+    <target name="database:reinitialize" depends="database:init-sql,database:execute-sql" unless="nodbintegration" description="Completely reset caarraydb by dropping database, recreating, and creating schema, and populating with initial data"/>
 
-    <target name="database:execute-sql" description="Run SQL scripts, skipping Hibernate code generation">
-        <antcall target="database:drop-schema" inheritAll="true" inheritRefs="true" />
-        <antcall target="database:create-schema" inheritAll="true" inheritRefs="true" />
-        <antcall target="database:populate" inheritAll="true" inheritRefs="true" />
-        <antcall target="database:env-specific-sql" inheritAll="true" inheritRefs="true" />
-    </target>
+    <target name="database:execute-sql" unless="nodbintegration" depends="database:drop-schema,database:create-schema,database:populate,database:env-specific-sql" description="Run SQL scripts, skipping Hibernate code generation"/>
 
-    <target name="database:recreate-database" description="Drops and recreates caarraydb database">
+    <target name="database:recreate-database" unless="nodbintegration" description="Drops and recreates caarraydb database">
         <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
     </target>
 
@@ -2423,17 +2393,17 @@
         <ncitask keyFile="${build.dir}/${property.template.file}" compareFile="${envpropertyfile}" />
     </target>
 
-    <target name="remote-jboss:stop">
+    <target name="remote-jboss:stop" unless="nodeploy">
         <echo message="Stopping jboss server at ${ssh.server.hostname}..." />
         <remote-ssh remotesshcommand="${jboss.home}/bin/stop_jboss" remoteSshSleep="${jboss.stop.sleep}" />
     </target>
 
-    <target name="remote-jboss:start">
+    <target name="remote-jboss:start" unless="nodeploy">
         <echo message="Starting jboss server at ${ssh.server.hostname}..." />
         <remote-ssh remotesshcommand="${jboss.home}/bin/start_jboss" remoteSshSleep="${jboss.start.sleep}" />
     </target>
 
-    <target name="-remote-jboss:configure-jboss-ds">
+    <target name="-remote-jboss:configure-jboss-ds" unless="nodeploy">
         <echo message="Configuring caarray-mysql database..." />
         <mkdir dir="${target.dir}" />
         <copy todir="${target.dir}/deploy/" file="${common.resources.jboss.conf.dir}/${mysql.datasource.file}" />
@@ -2444,7 +2414,7 @@
         </xmlconfig>
     </target>
 
-    <target name="-remote-jboss:configure-jboss-mailservice">
+    <target name="-remote-jboss:configure-jboss-mailservice" unless="nodeploy">
         <echo message="Configuring jboss mail service..." />
         <mkdir dir="${target.dir}" />
         <copy todir="${target.dir}/deploy/" file="${common.resources.jboss.conf.dir}/${jboss-mail-service.file}">
@@ -2452,60 +2422,50 @@
         </copy>
     </target>
 
-    <target name="-remote-jboss:copy-jboss-config">
+    <target name="-remote-jboss:copy-jboss-config" unless="nodeploy">
         <echo message="Copying caarray-mysql configuration to jboss server at ${ssh.server.hostname}..." />
         <remote-scp remoteScpFileToCopy="${target.dir}/deploy/${mysql.datasource.file}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/deploy" />
     </target>
 
-    <target name="remote-jboss:copy-jboss-mailservice">
+    <target name="remote-jboss:copy-jboss-mailservice" unless="nodeploy">
         <echo message="Copying mail service configuration to jboss server at ${ssh.server.hostname}..." />
         <remote-scp remoteScpFileToCopy="${target.dir}/deploy/${jboss-mail-service.file}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/deploy" />
     </target>
 
-    <target name="-remote-jboss:copy-log4j-jar">
+    <target name="-remote-jboss:copy-log4j-jar" unless="nodeploy">
         <echo message="Copying ${project.lib}/${log4j.jar} to jboss lib folder at ${ssh.server.hostname}..." />
         <remote-scp remoteScpFileToCopy="${project.lib}/${log4j.jar}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/lib" />
         <delete dir="${temp.dir}" />
     </target>
 
-    <target name="-remote-jboss:deploy-caarray-temp">
+    <target name="-remote-jboss:deploy-caarray-temp" unless="nodeploy">
         <echo message="Copying caarray EAR to jboss temp folder ${jboss.temp.dir} at ${ssh.server.hostname}..." />
         <remote-scp remoteScpFileToCopy="${caarray.ear}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}" />
     </target>
 
-    <target name="remote-jboss:deploy-caarray" depends="-remote-jboss:deploy-caarray-temp">
+    <target name="remote-jboss:deploy-caarray" unless="nodeploy" depends="-remote-jboss:deploy-caarray-temp">
         <echo message="Deploying caarray EAR to jboss at http://${jboss.server.hostname}:${jboss.server.port}/caarray" />
         <remote-ssh remotesshcommand="mv ${jboss.temp.dir}/caarray.ear ${jboss.home}/deploy/" />
     </target>
 
-    <target name="remote-jboss:undeploy-caarray">
+    <target name="remote-jboss:undeploy-caarray" unless="nodeploy">
         <echo message="Undeploying caarray EAR, datasource and mail service config from jboss server at ${ssh.server.hostname}..." />
         <remote-ssh remotesshcommand="rm -rf ${jboss.home}/deploy/caarray.ear ${jboss.home}/deploy/${mysql.datasource.file} ${jboss.home}/deploy/${jboss-mail-service.file}" />
     </target>
 
-    <target name="remote-jboss:deploy" unless="nodeploy">
-        <antcall target="remote-jboss:stop" inheritAll="true" inheritRefs="true" />
-        <antcall target="remote-jboss:undeploy-caarray" inheritAll="true" inheritRefs="true" />
-        <antcall target="-remote-jboss:configure-jboss-ds" inheritAll="true" inheritRefs="true" />
-        <antcall target="-remote-jboss:configure-jboss-mailservice" inheritAll="true" inheritRefs="true" />
-        <antcall target="remote-jboss:deploy-caarray" inheritAll="true" inheritRefs="true" />
-        <antcall target="-remote-jboss:copy-jboss-config" inheritAll="true" inheritRefs="true" />
-        <antcall target="remote-jboss:copy-jboss-mailservice" inheritAll="true" inheritRefs="true" />
-        <antcall target="-remote-jboss:copy-log4j-jar" inheritAll="true" inheritRefs="true" />
-        <antcall target="remote-jboss:start" inheritAll="true" inheritRefs="true" />
-    </target>
+    <target name="remote-jboss:deploy" unless="nodeploy" depends="remote-jboss:stop,remote-jboss:undeploy-caarray,-remote-jboss:configure-jboss-ds,-remote-jboss:configure-jboss-mailservice,remote-jboss:deploy-caarray,-remote-jboss:copy-jboss-config,remote-jboss:copy-jboss-mailservice,-remote-jboss:copy-log4j-jar,remote-jboss:start"/>
 
-    <target name="remote-grid:stop">
+    <target name="remote-grid:stop" unless="nodeploy">
         <echo message="Stopping jboss server at ${ssh.grid.hostname}..." />
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="${globoss.server.instance.home}/bin/stop_jboss" remoteSshSleep="${jboss.stop.sleep}" />
     </target>
 
-    <target name="remote-grid:start">
+    <target name="remote-grid:start" unless="nodeploy">
         <echo message="Starting JBoss/Grid server at ${ssh.grid.hostname}..." />
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="${globoss.server.instance.home}/bin/start_jboss" remoteSshSleep="${jboss.start.sleep}" />
     </target>
 
-    <target name="-remote-grid:configure-jboss-with-globus">
+    <target name="-remote-grid:configure-jboss-with-globus" unless="nodeploy">
         <echo message="Installing Globus configuration into JBoss Grid server instance" />
         <remote-scp remoteScpFileToCopy="${jboss-globus-serverinstance-config.zip}" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.temp.dir}" />
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="unzip -o ${globoss.temp.dir}/jboss-globus-serverinstance-config.zip -d ${globoss.server.instance.home}" />
@@ -2517,7 +2477,7 @@
         <remote-scp remoteScpFileToCopy="${target.dir}/archFileReplace/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" />
     </target>
 
-    <target name="remote-grid:deploy-grid">
+    <target name="remote-grid:deploy-grid" unless="nodeploy">
         <echo message="Deploying Grid to jboss server at ${ssh.grid.hostname}..." />
 
         <property name="caarraysvc.temp.dir" value="${caarray-svc.dir}/build/cagrid_CaArraySvc" />
@@ -2537,18 +2497,12 @@
         <echo message="Caarray Grid successfully deployed to http://${globoss.server.hostname}:${globoss.server.http.port}/" />
     </target>
 
-    <target name="remote-grid:undeploy">
+    <target name="remote-grid:undeploy" unless="nodeploy">
         <echo message="Undeploying Grid instance from jboss server at ${ssh.grid.hostname}..." />
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="rm -rf ${globoss.server.instance.home}/deploy/wsrf.war ${globoss.server.instance.home}/lib/cog-jglobus.jar ${globoss.server.instance.home}/lib/cog-tomcat.jar ${globoss.server.instance.home}/lib/cryptix32.jar ${globoss.server.instance.home}/lib/cryptix.jar ${globoss.server.instance.home}/lib/cryptix-asn1.jar ${globoss.server.instance.home}/lib/jce-jdk13-125.jar ${globoss.server.instance.home}/lib/log4j-1.2.8.jar ${globoss.server.instance.home}/lib/puretls.jar" />
     </target>
 
-    <target name="remote-grid:deploy" unless="nodeploy">
-        <antcall target="remote-grid:stop" inheritAll="true" inheritRefs="true" />
-        <antcall target="remote-grid:undeploy" inheritAll="true" inheritRefs="true" />
-        <antcall target="-remote-grid:configure-jboss-with-globus" inheritAll="true" inheritRefs="true" />
-        <antcall target="remote-grid:deploy-grid" inheritAll="true" inheritRefs="true" />
-        <antcall target="remote-grid:start" inheritAll="true" inheritRefs="true" />
-    </target>
+    <target name="remote-grid:deploy" unless="nodeploy" depends="remote-grid:stop,remote-grid:undeploy,-remote-grid:configure-jboss-with-globus,remote-grid:deploy-grid,remote-grid:start"/>
 
     <!-- Tag property to display on front page -->
     <target name="build-tags" depends="-get-version-info, -command-build-with-tag, -build-with-tag, -build-without-tag" />
@@ -2597,14 +2551,15 @@
         <echoproperties />
     </target>
 
-    <target name="remote-deploy" depends="clean">
+    <target name="pre-build-checks">
         <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="pre-build-checks" />
-        <antcall target="validate-properties" inheritAll="true" inheritRefs="true" />
-        <antcall target="continuous-integration" inheritAll="true" inheritRefs="true" />
-        <antcall target="remote-jboss:deploy" inheritAll="true" inheritRefs="true" />
-        <antcall target="remote-grid:deploy" inheritAll="true" inheritRefs="true" />
+    </target>
+
+    <target name="post-build-checks">
         <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="post-build-checks" />
     </target>
+
+    <target name="remote-deploy" depends="clean,pre-build-checks,validate-properties,continuous-integration,remote-jboss:deploy,remote-grid:deploy,post-build-checks"/>
 
     <!-- ******************************************************************* -->
     <!-- ** DOCUMENATION TARGETS                                          ** -->
