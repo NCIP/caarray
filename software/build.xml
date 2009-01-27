@@ -56,6 +56,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 
     <property name="lib.dir" value="${basedir}/lib" />
     <property name="bda-utils.dir" value="${basedir}/bda-utils" />
+    <property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
 
     <property name="tools.dist.dir" value="${basedir}/tools"/>
     <property name="jboss.dest.file" value="${tools.dist.dir}/${jboss.binaries.file}"/>
@@ -67,8 +68,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 
     <!-- delegate retrieval of third-party dependencies -->
     <ant antfile="${basedir}/build/build.xml" inheritall="false" target="init:dependencies" dir="${basedir}">
-        <property name="local.repo.dir" value="${local.repo.dir}"/>
         <property name="clean.libs.and.ivy.cache" value="${clean.libs.and.ivy.cache}"/>
+        <property name="local.repo.dir" value="${local.repo.dir}"/>
+        <property name="force.ivy.retrieval" value="${force.ivy.retrieval}" />
     </ant>
 
     <!-- Paths -->

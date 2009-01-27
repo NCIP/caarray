@@ -114,7 +114,7 @@
     </condition>
 
     <ant antfile="caarray-ivy-build.xml" dir="${basedir}" inheritAll="true" inheritRefs="true">
-        <property name="clean.lib.and.cache" value="${clean.libs.and.ivy.cache}"/>
+        <property name="clean.libs.and.ivy.cache" value="${clean.libs.and.ivy.cache}"/>
         <property name="local.repo.dir" value="${local.repo.dir}"/>
         <property name="do.ivy.retrieval" value="${do.ivy.retrieval}" />
         <property name="ivy.cache.dir" value="${ivy.cache.dir}"/>
