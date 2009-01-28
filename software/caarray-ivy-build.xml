@@ -11,13 +11,17 @@
     <property name="caarray.ivy.settings.file" value="ivy-caarray-settings.xml"/>
     <property name="bda-utils.dir" value="${software.dir}/bda-utils"/>
 
+    <condition property="internal.clean.libs.and.ivy.cache" value="true">
+        <equals arg1="${clean.libs.and.ivy.cache}" arg2="true" casesensitive="false" trim="true"/>
+    </condition>
+
     <condition property="internal.do.ivy.retrieval" value="true">
         <equals arg1="${do.ivy.retrieval}" arg2="true" casesensitive="false" trim="true"/>
     </condition>
 
     <condition property="need.to.get.ivy.bootstrap.dependencies" value="true">
         <or>
-            <isset property="clean.libs.and.ivy.cache"/>
+            <isset property="internal.clean.libs.and.ivy.cache"/>
             <or>
                 <equals arg1="${internal.do.ivy.retrieval}" arg2="true" casesensitive="false" trim="true"/>
                 <not>
@@ -30,7 +34,7 @@
         </or>
     </condition>
 
-    <target name="clean-libs-and-ivy-cache" if="clean.libs.and.ivy.cache">
+    <target name="clean-libs-and-ivy-cache" if="internal.clean.libs.and.ivy.cache">
         <delete dir="${bda-utils.dir}"/>
         <delete dir="${lib.dir}"/>
         <delete dir="${ivy.cache.dir}"/>
