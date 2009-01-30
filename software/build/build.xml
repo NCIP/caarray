@@ -43,6 +43,7 @@
     <property name="caarray-common.test.files.dir" value="${caarray-common.dir}/src/test/resources" />
     <property name="caarray-common.target.dir" value="${caarray-common.dir}/target" />
     <property name="caarray-common.classes.dir" value="${caarray-common.target.dir}/classes" />
+    <mkdir dir="${caarray-common.classes.dir}" />
     <property name="caarray-common.instrumented.classes.dir" value="${caarray-common.target.dir}/instrumented-classes" />
     <property name="caarray-common.test.classes.dir" value="${caarray-common.target.dir}/test-classes" />
     <property name="caarray-common.jar" value="${caarray-common.target.dir}/caarray-common.jar" />
