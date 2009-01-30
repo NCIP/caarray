@@ -2596,20 +2596,28 @@
     <target name="remote-grid:deploy-grid" unless="nodeploy">
         <echo message="Deploying Grid to jboss server at ${ssh.grid.hostname}..." />
 
-        <property name="caarraysvc.temp.dir" value="${caarray-svc.dir}/build/cagrid_CaArraySvc" />
-        <mkdir dir="${caarraysvc.temp.dir}" />
-        <mkdir dir="${caarraysvc.temp.dir}/server/default/deploy/wsrf.war" />
+	   	<for param="version" list="${caarray-grid-svc.versions}">
+	    	<sequential>
+	            <var name="caarraysvc.temp.dir" value="${caarray-grid-svc.base.dir}/@{version}/build/cagrid_CaArraySvc_@{version}" />
+	            <mkdir dir="${caarraysvc.temp.dir}" />
+	            <mkdir dir="${caarraysvc.temp.dir}/server/default/deploy/wsrf.war" />
 
-        <ant dir="${caarray-svc.dir}" target="createDeploymentZip" inheritall="false">
-            <property name="jboss.dir" value="${caarraysvc.temp.dir}" />
-        </ant>
-        <property name="cagrid_CaArraySvc.zip" value="${caarray-svc.dir}/cagrid_CaArraySvc.zip" />
+	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="createDeploymentZip" inheritall="false">
+	                <property name="jboss.dir" value="${caarraysvc.temp.dir}" />
+	            </ant>
+	    		<var name="cagrid_CaArraySvc.zip" value="${caarray-grid-svc.base.dir}/@{version}/cagrid_CaArraySvc.zip" />
+	    		
+	            <!-- SCP create archive to jboss404 server -->
+	            <remote-scp remoteScpFileToCopy="${cagrid_CaArraySvc.zip}" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.temp.dir}" />
 
-        <!-- SCP create archive to jboss404 server -->
-        <remote-scp remoteScpFileToCopy="${cagrid_CaArraySvc.zip}" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.temp.dir}" />
-
-        <!-- explode archive to ${globoss.server.instance.home}/deploy/wsrf.war -->
-        <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="unzip -o ${globoss.temp.dir}/cagrid_CaArraySvc.zip -d ${globoss.server.instance.home}/deploy/wsrf.war" />
+	            <!-- explode archive to ${globoss.server.instance.home}/deploy/wsrf.war -->
+	            <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="unzip -o ${globoss.temp.dir}/cagrid_CaArraySvc.zip -d ${globoss.server.instance.home}/deploy/wsrf.war" />
+	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="jars" inheritall="false">
+	                <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
+	                <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
+	            </ant>
+	 		</sequential>
+	   	</for>	
         <echo message="Caarray Grid successfully deployed to http://${globoss.server.hostname}:${globoss.server.http.port}/" />
     </target>
 
