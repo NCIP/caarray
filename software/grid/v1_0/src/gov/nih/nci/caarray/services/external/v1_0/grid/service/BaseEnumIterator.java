@@ -120,7 +120,7 @@ public abstract class BaseEnumIterator<T> implements EnumIterator {
             if (jndiUrl == null) {
                 throw new RemoteException("Could not connect to server: invalid JNDI configuration");
             }
-            this.caArrayServer = new CaArrayServer("localhost", 1099);
+            this.caArrayServer = new CaArrayServer(jndiUrl);
             caArrayServer.connect();
         } catch (ServerConnectionException e) {
             throw new RemoteException("Could not connect to server", e);
