@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.criterion.Order;
@@ -175,5 +176,10 @@ public class GenericDataServiceStub implements GenericDataService {
      */
     public PersistentObject getSavedObject() {
         return this.savedObject;
+    }
+
+    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, int maxResults, int firstResult,
+            Order... orders) throws IllegalAccessException, InstantiationException {
+        return Collections.emptyList();
     }
 }

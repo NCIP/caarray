@@ -60,9 +60,11 @@
 
         <dependency conf="project" name="c3p0" org="c3p0" rev="0.9.0"/>
 
-        <dependency conf="project" name="data" org="cagrid" rev="1.1"/>
+        <dependency conf="project" name="core" org="cagrid" rev="1.2"/>
 
-        <dependency conf="project" name="sdkQuery32" org="cagrid" rev="1.1"/>
+        <dependency conf="project" name="data" org="cagrid" rev="1.2"/>
+
+        <dependency conf="project" name="sdkQuery32" org="cagrid" rev="1.2"/>
 
         <dependency conf="project" name="cql" org="cagrid" rev="1.0-1.2"/>
 
@@ -214,7 +216,7 @@
 
         <dependency conf="project" name="serializer" org="apache" rev="2.7.1"/>
 
-        <dependency conf="project" name="castor" org="org.codehaus.castor" rev="1.0.2"/>
+        <dependency conf="project" name="castor" org="org.codehaus.castor" rev="1.0.4"/>
 
         <dependency conf="project" name="mail" org="javax.mail" rev="1.2"/>
 
@@ -250,6 +252,9 @@
 
         <dependency conf="project" name="yuicompressor" org="com.yahoo" rev="2.3.5"/>
 
+        <dependency conf="project" name="dozer" org="dozer" rev="4.2.1"/>
+
+        <dependency conf="project" name="rmiio" org="com.healthmarketscience" rev="2.0.2"/>
     </dependencies>
 
 </ivy-module>

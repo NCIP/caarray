@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.example;
 
-import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.cqlquery.Object;
@@ -131,15 +131,22 @@ public class GridApiExample {
             CQLQuery cqlQuery = new CQLQuery();
             Object target = new Object();
             cqlQuery.setTarget(target);
-            target.setName(QuantitationType.class.getName());
-            CQLQueryResults results = client.query(cqlQuery);
-            CQLQueryResultsIterator iterator = new CQLQueryResultsIterator(results,
-                    GridApiExample.class.getResourceAsStream("/client-config.wsdd"));
-            while (iterator.hasNext()) {
-                QuantitationType type = (QuantitationType) iterator.next();
-                System.out.println(type);
-            }
-            System.out.println("Successfully ran query");
+//            target.setName(QuantitationType.class.getName());
+//            CQLQueryResults results = client.query(cqlQuery);
+//            CQLQueryResultsIterator iterator = new CQLQueryResultsIterator(results,
+//                    CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
+//            while (iterator.hasNext()) {
+//                QuantitationType type = (QuantitationType) iterator.next();
+//                System.out.println(type);
+//            }
+            target.setName(Experiment.class.getName());
+          CQLQueryResults results = client.query(cqlQuery);
+          CQLQueryResultsIterator iterator = new CQLQueryResultsIterator(results,
+                  CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
+          while (iterator.hasNext()) {
+              Experiment e = (Experiment) iterator.next();
+              System.out.println("Experiment: " + e.getPublicIdentifier());
+          }
         } catch (MalformedURIException e) {
             System.err.println("Received MalformedURIException");
             e.printStackTrace(System.err);

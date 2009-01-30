@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.project;
 
+import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
@@ -95,6 +96,8 @@ import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
+import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -351,6 +354,15 @@ public interface ProjectManagementService {
     List<Project> searchByCategory(PageSortParams<Project> params, String keyword, SearchCategory... categories);
 
     /**
+     * Performs a query for experiments by the given criteria.
+     *
+     * @param params paging and sorting parameters
+     * @param criteria the criteria for the search
+     * @return a list of matching experiments
+     */
+    List<Experiment> searchByCriteria(PageSortParams<Experiment> params, ExperimentSearchCriteria criteria);
+
+    /**
      * Gets the count of search results matching the given keyword.
      *
      * @param keyword keyword to search for
@@ -472,5 +484,18 @@ public interface ProjectManagementService {
      */
     int searchCount(String keyword, BiomaterialSearchCategory... categories);
 
+    /**
+     * @return all principal investigators in the system, e.g. all persons that are a contact with the 
+     * principal investigator role for some experiment
+     */
+    List<Person> getAllPrincipalInvestigators();
 
+    /**
+     * Performs a query for files by the given criteria.
+     *
+     * @param params paging and sorting parameters
+     * @param criteria the criteria for the search
+     * @return a list of matching files
+     */
+    List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria);
 }

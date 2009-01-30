@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -95,7 +94,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Example;
@@ -103,6 +101,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * Base DAO implementation for all caArray domain DAOs.
@@ -183,9 +182,17 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, boolean excludeNulls,
             String[] excludeProperties, Order... order) {
+        return queryEntityByExample(entityToMatch, mode, excludeNulls, excludeProperties, -1, 0, order);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, boolean excludeNulls, //NOPMD
+            String[] excludeProperties, int maxResults, int firstResult, Order... orders) {
         if (entityToMatch == null) {
             return new ArrayList<T>();
         }
@@ -204,16 +211,21 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
                 example.excludeProperty(property);
             }
             criteria.add(example);
-            for (Order curretOrder : order) {
+            for (Order curretOrder : orders) {
                 criteria.addOrder(curretOrder);
             }
+            if (maxResults > 0) {
+                criteria.setMaxResults(maxResults);
+            }
+            criteria.setFirstResult(firstResult);
             return criteria.list();
         } catch (HibernateException he) {
             getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
             throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
         }
-    }
 
+    };
+    
     /**
      * {@inheritDoc}
      */
@@ -275,18 +287,9 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     public void evictObject(Object object) {
         HibernateUtil.getCurrentSession().evict(object);
     }
-
-    AbstractCaArrayEntity getEntityByLsid(Class entityClass, String lsidAuthority, String lsidNamespace,
-            String lsidObjectId) {
-        Query q = HibernateUtil.getCurrentSession().createQuery(
-                    "from "
-                    + entityClass.getName()
-                    + " where lsidAuthority = :lsidAuthority and lsidNamespace = :lsidNamespace "
-                    + "and lsidObjectId = :lsidObjectId");
-        q.setString("lsidAuthority", lsidAuthority);
-        q.setString("lsidNamespace", lsidNamespace);
-        q.setString("lsidObjectId", lsidObjectId);
-        return (AbstractCaArrayEntity) q.uniqueResult();
+    
+    static Order toOrder(PageSortParams<?> params) {
+        String orderField = params.getSortCriterion().getOrderField();
+        return params.isDesc() ? Order.desc(orderField) : Order.asc(orderField);
     }
-
 }

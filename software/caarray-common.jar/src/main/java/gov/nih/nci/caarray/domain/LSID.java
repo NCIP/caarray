@@ -117,6 +117,35 @@ public final class LSID implements Serializable {
         this.namespace = namespace.intern();
         this.objectId = objectId;
     }
+    
+    /**
+     * Sets the LSID components for this entity.
+     * If the authority and namespace are both absent, the default caArray authority
+     * and namespace will be used. The LSID string is of the form authority:namespace:objectId
+     * where authority can be absent, or authority and namespace can both be absent.
+     *
+     * @param lsidString the LSID string
+     */
+    public LSID(String lsidString) {
+        String[] lsidPortions = lsidString.split(":");
+        int lsidIndex = lsidPortions.length - 1;
+        this.objectId = lsidPortions[lsidIndex];
+        lsidIndex--;
+        if (lsidIndex < 0) {
+            // No explicit namespace provided. The name is assumed to be in the local (caArray) namespace.
+            this.authority = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;
+            this.namespace = AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE;
+        } else {
+            this.namespace = lsidPortions[lsidIndex];
+            lsidIndex--;
+            if (lsidIndex >= 0) {
+                this.authority = lsidPortions[lsidIndex];
+            } else {
+                this.authority = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;                
+            }
+        }
+    }
+
 
     /**
      * @return the authority

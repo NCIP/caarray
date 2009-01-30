@@ -115,6 +115,23 @@ public interface GenericDataService extends com.fiveamsolutions.nci.commons.serv
         throws IllegalAccessException, InstantiationException;
 
     /**
+     * Retrieves the given number of instances of the given class, starting with the given index, out of all
+     * the instances in the persistent store.
+     * @param <T> the type of the entity to retrieve
+     * @param entityClass the class of the entity to retrieve
+     * @param maxResults number of entities to retrieve. A negative or 0 value would indicate no limit.
+     * @param firstResult 0-based index of first entity to retrieve, given the ordering specified.
+     * @param orders the order by clauses. these may not be specified, but in that case the ordering used to 
+     * figure out which entity to start with is undefined. 
+     * @return the list of instances. If maxResults was greater than 0, the list will have at most 
+     * maxResults elements, but may have less.
+     * @throws IllegalAccessException if entityClass.newInstance fails
+     * @throws InstantiationException if entityClass.newInstance fails
+     */
+    <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, int maxResults, int firstResult,
+            Order... orders) throws IllegalAccessException, InstantiationException;
+
+    /**
      * Retrieves all instances of the given class with given ids.
      * @param <T> the type of the entity to retrieve
      * @param entityClass the class of the entity to retrieve

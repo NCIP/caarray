@@ -82,7 +82,9 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.data.QueryProcessingException;
@@ -178,6 +180,21 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         return (T) getCurrentSession().get(entityClass, entityId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public <T extends AbstractCaArrayEntity> T getEntityByLsid(Class<T> entityClass, LSID lsid) {
+        Query q = HibernateUtil.getCurrentSession().createQuery(
+                "from " + entityClass.getName()
+                        + " where lsidAuthority = :lsidAuthority and lsidNamespace = :lsidNamespace "
+                        + "and lsidObjectId = :lsidObjectId");
+        q.setString("lsidAuthority", lsid.getAuthority());
+        q.setString("lsidNamespace", lsid.getNamespace());
+        q.setString("lsidObjectId", lsid.getObjectId());
+        return (T) q.uniqueResult();
+    } 
+    
     /**
      * {@inheritDoc}
      */

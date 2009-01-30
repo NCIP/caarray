@@ -357,6 +357,18 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     }
 
     /**
+     * Returns an input stream to access the compressed contents of the file.
+     *
+     * @return the input stream to read. This will return the GZIPed contents of the file
+     * @throws IOException if the contents couldn't be accessed.
+     */
+    public InputStream readCompressedContents() throws IOException {
+        // the appropriate method on multi-part blob is, confusingly, named readUncompressedContents
+        // so the below is not a bug
+        return this.multiPartBlob.readUncompressedContents();
+    }
+
+    /**
      * @return the multiPartBlob
      */
     @Embedded

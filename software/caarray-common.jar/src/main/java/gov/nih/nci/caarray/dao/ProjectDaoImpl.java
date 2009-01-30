@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.dao;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
@@ -92,6 +93,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
@@ -114,6 +116,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -266,6 +270,40 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
         q.setString("keyword", "%" + keyword + "%");
         return q;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings({UNCHECKED, "PMD.NPathComplexity" })
+    public List<Experiment> searchByCriteria(PageSortParams<Experiment> params, ExperimentSearchCriteria criteria) {
+        Criteria c = HibernateUtil.getCurrentSession().createCriteria(Experiment.class);
+        Junction junction = criteria.isAnd() ? Restrictions.conjunction() : Restrictions.disjunction();
+        c.add(junction);
+        if (criteria.getTitle() != null) {
+            junction.add(Restrictions.eq("title", criteria.getTitle()));
+        }
+        if (criteria.getOrganisms() != null && !criteria.getOrganisms().isEmpty()) {
+            junction.add(Restrictions.in("organism", criteria.getOrganisms()));
+        }
+        if (criteria.getAssayType() != null) {
+            junction.add(Restrictions.eq("assayType", criteria.getAssayType().name()));
+        }
+        if (criteria.getArrayProvider() != null) {
+            junction.add(Restrictions.eq("manufacturer", criteria.getArrayProvider()));
+        }
+        if (criteria.getPrincipalInvestigator() != null) {
+            c.createAlias("experimentContacts", "ec", CriteriaSpecification.LEFT_JOIN);
+            c.createAlias("ec.roles", "r", CriteriaSpecification.LEFT_JOIN);
+            junction.add(Restrictions.and(Restrictions.eq("ec.person", criteria.getPrincipalInvestigator()),
+                    Restrictions.eq("r.value", ExperimentContact.PI_ROLE)));
+        }
+        c.setFirstResult(params.getIndex());
+        if (params.getPageSize() > 0) {
+            c.setMaxResults(params.getPageSize());
+        }
+        c.addOrder(toOrder(params));
+        return c.list();
     }
 
     private static String getJoinClause(SearchCategory... categories) {

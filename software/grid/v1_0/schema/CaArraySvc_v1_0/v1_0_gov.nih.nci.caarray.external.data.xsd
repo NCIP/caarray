@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dat="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"
+    xmlns:car="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
+    targetNamespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" elementFormDefault="qualified">
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.xsd" />
+
+     <xs:simpleType name="DataType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BOOLEAN"/>
+			<xs:enumeration value="LONG"/>
+			<xs:enumeration value="SHORT"/>
+			<xs:enumeration value="STRING"/>
+			<xs:enumeration value="INTEGER"/>
+			<xs:enumeration value="FLOAT"/>
+			<xs:enumeration value="DOUBLE"/>
+		</xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="QuantitationType" type="dat:QuantitationType" />
+    <xs:complexType name="QuantitationType">
+        <xs:complexContent>
+            <xs:extension base="car:AbstractCaArrayEntity">
+		<xs:attribute name="dataType" type="dat:DataType" />
+		<xs:attribute name="name" type="xs:string" />
+	    </xs:extension>
+	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="AbstractDataColumn" type="dat:AbstractDataColumn" />
+    <xs:complexType name="AbstractDataColumn">
+		<xs:sequence>
+        	<xs:element name="quantitationType" minOccurs="0" maxOccurs="1" type="dat:QuantitationType" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="ShortColumn" type="dat:ShortColumn" />
+    <xs:complexType name="ShortColumn">
+        <xs:complexContent>
+            <xs:extension base="dat:AbstractDataColumn">
+                <xs:sequence>
+		        	<xs:element name="values">        	
+        		    	<xs:complexType>            	
+                			<xs:sequence>
+                    			<xs:element name="short" minOccurs="0" maxOccurs="unbounded" type="xs:short"/>
+		                    </xs:sequence>
+        		        </xs:complexType>
+            		</xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="LongColumn" type="dat:LongColumn" />
+    <xs:complexType name="LongColumn">
+        <xs:complexContent>
+            <xs:extension base="dat:AbstractDataColumn">
+                <xs:sequence>
+		        	<xs:element name="values">        	
+        		    	<xs:complexType>            	
+                			<xs:sequence>
+                    			<xs:element name="long" minOccurs="0" maxOccurs="unbounded" type="xs:long"/>
+		                    </xs:sequence>
+        		        </xs:complexType>
+            		</xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="BooleanColumn" type="dat:BooleanColumn" />
+    <xs:complexType name="BooleanColumn">
+        <xs:complexContent>
+            <xs:extension base="dat:AbstractDataColumn">
+                <xs:sequence>
+		        	<xs:element name="values">        	
+        		    	<xs:complexType>            	
+                			<xs:sequence>
+                    			<xs:element name="boolean" minOccurs="0" maxOccurs="unbounded" type="xs:boolean"/>
+		                    </xs:sequence>
+        		        </xs:complexType>
+            		</xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="FloatColumn" type="dat:FloatColumn" />
+    <xs:complexType name="FloatColumn">
+        <xs:complexContent>
+            <xs:extension base="dat:AbstractDataColumn">
+                <xs:sequence>
+		        	<xs:element name="values">        	
+        		    	<xs:complexType>            	
+                			<xs:sequence>
+                    			<xs:element name="float" minOccurs="0" maxOccurs="unbounded" type="xs:float"/>
+		                    </xs:sequence>
+        		        </xs:complexType>
+            		</xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="StringColumn" type="dat:StringColumn" />
+    <xs:complexType name="StringColumn">
+        <xs:complexContent>
+            <xs:extension base="dat:AbstractDataColumn">
+                <xs:sequence>
+		        	<xs:element name="values">        	
+        		    	<xs:complexType>            	
+                			<xs:sequence>
+                    			<xs:element name="string" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+		                    </xs:sequence>
+        		        </xs:complexType>
+            		</xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="DoubleColumn" type="dat:DoubleColumn" />
+    <xs:complexType name="DoubleColumn">
+        <xs:complexContent>
+            <xs:extension base="dat:AbstractDataColumn">
+                <xs:sequence>
+		        	<xs:element name="values">        	
+        		    	<xs:complexType>            	
+                			<xs:sequence>
+                    			<xs:element name="double" minOccurs="0" maxOccurs="unbounded" type="xs:double"/>
+		                    </xs:sequence>
+        		        </xs:complexType>
+            		</xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="IntegerColumn" type="dat:IntegerColumn" />
+    <xs:complexType name="IntegerColumn">
+        <xs:complexContent>
+            <xs:extension base="dat:AbstractDataColumn">
+                <xs:sequence>
+		        	<xs:element name="values">        	
+        		    	<xs:complexType>            	
+                			<xs:sequence>
+                    			<xs:element name="int" minOccurs="0" maxOccurs="unbounded" type="xs:int"/>
+		                    </xs:sequence>
+        		        </xs:complexType>
+            		</xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:element name="HybridizationData" type="dat:HybridizationData" />
+    <xs:complexType name="HybridizationData">
+    	<xs:sequence>
+        	<xs:element name="columns">        	
+            	<xs:complexType>            	
+                	<xs:sequence>
+                    	<xs:element ref="dat:AbstractDataColumn" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>    
+
+    <xs:element name="DesignElement" type="dat:DesignElement" />
+    <xs:complexType name="DesignElement">
+		<xs:sequence/>
+        <xs:attribute name="name" type="xs:string" />
+    </xs:complexType>    
+
+    <xs:element name="DataSet" type="dat:DataSet" />
+    <xs:complexType name="DataSet">
+    	<xs:sequence>
+        	<xs:element name="designElements">        	
+            	<xs:complexType>            	
+                	<xs:sequence>
+                    	<xs:element ref="dat:DesignElement" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        	<xs:element name="quantitationTypes">
+            	<xs:complexType>            	
+                	<xs:sequence>
+                    	<xs:element ref="dat:QuantitationType" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        	<xs:element name="datas">
+            	<xs:complexType>            	
+                	<xs:sequence>
+                    	<xs:element ref="dat:HybridizationData" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>    
+
+    <xs:element name="FileType" type="dat:FileType" />
+    <xs:complexType name="FileType">
+        <xs:complexContent>
+            <xs:extension base="car:AbstractCaArrayEntity">
+                <xs:sequence/>
+		<xs:attribute name="name" type="xs:long" />
+		<xs:attribute name="raw" type="xs:boolean" />
+	    </xs:extension>
+	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="DataFile" type="dat:DataFile" />
+    <xs:complexType name="DataFile">
+        <xs:complexContent>
+            <xs:extension base="car:AbstractCaArrayEntity">
+                <xs:sequence>
+                    <xs:element name="fileType" minOccurs="0" maxOccurs="1" type="dat:FileType" />
+                </xs:sequence>
+		<xs:attribute name="compressedSize" type="xs:long" />
+		<xs:attribute name="uncompressedSize" type="xs:long" />
+		<xs:attribute name="name" type="xs:string" />
+	    </xs:extension>
+	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="DataFileContents" type="dat:DataFileContents" />
+    <xs:complexType name="DataFileContents">
+    	<xs:sequence>
+        	<xs:element name="fileMetadata" minOccurs="1" maxOccurs="1" type="dat:DataFile" />
+			<xs:element name="contents" minOccurs="1" maxOccurs="1" type="xs:base64Binary" />
+        </xs:sequence>
+		<xs:attribute name="compressed" type="xs:boolean" />
+    </xs:complexType>
+ </xs:schema>

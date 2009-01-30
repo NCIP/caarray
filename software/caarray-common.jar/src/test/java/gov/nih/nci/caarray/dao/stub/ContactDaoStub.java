@@ -84,8 +84,10 @@ package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.contact.Person;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -97,5 +99,9 @@ public class ContactDaoStub extends AbstractDaoStub implements ContactDao {
      */
     public List<Organization> getAllProviders() {
         return new ArrayList<Organization>();
+    }
+
+    public List<Person> getAllPrincipalInvestigators() {
+        return Collections.emptyList();
     }
 }

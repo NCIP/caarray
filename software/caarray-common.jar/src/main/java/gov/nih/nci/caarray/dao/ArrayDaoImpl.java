@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
@@ -289,14 +290,16 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      * {@inheritDoc}
      */
     public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        return (DesignElementList) getEntityByLsid(DesignElementList.class, lsidAuthority, lsidNamespace, lsidObjectId);
+        return CaArrayDaoFactory.INSTANCE.getSearchDao().getEntityByLsid(DesignElementList.class,
+                new LSID(lsidAuthority, lsidNamespace, lsidObjectId));
     }
 
     /**
      * {@inheritDoc}
      */
     public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        return (ArrayDesign) getEntityByLsid(ArrayDesign.class, lsidAuthority, lsidNamespace, lsidObjectId);
+        return CaArrayDaoFactory.INSTANCE.getSearchDao().getEntityByLsid(ArrayDesign.class,
+                new LSID(lsidAuthority, lsidNamespace, lsidObjectId));
     }
 
     /**

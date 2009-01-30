@@ -160,6 +160,25 @@ public interface CaArrayDao {
             Order... order);
 
     /**
+     * Returns A subset of entities matching the given entity by example, starting with the given result number and 
+     * returning at most the given number of results.
+     *
+     * @param <T> entity type
+     * @param example get objects matching this entity. A by-example query is used to match the entity.
+     * @param matchMode string comparison mode for string fields
+     * @param excludeNulls whether to exclude null properties from the query (ie not consider them at all, rather
+     * than including an is null check for them)
+     * @param excludeProperties a list of additional properties to exclude from the query.
+     * @param maxResults maximum number of results to return. A negative or 0 value would indicate no limit.
+     * @param firstResult index of first result to return
+     * @param orders list or order by clauses to add
+     * @return the List of objects, or an empty List. If maxResults was greater than 0, the list will have at most 
+     * maxResults elements, but may have less.
+     */
+    <T> List<T> queryEntityByExample(T example, MatchMode matchMode, boolean excludeNulls, //NOPMD
+            String[] excludeProperties, int maxResults, int firstResult, Order... orders);
+
+    /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
      * and its associations, or null if none exists.  This method ignores collection associations
      * (ie, one-to-many), but handles non-collection associations such as many-to-one or

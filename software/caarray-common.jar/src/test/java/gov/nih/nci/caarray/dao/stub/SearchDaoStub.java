@@ -83,7 +83,9 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.io.Serializable;
@@ -195,6 +197,10 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
      * {@inheritDoc}
      */
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders) {
+        return null;
+    }
+
+    public <T extends AbstractCaArrayEntity> T getEntityByLsid(Class<T> entityClass, LSID lsid) {
         return null;
     }
 }

@@ -83,6 +83,9 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.contact.Person;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentContact;
 
 import java.util.List;
 
@@ -108,5 +111,15 @@ class ContactDaoImpl extends AbstractCaArrayDaoImpl implements ContactDao {
     @Override
     Logger getLog() {
         return LOG;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<Person> getAllPrincipalInvestigators() {
+        return getCurrentSession().createQuery("select distinct p FROM " + Experiment.class.getName()
+                + " e join e.experimentContacts ec join ec.roles r join ec.contact p " 
+                + " where r.value = :piRole").setString("piRole", ExperimentContact.PI_ROLE).list();
     }
 }

@@ -197,21 +197,17 @@ public abstract class AbstractCaArrayEntity extends AbstractCaArrayObject {
      * @param lsidString the LSID string
      */
     public void setLsidForEntity(String lsidString) {
-        String[] lsidPortions = lsidString.split(":");
-        int lsidIndex = lsidPortions.length - 1;
-        setLsidObjectId(lsidPortions[lsidIndex]);
-        lsidIndex--;
-        if (lsidIndex < 0) {
-            // No explicit namespace provided. The name is assumed to be in the local (caArray) namespace.
-            setLsidAuthority(AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY);
-            setLsidNamespace(AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE);
-        } else {
-            setLsidNamespace(lsidPortions[lsidIndex]);
-            lsidIndex--;
-            if (lsidIndex >= 0) {
-                setLsidAuthority(lsidPortions[lsidIndex]);
-            }
-        }
+        setLsid(new LSID(lsidString));
+    }
+
+    /**
+     * Set the LSID for this entity.
+     * @param lsid the LSID to set.
+     */
+    public void setLsid(LSID lsid) {
+        setLsidAuthority(lsid.getAuthority());
+        setLsidNamespace(lsid.getNamespace());
+        setLsidObjectId(lsid.getObjectId());
     }
 
     /**

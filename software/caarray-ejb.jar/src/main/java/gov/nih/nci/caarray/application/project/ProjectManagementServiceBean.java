@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SampleDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -107,6 +108,8 @@ import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
+import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -132,6 +135,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
@@ -606,6 +610,12 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    public List<Experiment> searchByCriteria(PageSortParams<Experiment> params, ExperimentSearchCriteria criteria) {
+        return getProjectDao().searchByCriteria(params, criteria);
+    }
+    /**
+     * {@inheritDoc}
+     */
     public List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c) {
         return getSampleDao().searchSamplesByExperimentAndCategory(keyword, e, c);
     }
@@ -708,10 +718,22 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public int searchCount(String keyword, BiomaterialSearchCategory... categories) {
         return getSampleDao().searchCount(keyword, categories);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public List<Person> getAllPrincipalInvestigators() {
+        return this.daoFactory.getContactDao().getAllPrincipalInvestigators();
+    }
 
-
+    /**
+     * {@inheritDoc}
+     */
+    public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {
+        throw new NotImplementedException("To be implemented");
+    }
+    
     private SearchDao getSearchDao() {
         return this.daoFactory.getSearchDao();
     }
-
 }

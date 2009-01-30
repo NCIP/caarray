@@ -144,7 +144,6 @@ public interface FileManagementService {
      * @param arrayDesign the array design object
      */
     void importArrayDesignDetails(ArrayDesign arrayDesign);
-
     /**
      * Takes a idf file(s), and all files associated to the project,
      * finds the sdrf file associated with the idf from the list,

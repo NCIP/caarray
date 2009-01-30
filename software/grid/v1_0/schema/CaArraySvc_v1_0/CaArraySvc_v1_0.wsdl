@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0" xmlns:wsrp="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.xsd" xmlns:wsrlw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceLifetime-1.2-draft-01.wsdl" xmlns:wsdlpp="http://www.globus.org/namespaces/2004/10/WSDLPreprocessor" xmlns:gtwsdl1="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ServiceGroup-1.2-draft-01.wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing" xmlns:wsntw="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.wsdl" xmlns:wsrbfw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" xmlns:wsrpw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns2="http://gov.nih.nci.cagrid.data/DataService" xmlns:wns0="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns1="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" xmlns:ns16="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/CQLResultTypes" xmlns:ns14="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery" xmlns:ns12="http://transfer.cagrid.org/Transfer" xmlns:ns7="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" xmlns:ns9="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:ns18="http://gov.nih.nci.cagrid.data/DataServiceExceptions" xmlns:ns17="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice" xmlns:ns10="http://gov.nih.nci.cagrid.enumeration/EnumerationResponseContainer" xmlns:ns6="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" xmlns:ns8="http://schemas.xmlsoap.org/ws/2004/09/enumeration" xmlns:ns0="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment" xmlns:ns2="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary" xmlns:ns11="http://transfer.cagrid.org/TransferService/Context/types" xmlns:ns15="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet" xmlns:ns3="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" xmlns:ns5="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/types" xmlns:ns13="http://gov.nih.nci.cagrid.enumeration/CaGridEnumeration/types" xmlns:ns1="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external" xmlns:ns4="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" name="CaArraySvc_v1_0" targetNamespace="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0">
+  <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" location="../wsrf/properties/WS-ResourceProperties.wsdl" />
+  <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" location="../wsrf/faults/WS-BaseFaults.wsdl" />
+  <import namespace="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.wsdl" location="../wsrf/notification/WS-BaseN.wsdl" />
+  <import namespace="http://gov.nih.nci.cagrid.data/DataService" location="./DataService.wsdl" />
+  <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" location="./../wsrf/properties/WS-ResourceProperties.wsdl" />
+  <import namespace="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" location="./ServiceSecurity.wsdl" />
+  <!--============================================================
+
+                      T Y P E S
+                      
+  ============================================================-->
+  <types>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wsrbf="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.xsd" targetNamespace="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+      <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.xsd" schemaLocation="../wsrf/faults/WS-BaseFaults.xsd" />
+      <import namespace="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/CQLResultTypes" schemaLocation="./CaArraySvc_v1_0_CQLResultTypes.xsd" />
+      <import namespace="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery" schemaLocation="./1_gov.nih.nci.cagrid.CQLQuery.xsd" />
+      <import namespace="http://transfer.cagrid.org/Transfer" schemaLocation="./caGrid_Transfer.xsd" />
+      <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" schemaLocation="./xsd/cagrid/types/caGridMetadata.xsd" />
+      <import namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing" schemaLocation="./addressing.xsd" />
+      <import namespace="http://gov.nih.nci.cagrid.data/DataServiceExceptions" schemaLocation="./DataServiceExceptions.xsd" />
+      <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice" schemaLocation="./xsd/cagrid/types/data/data.xsd" />
+      <import namespace="http://gov.nih.nci.cagrid.enumeration/EnumerationResponseContainer" schemaLocation="./EnumerationResponseContainer.xsd" />
+      <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" schemaLocation="./xsd/cagrid/types/security/security.xsd" />
+      <import namespace="http://schemas.xmlsoap.org/ws/2004/09/enumeration" schemaLocation="./enumeration.xsd" />
+      <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment" schemaLocation="./v1_0_gov.nih.nci.caarray.external.experiment.xsd" />
+      <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary" schemaLocation="./v1_0_gov.nih.nci.caarray.external.vocabulary.xsd" />
+      <import namespace="http://transfer.cagrid.org/TransferService/Context/types" schemaLocation="./TransferServiceContextTypes.xsd" />
+      <import namespace="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet" schemaLocation="./1_gov.nih.nci.cagrid.CQLResultSet.xsd" />
+      <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" schemaLocation="./v1_0_gov.nih.nci.caarray.external.query.xsd" />
+      <import namespace="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/types" schemaLocation="./CaArraySvc_v1_0Types.xsd" />
+      <import namespace="http://gov.nih.nci.cagrid.enumeration/CaGridEnumeration/types" schemaLocation="./CaGridEnumerationTypes.xsd" />
+      <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external" schemaLocation="./v1_0_gov.nih.nci.caarray.external.xsd" />
+      <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" schemaLocation="./v1_0_gov.nih.nci.caarray.external.data.xsd" />
+      <element name="GetAllOrganismsRequest">
+        <complexType>
+          <sequence />
+        </complexType>
+      </element>
+      <element name="GetAllOrganismsResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns0:Organism" minOccurs="1" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForExperimentsRequest">
+        <complexType>
+          <sequence>
+            <element name="criteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns3:ExperimentSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForExperimentsResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns0:Experiment" minOccurs="1" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetAllPrincipalInvestigatorsRequest">
+        <complexType>
+          <sequence />
+        </complexType>
+      </element>
+      <element name="GetAllPrincipalInvestigatorsResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns0:Person" minOccurs="1" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetAllFileTypesRequest">
+        <complexType>
+          <sequence />
+        </complexType>
+      </element>
+      <element name="GetAllFileTypesResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns4:FileType" minOccurs="1" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetByReferenceRequest">
+        <complexType>
+          <sequence>
+            <element name="reference">
+              <complexType>
+                <sequence>
+                  <element ref="ns1:CaArrayEntityReference" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetByReferenceResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns1:AbstractCaArrayEntity" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetByReferencesRequest">
+        <complexType>
+          <sequence>
+            <element name="references">
+              <complexType>
+                <sequence>
+                  <element ref="ns1:CaArrayEntityReference" minOccurs="1" maxOccurs="unbounded" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetByReferencesResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns1:AbstractCaArrayEntity" minOccurs="1" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateOrganismsRequest">
+        <complexType>
+          <sequence />
+        </complexType>
+      </element>
+      <element name="EnumerateOrganismsResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns10:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateExperimentsRequest">
+        <complexType>
+          <sequence>
+            <element name="experimentSearchCriteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns3:ExperimentSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateExperimentsResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns10:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetFileContentsZipTransferRequest">
+        <complexType>
+          <sequence>
+            <element name="fileDownloadRequest">
+              <complexType>
+                <sequence>
+                  <element ref="ns3:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="compressIndividually" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetFileContentsZipTransferResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns11:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetFileContentsTransfersRequest">
+        <complexType>
+          <sequence>
+            <element name="fileDownloadRequest">
+              <complexType>
+                <sequence>
+                  <element ref="ns3:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="compress" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetFileContentsTransfersResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns11:TransferServiceContextReference" minOccurs="1" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateFileContentsRequest">
+        <complexType>
+          <sequence>
+            <element name="fileDownloadRequest">
+              <complexType>
+                <sequence>
+                  <element ref="ns3:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="compress" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateFileContentsResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns10:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateFileContentTransfersRequest">
+        <complexType>
+          <sequence>
+            <element name="fileDownloadRequest">
+              <complexType>
+                <sequence>
+                  <element ref="ns3:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="compress" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateFileContentTransfersResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns10:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetFileContentsTransferRequest">
+        <complexType>
+          <sequence>
+            <element name="fileRef">
+              <complexType>
+                <sequence>
+                  <element ref="ns1:CaArrayEntityReference" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="compress" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetFileContentsTransferResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns11:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetFileContentsRequest">
+        <complexType>
+          <sequence>
+            <element name="fileRef">
+              <complexType>
+                <sequence>
+                  <element ref="ns1:CaArrayEntityReference" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="compress" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetFileContentsResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns4:DataFileContents" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetDataSetRequest">
+        <complexType>
+          <sequence>
+            <element name="dataSetRequest">
+              <complexType>
+                <sequence>
+                  <element ref="ns3:DataSetRequest" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetDataSetResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns4:DataSet" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="CaArraySvc_v1_0ResourceProperties">
+        <complexType>
+          <sequence>
+            <element ref="ns7:ServiceMetadata" />
+            <element ref="ns17:DomainModel" />
+          </sequence>
+        </complexType>
+      </element>
+    </schema>
+  </types>
+  <!--  place service messages here -->
+  <message name="GetAllOrganismsRequest">
+    <part name="parameters" element="tns:GetAllOrganismsRequest" />
+  </message>
+  <message name="GetAllOrganismsResponse">
+    <part name="parameters" element="tns:GetAllOrganismsResponse" />
+  </message>
+  <message name="SearchForExperimentsRequest">
+    <part name="parameters" element="tns:SearchForExperimentsRequest" />
+  </message>
+  <message name="SearchForExperimentsResponse">
+    <part name="parameters" element="tns:SearchForExperimentsResponse" />
+  </message>
+  <message name="GetAllPrincipalInvestigatorsRequest">
+    <part name="parameters" element="tns:GetAllPrincipalInvestigatorsRequest" />
+  </message>
+  <message name="GetAllPrincipalInvestigatorsResponse">
+    <part name="parameters" element="tns:GetAllPrincipalInvestigatorsResponse" />
+  </message>
+  <message name="GetAllFileTypesRequest">
+    <part name="parameters" element="tns:GetAllFileTypesRequest" />
+  </message>
+  <message name="GetAllFileTypesResponse">
+    <part name="parameters" element="tns:GetAllFileTypesResponse" />
+  </message>
+  <message name="GetByReferenceRequest">
+    <part name="parameters" element="tns:GetByReferenceRequest" />
+  </message>
+  <message name="GetByReferenceResponse">
+    <part name="parameters" element="tns:GetByReferenceResponse" />
+  </message>
+  <message name="GetByReferencesRequest">
+    <part name="parameters" element="tns:GetByReferencesRequest" />
+  </message>
+  <message name="GetByReferencesResponse">
+    <part name="parameters" element="tns:GetByReferencesResponse" />
+  </message>
+  <message name="EnumerateOrganismsRequest">
+    <part name="parameters" element="tns:EnumerateOrganismsRequest" />
+  </message>
+  <message name="EnumerateOrganismsResponse">
+    <part name="parameters" element="tns:EnumerateOrganismsResponse" />
+  </message>
+  <message name="EnumerateExperimentsRequest">
+    <part name="parameters" element="tns:EnumerateExperimentsRequest" />
+  </message>
+  <message name="EnumerateExperimentsResponse">
+    <part name="parameters" element="tns:EnumerateExperimentsResponse" />
+  </message>
+  <message name="GetFileContentsZipTransferRequest">
+    <part name="parameters" element="tns:GetFileContentsZipTransferRequest" />
+  </message>
+  <message name="GetFileContentsZipTransferResponse">
+    <part name="parameters" element="tns:GetFileContentsZipTransferResponse" />
+  </message>
+  <message name="GetFileContentsTransfersRequest">
+    <part name="parameters" element="tns:GetFileContentsTransfersRequest" />
+  </message>
+  <message name="GetFileContentsTransfersResponse">
+    <part name="parameters" element="tns:GetFileContentsTransfersResponse" />
+  </message>
+  <message name="EnumerateFileContentsRequest">
+    <part name="parameters" element="tns:EnumerateFileContentsRequest" />
+  </message>
+  <message name="EnumerateFileContentsResponse">
+    <part name="parameters" element="tns:EnumerateFileContentsResponse" />
+  </message>
+  <message name="EnumerateFileContentTransfersRequest">
+    <part name="parameters" element="tns:EnumerateFileContentTransfersRequest" />
+  </message>
+  <message name="EnumerateFileContentTransfersResponse">
+    <part name="parameters" element="tns:EnumerateFileContentTransfersResponse" />
+  </message>
+  <message name="GetFileContentsTransferRequest">
+    <part name="parameters" element="tns:GetFileContentsTransferRequest" />
+  </message>
+  <message name="GetFileContentsTransferResponse">
+    <part name="parameters" element="tns:GetFileContentsTransferResponse" />
+  </message>
+  <message name="GetFileContentsRequest">
+    <part name="parameters" element="tns:GetFileContentsRequest" />
+  </message>
+  <message name="GetFileContentsResponse">
+    <part name="parameters" element="tns:GetFileContentsResponse" />
+  </message>
+  <message name="GetDataSetRequest">
+    <part name="parameters" element="tns:GetDataSetRequest" />
+  </message>
+  <message name="GetDataSetResponse">
+    <part name="parameters" element="tns:GetDataSetResponse" />
+  </message>
+  <message name="FileSizeTooBigExceptionFaultMessage">
+    <part name="fault" element="ns5:FileSizeTooBigException" />
+  </message>
+  <!--============================================================
+
+                       P O R T T Y P E
+                      
+  ============================================================-->
+  <portType name="CaArraySvc_v1_0PortType" wsrp:ResourceProperties="tns:CaArraySvc_v1_0ResourceProperties">
+    <operation name="getAllOrganisms">
+      <input message="tns:GetAllOrganismsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetAllOrganismsRequest" />
+      <output message="tns:GetAllOrganismsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetAllOrganismsResponse" />
+    </operation>
+    <operation name="searchForExperiments">
+      <input message="tns:SearchForExperimentsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForExperimentsRequest" />
+      <output message="tns:SearchForExperimentsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForExperimentsResponse" />
+    </operation>
+    <operation name="getAllPrincipalInvestigators">
+      <input message="tns:GetAllPrincipalInvestigatorsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetAllPrincipalInvestigatorsRequest" />
+      <output message="tns:GetAllPrincipalInvestigatorsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetAllPrincipalInvestigatorsResponse" />
+    </operation>
+    <operation name="getAllFileTypes">
+      <input message="tns:GetAllFileTypesRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetAllFileTypesRequest" />
+      <output message="tns:GetAllFileTypesResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetAllFileTypesResponse" />
+    </operation>
+    <operation name="getByReference">
+      <input message="tns:GetByReferenceRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetByReferenceRequest" />
+      <output message="tns:GetByReferenceResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetByReferenceResponse" />
+    </operation>
+    <operation name="getByReferences">
+      <input message="tns:GetByReferencesRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetByReferencesRequest" />
+      <output message="tns:GetByReferencesResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetByReferencesResponse" />
+    </operation>
+    <operation name="enumerateOrganisms">
+      <input message="tns:EnumerateOrganismsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateOrganismsRequest" />
+      <output message="tns:EnumerateOrganismsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateOrganismsResponse" />
+    </operation>
+    <operation name="enumerateExperiments">
+      <input message="tns:EnumerateExperimentsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateExperimentsRequest" />
+      <output message="tns:EnumerateExperimentsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateExperimentsResponse" />
+    </operation>
+    <operation name="getFileContentsZipTransfer">
+      <input message="tns:GetFileContentsZipTransferRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsZipTransferRequest" />
+      <output message="tns:GetFileContentsZipTransferResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsZipTransferResponse" />
+    </operation>
+    <operation name="getFileContentsTransfers">
+      <input message="tns:GetFileContentsTransfersRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsTransfersRequest" />
+      <output message="tns:GetFileContentsTransfersResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsTransfersResponse" />
+    </operation>
+    <operation name="enumerateFileContents">
+      <input message="tns:EnumerateFileContentsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateFileContentsRequest" />
+      <output message="tns:EnumerateFileContentsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateFileContentsResponse" />
+    </operation>
+    <operation name="enumerateFileContentTransfers">
+      <input message="tns:EnumerateFileContentTransfersRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateFileContentTransfersRequest" />
+      <output message="tns:EnumerateFileContentTransfersResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateFileContentTransfersResponse" />
+    </operation>
+    <operation name="getFileContentsTransfer">
+      <input message="tns:GetFileContentsTransferRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsTransferRequest" />
+      <output message="tns:GetFileContentsTransferResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsTransferResponse" />
+    </operation>
+    <operation name="getFileContents">
+      <input message="tns:GetFileContentsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsRequest" />
+      <output message="tns:GetFileContentsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsResponse" />
+      <fault name="FileSizeTooBigException" message="tns:FileSizeTooBigExceptionFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/FileSizeTooBigExceptionFaultMessage" />
+    </operation>
+    <operation name="getDataSet">
+      <input message="tns:GetDataSetRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetDataSetRequest" />
+      <output message="tns:GetDataSetResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetDataSetResponse" />
+    </operation>
+    <wsdl:operation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="GetMultipleResourceProperties">
+      <wsdl:input name="GetMultipleResourcePropertiesRequest" message="wsrpw:GetMultipleResourcePropertiesRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetMultipleResourceProperties" />
+      <wsdl:output name="GetMultipleResourcePropertiesResponse" message="wsrpw:GetMultipleResourcePropertiesResponse" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetMultipleResourcePropertiesResponse" />
+      <wsdl:fault name="ResourceUnknownFault" message="wsrpw:ResourceUnknownFault" />
+      <wsdl:fault name="InvalidResourcePropertyQNameFault" message="wsrpw:InvalidResourcePropertyQNameFault" />
+    </wsdl:operation>
+    <wsdl:operation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="GetResourceProperty">
+      <wsdl:input name="GetResourcePropertyRequest" message="wsrpw:GetResourcePropertyRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetResourceProperty" />
+      <wsdl:output name="GetResourcePropertyResponse" message="wsrpw:GetResourcePropertyResponse" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetResourcePropertyResponse" />
+      <wsdl:fault name="ResourceUnknownFault" message="wsrpw:ResourceUnknownFault" />
+      <wsdl:fault name="InvalidResourcePropertyQNameFault" message="wsrpw:InvalidResourcePropertyQNameFault" />
+    </wsdl:operation>
+    <wsdl:operation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="QueryResourceProperties">
+      <wsdl:input name="QueryResourcePropertiesRequest" message="wsrpw:QueryResourcePropertiesRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/QueryResourceProperties" />
+      <wsdl:output name="QueryResourcePropertiesResponse" message="wsrpw:QueryResourcePropertiesResponse" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/QueryResourcePropertiesResponse" />
+      <wsdl:fault name="ResourceUnknownFault" message="wsrpw:ResourceUnknownFault" />
+      <wsdl:fault name="InvalidResourcePropertyQNameFault" message="wsrpw:InvalidResourcePropertyQNameFault" />
+      <wsdl:fault name="UnknownQueryExpressionDialectFault" message="wsrpw:UnknownQueryExpressionDialectFault" />
+      <wsdl:fault name="InvalidQueryExpressionFault" message="wsrpw:InvalidQueryExpressionFault" />
+      <wsdl:fault name="QueryEvaluationErrorFault" message="wsrpw:QueryEvaluationErrorFault" />
+    </wsdl:operation>
+    <operation name="getServiceSecurityMetadata">
+      <input message="wns1:GetServiceSecurityMetadataRequest" wsa:Action="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity/GetServiceSecurityMetadataRequest" />
+      <output message="wns1:GetServiceSecurityMetadataResponse" wsa:Action="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity/GetServiceSecurityMetadataResponse" />
+    </operation>
+    <operation name="query">
+      <input message="wns2:QueryRequest" wsa:Action="http://data.cagrid.nci.nih.gov/DataService/QueryRequest" />
+      <output message="wns2:QueryResponse" wsa:Action="http://data.cagrid.nci.nih.gov/DataService/QueryResponse" />
+      <fault name="QueryProcessingException" message="wns2:QueryProcessingExceptionFaultMessage" wsa:Action="http://gov.nih.nci.cagrid.data/DataService/QueryProcessingExceptionFaultMessage" />
+      <fault name="MalformedQueryException" message="wns2:MalformedQueryExceptionFaultMessage" wsa:Action="http://gov.nih.nci.cagrid.data/DataService/MalformedQueryExceptionFaultMessage" />
+    </operation>
+  </portType>
+</definitions>
+

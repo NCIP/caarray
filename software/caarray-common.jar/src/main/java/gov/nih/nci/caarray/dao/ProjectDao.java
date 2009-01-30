@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
@@ -147,6 +148,15 @@ public interface ProjectDao extends CaArrayDao {
      * @return a list of matching experiments
      */
     List<Project> searchByCategory(PageSortParams<Project> params, String keyword, SearchCategory... categories);
+    
+    /**
+     * Performs a query for experiments by the given criteria.
+     *
+     * @param params paging and sorting parameters
+     * @param criteria the criteria for the search
+     * @return a list of matching experiments
+     */
+    List<Experiment> searchByCriteria(PageSortParams<Experiment> params, ExperimentSearchCriteria criteria);
 
     /**
      * Gets the count of search results matching the given keyword.

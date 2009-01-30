@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.contact.Person;
 
 import java.util.List;
 
@@ -96,4 +97,10 @@ public interface ContactDao extends CaArrayDao {
      * @return all Organizations in system.
      */
     List<Organization> getAllProviders();
+
+    /**
+     * @return all principal investigators in the system, e.g. all persons that are a contact with the 
+     * principal investigator role for some experiment
+     */
+    List<Person> getAllPrincipalInvestigators();
 }

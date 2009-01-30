@@ -141,5 +141,11 @@ public enum DataType {
     public Class<?> getTypeClass() {
         return typeClass;
     }
-
+    
+    /**
+     * @return result of calling name(), to enable retrieving it using JavaBean conventions.
+     */
+    public String getName() {
+        return name();
+    }
 }

@@ -97,8 +97,10 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -174,6 +176,15 @@ public class GenericDataServiceBean implements GenericDataService {
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders)
             throws IllegalAccessException, InstantiationException {
         return this.daoFactory.getSearchDao().queryEntityByExample(entityClass.newInstance(), orders);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, int maxResults, int firstResult,
+            Order... orders) throws IllegalAccessException, InstantiationException {
+        return this.daoFactory.getSearchDao().queryEntityByExample(entityClass.newInstance(), MatchMode.EXACT, true,
+                ArrayUtils.EMPTY_STRING_ARRAY, maxResults, firstResult, orders);
     }
 
     /**

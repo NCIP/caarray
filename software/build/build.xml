@@ -43,7 +43,6 @@
     <property name="caarray-common.test.files.dir" value="${caarray-common.dir}/src/test/resources" />
     <property name="caarray-common.target.dir" value="${caarray-common.dir}/target" />
     <property name="caarray-common.classes.dir" value="${caarray-common.target.dir}/classes" />
-    <mkdir dir="${caarray-common.classes.dir}" />
     <property name="caarray-common.instrumented.classes.dir" value="${caarray-common.target.dir}/instrumented-classes" />
     <property name="caarray-common.test.classes.dir" value="${caarray-common.target.dir}/test-classes" />
     <property name="caarray-common.jar" value="${caarray-common.target.dir}/caarray-common.jar" />
@@ -82,7 +81,16 @@
     <property name="caarraydb.sql.test.dir" value="${caarraydb.dir}/src/test/sql" />
     <property name="caarraydb.sql.dir" value="${caarraydb.target.dir}/sql" />
 
-    <property name="caarray-svc.dir" value="${basedir}/CaArraySvc" />
+    <property name="caarray-grid-svc.base.dir" value="${basedir}/grid" />
+    <property name="caarray-grid-svc.versions" value="legacy,v1_0" />
+    <property name="caarray-grid-svc.common.dir" value="${caarray-grid-svc.base.dir}/common" />
+    <property name="caarray-grid-svc.common.src.dir" value="${caarray-grid-svc.common.dir}/src/main/java" />
+    <property name="caarray-grid-svc.common.test.src.dir" value="${caarray-grid-svc.common.dir}/src/test/java" />
+    <property name="caarray-grid-svc.common.target.dir" value="${caarray-grid-svc.common.dir}/target" />
+    <property name="caarray-grid-svc.common.classes.dir" value="${caarray-grid-svc.common.target.dir}/classes" />
+    <property name="caarray-grid-svc.common.instrumented.classes.dir" value="${caarray-grid-svc.common.target.dir}/instrumented-classes" />
+    <property name="caarray-grid-svc.common.test.classes.dir" value="${caarray-grid-svc.common.target.dir}/test-classes" />
+    <property name="caarray-grid-svc.common.jar" value="${caarray-grid-svc.common.target.dir}/caarray-grid-common.jar" />
 
     <!-- ******************************************************************* -->
     <!-- ** 3RD PARTY DEPENDENCY MANAGMENT                                ** -->
@@ -140,12 +148,17 @@
     </tstamp>
 
     <!-- grid service-related dependencies, which are not yet handled by ivy -->
-    <fileset dir="${caarray-svc.dir}/build/lib" id="grid.dependencies.caarray-svc.build.fileset">
+    <fileset dir="${caarray-grid-svc.base.dir}/legacy/build/lib" id="grid.dependencies.caarray-grid-svc.legacy.build.fileset">
         <include name="CaArraySvc-client.jar" />
         <include name="CaArraySvc-common.jar" />
         <include name="CaArraySvc-stubs.jar" />
     </fileset>
-    <fileset dir="${caarray-svc.dir}/lib" id="grid.dependencies.caarray-svc.lib.fileset">
+    <fileset dir="${caarray-grid-svc.base.dir}/v1_0/build/lib" id="grid.dependencies.caarray-grid-svc.v1_0.build.fileset">
+        <include name="CaArraySvc_v1_0-client.jar" />
+        <include name="CaArraySvc_v1_0-common.jar" />
+        <include name="CaArraySvc_v1_0-stubs.jar" />
+    </fileset>
+    <fileset dir="${caarray-grid-svc.base.dir}/legacy/lib" id="grid.dependencies.caarray-grid-svc.lib.fileset">
         <include name="caGrid-data-utils-1.2.jar" />
         <include name="caGrid-core-1.2.jar" />
         <include name="caGrid-core-resources-1.2.jar" />
@@ -157,7 +170,6 @@
         <include name="caGrid-Transfer-client-1.2.jar" />
         <include name="caGrid-Transfer-common-1.2.jar" />
         <include name="caGrid-Transfer-stubs-1.2.jar" />
-        <include name="castor-1.0.4.jar" />
         <include name="commons-httpclient-3.0.jar" />
     </fileset>
 
@@ -279,6 +291,14 @@
         </fileset>
     </path>
     <property name="c3p0.jar" refid="c3p0.jar.fileset" />
+
+
+    <path id="caGrid-core.jar.path">
+        <fileset dir="${project.lib}" id="caGrid-core.jar.fileset">
+            <include name="caGrid-core-*.jar"/>
+        </fileset>
+    </path>
+    <property name="caGrid-core.jar" refid="caGrid-core.jar.fileset" />
 
     <path id="caGrid-data-stubs.jar.path">
         <fileset dir="${project.lib}" id="caGrid-data-stubs.jar.fileset">
@@ -909,6 +929,27 @@
     </path>
     <property name="serializer.jar" refid="serializer.jar.fileset" />
 
+    <path id="dozer.jar.path">
+        <fileset dir="${project.lib}" id="dozer.jar.fileset">
+            <include name="dozer-*.jar"/>
+        </fileset>
+    </path>
+    <property name="dozer.jar" refid="dozer.jar.fileset" />
+
+    <path id="javassist.jar.path">
+        <fileset dir="${project.lib}" id="javassist.jar.fileset">
+            <include name="javassist-*.jar"/>
+        </fileset>
+    </path>
+    <property name="javassist.jar" refid="javassist.jar.fileset" />
+
+    <path id="rmiio.jar.path">
+        <fileset dir="${project.lib}" id="rmiio.jar.fileset">
+            <include name="rmiio-*.jar"/>
+        </fileset>
+    </path>
+    <property name="rmiio.jar" refid="rmiio.jar.fileset" />
+
     <path id="jboss.dependencies.path">
         <fileset id="jboss.dependencies.fileset" dir="${project.lib}">
             <include name="${jboss-annotations-ejb3.jar}"/>
@@ -940,6 +981,7 @@
         <fileset refid="commons-configuration.jar.fileset"/>
         <fileset id="common.grid.dependencies.fileset" dir="${project.lib}">
             <include name="${axis.jar}"/>
+            <include name="${caGrid-core.jar}"/>
             <include name="${caGrid-data-common.jar}"/>
             <include name="${caGrid-sdkQuery32-core.jar}"/>
             <include name="${caGrid-data-stubs.jar}"/>
@@ -965,6 +1007,9 @@
         <fileset refid="jboss.dependencies.fileset"/>
         <fileset refid="common.compile.dependencies.fileset"/>
         <fileset refid="ejb3-persistence.jar.fileset"/>
+		<fileset refid="dozer.jar.fileset"/>
+		<fileset refid="rmiio.jar.fileset"/>
+		<fileset refid="javassist.jar.fileset"/>
     </path>
 
     <path id="grid.compile.dependencies.path">
@@ -1068,6 +1113,12 @@
         <fileset refid="selenium-java-client-driver-tests.jar.fileset"/>
     </path>
 
+    <path id="client.dependencies.path">
+        <fileset refid="jboss.dependencies.fileset"/>
+        <fileset refid="common.compile.dependencies.fileset"/>
+    </path>
+    <pathtofileset name="client.dependencies.fileset" pathrefid="client.dependencies.path" dir="${project.lib}"/>
+	
     <path id="client.test.dependencies.path">
         <fileset refid="jboss.dependencies.fileset"/>
         <fileset refid="common.compile.dependencies.fileset"/>
@@ -1099,8 +1150,9 @@
         <fileset refid="grid.compile.dependencies.fileset"/>
         <fileset refid="jboss.dependencies.fileset"/>
         <fileset refid="test.dependencies.fileset"/>
-        <fileset refid="grid.dependencies.caarray-svc.build.fileset" />
-        <fileset refid="grid.dependencies.caarray-svc.lib.fileset" />
+        <fileset refid="grid.dependencies.caarray-grid-svc.legacy.build.fileset" />
+        <fileset refid="grid.dependencies.caarray-grid-svc.v1_0.build.fileset" />
+        <fileset refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
     </path>
 
     <path id="caarray-client.dependencies.path">
@@ -1221,7 +1273,8 @@
         clean:test,
         clean:test-data,
         clean:target.dir,
-        clean:gridsvc,
+        clean:caarray-grid-common,
+        clean:caarray-grid-svc,
         clean:caarraydb" description="Deletes all of the target directories" />
 
     <target name="clean:caarray-client.jar">
@@ -1260,8 +1313,16 @@
         <delete dir="${target.dir}" />
     </target>
 
-    <target name="clean:gridsvc">
-        <ant dir="${caarray-svc.dir}" target="clean" inheritall="false" />
+    <target name="clean:caarray-grid-common">
+    	<delete dir="${caarray-grid-svc.common.target.dir}"/>
+    </target>
+
+    <target name="clean:caarray-grid-svc">
+        <for param="version" list="${caarray-grid-svc.versions}">
+            <sequential>
+                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="clean" inheritall="false" />
+            </sequential>
+        </for>
     </target>
 
     <target name="clean:caarraydb">
@@ -1341,10 +1402,10 @@
     <!-- ******************************************************************* -->
 
     <target name="compile" depends="compile:caarray-client.jar,
-      compile:caarray-common.jar,
+        compile:caarray-common.jar,
         compile:caarray-ejb.jar,
         compile:caarray.war,
-        compile:caarray-svc" />
+        compile:caarray-grid-svc" />
 
     <target name="compile:caarray-client.jar" depends="compile:caarray-common.jar,compile:caarray-ejb.jar">
         <mkdir dir="${caarray-client.classes.dir}" />
@@ -1390,23 +1451,28 @@
         </javac>
     </target>
 
-    <target name="compile:caarray-svc" unless="noglobus" depends="compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar">
-        <copy file="${caarray-svc.dir}/deploy.properties.orig" tofile="${caarray-svc.dir}/deploy.properties">
-            <filterset>
-                <filter token="grid.index.url" value="${grid.index.url}" />
-            </filterset>
-        </copy>
-        <ant dir="${caarray-svc.dir}" target="compile" inheritall="false">
-            <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
-            <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
-        </ant>
+    <target name="compile:caarray-grid-svc.common.jar">
+        <mkdir dir="${caarray-grid-svc.common.classes.dir}" />
+        <javac srcdir="${caarray-grid-svc.common.src.dir}" destdir="${caarray-grid-svc.common.classes.dir}" debug="true">
+            <classpath refid="common.compile.dependencies.path" />
+        </javac>
     </target>
 
-    <target name="jar:caarray-svc" depends="compile:caarray-svc">
-        <ant dir="${caarray-svc.dir}" target="jar" inheritall="false">
-            <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
-            <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
-        </ant>
+    <target name="compile:caarray-grid-svc" depends="compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar,build:caarray-grid-svc.common.jar">
+    	<for param="version" list="${caarray-grid-svc.versions}">
+    		<sequential>
+    	        <copy file="${caarray-grid-svc.base.dir}/@{version}/deploy.properties.orig" tofile="${caarray-grid-svc.base.dir}/@{version}/deploy.properties">
+    	            <filterset>
+    	                <filter token="grid.index.url" value="${grid.index.url}" />
+    	                <filter token="caarray.grid-service.version" value="@{version}" />
+    	            </filterset>
+    	        </copy>
+    	        <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="compile" inheritall="false">
+    	            <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
+    	            <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
+    	        </ant>
+    		</sequential>
+    	</for>
     </target>
 
     <!-- ******************************************************************* -->
@@ -1428,16 +1494,16 @@
     <!-- ** BUILD TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
 
-    <target name="build" depends="build:caarray-client.jar,
+    <target name="build" description="Builds the application without deploying." depends="build:caarray-client.jar,
         build:caarray-common.jar,
         build:caarray-ejb.jar,
         build:caarray.war,
         build:caarray.ear,
-        build:caarray-svc" description="Builds the application without deploying." />
+        build:caarray-grid-svc" />
 
     <target name="build-functional" depends="build:caarray-client.jar,
         build:functional:caarray.ear,
-        build:caarray-svc" description="Builds the application without deploying." />
+        build:caarray-grid-svc" description="Builds the application without deploying." />
 
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,svn:getinfo">
         <mkdir dir="${caarray-client.target.dir}" />
@@ -1456,6 +1522,7 @@
             <fileset dir="${caarray-client.resources.dir}" />
             <fileset dir="${caarray-common.classes.dir}">
                 <include name="**/domain/**" />
+                <include name="**/external/**" />
                 <include name="**/query/**" />
                 <include name="**/util/**" />
                 <include name="**/validation/**" />
@@ -1466,22 +1533,25 @@
             </fileset>
             <fileset dir="${caarray-ejb.classes.dir}">
                 <include name="**/services/**/*Service.class" />
+                <include name="**/services/**/*Exception.class" />
             </fileset>
         </jar>
     </target>
 
-    <target name="build:caarray-client.zip" depends="build:caarray-client.jar,javadoc:caarray-client,build:caarray-svc-jars">
+    <target name="build:caarray-client.zip" depends="build:caarray-client.jar,javadoc:caarray-client,build:caarray-grid-svc">
         <zip destfile="${caarray-client.target.dir}/caarray-client.zip">
             <fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
             <fileset dir="${caarray-client.dir}/src/distribution/resources" />
             <zipfileset prefix="lib" refid="caarray-client.dependencies.fileset" />
+            <zipfileset prefix="lib" refid="jboss.dependencies.fileset" />
             <zipfileset dir="${caarray-client.target.dir}" includes="docs/**" />
-            <zipfileset prefix="grid/etc" dir="${caarray-svc.dir}/src/gov/nih/nci/cagrid/caarray/client" includes="client-config.wsdd" />
-            <zipfileset prefix="grid/etc" dir="${caarray-svc.dir}/etc" includes="domainModel.xml" />
             <zipfileset prefix="grid/lib" refid="grid.dependencies.lib.fileset" />
-            <zipfileset prefix="grid/lib" refid="grid.dependencies.caarray-svc.lib.fileset" />
-            <zipfileset prefix="grid/lib" refid="grid.dependencies.caarray-svc.build.fileset" />
-            <zipfileset prefix="grid/schema" dir="${caarray-svc.dir}/schema/CaArraySvc" />
+            <zipfileset prefix="grid/lib" refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
+            <zipfileset prefix="grid/lib" refid="grid.dependencies.caarray-grid-svc.v1_0.build.fileset" />
+            <zipfileset prefix="grid/lib" refid="grid.dependencies.caarray-grid-svc.legacy.build.fileset" />
+            <zipfileset prefix="grid/lib" file="${caarray-grid-svc.common.jar}" />
+            <zipfileset prefix="grid/schema" dir="${caarray-grid-svc.base.dir}/v1_0/schema/CaArraySvc_v1_0" />
+            <zipfileset prefix="grid/schema" dir="${caarray-grid-svc.base.dir}/legacy/schema/CaArraySvc" />
         </zip>
     </target>
 
@@ -1519,6 +1589,9 @@
         <echo file="${caarray-ejb.target.dir}/flattened_dependencies" message="./lib/${flattened.ejb.dependencies}" />
         <replace file="${caarray-ejb.target.dir}/flattened_dependencies" token=" " value=" ./lib/" />
         <loadfile srcfile="${caarray-ejb.target.dir}/flattened_dependencies" property="processed.ejb.dependencies.ready.for.manifest.classpath" />
+        <copy todir="${caarray-ejb.classes.dir}" overwrite="true">
+            <fileset dir="${caarray-ejb.resources.dir}" includes="dozer*.xml" />
+        </copy>
         <jar destfile="${caarray-ejb.jar}">
             <manifest>
                 <attribute name="Class-Path" value="${processed.ejb.dependencies.ready.for.manifest.classpath}" />
@@ -1531,7 +1604,7 @@
                     <attribute name="Implementation-Vendor" value="5AM Solutions" />
                 </section>
             </manifest>
-            <metainf dir="${caarray-ejb.resources.dir}" includes="*.xml" />
+            <metainf dir="${caarray-ejb.resources.dir}" includes="jboss.xml" />
             <fileset dir="${caarray-ejb.classes.dir}" />
         </jar>
     </target>
@@ -1702,16 +1775,42 @@
     <target name="build:functional:caarray.ear" depends="build:functional:caarray.war,build:functional:caarray-ejb.jar,build:functional:caarray-common.jar">
         <build-caarray.ear />
     </target>
-
-    <target name="build:caarray-svc" unless="noglobus" depends="compile:caarray-svc"/>
-
-    <target name="build:caarray-svc-jars" depends="compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar">
-        <ant dir="${caarray-svc.dir}" inheritall="false">
-            <target name="jar" />
-            <target name="jarStubs" />
-        </ant>
+	
+    <target name="build:caarray-grid-svc.common.jar" depends="compile:caarray-grid-svc.common.jar,svn:getinfo">
+        <mkdir dir="${caarray-grid-svc.common.target.dir}" />
+        <pathconvert pathsep=" " property="flattened.common.dependencies" refid="common.compile.dependencies.path">
+            <flattenmapper />
+        </pathconvert>
+        <echo file="${caarray-common.target.dir}/flattened_dependencies" message="./lib/${flattened.common.dependencies}" />
+        <replace file="${caarray-common.target.dir}/flattened_dependencies" token=" " value=" ./lib/" />
+        <loadfile srcfile="${caarray-common.target.dir}/flattened_dependencies" property="processed.common.dependencies.ready.for.manifest.classpath" />
+        <jar destfile="${caarray-grid-svc.common.jar}">
+            <manifest>
+                <attribute name="Class-Path" value="${processed.common.dependencies.ready.for.manifest.classpath}" />
+                <section name="gov/nih/nci/caarray/">
+                    <attribute name="Specification-Title" value="caArray Grid Common Library" />
+                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Specification-Vendor" value="5AM Solutions" />
+                    <attribute name="Implementation-Title" value="caArray Grid Common Library" />
+                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Implementation-Vendor" value="5AM Solutions" />
+                </section>
+            </manifest>
+            <fileset dir="${caarray-grid-svc.common.classes.dir}" />
+        </jar>
     </target>
-
+	
+	<target name="build:caarray-grid-svc" depends="compile:caarray-grid-svc, build:caarray-grid-svc.common.jar">
+	   	<for param="version" list="${caarray-grid-svc.versions}">
+	    	<sequential>
+	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="jars" inheritall="false">
+	                <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
+	                <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
+	            </ant>
+	 		</sequential>
+	   	</for>	
+	</target>
+	
     <!-- ******************************************************************* -->
     <!-- ** TEST TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
@@ -1749,7 +1848,6 @@
       test:junit-report,
       test:cobertura-report,
       test:cobertura-check">
-        <ant dir="${caarray-svc.dir}" target="test" inheritall="false" />
         <fail if="junit.failure" message="There were JUnit failures." />
         <fail if="cobertura.failure" message="Test coverage was insufficient (see Cobertura report)." />
     </target>
@@ -1795,7 +1893,10 @@
 
     <target name="test:instrument:caarray-common.jar" unless="notest">
         <cobertura-instrument todir="${caarray-common.instrumented.classes.dir}" datafile="${cobertura.file}">
-            <fileset dir="${caarray-common.classes.dir}" />
+            <fileset dir="${caarray-common.classes.dir}">
+            	<include name="**/*.class" />
+	            <exclude name="**/external/**/*.class" />
+			</fileset>	
         </cobertura-instrument>
     </target>
 
@@ -1826,7 +1927,10 @@
 
     <target name="test:instrument:caarray-ejb.jar" unless="notest" depends="compile:caarray-ejb.jar">
         <cobertura-instrument todir="${caarray-ejb.instrumented.classes.dir}" datafile="${cobertura.file}">
-            <fileset dir="${caarray-ejb.classes.dir}" />
+            <fileset dir="${caarray-ejb.classes.dir}">
+            	<include name="**/*.class" />
+	            <exclude name="**/external/**/*.class" />
+			</fileset>            	
         </cobertura-instrument>
     </target>
 
@@ -1935,7 +2039,7 @@
     </target>
 
     <target name="test:cobertura-check" unless="notest">
-        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="71" totallinerate="80" />
+        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="70" totallinerate="79" />
     </target>
 
     <!-- Functional (Selenium) Test Targets -->
@@ -2056,7 +2160,7 @@
         </javac>
     </target>
 
-    <target name="test:grid:compile-tests" unless="notest" depends="build:caarray-client.jar,jar:caarray-svc">
+    <target name="test:grid:compile-tests" unless="notest" depends="build:caarray-client.jar,build:caarray-grid-svc">
         <mkdir dir="${test.classes.dir}" />
         <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true">
             <classpath>
@@ -2101,7 +2205,7 @@
         <java classname="gov.nih.nci.caarray.test.api.java.data.ApiDataSetDownloadClient" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref="client.test.dependencies.path" />
     </target>
 
-    <target name="test:grid:run-tests" unless="notest" depends="test:grid:compile-tests,build:caarray-client.jar,jar:caarray-svc">
+    <target name="test:grid:run-tests" unless="notest"  depends="test:grid:compile-tests,build:caarray-client.jar,build:caarray-grid-svc">
         <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/grid" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref.id="test.grid.dependencies.path" source.include="**/Grid*.java" source.exclude="**/Abstract*.java" />
     </target>
 
@@ -2276,10 +2380,10 @@
 
 
     <!-- ******************************************************************* -->
-    <!-- ** DEPLOY TARGETS                                                ** -->
+    <!-- ** LOCAL DEPLOY TARGETS                                          ** -->
     <!-- ******************************************************************* -->
 
-    <target name="deploy" depends="deploy:caarray.ear,deploy:caarray-svc" description="Deploy the application to JBoss" />
+    <target name="deploy" depends="deploy:caarray.ear,deploy:caarray-grid-svc" description="Deploy the application and grid services" />
 
     <target name="deploy:caarray.ear-dependencies" depends="prepare:create-local.properties">
         <copy file="${common.resources.jboss.conf.dir}/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
@@ -2302,21 +2406,31 @@
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
     </target>
 
-    <target name="deploy:caarray-svc" depends="build:caarray-svc,prepare:create-local.properties">
-        <ant dir="${caarray-svc.dir}" target="deployGlobus" inheritall="false" />
+	<target name="deploy:caarray-grid-svc" depends="deploy:caarray-grid-svc-globus, deploy:caarray-grid-svc-jboss"/>
+	
+    <target name="deploy:caarray-grid-svc-globus" depends="build:caarray-grid-svc,prepare:create-local.properties" if="grid.useGlobus">
+	   	<for param="version" list="${caarray-grid-svc.versions}">
+	    	<sequential>
+	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="deployGlobus" inheritall="false" />
+	    	</sequential>
+	   	</for>
     </target>
 
-    <target name="deploy:caarray-svc-jboss" depends="build:caarray-svc,prepare:create-local.properties">
+    <target name="deploy:caarray-grid-svc-jboss" depends="build:caarray-grid-svc,prepare:create-local.properties" if="grid.useJBoss">
         <unzip src="${jboss-globus-serverinstance-config.zip}" dest="${globoss.server.instance.home}" />
         <replace file="${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd">
             <replacefilter token="@LOGICAL_HOST@" value="${grid.static.hostname}" />
         </replace>
-        <ant dir="${caarray-svc.dir}" target="deployJBoss" inheritall="false">
-            <property name="jboss.dir" value="${globoss.home}"/>
-        </ant>
+	   	<for param="version" list="${caarray-grid-svc.versions}">
+	    	<sequential>
+	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="deployJBoss" inheritall="false">
+	                <property name="jboss.dir" value="${globoss.home}"/>
+	            </ant>
+	    	</sequential>
+	   	</for>
     </target>
 
-    <target name="undeploy" description="Undeploys the application from JBoss and Globoss" depends="undeploy:caarray.ear" />
+    <target name="undeploy" description="Undeploys the application from JBoss and Globoss" depends="undeploy:caarray.ear, undeploy:caarray-grid-svc" />
 
     <target name="undeploy:caarray.ear" description="Undeploys the application from JBoss">
         <delete file="${jboss.deploy.dir}/${mysql.datasource.file}" />
@@ -2324,12 +2438,20 @@
         <delete file="${jboss.deploy.dir}/mail-service.xml" />
     </target>
 
-    <target name="undeploy:caarray-svc" depends="prepare:create-local.properties">
-        <ant dir="${caarray-svc.dir}" target="undeployGlobus" inheritall="false" />
+    <target name="undeploy:caarray-grid-svc" depends="undeploy:caarray-grid-svc-globus, undeploy:caarray-grid-svc-jboss"/>
+
+    <target name="undeploy:caarray-grid-svc-globus" depends="prepare:create-local.properties">
+	   	<for param="version" list="${caarray-grid-svc.versions}">
+	    	<sequential>
+	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployJBoss" inheritall="false">
+	                <property name="jboss.dir" value="${globoss.home}"/>
+	            </ant>
+	    	</sequential>
+	   	</for>
     </target>
 
-    <target name="undeploy:caarray-svc-jboss" depends="prepare:create-local.properties">
-        <ant dir="${caarray-svc.dir}" target="undeployJBoss" inheritall="false">
+    <target name="undeploy:caarray-grid-svc-jboss" depends="prepare:create-local.properties">
+        <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployJBoss" inheritall="false">
             <property name="jboss.dir" value="${globoss.home}"/>
         </ant>
     </target>
@@ -2372,18 +2494,11 @@
         </for>
     </target>
 
-    <!-- local.globoss.home = /dev/app_servers/jboss-4.0.4.GA/server/default -->
-    <target name="create-grid-zip" if="local.globoss.home">
-        <property name="caarraysvc.temp.dir" value="${caarray-svc.dir}/build/cagrid_CaArraySvc" />
-        <mkdir dir="${caarraysvc.temp.dir}" />
-        <mkdir dir="${caarraysvc.temp.dir}/server/default/deploy/wsrf.war" />
-
-        <ant dir="${caarray-svc.dir}" target="createDeploymentZip" inheritall="false">
-            <property name="jboss.dir" value="${caarraysvc.temp.dir}" />
-        </ant>
-    </target>
-
     <target name="redeploy" description="Developer undeploy, clean, redeploy" depends="undeploy, clean, database:reinitialize, deploy" />
+
+    <!-- ******************************************************************* -->
+    <!-- ** REMOTE DEPLOY TARGETS                                          ** -->
+    <!-- ******************************************************************* -->
 
     <property name="property.template.file" value="caarray2-property-template.properties" />
     <property name="jboss.start.sleep" value="10" />
@@ -2574,18 +2689,20 @@
         <path refid="project.jars.path" />
     </path>
 
-    <target name="javadoc:all" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,compile:caarray.war,build:caarray-svc">
+    <target name="javadoc:all" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,compile:caarray.war,build:caarray-grid-svc">
         <mkdir dir="${site.dir}/docs/api" />
         <javadoc destdir="${site.dir}/docs/api" classpathref="javadoc.classpath">
             <packageset dir="${caarray-client.src.dir}" />
             <packageset dir="${caarray-common.src.dir}" />
             <packageset dir="${caarray-ejb.src.dir}" />
             <packageset dir="${caarray-war.src.dir}" />
-            <packageset dir="${caarray-svc.dir}/src" />
+            <packageset dir="${caarray-grid-svc.base.dir}/common/src" />
+            <packageset dir="${caarray-grid-svc.base.dir}/v1_0/src" />
+            <packageset dir="${caarray-grid-svc.base.dir}/legacy/src" />
         </javadoc>
     </target>
 
-    <target name="javadoc:caarray-client" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-svc">
+    <target name="javadoc:caarray-client" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-grid-svc">
         <mkdir dir="${caarray-client.target.dir}/docs/api" />
         <javadoc destdir="${caarray-client.target.dir}/docs/api" classpathref="javadoc.classpath">
             <packageset dir="${caarray-client.src.dir}" />
@@ -2596,7 +2713,9 @@
             <fileset dir="${caarray-ejb.src.dir}">
                 <include name="**/services/**/*Service.java" />
             </fileset>
-            <packageset dir="${caarray-svc.dir}/src" />
+            <packageset dir="${caarray-grid-svc.base.dir}/common/src" />
+            <packageset dir="${caarray-grid-svc.base.dir}/legacy/src" />
+            <packageset dir="${caarray-grid-svc.base.dir}/v1_0/src" />
         </javadoc>
     </target>
 </project>

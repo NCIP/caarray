@@ -82,9 +82,6 @@
  */
 package gov.nih.nci.caarray.dao;
 
-
-
-
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.file</code> package.
  *

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:qry="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"
+    xmlns:car="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
+    xmlns:exp="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"
+    targetNamespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" elementFormDefault="qualified">
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.xsd" />
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.experiment.xsd" />
+
+    <xs:element name="ExperimentSearchCriteria" type="qry:ExperimentSearchCriteria" />
+    <xs:complexType name="ExperimentSearchCriteria">
+    	<xs:sequence>
+			<xs:element name="organisms">
+	  			<xs:complexType>
+	    			<xs:sequence>
+	      				<xs:element ref="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded"/>
+	    			</xs:sequence>
+	  			</xs:complexType>
+			</xs:element>
+			<xs:element name="principalInvestigator" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded"/>
+      	</xs:sequence>
+      	<xs:attribute name="title" type="xs:string" />
+    </xs:complexType>
+
+    <xs:element name="FileDownloadRequest" type="qry:FileDownloadRequest" />
+    <xs:complexType name="FileDownloadRequest">
+    	<xs:sequence>
+			<xs:element name="files">
+	  			<xs:complexType>
+	    			<xs:sequence>
+	      				<xs:element ref="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded"/>
+	    			</xs:sequence>
+	  			</xs:complexType>
+			</xs:element>
+      	</xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="DataSetRequest" type="qry:DataSetRequest" />
+    <xs:complexType name="DataSetRequest">
+    	<xs:sequence>
+			<xs:element name="quantitationTypes">
+	  			<xs:complexType>
+	    			<xs:sequence>
+	      				<xs:element ref="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded"/>
+	    			</xs:sequence>
+	  			</xs:complexType>
+			</xs:element>
+			<xs:element name="hybridizations">
+	  			<xs:complexType>
+	    			<xs:sequence>
+	      				<xs:element ref="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded"/>
+	    			</xs:sequence>
+	  			</xs:complexType>
+			</xs:element>
+			<xs:element name="dataFiles">
+	  			<xs:complexType>
+	    			<xs:sequence>
+	      				<xs:element ref="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded"/>
+	    			</xs:sequence>
+	  			</xs:complexType>
+			</xs:element>
+      	</xs:sequence>
+    </xs:complexType>
+</xs:schema>

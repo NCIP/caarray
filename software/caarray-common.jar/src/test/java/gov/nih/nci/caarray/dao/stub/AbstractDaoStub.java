@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.dao.CaArrayDao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -177,4 +178,8 @@ public class AbstractDaoStub implements CaArrayDao {
         // no-op
     }
 
+    public <T> List<T> queryEntityByExample(T example, MatchMode matchMode, boolean excludeNulls,
+            String[] excludeProperties, int maxResults, int firstResult, Order... orders) {
+        return Collections.emptyList();
+    }
 }

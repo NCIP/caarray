@@ -82,7 +82,9 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.io.Serializable;
@@ -103,6 +105,14 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  */
 public interface SearchDao extends CaArrayDao {
     /**
+     * Returns the list of <code>AbstractCaArrayEntity</code> retrieved based on the given CQL query.
+     *
+     * @param cqlQuery CQL query to use as search criteria.
+     * @return the List of objects, values, or the count, depending on query modifier.
+     */
+    List<?> query(CQLQuery cqlQuery);
+    
+    /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity and its associations, or null
      * if none exists. If the id of the given entity is not null, this query will only match by id, ignoring all other
      * fields.
@@ -113,13 +123,6 @@ public interface SearchDao extends CaArrayDao {
      */
     <T extends AbstractCaArrayObject> List<T> query(T entityToMatch);
 
-    /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> retrieved based on the given CQL query.
-     *
-     * @param cqlQuery CQL query to use as search criteria.
-     * @return the List of objects, values, or the count, depending on query modifier.
-     */
-    List<?> query(CQLQuery cqlQuery);
 
     /**
      * Retrieves the object from the database.
@@ -151,6 +154,16 @@ public interface SearchDao extends CaArrayDao {
      * @return the entity.
      */
     <T extends PersistentObject> T retrieveUnsecured(Class<T> entityClass, Long entityId);
+    
+    /**
+     * Retrieves a caarray entity by its lsid.
+     * @param <T> the type of entity
+     * @param entityClass the class of entity to retrieve
+     * @param lsid the lsid
+     * @return the entity, or null if no entity with that id exists
+     */
+    <T extends AbstractCaArrayEntity> T getEntityByLsid(Class<T> entityClass, LSID lsid);
+
 
     /**
      * Return the instances of given class with given ids from the database.
