@@ -115,8 +115,12 @@ public abstract class BaseEnumIterator<T> implements EnumIterator {
         this.qname = objectQname;
         this.orderField = orderField;
         this.descending = descending;
-        this.caArrayServer = new CaArrayServer("localhost", 1099);
         try {
+            String jndiUrl = CaArraySvc_v1_0Impl.getJndiUrl();
+            if (jndiUrl == null) {
+                throw new RemoteException("Could not connect to server: invalid JNDI configuration");
+            }
+            this.caArrayServer = new CaArrayServer("localhost", 1099);
             caArrayServer.connect();
         } catch (ServerConnectionException e) {
             throw new RemoteException("Could not connect to server", e);
