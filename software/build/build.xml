@@ -2598,7 +2598,7 @@
 
 	   	<for param="version" list="${caarray-grid-svc.versions}">
 	    	<sequential>
-	            <var name="caarraysvc.temp.dir" value="${caarray-grid-svc.base.dir}/@{version}/build/cagrid_CaArraySvc_@{version}" />
+	            <var name="caarraysvc.temp.dir" value="${caarray-grid-svc.base.dir}/@{version}/build/cagrid_CaArraySvc" />
 	            <mkdir dir="${caarraysvc.temp.dir}" />
 	            <mkdir dir="${caarraysvc.temp.dir}/server/default/deploy/wsrf.war" />
 

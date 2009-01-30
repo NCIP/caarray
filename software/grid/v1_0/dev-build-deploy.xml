@@ -29,6 +29,18 @@
 
 	</target>
 	
+	<target name="createDeploymentZip">
+		<property name="caarraysvc.temp.dir" value="${basedir}/build/cagrid_CaArraySvc" />
+		<mkdir dir="${caarraysvc.temp.dir}" />
+		<mkdir dir="${caarraysvc.temp.dir}/server/default/deploy/wsrf.war" />
+		<antcall target="deployJBoss">
+		</antcall>
+
+		<zip file="${basedir}/cagrid_CaArraySvc.zip" basedir="${caarraysvc.temp.dir}/server/default/deploy/wsrf.war">
+		</zip>
+	</target>
+
+	
 	<!-- ============================================================== -->
 	<!-- Post UnDDeploy Tomcat                                              -->
 	<!-- ============================================================== -->
