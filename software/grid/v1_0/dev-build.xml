@@ -51,6 +51,7 @@
     <copy todir="lib" flatten="true">
       <fileset dir="${project.lib}">
         <include name="commons-collections-*.jar"/>
+        <include name="commons-lang-*.jar"/>
         <include name="commons-io-*.jar"/>
         <include name="csmapi-*.jar"/>
         <include name="ejb3-persistence-*.jar"/>
