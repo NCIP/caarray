@@ -24,7 +24,23 @@
     <path id="base.extended.classpath">
       <pathelement location="../../caarray-client.jar/target/caarray-client.jar"/>
       <pathelement location="../common/target/caarray-grid-common.jar"/>
-      <pathelement location="${project.lib}/cacore32-client-*.jar"/>
+      <pathelement location="${project.lib}/cacore32-client-*.jar" id="extra.jars.fileset"/>
+        <fileset dir="${project.lib}" id="extra.jars.fileset">
+          <include name="commons-collections-*.jar"/>
+          <include name="commons-io-*.jar"/>
+          <include name="csmapi-*.jar"/>
+          <include name="ejb3-persistence-*.jar"/>
+          <include name="hibernate-annotations-*.jar"/>
+          <include name="hibernate-*.jar"/>
+          <include name="jboss-aop-client-*.jar"/>
+          <include name="jboss-aspect-client-*.jar"/>
+          <include name="jboss-ejb3x-*.jar"/>
+          <include name="jboss-ejb3-client-*.jar"/>
+          <include name="jbossall-client-*.jar"/>
+          <include name="log4j-*.jar"/>
+          <include name="nci-commons-core-*.jar"/>
+          <include name="cglib-*.jar"/>
+        </fileset>
     </path>
     <path id="service.build.extended.classpath">
     </path>
@@ -46,26 +62,11 @@
   <!-- Pre Init Target                                                -->
   <!-- ============================================================== -->
   <target name="preInit">
-    <copy todir="lib" flatten="true">
-      <fileset dir="${project.lib}">
-        <include name="commons-collections-*.jar"/>
-        <include name="commons-io-*.jar"/>
-        <include name="csmapi-*.jar"/>
-        <include name="ejb3-persistence-*.jar"/>
-        <include name="hibernate-annotations-*.jar"/>
-        <include name="hibernate-*.jar"/>
-        <include name="jboss-aop-client-*.jar"/>
-        <include name="jboss-aspect-client-*.jar"/>
-        <include name="jboss-ejb3x-*.jar"/>
-        <include name="jboss-ejb3-client-*.jar"/>
-        <include name="jbossall-client-*.jar"/>
-        <include name="log4j-*.jar"/>
-        <include name="nci-commons-core-*.jar"/>
-        <include name="cglib-*.jar"/>
-      </fileset>
+    <copy todir="${build.lib.dir}" flatten="true">
+      <fileset refid="extra.jars.fileset"/>
     </copy>
-    <copy todir="lib" file="../../caarray-client.jar/target/caarray-client.jar"/>
-    <copy todir="lib" file="../common/target/caarray-grid-common.jar"/>
+    <copy todir="${build.lib.dir}" file="../../caarray-client.jar/target/caarray-client.jar"/>
+    <copy todir="${build.lib.dir}" file="../common/target/caarray-grid-common.jar"/>
   </target>
 
   <!-- ============================================================== -->
