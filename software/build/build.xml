@@ -1252,6 +1252,13 @@
         <filtersfile file="${envpropertyfile}" />
     </filterset>
 
+    <condition property="internal.grid.useJBoss" value="true">
+        <istrue value="${grid.useJBoss}"/>
+    </condition>
+
+    <condition property="internal.grid.useGlobus" value="true">
+        <istrue value="${grid.useGlobus}"/>
+    </condition>
 
     <!-- ******************************************************************* -->
     <!-- ** IMPORTS                                                       ** -->
@@ -2409,7 +2416,7 @@
 
 	<target name="deploy:caarray-grid-svc" depends="deploy:caarray-grid-svc-globus, deploy:caarray-grid-svc-jboss"/>
 	
-    <target name="deploy:caarray-grid-svc-globus" depends="build:caarray-grid-svc,prepare:create-local.properties" if="grid.useGlobus">
+    <target name="deploy:caarray-grid-svc-globus" depends="build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useGlobus">
 	   	<for param="version" list="${caarray-grid-svc.versions}">
 	    	<sequential>
 	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="deployGlobus" inheritall="false" />
@@ -2417,7 +2424,7 @@
 	   	</for>
     </target>
 
-    <target name="deploy:caarray-grid-svc-jboss" depends="build:caarray-grid-svc,prepare:create-local.properties" if="grid.useJBoss">
+    <target name="deploy:caarray-grid-svc-jboss" depends="build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useJBoss">
         <unzip src="${jboss-globus-serverinstance-config.zip}" dest="${globoss.server.instance.home}" />
         <replace file="${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd">
             <replacefilter token="@LOGICAL_HOST@" value="${grid.static.hostname}" />
@@ -2441,7 +2448,15 @@
 
     <target name="undeploy:caarray-grid-svc" depends="undeploy:caarray-grid-svc-globus, undeploy:caarray-grid-svc-jboss"/>
 
-    <target name="undeploy:caarray-grid-svc-globus" depends="prepare:create-local.properties">
+    <target name="undeploy:caarray-grid-svc-globus" depends="prepare:create-local.properties" if="internal.grid.useGlobus">
+	   	<for param="version" list="${caarray-grid-svc.versions}">
+	    	<sequential>
+	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployGlobus" inheritall="false"/>
+	    	</sequential>
+	   	</for>
+    </target>
+
+    <target name="undeploy:caarray-grid-svc-jboss" depends="prepare:create-local.properties" if="internal.grid.useJBoss">
 	   	<for param="version" list="${caarray-grid-svc.versions}">
 	    	<sequential>
 	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployJBoss" inheritall="false">
@@ -2449,12 +2464,6 @@
 	            </ant>
 	    	</sequential>
 	   	</for>
-    </target>
-
-    <target name="undeploy:caarray-grid-svc-jboss" depends="prepare:create-local.properties">
-        <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployJBoss" inheritall="false">
-            <property name="jboss.dir" value="${globoss.home}"/>
-        </ant>
     </target>
 
     <target name="deploy:stop-jboss">
@@ -2496,6 +2505,8 @@
     </target>
 
     <target name="redeploy" description="Developer undeploy, clean, redeploy" depends="undeploy, clean, database:reinitialize, deploy" />
+
+    <target name="redeploy:caarray.ear" description="Developer undeploy, clean, redeploy for the ear only" depends="undeploy:caarray.ear, clean, database:reinitialize, deploy:caarray.ear" />
 
     <!-- ******************************************************************* -->
     <!-- ** REMOTE DEPLOY TARGETS                                          ** -->
