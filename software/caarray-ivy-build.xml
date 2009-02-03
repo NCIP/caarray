@@ -1,54 +1,75 @@
-<project name="caarray-ivy" default="retrieve-dependencies" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="caarray-ivy" default="retrieve-bda-dependencies" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
     <property name="ivy.file" value="ivy-2.0.0-beta2.jar"/>
     <property name="ivy-core.file" value="ivy-core-2.0.0-beta2.jar"/>
     <property name="ivy.src.url" value="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-repo/apache/ivy/2.0.0-beta2/${ivy.file}"/>
     <property name="ivy-core.src.url" value="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-repo/apache/ivy-core/2.0.0-beta2/${ivy-core.file}"/>
     <property name="ivy-bda.src.url.base" value="http://gforge.nci.nih.gov/svnroot/automation/bda/ivy"/>
-    <property name="ivy.dest.file" value="${lib.dir}/${ivy.file}"/>
-    <property name="ivy-core.dest.file" value="${lib.dir}/${ivy-core.file}"/>
+    <property name="ivy.dest.file" value="${bda-utils.dir}/${ivy.file}"/>
+    <property name="ivy-core.dest.file" value="${bda-utils.dir}/${ivy-core.file}"/>
     <property name="caarray.dependencies.file" value="ivy-caarray.xml"/>
     <property name="caarray.ivy.settings.file" value="ivy-caarray-settings.xml"/>
     <property name="bda-utils.dir" value="${software.dir}/bda-utils"/>
 
-    <condition property="internal.clean.libs.and.ivy.cache" value="true">
-        <equals arg1="${clean.libs.and.ivy.cache}" arg2="true" casesensitive="false" trim="true"/>
+    <condition property="bda.utils.build.file.not.present" value="true">
+        <not>
+            <available file="${bda.utils.build.file}" type="file"/>
+        </not>
     </condition>
 
-    <condition property="internal.do.ivy.retrieval" value="true">
-        <equals arg1="${do.ivy.retrieval}" arg2="true" casesensitive="false" trim="true"/>
+    <condition property="internal.no.ivy" value="true">
+        <equals arg1="${no.ivy}" arg2="true" casesensitive="false" trim="true"/>
+    </condition>
+
+    <condition property="internal.clean.bootstrap.libs.and.ivy.cache" value="true">
+        <and>
+            <not>
+                <equals arg1="${no.ivy}" arg2="true" casesensitive="false" trim="true"/>
+            </not>
+            <and>
+                <equals arg1="${clean.bootstrap.libs.and.ivy.cache}" arg2="true" casesensitive="false" trim="true"/>
+                <not>
+                    <equals arg1="${psuedo_override.clean.bootstrap.libs.and.ivy.cache}" arg2="false" casesensitive="false" trim="true"/>
+                </not>
+            </and>
+        </and>
     </condition>
 
     <condition property="need.to.get.ivy.bootstrap.dependencies" value="true">
-        <or>
-            <isset property="internal.clean.libs.and.ivy.cache"/>
-            <or>
-                <equals arg1="${internal.do.ivy.retrieval}" arg2="true" casesensitive="false" trim="true"/>
-                <not>
-                    <and>
-                        <available type="file" file="${ivy.dest.file}"/>
-                        <available type="file" file="${ivy-core.dest.file}"/>
-                    </and>
-                </not>
-            </or>
-        </or>
+        <and>
+            <not>
+                <equals arg1="${no.ivy}" arg2="true" casesensitive="false" trim="true"/>
+            </not>
+            <and>
+                <or>
+                    <isset property="internal.clean.bootstrap.libs.and.ivy.cache"/>
+                    <or>
+                        <not>
+                            <and>
+                                <available type="file" file="${ivy.dest.file}"/>
+                                <available type="file" file="${ivy-core.dest.file}"/>
+                            </and>
+                        </not>
+                    </or>
+                </or>
+            </and>
+        </and>
     </condition>
 
-    <target name="clean-libs-and-ivy-cache" if="internal.clean.libs.and.ivy.cache">
+    <target name="clean-bootstrap-libs-and-ivy-cache" if="internal.clean.bootstrap.libs.and.ivy.cache">
         <delete dir="${bda-utils.dir}"/>
-        <delete dir="${lib.dir}"/>
         <delete dir="${ivy.cache.dir}"/>
     </target>
 
-    <target name="get-ivy-bootstrap-dependencies" if="need.to.get.ivy.bootstrap.dependencies" depends="clean-libs-and-ivy-cache">
-        <mkdir dir="${lib.dir}"/>
+    <target name="get-ivy-bootstrap-dependencies" if="need.to.get.ivy.bootstrap.dependencies" depends="clean-bootstrap-libs-and-ivy-cache">
+        <mkdir dir="${bda-utils.dir}"/>
         <get src="${ivy.src.url}" dest="${ivy.dest.file}"/>
         <get src="${ivy-core.src.url}" dest="${ivy-core.dest.file}"/>
     </target>
 
-    <target name="retrieve-dependencies" if="internal.do.ivy.retrieval" depends="get-ivy-bootstrap-dependencies">
+    <target name="retrieve-bda-dependencies" unless="internal.no.ivy" if="bda.utils.build.file.not.present" depends="get-ivy-bootstrap-dependencies">
         <path id="ivy.classpath">
-            <fileset dir="${lib.dir}">
+            <fileset dir="${bda-utils.dir}">
                 <include name="ivy*.jar" />
             </fileset>
         </path>
@@ -56,14 +77,27 @@
         <property name="ivy.cache.dir" value="${ivy.cache.dir}"/>
         <property name="ivy.resolver.default.check.modified" value="true"/>
         <ivy:settings override="false" file="${caarray.ivy.settings.file}" />
-        <ivy:resolve file="${caarray.dependencies.file}" refresh="true" conf="*" />
-        <ivy:retrieve pattern="${lib.dir}/caarray-[conf]/[artifact]-[revision].[ext]" conf="asm_2.2.1, asm_3.0, project" />
+        <ivy:resolve file="${caarray.dependencies.file}" refresh="true" conf="bda-utils" />
         <ivy:retrieve pattern="${bda-utils.dir}/[artifact]-[revision].[ext]" conf="bda-utils" />
         <unzip dest="${bda-utils.dir}">
             <fileset dir="${bda-utils.dir}">
                 <include name="bda-build-utils*.zip"/>
             </fileset>
         </unzip>
+    </target>
+
+    <target name="retrieve-app-dependencies" unless="internal.no.ivy" depends="get-ivy-bootstrap-dependencies">
+        <path id="ivy.classpath">
+            <fileset dir="${bda-utils.dir}">
+                <include name="ivy*.jar" />
+            </fileset>
+        </path>
+        <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.classpath"/>
+        <property name="ivy.cache.dir" value="${ivy.cache.dir}"/>
+        <property name="ivy.resolver.default.check.modified" value="true"/>
+        <ivy:settings override="false" file="${caarray.ivy.settings.file}" />
+        <ivy:resolve file="${caarray.dependencies.file}" refresh="true" conf="asm_2.2.1, asm_3.0, project" />
+        <ivy:retrieve pattern="${lib.dir}/caarray-[conf]/[artifact]-[revision].[ext]" conf="asm_2.2.1, asm_3.0, project" />
     </target>
 
 </project>

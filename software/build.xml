@@ -51,7 +51,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <property name="caarray.sql.target.dir" value="${caarray.src.dir}/caarraydb/target/sql" />
     <property name="caarray.sql.src.dir" value="${caarray.src.dir}/caarraydb/src/main/sql" />
     <property name="caarray.ear.target.dir" value="${caarray.src.dir}/caarray.ear/target" />
-    <property name="caarray.grid.target.dir" value="${caarray.src.dir}/CaArraySvc" />
+    <property name="caarray.grid.target.dir" value="${caarray.src.dir}/grid/v1_0" />
 
 
     <property name="lib.dir" value="${basedir}/lib" />
@@ -67,10 +67,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 
 
     <!-- delegate retrieval of third-party dependencies -->
-    <ant antfile="${basedir}/build/build.xml" inheritall="false" target="init:dependencies" dir="${basedir}">
-        <property name="clean.libs.and.ivy.cache" value="${clean.libs.and.ivy.cache}"/>
+    <ant antfile="${basedir}/build/build.xml" inheritall="false" target="init:bootstrap:dependencies" dir="${basedir}">
+        <property name="no.ivy" value="${no.ivy}"/>
+        <property name="clean.bootstrap.libs.and.ivy.cache" value="${clean.bootstrap.libs.and.ivy.cache}"/>
         <property name="local.repo.dir" value="${local.repo.dir}"/>
-        <property name="force.ivy.retrieval" value="${force.ivy.retrieval}" />
     </ant>
 
     <!-- Paths -->
@@ -86,33 +86,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         </fileset>
     </path>
 
-
-    <!-- Task definitions -->
-    <taskdef resource="simiantask.properties" classpathref="bda-utils.classpath" />
-    <taskdef uri="antlib:org.apache.ant.antunit" resource="org/apache/ant/antunit/antlib.xml">
-        <classpath>
-            <pathelement location="${bda-utils.dir}/antunit-1.0.jar" />
-        </classpath>
-    </taskdef>
-    <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="bda-utils.classpath" />
-    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="project.classpath"/>
-    <taskdef name="for" classname="net.sf.antcontrib.logic.ForTask" classpathref="bda-utils.classpath"/>
-
     <!-- Includes- include BDA marcos -->
     <import file="${bda-utils.dir}/bda-build-utils-${bda.version}.xml" />
-
-    <!-- Targets -->
-    <target name="static-analysis:simian" description="Performs code duplication analysis">
-        <simian>
-            <fileset dir="${basedir}/ncia-services-commons/src" includes="**/*.java"/>
-            <fileset dir="${basedir}/ncia-services-grid/src" includes="**/*.java"/>
-            <fileset dir="${basedir}/ncia-web/src" includes="**/*.java"/>
-            <formatter type="xml" toFile="${reports.dir}/simian-log.xml"/>
-        </simian>
-        <xslt in="${reports.dir}/simian-log.xml" out="${reports.dir}/simian-log.html" style="${resources.dir}/simian.xsl" />
-    </target>
-    <!-- Static Analysis wrapper, calls all statict analysis targets -->
-    <target name="static-analysis" depends="static-analysis:simian" description="Performs static analysis" />
 
     <target name="diagnostics" description="diagnostics">
         <echoproperties/>
@@ -129,23 +104,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <!-- start from scratch to make sure no stale
              lib definitinos, esp during dev -->
         <available file="${jboss.dest.file}" property="jboss.tools.exists"/>
-    </target>
-
-    <!-- I dont think this is needed
-    <target name="ivy" description="Updates Ivy repository">
-        <ivy:retrieve />
-    </target>
-    -->
-
-    <target name="ivy:clean" description="Clean">
-        <ivy:settings file="${global.ivy.settings.file}" />
-        <ivy:cleancache />
-        <ant inheritAll="false" inheritRefs="false" antfile="bda-ivy-build.xml"
-            target="ivy-cleancache">
-            <property name="bda-utils.dir" value="${bda-utils.dir}"/>
-            <property name="lib.dir" value="${lib.dir}"/>
-        </ant>
-
     </target>
 
     <!-- Wrapper build target, call appropriate builds for sub-projects -->
@@ -216,21 +174,19 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         </ant>
     </target>
 
-
-
     <target name="build:caarray">
-        <ant antfile="${basedir}/build/build.xml" inheritall="false" target="clean" dir="${basedir}"/>
-        <ant antfile="${basedir}/build/build.xml" inheritall="false" target="build" dir="${basedir}"/>
-        <ant antfile="${basedir}/build/build.xml" inheritall="false" target="build:caarray-svc" dir="${basedir}"/>
-        <ant antfile="${basedir}/build/build.xml" inheritall="false" target="build:caarray-client.zip" dir="${basedir}"/>
-        <ant antfile="${basedir}/build/build.xml" inheritall="false" target="create-grid-zip" dir="${basedir}">
+        <ant antfile="${basedir}/build/build.xml" inheritall="false" target="clean-build-with-zips" dir="${basedir}">
              <property name="local.globoss.home" value="${loc.globoss.home}"/>
         </ant>
     </target>
 
     <target name="build:init-sql">
-        <ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-schema-sql" dir="${basedir}" />
-        <ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-mged-sql" dir="${basedir}" />
+        <ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-schema-sql" dir="${basedir}">
+            <property name="no.ivy" value="true"/>
+        </ant>
+        <ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-mged-sql" dir="${basedir}">
+            <property name="no.ivy" value="true"/>
+        </ant>
     </target>
 
 

@@ -211,6 +211,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </filterset>
         </copy>
         <ant antfile="${this.dir}/build-caarray-app.xml" target="database:execute-sql">
+            <property name="no.ivy" value="true" />
             <property name="schema.sql.exists" value="true" />
         </ant>
         <delete dir="${caarraydb.sql.dir}"/>

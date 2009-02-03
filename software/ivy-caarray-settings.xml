@@ -17,7 +17,7 @@ Users must explicitly set the software.dir property if local repository is to be
 
     <!-- defaultCacheDir causes the caarray to use it's own ivy cache directory -->
     <!-- useOrigin causes avoiding the copy of local artifacts to the cache and use directly their original location -->
-    <caches defaultCacheDir="${user.home}/.ivy2-caarray-cache" useOrigin="true"/>
+    <caches defaultCacheDir="${ivy.settings.dir}/.ivy2-caarray-cache" useOrigin="true"/>
     <resolvers>
         <!-- this is where you read from -->
         <chain name="ncicb-chain">

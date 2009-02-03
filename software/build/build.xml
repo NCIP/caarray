@@ -97,39 +97,35 @@
     <!-- ** 3RD PARTY DEPENDENCY MANAGMENT                                ** -->
     <!-- ******************************************************************* -->
 
-    <target name="init:dependencies" description="This target is just a placeholder to allow client scripts which require dependencies to make sure they get downloaded by ivy before setting up paths, etc."/>
+    <target name="init:bootstrap:dependencies" description="This target allows build clients of ivy or bda-utils to initialize them here."/>
 
-    <property name="ivy.cache.dir" value="${user.home}/.ivy2-caarray-cache"/>
+    <property name="ivy.cache.dir" value="${basedir}/.ivy2-caarray-cache"/>
     <property name="asm.2.2.1.lib" value="${lib.dir}/caarray-asm_2.2.1" />
     <property name="asm.3.0.lib" value="${lib.dir}/caarray-asm_3.0" />
     <property name="project.lib" value="${lib.dir}/caarray-project" />
     <property name="bda-utils.dir" value="${basedir}/bda-utils" />
     <property name="bda.version" value="0.9.3" />
+    <property name="bda.utils.build.file" value="${bda-utils.dir}/bda-build-utils-${bda.version}.xml"/>
     <property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
 
-    <condition property="do.ivy.retrieval" value="true">
-        <or>
-            <isset property="clean.libs.and.ivy.cache"/>
-            <isset property="force.ivy.retrieval"/>
-            <not>
-                <and>
-                    <available type="dir" file="${lib.dir}/caarray-asm_2.2.1"/>
-                    <available type="dir" file="${lib.dir}/caarray-asm_3.0"/>
-                    <available type="dir" file="${lib.dir}/caarray-project"/>
-                    <available type="dir" file="${bda-utils.dir}"/>
-                </and>
-            </not>
-        </or>
-    </condition>
-
-    <ant antfile="caarray-ivy-build.xml" dir="${basedir}" inheritAll="true" inheritRefs="true">
-        <property name="clean.libs.and.ivy.cache" value="${clean.libs.and.ivy.cache}"/>
+    <ant antfile="caarray-ivy-build.xml" dir="${basedir}" inheritAll="true" inheritRefs="true" target="retrieve-bda-dependencies">
+        <property name="no.ivy" value="${no.ivy}"/>
+        <property name="clean.bootstrap.libs.and.ivy.cache" value="${clean.bootstrap.libs.and.ivy.cache}"/>
         <property name="local.repo.dir" value="${local.repo.dir}"/>
-        <property name="do.ivy.retrieval" value="${do.ivy.retrieval}" />
         <property name="ivy.cache.dir" value="${ivy.cache.dir}"/>
         <property name="lib.dir" location="${lib.dir}" />
         <property name="bda-utils.dir" value="${bda-utils.dir}"/>
+        <property name="bda.utils.build.file" value="${bda.utils.build.file}"/>
     </ant>
+
+
+    <!-- ******************************************************************* -->
+    <!-- ** IMPORTS                                                       ** -->
+    <!-- ******************************************************************* -->
+
+    <import file="macrodefs.xml" />
+    <import file="${bda.utils.build.file}" />
+
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -174,1050 +170,1052 @@
         <include name="commons-httpclient-3.0.jar" />
     </fileset>
 
-    <!-- paths and filesets to define needed dependencies, which have been retrieved by ivy above -->
-    <path id="project.jars.path">
-        <fileset dir="${project.lib}" id="project.jars.fileset">
-            <include name="*.jar"/>
-        </fileset>
-    </path>
-
-    <path id="no.dependencies.path">
-        <fileset dir="${project.lib}" id="no.dependencies.fileset">
-            <exclude name="**/*" />
-        </fileset>
-    </path>
-
-    <path id="affxfusion.jar.path">
-        <fileset dir="${project.lib}" id="affxfusion.jar.fileset">
-            <include name="AffxFusion-*.jar"/>
-        </fileset>
-    </path>
-    <property name="affxfusion.jar" refid="affxfusion.jar.fileset" />
-
-    <path id="acegi-security.jar.path">
-        <fileset dir="${project.lib}" id="acegi-security.jar.fileset">
-            <include name="acegi-security-*.jar"/>
-            <exclude name="acegi-security-jboss-*.jar"/>
-        </fileset>
-    </path>
-    <property name="acegi-security.jar" refid="acegi-security.jar.fileset" />
-
-    <path id="acegi-security-jboss.jar.path">
-        <fileset dir="${project.lib}" id="acegi-security-jboss.jar.fileset">
-            <include name="acegi-security-jboss-*.jar"/>
-        </fileset>
-    </path>
-    <property name="acegi-security-jboss.jar" refid="acegi-security-jboss.jar.fileset" />
-
-    <path id="ajaxtags.jar.path">
-        <fileset dir="${project.lib}" id="ajaxtags.jar.fileset">
-            <include name="ajaxtags-*.jar"/>
-        </fileset>
-    </path>
-    <property name="ajaxtags.jar" refid="ajaxtags.jar.fileset" />
-
-    <path id="jericho-html.jar.path">
-        <fileset dir="${project.lib}" id="jericho-html.jar.fileset">
-            <include name="jericho-html-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jericho-html.jar" refid="jericho-html.jar.fileset" />
-
-    <path id="ant-contrib.jar.path">
-        <fileset dir="${project.lib}" id="ant-contrib.jar.fileset">
-            <include name="ant-contrib-*.jar"/>
-        </fileset>
-    </path>
-    <property name="ant-contrib.jar" refid="ant-contrib.jar.fileset" />
-    <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="ant-contrib.jar.path" />
-
-    <path id="antlr.jar.path">
-        <fileset dir="${project.lib}" id="antlr.jar.fileset">
-            <include name="antlr-*.jar"/>
-        </fileset>
-    </path>
-    <property name="antlr.jar" refid="antlr.jar.fileset" />
-
-    <path id="asm.jar.path">
-        <fileset dir="${project.lib}" id="asm.jar.fileset">
-            <include name="asm-*.jar"/>
-            <exclude name="asm-attrs-*.jar"/>
-            <exclude name="asm-tree-*.jar"/>
-        </fileset>
-    </path>
-    <property name="asm.jar" refid="asm.jar.fileset" />
-
-    <path id="asm.2.2.1.jar.path">
-        <fileset dir="${asm.2.2.1.lib}" id="asm.2.2.1.jar.fileset">
-            <include name="asm-*.jar"/>
-            <exclude name="asm-attrs-*.jar"/>
-            <exclude name="asm-tree-*.jar"/>
-        </fileset>
-    </path>
-    <property name="asm.2.2.1.jar" refid="asm.2.2.1.jar.fileset" />
-
-    <path id="asm.3.0.jar.path">
-        <fileset dir="${asm.3.0.lib}" id="asm.3.0.jar.fileset">
-            <include name="asm-*.jar"/>
-            <exclude name="asm-attrs-*.jar"/>
-            <exclude name="asm-tree-*.jar"/>
-        </fileset>
-    </path>
-    <property name="asm.3.0.jar" refid="asm.3.0.jar.fileset" />
-
-    <path id="asm-attrs.jar.path">
-        <fileset dir="${project.lib}" id="asm-attrs.jar.fileset">
-            <include name="asm-attrs-*.jar"/>
-        </fileset>
-    </path>
-    <property name="asm-attrs.jar" refid="asm-attrs.jar.fileset" />
-
-    <path id="asm-tree.jar.path">
-        <fileset dir="${project.lib}" id="asm-tree.jar.fileset">
-            <include name="asm-tree-*.jar"/>
-        </fileset>
-    </path>
-    <property name="asm-tree.jar" refid="asm-tree.jar.fileset" />
-
-    <path id="backport-util-concurrent.jar.path">
-        <fileset dir="${project.lib}" id="backport-util-concurrent.jar.fileset">
-            <include name="backport-util-concurrent-*.jar"/>
-        </fileset>
-    </path>
-    <property name="backport-util-concurrent.jar" refid="backport-util-concurrent.jar.fileset" />
-
-    <path id="c3p0.jar.path">
-        <fileset dir="${project.lib}" id="c3p0.jar.fileset">
-            <include name="c3p0-*.jar"/>
-        </fileset>
-    </path>
-    <property name="c3p0.jar" refid="c3p0.jar.fileset" />
-
-
-    <path id="caGrid-core.jar.path">
-        <fileset dir="${project.lib}" id="caGrid-core.jar.fileset">
-            <include name="caGrid-core-*.jar"/>
-        </fileset>
-    </path>
-    <property name="caGrid-core.jar" refid="caGrid-core.jar.fileset" />
-
-    <path id="caGrid-data-stubs.jar.path">
-        <fileset dir="${project.lib}" id="caGrid-data-stubs.jar.fileset">
-            <include name="caGrid-data-stubs-*.jar"/>
-        </fileset>
-    </path>
-    <property name="caGrid-data-stubs.jar" refid="caGrid-data-stubs.jar.fileset" />
-
-    <path id="caGrid-data-common.jar.path">
-        <fileset dir="${project.lib}" id="caGrid-data-common.jar.fileset">
-            <include name="caGrid-data-common-*.jar"/>
-        </fileset>
-    </path>
-    <property name="caGrid-data-common.jar" refid="caGrid-data-common.jar.fileset" />
-
-    <path id="caGrid-sdkQuery32-core.jar.path">
-        <fileset dir="${project.lib}" id="caGrid-sdkQuery32-core.jar.fileset">
-            <include name="caGrid-sdkQuery32-core-*.jar"/>
-        </fileset>
-    </path>
-    <property name="caGrid-sdkQuery32-core.jar" refid="caGrid-sdkQuery32-core.jar.fileset" />
-
-    <path id="caGrid-cql.jar.path">
-        <fileset dir="${project.lib}" id="caGrid-cql.jar.fileset">
-            <include name="caGrid-cql-*.jar"/>
-        </fileset>
-    </path>
-    <property name="caGrid-cql.jar" refid="caGrid-cql.jar.fileset" />
-
-    <path id="cglib.jar.path">
-        <fileset dir="${project.lib}" id="cglib.jar.fileset">
-            <include name="cglib-*.jar"/>
-        </fileset>
-    </path>
-    <property name="cglib.jar" refid="cglib.jar.fileset" />
-
-    <path id="checkstyle.jar.path">
-        <fileset dir="${project.lib}" id="checkstyle.jar.fileset">
-            <include name="checkstyle-*.jar"/>
-        </fileset>
-    </path>
-    <property name="checkstyle.jar" refid="checkstyle.jar.fileset" />
-
-    <path id="cobertura.jar.path">
-        <fileset dir="${project.lib}" id="cobertura.jar.fileset">
-            <include name="cobertura-*.jar"/>
-        </fileset>
-    </path>
-    <property name="cobertura.jar" refid="cobertura.jar.fileset" />
-
-    <path id="commons-beanutils.jar.path">
-        <fileset dir="${project.lib}" id="commons-beanutils.jar.fileset">
-            <include name="commons-beanutils-*.jar"/>
-            <exclude name="commons-beanutils-core-*.jar"/>
-        </fileset>
-    </path>
-    <property name="commons-beanutils.jar" refid="commons-beanutils.jar.fileset" />
-
-    <path id="commons-codec.jar.path">
-        <fileset dir="${project.lib}" id="commons-codec.jar.fileset">
-            <include name="commons-codec-*.jar"/>
-        </fileset>
-    </path>
-    <property name="commons-codec.jar" refid="commons-codec.jar.fileset" />
-
-    <path id="commons-collections.jar.path">
-        <fileset dir="${project.lib}" id="commons-collections.jar.fileset">
-            <include name="commons-collections-*.jar"/>
-        </fileset>
-    </path>
-    <property name="commons-collections.jar" refid="commons-collections.jar.fileset" />
-
-    <path id="commons-digester.jar.path">
-        <fileset dir="${project.lib}" id="commons-digester.jar.fileset">
-            <include name="commons-digester-*.jar"/>
-        </fileset>
-    </path>
-    <property name="commons-digester.jar" refid="commons-digester.jar.fileset" />
-
-    <path id="commons-discovery.jar.path">
-        <fileset dir="${project.lib}" id="commons-discovery.jar.fileset">
-            <include name="commons-discovery-*.jar"/>
-        </fileset>
-    </path>
-    <property name="commons-discovery.jar" refid="commons-discovery.jar.fileset" />
-
-    <path id="commons-el.jar.path">
-        <fileset dir="${project.lib}" id="commons-el.jar.fileset">
-            <include name="commons-el-*.jar"/>
-        </fileset>
-    </path>
-    <property name="commons-el.jar" refid="commons-el.jar.fileset" />
-
-    <path id="commons-io.jar.path">
-        <fileset dir="${project.lib}" id="commons-io.jar.fileset">
-            <include name="commons-io-*.jar"/>
-        </fileset>
-    </path>
-    <property name="commons-io.jar" refid="commons-io.jar.fileset" />
-
-    <path id="commons-lang.jar.path">
-        <fileset dir="${project.lib}" id="commons-lang.jar.fileset">
-            <include name="commons-lang-*.jar"/>
-        </fileset>
-    </path>
-    <property name="commons-lang.jar" refid="commons-lang.jar.fileset" />
-
-    <path id="commons-configuration.jar.path">
-        <fileset dir="${project.lib}" id="commons-configuration.jar.fileset">
-            <include name="commons-configuration-*.jar"/>
-        </fileset>
-    </path>
-    <property name="commons-configuration.jar" refid="commons-configuration.jar.fileset" />
-
-    <path id="commons-logging.jar.path">
-        <fileset dir="${project.lib}" id="commons-logging.jar.fileset">
-            <include name="commons-logging-*.jar"/>
-        </fileset>
-    </path>
-    <property name="commons-logging.jar" refid="commons-logging.jar.fileset" />
-
-    <path id="commons-fileupload.jar.path">
-        <fileset dir="${project.lib}" id="commons-fileupload.jar.fileset">
-            <include name="commons-fileupload-*.jar"/>
-        </fileset>
-    </path>
-    <property name="commons-fileupload.jar" refid="commons-fileupload.jar.fileset" />
-
-    <path id="cog-axis.jar.path">
-        <fileset dir="${project.lib}" id="cog-axis.jar.fileset">
-            <include name="cog-axis-*.jar"/>
-        </fileset>
-    </path>
-    <property name="cog-axis.jar" refid="cog-axis.jar.fileset" />
-
-    <path id="cog-jglobus.jar.path">
-        <fileset dir="${project.lib}" id="cog-jglobus.jar.fileset">
-            <include name="cog-jglobus-*.jar"/>
-        </fileset>
-    </path>
-    <property name="cog-jglobus.jar" refid="cog-jglobus.jar.fileset" />
-
-    <path id="jce.jar.path">
-        <fileset dir="${project.lib}" id="jce.jar.fileset">
-            <include name="jce-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jce.jar" refid="jce.jar.fileset" />
-
-    <path id="wsrf_core_enum.jar.path">
-        <fileset dir="${project.lib}" id="wsrf_core_enum.jar.fileset">
-            <include name="wsrf_core_enum-*.jar"/>
-        </fileset>
-    </path>
-    <property name="wsrf_core_enum.jar" refid="wsrf_core_enum.jar.fileset" />
-
-    <path id="wsrf_core_stubs_enum.jar.path">
-        <fileset dir="${project.lib}" id="wsrf_core_stubs_enum.jar.fileset">
-            <include name="wsrf_core_stubs_enum-*.jar"/>
-        </fileset>
-    </path>
-    <property name="wsrf_core_stubs_enum.jar" refid="wsrf_core_stubs_enum.jar.fileset" />
-
-    <path id="wss4j.jar.path">
-        <fileset dir="${project.lib}" id="wss4j.jar.fileset">
-            <include name="wss4j-*.jar"/>
-        </fileset>
-    </path>
-    <property name="wss4j.jar" refid="wss4j.jar.fileset" />
-
-    <path id="dom4j.jar.path">
-        <fileset dir="${project.lib}" id="dom4j.jar.fileset">
-            <include name="dom4j-*.jar"/>
-        </fileset>
-    </path>
-    <property name="dom4j.jar" refid="dom4j.jar.fileset" />
-
-    <path id="xercesImpl.jar.path">
-        <fileset dir="${project.lib}" id="xercesImpl.jar.fileset">
-            <include name="xercesImpl-*.jar"/>
-        </fileset>
-    </path>
-    <property name="xercesImpl.jar" refid="xercesImpl.jar.fileset" />
-
-    <path id="xerces-J.jar.path">
-        <fileset dir="${project.lib}" id="xerces-J.jar.fileset">
-            <include name="xerces-J-*.jar"/>
-        </fileset>
-    </path>
-    <property name="xerces-J.jar" refid="xerces-J.jar.fileset"/>
-
-    <path id="ehcache.jar.path">
-        <fileset dir="${project.lib}" id="ehcache.jar.fileset">
-            <include name="ehcache-*.jar"/>
-        </fileset>
-    </path>
-    <property name="ehcache.jar" refid="ehcache.jar.fileset" />
-
-    <path id="hibernate.jar.path">
-        <fileset dir="${project.lib}" id="hibernate.jar.fileset">
-            <include name="hibernate-*.jar"/>
-            <exclude name="hibernate-annotations-*.jar"/>
-            <exclude name="hibernate-client-*.jar"/>
-            <exclude name="hibernate-tools-*.jar"/>
-        </fileset>
-    </path>
-    <property name="hibernate.jar" refid="hibernate.jar.fileset" />
-
-    <path id="hibernate-client.jar.path">
-        <fileset dir="${project.lib}" id="hibernate-client.jar.fileset">
-            <include name="hibernate-client-*.jar"/>
-        </fileset>
-    </path>
-    <property name="hibernate-client.jar" refid="hibernate-client.jar.fileset" />
-
-    <path id="castor.jar.path">
-        <fileset dir="${project.lib}" id="castor.jar.fileset">
-            <include name="castor-*.jar"/>
-        </fileset>
-    </path>
-    <property name="castor.jar" refid="castor.jar.fileset" />
-
-    <path id="ejb3-persistence.jar.path">
-        <fileset dir="${project.lib}" id="ejb3-persistence.jar.fileset">
-            <include name="ejb3-persistence-*.jar"/>
-        </fileset>
-    </path>
-    <property name="ejb3-persistence.jar" refid="ejb3-persistence.jar.fileset" />
-
-    <path id="hibernate-annotations.jar.path">
-        <fileset dir="${project.lib}" id="hibernate-annotations.jar.fileset">
-            <include name="hibernate-annotations-*.jar"/>
-        </fileset>
-    </path>
-    <property name="hibernate-annotations.jar" refid="hibernate-annotations.jar.fileset" />
-
-    <path id="jakarta-oro.jar.path">
-        <fileset dir="${project.lib}" id="jakarta-oro.jar.fileset">
-            <include name="jakarta-oro-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jakarta-oro.jar" refid="jakarta-oro.jar.fileset" />
-
-    <path id="javaee.jar.path">
-        <fileset dir="${project.lib}" id="javaee.jar.fileset">
-            <include name="javaee-*.jar"/>
-        </fileset>
-    </path>
-    <property name="javaee.jar" refid="javaee.jar.fileset" />
-
-    <path id="jaxen.jar.path">
-        <fileset dir="${project.lib}" id="jaxen.jar.fileset">
-            <include name="jaxen-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jaxen.jar" refid="jaxen.jar.fileset" />
-
-    <path id="jboss-aop-client.jar.path">
-        <fileset dir="${project.lib}" id="jboss-aop-client.jar.fileset">
-            <include name="jboss-aop-client-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jboss-aop-client.jar" refid="jboss-aop-client.jar.fileset" />
-
-    <path id="jboss-aspect-client.jar.path">
-        <fileset dir="${project.lib}" id="jboss-aspect-client.jar.fileset">
-            <include name="jboss-aspect-client-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jboss-aspect-client.jar" refid="jboss-aspect-client.jar.fileset" />
-
-    <path id="jbossall-client.jar.path">
-        <fileset dir="${project.lib}" id="jbossall-client.jar.fileset">
-            <include name="jbossall-client-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jbossall-client.jar" refid="jbossall-client.jar.fileset" />
-
-    <path id="jboss-ejb3-client.jar.path">
-        <fileset dir="${project.lib}" id="jboss-ejb3-client.jar.fileset">
-            <include name="jboss-ejb3-client-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jboss-ejb3-client.jar" refid="jboss-ejb3-client.jar.fileset" />
-
-    <path id="jboss-ejb3x.jar.path">
-        <fileset dir="${project.lib}" id="jboss-ejb3x.jar.fileset">
-            <include name="jboss-ejb3x-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jboss-ejb3x.jar" refid="jboss-ejb3x.jar.fileset" />
-
-    <path id="jboss-annotations-ejb3.jar.path">
-        <fileset dir="${project.lib}" id="jboss-annotations-ejb3.jar.fileset">
-            <include name="jboss-annotations-ejb3-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jboss-annotations-ejb3.jar" refid="jboss-annotations-ejb3.jar.fileset" />
-
-    <path id="jta.jar.path">
-        <fileset dir="${project.lib}" id="jta.jar.fileset">
-            <include name="jta-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jta.jar" refid="jta.jar.fileset" />
-
-    <path id="junit.jar.path">
-        <fileset dir="${project.lib}" id="junit.jar.fileset">
-            <include name="junit-*.jar"/>
-        </fileset>
-    </path>
-    <property name="junit.jar" refid="junit.jar.fileset" />
-
-    <path id="oscache.jar.path">
-        <fileset dir="${project.lib}" id="oscache.jar.fileset">
-            <include name="oscache-*.jar"/>
-        </fileset>
-    </path>
-    <property name="oscache.jar" refid="oscache.jar.fileset" />
-
-    <path id="urlrewrite.jar.path">
-        <fileset dir="${project.lib}" id="urlrewrite.jar.fileset">
-            <include name="urlrewrite-*.jar"/>
-        </fileset>
-    </path>
-    <property name="urlrewrite.jar" refid="urlrewrite.jar.fileset" />
-
-    <path id="sitemesh.jar.path">
-        <fileset dir="${project.lib}" id="sitemesh.jar.fileset">
-            <include name="sitemesh-*.jar"/>
-        </fileset>
-    </path>
-    <property name="sitemesh.jar" refid="sitemesh.jar.fileset" />
-
-    <path id="struts2-spring-plugin.jar.path">
-        <fileset dir="${project.lib}" id="struts2-spring-plugin.jar.fileset">
-            <include name="struts2-spring-plugin-*.jar"/>
-        </fileset>
-    </path>
-    <property name="struts2-spring-plugin.jar" refid="struts2-spring-plugin.jar.fileset" />
-
-    <path id="struts2-sitemesh-plugin.jar.path">
-        <fileset dir="${project.lib}" id="struts2-sitemesh-plugin.jar.fileset">
-            <include name="struts2-sitemesh-plugin-*.jar"/>
-        </fileset>
-    </path>
-    <property name="struts2-sitemesh-plugin.jar" refid="struts2-sitemesh-plugin.jar.fileset" />
-
-    <path id="struts2-codebehind-plugin.jar.path">
-        <fileset dir="${project.lib}" id="struts2-codebehind-plugin.jar.fileset">
-            <include name="struts2-codebehind-plugin-*.jar"/>
-        </fileset>
-    </path>
-    <property name="struts2-codebehind-plugin.jar" refid="struts2-codebehind-plugin.jar.fileset" />
-
-    <path id="log4j.jar.path">
-        <fileset dir="${project.lib}" id="log4j.jar.fileset">
-            <include name="log4j-*.jar"/>
-        </fileset>
-    </path>
-    <property name="log4j.jar" refid="log4j.jar.fileset" />
-
-    <path id="myfaces-api.jar.path">
-        <fileset dir="${project.lib}" id="myfaces-api.jar.fileset">
-            <include name="myfaces-api-*.jar"/>
-        </fileset>
-    </path>
-    <property name="myfaces-api.jar" refid="myfaces-api.jar.fileset" />
-
-    <path id="mysql-connector-java.jar.path">
-        <fileset dir="${project.lib}" id="mysql-connector-java.jar.fileset">
-            <include name="mysql-connector-java-*.jar"/>
-        </fileset>
-    </path>
-    <property name="mysql-connector-java.jar" refid="mysql-connector-java.jar.fileset" />
-
-    <path id="pmd.jar.path">
-        <fileset dir="${project.lib}" id="pmd.jar.fileset">
-            <include name="pmd-*.jar"/>
-        </fileset>
-    </path>
-    <property name="pmd.jar" refid="pmd.jar.fileset" />
-
-    <path id="selenium-server.jar.path">
-        <fileset dir="${project.lib}" id="selenium-server.jar.fileset">
-            <include name="selenium-server-*.jar"/>
-        </fileset>
-    </path>
-    <property name="selenium-server.jar" refid="selenium-server.jar.fileset" />
-
-    <path id="selenium-java-client-driver.jar.path">
-        <fileset dir="${project.lib}" id="selenium-java-client-driver.jar.fileset">
-            <include name="selenium-java-client-driver-*.jar"/>
-        </fileset>
-    </path>
-    <property name="selenium-java-client-driver.jar" refid="selenium-java-client-driver.jar.fileset" />
-
-    <path id="selenium-java-client-driver-tests.jar.path">
-        <fileset dir="${project.lib}" id="selenium-java-client-driver-tests.jar.fileset">
-            <include name="selenium-java-client-driver-tests-*.jar"/>
-        </fileset>
-    </path>
-    <property name="selenium-java-client-driver-tests.jar" refid="selenium-java-client-driver-tests.jar.fileset" />
-
-    <path id="spring.jar.path">
-        <fileset dir="${project.lib}" id="spring.jar.fileset">
-            <include name="spring-*.jar"/>
-            <exclude name="spring-mock-*.jar"/>
-            <exclude name="spring-richclient-full-*.jar"/>
-        </fileset>
-    </path>
-    <property name="spring.jar" refid="spring.jar.fileset" />
-
-    <path id="spring-mock.jar.path">
-        <fileset dir="${project.lib}" id="spring-mock.jar.fileset">
-            <include name="spring-mock-*.jar"/>
-        </fileset>
-    </path>
-    <property name="spring-mock.jar" refid="spring-mock.jar.fileset" />
-
-    <path id="netcdf.jar.path">
-        <fileset dir="${project.lib}" id="netcdf.jar.fileset">
-            <include name="netcdf-*.jar"/>
-        </fileset>
-    </path>
-    <property name="netcdf.jar" refid="netcdf.jar.fileset" />
-
-    <path id="javacsv.jar.path">
-        <fileset dir="${project.lib}" id="javacsv.jar.fileset">
-            <include name="javacsv-*.jar"/>
-        </fileset>
-    </path>
-    <property name="javacsv.jar" refid="javacsv.jar.fileset" />
-
-    <path id="csmapi.jar.path">
-        <fileset dir="${project.lib}" id="csmapi.jar.fileset">
-            <include name="csmapi-*.jar"/>
-        </fileset>
-    </path>
-    <property name="csmapi.jar" refid="csmapi.jar.fileset" />
-
-    <path id="svnant.jar.path">
-        <fileset dir="${project.lib}" id="svnant.jar.fileset">
-            <include name="svnant-*.jar"/>
-        </fileset>
-    </path>
-    <property name="svnant.jar" refid="svnant.jar.fileset" />
-
-    <path id="svnClientAdapter.jar.path">
-        <fileset dir="${project.lib}" id="svnClientAdapter.jar.fileset">
-            <include name="svnClientAdapter-*.jar"/>
-        </fileset>
-    </path>
-    <property name="svnClientAdapter.jar" refid="svnClientAdapter.jar.fileset" />
-
-    <path id="svnjavahl.jar.path">
-        <fileset dir="${project.lib}" id="svnjavahl.jar.fileset">
-            <include name="svnjavahl-*.jar"/>
-        </fileset>
-    </path>
-    <property name="svnjavahl.jar" refid="svnjavahl.jar.fileset" />
-
-    <path id="clm.jar.path">
-        <fileset dir="${project.lib}" id="clm.jar.fileset">
-            <include name="clm-*.jar"/>
-        </fileset>
-    </path>
-    <property name="clm.jar" refid="clm.jar.fileset" />
-
-    <path id="addressing.jar.path">
-        <fileset dir="${project.lib}" id="addressing.jar.fileset">
-            <include name="addressing-*.jar"/>
-        </fileset>
-    </path>
-    <property name="addressing.jar" refid="addressing.jar.fileset" />
-
-    <path id="struts2-core.jar.path">
-        <fileset dir="${project.lib}" id="struts2-core.jar.fileset">
-            <include name="struts2-core-*.jar"/>
-        </fileset>
-    </path>
-    <property name="struts2-core.jar" refid="struts2-core.jar.fileset" />
-
-    <path id="xwork.jar.path">
-        <fileset dir="${project.lib}" id="xwork.jar.fileset">
-            <include name="xwork-*.jar"/>
-        </fileset>
-    </path>
-    <property name="xwork.jar" refid="xwork.jar.fileset" />
-
-    <path id="ognl.jar.path">
-        <fileset dir="${project.lib}" id="ognl.jar.fileset">
-            <include name="ognl-*.jar"/>
-        </fileset>
-    </path>
-    <property name="ognl.jar" refid="ognl.jar.fileset" />
-
-    <path id="displaytag.jar.path">
-        <fileset dir="${project.lib}" id="displaytag.jar.fileset">
-            <include name="displaytag-*.jar"/>
-        </fileset>
-    </path>
-    <property name="displaytag.jar" refid="displaytag.jar.fileset" />
-
-    <path id="freemarker.jar.path">
-        <fileset dir="${project.lib}" id="freemarker.jar.fileset">
-            <include name="freemarker-*.jar"/>
-        </fileset>
-    </path>
-    <property name="freemarker.jar" refid="freemarker.jar.fileset" />
-
-    <path id="jstl.jar.path">
-        <fileset dir="${project.lib}" id="jstl.jar.fileset">
-            <include name="jstl-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jstl.jar" refid="jstl.jar.fileset" />
-
-    <path id="standard.jar.path">
-        <fileset dir="${project.lib}" id="standard.jar.fileset">
-            <include name="standard-*.jar"/>
-        </fileset>
-    </path>
-    <property name="standard.jar" refid="standard.jar.fileset" />
-
-    <path id="axis.jar.path">
-        <fileset dir="${project.lib}" id="axis.jar.fileset">
-            <include name="axis-*.jar"/>
-        </fileset>
-    </path>
-    <property name="axis.jar" refid="axis.jar.fileset" />
-
-    <path id="jboss-cache.jar.path">
-        <fileset dir="${project.lib}" id="jboss-cache.jar.fileset">
-            <include name="jboss-cache-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jboss-cache.jar" refid="jboss-cache.jar.fileset" />
-
-    <path id="jboss-common.jar.path">
-        <fileset dir="${project.lib}" id="jboss-common.jar.fileset">
-            <include name="jboss-common-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jboss-common.jar" refid="jboss-common.jar.fileset" />
-
-    <path id="jboss-system.jar.path">
-        <fileset dir="${project.lib}" id="jboss-system.jar.fileset">
-            <include name="jboss-system-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jboss-system.jar" refid="jboss-system.jar.fileset" />
-
-    <path id="jboss-jmx.jar.path">
-        <fileset dir="${project.lib}" id="jboss-jmx.jar.fileset">
-            <include name="jboss-jmx-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jboss-jmx.jar" refid="jboss-jmx.jar.fileset" />
-
-    <path id="jgroups.jar.path">
-        <fileset dir="${project.lib}" id="jgroups.jar.fileset">
-            <include name="jgroups-*.jar"/>
-        </fileset>
-    </path>
-    <property name="jgroups.jar" refid="jgroups.jar.fileset" />
-
-    <path id="concurrent.jar.path">
-        <fileset dir="${project.lib}" id="concurrent.jar.fileset">
-            <include name="concurrent-*.jar"/>
-        </fileset>
-    </path>
-    <property name="concurrent.jar" refid="concurrent.jar.fileset" />
-
-    <path id="ncicb-ant.jar.path">
-        <fileset dir="${project.lib}" id="ncicb-ant.jar.fileset">
-            <include name="ncicb-ant-*.jar"/>
-        </fileset>
-    </path>
-    <property name="ncicb-ant.jar" refid="ncicb-ant.jar.fileset" />
-
-    <path id="xmlconfig.jar.path">
-        <fileset dir="${project.lib}" id="xmlconfig.jar.fileset">
-            <include name="xmlconfig-*.jar"/>
-        </fileset>
-    </path>
-    <property name="xmlconfig.jar" refid="xmlconfig.jar.fileset" />
-
-    <path id="nci-commons-core.jar.path">
-        <fileset dir="${project.lib}" id="nci-commons-core.jar.fileset">
-            <include name="nci-commons-core-*.jar"/>
-        </fileset>
-    </path>
-    <property name="nci-commons-core.jar" refid="nci-commons-core.jar.fileset" />
-
-    <path id="nci-commons-struts2.jar.path">
-        <fileset dir="${project.lib}" id="nci-commons-struts2.jar.fileset">
-            <include name="nci-commons-struts2-*.jar"/>
-        </fileset>
-    </path>
-    <property name="nci-commons-struts2.jar" refid="nci-commons-struts2.jar.fileset" />
-
-    <path id="ezmorph.jar.path">
-        <fileset dir="${project.lib}" id="ezmorph.jar.fileset">
-            <include name="ezmorph-*.jar"/>
-        </fileset>
-    </path>
-    <property name="ezmorph.jar" refid="ezmorph.jar.fileset" />
-
-    <path id="json-lib.jar.path">
-        <fileset dir="${project.lib}" id="json-lib.jar.fileset">
-            <include name="json-lib-*.jar"/>
-        </fileset>
-    </path>
-    <property name="json-lib.jar" refid="json-lib.jar.fileset" />
-
-    <path id="xalan.jar.path">
-        <fileset dir="${project.lib}" id="xalan.jar.fileset">
-            <include name="xalan-*.jar"/>
-        </fileset>
-    </path>
-    <property name="xalan.jar" refid="xalan.jar.fileset" />
-
-    <path id="serializer.jar.path">
-        <fileset dir="${project.lib}" id="serializer.jar.fileset">
-            <include name="serializer-*.jar"/>
-        </fileset>
-    </path>
-    <property name="serializer.jar" refid="serializer.jar.fileset" />
-
-    <path id="dozer.jar.path">
-        <fileset dir="${project.lib}" id="dozer.jar.fileset">
-            <include name="dozer-*.jar"/>
-        </fileset>
-    </path>
-    <property name="dozer.jar" refid="dozer.jar.fileset" />
-
-    <path id="javassist.jar.path">
-        <fileset dir="${project.lib}" id="javassist.jar.fileset">
-            <include name="javassist-*.jar"/>
-        </fileset>
-    </path>
-    <property name="javassist.jar" refid="javassist.jar.fileset" />
-
-    <path id="rmiio.jar.path">
-        <fileset dir="${project.lib}" id="rmiio.jar.fileset">
-            <include name="rmiio-*.jar"/>
-        </fileset>
-    </path>
-    <property name="rmiio.jar" refid="rmiio.jar.fileset" />
-
-    <path id="jboss.dependencies.path">
-        <fileset id="jboss.dependencies.fileset" dir="${project.lib}">
-            <include name="${jboss-annotations-ejb3.jar}"/>
-            <include name="${jbossall-client.jar}"/>
-            <include name="${jboss-common.jar}"/>
-            <include name="${jboss-cache.jar}"/>
-            <include name="${jboss-jmx.jar}"/>
-            <include name="${jboss-system.jar}"/>
-            <include name="${jboss-aop-client.jar}"/>
-            <include name="${jboss-aspect-client.jar}"/>
-            <include name="${jboss-ejb3-client.jar}"/>
-        </fileset>
-    </path>
-
-    <path id="common.compile.dependencies.path">
-        <fileset refid="javaee.jar.fileset"/>
-        <fileset refid="dom4j.jar.fileset"/>
-        <fileset refid="affxfusion.jar.fileset"/>
-        <fileset refid="castor.jar.fileset"/>
-        <fileset refid="cglib.jar.fileset"/>
-        <fileset refid="commons-lang.jar.fileset"/>
-        <fileset refid="clm.jar.fileset"/>
-        <fileset refid="csmapi.jar.fileset"/>
-        <fileset refid="javacsv.jar.fileset"/>
-        <fileset refid="mysql-connector-java.jar.fileset"/>
-        <fileset refid="netcdf.jar.fileset"/>
-        <fileset refid="xerces-J.jar.fileset"/>
-        <fileset refid="xercesImpl.jar.fileset"/>
-        <fileset refid="commons-configuration.jar.fileset"/>
-        <fileset id="common.grid.dependencies.fileset" dir="${project.lib}">
-            <include name="${axis.jar}"/>
-            <include name="${caGrid-core.jar}"/>
-            <include name="${caGrid-data-common.jar}"/>
-            <include name="${caGrid-sdkQuery32-core.jar}"/>
-            <include name="${caGrid-data-stubs.jar}"/>
-            <include name="${caGrid-cql.jar}"/>
-            <include name="${ejb3-persistence.jar}"/>
-            <include name="${hibernate.jar}"/>
-            <include name="${hibernate-annotations.jar}"/>
-            <include name="${nci-commons-core.jar}"/>
-        </fileset>
-        <fileset id="common.compile.partial.dependencies.fileset" dir="${project.lib}">
-            <include name="${commons-beanutils.jar}"/>
-            <include name="${commons-collections.jar}"/>
-            <include name="${commons-logging.jar}"/>
-            <include name="${commons-io.jar}"/>
-            <include name="${json-lib.jar}"/>
-            <include name="${log4j.jar}"/>
-            <include name="${spring.jar}"/>
-        </fileset>
-    </path>
-    <pathtofileset name="common.compile.dependencies.fileset" pathrefid="common.compile.dependencies.path" dir="${project.lib}"/>
-
-    <path id="ejb.compile.dependencies.path">
-        <fileset refid="jboss.dependencies.fileset"/>
-        <fileset refid="common.compile.dependencies.fileset"/>
-        <fileset refid="ejb3-persistence.jar.fileset"/>
-		<fileset refid="dozer.jar.fileset"/>
-		<fileset refid="rmiio.jar.fileset"/>
-		<fileset refid="javassist.jar.fileset"/>
-    </path>
-
-    <path id="grid.compile.dependencies.path">
-        <fileset refid="common.compile.partial.dependencies.fileset"/>
-        <fileset refid="common.grid.dependencies.fileset"/>
-        <fileset id="grid.compile.partial.dependencies.fileset" dir="${project.lib}">
-            <include name="${addressing.jar}"/>
-            <include name="${cog-axis.jar}"/>
-            <include name="${cog-jglobus.jar}"/>
-            <include name="${commons-discovery.jar}"/>
-            <include name="${jce.jar}"/>
-            <include name="${wsrf_core_enum.jar}"/>
-            <include name="${wsrf_core_stubs_enum.jar}"/>
-            <include name="${wss4j.jar}"/>
-            <include name="${xercesImpl.jar}"/>
-        </fileset>
-    </path>
-    <pathtofileset name="grid.compile.dependencies.fileset" pathrefid="grid.compile.dependencies.path" dir="${project.lib}"/>
-
-    <path id="war.outside.app.server.dependencies.path">
-        <fileset refid="common.compile.dependencies.fileset"/>
-        <fileset id="war.outside.app.server.partial.dependencies.fileset" dir="${project.lib}">
-            <include name="${acegi-security.jar}"/>
-            <include name="${acegi-security-jboss.jar}"/>
-            <include name="${spring-mock.jar}"/>
-            <include name="${commons-discovery.jar}"/>
-            <include name="${commons-el.jar}"/>
-            <include name="${commons-fileupload.jar}"/>
-            <include name="${displaytag.jar}"/>
-            <include name="${freemarker.jar}"/>
-            <include name="${jstl.jar}"/>
-            <include name="${standard.jar}"/>
-            <include name="${log4j.jar}"/>
-            <include name="${junit.jar}"/>
-            <include name="${oscache.jar}"/>
-            <include name="${sitemesh.jar}"/>
-            <include name="${urlrewrite.jar}"/>
-            <include name="${xwork.jar}"/>
-            <include name="${ognl.jar}"/>
-            <include name="${ajaxtags.jar}"/>
-            <include name="${jericho-html.jar}"/>
-            <include name="${json-lib.jar}"/>
-            <include name="${ezmorph.jar}"/>
-            <include name="${nci-commons-struts2.jar}"/>
-            <include name="${struts2-core.jar}"/>
-        </fileset>
-    </path>
-
-    <pathtofileset name="war.outside.app.server.dependencies.fileset" pathrefid="war.outside.app.server.dependencies.path" dir="${project.lib}"/>
-
-    <path id="war.inside.app.server.dependencies.path">
-        <fileset refid="war.outside.app.server.partial.dependencies.fileset"/>
-        <fileset id="war.inside.app.server.partial.dependencies.fileset" dir="${project.lib}">
-            <include name="${commons-codec.jar}"/>
-            <include name="${commons-collections.jar}"/>
-            <include name="${commons-digester.jar}"/>
-            <include name="${struts2-codebehind-plugin.jar}"/>
-            <include name="${struts2-sitemesh-plugin.jar}"/>
-            <include name="${struts2-spring-plugin.jar}"/>
-        </fileset>
-    </path>
-    <pathtofileset name="war.inside.app.server.dependencies.fileset" dir="${project.lib}" pathrefid="war.inside.app.server.dependencies.path"/>
-
-    <path id="pmd.dependencies.path">
-        <fileset refid="asm.3.0.jar.fileset"/>
-        <fileset refid="pmd.jar.fileset"/>
-        <fileset refid="jaxen.jar.fileset"/>
-        <fileset refid="backport-util-concurrent.jar.fileset"/>
-    </path>
-
-    <path id="cobertura.dependencies.path">
-        <fileset refid="cobertura.jar.fileset"/>
-        <fileset refid="asm.2.2.1.jar.fileset"/>
-        <fileset refid="asm-tree.jar.fileset"/>
-        <fileset refid="jakarta-oro.jar.fileset"/>
-        <fileset refid="log4j.jar.fileset"/>
-    </path>
-
-    <path id="svn.dependencies.path">
-        <fileset refid="svnant.jar.fileset"/>
-        <fileset refid="svnClientAdapter.jar.fileset"/>
-        <fileset refid="svnjavahl.jar.fileset"/>
-    </path>
-
-    <path id="unit.test.dependencies.path">
-        <fileset refid="jboss.dependencies.fileset"/>
-        <fileset id="test.dependencies.fileset" dir="${project.lib}">
-            <include name="${antlr.jar}"/>
-            <include name="${asm.jar}"/>
-            <include name="${c3p0.jar}"/>
-            <include name="${concurrent.jar}"/>
-            <include name="${jgroups.jar}"/>
-            <include name="${junit.jar}"/>
-        </fileset>
-    </path>
-
-    <path id="selenium.dependencies.path">
-        <fileset refid="test.dependencies.fileset"/>
-        <fileset refid="selenium-server.jar.fileset"/>
-        <fileset refid="selenium-java-client-driver.jar.fileset"/>
-        <fileset refid="selenium-java-client-driver-tests.jar.fileset"/>
-    </path>
-
-    <path id="client.dependencies.path">
-        <fileset refid="jboss.dependencies.fileset"/>
-        <fileset refid="common.compile.dependencies.fileset"/>
-    </path>
-    <pathtofileset name="client.dependencies.fileset" pathrefid="client.dependencies.path" dir="${project.lib}"/>
-	
-    <path id="client.test.dependencies.path">
-        <fileset refid="jboss.dependencies.fileset"/>
-        <fileset refid="common.compile.dependencies.fileset"/>
-        <fileset refid="test.dependencies.fileset"/>
-    </path>
-
-    <path id="common.test.dependencies.path">
-        <fileset refid="common.compile.dependencies.fileset"/>
-        <fileset refid="jboss.dependencies.fileset"/>
-        <fileset refid="test.dependencies.fileset"/>
-    </path>
-
-    <path id="ejb.test.dependencies.path">
-        <fileset refid="common.compile.dependencies.fileset"/>
-        <fileset refid="jboss-annotations-ejb3.jar.fileset"/>
-        <fileset refid="ejb3-persistence.jar.fileset"/>
-        <fileset refid="jboss.dependencies.fileset"/>
-        <fileset refid="test.dependencies.fileset"/>
-    </path>
-
-    <path id="war.test.dependencies.path">
-        <fileset refid="common.compile.dependencies.fileset"/>
-        <fileset refid="war.outside.app.server.dependencies.fileset"/>
-        <fileset refid="jboss.dependencies.fileset"/>
-        <fileset refid="test.dependencies.fileset"/>
-    </path>
-
-    <path id="test.grid.dependencies.path">
-        <fileset refid="grid.compile.dependencies.fileset"/>
-        <fileset refid="jboss.dependencies.fileset"/>
-        <fileset refid="test.dependencies.fileset"/>
-        <fileset refid="grid.dependencies.caarray-grid-svc.legacy.build.fileset" />
-        <fileset refid="grid.dependencies.caarray-grid-svc.v1_0.build.fileset" />
-        <fileset refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
-    </path>
-
-    <path id="caarray-client.dependencies.path">
-        <fileset dir="${project.lib}" id="caarray-client.dependencies.fileset">
-            <include name="${axis.jar}" />
-            <include name="${caGrid-data-stubs.jar}" />
-            <include name="${caGrid-cql.jar}"/>
-            <include name="${commons-collections.jar}" />
-            <include name="${commons-lang.jar}" />
-            <include name="${commons-io.jar}" />
-            <include name="${commons-logging.jar}" />
-            <include name="${csmapi.jar}" />
-            <include name="${ejb3-persistence.jar}" />
-            <include name="${hibernate.jar}" />
-            <include name="${hibernate-annotations.jar}" />
-            <include name="${log4j.jar}" />
-            <include name="${javassist.jar}" />
-            <include name="${jboss-ejb3-client.jar}" />
-            <include name="${jboss-ejb3x.jar}" />
-            <include name="${jbossall-client.jar}" />
-            <include name="${jboss-aspect-client.jar}" />
-            <include name="${jboss-aop-client.jar}" />
-            <include name="${nci-commons-core.jar}" />
-        </fileset>
-    </path>
-
-    <path id="grid.dependencies.lib.path">
-        <fileset dir="${project.lib}" id="grid.dependencies.lib.fileset">
-            <include name="${addressing.jar}" />
-            <include name="${cog-axis.jar}" />
-            <include name="${cog-jglobus.jar}" />
-            <include name="${commons-discovery.jar}" />
-            <include name="${jce.jar}" />
-            <include name="${wsrf_core_enum.jar}"/>
-            <include name="${wsrf_core_stubs_enum.jar}"/>
-            <include name="${wss4j.jar}" />
-            <include name="${xercesImpl.jar}" />
-        </fileset>
-    </path>
-
-    <taskdef resource="checkstyletask.properties">
-        <classpath refid="checkstyle.jar.path"/>
-        <classpath refid="commons-beanutils.jar.path"/>
-        <classpath refid="antlr.jar.path"/>
-        <classpath refid="commons-collections.jar.path"/>
-        <classpath refid="commons-logging.jar.path"/>
-    </taskdef>
-
-    <taskdef resource="tasks.properties" classpathref="cobertura.dependencies.path" />
-
-    <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.dependencies.path" />
-
-    <taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask" classpathref="project.jars.path">
-        <classpath>
-            <pathelement location="${caarray-common.classes.dir}" />
-            <pathelement location="${caarray-common.resources.dir}" />
-        </classpath>
-    </taskdef>
-
-    <taskdef resource="svntask.properties" classpathref="svn.dependencies.path" />
-
-    <taskdef name="ncitask" classname="gov.nih.ncicb.anttasks.PropertyValidator" classpathref="project.jars.path"/>
-
-    <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="project.jars.path" />
+    <target name="init:third-party-paths">
+        <ant antfile="caarray-ivy-build.xml" dir="${basedir}" inheritAll="true" inheritRefs="true" target="retrieve-app-dependencies">
+            <property name="no.ivy" value="${no.ivy}"/>
+            <property name="psuedo_override.clean.bootstrap.libs.and.ivy.cache" value="false"/>
+            <property name="local.repo.dir" value="${local.repo.dir}"/>
+            <property name="ivy.cache.dir" value="${ivy.cache.dir}"/>
+            <property name="lib.dir" location="${lib.dir}" />
+            <property name="bda-utils.dir" value="${bda-utils.dir}"/>
+            <property name="bda.utils.build.file" value="${bda.utils.build.file}"/>
+        </ant>
+        <!-- paths and filesets to define needed dependencies, which have been retrieved by ivy above -->
+        <path id="project.jars.path">
+            <fileset dir="${project.lib}" id="project.jars.fileset">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+
+        <path id="no.dependencies.path">
+            <fileset dir="${project.lib}" id="no.dependencies.fileset">
+                <exclude name="**/*" />
+            </fileset>
+        </path>
+
+        <path id="affxfusion.jar.path">
+            <fileset dir="${project.lib}" id="affxfusion.jar.fileset">
+                <include name="AffxFusion-*.jar"/>
+            </fileset>
+        </path>
+        <property name="affxfusion.jar" refid="affxfusion.jar.fileset" />
+
+        <path id="acegi-security.jar.path">
+            <fileset dir="${project.lib}" id="acegi-security.jar.fileset">
+                <include name="acegi-security-*.jar"/>
+                <exclude name="acegi-security-jboss-*.jar"/>
+            </fileset>
+        </path>
+        <property name="acegi-security.jar" refid="acegi-security.jar.fileset" />
+
+        <path id="acegi-security-jboss.jar.path">
+            <fileset dir="${project.lib}" id="acegi-security-jboss.jar.fileset">
+                <include name="acegi-security-jboss-*.jar"/>
+            </fileset>
+        </path>
+        <property name="acegi-security-jboss.jar" refid="acegi-security-jboss.jar.fileset" />
+
+        <path id="ajaxtags.jar.path">
+            <fileset dir="${project.lib}" id="ajaxtags.jar.fileset">
+                <include name="ajaxtags-*.jar"/>
+            </fileset>
+        </path>
+        <property name="ajaxtags.jar" refid="ajaxtags.jar.fileset" />
+
+        <path id="jericho-html.jar.path">
+            <fileset dir="${project.lib}" id="jericho-html.jar.fileset">
+                <include name="jericho-html-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jericho-html.jar" refid="jericho-html.jar.fileset" />
+
+        <path id="ant-contrib.jar.path">
+            <fileset dir="${project.lib}" id="ant-contrib.jar.fileset">
+                <include name="ant-contrib-*.jar"/>
+            </fileset>
+        </path>
+        <property name="ant-contrib.jar" refid="ant-contrib.jar.fileset" />
+
+        <path id="antlr.jar.path">
+            <fileset dir="${project.lib}" id="antlr.jar.fileset">
+                <include name="antlr-*.jar"/>
+            </fileset>
+        </path>
+        <property name="antlr.jar" refid="antlr.jar.fileset" />
+
+        <path id="asm.jar.path">
+            <fileset dir="${project.lib}" id="asm.jar.fileset">
+                <include name="asm-*.jar"/>
+                <exclude name="asm-attrs-*.jar"/>
+                <exclude name="asm-tree-*.jar"/>
+            </fileset>
+        </path>
+        <property name="asm.jar" refid="asm.jar.fileset" />
+
+        <path id="asm.2.2.1.jar.path">
+            <fileset dir="${asm.2.2.1.lib}" id="asm.2.2.1.jar.fileset">
+                <include name="asm-*.jar"/>
+                <exclude name="asm-attrs-*.jar"/>
+                <exclude name="asm-tree-*.jar"/>
+            </fileset>
+        </path>
+        <property name="asm.2.2.1.jar" refid="asm.2.2.1.jar.fileset" />
+
+        <path id="asm.3.0.jar.path">
+            <fileset dir="${asm.3.0.lib}" id="asm.3.0.jar.fileset">
+                <include name="asm-*.jar"/>
+                <exclude name="asm-attrs-*.jar"/>
+                <exclude name="asm-tree-*.jar"/>
+            </fileset>
+        </path>
+        <property name="asm.3.0.jar" refid="asm.3.0.jar.fileset" />
+
+        <path id="asm-attrs.jar.path">
+            <fileset dir="${project.lib}" id="asm-attrs.jar.fileset">
+                <include name="asm-attrs-*.jar"/>
+            </fileset>
+        </path>
+        <property name="asm-attrs.jar" refid="asm-attrs.jar.fileset" />
+
+        <path id="asm-tree.jar.path">
+            <fileset dir="${project.lib}" id="asm-tree.jar.fileset">
+                <include name="asm-tree-*.jar"/>
+            </fileset>
+        </path>
+        <property name="asm-tree.jar" refid="asm-tree.jar.fileset" />
+
+        <path id="backport-util-concurrent.jar.path">
+            <fileset dir="${project.lib}" id="backport-util-concurrent.jar.fileset">
+                <include name="backport-util-concurrent-*.jar"/>
+            </fileset>
+        </path>
+        <property name="backport-util-concurrent.jar" refid="backport-util-concurrent.jar.fileset" />
+
+        <path id="c3p0.jar.path">
+            <fileset dir="${project.lib}" id="c3p0.jar.fileset">
+                <include name="c3p0-*.jar"/>
+            </fileset>
+        </path>
+        <property name="c3p0.jar" refid="c3p0.jar.fileset" />
+
+        <path id="caGrid-core.jar.path">
+            <fileset dir="${project.lib}" id="caGrid-core.jar.fileset">
+                <include name="caGrid-core-*.jar"/>
+            </fileset>
+        </path>
+        <property name="caGrid-core.jar" refid="caGrid-core.jar.fileset" />
+
+        <path id="caGrid-data-stubs.jar.path">
+            <fileset dir="${project.lib}" id="caGrid-data-stubs.jar.fileset">
+                <include name="caGrid-data-stubs-*.jar"/>
+            </fileset>
+        </path>
+        <property name="caGrid-data-stubs.jar" refid="caGrid-data-stubs.jar.fileset" />
+
+        <path id="caGrid-data-common.jar.path">
+            <fileset dir="${project.lib}" id="caGrid-data-common.jar.fileset">
+                <include name="caGrid-data-common-*.jar"/>
+            </fileset>
+        </path>
+        <property name="caGrid-data-common.jar" refid="caGrid-data-common.jar.fileset" />
+
+        <path id="caGrid-sdkQuery32-core.jar.path">
+            <fileset dir="${project.lib}" id="caGrid-sdkQuery32-core.jar.fileset">
+                <include name="caGrid-sdkQuery32-core-*.jar"/>
+            </fileset>
+        </path>
+        <property name="caGrid-sdkQuery32-core.jar" refid="caGrid-sdkQuery32-core.jar.fileset" />
+
+        <path id="caGrid-cql.jar.path">
+            <fileset dir="${project.lib}" id="caGrid-cql.jar.fileset">
+                <include name="caGrid-cql-*.jar"/>
+            </fileset>
+        </path>
+        <property name="caGrid-cql.jar" refid="caGrid-cql.jar.fileset" />
+
+        <path id="cglib.jar.path">
+            <fileset dir="${project.lib}" id="cglib.jar.fileset">
+                <include name="cglib-*.jar"/>
+            </fileset>
+        </path>
+        <property name="cglib.jar" refid="cglib.jar.fileset" />
+
+        <path id="checkstyle.jar.path">
+            <fileset dir="${project.lib}" id="checkstyle.jar.fileset">
+                <include name="checkstyle-*.jar"/>
+            </fileset>
+        </path>
+        <property name="checkstyle.jar" refid="checkstyle.jar.fileset" />
+
+        <path id="cobertura.jar.path">
+            <fileset dir="${project.lib}" id="cobertura.jar.fileset">
+                <include name="cobertura-*.jar"/>
+            </fileset>
+        </path>
+        <property name="cobertura.jar" refid="cobertura.jar.fileset" />
+
+        <path id="commons-beanutils.jar.path">
+            <fileset dir="${project.lib}" id="commons-beanutils.jar.fileset">
+                <include name="commons-beanutils-*.jar"/>
+                <exclude name="commons-beanutils-core-*.jar"/>
+            </fileset>
+        </path>
+        <property name="commons-beanutils.jar" refid="commons-beanutils.jar.fileset" />
+
+        <path id="commons-codec.jar.path">
+            <fileset dir="${project.lib}" id="commons-codec.jar.fileset">
+                <include name="commons-codec-*.jar"/>
+            </fileset>
+        </path>
+        <property name="commons-codec.jar" refid="commons-codec.jar.fileset" />
+
+        <path id="commons-collections.jar.path">
+            <fileset dir="${project.lib}" id="commons-collections.jar.fileset">
+                <include name="commons-collections-*.jar"/>
+            </fileset>
+        </path>
+        <property name="commons-collections.jar" refid="commons-collections.jar.fileset" />
+
+        <path id="commons-digester.jar.path">
+            <fileset dir="${project.lib}" id="commons-digester.jar.fileset">
+                <include name="commons-digester-*.jar"/>
+            </fileset>
+        </path>
+        <property name="commons-digester.jar" refid="commons-digester.jar.fileset" />
+
+        <path id="commons-discovery.jar.path">
+            <fileset dir="${project.lib}" id="commons-discovery.jar.fileset">
+                <include name="commons-discovery-*.jar"/>
+            </fileset>
+        </path>
+        <property name="commons-discovery.jar" refid="commons-discovery.jar.fileset" />
+
+        <path id="commons-el.jar.path">
+            <fileset dir="${project.lib}" id="commons-el.jar.fileset">
+                <include name="commons-el-*.jar"/>
+            </fileset>
+        </path>
+        <property name="commons-el.jar" refid="commons-el.jar.fileset" />
+
+        <path id="commons-io.jar.path">
+            <fileset dir="${project.lib}" id="commons-io.jar.fileset">
+                <include name="commons-io-*.jar"/>
+            </fileset>
+        </path>
+        <property name="commons-io.jar" refid="commons-io.jar.fileset" />
+
+        <path id="commons-lang.jar.path">
+            <fileset dir="${project.lib}" id="commons-lang.jar.fileset">
+                <include name="commons-lang-*.jar"/>
+            </fileset>
+        </path>
+        <property name="commons-lang.jar" refid="commons-lang.jar.fileset" />
+
+        <path id="commons-configuration.jar.path">
+            <fileset dir="${project.lib}" id="commons-configuration.jar.fileset">
+                <include name="commons-configuration-*.jar"/>
+            </fileset>
+        </path>
+        <property name="commons-configuration.jar" refid="commons-configuration.jar.fileset" />
+
+        <path id="commons-logging.jar.path">
+            <fileset dir="${project.lib}" id="commons-logging.jar.fileset">
+                <include name="commons-logging-*.jar"/>
+            </fileset>
+        </path>
+        <property name="commons-logging.jar" refid="commons-logging.jar.fileset" />
+
+        <path id="commons-fileupload.jar.path">
+            <fileset dir="${project.lib}" id="commons-fileupload.jar.fileset">
+                <include name="commons-fileupload-*.jar"/>
+            </fileset>
+        </path>
+        <property name="commons-fileupload.jar" refid="commons-fileupload.jar.fileset" />
+
+        <path id="cog-axis.jar.path">
+            <fileset dir="${project.lib}" id="cog-axis.jar.fileset">
+                <include name="cog-axis-*.jar"/>
+            </fileset>
+        </path>
+        <property name="cog-axis.jar" refid="cog-axis.jar.fileset" />
+
+        <path id="cog-jglobus.jar.path">
+            <fileset dir="${project.lib}" id="cog-jglobus.jar.fileset">
+                <include name="cog-jglobus-*.jar"/>
+            </fileset>
+        </path>
+        <property name="cog-jglobus.jar" refid="cog-jglobus.jar.fileset" />
+
+        <path id="jce.jar.path">
+            <fileset dir="${project.lib}" id="jce.jar.fileset">
+                <include name="jce-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jce.jar" refid="jce.jar.fileset" />
+
+        <path id="wsrf_core_enum.jar.path">
+            <fileset dir="${project.lib}" id="wsrf_core_enum.jar.fileset">
+                <include name="wsrf_core_enum-*.jar"/>
+            </fileset>
+        </path>
+        <property name="wsrf_core_enum.jar" refid="wsrf_core_enum.jar.fileset" />
+
+        <path id="wsrf_core_stubs_enum.jar.path">
+            <fileset dir="${project.lib}" id="wsrf_core_stubs_enum.jar.fileset">
+                <include name="wsrf_core_stubs_enum-*.jar"/>
+            </fileset>
+        </path>
+        <property name="wsrf_core_stubs_enum.jar" refid="wsrf_core_stubs_enum.jar.fileset" />
+
+        <path id="wss4j.jar.path">
+            <fileset dir="${project.lib}" id="wss4j.jar.fileset">
+                <include name="wss4j-*.jar"/>
+            </fileset>
+        </path>
+        <property name="wss4j.jar" refid="wss4j.jar.fileset" />
+
+        <path id="dom4j.jar.path">
+            <fileset dir="${project.lib}" id="dom4j.jar.fileset">
+                <include name="dom4j-*.jar"/>
+            </fileset>
+        </path>
+        <property name="dom4j.jar" refid="dom4j.jar.fileset" />
+
+        <path id="xercesImpl.jar.path">
+            <fileset dir="${project.lib}" id="xercesImpl.jar.fileset">
+                <include name="xercesImpl-*.jar"/>
+            </fileset>
+        </path>
+        <property name="xercesImpl.jar" refid="xercesImpl.jar.fileset" />
+
+        <path id="xerces-J.jar.path">
+            <fileset dir="${project.lib}" id="xerces-J.jar.fileset">
+                <include name="xerces-J-*.jar"/>
+            </fileset>
+        </path>
+        <property name="xerces-J.jar" refid="xerces-J.jar.fileset"/>
+
+        <path id="ehcache.jar.path">
+            <fileset dir="${project.lib}" id="ehcache.jar.fileset">
+                <include name="ehcache-*.jar"/>
+            </fileset>
+        </path>
+        <property name="ehcache.jar" refid="ehcache.jar.fileset" />
+
+        <path id="hibernate.jar.path">
+            <fileset dir="${project.lib}" id="hibernate.jar.fileset">
+                <include name="hibernate-*.jar"/>
+                <exclude name="hibernate-annotations-*.jar"/>
+                <exclude name="hibernate-client-*.jar"/>
+                <exclude name="hibernate-tools-*.jar"/>
+            </fileset>
+        </path>
+        <property name="hibernate.jar" refid="hibernate.jar.fileset" />
+
+        <path id="hibernate-client.jar.path">
+            <fileset dir="${project.lib}" id="hibernate-client.jar.fileset">
+                <include name="hibernate-client-*.jar"/>
+            </fileset>
+        </path>
+        <property name="hibernate-client.jar" refid="hibernate-client.jar.fileset" />
+
+        <path id="castor.jar.path">
+            <fileset dir="${project.lib}" id="castor.jar.fileset">
+                <include name="castor-*.jar"/>
+            </fileset>
+        </path>
+        <property name="castor.jar" refid="castor.jar.fileset" />
+
+        <path id="ejb3-persistence.jar.path">
+            <fileset dir="${project.lib}" id="ejb3-persistence.jar.fileset">
+                <include name="ejb3-persistence-*.jar"/>
+            </fileset>
+        </path>
+        <property name="ejb3-persistence.jar" refid="ejb3-persistence.jar.fileset" />
+
+        <path id="hibernate-annotations.jar.path">
+            <fileset dir="${project.lib}" id="hibernate-annotations.jar.fileset">
+                <include name="hibernate-annotations-*.jar"/>
+            </fileset>
+        </path>
+        <property name="hibernate-annotations.jar" refid="hibernate-annotations.jar.fileset" />
+
+        <path id="jakarta-oro.jar.path">
+            <fileset dir="${project.lib}" id="jakarta-oro.jar.fileset">
+                <include name="jakarta-oro-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jakarta-oro.jar" refid="jakarta-oro.jar.fileset" />
+
+        <path id="javaee.jar.path">
+            <fileset dir="${project.lib}" id="javaee.jar.fileset">
+                <include name="javaee-*.jar"/>
+            </fileset>
+        </path>
+        <property name="javaee.jar" refid="javaee.jar.fileset" />
+
+        <path id="jaxen.jar.path">
+            <fileset dir="${project.lib}" id="jaxen.jar.fileset">
+                <include name="jaxen-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jaxen.jar" refid="jaxen.jar.fileset" />
+
+        <path id="jboss-aop-client.jar.path">
+            <fileset dir="${project.lib}" id="jboss-aop-client.jar.fileset">
+                <include name="jboss-aop-client-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-aop-client.jar" refid="jboss-aop-client.jar.fileset" />
+
+        <path id="jboss-aspect-client.jar.path">
+            <fileset dir="${project.lib}" id="jboss-aspect-client.jar.fileset">
+                <include name="jboss-aspect-client-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-aspect-client.jar" refid="jboss-aspect-client.jar.fileset" />
+
+        <path id="jbossall-client.jar.path">
+            <fileset dir="${project.lib}" id="jbossall-client.jar.fileset">
+                <include name="jbossall-client-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jbossall-client.jar" refid="jbossall-client.jar.fileset" />
+
+        <path id="jboss-ejb3-client.jar.path">
+            <fileset dir="${project.lib}" id="jboss-ejb3-client.jar.fileset">
+                <include name="jboss-ejb3-client-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-ejb3-client.jar" refid="jboss-ejb3-client.jar.fileset" />
+
+        <path id="jboss-ejb3x.jar.path">
+            <fileset dir="${project.lib}" id="jboss-ejb3x.jar.fileset">
+                <include name="jboss-ejb3x-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-ejb3x.jar" refid="jboss-ejb3x.jar.fileset" />
+
+        <path id="jboss-annotations-ejb3.jar.path">
+            <fileset dir="${project.lib}" id="jboss-annotations-ejb3.jar.fileset">
+                <include name="jboss-annotations-ejb3-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-annotations-ejb3.jar" refid="jboss-annotations-ejb3.jar.fileset" />
+
+        <path id="jta.jar.path">
+            <fileset dir="${project.lib}" id="jta.jar.fileset">
+                <include name="jta-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jta.jar" refid="jta.jar.fileset" />
+
+        <path id="junit.jar.path">
+            <fileset dir="${project.lib}" id="junit.jar.fileset">
+                <include name="junit-*.jar"/>
+            </fileset>
+        </path>
+        <property name="junit.jar" refid="junit.jar.fileset" />
+
+        <path id="oscache.jar.path">
+            <fileset dir="${project.lib}" id="oscache.jar.fileset">
+                <include name="oscache-*.jar"/>
+            </fileset>
+        </path>
+        <property name="oscache.jar" refid="oscache.jar.fileset" />
+
+        <path id="urlrewrite.jar.path">
+            <fileset dir="${project.lib}" id="urlrewrite.jar.fileset">
+                <include name="urlrewrite-*.jar"/>
+            </fileset>
+        </path>
+        <property name="urlrewrite.jar" refid="urlrewrite.jar.fileset" />
+
+        <path id="sitemesh.jar.path">
+            <fileset dir="${project.lib}" id="sitemesh.jar.fileset">
+                <include name="sitemesh-*.jar"/>
+            </fileset>
+        </path>
+        <property name="sitemesh.jar" refid="sitemesh.jar.fileset" />
+
+        <path id="struts2-spring-plugin.jar.path">
+            <fileset dir="${project.lib}" id="struts2-spring-plugin.jar.fileset">
+                <include name="struts2-spring-plugin-*.jar"/>
+            </fileset>
+        </path>
+        <property name="struts2-spring-plugin.jar" refid="struts2-spring-plugin.jar.fileset" />
+
+        <path id="struts2-sitemesh-plugin.jar.path">
+            <fileset dir="${project.lib}" id="struts2-sitemesh-plugin.jar.fileset">
+                <include name="struts2-sitemesh-plugin-*.jar"/>
+            </fileset>
+        </path>
+        <property name="struts2-sitemesh-plugin.jar" refid="struts2-sitemesh-plugin.jar.fileset" />
+
+        <path id="struts2-codebehind-plugin.jar.path">
+            <fileset dir="${project.lib}" id="struts2-codebehind-plugin.jar.fileset">
+                <include name="struts2-codebehind-plugin-*.jar"/>
+            </fileset>
+        </path>
+        <property name="struts2-codebehind-plugin.jar" refid="struts2-codebehind-plugin.jar.fileset" />
+
+        <path id="log4j.jar.path">
+            <fileset dir="${project.lib}" id="log4j.jar.fileset">
+                <include name="log4j-*.jar"/>
+            </fileset>
+        </path>
+        <property name="log4j.jar" refid="log4j.jar.fileset" />
+
+        <path id="myfaces-api.jar.path">
+            <fileset dir="${project.lib}" id="myfaces-api.jar.fileset">
+                <include name="myfaces-api-*.jar"/>
+            </fileset>
+        </path>
+        <property name="myfaces-api.jar" refid="myfaces-api.jar.fileset" />
+
+        <path id="mysql-connector-java.jar.path">
+            <fileset dir="${project.lib}" id="mysql-connector-java.jar.fileset">
+                <include name="mysql-connector-java-*.jar"/>
+            </fileset>
+        </path>
+        <property name="mysql-connector-java.jar" refid="mysql-connector-java.jar.fileset" />
+
+        <path id="pmd.jar.path">
+            <fileset dir="${project.lib}" id="pmd.jar.fileset">
+                <include name="pmd-*.jar"/>
+            </fileset>
+        </path>
+        <property name="pmd.jar" refid="pmd.jar.fileset" />
+
+        <path id="selenium-server.jar.path">
+            <fileset dir="${project.lib}" id="selenium-server.jar.fileset">
+                <include name="selenium-server-*.jar"/>
+            </fileset>
+        </path>
+        <property name="selenium-server.jar" refid="selenium-server.jar.fileset" />
+
+        <path id="selenium-java-client-driver.jar.path">
+            <fileset dir="${project.lib}" id="selenium-java-client-driver.jar.fileset">
+                <include name="selenium-java-client-driver-*.jar"/>
+            </fileset>
+        </path>
+        <property name="selenium-java-client-driver.jar" refid="selenium-java-client-driver.jar.fileset" />
+
+        <path id="selenium-java-client-driver-tests.jar.path">
+            <fileset dir="${project.lib}" id="selenium-java-client-driver-tests.jar.fileset">
+                <include name="selenium-java-client-driver-tests-*.jar"/>
+            </fileset>
+        </path>
+        <property name="selenium-java-client-driver-tests.jar" refid="selenium-java-client-driver-tests.jar.fileset" />
+
+        <path id="spring.jar.path">
+            <fileset dir="${project.lib}" id="spring.jar.fileset">
+                <include name="spring-*.jar"/>
+                <exclude name="spring-mock-*.jar"/>
+                <exclude name="spring-richclient-full-*.jar"/>
+            </fileset>
+        </path>
+        <property name="spring.jar" refid="spring.jar.fileset" />
+
+        <path id="spring-mock.jar.path">
+            <fileset dir="${project.lib}" id="spring-mock.jar.fileset">
+                <include name="spring-mock-*.jar"/>
+            </fileset>
+        </path>
+        <property name="spring-mock.jar" refid="spring-mock.jar.fileset" />
+
+        <path id="netcdf.jar.path">
+            <fileset dir="${project.lib}" id="netcdf.jar.fileset">
+                <include name="netcdf-*.jar"/>
+            </fileset>
+        </path>
+        <property name="netcdf.jar" refid="netcdf.jar.fileset" />
+
+        <path id="javacsv.jar.path">
+            <fileset dir="${project.lib}" id="javacsv.jar.fileset">
+                <include name="javacsv-*.jar"/>
+            </fileset>
+        </path>
+        <property name="javacsv.jar" refid="javacsv.jar.fileset" />
+
+        <path id="csmapi.jar.path">
+            <fileset dir="${project.lib}" id="csmapi.jar.fileset">
+                <include name="csmapi-*.jar"/>
+            </fileset>
+        </path>
+        <property name="csmapi.jar" refid="csmapi.jar.fileset" />
+
+        <path id="svnant.jar.path">
+            <fileset dir="${project.lib}" id="svnant.jar.fileset">
+                <include name="svnant-*.jar"/>
+            </fileset>
+        </path>
+        <property name="svnant.jar" refid="svnant.jar.fileset" />
+
+        <path id="svnClientAdapter.jar.path">
+            <fileset dir="${project.lib}" id="svnClientAdapter.jar.fileset">
+                <include name="svnClientAdapter-*.jar"/>
+            </fileset>
+        </path>
+        <property name="svnClientAdapter.jar" refid="svnClientAdapter.jar.fileset" />
+
+        <path id="svnjavahl.jar.path">
+            <fileset dir="${project.lib}" id="svnjavahl.jar.fileset">
+                <include name="svnjavahl-*.jar"/>
+            </fileset>
+        </path>
+        <property name="svnjavahl.jar" refid="svnjavahl.jar.fileset" />
+
+        <path id="clm.jar.path">
+            <fileset dir="${project.lib}" id="clm.jar.fileset">
+                <include name="clm-*.jar"/>
+            </fileset>
+        </path>
+        <property name="clm.jar" refid="clm.jar.fileset" />
+
+        <path id="addressing.jar.path">
+            <fileset dir="${project.lib}" id="addressing.jar.fileset">
+                <include name="addressing-*.jar"/>
+            </fileset>
+        </path>
+        <property name="addressing.jar" refid="addressing.jar.fileset" />
+
+        <path id="struts2-core.jar.path">
+            <fileset dir="${project.lib}" id="struts2-core.jar.fileset">
+                <include name="struts2-core-*.jar"/>
+            </fileset>
+        </path>
+        <property name="struts2-core.jar" refid="struts2-core.jar.fileset" />
+
+        <path id="xwork.jar.path">
+            <fileset dir="${project.lib}" id="xwork.jar.fileset">
+                <include name="xwork-*.jar"/>
+            </fileset>
+        </path>
+        <property name="xwork.jar" refid="xwork.jar.fileset" />
+
+        <path id="ognl.jar.path">
+            <fileset dir="${project.lib}" id="ognl.jar.fileset">
+                <include name="ognl-*.jar"/>
+            </fileset>
+        </path>
+        <property name="ognl.jar" refid="ognl.jar.fileset" />
+
+        <path id="displaytag.jar.path">
+            <fileset dir="${project.lib}" id="displaytag.jar.fileset">
+                <include name="displaytag-*.jar"/>
+            </fileset>
+        </path>
+        <property name="displaytag.jar" refid="displaytag.jar.fileset" />
+
+        <path id="freemarker.jar.path">
+            <fileset dir="${project.lib}" id="freemarker.jar.fileset">
+                <include name="freemarker-*.jar"/>
+            </fileset>
+        </path>
+        <property name="freemarker.jar" refid="freemarker.jar.fileset" />
+
+        <path id="jstl.jar.path">
+            <fileset dir="${project.lib}" id="jstl.jar.fileset">
+                <include name="jstl-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jstl.jar" refid="jstl.jar.fileset" />
+
+        <path id="standard.jar.path">
+            <fileset dir="${project.lib}" id="standard.jar.fileset">
+                <include name="standard-*.jar"/>
+            </fileset>
+        </path>
+        <property name="standard.jar" refid="standard.jar.fileset" />
+
+        <path id="axis.jar.path">
+            <fileset dir="${project.lib}" id="axis.jar.fileset">
+                <include name="axis-*.jar"/>
+            </fileset>
+        </path>
+        <property name="axis.jar" refid="axis.jar.fileset" />
+
+        <path id="jboss-cache.jar.path">
+            <fileset dir="${project.lib}" id="jboss-cache.jar.fileset">
+                <include name="jboss-cache-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-cache.jar" refid="jboss-cache.jar.fileset" />
+
+        <path id="jboss-common.jar.path">
+            <fileset dir="${project.lib}" id="jboss-common.jar.fileset">
+                <include name="jboss-common-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-common.jar" refid="jboss-common.jar.fileset" />
+
+        <path id="jboss-system.jar.path">
+            <fileset dir="${project.lib}" id="jboss-system.jar.fileset">
+                <include name="jboss-system-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-system.jar" refid="jboss-system.jar.fileset" />
+
+        <path id="jboss-jmx.jar.path">
+            <fileset dir="${project.lib}" id="jboss-jmx.jar.fileset">
+                <include name="jboss-jmx-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-jmx.jar" refid="jboss-jmx.jar.fileset" />
+
+        <path id="jgroups.jar.path">
+            <fileset dir="${project.lib}" id="jgroups.jar.fileset">
+                <include name="jgroups-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jgroups.jar" refid="jgroups.jar.fileset" />
+
+        <path id="concurrent.jar.path">
+            <fileset dir="${project.lib}" id="concurrent.jar.fileset">
+                <include name="concurrent-*.jar"/>
+            </fileset>
+        </path>
+        <property name="concurrent.jar" refid="concurrent.jar.fileset" />
+
+        <path id="ncicb-ant.jar.path">
+            <fileset dir="${project.lib}" id="ncicb-ant.jar.fileset">
+                <include name="ncicb-ant-*.jar"/>
+            </fileset>
+        </path>
+        <property name="ncicb-ant.jar" refid="ncicb-ant.jar.fileset" />
+
+        <path id="xmlconfig.jar.path">
+            <fileset dir="${project.lib}" id="xmlconfig.jar.fileset">
+                <include name="xmlconfig-*.jar"/>
+            </fileset>
+        </path>
+        <property name="xmlconfig.jar" refid="xmlconfig.jar.fileset" />
+
+        <path id="nci-commons-core.jar.path">
+            <fileset dir="${project.lib}" id="nci-commons-core.jar.fileset">
+                <include name="nci-commons-core-*.jar"/>
+            </fileset>
+        </path>
+        <property name="nci-commons-core.jar" refid="nci-commons-core.jar.fileset" />
+
+        <path id="nci-commons-struts2.jar.path">
+            <fileset dir="${project.lib}" id="nci-commons-struts2.jar.fileset">
+                <include name="nci-commons-struts2-*.jar"/>
+            </fileset>
+        </path>
+        <property name="nci-commons-struts2.jar" refid="nci-commons-struts2.jar.fileset" />
+
+        <path id="ezmorph.jar.path">
+            <fileset dir="${project.lib}" id="ezmorph.jar.fileset">
+                <include name="ezmorph-*.jar"/>
+            </fileset>
+        </path>
+        <property name="ezmorph.jar" refid="ezmorph.jar.fileset" />
+
+        <path id="json-lib.jar.path">
+            <fileset dir="${project.lib}" id="json-lib.jar.fileset">
+                <include name="json-lib-*.jar"/>
+            </fileset>
+        </path>
+        <property name="json-lib.jar" refid="json-lib.jar.fileset" />
+
+        <path id="xalan.jar.path">
+            <fileset dir="${project.lib}" id="xalan.jar.fileset">
+                <include name="xalan-*.jar"/>
+            </fileset>
+        </path>
+        <property name="xalan.jar" refid="xalan.jar.fileset" />
+
+        <path id="serializer.jar.path">
+            <fileset dir="${project.lib}" id="serializer.jar.fileset">
+                <include name="serializer-*.jar"/>
+            </fileset>
+        </path>
+        <property name="serializer.jar" refid="serializer.jar.fileset" />
+
+        <path id="dozer.jar.path">
+            <fileset dir="${project.lib}" id="dozer.jar.fileset">
+                <include name="dozer-*.jar"/>
+            </fileset>
+        </path>
+        <property name="dozer.jar" refid="dozer.jar.fileset" />
+
+        <path id="javassist.jar.path">
+            <fileset dir="${project.lib}" id="javassist.jar.fileset">
+                <include name="javassist-*.jar"/>
+            </fileset>
+        </path>
+        <property name="javassist.jar" refid="javassist.jar.fileset" />
+
+        <path id="rmiio.jar.path">
+            <fileset dir="${project.lib}" id="rmiio.jar.fileset">
+                <include name="rmiio-*.jar"/>
+            </fileset>
+        </path>
+        <property name="rmiio.jar" refid="rmiio.jar.fileset" />
+
+        <path id="jboss.dependencies.path">
+            <fileset id="jboss.dependencies.fileset" dir="${project.lib}">
+                <include name="${jboss-annotations-ejb3.jar}"/>
+                <include name="${jbossall-client.jar}"/>
+                <include name="${jboss-common.jar}"/>
+                <include name="${jboss-cache.jar}"/>
+                <include name="${jboss-jmx.jar}"/>
+                <include name="${jboss-system.jar}"/>
+                <include name="${jboss-aop-client.jar}"/>
+                <include name="${jboss-aspect-client.jar}"/>
+                <include name="${jboss-ejb3-client.jar}"/>
+            </fileset>
+        </path>
+
+        <path id="common.compile.dependencies.path">
+            <fileset refid="javaee.jar.fileset"/>
+            <fileset refid="dom4j.jar.fileset"/>
+            <fileset refid="affxfusion.jar.fileset"/>
+            <fileset refid="castor.jar.fileset"/>
+            <fileset refid="cglib.jar.fileset"/>
+            <fileset refid="commons-lang.jar.fileset"/>
+            <fileset refid="clm.jar.fileset"/>
+            <fileset refid="csmapi.jar.fileset"/>
+            <fileset refid="javacsv.jar.fileset"/>
+            <fileset refid="mysql-connector-java.jar.fileset"/>
+            <fileset refid="netcdf.jar.fileset"/>
+            <fileset refid="xerces-J.jar.fileset"/>
+            <fileset refid="xercesImpl.jar.fileset"/>
+            <fileset refid="commons-configuration.jar.fileset"/>
+            <fileset id="common.grid.dependencies.fileset" dir="${project.lib}">
+                <include name="${axis.jar}"/>
+                <include name="${caGrid-core.jar}"/>
+                <include name="${caGrid-data-common.jar}"/>
+                <include name="${caGrid-sdkQuery32-core.jar}"/>
+                <include name="${caGrid-data-stubs.jar}"/>
+                <include name="${caGrid-cql.jar}"/>
+                <include name="${ejb3-persistence.jar}"/>
+                <include name="${hibernate.jar}"/>
+                <include name="${hibernate-annotations.jar}"/>
+                <include name="${nci-commons-core.jar}"/>
+            </fileset>
+            <fileset id="common.compile.partial.dependencies.fileset" dir="${project.lib}">
+                <include name="${commons-beanutils.jar}"/>
+                <include name="${commons-collections.jar}"/>
+                <include name="${commons-logging.jar}"/>
+                <include name="${commons-io.jar}"/>
+                <include name="${json-lib.jar}"/>
+                <include name="${log4j.jar}"/>
+                <include name="${spring.jar}"/>
+            </fileset>
+        </path>
+        <pathtofileset name="common.compile.dependencies.fileset" pathrefid="common.compile.dependencies.path" dir="${project.lib}"/>
+
+        <path id="ejb.compile.dependencies.path">
+            <fileset refid="jboss.dependencies.fileset"/>
+            <fileset refid="common.compile.dependencies.fileset"/>
+            <fileset refid="ejb3-persistence.jar.fileset"/>
+            <fileset refid="dozer.jar.fileset"/>
+            <fileset refid="rmiio.jar.fileset"/>
+            <fileset refid="javassist.jar.fileset"/>
+        </path>
+
+        <path id="grid.compile.dependencies.path">
+            <fileset refid="common.compile.partial.dependencies.fileset"/>
+            <fileset refid="common.grid.dependencies.fileset"/>
+            <fileset id="grid.compile.partial.dependencies.fileset" dir="${project.lib}">
+                <include name="${addressing.jar}"/>
+                <include name="${cog-axis.jar}"/>
+                <include name="${cog-jglobus.jar}"/>
+                <include name="${commons-discovery.jar}"/>
+                <include name="${jce.jar}"/>
+                <include name="${wsrf_core_enum.jar}"/>
+                <include name="${wsrf_core_stubs_enum.jar}"/>
+                <include name="${wss4j.jar}"/>
+                <include name="${xercesImpl.jar}"/>
+            </fileset>
+        </path>
+        <pathtofileset name="grid.compile.dependencies.fileset" pathrefid="grid.compile.dependencies.path" dir="${project.lib}"/>
+
+        <path id="war.outside.app.server.dependencies.path">
+            <fileset refid="common.compile.dependencies.fileset"/>
+            <fileset id="war.outside.app.server.partial.dependencies.fileset" dir="${project.lib}">
+                <include name="${acegi-security.jar}"/>
+                <include name="${acegi-security-jboss.jar}"/>
+                <include name="${spring-mock.jar}"/>
+                <include name="${commons-discovery.jar}"/>
+                <include name="${commons-el.jar}"/>
+                <include name="${commons-fileupload.jar}"/>
+                <include name="${displaytag.jar}"/>
+                <include name="${freemarker.jar}"/>
+                <include name="${jstl.jar}"/>
+                <include name="${standard.jar}"/>
+                <include name="${log4j.jar}"/>
+                <include name="${junit.jar}"/>
+                <include name="${oscache.jar}"/>
+                <include name="${sitemesh.jar}"/>
+                <include name="${urlrewrite.jar}"/>
+                <include name="${xwork.jar}"/>
+                <include name="${ognl.jar}"/>
+                <include name="${ajaxtags.jar}"/>
+                <include name="${jericho-html.jar}"/>
+                <include name="${json-lib.jar}"/>
+                <include name="${ezmorph.jar}"/>
+                <include name="${nci-commons-struts2.jar}"/>
+                <include name="${struts2-core.jar}"/>
+            </fileset>
+        </path>
+
+        <pathtofileset name="war.outside.app.server.dependencies.fileset" pathrefid="war.outside.app.server.dependencies.path" dir="${project.lib}"/>
+
+        <path id="war.inside.app.server.dependencies.path">
+            <fileset refid="war.outside.app.server.partial.dependencies.fileset"/>
+            <fileset id="war.inside.app.server.partial.dependencies.fileset" dir="${project.lib}">
+                <include name="${commons-codec.jar}"/>
+                <include name="${commons-collections.jar}"/>
+                <include name="${commons-digester.jar}"/>
+                <include name="${struts2-codebehind-plugin.jar}"/>
+                <include name="${struts2-sitemesh-plugin.jar}"/>
+                <include name="${struts2-spring-plugin.jar}"/>
+            </fileset>
+        </path>
+        <pathtofileset name="war.inside.app.server.dependencies.fileset" dir="${project.lib}" pathrefid="war.inside.app.server.dependencies.path"/>
+
+        <path id="pmd.dependencies.path">
+            <fileset refid="asm.3.0.jar.fileset"/>
+            <fileset refid="pmd.jar.fileset"/>
+            <fileset refid="jaxen.jar.fileset"/>
+            <fileset refid="backport-util-concurrent.jar.fileset"/>
+        </path>
+
+        <path id="cobertura.dependencies.path">
+            <fileset refid="cobertura.jar.fileset"/>
+            <fileset refid="asm.2.2.1.jar.fileset"/>
+            <fileset refid="asm-tree.jar.fileset"/>
+            <fileset refid="jakarta-oro.jar.fileset"/>
+            <fileset refid="log4j.jar.fileset"/>
+        </path>
+
+        <path id="svn.dependencies.path">
+            <fileset refid="svnant.jar.fileset"/>
+            <fileset refid="svnClientAdapter.jar.fileset"/>
+            <fileset refid="svnjavahl.jar.fileset"/>
+        </path>
+
+        <path id="unit.test.dependencies.path">
+            <fileset refid="jboss.dependencies.fileset"/>
+            <fileset id="test.dependencies.fileset" dir="${project.lib}">
+                <include name="${antlr.jar}"/>
+                <include name="${asm.jar}"/>
+                <include name="${c3p0.jar}"/>
+                <include name="${concurrent.jar}"/>
+                <include name="${jgroups.jar}"/>
+                <include name="${junit.jar}"/>
+            </fileset>
+        </path>
+
+        <path id="selenium.dependencies.path">
+            <fileset refid="test.dependencies.fileset"/>
+            <fileset refid="selenium-server.jar.fileset"/>
+            <fileset refid="selenium-java-client-driver.jar.fileset"/>
+            <fileset refid="selenium-java-client-driver-tests.jar.fileset"/>
+        </path>
+
+        <path id="client.dependencies.path">
+            <fileset refid="jboss.dependencies.fileset"/>
+            <fileset refid="common.compile.dependencies.fileset"/>
+        </path>
+        <pathtofileset name="client.dependencies.fileset" pathrefid="client.dependencies.path" dir="${project.lib}"/>
+
+        <path id="client.test.dependencies.path">
+            <fileset refid="jboss.dependencies.fileset"/>
+            <fileset refid="common.compile.dependencies.fileset"/>
+            <fileset refid="test.dependencies.fileset"/>
+        </path>
+
+        <path id="common.test.dependencies.path">
+            <fileset refid="common.compile.dependencies.fileset"/>
+            <fileset refid="jboss.dependencies.fileset"/>
+            <fileset refid="test.dependencies.fileset"/>
+        </path>
+
+        <path id="ejb.test.dependencies.path">
+            <fileset refid="common.compile.dependencies.fileset"/>
+            <fileset refid="jboss-annotations-ejb3.jar.fileset"/>
+            <fileset refid="ejb3-persistence.jar.fileset"/>
+            <fileset refid="jboss.dependencies.fileset"/>
+            <fileset refid="test.dependencies.fileset"/>
+        </path>
+
+        <path id="war.test.dependencies.path">
+            <fileset refid="common.compile.dependencies.fileset"/>
+            <fileset refid="war.outside.app.server.dependencies.fileset"/>
+            <fileset refid="jboss.dependencies.fileset"/>
+            <fileset refid="test.dependencies.fileset"/>
+        </path>
+
+        <path id="test.grid.dependencies.path">
+            <fileset refid="grid.compile.dependencies.fileset"/>
+            <fileset refid="jboss.dependencies.fileset"/>
+            <fileset refid="test.dependencies.fileset"/>
+            <fileset refid="grid.dependencies.caarray-grid-svc.legacy.build.fileset" />
+            <fileset refid="grid.dependencies.caarray-grid-svc.v1_0.build.fileset" />
+            <fileset refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
+        </path>
+
+        <path id="caarray-client.dependencies.path">
+            <fileset dir="${project.lib}" id="caarray-client.dependencies.fileset">
+                <include name="${axis.jar}" />
+                <include name="${caGrid-data-stubs.jar}" />
+                <include name="${caGrid-cql.jar}"/>
+                <include name="${commons-collections.jar}" />
+                <include name="${commons-lang.jar}" />
+                <include name="${commons-io.jar}" />
+                <include name="${commons-logging.jar}" />
+                <include name="${csmapi.jar}" />
+                <include name="${ejb3-persistence.jar}" />
+                <include name="${hibernate.jar}" />
+                <include name="${hibernate-annotations.jar}" />
+                <include name="${log4j.jar}" />
+                <include name="${javassist.jar}" />
+                <include name="${jboss-ejb3-client.jar}" />
+                <include name="${jboss-ejb3x.jar}" />
+                <include name="${jbossall-client.jar}" />
+                <include name="${jboss-aspect-client.jar}" />
+                <include name="${jboss-aop-client.jar}" />
+                <include name="${nci-commons-core.jar}" />
+            </fileset>
+        </path>
+
+        <path id="grid.dependencies.lib.path">
+            <fileset dir="${project.lib}" id="grid.dependencies.lib.fileset">
+                <include name="${addressing.jar}" />
+                <include name="${cog-axis.jar}" />
+                <include name="${cog-jglobus.jar}" />
+                <include name="${commons-discovery.jar}" />
+                <include name="${jce.jar}" />
+                <include name="${wsrf_core_enum.jar}"/>
+                <include name="${wsrf_core_stubs_enum.jar}"/>
+                <include name="${wss4j.jar}" />
+                <include name="${xercesImpl.jar}" />
+            </fileset>
+        </path>
+
+        <taskdef resource="checkstyletask.properties">
+            <classpath refid="checkstyle.jar.path"/>
+            <classpath refid="commons-beanutils.jar.path"/>
+            <classpath refid="antlr.jar.path"/>
+            <classpath refid="commons-collections.jar.path"/>
+            <classpath refid="commons-logging.jar.path"/>
+        </taskdef>
+
+        <taskdef resource="tasks.properties" classpathref="cobertura.dependencies.path" />
+
+        <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.dependencies.path" />
+
+        <taskdef resource="svntask.properties" classpathref="svn.dependencies.path" />
+
+        <taskdef name="ncitask" classname="gov.nih.ncicb.anttasks.PropertyValidator" classpathref="project.jars.path"/>
+
+        <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="project.jars.path" />
+    </target>
 
 
     <!-- Datasource-configuration-related properties -->
@@ -1260,19 +1258,13 @@
         <istrue value="${grid.useGlobus}"/>
     </condition>
 
-    <!-- ******************************************************************* -->
-    <!-- ** IMPORTS                                                       ** -->
-    <!-- ******************************************************************* -->
-
-    <import file="macrodefs.xml" />
-    <import file="${bda-utils.dir}/bda-build-utils-${bda.version}.xml" />
-
 
     <!-- ******************************************************************* -->
     <!-- ** CLEAN TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
 
-    <target name="clean" depends="clean:caarray-client.jar,
+    <target name="clean" depends="clean:lib,
+        clean:caarray-client.jar,
         clean:caarray-common.jar,
         clean:caarray-ejb.jar,
         clean:caarray.war,
@@ -1284,6 +1276,10 @@
         clean:caarray-grid-common,
         clean:caarray-grid-svc,
         clean:caarraydb" description="Deletes all of the target directories" />
+
+    <target name="clean:lib">
+        <delete dir="${lib.dir}"/>
+    </target>
 
     <target name="clean:caarray-client.jar">
         <delete dir="${caarray-client.target.dir}" />
@@ -1322,7 +1318,7 @@
     </target>
 
     <target name="clean:caarray-grid-common">
-    	<delete dir="${caarray-grid-svc.common.target.dir}"/>
+        <delete dir="${caarray-grid-svc.common.target.dir}"/>
     </target>
 
     <target name="clean:caarray-grid-svc">
@@ -1342,7 +1338,7 @@
     <!-- ** MAIN TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-    <target name="continuous-integration" depends="build-tags,clean,database:reinitialize,build,check,test,javadoc"/>
+    <target name="continuous-integration" depends="clean,init:third-party-paths,build-tags,database:reinitialize,build,check,test,javadoc"/>
 
 
     <target name="nightly-build" depends="continuous-integration,
@@ -1355,7 +1351,7 @@
     <!-- ** PREPARATION TARGETS                                           ** -->
     <!-- ******************************************************************* -->
 
-    <target name="prepare:create-local.properties" unless="local.properties.exists" depends="prepare:check-for-local.properties">
+    <target name="prepare:create-local.properties" unless="local.properties.exists" depends="init:third-party-paths,prepare:check-for-local.properties">
         <touch file="${build.dir}/local.properties" />
     </target>
 
@@ -1409,13 +1405,13 @@
     <!-- ** COMPILE TARGETS                                               ** -->
     <!-- ******************************************************************* -->
 
-    <target name="compile" depends="compile:caarray-client.jar,
-        compile:caarray-common.jar,
+    <target name="compile" depends="init:third-party-paths,compile:caarray-client.jar,
+      compile:caarray-common.jar,
         compile:caarray-ejb.jar,
         compile:caarray.war,
         compile:caarray-grid-svc" />
 
-    <target name="compile:caarray-client.jar" depends="compile:caarray-common.jar,compile:caarray-ejb.jar">
+    <target name="compile:caarray-client.jar" depends="init:third-party-paths,compile:caarray-common.jar,compile:caarray-ejb.jar">
         <mkdir dir="${caarray-client.classes.dir}" />
         <javac srcdir="${caarray-client.src.dir}" destdir="${caarray-client.classes.dir}" debug="true">
             <classpath>
@@ -1427,7 +1423,7 @@
         </javac>
     </target>
 
-    <target name="compile:caarray-common.jar" unless="schema.sql.exists">
+    <target name="compile:caarray-common.jar" unless="schema.sql.exists" depends="init:third-party-paths">
         <mkdir dir="${caarray-common.classes.dir}" />
         <javac srcdir="${caarray-common.src.dir}" destdir="${caarray-common.classes.dir}" debug="true">
             <classpath>
@@ -1438,7 +1434,7 @@
         </javac>
     </target>
 
-    <target name="compile:caarray-ejb.jar" depends="compile:caarray-common.jar">
+    <target name="compile:caarray-ejb.jar" depends="init:third-party-paths,compile:caarray-common.jar">
         <mkdir dir="${caarray-ejb.classes.dir}" />
         <javac srcdir="${caarray-ejb.src.dir}" destdir="${caarray-ejb.classes.dir}" debug="true">
             <classpath>
@@ -1448,7 +1444,7 @@
         </javac>
     </target>
 
-    <target name="compile:caarray.war" depends="compile:caarray-common.jar,compile:caarray-ejb.jar">
+    <target name="compile:caarray.war" depends="init:third-party-paths,compile:caarray-common.jar,compile:caarray-ejb.jar">
         <mkdir dir="${caarray-war.classes.dir}" />
         <javac srcdir="${caarray-war.src.dir}" destdir="${caarray-war.classes.dir}" debug="true">
             <classpath>
@@ -1459,34 +1455,34 @@
         </javac>
     </target>
 
-    <target name="compile:caarray-grid-svc.common.jar">
+    <target name="compile:caarray-grid-svc.common.jar" depends="init:third-party-paths">
         <mkdir dir="${caarray-grid-svc.common.classes.dir}" />
         <javac srcdir="${caarray-grid-svc.common.src.dir}" destdir="${caarray-grid-svc.common.classes.dir}" debug="true">
             <classpath refid="common.compile.dependencies.path" />
         </javac>
     </target>
 
-    <target name="compile:caarray-grid-svc" depends="compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar,build:caarray-grid-svc.common.jar">
-    	<for param="version" list="${caarray-grid-svc.versions}">
-    		<sequential>
-    	        <copy file="${caarray-grid-svc.base.dir}/@{version}/deploy.properties.orig" tofile="${caarray-grid-svc.base.dir}/@{version}/deploy.properties">
-    	            <filterset>
-    	                <filter token="grid.index.url" value="${grid.index.url}" />
-    	                <filter token="caarray.grid-service.version" value="@{version}" />
-    	            </filterset>
-    	        </copy>
-    	        <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="compile" inheritall="false">
-    	            <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
-    	            <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
-    	        </ant>
-    		</sequential>
-    	</for>
+    <target name="compile:caarray-grid-svc" depends="init:third-party-paths,compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar,build:caarray-grid-svc.common.jar">
+        <for param="version" list="${caarray-grid-svc.versions}">
+            <sequential>
+                <copy file="${caarray-grid-svc.base.dir}/@{version}/deploy.properties.orig" tofile="${caarray-grid-svc.base.dir}/@{version}/deploy.properties">
+                    <filterset>
+                        <filter token="grid.index.url" value="${grid.index.url}" />
+                        <filter token="caarray.grid-service.version" value="@{version}" />
+                    </filterset>
+                </copy>
+                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="compile" inheritall="false">
+                    <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
+                    <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
+                </ant>
+            </sequential>
+        </for>
     </target>
 
     <!-- ******************************************************************* -->
     <!-- ** SVN TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
-    <target name="svn:getinfo" description="obtain subversion revision info" unless="nosvn">
+    <target name="svn:getinfo" description="obtain subversion revision info" unless="nosvn" depends="init:third-party-paths">
         <svn javahl="false">
             <status path="${root.dir}" revisionProperty="svn.revision" urlProperty="svn.url" />
         </svn>
@@ -1502,18 +1498,28 @@
     <!-- ** BUILD TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
 
+    <target name="clean-build-with-zips" depends="clean,
+        build:caarray-client.jar,
+        build:caarray-common.jar,
+        build:caarray-ejb.jar,
+        build:caarray.war,
+        build:caarray.ear,
+        build:caarray-grid-svc,
+        build:caarray-client.zip,
+        create-grid-zip"/>
+
     <target name="build" description="Builds the application without deploying." depends="build:caarray-client.jar,
         build:caarray-common.jar,
         build:caarray-ejb.jar,
         build:caarray.war,
         build:caarray.ear,
-        build:caarray-grid-svc" />
+        build:caarray-grid-svc"/>
 
     <target name="build-functional" depends="build:caarray-client.jar,
         build:functional:caarray.ear,
         build:caarray-grid-svc" description="Builds the application without deploying." />
 
-    <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,svn:getinfo">
+    <target name="build:caarray-client.jar" depends="init:third-party-paths,compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,svn:getinfo">
         <mkdir dir="${caarray-client.target.dir}" />
         <jar destfile="${caarray-client.jar}">
             <manifest>
@@ -1546,7 +1552,7 @@
         </jar>
     </target>
 
-    <target name="build:caarray-client.zip" depends="build:caarray-client.jar,javadoc:caarray-client,build:caarray-grid-svc">
+    <target name="build:caarray-client.zip" depends="init:third-party-paths,build:caarray-client.jar,javadoc:caarray-client,build:caarray-grid-svc">
         <zip destfile="${caarray-client.target.dir}/caarray-client.zip">
             <fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
             <fileset dir="${caarray-client.dir}/src/distribution/resources" />
@@ -1563,7 +1569,7 @@
         </zip>
     </target>
 
-    <target name="build:caarray-common.jar" depends="compile:caarray-common.jar,configure-datasource-for-deploy,svn:getinfo">
+    <target name="build:caarray-common.jar" depends="init:third-party-paths,compile:caarray-common.jar,configure-datasource-for-deploy,svn:getinfo">
         <mkdir dir="${caarray-common.target.dir}" />
         <pathconvert pathsep=" " property="flattened.common.dependencies" refid="common.compile.dependencies.path">
             <flattenmapper />
@@ -1589,7 +1595,7 @@
 
     <target name="build:functional:caarray-common.jar" depends="build:caarray-common.jar, test:instrument-functional:caarray-common.jar" />
 
-    <target name="build:caarray-ejb.jar" depends="compile:caarray-ejb.jar,svn:getinfo">
+    <target name="build:caarray-ejb.jar" depends="init:third-party-paths,compile:caarray-ejb.jar,svn:getinfo">
         <mkdir dir="${caarray-ejb.target.dir}" />
         <pathconvert pathsep=" " property="flattened.ejb.dependencies" refid="ejb.compile.dependencies.path">
             <flattenmapper />
@@ -1628,7 +1634,7 @@
         </unzip>
     </target>
 
-    <target name="build:caarray.war:scriptsAndStyles:minify">
+    <target name="build:caarray.war:scriptsAndStyles:minify" depends="init:third-party-paths">
         <if>
             <equals arg1="${minify}" arg2="true" />
             <then>
@@ -1671,7 +1677,7 @@
 
     <target name="build:caarray.war:scriptsAndStyles" depends="build:caarray.war:scriptsAndStyles:copy-files,build:caarray.war:scriptsAndStyles:minify"/>
 
-    <target name="build:caarray.war" depends="compile:caarray.war, prepare:caarray.war:onlinehelp,svn:getinfo,build:caarray.war:scriptsAndStyles">
+    <target name="build:caarray.war" depends="init:third-party-paths,compile:caarray.war, prepare:caarray.war:onlinehelp,svn:getinfo,build:caarray.war:scriptsAndStyles">
         <mkdir dir="${caarray-war.target.dir}" />
         <copy todir="${caarray-war.target.dir}/xml" file="${caarray-war.webapp.dir}/WEB-INF/web.xml" overwrite="true">
             <filterset>
@@ -1776,15 +1782,15 @@
         </sequential>
     </macrodef>
 
-    <target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar,svn:getinfo">
+    <target name="build:caarray.ear" depends="init:third-party-paths,build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar,svn:getinfo">
         <build-caarray.ear />
     </target>
 
-    <target name="build:functional:caarray.ear" depends="build:functional:caarray.war,build:functional:caarray-ejb.jar,build:functional:caarray-common.jar">
+    <target name="build:functional:caarray.ear" depends="init:third-party-paths,build:functional:caarray.war,build:functional:caarray-ejb.jar,build:functional:caarray-common.jar">
         <build-caarray.ear />
     </target>
-	
-    <target name="build:caarray-grid-svc.common.jar" depends="compile:caarray-grid-svc.common.jar,svn:getinfo">
+
+    <target name="build:caarray-grid-svc.common.jar" depends="init:third-party-paths,compile:caarray-grid-svc.common.jar,svn:getinfo">
         <mkdir dir="${caarray-grid-svc.common.target.dir}" />
         <pathconvert pathsep=" " property="flattened.common.dependencies" refid="common.compile.dependencies.path">
             <flattenmapper />
@@ -1807,27 +1813,27 @@
             <fileset dir="${caarray-grid-svc.common.classes.dir}" />
         </jar>
     </target>
-	
-	<target name="build:caarray-grid-svc" depends="compile:caarray-grid-svc, build:caarray-grid-svc.common.jar">
-	   	<for param="version" list="${caarray-grid-svc.versions}">
-	    	<sequential>
-	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="jars" inheritall="false">
-	                <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
-	                <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
-	            </ant>
-	 		</sequential>
-	   	</for>	
-	</target>
-	
+
+    <target name="build:caarray-grid-svc" depends="init:third-party-paths,compile:caarray-grid-svc, build:caarray-grid-svc.common.jar">
+        <for param="version" list="${caarray-grid-svc.versions}">
+            <sequential>
+                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="jars" inheritall="false">
+                    <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
+                    <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
+                </ant>
+            </sequential>
+        </for>
+    </target>
+
     <!-- ******************************************************************* -->
     <!-- ** TEST TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-    <target name="test" unless="notest" depends="test:unit" description="Executes the unit tests"/>
+    <target name="test" unless="notest" depends="init:third-party-paths,test:unit" description="Executes the unit tests"/>
 
     <!-- Test Data Targets -->
 
-    <target name="test:copy-files-to-target-dir-and-unpack-test-data" unless="notest">
+    <target name="test:copy-files-to-target-dir-and-unpack-test-data" unless="notest" depends="init:third-party-paths">
         <copy todir="${test.data.target.dir}">
             <fileset dir="${test.data.files.dir}"/>
         </copy>
@@ -1841,7 +1847,7 @@
         </for>
     </target>
 
-    <target name="test:compile:test-data-classes" unless="notest">
+    <target name="test:compile:test-data-classes" unless="notest" depends="init:third-party-paths">
         <mkdir dir="${test.data.classes.dir}" />
         <javac srcdir="${test.data.src.dir}" destdir="${test.data.classes.dir}" debug="true">
         </javac>
@@ -1849,7 +1855,7 @@
 
     <!-- JUnit Test Targets -->
 
-    <target name="test:unit" unless="notest" depends="test:junit-caarray-client.jar,
+    <target name="test:unit" unless="notest" depends="init:third-party-paths,test:junit-caarray-client.jar,
       test:junit-caarray-common.jar,
       test:junit-caarray-ejb.jar,
       test:junit-caarray.war,
@@ -1862,7 +1868,7 @@
 
     <!-- caarray-client.jar -->
 
-    <target name="test:instrument:caarray-client.jar" unless="notest" depends="compile:caarray-client.jar">
+    <target name="test:instrument:caarray-client.jar" unless="notest" depends="init:third-party-paths,compile:caarray-client.jar">
         <cobertura-instrument todir="${caarray-client.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-client.classes.dir}">
                 <include name="gov/nih/nci/caarray/**" />
@@ -1870,7 +1876,7 @@
         </cobertura-instrument>
     </target>
 
-    <target name="test:instrument-functional:caarray-client.jar" unless="notest" depends="compile:caarray-client.jar">
+    <target name="test:instrument-functional:caarray-client.jar" unless="notest" depends="init:third-party-paths,compile:caarray-client.jar">
         <cobertura-instrument todir="${caarray-client.instrumented.classes.dir}" datafile="${cobertura-functional.file}">
             <fileset dir="${caarray-client.classes.dir}">
                 <include name="gov/nih/nci/caarray/**" />
@@ -1878,7 +1884,7 @@
         </cobertura-instrument>
     </target>
 
-    <target name="test:compile:caarray-client.test.classes" unless="notest" depends="compile:caarray-client.jar,test:compile:test-data-classes">
+    <target name="test:compile:caarray-client.test.classes" unless="notest" depends="init:third-party-paths,compile:caarray-client.jar,test:compile:test-data-classes">
         <mkdir dir="${caarray-client.test.classes.dir}" />
         <javac srcdir="${caarray-client.test.src.dir}" destdir="${caarray-client.test.classes.dir}" debug="true">
             <classpath>
@@ -1893,28 +1899,28 @@
         </javac>
     </target>
 
-    <target name="test:junit-caarray-client.jar" unless="notest" depends="test:compile:caarray-client.test.classes,test:instrument:caarray-client.jar">
+    <target name="test:junit-caarray-client.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-client.test.classes,test:instrument:caarray-client.jar">
         <caarray-run-junit-tests test.src.dir="${caarray-client.test.src.dir}" xml.output.dir="${caarray-client.target.dir}/junit" instrumented.classes="${caarray-client.instrumented.classes.dir}" classpath="${caarray-client.test.classes.dir};${test.data.target.dir};${test.classes.dir};${caarray-client.test.files.dir};${caarray-client.classes.dir};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" />
     </target>
 
     <!-- caarray-common.jar -->
 
-    <target name="test:instrument:caarray-common.jar" unless="notest">
+    <target name="test:instrument:caarray-common.jar" unless="notest" depends="init:third-party-paths">
         <cobertura-instrument todir="${caarray-common.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-common.classes.dir}">
-            	<include name="**/*.class" />
-	            <exclude name="**/external/**/*.class" />
-			</fileset>	
+                <include name="**/*.class" />
+                <exclude name="**/external/**/*.class" />
+            </fileset>
         </cobertura-instrument>
     </target>
 
-    <target name="test:instrument-functional:caarray-common.jar" unless="notest" depends="build:caarray-common.jar">
+    <target name="test:instrument-functional:caarray-common.jar" unless="notest" depends="init:third-party-paths,build:caarray-common.jar">
         <cobertura-instrument datafile="${cobertura-functional.file}">
             <fileset file="${caarray-common.jar}" />
         </cobertura-instrument>
     </target>
 
-    <target name="test:compile:caarray-common.test.classes" unless="notest" depends="compile:caarray-common.jar,test:compile:test-data-classes">
+    <target name="test:compile:caarray-common.test.classes" unless="notest" depends="init:third-party-paths,compile:caarray-common.jar,test:compile:test-data-classes">
         <mkdir dir="${caarray-common.test.classes.dir}" />
         <javac srcdir="${caarray-common.test.src.dir}" destdir="${caarray-common.test.classes.dir}" debug="true">
             <classpath>
@@ -1927,28 +1933,28 @@
         </javac>
     </target>
 
-    <target name="test:junit-caarray-common.jar" unless="notest" depends="test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data">
+    <target name="test:junit-caarray-common.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data">
         <caarray-run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};" classpathref.id="common.test.dependencies.path" />
     </target>
 
     <!-- caarray-ejb.jar -->
 
-    <target name="test:instrument:caarray-ejb.jar" unless="notest" depends="compile:caarray-ejb.jar">
+    <target name="test:instrument:caarray-ejb.jar" unless="notest" depends="init:third-party-paths,compile:caarray-ejb.jar">
         <cobertura-instrument todir="${caarray-ejb.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-ejb.classes.dir}">
-            	<include name="**/*.class" />
-	            <exclude name="**/external/**/*.class" />
-			</fileset>            	
+                <include name="**/*.class" />
+                <exclude name="**/external/**/*.class" />
+            </fileset>
         </cobertura-instrument>
     </target>
 
-    <target name="test:instrument-functional:caarray-ejb.jar" unless="notest" depends="build:caarray-ejb.jar">
+    <target name="test:instrument-functional:caarray-ejb.jar" unless="notest" depends="init:third-party-paths,build:caarray-ejb.jar">
         <cobertura-instrument datafile="${cobertura-functional.file}">
             <fileset file="${caarray-ejb.jar}" />
         </cobertura-instrument>
     </target>
 
-    <target name="test:compile:caarray-ejb.test.classes" unless="notest" depends="compile:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:compile:caarray-common.test.classes,test:compile:test-data-classes">
+    <target name="test:compile:caarray-ejb.test.classes" unless="notest" depends="init:third-party-paths,compile:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:compile:caarray-common.test.classes,test:compile:test-data-classes">
         <mkdir dir="${caarray-ejb.test.classes.dir}" />
         <javac srcdir="${caarray-ejb.test.src.dir}" destdir="${caarray-ejb.test.classes.dir}" debug="true">
             <classpath>
@@ -1963,13 +1969,13 @@
         </javac>
     </target>
 
-    <target name="test:junit-caarray-ejb.jar" unless="notest" depends="test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data">
+    <target name="test:junit-caarray-ejb.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data">
         <caarray-run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path" />
     </target>
 
     <!-- caarray.war -->
 
-    <target name="test:instrument:caarray.war" unless="notest" depends="compile:caarray.war">
+    <target name="test:instrument:caarray.war" unless="notest" depends="init:third-party-paths,compile:caarray.war">
         <cobertura-instrument todir="${caarray-war.instrumented.classes.dir}" datafile="${cobertura.file}">
             <!-- do not have good way of testing the upload handler via junit for the time being -->
             <fileset dir="${caarray-war.classes.dir}">
@@ -1979,13 +1985,13 @@
         </cobertura-instrument>
     </target>
 
-    <target name="test:instrument-functional:caarray.war" unless="notest" depends="build:caarray.war">
+    <target name="test:instrument-functional:caarray.war" unless="notest" depends="init:third-party-paths,build:caarray.war">
         <cobertura-instrument datafile="${cobertura-functional.file}">
             <fileset file="${caarray.war}" />
         </cobertura-instrument>
     </target>
 
-    <target name="test:compile:caarray-war.test.classes" unless="notest" depends="compile:caarray.war,compile:caarray-common.jar,compile:caarray-ejb.jar,test:compile:caarray-ejb.test.classes,test:compile:caarray-common.test.classes,test:compile:test-data-classes">
+    <target name="test:compile:caarray-war.test.classes" unless="notest" depends="init:third-party-paths,compile:caarray.war,compile:caarray-common.jar,compile:caarray-ejb.jar,test:compile:caarray-ejb.test.classes,test:compile:caarray-common.test.classes,test:compile:test-data-classes">
         <mkdir dir="${caarray-war.test.classes.dir}" />
         <javac srcdir="${caarray-war.test.src.dir}" destdir="${caarray-war.test.classes.dir}" debug="true">
             <classpath>
@@ -2004,13 +2010,13 @@
         </copy>
     </target>
 
-    <target name="test:junit-caarray.war" unless="notest" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data">
+    <target name="test:junit-caarray.war" unless="notest" depends="init:third-party-paths,test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data">
         <!-- need to make sure there aren't duplicate struts.xml on classpath! -->
         <move file="${test.data.classes.dir}/struts.xml" tofile="${test.data.classes.dir}/struts.xml.renamed" failonerror="false" />
         <caarray-run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${caarray-ejb.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};" classpathref.id="war.test.dependencies.path" />
     </target>
 
-    <target name="test:junit-report" unless="notest">
+    <target name="test:junit-report" unless="notest" depends="init:third-party-paths">
         <mkdir dir="${site.dir}/junit/unit" />
         <mkdir dir="${test.target.dir}/junit" />
         <junitreport todir="${site.dir}/junit/unit">
@@ -2031,7 +2037,7 @@
     </target>
 
     <!-- Cobertura Test Targets -->
-    <target name="test:cobertura-report" unless="notest">
+    <target name="test:cobertura-report" unless="notest" depends="init:third-party-paths">
         <cobertura-report format="xml" destdir="${site.dir}/cobertura/unit" datafile="${cobertura.file}">
             <fileset dir="${caarray-client.src.dir}" />
             <fileset dir="${caarray-common.src.dir}" />
@@ -2046,13 +2052,13 @@
         </cobertura-report>
     </target>
 
-    <target name="test:cobertura-check" unless="notest">
+    <target name="test:cobertura-check" unless="notest" depends="init:third-party-paths">
         <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="70" totallinerate="79" />
     </target>
 
     <!-- Functional (Selenium) Test Targets -->
 
-    <target name="test:functional" unless="notest" depends="test:functional:prepare,
+    <target name="test:functional" unless="notest" depends="init:third-party-paths,test:functional:prepare,
         deploy:start-jboss-and-deploy,
         test:functional:run-tests,
         deploy:stop-jboss,
@@ -2061,23 +2067,23 @@
         <fail if="junit.failure" message="There were functional test failures." />
     </target>
 
-    <target name="test:functional:instrument" unless="notest" depends="test:instrument-functional:caarray-client.jar,
+    <target name="test:functional:instrument" unless="notest" depends="init:third-party-paths,test:instrument-functional:caarray-client.jar,
         test:instrument-functional:caarray-common.jar,
         test:instrument-functional:caarray-ejb.jar,
         test:instrument-functional:caarray.war"/>
 
-    <target name="test:functional:prepare" unless="notest" depends="test:functional:instrument">
+    <target name="test:functional:prepare" unless="notest" depends="init:third-party-paths,test:functional:instrument">
         <copy tofile="${build.dir}/cobertura.ser" file="${cobertura-functional.file}" />
         <copy todir="${jboss.lib.dir}" overwrite="true" flatten="true">
             <fileset refid="cobertura.jar.fileset"/>
         </copy>
     </target>
 
-    <target name="test:functional:cobertura-report" unless="notest" depends="test:functional:cobertura-report-functional-only,
+    <target name="test:functional:cobertura-report" unless="notest" depends="init:third-party-paths,test:functional:cobertura-report-functional-only,
         test:functional:cobertura-report-check-unit,
         test:functional:cobertura-report-merged" />
 
-    <target name="test:functional:cobertura-report-functional-only" unless="notest">
+    <target name="test:functional:cobertura-report-functional-only" unless="notest" depends="init:third-party-paths">
         <move file="${build.dir}/cobertura.ser" tofile="${cobertura-functional.file}" />
         <cobertura-report format="xml" destdir="${site.dir}/cobertura/functional" datafile="${cobertura-functional.file}">
             <fileset dir="${caarray-client.src.dir}" />
@@ -2093,11 +2099,11 @@
         </cobertura-report>
     </target>
 
-    <target name="test:functional:cobertura-report-check-unit" unless="notest">
+    <target name="test:functional:cobertura-report-check-unit" unless="notest" depends="init:third-party-paths">
         <available file="${cobertura.file}" property="cobertura.unit.exists" />
     </target>
 
-    <target name="test:functional:cobertura-report-merged" if="cobertura.unit.exists" unless="notest">
+    <target name="test:functional:cobertura-report-merged" if="cobertura.unit.exists" unless="notest" depends="init:third-party-paths">
         <cobertura-merge datafile="${cobertura-merged.file}">
             <fileset file="${cobertura-merged.file}" />
             <fileset file="${cobertura.file}" />
@@ -2116,11 +2122,11 @@
         </cobertura-report>
     </target>
 
-    <target name="test:check-functional-test-results" unless="notest">
+    <target name="test:check-functional-test-results" unless="notest" depends="init:third-party-paths">
         <fail if="junit.failure" message="There were functional test failures." />
     </target>
 
-    <target name="test:selenium:start-server" unless="notest">
+    <target name="test:selenium:start-server" unless="notest" depends="init:third-party-paths">
         <echo message="Starting Selenium RC server on port ${selenium.server.port}" />
         <property name="firefox.2x.executable.path" value="${env.ProgramFiles}\Mozilla Firefox\firefox.exe"/>
         <java jar="${project.lib}/${selenium-server.jar}" fork="true" spawn="true">
@@ -2133,15 +2139,15 @@
         </java>
     </target>
 
-    <target name="test:selenium:stop-server" unless="notest">
+    <target name="test:selenium:stop-server" unless="notest" depends="init:third-party-paths">
         <mkdir dir="${target.dir}/temp" />
         <get taskname="selenium-shutdown" src="http://localhost:${selenium.server.port}/selenium-server/driver/?cmd=shutDown" dest="${target.dir}/temp/selenium-shutdown-result.txt" ignoreerrors="true" />
         <echo taskname="selenium-shutdown" message="DGF Errors during shutdown are expected" />
     </target>
 
-    <target name="test:functional:compile-tests" unless="notest" depends="test:selenium:compile-tests,test:api:compile-tests,test:grid:compile-tests" />
+    <target name="test:functional:compile-tests" unless="notest" depends="init:third-party-paths,test:selenium:compile-tests,test:api:compile-tests,test:grid:compile-tests" />
 
-    <target name="test:selenium:compile-tests" unless="notest" depends="compile:caarray-common.jar,compile:caarray-client.jar,compile:caarray-ejb.jar,test:compile:test-data-classes">
+    <target name="test:selenium:compile-tests" unless="notest" depends="init:third-party-paths,compile:caarray-common.jar,compile:caarray-client.jar,compile:caarray-ejb.jar,test:compile:test-data-classes">
         <mkdir dir="${test.classes.dir}" />
         <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true">
             <classpath>
@@ -2156,7 +2162,7 @@
         </javac>
     </target>
 
-    <target name="test:api:compile-tests" unless="notest" depends="build:caarray-client.jar">
+    <target name="test:api:compile-tests" unless="notest" depends="init:third-party-paths,build:caarray-client.jar">
         <mkdir dir="${test.classes.dir}" />
         <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true">
             <classpath>
@@ -2168,7 +2174,7 @@
         </javac>
     </target>
 
-    <target name="test:grid:compile-tests" unless="notest" depends="build:caarray-client.jar,build:caarray-grid-svc">
+    <target name="test:grid:compile-tests" unless="notest" depends="init:third-party-paths,build:caarray-client.jar,build:caarray-grid-svc">
         <mkdir dir="${test.classes.dir}" />
         <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true">
             <classpath>
@@ -2180,9 +2186,9 @@
         </javac>
     </target>
 
-    <target name="test:functional:run-tests" unless="notest" depends="test:selenium:run-tests,test:api:run-tests" />
+    <target name="test:functional:run-tests" unless="notest" depends="init:third-party-paths,test:selenium:run-tests,test:api:run-tests" />
 
-    <target name="test:functional:report" unless="notest">
+    <target name="test:functional:report" unless="notest" depends="init:third-party-paths">
         <mkdir dir="${site.dir}/junit/functional" />
         <junitreport todir="${site.dir}/junit/functional">
             <fileset dir="${test.target.dir}/junit/selenium">
@@ -2195,25 +2201,25 @@
         </junitreport>
     </target>
 
-    <target name="test:selenium:run-tests:do-run" unless="notest">
+    <target name="test:selenium:run-tests:do-run" unless="notest" depends="init:third-party-paths">
         <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/selenium" classpath="${test.classes.dir};${caarray-client.jar};${test.data.classes.dir};${test.data.target.dir};" classpathref.id="selenium.dependencies.path" />
     </target>
 
-    <target name="test:selenium:run-tests" unless="notest" depends="test:selenium:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data,build:caarray-client.jar,test:selenium:start-server,test:selenium:run-tests:do-run,test:selenium:stop-server"/>
+    <target name="test:selenium:run-tests" unless="notest" depends="init:third-party-paths,test:selenium:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data,build:caarray-client.jar,test:selenium:start-server,test:selenium:run-tests:do-run,test:selenium:stop-server"/>
 
-    <target name="test:selenium:prepare-selenium-server.jar" unless="notest">
+    <target name="test:selenium:prepare-selenium-server.jar" unless="notest" depends="init:third-party-paths">
         <jar update="true" jarfile="${selenium-server.jar}" basedir="${test.resources.dir}/selenium" />
     </target>
 
-    <target name="test:api:run-tests" unless="notest" depends="test:api:compile-tests,build:caarray-client.jar">
+    <target name="test:api:run-tests" unless="notest" depends="init:third-party-paths,test:api:compile-tests,build:caarray-client.jar">
         <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/java" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" source.include="**/Api*.java" source.exclude="**/Abstract*.java" />
     </target>
 
-    <target name="test:dataset" unless="notest" depends="test:api:compile-tests,build:caarray-client.jar">
+    <target name="test:dataset" unless="notest" depends="init:third-party-paths,test:api:compile-tests,build:caarray-client.jar">
         <java classname="gov.nih.nci.caarray.test.api.java.data.ApiDataSetDownloadClient" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref="client.test.dependencies.path" />
     </target>
 
-    <target name="test:grid:run-tests" unless="notest"  depends="test:grid:compile-tests,build:caarray-client.jar,build:caarray-grid-svc">
+    <target name="test:grid:run-tests" unless="notest"  depends="init:third-party-paths,test:grid:compile-tests,build:caarray-client.jar,build:caarray-grid-svc">
         <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/grid" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref.id="test.grid.dependencies.path" source.include="**/Grid*.java" source.exclude="**/Abstract*.java" />
     </target>
 
@@ -2221,12 +2227,12 @@
     <!-- ** CHECK TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
 
-    <target name="check" unless="nocheck" depends="check:checkstyle,check:pmd">
+    <target name="check" unless="nocheck" depends="init:third-party-paths,check:checkstyle,check:pmd">
         <fail if="checkstyle.failure" message="There were Checkstyle failures." />
         <fail if="pmd.failure" message="There were PMD failures." />
     </target>
 
-    <target name="check:checkstyle" depends="build:caarray-common.jar,build:caarray-ejb.jar,compile:caarray.war">
+    <target name="check:checkstyle" depends="init:third-party-paths,build:caarray-common.jar,build:caarray-ejb.jar,compile:caarray.war">
         <mkdir dir="${site.dir}/checkstyle" />
         <checkstyle config="${checkstyle.config}" failureProperty="checkstyle.failure" failOnViolation="false" maxerrors="0" maxwarnings="0">
             <classpath>
@@ -2248,7 +2254,7 @@
         </xslt>
     </target>
 
-    <target name="check:pmd">
+    <target name="check:pmd" depends="init:third-party-paths">
         <mkdir dir="${site.dir}/pmd" />
         <mkdir dir="${site.dir}/pmd-jsp" />
 
@@ -2279,7 +2285,7 @@
         </xslt>
     </target>
 
-    <target name="check:pmd:update-eclipse-projects">
+    <target name="check:pmd:update-eclipse-projects" depends="init:third-party-paths">
         <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-client.dir}/.ruleset" />
         <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-common.dir}/.ruleset" />
         <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-war.dir}/.ruleset" />
@@ -2295,7 +2301,7 @@
     <!-- ** SQL TARGETS                                                   ** -->
     <!-- ******************************************************************* -->
 
-    <target name="database:init-sql" unless="schema.sql.exists">
+    <target name="database:init-sql" unless="schema.sql.exists" depends="init:third-party-paths">
         <mkdir dir="${caarraydb.sql.dir}" />
         <dependset>
             <srcfileset dir="${caarray-common.src.dir}">
@@ -2315,19 +2321,23 @@
         <available property="schema.sql.exists" file="${caarraydb.sql.dir}/sql/drop_schema.sql" />
     </target>
 
-    <target name="database:generate-drop-schema-sql" unless="schema.sql.exists" depends="compile:caarray-common.jar,configure-datasource-for-test,database:init-sql">
-        <hibernatetool destdir="${caarraydb.sql.dir}">
-            <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
-            <hbm2ddl drop="true" create="false" export="false" outputfilename="drop_schema.sql" />
+    <target name="database:init-hibernatetool-taskdef" depends="init:third-party-paths">
+        <taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask" classpathref="project.jars.path">
             <classpath>
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${caarray-common.resources.dir}" />
             </classpath>
-            <classpath refid="hibernate.jar.path" />
+        </taskdef>
+    </target>
+
+    <target name="database:generate-drop-schema-sql" unless="schema.sql.exists" depends="init:third-party-paths,compile:caarray-common.jar,configure-datasource-for-test,database:init-sql,database:init-hibernatetool-taskdef">
+        <hibernatetool destdir="${caarraydb.sql.dir}">
+            <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
+            <hbm2ddl drop="true" create="false" export="false" outputfilename="drop_schema.sql" />
         </hibernatetool>
     </target>
 
-    <target name="database:generate-create-schema-sql" unless="schema.sql.exists" depends="configure-datasource-for-test,compile:caarray-common.jar,database:init-sql">
+    <target name="database:generate-create-schema-sql" unless="schema.sql.exists" depends="init:third-party-paths,configure-datasource-for-test,compile:caarray-common.jar,database:init-sql,database:init-hibernatetool-taskdef">
         <hibernatetool destdir="${caarraydb.sql.dir}">
             <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
             <hbm2ddl drop="false" create="true" export="false" outputfilename="create_schema.sql" />
@@ -2339,9 +2349,9 @@
         </hibernatetool>
     </target>
 
-    <target name="database:generate-schema-sql" depends="database:generate-drop-schema-sql, database:generate-create-schema-sql" />
+    <target name="database:generate-schema-sql" depends="init:third-party-paths,database:generate-drop-schema-sql, database:generate-create-schema-sql" />
 
-    <target name="database:generate-mged-sql" unless="schema.sql.exists" depends="compile:caarray-common.jar,database:init-sql">
+    <target name="database:generate-mged-sql" unless="schema.sql.exists" depends="init:third-party-paths,compile:caarray-common.jar,database:init-sql">
         <java classname="gov.nih.nci.caarray.util.owlparser.ParseMgedOntology" failonerror="true">
             <arg value="${caarraydb.sql.dir}" />
             <classpath>
@@ -2352,21 +2362,21 @@
         </java>
     </target>
 
-    <target name="database:drop-schema" unless="nodbintegration" depends="database:generate-drop-schema-sql" description="Drop DB schema">
+    <target name="database:drop-schema" unless="nodbintegration" depends="init:third-party-paths,database:generate-drop-schema-sql" description="Drop DB schema">
         <run-sql-script database.user="${database.user}" database.password="${database.password}" onerror="continue" sql.file="${caarraydb.sql.dir}/drop_schema.sql" />
         <run-sql-script database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/drop-caarray-schema.sql" />
         <run-sql-script database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/drop-csm-schema.sql" />
     </target>
 
-    <target name="database:create-schema" unless="nodbintegration" depends="database:generate-create-schema-sql" description="Create DB schema">
+    <target name="database:create-schema" unless="nodbintegration" depends="init:third-party-paths,database:generate-create-schema-sql" description="Create DB schema">
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/create_schema.sql" />
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/init-caarray-schema.sql" />
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/init-csm-schema.sql" />
     </target>
 
-    <target name="database:initialize-schema" depends="database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
+    <target name="database:initialize-schema" depends="init:third-party-paths,database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
 
-    <target name="database:populate" unless="nodbintegration" depends="database:generate-mged-sql" description="populates db with initial data">
+    <target name="database:populate" unless="nodbintegration" depends="init:third-party-paths,database:generate-mged-sql" description="populates db with initial data">
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-csm.sql" />
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-csm2.sql" />
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-mged.sql" />
@@ -2374,26 +2384,26 @@
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-caarray-procedures.sql" sql.delimiter="//" />
     </target>
 
-    <target name="database:env-specific-sql" unless="nodbintegration" description="populates db with initial data">
+    <target name="database:env-specific-sql" unless="nodbintegration" description="populates db with initial data" depends="init:third-party-paths">
         <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/${config.sql.file}" />
     </target>
 
-    <target name="database:reinitialize" depends="database:init-sql,database:execute-sql" unless="nodbintegration" description="Completely reset caarraydb by dropping database, recreating, and creating schema, and populating with initial data"/>
+    <target name="database:reinitialize" depends="init:third-party-paths,database:init-sql,database:execute-sql" unless="nodbintegration" description="Completely reset caarraydb by dropping database, recreating, and creating schema, and populating with initial data"/>
 
-    <target name="database:execute-sql" unless="nodbintegration" depends="database:drop-schema,database:create-schema,database:populate,database:env-specific-sql" description="Run SQL scripts, skipping Hibernate code generation"/>
+    <target name="database:execute-sql" unless="nodbintegration" depends="init:third-party-paths,database:drop-schema,database:create-schema,database:populate,database:env-specific-sql" description="Run SQL scripts, skipping Hibernate code generation"/>
 
-    <target name="database:recreate-database" unless="nodbintegration" description="Drops and recreates caarraydb database">
+    <target name="database:recreate-database" unless="nodbintegration" description="Drops and recreates caarraydb database" depends="init:third-party-paths">
         <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
     </target>
 
 
     <!-- ******************************************************************* -->
-    <!-- ** LOCAL DEPLOY TARGETS                                          ** -->
+    <!-- ** LOCAL DEPLOY TARGETS                                                ** -->
     <!-- ******************************************************************* -->
 
-    <target name="deploy" depends="deploy:caarray.ear,deploy:caarray-grid-svc" description="Deploy the application and grid services" />
+    <target name="deploy" depends="init:third-party-paths,deploy:caarray.ear,deploy:caarray-grid-svc" description="Deploy the application and grid services" />
 
-    <target name="deploy:caarray.ear-dependencies" depends="prepare:create-local.properties">
+    <target name="deploy:caarray.ear-dependencies" depends="init:third-party-paths,prepare:create-local.properties">
         <copy file="${common.resources.jboss.conf.dir}/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
             <filterset refid="caarray.filterset" />
         </copy>
@@ -2406,81 +2416,79 @@
         </copy>
     </target>
 
-    <target name="deploy:caarray.ear" depends="build:caarray.ear,deploy:caarray.ear-dependencies">
+    <target name="deploy:caarray.ear" depends="init:third-party-paths,build:caarray.ear,deploy:caarray.ear-dependencies">
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
     </target>
 
-    <target name="deploy:functional:caarray.ear" depends="build:functional:caarray.ear,deploy:caarray.ear-dependencies">
+    <target name="deploy:functional:caarray.ear" depends="init:third-party-paths,build:functional:caarray.ear,deploy:caarray.ear-dependencies">
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
     </target>
 
-	<target name="deploy:caarray-grid-svc" depends="deploy:caarray-grid-svc-globus, deploy:caarray-grid-svc-jboss"/>
-	
-    <target name="deploy:caarray-grid-svc-globus" depends="build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useGlobus">
-	   	<for param="version" list="${caarray-grid-svc.versions}">
-	    	<sequential>
-	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="deployGlobus" inheritall="false" />
-	    	</sequential>
-	   	</for>
+    <target name="deploy:caarray-grid-svc" depends="init:third-party-paths,deploy:caarray-grid-svc-globus, deploy:caarray-grid-svc-jboss"/>
+
+    <target name="deploy:caarray-grid-svc-globus" depends="init:third-party-paths,build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useGlobus">
+        <for param="version" list="${caarray-grid-svc.versions}">
+            <sequential>
+                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="deployGlobus" inheritall="false" />
+            </sequential>
+        </for>
     </target>
 
-    <target name="deploy:caarray-grid-svc-jboss" depends="build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useJBoss">
+    <target name="deploy:caarray-grid-svc-jboss" depends="init:third-party-paths,build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useJBoss">
         <unzip src="${jboss-globus-serverinstance-config.zip}" dest="${globoss.server.instance.home}" />
         <replace file="${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd">
             <replacefilter token="@LOGICAL_HOST@" value="${grid.static.hostname}" />
         </replace>
-	   	<for param="version" list="${caarray-grid-svc.versions}">
-	    	<sequential>
-	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="deployJBoss" inheritall="false">
-	                <property name="jboss.dir" value="${globoss.home}"/>
-	            </ant>
-	    	</sequential>
-	   	</for>
+        <for param="version" list="${caarray-grid-svc.versions}">
+            <sequential>
+                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="deployJBoss" inheritall="false">
+                    <property name="jboss.dir" value="${globoss.home}"/>
+                </ant>
+            </sequential>
+        </for>
     </target>
 
-    <target name="undeploy" description="Undeploys the application from JBoss and Globoss" depends="undeploy:caarray.ear, undeploy:caarray-grid-svc" />
+    <target name="undeploy" description="Undeploys the application from JBoss and Globoss" depends="init:third-party-paths,undeploy:caarray.ear, undeploy:caarray-grid-svc" />
 
-    <target name="undeploy:caarray.ear" description="Undeploys the application from JBoss">
+    <target name="undeploy:caarray.ear" description="Undeploys the application from JBoss" depends="init:third-party-paths">
         <delete file="${jboss.deploy.dir}/${mysql.datasource.file}" />
         <delete file="${jboss.deploy.dir}/caarray.ear" />
         <delete file="${jboss.deploy.dir}/mail-service.xml" />
     </target>
 
-    <target name="undeploy:caarray-grid-svc" depends="undeploy:caarray-grid-svc-globus, undeploy:caarray-grid-svc-jboss"/>
+    <target name="undeploy:caarray-grid-svc" depends="init:third-party-paths,undeploy:caarray-grid-svc-globus, undeploy:caarray-grid-svc-jboss"/>
 
-    <target name="undeploy:caarray-grid-svc-globus" depends="prepare:create-local.properties" if="internal.grid.useGlobus">
-	   	<for param="version" list="${caarray-grid-svc.versions}">
-	    	<sequential>
-	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployGlobus" inheritall="false"/>
-	    	</sequential>
-	   	</for>
+    <target name="undeploy:caarray-grid-svc-globus" depends="init:third-party-paths,prepare:create-local.properties" if="internal.grid.useJBoss">
+        <for param="version" list="${caarray-grid-svc.versions}">
+            <sequential>
+                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployJBoss" inheritall="false">
+                    <property name="jboss.dir" value="${globoss.home}"/>
+                </ant>
+            </sequential>
+        </for>
     </target>
 
-    <target name="undeploy:caarray-grid-svc-jboss" depends="prepare:create-local.properties" if="internal.grid.useJBoss">
-	   	<for param="version" list="${caarray-grid-svc.versions}">
-	    	<sequential>
-	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployJBoss" inheritall="false">
-	                <property name="jboss.dir" value="${globoss.home}"/>
-	            </ant>
-	    	</sequential>
-	   	</for>
+    <target name="undeploy:caarray-grid-svc-jboss" depends="prepare:create-local.properties">
+        <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployJBoss" inheritall="false">
+            <property name="jboss.dir" value="${globoss.home}"/>
+        </ant>
     </target>
 
-    <target name="deploy:stop-jboss">
+    <target name="deploy:stop-jboss" depends="init:third-party-paths">
         <jboss-stop-jboss jboss.home="${jboss.home}" jboss.server.hostname="${jboss.server.hostname}" jboss.server.jndi.port="${jboss.server.jndi.port}" jboss.server.name="${jboss.server.name}" jboss.web.password="${jboss.web.password}"/>
     </target>
 
-    <target name="deploy:start-jboss" depends="deploy:check-if-jboss-is-running" unless="jboss.running">
+    <target name="deploy:start-jboss" depends="init:third-party-paths,deploy:check-if-jboss-is-running" unless="jboss.running">
         <jboss-start-jboss jboss.home="${jboss.home}" jboss.server.name="${jboss.server.name}"/>
     </target>
 
-    <target name="deploy:start-jboss-and-deploy" depends="deploy:stop-jboss,deploy:caarray.ear,deploy:start-jboss"/>
+    <target name="deploy:start-jboss-and-deploy" depends="init:third-party-paths,deploy:stop-jboss,deploy:caarray.ear,deploy:start-jboss"/>
 
-    <target name="deploy:check-if-jboss-is-running">
+    <target name="deploy:check-if-jboss-is-running" depends="init:third-party-paths">
         <jboss-check-if-jboss-is-running jboss.server.port="${jboss.server.port}" jboss.server.hostname="${jboss.server.hostname}"/>
     </target>
 
-    <target name="deploy:copy-jsp" description="Copies the jsp's over to the unpacked war directory in jboss">
+    <target name="deploy:copy-jsp" description="Copies the jsp's over to the unpacked war directory in jboss" depends="init:third-party-paths">
         <for param="toDir">
             <path>
                 <dirset dir="${jboss.deploy.dir}/../tmp/deploy" includes="tmp*caarray.ear-contents/caarray-exp.war" />
@@ -2504,9 +2512,21 @@
         </for>
     </target>
 
-    <target name="redeploy" description="Developer undeploy, clean, redeploy" depends="undeploy, clean, database:reinitialize, deploy" />
+    <target name="create-grid-zip">
+        <for param="version" list="${caarray-grid-svc.versions}">
+            <sequential>
+                <var name="caarraysvc.temp.dir" value="${caarray-grid-svc.base.dir}/@{version}/build/cagrid_CaArraySvc" />
+                <mkdir dir="${caarraysvc.temp.dir}" />
+                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="createDeploymentZip" inheritall="false">
+                    <property name="jboss.dir" value="${caarraysvc.temp.dir}" />
+                </ant>
+            </sequential>
+        </for>
+    </target>
 
-    <target name="redeploy:caarray.ear" description="Developer undeploy, clean, redeploy for the ear only" depends="undeploy:caarray.ear, clean, database:reinitialize, deploy:caarray.ear" />
+    <target name="redeploy" description="Developer undeploy, clean, redeploy" depends="clean, init:third-party-paths, undeploy, database:reinitialize, deploy" />
+
+    <target name="redeploy:caarray.ear" description="Developer undeploy, clean, redeploy for the ear only" depends="clean, init:third-party-paths, undeploy:caarray.ear, database:reinitialize, deploy:caarray.ear" />
 
     <!-- ******************************************************************* -->
     <!-- ** REMOTE DEPLOY TARGETS                                          ** -->
@@ -2516,21 +2536,21 @@
     <property name="jboss.start.sleep" value="10" />
     <property name="jboss.stop.sleep" value="30" />
 
-    <target name="validate-properties">
+    <target name="validate-properties" depends="init:third-party-paths">
         <ncitask keyFile="${build.dir}/${property.template.file}" compareFile="${envpropertyfile}" />
     </target>
 
-    <target name="remote-jboss:stop" unless="nodeploy">
+    <target name="remote-jboss:stop" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Stopping jboss server at ${ssh.server.hostname}..." />
         <remote-ssh remotesshcommand="${jboss.home}/bin/stop_jboss" remoteSshSleep="${jboss.stop.sleep}" />
     </target>
 
-    <target name="remote-jboss:start" unless="nodeploy">
+    <target name="remote-jboss:start" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Starting jboss server at ${ssh.server.hostname}..." />
         <remote-ssh remotesshcommand="${jboss.home}/bin/start_jboss" remoteSshSleep="${jboss.start.sleep}" />
     </target>
 
-    <target name="-remote-jboss:configure-jboss-ds" unless="nodeploy">
+    <target name="-remote-jboss:configure-jboss-ds" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Configuring caarray-mysql database..." />
         <mkdir dir="${target.dir}" />
         <copy todir="${target.dir}/deploy/" file="${common.resources.jboss.conf.dir}/${mysql.datasource.file}" />
@@ -2541,7 +2561,7 @@
         </xmlconfig>
     </target>
 
-    <target name="-remote-jboss:configure-jboss-mailservice" unless="nodeploy">
+    <target name="-remote-jboss:configure-jboss-mailservice" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Configuring jboss mail service..." />
         <mkdir dir="${target.dir}" />
         <copy todir="${target.dir}/deploy/" file="${common.resources.jboss.conf.dir}/${jboss-mail-service.file}">
@@ -2549,50 +2569,50 @@
         </copy>
     </target>
 
-    <target name="-remote-jboss:copy-jboss-config" unless="nodeploy">
+    <target name="-remote-jboss:copy-jboss-config" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Copying caarray-mysql configuration to jboss server at ${ssh.server.hostname}..." />
         <remote-scp remoteScpFileToCopy="${target.dir}/deploy/${mysql.datasource.file}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/deploy" />
     </target>
 
-    <target name="remote-jboss:copy-jboss-mailservice" unless="nodeploy">
+    <target name="remote-jboss:copy-jboss-mailservice" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Copying mail service configuration to jboss server at ${ssh.server.hostname}..." />
         <remote-scp remoteScpFileToCopy="${target.dir}/deploy/${jboss-mail-service.file}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/deploy" />
     </target>
 
-    <target name="-remote-jboss:copy-log4j-jar" unless="nodeploy">
+    <target name="-remote-jboss:copy-log4j-jar" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Copying ${project.lib}/${log4j.jar} to jboss lib folder at ${ssh.server.hostname}..." />
         <remote-scp remoteScpFileToCopy="${project.lib}/${log4j.jar}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/lib" />
         <delete dir="${temp.dir}" />
     </target>
 
-    <target name="-remote-jboss:deploy-caarray-temp" unless="nodeploy">
+    <target name="-remote-jboss:deploy-caarray-temp" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Copying caarray EAR to jboss temp folder ${jboss.temp.dir} at ${ssh.server.hostname}..." />
         <remote-scp remoteScpFileToCopy="${caarray.ear}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}" />
     </target>
 
-    <target name="remote-jboss:deploy-caarray" unless="nodeploy" depends="-remote-jboss:deploy-caarray-temp">
+    <target name="remote-jboss:deploy-caarray" unless="nodeploy" depends="init:third-party-paths,-remote-jboss:deploy-caarray-temp">
         <echo message="Deploying caarray EAR to jboss at http://${jboss.server.hostname}:${jboss.server.port}/caarray" />
         <remote-ssh remotesshcommand="mv ${jboss.temp.dir}/caarray.ear ${jboss.home}/deploy/" />
     </target>
 
-    <target name="remote-jboss:undeploy-caarray" unless="nodeploy">
+    <target name="remote-jboss:undeploy-caarray" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Undeploying caarray EAR, datasource and mail service config from jboss server at ${ssh.server.hostname}..." />
         <remote-ssh remotesshcommand="rm -rf ${jboss.home}/deploy/caarray.ear ${jboss.home}/deploy/${mysql.datasource.file} ${jboss.home}/deploy/${jboss-mail-service.file}" />
     </target>
 
-    <target name="remote-jboss:deploy" unless="nodeploy" depends="remote-jboss:stop,remote-jboss:undeploy-caarray,-remote-jboss:configure-jboss-ds,-remote-jboss:configure-jboss-mailservice,remote-jboss:deploy-caarray,-remote-jboss:copy-jboss-config,remote-jboss:copy-jboss-mailservice,-remote-jboss:copy-log4j-jar,remote-jboss:start"/>
+    <target name="remote-jboss:deploy" unless="nodeploy" depends="init:third-party-paths,remote-jboss:stop,remote-jboss:undeploy-caarray,-remote-jboss:configure-jboss-ds,-remote-jboss:configure-jboss-mailservice,remote-jboss:deploy-caarray,-remote-jboss:copy-jboss-config,remote-jboss:copy-jboss-mailservice,-remote-jboss:copy-log4j-jar,remote-jboss:start"/>
 
-    <target name="remote-grid:stop" unless="nodeploy">
+    <target name="remote-grid:stop" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Stopping jboss server at ${ssh.grid.hostname}..." />
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="${globoss.server.instance.home}/bin/stop_jboss" remoteSshSleep="${jboss.stop.sleep}" />
     </target>
 
-    <target name="remote-grid:start" unless="nodeploy">
+    <target name="remote-grid:start" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Starting JBoss/Grid server at ${ssh.grid.hostname}..." />
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="${globoss.server.instance.home}/bin/start_jboss" remoteSshSleep="${jboss.start.sleep}" />
     </target>
 
-    <target name="-remote-grid:configure-jboss-with-globus" unless="nodeploy">
+    <target name="-remote-grid:configure-jboss-with-globus" unless="init:third-party-paths,nodeploy">
         <echo message="Installing Globus configuration into JBoss Grid server instance" />
         <remote-scp remoteScpFileToCopy="${jboss-globus-serverinstance-config.zip}" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.temp.dir}" />
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="unzip -o ${globoss.temp.dir}/jboss-globus-serverinstance-config.zip -d ${globoss.server.instance.home}" />
@@ -2604,45 +2624,45 @@
         <remote-scp remoteScpFileToCopy="${target.dir}/archFileReplace/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" />
     </target>
 
-    <target name="remote-grid:deploy-grid" unless="nodeploy">
+    <target name="remote-grid:deploy-grid" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Deploying Grid to jboss server at ${ssh.grid.hostname}..." />
 
-	   	<for param="version" list="${caarray-grid-svc.versions}">
-	    	<sequential>
-	            <var name="caarraysvc.temp.dir" value="${caarray-grid-svc.base.dir}/@{version}/build/cagrid_CaArraySvc" />
-	            <mkdir dir="${caarraysvc.temp.dir}" />
-	            <mkdir dir="${caarraysvc.temp.dir}/server/default/deploy/wsrf.war" />
+        <for param="version" list="${caarray-grid-svc.versions}">
+            <sequential>
+                <var name="caarraysvc.temp.dir" value="${caarray-grid-svc.base.dir}/@{version}/build/cagrid_CaArraySvc" />
+                <mkdir dir="${caarraysvc.temp.dir}" />
+                <mkdir dir="${caarraysvc.temp.dir}/server/default/deploy/wsrf.war" />
 
-	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="createDeploymentZip" inheritall="false">
-	                <property name="jboss.dir" value="${caarraysvc.temp.dir}" />
-	            </ant>
-	    		<var name="cagrid_CaArraySvc.zip" value="${caarray-grid-svc.base.dir}/@{version}/cagrid_CaArraySvc.zip" />
-	    		
-	            <!-- SCP create archive to jboss404 server -->
-	            <remote-scp remoteScpFileToCopy="${cagrid_CaArraySvc.zip}" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.temp.dir}" />
+                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="createDeploymentZip" inheritall="false">
+                    <property name="jboss.dir" value="${caarraysvc.temp.dir}" />
+                </ant>
+                <var name="cagrid_CaArraySvc.zip" value="${caarray-grid-svc.base.dir}/@{version}/cagrid_CaArraySvc.zip" />
 
-	            <!-- explode archive to ${globoss.server.instance.home}/deploy/wsrf.war -->
-	            <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="unzip -o ${globoss.temp.dir}/cagrid_CaArraySvc.zip -d ${globoss.server.instance.home}/deploy/wsrf.war" />
-	            <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="jars" inheritall="false">
-	                <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
-	                <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
-	            </ant>
-	 		</sequential>
-	   	</for>	
+                <!-- SCP create archive to jboss404 server -->
+                <remote-scp remoteScpFileToCopy="${cagrid_CaArraySvc.zip}" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.temp.dir}" />
+
+                <!-- explode archive to ${globoss.server.instance.home}/deploy/wsrf.war -->
+                <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="unzip -o ${globoss.temp.dir}/cagrid_CaArraySvc.zip -d ${globoss.server.instance.home}/deploy/wsrf.war" />
+                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="jars" inheritall="false">
+                    <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
+                    <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
+                </ant>
+            </sequential>
+        </for>
         <echo message="Caarray Grid successfully deployed to http://${globoss.server.hostname}:${globoss.server.http.port}/" />
     </target>
 
-    <target name="remote-grid:undeploy" unless="nodeploy">
+    <target name="remote-grid:undeploy" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Undeploying Grid instance from jboss server at ${ssh.grid.hostname}..." />
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="rm -rf ${globoss.server.instance.home}/deploy/wsrf.war ${globoss.server.instance.home}/lib/cog-jglobus.jar ${globoss.server.instance.home}/lib/cog-tomcat.jar ${globoss.server.instance.home}/lib/cryptix32.jar ${globoss.server.instance.home}/lib/cryptix.jar ${globoss.server.instance.home}/lib/cryptix-asn1.jar ${globoss.server.instance.home}/lib/jce-jdk13-125.jar ${globoss.server.instance.home}/lib/log4j-1.2.8.jar ${globoss.server.instance.home}/lib/puretls.jar" />
     </target>
 
-    <target name="remote-grid:deploy" unless="nodeploy" depends="remote-grid:stop,remote-grid:undeploy,-remote-grid:configure-jboss-with-globus,remote-grid:deploy-grid,remote-grid:start"/>
+    <target name="remote-grid:deploy" unless="nodeploy" depends="init:third-party-paths,remote-grid:stop,remote-grid:undeploy,-remote-grid:configure-jboss-with-globus,remote-grid:deploy-grid,remote-grid:start"/>
 
     <!-- Tag property to display on front page -->
-    <target name="build-tags" depends="-get-version-info, -command-build-with-tag, -build-with-tag, -build-without-tag" />
+    <target name="build-tags" depends="init:third-party-paths,-get-version-info, -command-build-with-tag, -build-with-tag, -build-without-tag" />
 
-    <target name="-get-version-info">
+    <target name="-get-version-info" depends="init:third-party-paths">
         <condition property="buildtagbuilt.null">
             <and>
                 <not>
@@ -2661,13 +2681,13 @@
         </condition>
     </target>
 
-    <target name="-command-build-with-tag" if="command.line.build.with.tag">
+    <target name="-command-build-with-tag" if="command.line.build.with.tag" depends="init:third-party-paths">
         <echo> Building WITH Tag, Command Line...</echo>
         <property name="caarray.version" value="${svn.tag}" />
         <echo> caarray.version=${caarray.version}</echo>
     </target>
 
-    <target name="-build-with-tag" unless="buildtagbuilt.null">
+    <target name="-build-with-tag" unless="buildtagbuilt.null" depends="init:third-party-paths">
         <echo> Building WITH Tag...</echo>
         <property name="caarray.version" value="${build.tag_built}(${buildNumber})|${build.date_time}" />
         <echo> caarray.version=${caarray.version}</echo>
@@ -2675,41 +2695,43 @@
 
     <!-- Missing - if build master types a value in Build as Version: -->
 
-    <target name="-build-without-tag" if="buildtagbuilt.null">
+    <target name="-build-without-tag" if="buildtagbuilt.null" depends="init:third-party-paths">
         <echo> Building WITHOUT Tag...</echo>
         <property name="caarray.version" value="trunk(${buildNumber})|${build.date_time}" />
         <echo> caarray.version=${caarray.version}</echo>
     </target>
 
-    <target name="display-properties">
+    <target name="display-properties" depends="init:third-party-paths">
         <echo> Diagnostics...</echo>
         <echoproperties />
     </target>
 
-    <target name="pre-build-checks">
+    <target name="pre-build-checks" depends="init:third-party-paths">
         <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="pre-build-checks" />
     </target>
 
-    <target name="post-build-checks">
+    <target name="post-build-checks" depends="init:third-party-paths">
         <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="post-build-checks" />
     </target>
 
-    <target name="remote-deploy" depends="clean,pre-build-checks,validate-properties,continuous-integration,remote-jboss:deploy,remote-grid:deploy,post-build-checks"/>
+    <target name="remote-deploy" depends="init:third-party-paths,clean,pre-build-checks,validate-properties,continuous-integration,remote-jboss:deploy,remote-grid:deploy,post-build-checks"/>
 
     <!-- ******************************************************************* -->
     <!-- ** DOCUMENATION TARGETS                                          ** -->
     <!-- ******************************************************************* -->
 
-    <target name="javadoc" depends="javadoc:all" description="Generates javadoc for all source code" />
+    <target name="javadoc" depends="init:third-party-paths,javadoc:all" description="Generates javadoc for all source code" />
 
-    <path id="javadoc.classpath">
-        <pathelement path="${caarray-client.classes.dir}" />
-        <pathelement path="${caarray-common.classes.dir}" />
-        <pathelement path="${caarray-ejb.classes.dir}" />
-        <path refid="project.jars.path" />
-    </path>
+    <target name="init:javadoc-dependencies" depends="init:third-party-paths">
+        <path id="javadoc.classpath">
+            <pathelement path="${caarray-client.classes.dir}" />
+            <pathelement path="${caarray-common.classes.dir}" />
+            <pathelement path="${caarray-ejb.classes.dir}" />
+            <path refid="project.jars.path" />
+        </path>
+    </target>
 
-    <target name="javadoc:all" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,compile:caarray.war,build:caarray-grid-svc">
+    <target name="javadoc:all" depends="init:third-party-paths,compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,compile:caarray.war,build:caarray-grid-svc">
         <mkdir dir="${site.dir}/docs/api" />
         <javadoc destdir="${site.dir}/docs/api" classpathref="javadoc.classpath">
             <packageset dir="${caarray-client.src.dir}" />
@@ -2722,7 +2744,7 @@
         </javadoc>
     </target>
 
-    <target name="javadoc:caarray-client" depends="compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-grid-svc">
+    <target name="javadoc:caarray-client" depends="init:third-party-paths,compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-grid-svc">
         <mkdir dir="${caarray-client.target.dir}/docs/api" />
         <javadoc destdir="${caarray-client.target.dir}/docs/api" classpathref="javadoc.classpath">
             <packageset dir="${caarray-client.src.dir}" />
@@ -2738,4 +2760,5 @@
             <packageset dir="${caarray-grid-svc.base.dir}/v1_0/src" />
         </javadoc>
     </target>
+
 </project>
