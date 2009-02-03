@@ -352,31 +352,23 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     }
 
     private void checkSdrfHybridizations(FileValidationResult result,
-            List<String> fileHybNames, Set<Hybridization> sdrfHybs) {
+            List<String> fileHybNames,
+            Map<String, List<Hybridization>> sdrfHybsMap) {
         // get collection of hyb names from sdrf as strings
-        List<String> sdrfHybStrs = new ArrayList<String>();
-        for (Hybridization hyb : sdrfHybs) {
-            sdrfHybStrs.add(hyb.getName());
-        }
-
-        if (!sdrfHybStrs.containsAll(fileHybNames)) {
-            StringBuilder sb =
-                new StringBuilder("This data file contains the following hybridization names"
-                        +  " that are not referenced in the SDRF document:");
-            int count = 0;
-            for (String name : fileHybNames) {
-                if (!sdrfHybStrs.contains(name)) {
-                    count++;
-                    if (count > 1) {
-                        sb.append(", ");
-                    } else {
-                        sb.append(" ");
-                    }
-                    sb.append(name);
+        for (List<Hybridization> hybList : sdrfHybsMap.values()) {
+                List<String> sdrfHybStrs = new ArrayList<String>();
+                for (Hybridization hyb : hybList) {
+                    sdrfHybStrs.add(hyb.getName());
                 }
-            }
 
-            result.addMessage(Type.ERROR, sb.toString());
+                if (!sdrfHybStrs.containsAll(fileHybNames)) {
+                    StringBuilder sb =
+                        new StringBuilder("This data file contains the following hybridization names"
+                                +  " that are not referenced in the SDRF document:");
+                    sdrfHybStrs.removeAll(fileHybNames);
+                    sb.append(StringUtils.join(sdrfHybStrs.iterator(), ','));
+                    result.addMessage(Type.ERROR, sb.toString());
+                }
         }
     }
 
@@ -465,6 +457,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
             if (result.isValid()) {
                 validateData(reader, result);
             }
+            result.addValidationProperties(FileValidationResult.HYB_NAME, this.getHybridizationNames(file));
         } catch (IOException e) {
             throw new IllegalStateException(AbstractDataFileHandler.READ_FILE_ERROR_MESSAGE, e);
         } finally {

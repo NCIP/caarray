@@ -95,4 +95,6 @@ public class GenepixArrayDesignFiles {
     public static final File MEEBO =
         new File(GenepixArrayDesignFiles.class.getResource("/arraydesign/genepix/MEEBO.GAL").getFile());
 
+    public static final File INCYTE =
+        new File(GenepixArrayDesignFiles.class.getResource("/arraydesign/genepix/Mm-Incyte-v1px_16Bx24Cx23R.gal").getFile());
 }

@@ -102,6 +102,7 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
@@ -113,7 +114,11 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
+import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
+import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.GenepixArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
@@ -122,6 +127,9 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Transaction;
@@ -320,6 +328,75 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
     }
 
     @Test
+    public void testValidateDefect18625Samples() throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        ArrayDesign design = importArrayDesign(GenepixArrayDesignFiles.INCYTE);
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
+        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        tx.commit();
+        Set<File> files = new HashSet<File>();
+        files.add(GenepixArrayDataFiles.GPR_DEFECT_18652_IDF);
+        files.add(GenepixArrayDataFiles.GPR_DEFECT_18652_SDRF);
+        files.add(GenepixArrayDataFiles.GPR_DEFECT_18652_NEU9);
+        files.add(GenepixArrayDataFiles.GPR_DEFECT_18652_NEU10);
+
+        uploadAndValidateFiles(DUMMY_PROJECT_1, files);
+
+        tx = HibernateUtil.beginTransaction();
+        Project project = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        for (CaArrayFile file : project.getFiles()) {
+            if (!file.getFileType().equals(FileType.MAGE_TAB_SDRF)) {
+                assertEquals(FileStatus.VALIDATED, file.getFileStatus());
+            } else {
+                assertEquals(FileStatus.VALIDATION_ERRORS, file.getFileStatus());
+                assertEquals(1, file.getValidationResult().getMessages().size());
+                assertTrue(file.getValidationResult()
+                        .getMessages().get(0).getMessage().contains("WRONG"));
+            }
+        }
+        tx.commit();
+
+    }
+
+    @Test
+    public void testValidateDefect18625Hybes() throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        ArrayDesign design = importArrayDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
+        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        tx.commit();
+        Map<File, FileType> files = new HashMap<File, FileType>();
+        files.put(IlluminaArrayDataFiles.DEFECT_18652_IDF, FileType.MAGE_TAB_IDF);
+        files.put(IlluminaArrayDataFiles.DEFECT_18652_SDRF, FileType.MAGE_TAB_SDRF);
+        files.put(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, FileType.ILLUMINA_DATA_CSV);
+
+        uploadAndValidateFiles(DUMMY_PROJECT_1, files);
+
+        tx = HibernateUtil.beginTransaction();
+        Project project = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        for (CaArrayFile file : project.getFiles()) {
+            if (!file.getFileType().equals(FileType.MAGE_TAB_SDRF)) {
+                assertEquals(FileStatus.VALIDATED, file.getFileStatus());
+            } else {
+                assertEquals(FileStatus.VALIDATION_ERRORS, file.getFileStatus());
+                assertEquals(1, file.getValidationResult().getMessages().size());
+                assertTrue(file.getValidationResult()
+                        .getMessages().get(0).getMessage().contains("WRONG"));
+            }
+        }
+        tx.commit();
+
+    }
+
+    @Test
     public void testUpdateBioMaterialChain() throws Exception {
         Transaction tx = HibernateUtil.beginTransaction();
         saveSupportingObjects();
@@ -394,6 +471,32 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         tx.commit();
     }
 
+    @SuppressWarnings("PMD")
+    private void uploadAndValidateFiles(Project project, Set<File> files) throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+        CaArrayFileSet fileSet = uploadFiles(project, files);
+        tx.commit();
+
+        helpValidateFiles(tx, project, fileSet);
+    }
+
+    @SuppressWarnings("PMD")
+    private void uploadAndValidateFiles(Project project, Map<File, FileType> files) throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+        CaArrayFileSet fileSet = uploadFiles(project, files);
+        tx.commit();
+
+        helpValidateFiles(tx, project, fileSet);
+    }
+
+    @SuppressWarnings("PMD")
+    private void helpValidateFiles(Transaction tx, Project project, CaArrayFileSet fileSet) throws Exception {
+        tx = HibernateUtil.beginTransaction();
+        project = (Project) HibernateUtil.getCurrentSession().load(Project.class, project.getId());
+        validateFiles(project, fileSet);
+        tx.commit();
+    }
+
     /**
      * "Upload" files to a project, returning the CaArrayFileSet containing those files.
      * @param project project to upload to
@@ -415,6 +518,33 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         return fileSet;
     }
 
+    private CaArrayFileSet uploadFiles(Project project, Set<File> files) {
+        for (File file : files) {
+            CaArrayFile caArrayFile = this.fileAccessService.add(file);
+            caArrayFile.setProject(project);
+            project.getFiles().add(caArrayFile);
+            HibernateUtil.getCurrentSession().save(caArrayFile);
+        }
+
+        HibernateUtil.getCurrentSession().update(project);
+        return project.getFileSet();
+    }
+
+    private CaArrayFileSet uploadFiles(Project project, Map<File, FileType> files) {
+        for (File file : files.keySet()) {
+            CaArrayFile caArrayFile = this.fileAccessService.add(file);
+            caArrayFile.setProject(project);
+            caArrayFile.setFileType(files.get(file));
+            project.getFiles().add(caArrayFile);
+            HibernateUtil.getCurrentSession().save(caArrayFile);
+        }
+
+        HibernateUtil.getCurrentSession().update(project);
+        return project.getFileSet();
+    }
+
+
+
     private Source findSource(Project project, String name) {
         return CaArrayDaoFactory.INSTANCE.getProjectDao().getSourceForExperiment(project.getExperiment(), name);
     }
@@ -422,6 +552,17 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
     private void importFiles(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions) throws Exception {
         ProjectFilesImportJob job = new ProjectFilesImportJob(UsernameHolder.getUser(), targetProject, fileSet,
                 dataImportOptions);
+        job.setDaoFactory(CaArrayDaoFactory.INSTANCE);
+        try {
+            job.execute();
+        } catch (Exception e) {
+            job.getUnexpectedErrorPreparedStatement(HibernateUtil.getCurrentSession().connection()).execute();
+            throw e;
+        }
+    }
+
+    private void validateFiles(Project targetProject, CaArrayFileSet fileSet) throws Exception {
+        ProjectFilesValidationJob job = new ProjectFilesValidationJob(UsernameHolder.getUser(), targetProject, fileSet);
         job.setDaoFactory(CaArrayDaoFactory.INSTANCE);
         try {
             job.execute();
@@ -463,5 +604,7 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
 
         return bean;
     }
+
+
 
 }

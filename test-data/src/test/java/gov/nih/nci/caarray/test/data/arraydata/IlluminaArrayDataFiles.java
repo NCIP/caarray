@@ -92,4 +92,9 @@ public class IlluminaArrayDataFiles {
     public static final File HUMAN_WG6_SMALL =
         new File(IlluminaArrayDataFiles.class.getResource("/arraydata/illumina/Human_WG-6_data_small.csv").getFile());
 
+    public static final File DEFECT_18652_IDF =
+        new File(IlluminaArrayDataFiles.class.getResource("/arraydata/illumina/defect18652/defect18652.idf").getFile());
+
+    public static final File DEFECT_18652_SDRF =
+        new File(IlluminaArrayDataFiles.class.getResource("/arraydata/illumina/defect18652/defect18652.sdrf").getFile());
 }

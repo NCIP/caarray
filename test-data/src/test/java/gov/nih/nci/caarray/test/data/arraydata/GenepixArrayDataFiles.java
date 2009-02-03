@@ -101,4 +101,18 @@ public class GenepixArrayDataFiles {
     public static final File GPR_5_0_1 =
         new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/5_0_1_26.gpr").getFile());
 
+    public static final File GPR_DEFECT_18652_NEU9 =
+        new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/defect-18652/21160_neu9.gpr").getFile());
+
+    public static final File GPR_DEFECT_18652_NEU10 =
+        new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/defect-18652/21161_neu10.gpr").getFile());
+
+    public static final File GPR_DEFECT_18652_IDF =
+        new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/defect-18652/experiment-id-1015897540258547.jia.idf").getFile());
+
+    public static final File GPR_DEFECT_18652_SDRF =
+        new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/defect-18652/experiment-id-1015897540258547_curated.sdrf").getFile());
+
+    public static final File GPR_DEFECT_18652_FIXED_SDRF =
+        new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/defect-18652/fixed/experiment-id-1015897540258547_curated.sdrf").getFile());
 }

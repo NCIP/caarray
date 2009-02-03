@@ -252,15 +252,25 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         return getQuantitationTypeDescriptors(getColumnHeaders(reader));
     }
 
-    private void checkSdrfSamples(FileValidationResult result, List<String> fileSampleNames, Set<Sample> sdrfSamples) {
+    private void checkSdrfSamples(FileValidationResult result, List<String> fileSampleNames,
+            Map<String, List<Sample>> sdrfSamplesMap) {
         // get collection of sample names from sdrf as strings
-        List<String> sdrfHybStrs = new ArrayList<String>();
-        for (Sample sam : sdrfSamples) {
-            sdrfHybStrs.add(sam.getName());
-        }
 
-        if (!sdrfHybStrs.containsAll(fileSampleNames)) {
-            result.addMessage(Type.ERROR, "Data file contains Sample names not referenced in the Sdrf document.");
+        for (List<Sample> samList : sdrfSamplesMap.values()) {
+            List<String> sdrfSampleNames = new ArrayList<String>();
+            for (Sample sam : samList) {
+                sdrfSampleNames.add(sam.getName());
+            }
+
+            if (!sdrfSampleNames.containsAll(fileSampleNames)) {
+                StringBuilder sb =
+                    new StringBuilder("This data file contains the following Sample names"
+                            +  " that are not referenced in the SDRF document:");
+                sdrfSampleNames.removeAll(fileSampleNames);
+                sb.append(StringUtils.join(sdrfSampleNames.iterator(), ','));
+                result.addMessage(Type.ERROR, sb.toString());
+            }
+
         }
     }
 
@@ -413,6 +423,7 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
             if (result.isValid()) {
                 validateData(reader, result);
             }
+            result.addValidationProperties(FileValidationResult.SAMPLE_NAME, getSampleNames(file, null));
         } catch (IOException e) {
             throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
         } finally {

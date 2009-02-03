@@ -123,8 +123,10 @@ public final class MageTabDocumentSet implements Serializable {
     private final Map<String, ArrayDesign> arrayDesignCache = new HashMap<String, ArrayDesign>();
     private final Map<String, Protocol> protocolCache = new HashMap<String, Protocol>();
     private final ValidationResult validationResult = new ValidationResult();
-    private final Set<Hybridization> hybridizations = new HashSet<Hybridization>();
-    private final Set<Sample> samples = new HashSet<Sample>();
+    private final Map<String, List<Hybridization>> hybridizations
+        = new HashMap<String, List<Hybridization>>();
+    private final Map<String, List<Sample>> samples
+        = new HashMap<String, List<Sample>>();
 
     private final boolean reimportingMagetab;
 
@@ -446,7 +448,7 @@ public final class MageTabDocumentSet implements Serializable {
      * Return a set of the hybridizations referenced by the sdrf files.
      * @return set of Hybridization
      */
-    public Set<Hybridization> getSdrfHybridizations() {
+    public Map<String, List<Hybridization>> getSdrfHybridizations() {
         return this.hybridizations;
     }
 
@@ -454,7 +456,7 @@ public final class MageTabDocumentSet implements Serializable {
      * Return a set of the sample ref'd by the sdrf files.
      * @return set of Samples
      */
-    public Set<Sample> getSdrfSamples() {
+    public Map<String, List<Sample>> getSdrfSamples() {
         return this.samples;
     }
 
@@ -490,13 +492,13 @@ public final class MageTabDocumentSet implements Serializable {
 
     private void generateSdrfRefHybs() {
         for (SdrfDocument sdrf : sdrfDocuments) {
-            hybridizations.addAll(sdrf.getAllHybridizations());
+            hybridizations.put(sdrf.getFile().getName(), sdrf.getAllHybridizations());
         }
     }
 
     private void generateSdrfRefSamples() {
         for (SdrfDocument sdrf : sdrfDocuments) {
-            samples.addAll(sdrf.getAllSamples());
+            samples.put(sdrf.getFile().getName(), sdrf.getAllSamples());
         }
     }
 

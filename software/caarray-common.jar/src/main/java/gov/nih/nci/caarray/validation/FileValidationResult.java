@@ -89,8 +89,10 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -111,12 +113,22 @@ import org.hibernate.annotations.BatchSize;
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 public class FileValidationResult implements Serializable, Comparable<FileValidationResult> {
+    /**
+     * Key for validationProperties for array data file sample names.
+     */
+    public static final String SAMPLE_NAME = "Sample(s)";
+    /**
+     * Key for validationProperties for array data file hybridization names.
+     */
+    public static final String HYB_NAME = "Hybridization(s)";
     private static final long serialVersionUID = -5402207496806890698L;
     private static final String UNUSED = "unused";
 
     private Long id;
     private File file;
     private Set<ValidationMessage> messageSet = new HashSet<ValidationMessage>();
+    private final transient Map<String, Object> validationProperties =
+        new HashMap<String, Object>();
 
     @SuppressWarnings(UNUSED)
     private FileValidationResult() {
@@ -305,7 +317,27 @@ public class FileValidationResult implements Serializable, Comparable<FileValida
         if (id == null) {
             return System.identityHashCode(this);
         }
-
         return id.hashCode();
+    }
+
+    /**
+     * Validation properties based on name.
+     * @param name key for properties
+     * @return validation properties
+     */
+    @Transient
+    public Object getValidationProperties(String name) {
+        return validationProperties.get(name) == null ? new ArrayList<String>() : validationProperties.get(name);
+    }
+
+    /**
+     * Add validation properties to general purpose storage for
+     * use by specific validators.
+     * @param name type of properties
+     * @param props the properties
+     */
+    @Transient
+    public void addValidationProperties(String name, Object props) {
+        this.validationProperties.put(name, props);
     }
 }

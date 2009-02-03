@@ -159,6 +159,35 @@ public final class CaArrayFileSet implements Serializable {
     }
 
     /**
+     * Get a subset of CaArrayFile objects with file type specified.
+     * @param ft File type
+     * @return set of CaArrayFile objects
+     */
+    public Set<CaArrayFile> getFilesByType(FileType ft) {
+        Set<CaArrayFile> sdrfFiles = new HashSet<CaArrayFile>();
+        for (CaArrayFile fileIt : files) {
+            if (fileIt.getFileType() == ft) {
+                sdrfFiles.add(fileIt);
+            }
+        }
+        return sdrfFiles;
+    }
+
+    /**
+     * Get a subset of CaArrayFile objects that are array data file types.
+     * @return set of CaArrayFile objects
+     */
+    public Set<CaArrayFile> getArrayDataFiles() {
+        Set<CaArrayFile> dataFiles = new HashSet<CaArrayFile>();
+        for (CaArrayFile fileIt : files) {
+            if (fileIt.getFileType().isArrayData()) {
+                dataFiles.add(fileIt);
+            }
+        }
+        return dataFiles;
+    }
+
+    /**
      * Returns the aggregate status of the file set.
      *
      * @return status of the set.
@@ -267,7 +296,7 @@ public final class CaArrayFileSet implements Serializable {
         }
         return null;
     }
-    
+
     /**
      * @return the combined compressed size of the files in this fileset
      */
