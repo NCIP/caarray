@@ -135,7 +135,8 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         assertTrue(b.getOtherMap().entrySet().isEmpty());
         assertTrue(b.getOtherCollection().isEmpty());
         assertNotNull(b.getFoo());
-        assertNull(b.getUser());
+        assertNotNull(b.getUser());
+        assertNull(b.getUnserializable());
         assertEquals(3, b.getI());
         assertTrue(b.getSortedSet().isEmpty());
     }
@@ -148,7 +149,8 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         pruner.makeChildrenLeaves(b);
         assertTrue(b.fooAccessed || b.iAccessed);
 
-        assertNull(b.getUser());
+        assertNotNull(b.getUser());
+        assertNull(b.getUnserializable());
         assertEquals(b.getId(), 1L);
         assertNotNull(b.getA());
         assertNotNull(b.getOther());
@@ -163,7 +165,8 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         assertNull(b.getOtherList().iterator().next().getA());
         assertNull(b.getOtherSet().iterator().next().getA());
         assertNull(b.getOtherCollection().iterator().next().getA());
-        assertTrue(b.getUsers().isEmpty());
+        assertFalse(b.getUsers().isEmpty());
+        assertTrue(b.getUnserializables().isEmpty());
     }
 
     @Test
@@ -199,16 +202,10 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
             this.id = id;
         }
 
-        /**
-         * @return the a
-         */
         public A getA() {
             return aToo;
         }
 
-        /**
-         * @param a the a to set
-         */
         public void setA(A a) {
             this.aToo = a;
         }
@@ -236,6 +233,8 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         private boolean iAccessed = false;
         private Set<User> users = new HashSet<User>();
         private SortedSet<A> sortedSet = new TreeSet<A>();
+        private D unserializable;
+        private Set<D> unserializables = new HashSet<D>();
 
 
         public Set<User> getUsers() {
@@ -272,74 +271,46 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
             otherCollection.add(new A());
             users.add(new User());
             sortedSet.add(new A());
+            unserializable = new D();
+            unserializables.add(new D());
         }
 
-        /**
-         * @return the other
-         */
         public A getOther() {
             return other;
         }
 
-        /**
-         * @param other the other to set
-         */
         public void setOther(A other) {
             this.other = other;
         }
 
-        /**
-         * @return the otherList
-         */
         public List<A> getOtherList() {
             return otherList;
         }
 
-        /**
-         * @param otherList the otherList to set
-         */
         public void setOtherList(List<A> otherList) {
             this.otherList = otherList;
         }
 
-        /**
-         * @return the otherSet
-         */
         public Set<A> getOtherSet() {
             return otherSet;
         }
 
-        /**
-         * @param otherSet the otherSet to set
-         */
         public void setOtherSet(Set<A> otherSet) {
             this.otherSet = otherSet;
         }
 
-        /**
-         * @return the otherMap
-         */
         public Map<Integer, A> getOtherMap() {
             return otherMap;
         }
 
-        /**
-         * @param otherMap the otherMap to set
-         */
         public void setOtherMap(Map<Integer, A> otherMap) {
             this.otherMap = otherMap;
         }
 
-        /**
-         * @return the otherCollection
-         */
         public Collection<A> getOtherCollection() {
             return otherCollection;
         }
 
-        /**
-         * @param otherCollection the otherCollection to set
-         */
         @SuppressWarnings("unused")
         private void setOtherCollection(Collection<A> otherCollection) {
             // private on purpose, to test setAccessable
@@ -363,6 +334,22 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
             this.sortedSet = sortedSet;
         }
 
+        public D getUnserializable() {
+            return unserializable;
+        }
+
+        public void setUnserializable(D unserializable) {
+            this.unserializable = unserializable;
+        }
+
+        public Set<D> getUnserializables() {
+            return unserializables;
+        }
+
+        public void setUnserializables(Set<D> unserializables) {
+            this.unserializables = unserializables;
+        }
+
     }
 
     public static class C implements PersistentObject {
@@ -382,6 +369,19 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
 
         public void setMapA(Map<Long, A> mapA) {
             this.mapA = mapA;
+        }
+    }
+
+    // a non-serializable class
+    public static class D {
+        private String foo = "bar";
+
+        public String getFoo() {
+            return foo;
+        }
+
+        public void setFoo(String foo) {
+            this.foo = foo;
         }
     }
 }

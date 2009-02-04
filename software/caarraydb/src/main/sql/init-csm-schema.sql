@@ -1,5 +1,5 @@
 -- This script is is a slightly modified version of the AuthSchemaMySQL.sql
--- file from the CSM 4.0 distribution.  It has been modified:
+-- file from the CSM 4.1 distribution.  It has been modified:
 -- (1) to use our replacements
 -- (2) not to drop the db, nor the tables
 -- (3) to allow UPDATE_DATE to be null everywhere
@@ -48,7 +48,8 @@ CREATE TABLE csm_filter_clause (
   target_class_attribute_type VARCHAR (100) NOT NULL,
   target_class_alias VARCHAR (100),
   target_class_attribute_alias VARCHAR (100),
-  generated_sql VARCHAR (5500) NOT NULL,
+  generated_sql_user VARCHAR (4000) NOT NULL,
+  generated_sql_group VARCHAR (4000) NOT NULL,
   application_id BIGINT NOT NULL,
   update_date DATE,
   PRIMARY KEY(filter_clause_id)
@@ -61,10 +62,10 @@ CREATE TABLE csm_protection_element (
   protection_element_description VARCHAR(200),
   object_id VARCHAR(100) NOT NULL,
   attribute VARCHAR(100) ,
+  attribute_value VARCHAR(100) ,
   protection_element_type VARCHAR(100),
   application_id BIGINT NOT NULL,
   update_date DATE,
-  attribute_value VARCHAR(100),
   PRIMARY KEY(protection_element_id)
 )Type=InnoDB
 ;
@@ -105,14 +106,14 @@ CREATE TABLE csm_role_privilege (
   role_privilege_id BIGINT AUTO_INCREMENT  NOT NULL,
   role_id BIGINT NOT NULL,
   privilege_id BIGINT NOT NULL,
-  update_date DATE,
   PRIMARY KEY(role_privilege_id)
 )Type=InnoDB
 ;
 
 CREATE TABLE csm_user (
   user_id BIGINT AUTO_INCREMENT  NOT NULL,
-  login_name VARCHAR(100) NOT NULL,
+  login_name VARCHAR(500) NOT NULL,
+  migrated_flag BOOL NOT NULL DEFAULT 0,
   first_name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
   organization VARCHAR(100),
@@ -124,6 +125,7 @@ CREATE TABLE csm_user (
   start_date DATE,
   end_date DATE,
   update_date DATE,
+  premgrt_login_name VARCHAR(100) ,
   PRIMARY KEY(user_id)
 )Type=InnoDB
 ;
@@ -151,7 +153,6 @@ CREATE TABLE csm_user_pe (
   user_protection_element_id BIGINT AUTO_INCREMENT  NOT NULL,
   protection_element_id BIGINT NOT NULL,
   user_id BIGINT NOT NULL,
-  update_date DATE,
   PRIMARY KEY(user_protection_element_id)
 )Type=InnoDB
 ;

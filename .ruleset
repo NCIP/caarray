@@ -2,11 +2,16 @@
 <ruleset name="pmd-rules">
 
     <description>5AM PMD Rules</description>
-    <exclude-pattern>.*/CaArraySvc/build/.*</exclude-pattern>
-    <exclude-pattern>.*/CaArraySvc/src/gov/nih/nci/cagrid/caarray/service/ServiceConfiguration\.java</exclude-pattern>
-    <exclude-pattern>.*/CaArraySvc/src/gov/nih/nci/cagrid/caarray/service/CaArraySvcConfiguration\.java</exclude-pattern>
-    <exclude-pattern>.*/CaArraySvc/src/gov/nih/nci/cagrid/caarray/client/CaArraySvcClient\.java</exclude-pattern>
-    <exclude-pattern>.*/CaArraySvc/src/gov/nih/nci/cagrid/caarray/service/globus/.*</exclude-pattern>
+    <exclude-pattern>.*/grid/legacy/build/.*</exclude-pattern>
+    <exclude-pattern>.*/grid/legacy/src/gov/nih/nci/cagrid/caarray/service/ServiceConfiguration\.java</exclude-pattern>
+    <exclude-pattern>.*/grid/legacy/src/gov/nih/nci/cagrid/caarray/service/CaArraySvcConfiguration\.java</exclude-pattern>
+    <exclude-pattern>.*/grid/legacy/src/gov/nih/nci/cagrid/caarray/client/CaArraySvcClient\.java</exclude-pattern>
+    <exclude-pattern>.*/grid/legacy/src/gov/nih/nci/cagrid/caarray/service/globus/.*</exclude-pattern>
+    <exclude-pattern>.*/grid/v1_0/build/.*</exclude-pattern>
+    <exclude-pattern>.*/grid/v1_0/src/gov/nih/nci/caarray/services/external/v1_0/grid/service/CaArraySvc_v1_0Configuration\.java</exclude-pattern>
+    <exclude-pattern>.*/grid/v1_0/src/gov/nih/nci/caarray/services/external/v1_0/grid/client/CaArraySvc_v1_0Client\.java</exclude-pattern>
+    <exclude-pattern>.*/grid/v1_0/src/gov/nih/nci/caarray/services/external/v1_0/grid/service/globus/.*</exclude-pattern>
+    <exclude-pattern>.*/grid/v1_0/src/gov/nih/nci/cagrid/enumeration/.*</exclude-pattern>
     <exclude-pattern>.*/software/test/.*</exclude-pattern>
     <exclude-pattern>.*/software/load-test/.*</exclude-pattern>
     <exclude-pattern>.*/qa/docs/.*</exclude-pattern>

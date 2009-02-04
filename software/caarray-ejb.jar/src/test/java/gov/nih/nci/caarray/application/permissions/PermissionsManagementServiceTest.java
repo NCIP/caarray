@@ -141,10 +141,12 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
         assertEquals(created, this.genericDataServiceStub.getDeletedObject());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testDeleteException() throws CSTransactionException {
         CollaboratorGroup cg = new CollaboratorGroup(new Group(), new User());
         cg.getOwner().setLoginName("anotheruser");
+        // only the owner of the group can delete it, so attempting to delete after changing the owner should
+        // cause an exception
         this.permissionsManagementService.delete(cg);
     }
 

@@ -23,73 +23,73 @@ values("@csm.application.name@","caarray Admin Application Protection Element","
 -- security on objects that anonymous (non-logged-in) users sometimes have access to.
 insert into csm_user (login_name,first_name,last_name,password,update_date)
 values ("__anonymous__","Anonymous","User","sNYUJiYS6oaabiiT/fn5hIc+SidokNh2+YRTFJJYiuZLRCIBFypS8Q==",sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(2,1,sysdate());
+insert into csm_user_pe(protection_element_id,user_id)
+values(2,1);
 
  -- caArray2! is password
 insert into csm_user (login_name,first_name,last_name,password,update_date)
 values ("caarrayadmin","caArray","Administrator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(1,2,sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(2,2,sysdate());
+insert into csm_user_pe(protection_element_id,user_id)
+values(1,2);
+insert into csm_user_pe(protection_element_id,user_id)
+values(2,2);
 
 -- 2nd db-backed user to test permissions
 -- caArray2! is password
 insert into csm_user (login_name,first_name,last_name,password,update_date)
 values ("caarrayuser","caArray","User","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(1,3,sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(2,3,sysdate());
+insert into csm_user_pe(protection_element_id,user_id)
+values(1,3);
+insert into csm_user_pe(protection_element_id,user_id)
+values(2,3);
 
  -- caArray2! is password
 insert into csm_user (login_name,first_name,last_name,password,update_date)
 values ("researchscientist","ResearchScientist","ResearchScientist","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(1,4,sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(2,4,sysdate());
+insert into csm_user_pe(protection_element_id,user_id)
+values(1,4);
+insert into csm_user_pe(protection_element_id,user_id)
+values(2,4);
 
  -- caArray2! is password
 insert into csm_user (login_name,first_name,last_name,password,update_date)
 values ("labadministrator","LabAdministrator","LabAdministrator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(1,5,sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(2,5,sysdate());
+insert into csm_user_pe(protection_element_id,user_id)
+values(1,5);
+insert into csm_user_pe(protection_element_id,user_id)
+values(2,5);
 
  -- caArray2! is password
 insert into csm_user (login_name,first_name,last_name,password,update_date)
 values ("labscientist","LabScientist","LabScientist","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(1,6,sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(2,6,sysdate());
+insert into csm_user_pe(protection_element_id,user_id)
+values(1,6);
+insert into csm_user_pe(protection_element_id,user_id)
+values(2,6);
 
  -- caArray2! is password
 insert into csm_user (login_name,first_name,last_name,password,update_date)
 values ("biostatistician","Biostatistician","Biostatistician","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(1,7,sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(2,7,sysdate());
+insert into csm_user_pe(protection_element_id,user_id)
+values(1,7);
+insert into csm_user_pe(protection_element_id,user_id)
+values(2,7);
 
 -- caArray2! is password
 insert into csm_user (login_name,first_name,last_name,password,update_date)
 values ("systemadministrator","SystemAdministrator","SystemAdministrator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(1,8,sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(2,8,sysdate());
+insert into csm_user_pe(protection_element_id,user_id)
+values(1,8);
+insert into csm_user_pe(protection_element_id,user_id)
+values(2,8);
 
 -- caArray2! is password
 insert into csm_user (login_name,first_name,last_name,password,update_date)
 values ("collaborator","Collaborator","Collaborator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(1,9,sysdate());
-insert into csm_user_pe(protection_element_id,user_id,update_date)
-values(2,9,sysdate());
+insert into csm_user_pe(protection_element_id,user_id)
+values(1,9);
+insert into csm_user_pe(protection_element_id,user_id)
+values(2,9);
 
 -- The anonymous group corresponds to access profiles.  Everyone, including the anonymous user,
 -- should be in this group
@@ -231,71 +231,78 @@ VALUES('Execute', 'Execute', 2, 1, sysdate());
 INSERT INTO csm_role (role_name, role_description, application_id, active_flag, update_date)
 VALUES('Permissions', 'Permissions', 2, 1, sysdate());
 
-INSERT INTO csm_role_privilege (role_id, privilege_id, update_date)
-VALUES(1, 1, sysdate());
+INSERT INTO csm_role_privilege (role_id, privilege_id)
+VALUES(1, 1);
 
-INSERT INTO csm_role_privilege (role_id, privilege_id, update_date)
-VALUES(2, 2, sysdate());
+INSERT INTO csm_role_privilege (role_id, privilege_id)
+VALUES(2, 2);
 
-INSERT INTO csm_role_privilege (role_id, privilege_id, update_date)
-VALUES(3, 3, sysdate());
+INSERT INTO csm_role_privilege (role_id, privilege_id)
+VALUES(3, 3);
 
-INSERT INTO csm_role_privilege (role_id, privilege_id, update_date)
-VALUES(4, 4, sysdate());
+INSERT INTO csm_role_privilege (role_id, privilege_id)
+VALUES(4, 4);
 
-INSERT INTO csm_role_privilege (role_id, privilege_id, update_date)
-VALUES(5, 5, sysdate());
+INSERT INTO csm_role_privilege (role_id, privilege_id)
+VALUES(5, 5);
 
-INSERT INTO csm_role_privilege (role_id, privilege_id, update_date)
-VALUES(6, 6, sysdate());
+INSERT INTO csm_role_privilege (role_id, privilege_id)
+VALUES(6, 6);
 
-INSERT INTO csm_role_privilege (role_id, privilege_id, update_date)
-VALUES(7, 7, sysdate());
+INSERT INTO csm_role_privilege (role_id, privilege_id)
+VALUES(7, 7);
 
-INSERT INTO csm_role_privilege (role_id, privilege_id, update_date)
-VALUES(8, 8, sysdate());
+INSERT INTO csm_role_privilege (role_id, privilege_id)
+VALUES(8, 8);
 
 -- Our security filters
 
 insert into csm_filter_clause (class_name, filter_chain, target_class_name,
-application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql)
+application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql_user, generated_sql_group)
 values ('gov.nih.nci.caarray.domain.project.Project', 'gov.nih.nci.caarray.domain.project.Project', 'gov.nih.nci.caarray.domain.project.Project - self',
 2, sysdate(), 'id', 'java.lang.Long',
-'ID in (select p.ID from PROJECT p where p.ID in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.project.Project'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''ACCESS'') __caarray_filter_alias__))');
+'ID in (select p.ID from PROJECT p where p.ID in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.project.Project'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''ACCESS'') __caarray_filter_alias__))',
+'1=1');
 
 insert into csm_filter_clause (class_name, filter_chain, target_class_name,
-application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql)
+application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql_user, generated_sql_group)
 values ('gov.nih.nci.caarray.domain.project.Experiment', 'gov.nih.nci.caarray.domain.project.Experiment', 'gov.nih.nci.caarray.domain.project.Experiment - self',
 2, sysdate(), 'id', 'java.lang.Long',
-'ID in (select ex.ID from experiment ex inner join project p on ex.id = p.experiment where p.id in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.project.Project'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''ACCESS'') __caarray_filter_alias__))');
+'ID in (select ex.ID from experiment ex inner join project p on ex.id = p.experiment where p.id in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.project.Project'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''ACCESS'') __caarray_filter_alias__))',
+'1=1');
 
 insert into csm_filter_clause (class_name, filter_chain, target_class_name,
-application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql)
+application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql_user, generated_sql_group)
 values ('gov.nih.nci.caarray.domain.permissions.CollaboratorGroup', 'gov.nih.nci.caarray.domain.permissions.CollaboratorGroup', 'gov.nih.nci.caarray.domain.permissions.CollaboratorGroup - self',
 2, sysdate(), 'id', 'java.lang.Long',
-'ID in (select cg.ID from COLLABORATOR_GROUP cg where cg.ID in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.permissions.CollaboratorGroup'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__))');
+'ID in (select cg.ID from COLLABORATOR_GROUP cg where cg.ID in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.permissions.CollaboratorGroup'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__))',
+'1=1');
 
-insert into csm_filter_clause (class_name, filter_chain, target_class_name, application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql)
+insert into csm_filter_clause (class_name, filter_chain, target_class_name, application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql_user, generated_sql_group)
  values ('gov.nih.nci.caarray.domain.hybridization.Hybridization', 'gov.nih.nci.caarray.domain.hybridization.Hybridization', 'gov.nih.nci.caarray.domain.hybridization.Hybridization - self',
  2, sysdate(), 'id', 'java.lang.Long',
-  'ID in (select h.ID from hybridization h inner join labeledextracthybridization lhe on h.id = lhe.hybridization_id inner join extractlabeledextract ele on lhe.labeledextract_id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = se.extract_id inner join biomaterial s on se.sample_id = s.id where s.ID in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.sample.Sample'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__))');
+  'ID in (select h.ID from hybridization h inner join labeledextracthybridization lhe on h.id = lhe.hybridization_id inner join extractlabeledextract ele on lhe.labeledextract_id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = se.extract_id inner join biomaterial s on se.sample_id = s.id where s.ID in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.sample.Sample'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__))',
+'1=1');
 
-insert into csm_filter_clause (class_name, filter_chain, target_class_name, application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql)
+insert into csm_filter_clause (class_name, filter_chain, target_class_name, application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql_user, generated_sql_group)
  values ('gov.nih.nci.caarray.domain.project.Factor', 'gov.nih.nci.caarray.domain.project.Factor', 'gov.nih.nci.caarray.domain.project.Factor - self',
  2, sysdate(), 'id', 'java.lang.Long',
-  'ID in (select f.ID from factor f inner join experiment ex on f.experiment = ex.id left join project p on ex.id = p.experiment where p.id in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.project.Project'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__))');
+  'ID in (select f.ID from factor f inner join experiment ex on f.experiment = ex.id left join project p on ex.id = p.experiment where p.id in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.project.Project'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__))',
+'1=1');
 
-insert into csm_filter_clause (class_name, filter_chain, target_class_name, application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql)
+insert into csm_filter_clause (class_name, filter_chain, target_class_name, application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql_user, generated_sql_group)
  values ('gov.nih.nci.caarray.domain.data.AbstractArrayData', 'gov.nih.nci.caarray.domain.data.AbstractArrayData', 'gov.nih.nci.caarray.domain.data.AbstractArrayData - self',
  2, sysdate(), 'id', 'java.lang.Long',
-  'ID in (select ad.id from arraydata ad left join rawarraydata_hybridizations radh on ad.id = radh.rawarraydata_id left join hybridization h on radh.hybridization_id = h.id left join derivedarraydata_hybridizations dadh on ad.id = dadh.derivedarraydata_id left join hybridization h2 on dadh.hybridization_id = h2.id left join labeledextracthybridization leh on h.id = leh.hybridization_id left join extractlabeledextract ele on leh.labeledextract_id = ele.labeledextract_id left join sampleextract se on ele.extract_id = se.extract_id left join biomaterial s on se.sample_id = s.id left join labeledextracthybridization leh2 on h2.id = leh2.hybridization_id left join extractlabeledextract ele2 on leh2.labeledextract_id = ele2.labeledextract_id left join sampleextract se2 on ele2.extract_id = se2.extract_id left join biomaterial s2 on se2.sample_id = s2.id where s.id is not null and s.id in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.sample.Sample'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__) or s2.id is not null and s2.id in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.sample.Sample'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__))');
+  'ID in (select ad.id from arraydata ad left join rawarraydata_hybridizations radh on ad.id = radh.rawarraydata_id left join hybridization h on radh.hybridization_id = h.id left join derivedarraydata_hybridizations dadh on ad.id = dadh.derivedarraydata_id left join hybridization h2 on dadh.hybridization_id = h2.id left join labeledextracthybridization leh on h.id = leh.hybridization_id left join extractlabeledextract ele on leh.labeledextract_id = ele.labeledextract_id left join sampleextract se on ele.extract_id = se.extract_id left join biomaterial s on se.sample_id = s.id left join labeledextracthybridization leh2 on h2.id = leh2.hybridization_id left join extractlabeledextract ele2 on leh2.labeledextract_id = ele2.labeledextract_id left join sampleextract se2 on ele2.extract_id = se2.extract_id left join biomaterial s2 on se2.sample_id = s2.id where s.id is not null and s.id in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.sample.Sample'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__) or s2.id is not null and s2.id in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.sample.Sample'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__))',
+'1=1');
 
-insert into csm_filter_clause (class_name, filter_chain, target_class_name, application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql)
+insert into csm_filter_clause (class_name, filter_chain, target_class_name, application_id, update_date, target_class_attribute_name, target_class_attribute_type, generated_sql_user, generated_sql_group)
  values ('gov.nih.nci.caarray.domain.sample.AbstractBioMaterial', 'gov.nih.nci.caarray.domain.sample.AbstractBioMaterial', 'gov.nih.nci.caarray.domain.sample.AbstractBioMaterial - all',
  2, sysdate(), 'id', 'java.lang.Long',
   concat('ID in (select b.ID from biomaterial b left join experimentsource es on b.id = es.source_id left join experiment ex on es.experiment_id = ex.id left join project p on ex.id = p.experiment left join sampleextract se on b.id = se.extract_id left join biomaterial b2 on b2.id = se.sample_id left join extractlabeledextract ele on b.id = ele.labeledextract_id left join sampleextract se2 on ele.extract_id = se2.extract_id left join biomaterial b3 on b3.id = se2.sample_id where ',
 'b.discriminator=''SO'' and p.id in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.project.Project'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__) or ',
 'b.discriminator = ''SA'' and b.ID in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.sample.Sample'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__) OR ',
 'b2.discriminator = ''SA'' and b2.ID in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.sample.Sample'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__) OR ',
-'b3.discriminator=''SA'' and b3.id in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.sample.Sample'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__))'));
+'b3.discriminator=''SA'' and b3.id in (select __caarray_filter_alias__.attribute_value from (select pe.attribute_value from csm_protection_group pg, csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, csm_role r, csm_privilege p, csm_user_group ug where pe.object_id= ''gov.nih.nci.caarray.domain.sample.Sample'' and pe.attribute=''id'' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id = r.role_id and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = p.privilege_id and p.privilege_name=''READ'') __caarray_filter_alias__))'),
+'1=1');
 

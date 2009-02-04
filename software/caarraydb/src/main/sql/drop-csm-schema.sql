@@ -1,5 +1,5 @@
 -- This script is is a slightly modified version of the AuthSchemaMySQL.sql
--- file from the CSM 4.0 distribution.  It has been modified to use our replacements
+-- file from the CSM 4.1 distribution.  It has been modified to use our replacements
 -- and not to drop the db itself, and the order of the drops was reversed.
 
 USE @database.name@;
