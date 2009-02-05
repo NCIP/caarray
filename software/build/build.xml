@@ -2715,7 +2715,7 @@
         <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="post-build-checks" />
     </target>
 
-    <target name="remote-deploy" depends="init:third-party-paths,clean,pre-build-checks,validate-properties,continuous-integration,remote-jboss:deploy,remote-grid:deploy,post-build-checks"/>
+    <target name="remote-deploy" depends="clean,init:third-party-paths,pre-build-checks,validate-properties,continuous-integration,remote-jboss:deploy,remote-grid:deploy,post-build-checks"/>
 
     <!-- ******************************************************************* -->
     <!-- ** DOCUMENATION TARGETS                                          ** -->
