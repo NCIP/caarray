@@ -23,6 +23,12 @@
     <property name="ear.dist.dir" value="${basedir}/dist/ear" />
     <property name="common.resources.jboss.conf.dir" value="${basedir}/common/resources/jboss-conf" />
 
+    <!-- Environment properties -->
+    <property environment="env" />
+    <property file="${envpropertyfile}" />
+    <property file="${build.dir}/local.properties" />
+    <property file="${build.dir}/default.properties" />
+
     <!-- Components -->
 
     <property name="caarray-client.dir" value="${basedir}/caarray-client.jar" />
@@ -1230,11 +1236,6 @@
     <!-- Configuration files -->
     <property name="checkstyle.config" value="${resource.dir}/caarray_checks.xml" />
 
-    <!-- Environment properties -->
-    <property environment="env" />
-    <property file="${envpropertyfile}" />
-    <property file="${build.dir}/local.properties" />
-    <property file="${build.dir}/default.properties" />
     <property name="jboss.deploy.dir" value="${jboss.home}/server/${jboss.server.name}/deploy" />
     <property name="jboss.lib.dir" value="${jboss.home}/server/${jboss.server.name}/lib" />
 
