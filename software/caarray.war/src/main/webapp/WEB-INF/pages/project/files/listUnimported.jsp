@@ -62,6 +62,29 @@
     $('jobSizeContent').innerHTML= jobNumFiles + " Files, " +formatFileSize(jobSize);
     }
 
+  checkRefFileSelection = function(findRefUrl) {
+    var count = 0;
+    numElements = $('selectFilesForm').elements.length;
+    for (i = 0; i < numElements; i++) {
+         var element = $('selectFilesForm').elements[i];
+         if ("checkbox" == element.type && element.checked && element.id.indexOf('chk') >= 0) {
+                count++;
+                var type = fileTypeLookup[element.value];
+                if (type != IDF_FILE_TYPE) {
+                  alert('Only an IDF file may be selected.');
+                  return false;
+                }
+         }
+    }
+
+    if (count > 1) {
+      alert('Only one IDF file may be selected.');
+      return false;
+     }
+
+    return TabUtils.submitTabFormToUrl('selectFilesForm', findRefUrl, 'tabboxlevel2wrapper');
+  }
+
     unimportedFilterCallBack = function() {
         TabUtils.hideLoadingText();
     }
@@ -375,7 +398,7 @@
                 <c:url value="/protected/ajax/project/files/editFiles.action" var="editUrl" />
                 <caarray:linkButton actionClass="edit" text="Change File Type" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${editUrl}', 'tabboxlevel2wrapper');" />
                 <c:url value="/protected/ajax/project/files/findRefFiles.action" var="findRefUrl" />
-                <caarray:linkButton actionClass="validate" text="Select Referenced Files" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${findRefUrl}', 'tabboxlevel2wrapper');" />
+                <caarray:linkButton actionClass="validate" text="Select Referenced Files" onclick="checkRefFileSelection('${findRefUrl}');" />
                 <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />
                 <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
                 <c:url value="/protected/ajax/project/files/importFiles.action" var="importUrl"/>

@@ -104,11 +104,15 @@ import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 import java.util.List;
 import java.util.Set;
+
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -152,7 +156,7 @@ class MageTabImporter {
         try {
 
             documentSet = MageTabParser.INSTANCE.parseDataFileNames(inputSet);
-
+            handleSelectRefFilesResult(idfFileSet, translator.validate(documentSet, idfFileSet));
         } catch (MageTabParsingException e) {
             updateFileStatus(idfFileSet, FileStatus.VALIDATION_ERRORS);
         } catch (InvalidDataException e) {
@@ -160,6 +164,36 @@ class MageTabImporter {
         }
 
         return documentSet;
+    }
+
+    private void handleSelectRefFilesResult(CaArrayFileSet fileSet, ValidationResult result) {
+
+        for (FileValidationResult fileValidationResult : result.getFileValidationResults()) {
+            CaArrayFile caArrayFile = fileSet.getFile(fileValidationResult.getFile());
+            if (!result.isValid()) {
+                // check whether any of the validation errors are other than data file checks
+                saveErrorMessages(fileValidationResult, caArrayFile);
+            }
+
+        }
+    }
+
+    private void saveErrorMessages(FileValidationResult fileValidationResult,
+            CaArrayFile caArrayFile) {
+        FileValidationResult newResult =
+            new FileValidationResult(getFile(caArrayFile));
+        for (ValidationMessage vm : fileValidationResult.getMessages()) {
+            if (vm.getType().equals(Type.ERROR)
+                    && !Pattern.matches(".*Array Data.*not found in the document set.*", vm.getMessage())) {
+                newResult.addMessage(Type.ERROR, vm.getMessage());
+            }
+        }
+
+        if (newResult.getMessages().size() > 0) {
+            caArrayFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
+            caArrayFile.setValidationResult(newResult);
+            daoFactory.getProjectDao().save(caArrayFile);
+        }
     }
 
     private void handleResult(CaArrayFileSet fileSet, ValidationResult result) {

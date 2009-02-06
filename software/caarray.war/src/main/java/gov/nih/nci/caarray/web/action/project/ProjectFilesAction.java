@@ -602,8 +602,16 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             }
         }
 
+        boolean addErrorMessage = false;
         for (CaArrayFile caf : selectedFiles) {
             selectedFileIds.add(caf.getId());
+            if (caf.getValidationResult() != null && !caf.getValidationResult().isValid()) {
+                addErrorMessage = true;
+            }
+        }
+
+        if (addErrorMessage) {
+            ActionHelper.saveMessage(getText("project.selectRefFile.error.validation"));
         }
     }
 
