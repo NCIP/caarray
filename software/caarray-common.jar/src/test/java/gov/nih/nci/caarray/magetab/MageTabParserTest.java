@@ -143,10 +143,12 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     static {
         TermSource mo = new TermSource("MO", "http://mged.sourceforge.net/ontologies/MGEDontology.php", "1.3.0.1");
+        TermSource mo2 = new TermSource("MO_2", "http://mged.sourceforge.net/ontologies/MGEDontology.php", "1.3.0.1");  // test for bug 17781
         TermSource cto = new TermSource("CTO", "http://obo.sourceforge.net/cgi-bin/detail.cgi?cell", null);
         TermSource ncbitax = new TermSource("ncbitax", "http://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/", null);
         TermSource arrayExpress = new TermSource("ArrayExpress", "http://www.ebi.ac.uk/arrayexpress/", null);
         SPEC_EXPECTED_TERM_SOURCES.put(mo.getName(), mo);
+        SPEC_EXPECTED_TERM_SOURCES.put(mo2.getName(), mo2);
         SPEC_EXPECTED_TERM_SOURCES.put(cto.getName(), cto);
         SPEC_EXPECTED_TERM_SOURCES.put(ncbitax.getName(), ncbitax);
         SPEC_EXPECTED_TERM_SOURCES.put(arrayExpress.getName(), arrayExpress);

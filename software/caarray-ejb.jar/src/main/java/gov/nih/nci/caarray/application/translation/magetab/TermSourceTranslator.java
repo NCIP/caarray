@@ -108,7 +108,6 @@ final class TermSourceTranslator extends AbstractTranslator {
 
     private final VocabularyService vocabularyService;
     private final Map<TermSourceKey, TermSource> termSourceByName = new HashMap<TermSourceKey, TermSource>();
-    private final Map<TermSourceKey, TermSource> termSourceByUrl = new HashMap<TermSourceKey, TermSource>();
 
     TermSourceTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
             VocabularyService vocabularyService, CaArrayDaoFactory daoFatory) {
@@ -128,14 +127,9 @@ final class TermSourceTranslator extends AbstractTranslator {
         TermSource source = lookupSource(termSource);
         // check that this does not match (via unique constraints) one of the sources we've already created.
         TermSourceKey nameKey = new TermSourceKey(source.getName(), source.getVersion());
-        TermSourceKey urlKey = new TermSourceKey(source.getUrl(), source.getVersion());        
-        if (!termSourceByName.containsKey(nameKey)
-                && (StringUtils.isBlank(source.getUrl()) || !termSourceByUrl.containsKey(urlKey))) {
+        if (!termSourceByName.containsKey(nameKey)) {
             getTranslationResult().addSource(termSource, source);
             termSourceByName.put(nameKey, source);
-            if (!StringUtils.isBlank(source.getUrl())) {
-                termSourceByUrl.put(urlKey, source);                
-            }
         }
     }
 
@@ -163,6 +157,7 @@ final class TermSourceTranslator extends AbstractTranslator {
     private TermSource lookupSourceByNameUrlAndVersion(String name, String url, String version) {
         TermSource match = vocabularyService.getSourceByUrl(url, version);
         if (match != null) {
+            match.setName(name);
             return match;
         } else {
             TermSource result = lookupSourceByNameAndVersion(name, version);
@@ -237,7 +232,7 @@ final class TermSourceTranslator extends AbstractTranslator {
     /**
      * Compares term sources by their version, such that empty / null versions come first, and otherwise uses inverse
      * alphabetical ordering.
-     * 
+     *
      * @author dkokotov@vecna.com
      */
     private static class TermSourceVersionComparator implements Comparator<TermSource> {
@@ -254,14 +249,14 @@ final class TermSourceTranslator extends AbstractTranslator {
             return ts1.getVersion().compareToIgnoreCase(ts2.getVersion()) * -1;
         }
     }
-    
+
     /**
      * Key class for looking up term sources in the cache by the Term Source natural keys.
      */
     private static final class TermSourceKey {
         private final String name;
         private final String version;
-                
+
         public TermSourceKey(String name, String version) {
             this.name = name;
             this.version = version;
@@ -283,7 +278,7 @@ final class TermSourceTranslator extends AbstractTranslator {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#hashCode()
          */
         @Override
@@ -293,7 +288,7 @@ final class TermSourceTranslator extends AbstractTranslator {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#equals(java.lang.Object)
          */
         @Override

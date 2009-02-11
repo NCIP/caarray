@@ -1835,17 +1835,25 @@
     <!-- Test Data Targets -->
 
     <target name="test:copy-files-to-target-dir-and-unpack-test-data" unless="notest" depends="init:third-party-paths">
-        <copy todir="${test.data.target.dir}">
-            <fileset dir="${test.data.files.dir}"/>
-        </copy>
-        <for param="zipfile">
-            <path>
-                <fileset dir="${test.data.target.dir}" includes="**/*.zip" />
-            </path>
+        <outofdate>
+            <sourcefiles>
+                <fileset dir="${test.data.files.dir}" includes="**/*.zip"/>
+            </sourcefiles>
+            <mapper type="glob" dir="${test.data.files.dir}" from="*.zip" to="${test.data.target.dir}/*.zip"/>
             <sequential>
-                <unzip overwrite="false" src="@{zipfile}" dest="@{zipfile}/.." />
+                <copy todir="${test.data.target.dir}">
+                    <fileset dir="${test.data.files.dir}"/>
+                </copy>
+                <for param="zipfile">
+                    <path>
+                        <fileset dir="${test.data.target.dir}" includes="**/*.zip" />
+                    </path>
+                    <sequential>
+                        <unzip overwrite="false" src="@{zipfile}" dest="@{zipfile}/.." />
+                    </sequential>
+                </for>
             </sequential>
-        </for>
+        </outofdate>
     </target>
 
     <target name="test:compile:test-data-classes" unless="notest" depends="init:third-party-paths">
