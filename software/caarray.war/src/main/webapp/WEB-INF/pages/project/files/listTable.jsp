@@ -13,7 +13,7 @@
         <c:set var="defaultSortVal" value="1" />
     </c:otherwise>
 </c:choose>
-
+<s:hidden name="selectedFileIds" value=""/>
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <display:table class="searchresults" cellspacing="0" defaultsort="${defaultSortVal}" list="${files}" requestURI="${sortUrl}"
         sort="list" id="row" excludedParams="project.id selectedFileIds __checkbox_selectedFileIds">

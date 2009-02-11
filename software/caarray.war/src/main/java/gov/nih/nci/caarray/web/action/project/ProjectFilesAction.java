@@ -604,7 +604,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
         boolean addErrorMessage = false;
         for (CaArrayFile caf : selectedFiles) {
-            selectedFileIds.add(caf.getId());
+            if (!selectedFileIds.contains(caf.getId())) {
+                selectedFileIds.add(caf.getId());
+            }
             if (caf.getValidationResult() != null && !caf.getValidationResult().isValid()) {
                 addErrorMessage = true;
             }
