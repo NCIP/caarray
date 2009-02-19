@@ -24,6 +24,7 @@
     MAX_JOB_SIZE = <s:property value="@gov.nih.nci.caarray.web.action.project.ProjectFilesAction@MAX_IMPORT_TOTAL_SIZE"/>;
     SDRF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileType@MAGE_TAB_SDRF"/>';
     IDF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileType@MAGE_TAB_IDF"/>';
+    GPR_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileType@GENEPIX_GPR"/>';
     <c:forEach items="${files}" var="file">
     fileTypeLookup['${file.id}'] = '${file.fileType}';
     fileNameLookup['${file.id}'] = '${caarrayfn:escapeJavaScript(file.name)}';
@@ -40,21 +41,21 @@
              }
         }
     }
-    
+
     toggleFileInJob = function(checked, id) {
         var size = fileSizeLookup[id];
-		if (checked) {
-			jobNumFiles++;
-			jobSize += size;
-		} else {
-			jobNumFiles--;
-			jobSize -= size;
-		}
-		updateJobSummary();
+    if (checked) {
+      jobNumFiles++;
+      jobSize += size;
+    } else {
+      jobNumFiles--;
+      jobSize -= size;
+    }
+    updateJobSummary();
     }
 
     updateJobSummary = function() {
-		$('jobSizeContent').innerHTML= jobNumFiles + " Files, " +formatFileSize(jobSize);
+    $('jobSizeContent').innerHTML= jobNumFiles + " Files, " +formatFileSize(jobSize);
     }
 
     unimportedFilterCallBack = function() {
@@ -79,6 +80,13 @@
         });
     }
 
+    isGprImport = function() {
+        var formElts = document.getElementById('datatable').getElementsByTagName('input');
+        return $A(formElts).any(function(elt) {
+            return elt.checked && (elt.id.lastIndexOf('chk') > -1) && (fileTypeLookup[elt.value] == GPR_FILE_TYPE);
+        });
+    }
+
     checkAnyFilesSelected = function() {
         var formElts = document.getElementById('datatable').getElementsByTagName('input');
         return $A(formElts).any(function(elt) {
@@ -92,7 +100,7 @@
     getSelectedFileNames = function() {
         var formElts = document.getElementById('datatable').getElementsByTagName('input');
         return $A(formElts).select(function(elt) {
-        	if(elt.id.lastIndexOf('chk') < 0) {
+          if(elt.id.lastIndexOf('chk') < 0) {
              return false;
             }
             return elt.checked;
@@ -106,10 +114,22 @@
             alert("At least one file must be selected");
         } else if (jobSize >= MAX_JOB_SIZE) {
             alert("<fmt:message key='project.fileImport.error.jobTooLarge'/>");
+        } else if (isGprImport() && !isMageTabImport()) {
+            alert("Genepix GPR files can only be imported/validated as part of a MAGE-TAB dataset with at least one IDF and SDRF file.");
         } else if (isMageTabImport()) {
             doImportFiles(importUrl);
         } else {
             openImportDialog(importUrl);
+        }
+    }
+
+    validateFiles = function(validateUrl) {
+        if (!checkAnyFilesSelected()) {
+            alert("At least one file must be selected");
+        } else if (isGprImport() && !isMageTabImport()) {
+            alert("Genepix GPR files can only be imported/validated as part of a MAGE-TAB dataset with at least one IDF and SDRF file.");
+        } else {
+            TabUtils.submitTabFormToUrl('selectFilesForm', validateUrl, 'tabboxlevel2wrapper');
         }
     }
 
@@ -369,8 +389,8 @@
                 <caarray:linkButton actionClass="import" text="Unpack Archive" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${unpackUrl}', 'tabboxlevel2wrapper');" />
                 <c:url value="/protected/ajax/project/files/editFiles.action" var="editUrl" />
                 <caarray:linkButton actionClass="edit" text="Change File Type" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${editUrl}', 'tabboxlevel2wrapper');" />
-	            <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />
-    	        <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
+              <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />
+              <caarray:linkButton actionClass="validate" text="Validate" onclick="validateFiles('${validateUrl}');" />
                 <c:url value="/protected/ajax/project/files/importFiles.action" var="importUrl"/>
                 <caarray:linkButton actionClass="import" text="Import" onclick="importFiles('${importUrl}');" />
                 <c:url value="/protected/ajax/project/files/addSupplementalFiles.action" var="supplementalUrl"/>

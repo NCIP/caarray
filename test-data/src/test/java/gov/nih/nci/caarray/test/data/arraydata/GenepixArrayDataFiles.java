@@ -92,6 +92,9 @@ public class GenepixArrayDataFiles {
     public static final File GPR_3_0_6 =
         new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/3_0_6_x.gpr").getFile());
 
+    public static final File GPR_3_0_6_mod =
+        new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/3_0_6_mod.gpr").getFile());
+
     public static final File GPR_4_0_1 =
         new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/4_0_1_x.gpr").getFile());
 
@@ -100,5 +103,11 @@ public class GenepixArrayDataFiles {
 
     public static final File GPR_5_0_1 =
         new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/5_0_1_26.gpr").getFile());
+
+    public static final File EXPORTED_IDF =
+        new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/exportedGprMageTab.idf").getFile());
+
+    public static final File EXPORTED_SDRF =
+        new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/exportedGprMageTab.sdrf").getFile());
 
 }

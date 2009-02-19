@@ -102,6 +102,7 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
@@ -114,6 +115,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
+import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -123,6 +125,8 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Transaction;
@@ -382,6 +386,64 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         assertNotNull(findSource(project, "Source B"));
         assertEquals(2, project.getExperiment().getHybridizationByName("Hyb 1").getAllDataFiles().size());
         tx.commit();
+    }
+
+    @Test
+    public void testImportDefect19324() throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        ArrayDesign design = importArrayDesign(GenepixArrayDataFiles.JOE_DERISI_FIX);
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
+        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        tx.commit();
+        Set<File> files = new HashSet<File>();
+        files.add(GenepixArrayDataFiles.EXPORTED_IDF);
+        files.add(GenepixArrayDataFiles.EXPORTED_SDRF);
+        files.add(GenepixArrayDataFiles.GPR_3_0_6);
+        files.add(GenepixArrayDataFiles.GPR_3_0_6_mod);
+        files.add(GenepixArrayDataFiles.GPR_4_0_1);
+        files.add(GenepixArrayDataFiles.GPR_4_1_1);
+        uploadAndImportFiles(DUMMY_PROJECT_1, files);
+
+        tx = HibernateUtil.beginTransaction();
+        Project project = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
+        assertNotNull(project.getExperiment().getSampleByName("new"));
+        assertNull(project.getExperiment().getSampleByName("123"));
+        tx.commit();
+
+    }
+
+    @SuppressWarnings("PMD")
+    private void uploadAndImportFiles(Project project, Set<File> files) throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+        CaArrayFileSet fileSet = uploadFiles(project, files);
+        tx.commit();
+
+        helpImportFiles(tx, project, fileSet);
+    }
+
+    @SuppressWarnings("PMD")
+    private void helpImportFiles(Transaction tx, Project project, CaArrayFileSet fileSet) throws Exception {
+        tx = HibernateUtil.beginTransaction();
+        project = (Project) HibernateUtil.getCurrentSession().load(Project.class, project.getId());
+        importFiles(project, fileSet, null);
+        tx.commit();
+    }
+
+    private CaArrayFileSet uploadFiles(Project project, Set<File> files) {
+        for (File file : files) {
+            CaArrayFile caArrayFile = this.fileAccessService.add(file);
+            caArrayFile.setProject(project);
+            project.getFiles().add(caArrayFile);
+            HibernateUtil.getCurrentSession().save(caArrayFile);
+        }
+
+        HibernateUtil.getCurrentSession().update(project);
+        return project.getFileSet();
     }
 
     @SuppressWarnings("PMD")

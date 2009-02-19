@@ -405,7 +405,7 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
                 RGN_R2_635_532, F_PIXELS, B_PIXELS, SUM_OF_MEDIANS_635_532, SUM_OF_MEANS_635_532, LOG_RATIO_635_532,
                 F635_MEDIAN_B635, F532_MEDIAN_B532, F635_MEAN_B635, F532_MEAN_B532, FLAGS
         };
-        testImportGenepixFile(GenepixArrayDataFiles.GPR_3_0_6, expectedTypes, 2);
+        testImportGenepixFile(GenepixArrayDataFiles.GPR_3_0_6, expectedTypes, 1);
     }
 
     private void testImportGenepixFile(File gprFile, QuantitationTypeDescriptor[] expectedTypes, int expectedNumberOfSamples) throws InvalidDataFileException {
@@ -513,6 +513,7 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
     @Test
     public void testValidate() {
         testIlluminaValidation();
+        testGenepixNoMageTabValidation();
         testGenepixValidation();
         testCelValidation();
         testChpValidation();
@@ -524,6 +525,8 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
         fileList.add(GenepixArrayDataFiles.GPR_4_0_1);
         fileList.add(GenepixArrayDataFiles.GPR_4_1_1);
         fileList.add(GenepixArrayDataFiles.GPR_5_0_1);
+        fileList.add(GenepixArrayDataFiles.EXPORTED_IDF);
+        fileList.add(GenepixArrayDataFiles.EXPORTED_SDRF);
         fileList.add(AffymetrixArrayDataFiles.TEST3_CEL);
 
         testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_3_0_6, GAL_DERISI_LSID_OBJECT_ID),
@@ -538,6 +541,23 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
                 genMageTabDocSet(fileList));
     }
 
+    private void testGenepixNoMageTabValidation() {
+        List<File> fileList = new ArrayList<File>();
+        fileList.add(GenepixArrayDataFiles.GPR_3_0_6);
+        fileList.add(GenepixArrayDataFiles.GPR_4_0_1);
+        fileList.add(GenepixArrayDataFiles.GPR_4_1_1);
+        fileList.add(GenepixArrayDataFiles.GPR_5_0_1);
+
+        testInvalidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_3_0_6, GAL_DERISI_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testInvalidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_0_1, GAL_DERISI_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testInvalidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_1_1, GAL_DERISI_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+        testInvalidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_5_0_1, GAL_YEAST1_LSID_OBJECT_ID),
+                genMageTabDocSet(fileList));
+
+    }
 
     private void testIlluminaValidation() {
         List<File> fileList = new ArrayList<File>();
@@ -549,7 +569,13 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
     private MageTabDocumentSet genMageTabDocSet(List<File> fl) {
         MageTabFileSet mTabFiles = new MageTabFileSet();
         for (File f : fl) {
-            mTabFiles.addNativeData(f);
+            if (f.getName().contains(".idf")) {
+                mTabFiles.addIdf(f);
+            } else if (f.getName().contains(".sdrf")) {
+                mTabFiles.addSdrf(f);
+            } else {
+                mTabFiles.addNativeData(f);
+            }
         }
         MageTabDocumentSet mTabSet = new MageTabDocumentSet(mTabFiles);
         return mTabSet;
