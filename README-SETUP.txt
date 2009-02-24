@@ -7,8 +7,6 @@
 - Install JBoss 4.0.5 GA 
     - Use the JEMS distribution v. 1.2.0GA, which you can obtain from http://labs.jboss.com/jemsinstaller/
 - Install Ant 1.7.0 from http://ant.apache.org/
-- Install Globus 4.0.3 from http://www.globus.org/toolkit/downloads/4.0.3/
-    - use the Java WS Core Binary Installer
 - Start the JBoss
 - Open up a command prompt and go to $CAARRAY_DEV_ROOT$\software\build
 - execute:  ant database:reinitialize

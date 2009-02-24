@@ -110,7 +110,7 @@
     <property name="asm.3.0.lib" value="${lib.dir}/caarray-asm_3.0" />
     <property name="project.lib" value="${lib.dir}/caarray-project" />
     <property name="bda-utils.dir" value="${basedir}/bda-utils" />
-    <property name="bda.version" value="0.9.3" />
+    <property name="bda.version" value="0.10.1" />
     <property name="bda.utils.build.file" value="${bda-utils.dir}/bda-build-utils-${bda.version}.xml"/>
     <property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
 
@@ -1463,7 +1463,7 @@
         </javac>
     </target>
 
-    <target name="compile:caarray-grid-svc" depends="init:third-party-paths,compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar,build:caarray-grid-svc.common.jar">
+    <target name="compile:caarray-grid-svc" depends="init:third-party-paths,validate-pre-build,compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar,build:caarray-grid-svc.common.jar">
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
                 <copy file="${caarray-grid-svc.base.dir}/@{version}/deploy.properties.orig" tofile="${caarray-grid-svc.base.dir}/@{version}/deploy.properties">
@@ -1475,6 +1475,7 @@
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="compile" inheritall="false">
                     <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
                     <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
+                    <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
                 </ant>
             </sequential>
         </for>
@@ -1500,6 +1501,7 @@
     <!-- ******************************************************************* -->
 
     <target name="clean-build-with-zips" depends="clean,
+        validate-pre-build,
         build:caarray-client.jar,
         build:caarray-common.jar,
         build:caarray-ejb.jar,
@@ -1509,14 +1511,19 @@
         build:caarray-client.zip,
         create-grid-zip"/>
 
-    <target name="build" description="Builds the application without deploying." depends="build:caarray-client.jar,
+    <target name="build" description="Builds the application without deploying." depends="validate-pre-build,build:caarray-client.jar,
         build:caarray-common.jar,
         build:caarray-ejb.jar,
         build:caarray.war,
         build:caarray.ear,
         build:caarray-grid-svc"/>
 
-    <target name="build-functional" depends="build:caarray-client.jar,
+    <target name="validate-pre-build" depends="init:third-party-paths">
+        <validate-pre-build application.base.path="${basedir}/tools" wscore.relative.dir="ws-core-4.0.3"/>
+    </target>
+
+    <target name="build-functional" depends="validate-pre-build,
+        build:caarray-client.jar,
         build:functional:caarray.ear,
         build:caarray-grid-svc" description="Builds the application without deploying." />
 
@@ -1815,12 +1822,13 @@
         </jar>
     </target>
 
-    <target name="build:caarray-grid-svc" depends="init:third-party-paths,compile:caarray-grid-svc, build:caarray-grid-svc.common.jar">
+    <target name="build:caarray-grid-svc" depends="init:third-party-paths,validate-pre-build,compile:caarray-grid-svc, build:caarray-grid-svc.common.jar">
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="jars" inheritall="false">
                     <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
                     <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
+                    <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
                 </ant>
             </sequential>
         </for>
@@ -2435,15 +2443,17 @@
 
     <target name="deploy:caarray-grid-svc" depends="init:third-party-paths,deploy:caarray-grid-svc-globus, deploy:caarray-grid-svc-jboss"/>
 
-    <target name="deploy:caarray-grid-svc-globus" depends="init:third-party-paths,build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useGlobus">
+    <target name="deploy:caarray-grid-svc-globus" depends="init:third-party-paths,validate-pre-build,build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useGlobus">
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
-                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="deployGlobus" inheritall="false" />
+                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="deployGlobus" inheritall="false">
+                    <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
+                </ant>
             </sequential>
         </for>
     </target>
 
-    <target name="deploy:caarray-grid-svc-jboss" depends="init:third-party-paths,build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useJBoss">
+    <target name="deploy:caarray-grid-svc-jboss" depends="init:third-party-paths,validate-pre-build,build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useJBoss">
         <unzip src="${jboss-globus-serverinstance-config.zip}" dest="${globoss.server.instance.home}" />
         <replace file="${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd">
             <replacefilter token="@LOGICAL_HOST@" value="${grid.static.hostname}" />
@@ -2452,6 +2462,7 @@
             <sequential>
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="deployJBoss" inheritall="false">
                     <property name="jboss.dir" value="${globoss.home}"/>
+                    <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
                 </ant>
             </sequential>
         </for>
@@ -2467,19 +2478,21 @@
 
     <target name="undeploy:caarray-grid-svc" depends="init:third-party-paths,undeploy:caarray-grid-svc-globus, undeploy:caarray-grid-svc-jboss"/>
 
-    <target name="undeploy:caarray-grid-svc-globus" depends="init:third-party-paths,prepare:create-local.properties" if="internal.grid.useJBoss">
+    <target name="undeploy:caarray-grid-svc-globus" depends="init:third-party-paths,validate-pre-build,prepare:create-local.properties" if="internal.grid.useJBoss">
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployJBoss" inheritall="false">
                     <property name="jboss.dir" value="${globoss.home}"/>
+                    <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
                 </ant>
             </sequential>
         </for>
     </target>
 
-    <target name="undeploy:caarray-grid-svc-jboss" depends="prepare:create-local.properties">
+    <target name="undeploy:caarray-grid-svc-jboss" depends="validate-pre-build,prepare:create-local.properties">
         <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployJBoss" inheritall="false">
             <property name="jboss.dir" value="${globoss.home}"/>
+            <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </ant>
     </target>
 
@@ -2521,13 +2534,14 @@
         </for>
     </target>
 
-    <target name="create-grid-zip">
+    <target name="create-grid-zip" depends="validate-pre-build">
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
                 <var name="caarraysvc.temp.dir" value="${caarray-grid-svc.base.dir}/@{version}/build/cagrid_CaArraySvc" />
                 <mkdir dir="${caarraysvc.temp.dir}" />
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="createDeploymentZip" inheritall="false">
                     <property name="jboss.dir" value="${caarraysvc.temp.dir}" />
+                    <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
                 </ant>
             </sequential>
         </for>
@@ -2633,7 +2647,7 @@
         <remote-scp remoteScpFileToCopy="${target.dir}/archFileReplace/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" />
     </target>
 
-    <target name="remote-grid:deploy-grid" unless="nodeploy" depends="init:third-party-paths">
+    <target name="remote-grid:deploy-grid" unless="nodeploy" depends="init:third-party-paths,validate-pre-build">
         <echo message="Deploying Grid to jboss server at ${ssh.grid.hostname}..." />
 
         <for param="version" list="${caarray-grid-svc.versions}">
@@ -2644,6 +2658,7 @@
 
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="createDeploymentZip" inheritall="false">
                     <property name="jboss.dir" value="${caarraysvc.temp.dir}" />
+                    <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
                 </ant>
                 <var name="cagrid_CaArraySvc.zip" value="${caarray-grid-svc.base.dir}/@{version}/cagrid_CaArraySvc.zip" />
 
@@ -2655,6 +2670,7 @@
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="jars" inheritall="false">
                     <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
                     <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
+                    <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
                 </ant>
             </sequential>
         </for>
@@ -2715,12 +2731,16 @@
         <echoproperties />
     </target>
 
-    <target name="pre-build-checks" depends="init:third-party-paths">
-        <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="pre-build-checks" />
+    <target name="pre-build-checks" depends="init:third-party-paths,validate-pre-build">
+        <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="pre-build-checks">
+            <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
+        </ant>
     </target>
 
-    <target name="post-build-checks" depends="init:third-party-paths">
-        <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="post-build-checks" />
+    <target name="post-build-checks" depends="init:third-party-paths,validate-pre-build">
+        <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="post-build-checks">
+            <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
+        </ant>
     </target>
 
     <target name="remote-deploy" depends="clean,init:third-party-paths,pre-build-checks,validate-properties,continuous-integration,remote-jboss:deploy,remote-grid:deploy,post-build-checks"/>
