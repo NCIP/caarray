@@ -117,7 +117,6 @@ import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-import gov.nih.nci.caarray.test.data.arraydesign.GenepixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -328,41 +327,6 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
     }
 
     @Test
-    public void testValidateDefect18625Samples() throws Exception {
-        Transaction tx = HibernateUtil.beginTransaction();
-        saveSupportingObjects();
-        ArrayDesign design = importArrayDesign(GenepixArrayDesignFiles.INCYTE);
-        tx.commit();
-
-        tx = HibernateUtil.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
-        Set<File> files = new HashSet<File>();
-        files.add(GenepixArrayDataFiles.GPR_DEFECT_18652_IDF);
-        files.add(GenepixArrayDataFiles.GPR_DEFECT_18652_SDRF);
-        files.add(GenepixArrayDataFiles.GPR_DEFECT_18652_NEU9);
-        files.add(GenepixArrayDataFiles.GPR_DEFECT_18652_NEU10);
-
-        uploadAndValidateFiles(DUMMY_PROJECT_1, files);
-
-        tx = HibernateUtil.beginTransaction();
-        Project project = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        for (CaArrayFile file : project.getFiles()) {
-            if (!file.getFileType().equals(FileType.MAGE_TAB_SDRF)) {
-                assertEquals(FileStatus.VALIDATED, file.getFileStatus());
-            } else {
-                assertEquals(FileStatus.VALIDATION_ERRORS, file.getFileStatus());
-                assertEquals(1, file.getValidationResult().getMessages().size());
-                assertTrue(file.getValidationResult()
-                        .getMessages().get(0).getMessage().contains("WRONG"));
-            }
-        }
-        tx.commit();
-
-    }
-
-    @Test
     public void testValidateDefect18625Hybes() throws Exception {
         Transaction tx = HibernateUtil.beginTransaction();
         saveSupportingObjects();
@@ -471,14 +435,7 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         tx.commit();
     }
 
-    @SuppressWarnings("PMD")
-    private void uploadAndValidateFiles(Project project, Set<File> files) throws Exception {
-        Transaction tx = HibernateUtil.beginTransaction();
-        CaArrayFileSet fileSet = uploadFiles(project, files);
-        tx.commit();
 
-        helpValidateFiles(tx, project, fileSet);
-    }
 
     @SuppressWarnings("PMD")
     private void uploadAndValidateFiles(Project project, Map<File, FileType> files) throws Exception {
@@ -516,18 +473,6 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         }
         HibernateUtil.getCurrentSession().update(project);
         return fileSet;
-    }
-
-    private CaArrayFileSet uploadFiles(Project project, Set<File> files) {
-        for (File file : files) {
-            CaArrayFile caArrayFile = this.fileAccessService.add(file);
-            caArrayFile.setProject(project);
-            project.getFiles().add(caArrayFile);
-            HibernateUtil.getCurrentSession().save(caArrayFile);
-        }
-
-        HibernateUtil.getCurrentSession().update(project);
-        return project.getFileSet();
     }
 
     private CaArrayFileSet uploadFiles(Project project, Map<File, FileType> files) {

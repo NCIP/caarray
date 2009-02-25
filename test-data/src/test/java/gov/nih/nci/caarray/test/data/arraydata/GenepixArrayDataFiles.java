@@ -115,4 +115,10 @@ public class GenepixArrayDataFiles {
 
     public static final File GPR_DEFECT_18652_FIXED_SDRF =
         new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/defect-18652/fixed/experiment-id-1015897540258547_curated.sdrf").getFile());
+
+    public static final File EXPORTED_IDF =
+        new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/exportedGprMageTab.idf").getFile());
+
+    public static final File EXPORTED_SDRF =
+        new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/exportedGprMageTab.sdrf").getFile());
 }

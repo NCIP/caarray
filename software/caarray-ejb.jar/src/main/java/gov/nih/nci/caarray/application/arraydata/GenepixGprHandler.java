@@ -97,7 +97,6 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab.sdrf.Sample;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -110,7 +109,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -127,8 +125,6 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     private static final String LSID_NAMESPACE = AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE;
 
     private static final int REQUIRED_INITIAL_ROW_HEADER_LENGTH = 3;
-    private static final String WAVELENGTHS_HEADER = "Wavelengths";
-    private static final String IMAGE_NAME_HEADER = "ImageName";
     private static final String GAL_FILE_HEADER = "GalFile";
     private static final String ROW_HEADER = "Row";
     private static final String COLUMN_HEADER = "Column";
@@ -139,7 +135,6 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     private static final String Y_HEADER = "Y";
     private static final String DIA_HEADER = "Dia.";
     private static final String ERROR_INDICATOR = "Error";
-    private static final String NOT_APPLICATBLE_INDICATOR = "n/a";
 
     private static final Logger LOG = Logger.getLogger(GenepixGprHandler.class);
     private static final Map<String, QuantitationTypeDescriptor> NAME_TO_TYPE_MAP;
@@ -252,62 +247,11 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         return getQuantitationTypeDescriptors(getColumnHeaders(reader));
     }
 
-    private void checkSdrfSamples(FileValidationResult result, List<String> fileSampleNames,
-            Map<String, List<Sample>> sdrfSamplesMap) {
-        // get collection of sample names from sdrf as strings
-
-        for (List<Sample> samList : sdrfSamplesMap.values()) {
-            List<String> sdrfSampleNames = new ArrayList<String>();
-            for (Sample sam : samList) {
-                sdrfSampleNames.add(sam.getName());
-            }
-
-            if (!sdrfSampleNames.containsAll(fileSampleNames)) {
-                StringBuilder sb =
-                    new StringBuilder("This data file contains the following Sample names"
-                            +  " that are not referenced in the SDRF document:");
-                sdrfSampleNames.removeAll(fileSampleNames);
-                sb.append(StringUtils.join(sdrfSampleNames.iterator(), ','));
-                result.addMessage(Type.ERROR, sb.toString());
-            }
-
-        }
-    }
-
     private DelimitedFileReader getReader(File file) {
         try {
             return DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(file);
         } catch (IOException e) {
             throw new IllegalStateException("Couldn't open file " + file.getName(), e);
-        }
-    }
-
-    @Override
-    List<String> getSampleNames(File dataFile, String hybridizationName) {
-        List<String> names = new ArrayList<String>();
-        DelimitedFileReader reader = getReader(dataFile);
-        try {
-            Map<String, String[]> headers = getHeaders(reader);
-            names.add("635");
-            names.add("532");
-            if (headers.containsKey(WAVELENGTHS_HEADER) && headers.get(WAVELENGTHS_HEADER).length > 2) {
-                addThreeAndFourColorNames(names, headers.get(WAVELENGTHS_HEADER));
-            } else if (headers.containsKey(IMAGE_NAME_HEADER) && headers.get(IMAGE_NAME_HEADER).length > 2) {
-                addThreeAndFourColorNames(names, headers.get(IMAGE_NAME_HEADER));
-            }
-            return names;
-        } catch (IOException e) {
-            throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
-        } finally {
-            reader.close();
-        }
-    }
-
-    private void addThreeAndFourColorNames(List<String> names, String[] values) {
-        for (int i = 2; i < values.length; i++) {
-            if (!values[i].trim().toLowerCase(Locale.getDefault()).equals(NOT_APPLICATBLE_INDICATOR)) {
-                names.add(values[i].replace(' ', '_'));
-            }
         }
     }
 
@@ -413,21 +357,20 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     @Override
     void validate(CaArrayFile caArrayFile, File file, MageTabDocumentSet mTabSet, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
-        DelimitedFileReader reader = getReader(file);
-        try {
-            validateHeader(reader, result);
-            if (mTabSet.getSdrfDocuments() != null && !mTabSet.getSdrfDocuments().isEmpty()) {
-                checkSdrfSamples(result, getSampleNames(file, null), mTabSet.getSdrfSamples());
+        if (mTabSet == null || mTabSet.getIdfDocuments().isEmpty() || mTabSet.getSdrfDocuments().isEmpty()) {
+            result.addMessage(Type.ERROR, "An IDF and SDRF must be provided for this data file type.");
+        } else {
+            DelimitedFileReader reader = getReader(file);
+            try {
+                validateHeader(reader, result);
+                if (result.isValid()) {
+                    validateData(reader, result);
+                }
+            } catch (IOException e) {
+                throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
+            } finally {
+                reader.close();
             }
-
-            if (result.isValid()) {
-                validateData(reader, result);
-            }
-            result.addValidationProperties(FileValidationResult.SAMPLE_NAME, getSampleNames(file, null));
-        } catch (IOException e) {
-            throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
-        } finally {
-            reader.close();
         }
     }
 

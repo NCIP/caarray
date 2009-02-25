@@ -162,21 +162,11 @@ final class ArrayDataImporter {
                 validateFile(file, mTabSet);
             }
         }
-
-        checkSdrfSampleNames(dataFiles, mTabSet, sdrfFiles);
         checkSdrfHybNames(dataFiles, mTabSet, sdrfFiles);
     }
 
     private void validateFile(CaArrayFile file, MageTabDocumentSet mTabSet) {
         this.arrayDataService.validate(file, mTabSet);
-    }
-
-    private void checkSdrfSampleNames(Set<CaArrayFile> dataFiles, MageTabDocumentSet mTabSet,
-            Set<CaArrayFile> sdrfFiles) {
-        if (mTabSet != null) {
-            checkSdrfDataRelationshipNodeNames(dataFiles, mTabSet.getSdrfSamples(),
-                    sdrfFiles, FileValidationResult.SAMPLE_NAME);
-        }
     }
 
     private void checkSdrfHybNames(Set<CaArrayFile> dataFiles, MageTabDocumentSet mTabSet,
