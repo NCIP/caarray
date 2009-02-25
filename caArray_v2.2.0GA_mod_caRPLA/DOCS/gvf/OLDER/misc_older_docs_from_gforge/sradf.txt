@@ -1,0 +1,101 @@
+The .sradf file
+
+The .sradf file can refer to more than one array. The .sradf file is in three basic parts. 
+These parts will be referred to as a samples section, an array locations section, and lastly, an array data section.
+
+Samples section
+The samples section is a subset extracted from MAGE-TAB and serves to enumerate BioSamples and possibly their BioSource provenance. 
+It is required that the sample name referenced in the array location section be present in this section. 
+It is also required that every sample name in a single .sradf file be unique, so multiple arrays using the same sample names for different samples will require multiple .sradf files.
+
+Array Locations section
+
+In this section, samples are associated with an array, array location and dilution of the sample. 
+Multiple arrays can be present in this section. For example, the same sample from the samples section may be split among multiple arrays.
+
+Array Data section
+
+This section serves to map an array with the particular antibody used for hybridization, protocols used in the array creation, hybridization, scanning, quantitation, normalization, and resultant files. 
+"Antibody Name" must refer to an antibody in the .rpla-idf. 
+Protocols need to reference protocols listed in the .rpla-idf. 
+For purposes of clarity, protocols that have to do with array creation, hybridization, image acquisition, and derived array data are explicitly named. 
+They could all potentially refer to the same protocol in the .rpla-idf.
+
+There *must* be at least one image file per distinct array within the data set. 
+There can be multiple image files present, each with an associated protocol. 
+Having imaged a hybridized array is a logical stopping place where the data set can be submitted to a repository and later reviewed.
+
+At a later time, the user can submit measured array data files or derived array data files and associate them with an existing array and source data files through the web interface.
+
+Adding measured and derived array data files through the web interface will require entering the mandatory protocol and its various fields. 
+Potentially, a protocol could be copied and so only modified fields edited. 
+This process would require browsing existing protocols and since protocol names in the .rpla-idf ( and MAGE-TAB .idf) need only be unique within the data set, it would make the most sense to be able to browse protocols and see in what experiment(s) they were used.
+
+
+Columns in .sradf
+
+Columns are listed below for the reader but the formal grammar serves to describe the possible column structure with rigor.
+
+
+
+Source Name (and associated information such as Characteristics, Provider, MaterialType, Description,...)
+Protocol REF (and associated information; points to protocols enumerated in the .idf file)
+Sample Name (and associated information such as Characteristics, MaterialType, Description,...)
+Reporter Group
+Factor Value
+//samples data here
+--end of Samples section delimiter--
+Array Name
+BlockColumn
+BlockRow
+Column
+Row
+Sample Name
+Reporter Group
+Dilution Value
+Dilution Unit
+Dilution Unit Term Source REF
+Reporter Group
+//array locations data here
+---end of array Locations section delimiter---
+ArrayCreationProtocol REF
+Array Name
+ArrayHybridizationProtocol REF
+Antibody Name (antibody used on array -> Antibody Name in .rpla-idf)
+ImageAcquisitionProtocol REF
+Image File
+MeasuredArrayDataProtocol REF
+Array Data File
+DerivedArrayDataProtocol REF
+Derived Array Data File
+Factor Value
+//array data data here
+---end of array data section delimiter---
+
+--------------------------------------------
+
+Formal Grammar for .sradf file format
+
+The JavaCC grammars for each section can be found the *.jj files. 
+
+[] means optional
+* means 0 or more
++ means at least 1
+
+The MAGE-TAB spec. does not currently have a formal grammar.
+
+---------------------------------------
+Validation policy notes for sradf files:
+
+Any *REF must resolve according to the  .rpla-idf file
+Any sample name in the array locations section must be found in the samples section, and not necessarily the last Sample in a row.
+There muct be uniqueness in each row for the following four fields (Array Name,	BlockColumn,	BlockRow,	Column,	Row )
+
+Any array in the array data section must refer to an array in the array locations section
+
+Tabs in quotes in the sradf file are not supported. TODO: invalidate files with such.
+There must be the correct number of columns in each section.
+
+* Data Matrix files are not yet supported in the grammar.
+
+

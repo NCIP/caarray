@@ -1,0 +1,98 @@
+The .rpla-idf file
+File format is derived from the MAGE-TAB spec., v1.0, January 31, 2007.
+Variations from the MAGE-TAB .idf format are underlined.
+
+An antibody used in an RPLArray must be listed here and is referenced from an .sradf file.
+
+Multiple antibodies can be used in the experiment (following MAGE-TAB convention of using additional columns and so each antibody has its own fields).
+
+Antibody names must be unique in the .rpla-idf file.
+Antibodies in the database will not be uniquely identified by name, and will require additional fields, such as the fields below, for unique identification.
+There will be a policy for matching an antibody listed in this file to an existing antibody in the database.
+
+
+HUGO is one possible preferred term source for describing antibody targets.
+http://www.gene.ucl.ac.uk/nomenclature/
+
+The .rpla-idf file may point to multiple *.sradf files.
+
+===============================================================
+
+
+Investigation Title
+Experimental Design
+Experimental Factor Name
+Experimental Factor Type
+Experimental Factor Term Source REF
+Antibody Name
+Antigen Name
+Antigen Name Term Source REF
+Antibody Provider
+Antibody Catalog ID
+Antibody Lot ID
+Antibody Comment
+Person Last Name
+Person First Name
+Person Email
+Person Phone
+Person Address
+Person Affiliation
+Person Roles
+Person Roles Term Source REF
+Quality Control Type
+Quality Control Term Source REF
+Replicate Type
+Replicate Term Source REF
+Normalization Type
+Normalization Term Source REF
+Date of Experiment
+Public Release Date
+PubMed ID
+Publication DOI
+Publication Author List
+Publication Title
+Publication Status
+Publication Status Term Source REF
+Experiment Description
+Protocol Name
+Protocol Type
+Protocol Description
+Protocol Parameters
+Protocol Hardware
+Protocol Software
+Protocol Contact
+Protocol Term Source REF
+SRADF File
+Term Source Name
+Term Source File
+Term Source Version
+
+----------------------------------------------------
+Validation policy notes for .rpla-idf files:
+
+Number of columns must match up where appropriate.
+Factor names cannot be identical.
+
+There must be at least one antibody and antibody names cannot be identical
+
+There must be at least one sradf file.
+.sradf files cannot be of zero size.
+Quotes around sradf filepath are optional.
+All sradf files references must be found. The parser can accommodate both relative and absolute paths.
+TODO: Test window paths.
+Spaces, but not tabs, are allowed in sradf file path
+
+For better readabality, new lines are allowed after
+
+Experimental Factor Term Source
+Antibody Comment
+Person Roles Term Source REF
+Quality Control Term Source REF
+Replicate Term Source REF
+Normalization Term Source REF
+Public Release Date
+Publication Status Term Source REF
+Experiment Description
+Protocol Term Source REF
+SRADF File
+----------------------------------------------------

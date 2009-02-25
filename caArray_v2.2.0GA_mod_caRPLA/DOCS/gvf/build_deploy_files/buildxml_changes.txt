@@ -1,0 +1,20 @@
+rename GridSvc2 to CaArraySvc 
+
+caarray-client-jar to caarray-client.jar
+caarray-common-jar to .jar
+caarray-ear to .ear
+caarray-ejb-jar to .jar
+caarray-war to .war
+
+pull caarray-svc build out
+
+
+<!--gvf -->
+	<property name="test.data.dir" value="${basedir}/test-data" />
+	<!--gvf -->
+	
+	
+	pull this out of <target name="test:unit" 
+		<!-- gvf -->
+  	<!-- <ant dir="${caaray-svc.dir}" target="test" inheritall="false"/> -->
+  	<!-- gvf --> 

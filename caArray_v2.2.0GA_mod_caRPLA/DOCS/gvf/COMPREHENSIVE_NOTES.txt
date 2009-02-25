@@ -1,0 +1,858 @@
+
+occurs to me that 
+"matched smaples are higher-lelev issue and probably outside of scope of this proejct,
+since you don;t have such a thing, and such matching coudl easily occur in the current assay types availabale now...
+
+so keep one assay type per experiment, replace bar2... 
+
+---------
+
+
+What does it mean to have "matched" samples?
+How are they matched?
+
+How to show desired outcome for such matching?
+
+===========
+
+Consider abstract notion of "linking" between experiments?
+why? how? when? by whom?
+
+can an experiment be included under multiple projects? that cuold help....
+
+stay away from matching sets if factor values
+---model of sets fo factor values...treatment groups...imaging assays, so on...
+
+could samples also be matched by a "matching" protocol?
+
+consider explicit internal linking.. metdata type linking
+
+critical question: to do ww/ interface?
+ change it?
+ how to add to it?
+ leave it alone possible?
+
+
+
+======================
+
+
+
+
+the antibody used could also be a factor value, right?
+
+
+
+
+adopt same term policy as cav2? : can add terms, for antibody validation for xample?
+
+careful with bio vs tech replciacates.
+
+control -> technical  background with buffers etc
+
+dmso.egf one compound treatment
+ just egf, assume dmso
+ 
+ 
+shoudl antibodies have site-wide scope?
+can antibodies also be entered via rpla-tab?
+
+what elements in ca2 have site-wide scope?
+
+
+shoudl dilution be referred by name??
+
+col/row can be in any order with regard to sradf
+
+
+remember to verify sample names are unique
+
+
+
+
+
+----------
+matched samples, not replicates in any sense, will have same "source" and have same factor values
+
+how to do this???
+
+
+
+
+
+----------
+
+
+
+
+use cases:
+
+users can browse antiodies
+users ( which users? ) can annotate antibodies
+antibodies have own terms
+antibodies have access control
+
+
+upload/import/parsing/validation:
+
+upload rpla-tab
+import rpla-tab
+edit?
+export?
+
+how are factor vALUES ASSOCIated explicitly?
+
+catalog id,lot id -> gene
+
+gene -ab name
+
+how are genes references in ca2?
+
+
+if experiment is of a different type, view changes...
+
+an experiment cna have both mdata nd rdata
+how can they be linked? by tech/bio replciate?
+
+
+=======================================
+
+
+
+
+
+caarray.ear
+caarray.war
+caarray-client.jar
+caarray-common.jar
+caarraydb
+caarray-docs
+caarray-ejb.jar
+caarray-generated
+caarrayRemoteClient
+CaArraySvc
+cacoresdk
+dist
+lib
+load-test
+test
+test-data
+
+
+
+from teleconf of 12/04/07: for next time
+wireframes with use cases
+real data set(s)
+
+GA probably end of januarya
+
+Use "Roundtrip" on annotated model submitted by Eric
+
+Look at new LexBig service..
+
+==============
+
+defend idea that using comment for this extensions is not a good idea.
+
+
+======
+
+get array data out of array express under joe gray's name to put into
+caarray2
+
+
+============
+
+maybe still use javacc but make sure to 
+collapse any code in the regexp chains into the 
+constructors of the header object...do i need the 
+hreader object??????
+===========
+
+grammar succinctly shows rules and principality of nodes
+
+make .jj one tneth as long?
+
+
+
+========================
+absorb comments in sha1sumutility--rename function better.
+===========
+
+instead of debugPrintProtocols ( where? ) 
+use somethign like toString ...referencing modeling
+
+
+==========
+
+use weak references in parser?
+
+-----------
+think about some interface hiding omeis..do tests liek they did...
+
+---------
+
+have secure version up for next time...
+
+----------------
+
+
+
+==========================
+
+
+
+=========================
+develop modules to connect bs w/ caarray2 and vice versa
+	strart with limited funtionality, integrate more later...
+	would be usefule experience in how to connect data
+	
+	options: connect via cagrid, intgeration of data modeling
+	
+abminer in picture?
+grdify it?
+--------------------------
+
+work out use cases and web pages
+changes addtitive, non additive?
+can all changes in fact be additive?
+-------------------
+
+some icbp data from heidi at:
+
+[gvf@caarray2 HTA_ICBP_Pilot]$ pwd
+/data/hta/HTA_ICBP_Pilot
+
+
+
+============================
+
+look At use cases in brent style
+and scope document
+
+in caarray2 you can download data for a sample or set of smaples
+
+====
+where is selection of parser decided by file suffix?
+====
+COuld display my own validation messages upon validation of rpla-tab like
+it is done ( hyperlinked for warnings) in caarray2
+===============
+
+be able to register local caarray2/carpla node on grid
+so will see on browse front page
+
+
+==============
+do secure install/apache/jboss with real ceritifictae
+
+
+
+------------
+shoudl be considering on best way to get data in to the system?
+
+===================
+1 end startint text file
+
+vs.
+
+other end all through interface
+===================
+
+inbetween? interface helps generate text file?
+
+For next teleconf:
+
+1) put up use cases and requirements like brent's
+2) timeline updated
+
+3) add reporter-factor-value asasocaition, clean up modeling
+
+Dec 4th
+
+--------------------------
+?
+Will every spot correspond to a Sample ?
+Will every control spot be a Sample?
+DMSO can be considered a biomaterial
+
+IS there a way to differentiate samples based on treatment ? how?
+
+need rplarray -surface type as term : assocaition to term
+
+where do hardware specs go
+
+will need to uplaod protocol files such as "Prep of Cell lysate for rpla"
+
+what ios streptavidin-biotin complex  used for?
+
+---
+
+extremely challenging to figure out a way to get from the mass of excel
+files to something verifiable and clear
+
+
+----------------
+
+since this is basically "new" :
+considering the following for user-ease:
+
+1) all from rpla-tab . use some interface widgets to make edits/corrections, will need others to make 
+otehr sorts of edits
+
+2) some from rpla-tab same as above for edits, will need nes widgtes to enter information
+
+================
+
+
+in mage, controltype brlongd to super class DesignElement
+
+caarray2, moved this to PhysicalProbe
+?in carpla:
+moved to rplarrayreporter
+
+=========
+set caarray entitiy super class correctly everywhere
+
+
+
+
+
+
+-------------
+had iterated claims that 
+
+array != rplarray
+rplarray has no array design file per se, the array is the arraydesign
+it is not a microarray
+does not have 0..1 with organism
+Abstract probe annotation doesn't apply to rplarray ( but actuaklly may be useful( doubtful) for the Ab)
+
+Entity vs object...entity is to be externally referenceable
+
+---------
+
+time to login, ,maybe looking for ldap
+
+
+should new type of smaple be linked to factor value? or just reporter?
+
+
+---
+cacore dsk only really used in evs utility and mged ontology lookerupper
+
+------
+
+get info from heidi, same sample has rplarray and microarray data
+
+------
+
+add surface type term thingie to rplarray
+
+
+----
+
+rplatab providers and performers delimited by semicolons
+
+
+--------
+
+comment[name] allowable in rpla-idf
+
+------------
+
+handle -> 
+
+------
+
+can have multiple MaterialTypes?
+
+---
+is array data file required?
+
+
+
+
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+We are deploying caarray2 on
+caarray2.lbl.gov ( more for production deployment of caarray2 straight )
+and 
+cox.lbl.gov ( more for development iterations using carpla)
+
+caarray2 is up now, will be updating from SVN on a regular basis.
+
+caarrayuser
+firebird05
+
+---------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+besides managing imaging data, my group is also involved in microarray data management and analysis
+and in the background, I'm going to push for caarray2 adoption locally. 
+
+just one group the hta group has about 
+3000 cel files.
+which come from about 30 experiments
+
+we also have microarray data for the icbp project...
+
+
+
+
+while getting to knwo the system, introduce potential users around here, 
+see if i can migrate some of their data so they can adopt caarray2 as data annotation/distribution.
+
+Lots of data from heidi? how much? is a ht system, also get feedback from here
+3000 cel files.
+about 30 exports
+
+HTHGU133A
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+
+Show updated UML model
+MODEL
+
+
+
+
+
+appears to be no explicit links between factor value and Measurement, or Protocol or what? Weren't these there before in mage?
+I think mage had pointed to measurement.
+
+Does cabio have array reporter?
+
+are protocols shared? can you edit a protocol?
+
+
+
+use cases changed?
+
+get rplarrays for a given experiment
+retrieve rplarrays that use a given Ab ( by how? hugo name..provider..manufacturrer....by validation result, etc...)?
+
+retrieve biosource-biosample chains for a given rplarray
+
+retrieve and display tiff-cionverted-to-jpeg for a given rplarray
+
+retrieve all data files for a particular rplarray? and what if data files span multiple arrays?
+
+
+
+
+
+
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+
+
+Ab validation
+
+data is somewhat slow coming, antibody validation still critical.
+
+Ab validation (and possible use of abminer) still very critical.
+
+http://discover.nci.nih.gov/abminer/browseAllAntibody.do
+
+http://discover.nci.nih.gov/abminer/Nci60Results.jsp?ID=19
+
+
+
+
+will be including images/quantitation/ results of rppa : wasterns..grpahs comparing correlation of the two methods
+
+want western to show single-predominant band?  low background/high signal
+
+can have different results with differnet cell types
+
+different results in cell lines v.s tissues
+
+SOP very important!
+buffer conditions
+
+provider
+catalog no
+lot no
+validated by
+
+at least 8 samples for validation along with correlation coefficient
+include a treated smaple where level of specific protein is supposed to be altered
+ ideally at least 4 cell lines
+ 
+ what western quantitation software would be used?
+
+with quantitated western
+
+so would this effectively be an ab validation database
+
+
+
+abminer
+635 available abs with validation by westerns
+"immunogen"
+vendor
+antigen
+corresponding gene
+
+western bands: single band, multiple band, wrong molecular weight, no band
+
+show western images for ab
+
+
+shoudl abmier terms go in controlled vocab? along with possible values?
+
+
+ab validation: important for reproduciblity
+
+
+
+
+
+
+Reproducibility has been hard:
+Variability with lot id
+
+Variability  with protocol VERY IMPORTANT
+Confirm protocol application everyhere needed....
+
+-----is a protocol linked to a source and a sample? do i know if it is explicitly how sample was created?
+
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+
+Have basic architectural assumptions changed?
+Have use cases changed?
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+Talk about test data from heidi
+Having looked through some of the data, there appears to be a ****very citical need for data management, distribution
+in this icbp program***. There is no sort of formalized dataset format that easily shows people what's going on.
+There are no apparent controlled terminologies for samples, controls, for example...
+there is a need to sort out this data. I'd like to use this data as test data for carpla deployment using caarray2.
+Need to adopt the data in this form and get into system
+
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+So since this has to do with the actual format and organization of the data
+First address eric's question about using comments
+really should be first class citizens..
+
+Have gone through wire frames and interfaces : What works and what won't work:
+
+
+
+
+In Propose Experiment 
+-----------------------------------------------
+need to add correct assay type rather than 
+gene expression
+SNP
+DNA
+aCGH
+---------
+
+There can be multiple organisms tissue types/sites, cell types
+
+
+
+
+
+
+
+
+
+
+
+How does current system handle mage-tab?
+
+Is particular validation method chosen by file suffix?
+
+
+Data will be available for editing in the interface, so the existing rpla-tab file will not be correct. right?
+So should export of an experiment in the form of an rpla-tab dataset be possible?
+
+Does the current system export a mage-tab file set? Or would a module need to be written to do this?
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+
+RPLA-TAB validation and notes
+
+I made some changes in the format in that protocol types wouldn't be hardwired and required.
+Putting those changes in currently...
+
+
+
+
+
+
+list validation rules which make it different than mage-tab
+
+
+
+
+Validation shoud involve resolving references to data files ( images, array data, derived array data)
+This could be done on the client or server. Previously, I was doing this on the client, where the applet 
+could look in the local directory for all referenced files when pointed to an rpla-idf file.
+
+Or it could be done on the server:
+*Is it the case that a validated mage-tab file set is validated when all referenced files have been
+ uploaded and found?*..
+If so, then names for files within a workspace would need to be unique, correct? 
+The simplest implementation would imply that.
+
+  apparently comment can appear anywhere in an rpla-idf file or anywhere in sdrf and sradf....
+
+
+
+
+
+*** important---
+Changes from last time: no more fixed name protocols since this would be pulling it away from the genericity of magetab
+
+
+nned to deal with <-
+
+
+current vlaidation passes through grammar for header patterns.
+this serves to effectibely encapslate many rules that would be harder to express...
+such as:
+
+
+or enforcing in code: such as:
+also eserves to communicate more succinctly possible patterns..
+
+regexpression could also be used to generate all possible paths...
+useful for  showing users...
+
+
+
+could it also be used to enforce site-specific rules? such as?
+wouldn't this be tricky?
+
+related: how might new column headers be added and incorporated into parser?
+
+
+
+
+
+-----------------------------
+
+
+validation:stuff
+
+verify sradf exists and is not of zero size
+
+verify unique spot locations in locaiton section
+
+verify not extra tabs in header or rows ( check number of columns everywhere)
+
+a source or sample cannot have differing characteristics: exmaple:
+
+same smaple name not duplicated in samples section
+
+
+same array cannot have different array creation protocols
+same image file cannot have different acquistion protocols
+
+sample name in locaitons section must reference samples section
+
+array name in data section must rerfeffence array name in location section
+
+
+validate all against ontlogy terms?
+
+what if term is not known in system? need to put there first?
+
+
+// //
+	// =============================================================================
+	// // validateSradfRows (SradfHeaders,):
+	// // know all distinct sources, distinct samples,distinct arrays,
+	// // number of rows, all distinct file image files, all distinct array adta
+	// // names
+	// // a ll references files exisrt
+	// //
+	// =============================================================================
+	// public void validateSradfRows(RplaIdf rplaIdf, SradfHeaders sradfHeaders)
+	// {
+	//
+	// // for each section
+	// // //for each row
+	// // // // read in row
+	// // // // // apply:
+	// // // // // checkNumberOfColumns
+	// // // // // check types
+	// // //
+	// //
+	//
+	// // samplessectioninfo.collectDistinctSourceNames();
+	// // samplessectioninfo.collectDistinctSampleNames();
+	// // samplessectioninfo.verifyEachSourceHasSameCharacteristics();
+	// // samplessectioninfo.verifyEachSampleHasSameCharacteristics();
+	//
+	// // arraylocationssectioninfo.collectDistinctSampleNames();
+	//
+	// // all protocols in samples and data section must be present in rplaidf
+	// // all antibodies in data section must be present in rplaidf
+	//
+	// // all factor values must reference an experimental factor declared in
+	// // the rplaidf
+	//
+	// // should all experimental factors me represented??
+	//
+
+	//
+	// // no array locations for the same array can be duplicated
+	//
+	// // all samples in array locations must be declared in samples section
+	// // samples cannot be duplicated in samples section
+	//
+	// // all files referenced in data section must exist and be of >0 size
+	//
+	// // all arrays in data section must be present in locations section
+	// // verifyArrayReferences(arraylocationssectioninfo,
+	//
+	// // non zero number of rows in samples
+	// // non zero number of rows in locations
+	// // non zero number of rows in data?
+	//
+	// // same array cannot have different array creation protocols/aparma
+	// // same imagefile cannot have different image acquisition
+	// // protocols/parma.s
+	//
+	// }
+
+a b c d
+a b c e
+null b c f
+
+doesn;t work
+
+verify images are not corrupt: convert tiffs to jpegs for viewing in browser...
+
+rpla-tab uses names of files..must they be unique within scope of the application? 
+in other words, say user uploads the files, will they be found by name in the workspace?
+can you upload data files with same name?
+
+how does caarray2 deal with say samples that have the same names as other experiments?
+
+how would a new rpla-tab or any mage-tab dataset reference existing sources or samples? 
+
+how will rplarrays be differentiated from other arrays in caarray2? apples and oranges...
+( same array arraygroup thing as well?) 
+
+
+
+
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+
+how are controls handled? in different systems, i've seen controls relegated to second class citizens where they are in fact
+critically important and i can't see a reason to not make them more explicit.
+
+
+negative antibody control: which does not recognize any human antigen ( in pnas paper)
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+
+Issue with identifiers:
+
+issue with identifiers/lsid references...
+
+how able to establish equivalence between samples, sources, etc...? 
+when is this important?
+
+for what columsn are lsid identifiers important?
+
+does dataset use lsid inderntiders? yes, check local db, exists? no create, yes, display
+
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+############################################################################
+############################################################################
+############################################################################
+############################################################################
+############################################################################
+############################################################################
+############################################################################
+############################################################################
+
+
+
+
+
+Misc:
+
+* We are comparing protein levels across samples  rather than comparing sames across protein types
+
+
+
+* as technology progresses there will be higher density robotically spotted rplarrays
+
+* Tie in biosig image modeling?
+  
+
+---------------------
+
+
+could develop graphical tools or interactive tools to help generate sradf files
+would need template-type files?
+
+
+
+------------------------
+
+
+how ouwld ed column headers be added and incorporated into existingparser?
+
+
+could use OBO--could use OBO terms in some particular namespace ( obo::) as column headers?
+look at OBO for celllines....
+
+
+

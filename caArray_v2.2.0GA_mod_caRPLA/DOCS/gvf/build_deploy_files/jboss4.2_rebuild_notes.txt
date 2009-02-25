@@ -1,0 +1,9 @@
+ 
+had to mkdir jboss-4.2.0.GA/server/default/tmp/deploy
+
+
+
+cp /caArray/jboss-4.0.5.GA/server/default/lib/mysql-connector-java-5.0.5-bin.jar /caArray/jboss-4.2.0.GA/server/default/lib/
+
+
+cp /home/gvf/workspace/lib/commons* /caArray/jboss-4.2.0.GA/server/default/lib/

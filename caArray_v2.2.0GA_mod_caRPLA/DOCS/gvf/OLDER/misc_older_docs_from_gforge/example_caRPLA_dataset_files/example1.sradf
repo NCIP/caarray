@@ -1,0 +1,19 @@
+Sample Name	Characteristics[CellLine]	Term Source REF	Factor Value[CellLine]
+sample1	T47D	MGED	T47D
+sample2	MCF-7	MGED	MCF-7
+END_SAMPLES_SECTION
+Array Name	BlockColumn	BlockRow	Column	Row	Sample Name	Dilution Value	Dilution Unit	Term Source REF	Reporter Group
+array1	1	1	1	1	sample1	1:2	x_times	MGED	T47D	
+array1	1	1	2	1	sample1	1:4	x_times	MGED	T47D
+array1	1	1	3	1	sample1	1:8	x_times	MGED	T47D
+array1	1	1	4	1	sample1	1:16	x_times	MGED	T47D
+array1	1	1	5	1	sample1	1:32	x_times	MGED	T47D
+array1	1	1	1	2	sample2	1:2	x_times	MGED	MCF-7
+array1	1	1	2	2	sample2	1:4	x_times	MGED	MCF-7
+array1	1	1	3	2	sample2	1:8	x_times	MGED	MCF-7
+array1	1	1	4	2	sample2	1:16	x_times	MGED	MCF-7
+array1	1	1	5	2	sample2	1:32	x_times	MGED	MCF-7
+END_ARRAYLOCATIONS_SECTION
+ArrayCreationProtocol REF	Parameter Value[DateOfSpotting]	Parameter Value[Performer]	Array Name	ArrayHybridizationProtocol REF	Parameter Value[TimeAfterSpotting]	Unit[TimeUnit]	Term Source REF	Antibody Name	ImageAcquisitionProtocol REF	Parameter Value[imgAcq_bgCorrectionParam]	Image File	MeasuredArrayDataProtocol REF	Parameter Value[sc_param1]	Array Data File	DerivedArrayDataProtocol REF	Parameter Value[sc_param3]	Derived Array Data File	
+RPLA_CreationProtocol_1	Date(2007-04-10)	Doris Siwak	array1	RPLA_HybProtocol_1	2	days	MGED	atm1	RPLA_ImgProtocol_1	bgCorr1	atm1.tif	RPLA_MeasuredBioAssayProtocol	sc1.1	atm1.microvigene.txt	RPLA_DerivedBioAssayProtocol	sc3.1	scresults_atm.txt
+END_ARRAYDATA_SECTION

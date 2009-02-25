@@ -1,0 +1,34 @@
+Validation and Parser Module Design
+
+
+There will be two distinct modules for validating and parsing a caRPLA data set into objects suitable for the caArray-caRPLA instance database.
+
+
+Validation, here, means the following:
+
+    1) That the .rpla-idf is syntactically valid
+    2) That terms in the .sradf match the .rpla-idf file appropriately
+    3) That the .sradf is syntactically valid
+    4) That all referenced files can be found
+   
+   
+
+The first module will validate the .rpla-idf file and the .sradf files.
+The result of a successful validation for the data set will be an XML document that will contain the following:
+
+    1) All data from the  .rpla-idf file  wrapped in XML elements.
+    2) The column headers from the .sradf file along with their column indexes. The heirarchy of these XML data elements follows implicitly from the MAGE-TAB specification. See the example below.
+    3) List of all referenced files
+    4) List of all term sources
+
+An XML schema document will be provided for the generated XML file.  
+
+The flexible structure of a MAGE-TAB-derived format is handled using a grammar specification and a parser generator.
+The current implementation of this first module uses JavaCC, a popular open-source parser generator.
+More information about JavaCC is available at https://javacc.dev.java.net/
+
+
+The second module will use the resultant XML file and data set files to create objects appropriate for persistence in the caArray-caRPLA instance. Object generation in this module can leverage XSLT stylesheets (for dynamic code generation) and XML parsing.
+
+The validation and implicit data heirarchy following the MAGE-TAB-derived formal grammar is abstracted away into the first module. The subsequent object generation tasks are separated from this validation. A side benefit is that different secondary modules could be used for persistence in other applications or using other languages besides Java.
+

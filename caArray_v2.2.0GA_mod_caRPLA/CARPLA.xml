@@ -1,0 +1,216 @@
+<project name="caRPLA-tasks" default="devel1" basedir=".">
+	<description>
+
+	</description>
+
+	<!-- have manually copied local.properties into modded_dir/build -->
+
+	<!-- go to 	mod_dir/build and run ant -->
+	<property name="orig.dir" value="${basedir}/../caArray_v2.2.0GA" />
+	<property name="changes.dir" value="${basedir}/CAARRAY_SOFTWARE_CHANGES" />
+	<property name="modded.dir" value="${basedir}/../caRPLA" />
+	<property name="modded.test.dir" value="${basedir}/../testcopying" />
+
+
+	<target name="devel1" depends=" restore:build,
+									write_changes:build,
+									restore:caarray-common.jar,
+									write_changes:carray-common.jar,
+									restore:caarray-ejb.jar,
+									write_changes:carray-ejb.jar,
+									restore:caarray.ear,
+									write_changes:carray.ear,
+									restore:caarray.war,
+									write_changes:carray.war,
+									rmdir:rplatab.jar,
+		                            write:rplatab.jar,
+									write:lib" />
+
+	<target name="restore:all" depends="restore:build,
+										restore:caarray-common.jar,
+										restore:caarray-ejb.jar,
+										restore:caarray.ear,
+										restore:caarray.war">
+	</target>
+
+
+
+
+	<!-- build folder restore and mod targets -->
+
+	<target name="restore:build">
+		<delete dir="${modded.dir}/build" />
+		<mkdir dir="${modded.dir}/build" />
+		<copy todir="${modded.dir}/build">
+			<fileset dir="${orig.dir}/build" />
+		</copy>
+	</target>
+
+	<target name="write_changes:build">
+		<copy todir="${modded.dir}/build" verbose="true" overwrite="true">
+			<fileset dir="${changes.dir}/build">
+				<exclude name="**/ORIG_AND_DOCS" />
+				<exclude name="**/ORIG_AND_DOCS/*" />
+			</fileset>
+		</copy>
+	</target>
+
+
+	<!-- caarray-common.jar restore and mod targets -->
+
+	<target name="restore:caarray-common.jar">
+		<delete dir="${modded.dir}/caarray-common.jar" />
+		<mkdir dir="${modded.dir}/caarray-common.jar" />
+		<copy todir="${modded.dir}/caarray-common.jar">
+			<fileset dir="${orig.dir}/caarray-common.jar" />
+		</copy>
+	</target>
+
+	<target name="write_changes:carray-common.jar">
+		<copy todir="${modded.dir}/caarray-common.jar" verbose="true" overwrite="true">
+			<fileset dir="${changes.dir}/caarray-common.jar">
+				<exclude name="**/ORIG_AND_DOCS" />
+				<exclude name="**/ORIG_AND_DOCS/*" />
+			</fileset>
+		</copy>
+	</target>
+
+
+	<target name="rmdir:rplatab.jar">
+		<delete dir="${modded.dir}/rplatab.jar" />
+	</target>
+
+	<target name="write:rplatab.jar">
+		<copy todir="${modded.dir}/rplatab.jar" verbose="true" overwrite="true">
+			<fileset dir="${changes.dir}/rplatab.jar">
+				<exclude name="**/ORIG_AND_DOCS" />
+				<exclude name="**/ORIG_AND_DOCS/*" />
+			</fileset>
+		</copy>
+	</target>
+
+
+
+
+
+
+
+
+
+	<!-- caarray-ejb.jar restore and mod targets -->
+
+	<target name="restore:caarray-ejb.jar">
+		<delete dir="${modded.dir}/caarray-ejb.jar" />
+		<mkdir dir="${modded.dir}/caarray-ejb.jar" />
+		<copy todir="${modded.dir}/caarray-ejb.jar">
+			<fileset dir="${orig.dir}/caarray-ejb.jar" />
+		</copy>
+	</target>
+
+	<target name="write_changes:carray-ejb.jar">
+		<copy todir="${modded.dir}/caarray-ejb.jar" verbose="true" overwrite="true">
+			<fileset dir="${changes.dir}/caarray-ejb.jar">
+				<exclude name="**/ORIG_AND_DOCS" />
+				<exclude name="**/ORIG_AND_DOCS/*" />
+			</fileset>
+		</copy>
+	</target>
+
+
+	<!-- caarray.ear restore and mod targets -->
+
+	<target name="restore:caarray.ear">
+		<delete dir="${modded.dir}/caarray.ear" />
+		<mkdir dir="${modded.dir}/caarray.ear" />
+		<copy todir="${modded.dir}/caarray.ear">
+			<fileset dir="${orig.dir}/caarray.ear">
+
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="write_changes:carray.ear">
+		<copy todir="${modded.dir}/caarray.ear" verbose="true" overwrite="true">
+			<fileset dir="${changes.dir}/caarray.ear">
+				<exclude name="**/ORIG_AND_DOCS" />
+				<exclude name="**/ORIG_AND_DOCS/*" />
+			</fileset>
+		</copy>
+	</target>
+
+
+
+	<!-- caarray.war restore and mod targets -->
+
+	<target name="restore:caarray.war">
+		<delete dir="${modded.dir}/caarray.war" />
+		<mkdir dir="${modded.dir}/caarray.war" />
+		<copy todir="${modded.dir}/caarray.war">
+			<fileset dir="${orig.dir}/caarray.war" />
+
+		</copy>
+	</target>
+
+	<target name="write_changes:carray.war">
+		<copy todir="${modded.dir}/caarray.war" verbose="true" overwrite="true">
+			<fileset dir="${changes.dir}/caarray.war">
+				<exclude name="**/ORIG_AND_DOCS" />
+				<exclude name="**/ORIG_AND_DOCS/*" />
+			</fileset>
+		</copy>
+	</target>
+	
+	
+	<target name="write:lib">
+			<copy todir="${modded.dir}/lib" verbose="true" overwrite="true">
+				<fileset dir="${changes.dir}/lib">
+					<exclude name="**/ORIG_AND_DOCS" />
+					<exclude name="**/ORIG_AND_DOCS/*" />
+				</fileset>
+			</copy>
+		</target>
+	
+	
+	
+	
+
+
+	<!-- top level dir restore and mod targets 
+
+		<target name="restore_top_level_dir_files">
+			
+			  <delete file="${modded.dir}/"/>
+			
+			
+		</target>
+
+		<target name="write_changes_top_level_dir">
+			<copy todir="${modded.dir}/caarray.war" verbose="true" overwrite="true">
+				<fileset dir="${changes.dir}/caarray.war">
+					<exclude name="**/ORIG_AND_DOCS" />
+					<exclude name="**/ORIG_AND_DOCS/*" />
+				</fileset>
+			</copy>
+		</target>
+
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</project>
+
