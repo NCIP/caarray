@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.ant.freeform</type>
+    <configuration>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <name>caarray.war</name>
+        </general-data>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
+            <!-- Do not use Project Properties customizer when editing this file manually. -->
+            <name>caarray.war</name>
+            <properties>
+                <property name="ant.script">nbbuild.xml</property>
+            </properties>
+            <folders>
+                <source-folder>
+                    <label>caarray.war</label>
+                    <location>.</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>java</label>
+                    <type>doc_root</type>
+                    <location>src/main/java</location>
+                </source-folder>
+                <source-folder>
+                    <label>WEB-INF</label>
+                    <type>web_inf</type>
+                    <location>src/main/webapp/WEB-INF</location>
+                </source-folder>
+                <source-folder>
+                    <label>src/main/java</label>
+                    <type>java</type>
+                    <location>src/main/java</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>src/test</label>
+                    <type>java</type>
+                    <location>src/test</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+            </folders>
+            <ide-actions>
+                <action name="build">
+                    <script>${ant.script}</script>
+                    <target>nb:build</target>
+                </action>
+                
+                <action name="clean">
+                    <script>${ant.script}</script>
+                    <target>nb:clean</target>
+                </action>
+                <action name="test">
+                    <script>${ant.script}</script>
+                    <target>nb:test</target>
+                </action>
+                <action name="rebuild">
+                    <script>${ant.script}</script>
+                    <target>nb:clean</target>
+                    <target>build</target>
+                </action>
+            </ide-actions>
+            <export>
+                <type>folder</type>
+                <location>target/classes</location>
+                <script>${ant.script}</script>
+                <build-target>nb:build</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>target/test-classes</location>
+                <script>${ant.script}</script>
+                <build-target>nb:build</build-target>
+            </export>
+            <view>
+                <items>
+                    <source-folder style="tree">
+                        <label>Web Pages</label>
+                        <location>src/main/java</location>
+                    </source-folder>
+                    <source-folder style="tree">
+                        <label>WEB-INF Content</label>
+                        <location>src/main/webapp/WEB-INF</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>src/main/java</label>
+                        <location>src/main/java</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>src/test</label>
+                        <location>src/test</location>
+                    </source-folder>
+                    <source-file>
+                        <location>${ant.script}</location>
+                    </source-file>
+                </items>
+                <context-menu>
+                    <ide-action name="build"/>
+                    <ide-action name="rebuild"/>
+                    <ide-action name="clean"/>
+                    <ide-action name="test"/>
+                    
+                    <action>
+                        <script>${ant.script}</script>
+                        <label>Compile</label>
+                        <target>nb:compile</target>
+                    </action>
+                    <action>
+                        <script>${ant.script}</script>
+                        <label>Compile Tests</label>
+                        <target>nb:compile-test</target>
+                    </action>
+                </context-menu>
+            </view>
+            <subprojects/>
+        </general-data>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
+            <compilation-unit>
+                <package-root>src/main/java</package-root>
+                <classpath mode="compile">../caarray-common.jar/target/classes:../caarray-ejb.jar/target/jar:../lib/caarray-project/AffxFusion-noversion.jar:../lib/caarray-project/axis-1.4.2_10.jar:../lib/caarray-project/caGrid-core-1.2.jar:../lib/caarray-project/caGrid-cql-1.0-1.2.jar:../lib/caarray-project/caGrid-data-common-1.2.jar:../lib/caarray-project/caGrid-data-stubs-1.2.jar:../lib/caarray-project/caGrid-sdkQuery32-core-1.2.jar:../lib/caarray-project/castor-1.0.4.jar:../lib/caarray-project/cglib-2.1_3.jar:../lib/caarray-project/clm-4.1.jar:../lib/caarray-project/commons-beanutils-1.7.0.jar:../lib/caarray-project/commons-collections-3.2.jar:../lib/caarray-project/commons-configuration-1.5.jar:../lib/caarray-project/commons-io-1.4.jar:../lib/caarray-project/commons-lang-2.4.jar:../lib/caarray-project/commons-logging-1.0.4.jar:../lib/caarray-project/csmapi-4.1.jar:../lib/caarray-project/dom4j-1.6.1.jar:../lib/caarray-project/ejb3-persistence-1.0.1.jar:../lib/caarray-project/hibernate-3.2.0.ga.jar:../lib/caarray-project/hibernate-annotations-3.2.0.GA.jar:../lib/caarray-project/javacsv-1.0.jar:../lib/caarray-project/javaee-5.0.jar:../lib/caarray-project/json-lib-2.2.2-jdk15.jar:../lib/caarray-project/log4j-1.2.13.jar:../lib/caarray-project/mysql-connector-java-5.0.5.jar:../lib/caarray-project/nci-commons-core-1.0.12.jar:../lib/caarray-project/netcdf-2.2.20.07.jar:../lib/caarray-project/spring-1.2.8.jar:../lib/caarray-project/xerces-J-1.4.0.jar:../lib/caarray-project/xercesImpl-2.7.1.jar:../lib/caarray-project/acegi-security-1.0.5.jar:../lib/caarray-project/acegi-security-jboss-1.0.5.jar:../lib/caarray-project/ajaxtags-1.3-beta-rc7.jar:../lib/caarray-project/commons-discovery-0.2.jar:../lib/caarray-project/commons-el-1.0.jar:../lib/caarray-project/commons-fileupload-1.2.1.jar:../lib/caarray-project/displaytag-1.1.1.jar:../lib/caarray-project/ezmorph-1.0.4.jar:../lib/caarray-project/freemarker-2.3.8.jar:../lib/caarray-project/jericho-html-2.4.jar:../lib/caarray-project/jstl-1.1.2.jar:../lib/caarray-project/junit-4.3.1.jar:../lib/caarray-project/nci-commons-struts2-1.0.12.jar:../lib/caarray-project/ognl-2.6.11.jar:../lib/caarray-project/oscache-2.4.1.jar:../lib/caarray-project/sitemesh-2.3.jar:../lib/caarray-project/spring-mock-1.2.7.jar:../lib/caarray-project/standard-1.1.2.jar:../lib/caarray-project/struts2-core-2.0.9.jar:../lib/caarray-project/urlrewrite-2.6.0.jar:../lib/caarray-project/xwork-2.0.4.jar</classpath>
+                <built-to>target/classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>src/test</package-root>
+                <unit-tests/>
+                <classpath mode="compile">../../test-data/target/test-classes:target/classes:../caarray-common.jar/target/classes:../caarray-ejb.jar/target/classes:../caarray-ejb.jar/target/test-classes:../caarray-common.jar/target/test-classes:../caarray-common.jar/src/test/resources:../lib/caarray-project/AffxFusion-noversion.jar:../lib/caarray-project/axis-1.4.2_10.jar:../lib/caarray-project/caGrid-core-1.2.jar:../lib/caarray-project/caGrid-cql-1.0-1.2.jar:../lib/caarray-project/caGrid-data-common-1.2.jar:../lib/caarray-project/caGrid-data-stubs-1.2.jar:../lib/caarray-project/caGrid-sdkQuery32-core-1.2.jar:../lib/caarray-project/castor-1.0.4.jar:../lib/caarray-project/cglib-2.1_3.jar:../lib/caarray-project/clm-4.1.jar:../lib/caarray-project/commons-beanutils-1.7.0.jar:../lib/caarray-project/commons-collections-3.2.jar:../lib/caarray-project/commons-configuration-1.5.jar:../lib/caarray-project/commons-io-1.4.jar:../lib/caarray-project/commons-lang-2.4.jar:../lib/caarray-project/commons-logging-1.0.4.jar:../lib/caarray-project/csmapi-4.1.jar:../lib/caarray-project/dom4j-1.6.1.jar:../lib/caarray-project/ejb3-persistence-1.0.1.jar:../lib/caarray-project/hibernate-3.2.0.ga.jar:../lib/caarray-project/hibernate-annotations-3.2.0.GA.jar:../lib/caarray-project/javacsv-1.0.jar:../lib/caarray-project/javaee-5.0.jar:../lib/caarray-project/json-lib-2.2.2-jdk15.jar:../lib/caarray-project/log4j-1.2.13.jar:../lib/caarray-project/mysql-connector-java-5.0.5.jar:../lib/caarray-project/nci-commons-core-1.0.12.jar:../lib/caarray-project/netcdf-2.2.20.07.jar:../lib/caarray-project/spring-1.2.8.jar:../lib/caarray-project/xerces-J-1.4.0.jar:../lib/caarray-project/xercesImpl-2.7.1.jar:../lib/caarray-project/acegi-security-1.0.5.jar:../lib/caarray-project/acegi-security-jboss-1.0.5.jar:../lib/caarray-project/ajaxtags-1.3-beta-rc7.jar:../lib/caarray-project/commons-discovery-0.2.jar:../lib/caarray-project/commons-el-1.0.jar:../lib/caarray-project/commons-fileupload-1.2.1.jar:../lib/caarray-project/displaytag-1.1.1.jar:../lib/caarray-project/ezmorph-1.0.4.jar:../lib/caarray-project/freemarker-2.3.8.jar:../lib/caarray-project/jericho-html-2.4.jar:../lib/caarray-project/jstl-1.1.2.jar:../lib/caarray-project/junit-4.3.1.jar:../lib/caarray-project/nci-commons-struts2-1.0.12.jar:../lib/caarray-project/ognl-2.6.11.jar:../lib/caarray-project/oscache-2.4.1.jar:../lib/caarray-project/sitemesh-2.3.jar:../lib/caarray-project/spring-mock-1.2.7.jar:../lib/caarray-project/standard-1.1.2.jar:../lib/caarray-project/struts2-core-2.0.9.jar:../lib/caarray-project/urlrewrite-2.6.0.jar:../lib/caarray-project/xwork-2.0.4.jar:../lib/caarray-project/jboss-annotations-ejb3-1.0.jar:../lib/caarray-project/jboss-aop-client-1.5.2.GA.jar:../lib/caarray-project/jboss-aspect-client-1.5.jar:../lib/caarray-project/jboss-cache-1.4.0.SP1.jar:../lib/caarray-project/jboss-common-1.0.0.GA.jar:../lib/caarray-project/jboss-ejb3-client-noversion.jar:../lib/caarray-project/jboss-jmx-4.0.5.GA.jar:../lib/caarray-project/jboss-system-4.0.5.GA.jar:../lib/caarray-project/jbossall-client-4.0.5.GA.jar:../lib/caarray-project/antlr-2.7.6.jar:../lib/caarray-project/asm-1.5.3.jar:../lib/caarray-project/c3p0-0.9.0.jar:../lib/caarray-project/concurrent-1.3.4.jar:../lib/caarray-project/jgroups-all-2.2.9.2.jar</classpath>
+                <built-to>target/test-classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+        </java-data>
+        <web-data xmlns="http://www.netbeans.org/ns/freeform-project-web/2">
+            <web-module>
+                <doc-root>src/main/java</doc-root>
+                <classpath/>
+                <context-path>/caarray</context-path>
+                <j2ee-spec-level>1.5</j2ee-spec-level>
+                <web-inf>src/main/webapp/WEB-INF</web-inf>
+            </web-module>
+        </web-data>
+    </configuration>
+</project>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="caarray.war" default="nb:build" basedir="..">
+    <import file="../build/build.xml"/>
+    
+	<target name="nb:build" depends="build:caarray.war">
+    </target>
+
+	<target name="nb:clean" depends="clean:caarray.war">
+    </target>
+
+    <target name="nb:compile" depends="compile:caarray.war">
+    </target>
+
+    <target name="nb:compile-test" depends="test:compile:caarray-war.test.classes">
+    </target>
+
+    <target name="nb:test" depends="test:junit-caarray.war">
+    </target>
+</project>
