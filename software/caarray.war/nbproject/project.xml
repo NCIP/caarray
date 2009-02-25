@@ -18,16 +18,6 @@
                     <encoding>UTF-8</encoding>
                 </source-folder>
                 <source-folder>
-                    <label>java</label>
-                    <type>doc_root</type>
-                    <location>src/main/java</location>
-                </source-folder>
-                <source-folder>
-                    <label>WEB-INF</label>
-                    <type>web_inf</type>
-                    <location>src/main/webapp/WEB-INF</location>
-                </source-folder>
-                <source-folder>
                     <label>src/main/java</label>
                     <type>java</type>
                     <location>src/main/java</location>
@@ -39,13 +29,22 @@
                     <location>src/test</location>
                     <encoding>UTF-8</encoding>
                 </source-folder>
+                <source-folder>
+                    <label>webapp</label>
+                    <type>doc_root</type>
+                    <location>src/main/webapp</location>
+                </source-folder>
+                <source-folder>
+                    <label>WEB-INF</label>
+                    <type>web_inf</type>
+                    <location>src/main/webapp/WEB-INF</location>
+                </source-folder>
             </folders>
             <ide-actions>
                 <action name="build">
                     <script>${ant.script}</script>
                     <target>nb:build</target>
                 </action>
-                
                 <action name="clean">
                     <script>${ant.script}</script>
                     <target>nb:clean</target>
@@ -76,7 +75,7 @@
                 <items>
                     <source-folder style="tree">
                         <label>Web Pages</label>
-                        <location>src/main/java</location>
+                        <location>src/main/webapp</location>
                     </source-folder>
                     <source-folder style="tree">
                         <label>WEB-INF Content</label>
@@ -99,7 +98,6 @@
                     <ide-action name="rebuild"/>
                     <ide-action name="clean"/>
                     <ide-action name="test"/>
-                    
                     <action>
                         <script>${ant.script}</script>
                         <label>Compile</label>
@@ -131,7 +129,7 @@
         </java-data>
         <web-data xmlns="http://www.netbeans.org/ns/freeform-project-web/2">
             <web-module>
-                <doc-root>src/main/java</doc-root>
+                <doc-root>src/main/webapp</doc-root>
                 <classpath/>
                 <context-path>/caarray</context-path>
                 <j2ee-spec-level>1.5</j2ee-spec-level>
