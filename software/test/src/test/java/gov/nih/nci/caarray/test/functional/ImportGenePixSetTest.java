@@ -129,10 +129,10 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // - Import files
-        importData(AUTOCREATE_ANNOTATION_SET);
+        importData(MAGE_TAB);
 
         // - click on the Imported data tab and re-click until data can be found
-        reClickForText("displaying all items", "link=Imported Data", 4, 60000);
+        reClickForText(GenepixArrayDataFiles.GPR_3_0_6_mod.getName(), "link=Imported Data", 4, 60000);
 
         // - validate the status
         checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
