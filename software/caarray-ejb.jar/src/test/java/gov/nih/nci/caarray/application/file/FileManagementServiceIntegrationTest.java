@@ -94,7 +94,6 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
-import gov.nih.nci.caarray.application.project.ProjectManagementServiceBean;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.VocabularyDao;
@@ -389,75 +388,6 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         tx.commit();
     }
 
-/*
-    @Test
-    public void testImportDefect19324() throws Exception {
-        Transaction tx = HibernateUtil.beginTransaction();
-        saveSupportingObjects();
-        ArrayDesign design = importArrayDesign(GenepixArrayDataFiles.JOE_DERISI_FIX);
-        tx.commit();
-
-        tx = HibernateUtil.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        DUMMY_PROJECT_1.setStatus(ProposalStatus.DRAFT);
-        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
-
-        Map<File, FileType> files = new HashMap<File, FileType>();
-        files.put(GenepixArrayDataFiles.EXPORTED_IDF, FileType.MAGE_TAB_IDF);
-        files.put(GenepixArrayDataFiles.EXPORTED_SDRF, FileType.MAGE_TAB_SDRF);
-        files.put(GenepixArrayDataFiles.GPR_3_0_6, FileType.GENEPIX_GPR);
-        files.put(GenepixArrayDataFiles.GPR_3_0_6_mod, FileType.GENEPIX_GPR);
-        files.put(GenepixArrayDataFiles.GPR_4_0_1, FileType.GENEPIX_GPR);
-        files.put(GenepixArrayDataFiles.GPR_4_1_1, FileType.GENEPIX_GPR);
-
-        uploadAndImportFiles(DUMMY_PROJECT_1, files);
-
-        tx = HibernateUtil.beginTransaction();
-        Project project = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        assertNotNull(project.getExperiment().getSampleByName("new"));
-        assertNull(project.getExperiment().getSampleByName("123"));
-        tx.commit();
-
-
-        tx = HibernateUtil.beginTransaction();
-        ProjectManagementServiceBean projManServ = new ProjectManagementServiceBean();
-        projManServ.deleteProject(project);
-        tx.commit();
-
-    }
-
-    @SuppressWarnings("PMD")
-    private void uploadAndImportFiles(Project project, Map<File, FileType> files) throws Exception {
-        Transaction tx = HibernateUtil.beginTransaction();
-        CaArrayFileSet fileSet = uploadFiles(project, files);
-        tx.commit();
-        helpImportFiles(tx, project, fileSet);
-    }
-
-    @SuppressWarnings("PMD")
-    private void helpImportFiles(Transaction tx, Project project, CaArrayFileSet fileSet) throws Exception {
-        tx = HibernateUtil.beginTransaction();
-        project = (Project) HibernateUtil.getCurrentSession().load(Project.class, project.getId());
-        importFiles(project, fileSet, null);
-        HibernateUtil.getCurrentSession().flush();
-        tx.commit();
-    }
-
-    private CaArrayFileSet uploadFiles(Project project, Map<File, FileType> files) {
-        for (File file : files.keySet()) {
-            CaArrayFile caArrayFile = this.fileAccessService.add(file);
-            caArrayFile.setProject(project);
-            caArrayFile.setFileType(files.get(file));
-            project.getFiles().add(caArrayFile);
-            HibernateUtil.getCurrentSession().save(caArrayFile);
-        }
-
-        HibernateUtil.getCurrentSession().update(project);
-        return project.getFileSet();
-    }
-*/
-
     @SuppressWarnings("PMD")
     private void importFiles(Project project, Set<File> files, MageTabDocumentSet documentSet) throws Exception {
         Transaction tx = HibernateUtil.beginTransaction();
@@ -498,6 +428,17 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
     private void importFiles(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions) throws Exception {
         ProjectFilesImportJob job = new ProjectFilesImportJob(UsernameHolder.getUser(), targetProject, fileSet,
                 dataImportOptions);
+        job.setDaoFactory(CaArrayDaoFactory.INSTANCE);
+        try {
+            job.execute();
+        } catch (Exception e) {
+            job.getUnexpectedErrorPreparedStatement(HibernateUtil.getCurrentSession().connection()).execute();
+            throw e;
+        }
+    }
+
+    private void validateFiles(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions) throws Exception {
+        ProjectFilesValidationJob job = new ProjectFilesValidationJob(UsernameHolder.getUser(), targetProject, fileSet);
         job.setDaoFactory(CaArrayDaoFactory.INSTANCE);
         try {
             job.execute();

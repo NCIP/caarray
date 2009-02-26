@@ -154,6 +154,8 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
             throw new IllegalStateException("Couldn't read file", e);
         }
         getArrayDao().save(arrayDesign);
+        getArrayDao().save(arrayDesign.getDesignDetails());
+        getArrayDao().flushSession();
     }
 
     private void loadDesignDetails(ArrayDesignDetails details) throws IOException {

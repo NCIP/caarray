@@ -90,14 +90,16 @@ import org.junit.Test;
 
 /**
  * Test case #7959.
- * 
+ *
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
 public class ImportGenePixSetTest extends AbstractSeleniumTest {
 
-    private static final int NUMBER_OF_FILES = 3;
+    private static final int NUMBER_OF_FILES = 6;
     private static final String ORGANISM = "Bos taurus (ncbitax)";
     private static final String PROVIDER = "GenePix";
+    private static final String SAMPLE_IN_SDRF = "new";
+    private static final String SAMPLE_NOT_IN_SDRF = "123";
 
     @Test
     public void testImportAndRetrieval() throws Exception {
@@ -117,8 +119,12 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
 
         // Upload the following GenePix files:
         upload(GenepixArrayDataFiles.GPR_3_0_6);
+        upload(GenepixArrayDataFiles.GPR_3_0_6_mod);
         upload(GenepixArrayDataFiles.GPR_4_0_1);
         upload(GenepixArrayDataFiles.GPR_4_1_1);
+        upload(GenepixArrayDataFiles.EXPORTED_IDF);
+        upload(GenepixArrayDataFiles.EXPORTED_SDRF);
+
         // - Check if they are uploaded
         checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
 
@@ -131,8 +137,20 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         // - validate the status
         checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
 
+        // - check sample names
+        checkSampleNames();
+
         // make experiment public
         submitExperiment();
         makeExperimentPublic(experimentId);
+    }
+
+    private void checkSampleNames() {
+        selenium.click("link=Annotations");
+        waitForTab();
+        selenium.click("link=Samples");
+        waitForText("Sample name");
+        assertTrue(selenium.isTextPresent(SAMPLE_IN_SDRF));
+        assertFalse(selenium.isTextPresent(SAMPLE_NOT_IN_SDRF));
     }
 }
