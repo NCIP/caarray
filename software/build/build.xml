@@ -2633,7 +2633,12 @@
         <remote-ssh remotesshcommand="rm -rf ${jboss.home}/deploy/caarray.ear ${jboss.home}/deploy/${mysql.datasource.file} ${jboss.home}/deploy/${jboss-mail-service.file}" />
     </target>
 
-    <target name="remote-jboss:deploy" unless="nodeploy" depends="init:third-party-paths,remote-jboss:stop,remote-jboss:undeploy-caarray,-remote-jboss:configure-jboss-ds,-remote-jboss:configure-jboss-mailservice,remote-jboss:deploy-caarray,-remote-jboss:copy-jboss-config,remote-jboss:copy-jboss-mailservice,-remote-jboss:copy-log4j-jar,remote-jboss:start"/>
+    <target name="remote-jboss:punt-old-commons-lang" unless="nodeploy" depends="init:third-party-paths">
+        <echo message="Removing older version of commons lang from jboss's embedded tomcat" />
+        <remote-ssh remotesshcommand="rm -rf ${jboss.home}/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-lang*.jar" />
+    </target>
+
+    <target name="remote-jboss:deploy" unless="nodeploy" depends="init:third-party-paths,remote-jboss:stop,remote-jboss:undeploy-caarray,-remote-jboss:configure-jboss-ds,-remote-jboss:configure-jboss-mailservice,remote-jboss:deploy-caarray,-remote-jboss:copy-jboss-config,remote-jboss:copy-jboss-mailservice,-remote-jboss:copy-log4j-jar,remote-jboss:punt-old-commons-lang,remote-jboss:start"/>
 
     <target name="remote-grid:stop" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Stopping jboss server at ${ssh.grid.hostname}..." />
