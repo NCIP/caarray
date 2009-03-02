@@ -2239,7 +2239,7 @@
     </target>
 
     <target name="test:api:run-tests" unless="notest" depends="init:third-party-paths,test:api:compile-tests,build:caarray-client.jar">
-        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/java" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" source.include="**/external/**/*.java" source.exclude="**/Abstract*.java" />
+    	<caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/java" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" source.include="**/Api*.java" source.exclude="**/Abstract*.java" />
     </target>
 
     <target name="test:dataset" unless="notest" depends="init:third-party-paths,test:api:compile-tests,build:caarray-client.jar">
