@@ -92,15 +92,14 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.DataFileContents;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.DesignElement;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.services.external.v1_0.BaseV1_0ExternalService;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -149,7 +148,9 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         gov.nih.nci.caarray.domain.data.DataSet mergedDataSet = createMergedDataSet(dataSets, request);
         LOG.info("Retrieved " + mergedDataSet.getHybridizationDataList().size() + " hybridization data elements, "
                 + mergedDataSet.getQuantitationTypes().size() + " quant types");
-        return toExternalDataSet(mergedDataSet);
+        DataSet externalDataSet = toExternalDataSet(mergedDataSet);
+        HibernateUtil.getCurrentSession().clear();
+        return externalDataSet;
     }
     
     private DataSet toExternalDataSet(gov.nih.nci.caarray.domain.data.DataSet dataSet) {
@@ -318,54 +319,6 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
             types.add((gov.nih.nci.caarray.domain.data.QuantitationType) getByLsid(qtRef.getLsid()));
         }
         return types;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<DataFileContents> getFileContents(FileDownloadRequest fileDownloadRequest, boolean compress)
-            throws FileSizeTooBigException {
-        List<DataFileContents> fileContentsList = new ArrayList<DataFileContents>();
-        long fileSize = 0;
-        for (CaArrayEntityReference fileRef : fileDownloadRequest.getFiles()) {
-            DataFileContents contents = getFileContents(fileRef, compress);
-            if (contents == null) {
-                continue;
-            }
-            fileSize += compress ? contents.getFileMetadata().getCompressedSize() : contents.getFileMetadata()
-                    .getUncompressedSize();
-            if (fileSize > DataService.MAX_DIRECT_RETRIEVAL_FILE_SIZE) {
-                throw new FileSizeTooBigException(fileSize, DataService.MAX_DIRECT_RETRIEVAL_FILE_SIZE);
-            }
-            fileContentsList.add(contents);
-        }
-        return fileContentsList;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public DataFileContents getFileContents(CaArrayEntityReference fileRef, boolean compress)
-            throws FileSizeTooBigException {        
-        CaArrayFile file = (CaArrayFile) getByLsid(fileRef.getLsid());
-        long fileSize = compress ? file.getCompressedSize() : file.getUncompressedSize();
-        if (fileSize > DataService.MAX_DIRECT_RETRIEVAL_FILE_SIZE) {
-            throw new FileSizeTooBigException(fileSize, DataService.MAX_DIRECT_RETRIEVAL_FILE_SIZE);
-        }
-        DataFileContents contents = new DataFileContents();
-        DataFile fileMetadata = new DataFile();
-        fileMetadata.setCompressedSize(file.getCompressedSize());
-        fileMetadata.setUncompressedSize(file.getUncompressedSize());
-        fileMetadata.setName(file.getName());
-        fileMetadata.setLsid(file.getLsid());
-        contents.setFileMetadata(fileMetadata);
-        contents.setCompressed(compress);
-        try {
-            contents.setContents(IOUtils.toByteArray(compress ? file.readCompressedContents() : file.readContents()));
-        } catch (IOException e) {
-            LOG.warn("Could not read file contents", e);
-        }
-        return contents;
     }
     
     /**

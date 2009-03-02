@@ -84,11 +84,11 @@ package gov.nih.nci.caarray.external.v1_0.data;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
- * @author dkokotov
+ * An AbstractDataColumn represents a list of values for a particular measurement within a hybridization data set. 
+ * There are subclasses of this class for different value types (e.g. integers, floats, booleans, etc). 
  * 
+ * @author dkokotov
  */
 public abstract class AbstractDataColumn implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -107,12 +107,5 @@ public abstract class AbstractDataColumn implements Serializable {
      */
     public void setQuantitationType(QuantitationType quantitationType) {
         this.quantitationType = quantitationType;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
     }
 }

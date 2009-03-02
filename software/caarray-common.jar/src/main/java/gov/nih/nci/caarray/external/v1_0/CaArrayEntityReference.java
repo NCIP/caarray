@@ -87,8 +87,9 @@ import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
+ * a CaArrayEntityReference encapsulates a reference to an entity which can be retrieved using that reference.
+ * 
  * @author dkokotov
- *
  */
 public class CaArrayEntityReference implements Serializable {
     private static final long serialVersionUID = 1L;

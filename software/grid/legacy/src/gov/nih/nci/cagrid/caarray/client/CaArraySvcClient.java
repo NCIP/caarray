@@ -20,6 +20,7 @@ import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.cagrid.caarray.util.GridTransferResultHandler;
 import gov.nih.nci.cagrid.cqlquery.Attribute;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
@@ -105,13 +106,18 @@ public class CaArraySvcClient extends CaArraySvcClientBase {
                 Object target = new Object();
                 cqlQuery.setTarget(target);
 
-                target.setName(Experiment.class.getName());
+                target.setName(Sample.class.getName());
+                Attribute a = new Attribute();
+                a.setName("id");
+                a.setValue("3476");
+                a.setPredicate(Predicate.EQUAL_TO);
+                target.setAttribute(a);
 
                 CQLQueryResults results = client.query(cqlQuery);
                 CQLQueryResultsIterator iter = new CQLQueryResultsIterator(results, CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
                 while (iter.hasNext()) {
-                    Experiment e = (Experiment) iter.next();
-                    System.out.println("Experiment: " + e.getPublicIdentifier());
+                    Sample e = (Sample) iter.next();
+                    System.out.println("Sample: " + e.getName());
                 }
                 sw.stop();
                 System.out.println("Time for simple data service retrieval: " + sw.toString());

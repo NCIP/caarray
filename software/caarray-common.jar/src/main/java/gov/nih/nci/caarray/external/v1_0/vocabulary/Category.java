@@ -85,6 +85,8 @@ package gov.nih.nci.caarray.external.v1_0.vocabulary;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 
 /**
+ * A Category represents a class of values in a controlled vocabulary / ontology.
+ * 
  * @author dkokotov
  */
 public class Category extends AbstractCaArrayEntity {

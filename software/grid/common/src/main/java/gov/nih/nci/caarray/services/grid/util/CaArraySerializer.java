@@ -122,7 +122,7 @@ public class CaArraySerializer extends SDKSerializer {
         try {
             Mapping mapping = EncodingUtils.getMapping(context.getMessageContext());
             marshaller.setMapping(mapping);
-            marshaller.setValidation(false);
+            marshaller.setValidation(true);
         } catch (MappingException e) {
             LOG.error("Problem establishing castor mapping!  Using default mapping.", e);
         }

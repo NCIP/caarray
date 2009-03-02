@@ -85,8 +85,9 @@ package gov.nih.nci.caarray.external.v1_0.data;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 
 /**
- * @author dkokotov
+ * DataFile represents the metadata for a file within caarray.
  * 
+ * @author dkokotov
  */
 public class DataFile extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;

@@ -125,7 +125,6 @@ public class CaArrayDeserializer extends SDKDeserializer {
     public void onEndElement(String namespace, String localName, DeserializationContext context) {
         long startTime = System.currentTimeMillis();
         Unmarshaller unmarshall = new Unmarshaller(javaType);
-
         try {
             Mapping mapping = EncodingUtils.getMapping(context.getMessageContext());
             if (mapping != null) {
@@ -133,7 +132,7 @@ public class CaArrayDeserializer extends SDKDeserializer {
             } else {
                 LOG.error("Castor mapping was null!  Using default mapping.");
             }
-            unmarshall.setValidation(false);
+            unmarshall.setValidation(true);
         } catch (MappingException e) {
             LOG.error("Problem establishing castor mapping!  Using default mapping.", e);
         }

@@ -85,12 +85,21 @@ package gov.nih.nci.caarray.services.external.v1_0;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
-import gov.nih.nci.caarray.external.v1_0.query.PageSortParams;
+import gov.nih.nci.caarray.external.v1_0.factor.Factor;
+import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
+import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 import gov.nih.nci.caarray.services.external.AbstractExternalService;
 import gov.nih.nci.caarray.services.external.BeanMapperLookup;
 
@@ -119,22 +128,64 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
         CLASS_MAP.put(QuantitationType.class, gov.nih.nci.caarray.domain.data.QuantitationType.class);  
         CLASS_MAP.put(Experiment.class, gov.nih.nci.caarray.domain.project.Experiment.class);
         CLASS_MAP.put(Person.class, gov.nih.nci.caarray.domain.contact.Person.class);
-        // will need to add the rest and figure out what to do with classes that don't map one to one
+        CLASS_MAP.put(Hybridization.class, gov.nih.nci.caarray.domain.hybridization.Hybridization.class);
+        CLASS_MAP.put(Term.class, gov.nih.nci.caarray.domain.vocabulary.Term.class);
+        CLASS_MAP.put(Category.class, gov.nih.nci.caarray.domain.vocabulary.Category.class);
+        CLASS_MAP.put(TermSource.class, gov.nih.nci.caarray.domain.vocabulary.TermSource.class);
+        CLASS_MAP.put(Factor.class, gov.nih.nci.caarray.domain.project.Factor.class);
+        CLASS_MAP.put(ExperimentalContact.class, gov.nih.nci.caarray.domain.project.ExperimentContact.class);
+        CLASS_MAP.put(ArrayDesign.class, gov.nih.nci.caarray.domain.array.ArrayDesign.class);
+        CLASS_MAP.put(Biomaterial.class, gov.nih.nci.caarray.domain.sample.AbstractBioMaterial.class);
+        // still to deal with: FileType 
     }
     
     /**
      * convert given external paging params instance into internal paging params.
+     * 
      * @param <T> type being iterated over.
      * @param params the external params
+     * @param sortCriterion the sort criterion to use
+     * @param desc whether the sort should be in descending order
      * @return the internal params
      */
-    protected <T> com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> 
-        toInternalParams(PageSortParams params) {
-        SortCriterion<T> sortCriterion = new AdHocSortCriterion<T>(params.getSortField());
+    protected <T> com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> toInternalParams(PagingParams params,
+            SortCriterion<T> sortCriterion, boolean desc) {
         com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> internalParams = 
             new com.fiveamsolutions.nci.commons.data.search.PageSortParams<T>(
-                params.getMaxResults(), params.getFirstResult(), sortCriterion, params.isDesc());
+                params.getMaxResults(), params.getFirstResult(), sortCriterion, desc);
         return internalParams;
+    }
+
+    /**
+     * convert given external paging params instance into internal paging params.
+     * 
+     * @param <T> type being iterated over.
+     * @param params the external params
+     * @param sortField the field to sort on
+     * @param desc whether the sort should be in descending order
+     * @return the internal params
+     */
+    protected <T> com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> toInternalParams(PagingParams params,
+            String sortField, boolean desc) {
+        SortCriterion<T> sortCriterion = new AdHocSortCriterion<T>(sortField);
+        return toInternalParams(params, sortCriterion, desc);
+    }
+
+    /**
+     * convert given external paging params instance into internal paging params. Use this version to explicitly
+     * specify the class of the target entity, when it cannot be deduced by the compiler.
+     * 
+     * @param <T> type being iterated over.
+     * @param params the external params
+     * @param sortField the field to sort on
+     * @param desc whether the sort should be in descending order
+     * @param targetClass the class of the element entity of the list being sorted paged.
+     * @return the internal params
+     */
+    protected <T> com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> toInternalParams(PagingParams params,
+            String sortField, boolean desc, Class<T> targetClass) {
+        SortCriterion<T> sortCriterion = new AdHocSortCriterion<T>(sortField);
+        return toInternalParams(params, sortCriterion, desc);
     }
 
     /**
@@ -159,4 +210,25 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
         }
         return getDataService().getPersistentObject(internalEntityClass, id);
     }
+
+    /**
+     * Retrieve the entity with given lsid expected to have given type.
+     * @param <T> the entity type
+     * @param lsid the lsid of entity to retrieve
+     * @param type the class for the entity type
+     * @return the entity
+     * @throws InvalidReferenceException if no entity exists with given lsid or the entity is not of the expected type.
+     */
+    protected <T> T getByLsid(String lsid, Class<T> type) throws InvalidReferenceException {
+        PersistentObject o = getByLsid(lsid);
+        if (o == null) {
+            throw new NoEntityMatchingReferenceException(new CaArrayEntityReference(lsid));
+        }
+        try {
+            return type.cast(o);                    
+        } catch (ClassCastException e) {
+            throw new IncorrectEntityTypeException(e, new CaArrayEntityReference(lsid));            
+        }
+    }
+
 }

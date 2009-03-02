@@ -80,48 +80,34 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.external.v1_0.query;
+package gov.nih.nci.caarray.external.v1_0.sample;
 
-import java.io.Serializable;
+import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
+ * Represents a biomaterial in an experiment.
+ * 
  * @author dkokotov
- *
  */
-public class SampleSearchField implements Serializable {
+public class Biomaterial extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
 
     private String name;
+    private String description;
+    private String externalId;
+    private Term diseaseState;
+    private Term tissueSite;
+    private Term materialType;
+    private Term cellType;
+    private Organism organism;
+    private Set<Characteristic> characteristics = new HashSet<Characteristic>();
+    private BiomaterialType type;
 
-    /**
-     * the field for searching by sample name.
-     */
-    public static final SampleSearchField NAME = new SampleSearchField("name");
-    /**
-     * the field for searching by sample external id.
-     */
-    public static final SampleSearchField EXTERNAL_ID = new SampleSearchField("externalId");
-    /**
-     * the field for searching by sample organism.
-     */
-    public static final SampleSearchField ORGANISM = new SampleSearchField("organism");
-    /**
-     * the field for searching by sample disease state.
-     */
-    public static final SampleSearchField DISEASE_STATE = new SampleSearchField("disease_state");
-    /**
-     * the field for searching by sample tissue site.
-     */
-    public static final SampleSearchField TISSUE_SITE = new SampleSearchField("tissue_site");
-    
-    /**
-     * create a new sample search field with given name.
-     * @param name the name of the field
-     */
-    protected SampleSearchField(String name) {
-        this.name = name;        
-    }   
-    
     /**
      * @return the name
      */
@@ -134,6 +120,131 @@ public class SampleSearchField implements Serializable {
      */
     public void setName(String name) {
         this.name = name;
-    }    
+    }
+
+    /**
+     * @return the externalId
+     */
+    public String getExternalId() {
+        return externalId;
+    }
+
+    /**
+     * @param externalId the externalId to set
+     */
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * @return the diseaseState
+     */
+    public Term getDiseaseState() {
+        return diseaseState;
+    }
+
+    /**
+     * @param diseaseState the diseaseState to set
+     */
+    public void setDiseaseState(Term diseaseState) {
+        this.diseaseState = diseaseState;
+    }
+
+    /**
+     * @return the tissueSite
+     */
+    public Term getTissueSite() {
+        return tissueSite;
+    }
+
+    /**
+     * @param tissueSite the tissueSite to set
+     */
+    public void setTissueSite(Term tissueSite) {
+        this.tissueSite = tissueSite;
+    }
+
+    /**
+     * @return the materialType
+     */
+    public Term getMaterialType() {
+        return materialType;
+    }
+
+    /**
+     * @param materialType the materialType to set
+     */
+    public void setMaterialType(Term materialType) {
+        this.materialType = materialType;
+    }
+
+    /**
+     * @return the cellType
+     */
+    public Term getCellType() {
+        return cellType;
+    }
+
+    /**
+     * @param cellType the cellType to set
+     */
+    public void setCellType(Term cellType) {
+        this.cellType = cellType;
+    }
+
+    /**
+     * @return the organism
+     */
+    public Organism getOrganism() {
+        return organism;
+    }
+
+    /**
+     * @param organism the organism to set
+     */
+    public void setOrganism(Organism organism) {
+        this.organism = organism;
+    }
+
+    /**
+     * @return the characteristics
+     */
+    public Set<Characteristic> getCharacteristics() {
+        return characteristics;
+    }
+
+    /**
+     * @param characteristics the characteristics to set
+     */
+    public void setCharacteristics(Set<Characteristic> characteristics) {
+        this.characteristics = characteristics;
+    }
+
+    /**
+     * @return the type
+     */
+    public BiomaterialType getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(BiomaterialType type) {
+        this.type = type;
+    }
 }
-    

@@ -84,12 +84,8 @@ package gov.nih.nci.caarray.services.external.v1_0.data;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.DataFileContents;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
-
-import java.util.List;
 
 import javax.ejb.Remote;
 
@@ -107,48 +103,14 @@ public interface DataService {
      * The JNDI name to look up this Remote EJB under.
      */
     String JNDI_NAME = "caarray/external/v1_0/DataServiceBean";
-    
-    /**
-     * The maximum file size that can be retrieved without having to be streamed. Currently 50KB.
-     */
-    long MAX_DIRECT_RETRIEVAL_FILE_SIZE = 50 * 1024 * 1024;
-    
+        
     /**
      * Retrieves the parsed data set identified by the given request.
      * @param dataSetRequest a DataSetRequest instance identifying the parsed data to be retrieved.
      * @return the data set.
      */
     DataSet getDataSet(DataSetRequest dataSetRequest);
-    
-    /**
-     * Retrieves a the file contents and metadata for the files identified in the given request. 
-     * This method should only be used for small files, under the size given by the 
-     * MAX_DIRECT_RETRIEVAL_FILE_SIZE constant. For larger files, use the streamFileContents method.
-     * 
-     * @param fileDownloadRequest a FileDownloadRequest instance identifying the list of files
-     * to retrieve
-     * @param compress whether the contents of the file should be compressed using GZip.
-     * @return a List of DataFileContents instance containing the file metadata and contents.
-     * @throws FileSizeTooBigException if the total size of the files exceeds that given by the
-     * MAX_DIRECT_RETRIEVAL_FILE_SIZE constant
-     */
-    List<DataFileContents> getFileContents(FileDownloadRequest fileDownloadRequest, boolean compress)
-            throws FileSizeTooBigException;
-    
-    /**
-     * Retrieves the file metadata and contents for the file identified by the given reference. 
-     * This method should only be used for small files, under the size given by the 
-     * MAX_DIRECT_RETRIEVAL_FILE_SIZE constant. For larger files, use the streamFileContents method.
-     * 
-     * @param fileRef the reference identifying the file to retrieve.
-     * @param compress whether the contents of the file should be compressed using GZip.
-     * @return a DataFileContents instance containing the file metadata and contents, or null if 
-     * no file corresponding to the given reference exists. 
-     * @throws FileSizeTooBigException if the size of the file exceeds that given by the
-     * MAX_DIRECT_RETRIEVAL_FILE_SIZE constant
-     */
-    DataFileContents getFileContents(CaArrayEntityReference fileRef, boolean compress) throws FileSizeTooBigException;
-    
+        
     /**
      * Retrieves the file metadata and contents for the file identified by the given reference. The file
      * contents are streamed back using the remote output stream provided in the out parameter.

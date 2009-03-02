@@ -89,6 +89,8 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 /**
+ * ExperimentalContact represents a person who performed one or more roles in an experiment.
+ * 
  * @author dkokotov
  * 
  */

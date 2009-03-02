@@ -59,6 +59,8 @@ public class CaArraySvc_v1_0Configuration implements ServiceConfiguration {
 	
 	private String dataService_classMappingsFilename;
 	
+	private String dataService_enumIteratorType;
+	
 	
 	public String getEtcDirectoryPath() {
 		return ContainerConfig.getBaseDirectory() + File.separator + etcDirectoryPath;
@@ -136,6 +138,16 @@ public class CaArraySvc_v1_0Configuration implements ServiceConfiguration {
 	
 	public void setDataService_classMappingsFilename(String dataService_classMappingsFilename) {
 		this.dataService_classMappingsFilename = dataService_classMappingsFilename;
+	}
+
+	
+	public String getDataService_enumIteratorType() {
+		return dataService_enumIteratorType;
+	}
+	
+	
+	public void setDataService_enumIteratorType(String dataService_enumIteratorType) {
+		this.dataService_enumIteratorType = dataService_enumIteratorType;
 	}
 
 	

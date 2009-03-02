@@ -82,11 +82,17 @@
  */
 package gov.nih.nci.caarray.external.v1_0.query;
 
+import java.io.Serializable;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * @author dkokotov
  *
  */
-public class AbstractKeywordSearchCriteria {
+public class AbstractKeywordSearchCriteria implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private String keyword;
 
     /**
@@ -101,5 +107,12 @@ public class AbstractKeywordSearchCriteria {
      */
     public void setKeyword(String keyword) {
         this.keyword = keyword;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

@@ -6,6 +6,7 @@
         <java failonerror="true" classname="gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client" classpathref="run.classpath" fork="yes">
             <jvmarg value="-DGLOBUS_LOCATION=${ext.globus.dir}" />
             <jvmarg value="-agentlib:yjpagent=sessionname=GridClient"/>
+        	<jvmarg value="-XX:+HeapDumpOnOutOfMemoryError"/>
             <jvmarg value="-Xmx128m"/>
             <jvmarg value="-Xdebug"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8788,server=y,suspend=n"/>

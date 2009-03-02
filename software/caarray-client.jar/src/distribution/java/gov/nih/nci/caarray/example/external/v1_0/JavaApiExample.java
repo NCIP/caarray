@@ -88,19 +88,27 @@ import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.DataFileContents;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
+import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.data.HybridizationData;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchField;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
+import gov.nih.nci.caarray.external.v1_0.query.ExperimentKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
+import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchField;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.PageSortParams;
+import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
+import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
+import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
@@ -109,9 +117,15 @@ import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.cqlquery.Object;
 import gov.nih.nci.cagrid.cqlquery.QueryModifier;
 
+import java.io.ByteArrayOutputStream;
+import java.util.EnumSet;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.StopWatch;
+
+import com.healthmarketscience.rmiio.RemoteOutputStreamServer;
+import com.healthmarketscience.rmiio.SimpleRemoteOutputStream;
 
 /**
  * A simple class that connects to the remote Java API of a caArray server and retrieves and
@@ -156,28 +170,53 @@ public class JavaApiExample {
             StopWatch sw = new StopWatch();
             
             SearchService searchService = server.getSearchService();
+            
             List<Organism> organisms = searchService.getAllOrganisms(null);
             System.out.println("Organism count " + organisms.size());
             System.out.println("Organisms: " + organisms);
-            List<ArrayDesign> designs = searchService.getAllArrayDesigns(new PageSortParams(15, 5, "name", false));
+            
+            List<ArrayDesign> designs = searchService.getAllArrayDesigns(new PagingParams(15, 5));
             System.out.println("Design count: " + designs.size());
             System.out.println("Designs: " + designs);
+            
             List<ArrayProvider> providers = searchService.getAllProviders(null);
             System.out.println("Providers: " + providers);
+            
             List<FileType> fileTypes = searchService.getAllFileTypes(null);
             System.out.println("File Types: " + fileTypes);
+            
             List<Person> pis = searchService.getAllPrincipalInvestigators(null);
             System.out.println("PIs: " + pis);
+            
             ExperimentSearchCriteria experimentCrit = new ExperimentSearchCriteria();
             experimentCrit.setTitle("fsdfds");
             //experimentCrit.getOrganisms().add(new CaArrayEntityReference("URN:LSID:edu.georgetown.pir.Organism:1"));
-            //experimentCrit.getOrganisms().add(new CaArrayEntityReference("URN:LSID:edu.georgetown.pir.Organism:2"));
+            //experimentCrit.getOrganisms().add(new CaArrayEntityReference("URN:LSID:edu.georgetown.pir.Organism:2"));            
+            List<Experiment> exps = searchService.searchForExperiments(experimentCrit, new PagingParams(5, 0));
+            System.out.println("Experiments by criteria: " + exps);
             
-            List<Experiment> exps = searchService.searchForExperiments(experimentCrit, new PageSortParams(5, 0, "title", false));
-            System.out.println("Experiments: " + exps);
+            ExperimentKeywordSearchCriteria experimentKeywordCrit = new ExperimentKeywordSearchCriteria();
+            experimentKeywordCrit.setKeyword("MDR");
+            experimentKeywordCrit.getFields().add(ExperimentSearchField.TITLE);
+            experimentKeywordCrit.getFields().add(ExperimentSearchField.SAMPLE_NAME);
+            List<Experiment> keywordExps = searchService.searchForExperimentsByKeyword(experimentKeywordCrit, new PagingParams(5, 0));
+            System.out.println("Experiments by keyword criteria: " + keywordExps); 
+            
+            BiomaterialKeywordSearchCriteria sampleKeywordCrit = new BiomaterialKeywordSearchCriteria();
+            sampleKeywordCrit.setKeyword("MDR");
+            sampleKeywordCrit.getFields().add(BiomaterialSearchField.NAME);
+            List<Biomaterial> keywordSamples = searchService.searchForBiomaterialsByKeyword(sampleKeywordCrit, new PagingParams(30, 0));
+            System.out.println("Samples by name keyword: " + keywordSamples); 
+            
+            sampleKeywordCrit = new BiomaterialKeywordSearchCriteria();
+            sampleKeywordCrit.setKeyword("Homo");
+            sampleKeywordCrit.getFields().add(BiomaterialSearchField.ORGANISM);
+            keywordSamples = searchService.searchForBiomaterialsByKeyword(sampleKeywordCrit, new PagingParams(30, 0));
+            System.out.println("Samples by organism keyword: " + keywordSamples); 
+            
             
             Organism o = (Organism) searchService.getByReference(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:1"));
-            System.out.println("Retrieved organism: " + o);
+            System.out.println("Retrieved organism by reference: " + o);
             
             CQLQuery cqlQuery = new CQLQuery();
             Object target = new Object();
@@ -192,7 +231,7 @@ public class JavaApiExample {
             System.out.println("Num quant types: " + count);
 
             queryMod.setCountOnly(false);            
-            PageSortParams pageParams = new PageSortParams(20, 0, "name", false);
+            PagingParams pageParams = new PagingParams(20, 0);
             for (int i = 0; i < count; i+=20) {
                 System.out.println("Retrieving quant types " + i + " to " + (i + 20));
                 pageParams.setFirstResult(i);
@@ -211,40 +250,50 @@ public class JavaApiExample {
                 System.out.println("Quantitation Type name: " + quantAttrs[0]);
             }
             
-            FileDownloadRequest fileRequest = new FileDownloadRequest();
-            CaArrayEntityReference fileRef1 = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:6"); 
-            CaArrayEntityReference fileRef2 = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:7"); 
-            fileRequest.getFiles().add(fileRef1);
-            fileRequest.getFiles().add(fileRef2);
             DataService dataService = server.getDataService();
-            sw.start();
-            List<DataFileContents> fileContents = dataService.getFileContents(fileRequest, false);
-            sw.stop();
-            System.out.println("Time to retrieve multiple file contents: " + sw.toString());
-            for (DataFileContents fileContent : fileContents) {
-                System.out.println("File metadata: " + fileContent.getFileMetadata() + "\nData:\n"
-                        + new String(fileContent.getContents()));
-            }
-
             DataSetRequest dataRequest = new DataSetRequest();
-
             FileSearchCriteria fileCriteria = new FileSearchCriteria();
-            fileCriteria.setExtension("CEL");
-            FileType fileType = new FileType();
-            fileType.setName("AFFYMETRIX_CEL");
-            fileCriteria.setType(fileType);
-            fileCriteria.setIncludeRaw(true);
+            fileCriteria.setExperiment(new CaArrayEntityReference(
+                    "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
+            fileCriteria.setCategories(EnumSet.of(FileTypeCategory.RAW));
             List<DataFile> files = searchService.searchForFiles(fileCriteria, null);
             for (DataFile file : files) {
                 System.out.println("File Metadata: " + file);
-                dataRequest.getDataFiles().add(new CaArrayEntityReference(file.getLsid()));
+                CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getLsid()); 
+                RemoteOutputStreamServer ostream = null;
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                try {                    
+                    ostream = new SimpleRemoteOutputStream(bos);
+                    dataService.streamFileContents(fileRef, true, ostream.export());
+                    System.out.println("File Contents: ");
+                    IOUtils.write(bos.toByteArray(), System.out);
+                    System.out.println();
+                } finally {
+                    if (ostream != null) {
+                        ostream.close();
+                    }
+                }        
+                dataRequest.getDataFiles().add(fileRef);
             }
-            CaArrayEntityReference fileRef3 = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:22"); 
-            CaArrayEntityReference fileRef4 = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:23"); 
-            dataRequest.getDataFiles().add(fileRef3);
-            dataRequest.getDataFiles().add(fileRef4);
+
+            HybridizationSearchCriteria hsc = new HybridizationSearchCriteria();
+            hsc.setExperiment(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
+            List<Hybridization> hybs = searchService.searchForHybridizations(hsc, null);
+            for (Hybridization hyb : hybs) {
+                System.out.println("hyb: " + hyb);
+                //dataRequest.getHybridizations().add(new CaArrayEntityReference(hyb.getLsid()));
+            }
+
+            BiomaterialSearchCriteria bsc = new BiomaterialSearchCriteria();
+            bsc.setExperiment(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
+            bsc.setTypes(EnumSet.of(BiomaterialType.SOURCE, BiomaterialType.SAMPLE));
+            List<Biomaterial> bms = searchService.searchForBiomaterials(bsc, null);
+            for (Biomaterial bm : bms) {
+                System.out.println("bm: " + bm);
+            }
+
             
-            for (int i = 1; i <= 11; i++) {
+            for (int i = 16; i <= 22; i++) {
                 CaArrayEntityReference qRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:" + i);                                 
                 dataRequest.getQuantitationTypes().add(qRef);
             }
@@ -259,7 +308,8 @@ public class JavaApiExample {
             for (HybridizationData hdata : dataSet.getDatas()) {
                 System.out.println("Data for hyb " + hdata.getHybridization().getName());
                 for (AbstractDataColumn dataColumn : hdata.getDataColumns()) {
-                    System.out.println("Data column: " + dataColumn);
+                    //System.out.println("Data column: " + dataColumn);
+                    System.out.println("Retrieved data column of type: " + dataColumn.getQuantitationType());
                 }
             }
             

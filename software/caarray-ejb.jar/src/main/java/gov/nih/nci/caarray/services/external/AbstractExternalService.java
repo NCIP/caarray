@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.security.SecurityPolicy;
@@ -107,6 +108,8 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * @author dkokotov
  */
 public abstract class AbstractExternalService {
+    private final CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+
     /**
      * @return a reference to the ArrayDesignService EJB
      */
@@ -238,5 +241,12 @@ public abstract class AbstractExternalService {
                 SecurityPolicy.applySecurityPolicies(object, policies);
             }
         }
+    }
+
+    /**
+     * @return the daoFactory
+     */
+    public CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
     }
 }

@@ -6,9 +6,9 @@ import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
  * depends on an alias established in the joins.
  * @author mshestopalov
  *
- * @param <AbstractBiomaterial>
+ * @param <T> entity type for which this is sort criterion.
  */
-public interface JoinableSortCriterion<AbstractBiomaterial> extends SortCriterion<AbstractBiomaterial> {
+public interface JoinableSortCriterion<T> extends SortCriterion<T> {
 
 
     /**

@@ -91,9 +91,16 @@ import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.ExperimentKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.PageSortParams;
+import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
+import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.util.List;
@@ -101,8 +108,8 @@ import java.util.List;
 import javax.ejb.Remote;
 
 /**
- * Remote service for search and data enumeration. Used by the grid service, and can also be used directly by 
- * EJB clients. 
+ * Remote service for search and data enumeration. Used by the grid service, and can also be used directly by EJB
+ * clients.
  * 
  * @author dkokotov
  */
@@ -111,82 +118,134 @@ public interface SearchService {
     /**
      * The JNDI name to look up this Remote EJB under.
      */
-    String JNDI_NAME = "caarray/external/v1_0/SearchServiceBean";    
+    String JNDI_NAME = "caarray/external/v1_0/SearchServiceBean";
 
     /**
      * Retrieve list of file types in caArray.
-     * @param pageSortParams paging and sorting parameters.
-     * @return the subset of the file types specified by the given paging and sorting params.
+     * 
+     * @param pagingParams paging parameters.
+     * @return the subset of the file types specified by the given paging params.
      */
-    List<FileType> getAllFileTypes(PageSortParams pageSortParams);
+    List<FileType> getAllFileTypes(PagingParams pagingParams);
 
     /**
      * Retrieve list of providers in caArray.
-     * @param pageSortParams paging and sorting parameters.
-     * @return the subset of the file types specified by the given paging and sorting params.
+     * 
+     * @param pagingParams paging parameters.
+     * @return the subset of the file types specified by the given paging params.
      */
-    List<ArrayProvider> getAllProviders(PageSortParams pageSortParams);
-    
+    List<ArrayProvider> getAllProviders(PagingParams pagingParams);
+
     /**
      * Retrieve list of array designs in caArray.
-     * @param pageSortParams paging and sorting parameters.
-     * @return the subset of the file types specified by the given paging and sorting params.
+     * 
+     * @param pagingParams paging parameters.
+     * @return the subset of the file types specified by the given paging params.
      */
-    List<ArrayDesign> getAllArrayDesigns(PageSortParams pageSortParams);
+    List<ArrayDesign> getAllArrayDesigns(PagingParams pagingParams);
+
     /**
      * Retrieve list of organisms in caArray.
-     * @param pageSortParams paging and sorting parameters.
-     * @return the subset of the file types specified by the given paging and sorting params.
+     * 
+     * @param pagingParams paging parameters.
+     * @return the subset of the file types specified by the given paging params.
      */
-    List<Organism> getAllOrganisms(PageSortParams pageSortParams);
+    List<Organism> getAllOrganisms(PagingParams pagingParams);
+
     /**
      * Retrieve list of PIs in caArray.
-     * @param pageSortParams paging and sorting parameters.
-     * @return the subset of the file types specified by the given paging and sorting params.
+     * 
+     * @param pagingParams paging parameters.
+     * @return the subset of the file types specified by the given paging params.
      */
-    List<Person> getAllPrincipalInvestigators(PageSortParams pageSortParams);
+    List<Person> getAllPrincipalInvestigators(PagingParams pagingParams);
+    
+    /**
+     * Search for biomaterials satisfying the given search criteria.
+     * 
+     * @param criteria the search criteria
+     * @param pagingParams paging parameters
+     * @return the subset of the biomaterials matching the given criteria, subject to the paging params.
+     * @throws InvalidReferenceException if there is no experiment with given reference
+     */
+    List<Biomaterial> searchForBiomaterials(BiomaterialSearchCriteria criteria, PagingParams pagingParams)
+            throws InvalidReferenceException;
+
+    /**
+     * Search for hybridizations satisfying the given search criteria.
+     * 
+     * @param criteria the search criteria
+     * @param pagingParams paging parameters
+     * @return the subset of the hybridizations matching the given criteria, subject to the paging params.
+     * @throws InvalidReferenceException if there is no experiment with given reference
+     */
+    List<Hybridization> searchForHybridizations(HybridizationSearchCriteria criteria, PagingParams pagingParams)
+            throws InvalidReferenceException;
 
     /**
      * Retrieves the list of entities instance of an entity identified by the given reference.
+     * 
      * @param references a list of references identifying the entity to retrieve.
-     * @return the instances identified by the references. this list will have the same length as 
-     * the references list, and the i-th element will be the entity for the i-th reference, or null
-     * if that reference does not identify a valid entity.
-     */    
+     * @return the instances identified by the references. this list will have the same length as the references list,
+     *         and the i-th element will be the entity for the i-th reference, or null if that reference does not
+     *         identify a valid entity.
+     */
     List<AbstractCaArrayEntity> getByReferences(List<CaArrayEntityReference> references);
-    
+
     /**
      * Retrieves an entity identified by the given reference.
+     * 
      * @param reference a reference identifying the entity to retrieve.
      * @return the entity identified by the reference, or null if there is no corresponding entity.
      */
-    AbstractCaArrayEntity getByReference(CaArrayEntityReference reference);    
+    AbstractCaArrayEntity getByReference(CaArrayEntityReference reference);
 
     /**
      * Returns a list of experiments satisfying the given search criteria.
+     * 
      * @param criteria the search criteria.
-     * @param pageSortParams paging and sorting params.
-     * @return the list of experiments matching criteria, subject to the paging and sorting specifications.
+     * @param pagingParams paging params.
+     * @return the list of experiments matching criteria, subject to the paging specifications.
      */
-    List<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, PageSortParams pageSortParams);
-    
+    List<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, PagingParams pagingParams);
+
+    /**
+     * Returns a list of experiments satisfying the given keyword search criteria.
+     * 
+     * @param criteria the search criteria.
+     * @param pagingParams paging params.
+     * @return the list of experiments matching criteria, subject to the paging specifications.
+     */
+    List<Experiment> searchForExperimentsByKeyword(ExperimentKeywordSearchCriteria criteria, PagingParams pagingParams);
+
     /**
      * Returns a list of data files satisfying the given search criteria.
+     * 
      * @param criteria the search criteria.
-     * @param pageSortParams paging and sorting params.
-     * @return the list of files matching criteria, subject to the paging and sorting specifications.
+     * @param pagingParams paging params.
+     * @return the list of files matching criteria, subject to the paging specifications.
      */
-    List<DataFile> searchForFiles(FileSearchCriteria criteria, PageSortParams pageSortParams);
+    List<DataFile> searchForFiles(FileSearchCriteria criteria, PagingParams pagingParams);
     
     /**
-     * Searches for entities based on the given CQL query. 
-     *
-     * @param cqlQuery the CQL query.
-     * @param params paging and sorting parameters. these will be ignored if the "count only" modifier is
-     * specified for the query. may be left as null to retrieve all results with default ordering.
-     *
-     * @return the result for the provided query.  May be the list of objects, list of attribute values, or
-     * the count, depending upon the query modifiers.
+     * Returns a list of biomaterials satisfying the given keyword search criteria.
+     * 
+     * @param criteria the search criteria.
+     * @param pagingParams paging params.
+     * @return the list of biomaterials matching criteria, subject to the paging specifications.
      */
-    List<?> search(CQLQuery cqlQuery, PageSortParams params);
+    List<Biomaterial> searchForBiomaterialsByKeyword(BiomaterialKeywordSearchCriteria criteria,
+            PagingParams pagingParams);
+
+    /**
+     * Searches for entities based on the given CQL query.
+     * 
+     * @param cqlQuery the CQL query.
+     * @param params paging parameters. these will be ignored if the "count only" modifier is specified for
+     *            the query. may be left as null to retrieve all results with default ordering.
+     * 
+     * @return the result for the provided query. May be the list of objects, list of attribute values, or the count,
+     *         depending upon the query modifiers.
+     */
+    List<?> search(CQLQuery cqlQuery, PagingParams params);
 }

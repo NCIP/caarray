@@ -8,9 +8,11 @@ import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
+import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
-import gov.nih.nci.caarray.services.external.v1_0.data.FileSizeTooBigException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.cagrid.wsenum.utils.EnumerateResponseFactory;
 
 import java.io.File;
@@ -153,14 +155,6 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
       return refs;
   }
 
-  public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateFileContents(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compress) throws RemoteException {
-      try {
-          return EnumerateResponseFactory.createEnumerationResponse(new FileContentsEnumIterator(fileDownloadRequest, compress));
-      } catch (Exception e) {
-          throw new RemoteException("Unable to create enumeration", e);
-      }
-  }
-
   public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateFileContentTransfers(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compress) throws RemoteException {
       try {
           return EnumerateResponseFactory.createEnumerationResponse(new FileTransferEnumIterator(fileDownloadRequest, compress));
@@ -175,14 +169,6 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
       } catch (IOException e) {
           throw new RemoteException("Error retrieving file contents: " + e);
       }
-  }
-
-  public gov.nih.nci.caarray.external.v1_0.data.DataFileContents getFileContents(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference fileRef,boolean compress) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.FileSizeTooBigException {
-      try {
-        return caArrayServer.getDataService().getFileContents(fileRef, compress);
-    } catch (FileSizeTooBigException e) {
-        throw new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.FileSizeTooBigException(e.getActualSize(), e.getMaxAllowedSize());
-    }
   }
 
   static TransferServiceContextReference stageFileContentsWithRmiStream(CaArrayServer server,
@@ -267,4 +253,38 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
           return null;
       }
   }
+
+  public gov.nih.nci.caarray.external.v1_0.experiment.Experiment[] searchForExperimentsByKeyword(gov.nih.nci.caarray.external.v1_0.query.ExperimentKeywordSearchCriteria criteria) throws RemoteException {
+      List<Experiment> experiments = caArrayServer.getSearchService().searchForExperimentsByKeyword(criteria, null);
+      return experiments.toArray(new Experiment[experiments.size()]);
+  }
+
+  public gov.nih.nci.caarray.external.v1_0.data.DataFile[] searchForFiles(gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria fileSearchCriteria) throws RemoteException {
+      List<DataFile> files = caArrayServer.getSearchService().searchForFiles(fileSearchCriteria, null);
+      return files.toArray(new DataFile[files.size()]);
+  }
+
+  public gov.nih.nci.caarray.external.v1_0.sample.Biomaterial[] searchForBiomaterialsByKeyword(gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria criteria) throws RemoteException {
+      List<Biomaterial> bms = caArrayServer.getSearchService().searchForBiomaterialsByKeyword(criteria, null);
+      return bms.toArray(new Biomaterial[bms.size()]);
+  }
+
+  public gov.nih.nci.caarray.external.v1_0.sample.Biomaterial[] searchForBiomaterials(gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria criteria) throws RemoteException {
+      try {
+            List<Biomaterial> bms = caArrayServer.getSearchService().searchForBiomaterials(criteria, null);
+            return bms.toArray(new Biomaterial[bms.size()]);
+        } catch (InvalidReferenceException e) {
+            throw new RemoteException("Error retrieving samples: " + e);
+        } 
+  }
+
+  public gov.nih.nci.caarray.external.v1_0.sample.Hybridization[] searchForHybridizations(gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria criteria) throws RemoteException {
+      try {
+            List<Hybridization> hybs = caArrayServer.getSearchService().searchForHybridizations(criteria, null);
+            return hybs.toArray(new Hybridization[hybs.size()]);
+        } catch (InvalidReferenceException e) {
+            throw new RemoteException("Error retrieving hybs: " + e);
+        } 
+  }
+
 }

@@ -128,11 +128,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		
 	}
 					
-	public static void authorizeEnumerateFileContents() throws RemoteException {
-		
-		
-	}
-					
 	public static void authorizeEnumerateFileContentTransfers() throws RemoteException {
 		
 		
@@ -143,17 +138,37 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		
 	}
 					
-	public static void authorizeGetFileContents() throws RemoteException {
-		
-		
-	}
-					
 	public static void authorizeGetDataSet() throws RemoteException {
 		
 		
 	}
 					
 	public static void authorizeQuery() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeSearchForBiomaterials() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeSearchForHybridizations() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeSearchForExperimentsByKeyword() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeSearchForFiles() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeSearchForBiomaterialsByKeyword() throws RemoteException {
 		
 		
 	}
@@ -277,14 +292,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 				e.printStackTrace();
 				return false;
 			}
-		} else if(operation.getLocalPart().equals("enumerateFileContents")){
-			try{
-				authorizeEnumerateFileContents();
-				return true;
-			} catch (Exception e){
-				e.printStackTrace();
-				return false;
-			}
 		} else if(operation.getLocalPart().equals("enumerateFileContentTransfers")){
 			try{
 				authorizeEnumerateFileContentTransfers();
@@ -301,14 +308,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 				e.printStackTrace();
 				return false;
 			}
-		} else if(operation.getLocalPart().equals("getFileContents")){
-			try{
-				authorizeGetFileContents();
-				return true;
-			} catch (Exception e){
-				e.printStackTrace();
-				return false;
-			}
 		} else if(operation.getLocalPart().equals("getDataSet")){
 			try{
 				authorizeGetDataSet();
@@ -320,6 +319,46 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		} else if(operation.getLocalPart().equals("query")){
 			try{
 				authorizeQuery();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("searchForBiomaterials")){
+			try{
+				authorizeSearchForBiomaterials();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("searchForHybridizations")){
+			try{
+				authorizeSearchForHybridizations();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("searchForExperimentsByKeyword")){
+			try{
+				authorizeSearchForExperimentsByKeyword();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("searchForFiles")){
+			try{
+				authorizeSearchForFiles();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("searchForBiomaterialsByKeyword")){
+			try{
+				authorizeSearchForBiomaterialsByKeyword();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();

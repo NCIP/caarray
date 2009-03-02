@@ -82,13 +82,17 @@
  */
 package gov.nih.nci.caarray.external.v1_0.array;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import java.io.Serializable;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 
 /**
+ * An ArrayProvider represents a manufacturer of microarrays.
+ * 
  * @author dkokotov
- *
  */
-public class ArrayProvider extends AbstractCaArrayEntity {
+public class ArrayProvider implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private String name;
@@ -120,5 +124,12 @@ public class ArrayProvider extends AbstractCaArrayEntity {
      */
     public void setName(String name) {
         this.name = name;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

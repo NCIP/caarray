@@ -83,7 +83,9 @@
 package gov.nih.nci.caarray.domain.search;
 
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -98,11 +100,26 @@ public class FileSearchCriteria extends AbstractSearchCriteria {
 
     private Experiment experiment;
     private String extension;
-    private FileType fileType;
+    private Set<FileType> types = new HashSet<FileType>();
     private boolean includeRaw;
     private boolean includeDerived;
-    private Set<String> sampleNames = new HashSet<String>();
-    private Set<String> hybridizationNames = new HashSet<String>();
+    private boolean includeSupplemental;
+    private Set<Biomaterial> biomaterials = new HashSet<Biomaterial>();
+    private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
+    
+    /**
+     * @return the biomaterials
+     */
+    public Set<Biomaterial> getBiomaterials() {
+        return biomaterials;
+    }
+
+    /**
+     * @param biomaterials the biomaterials to set
+     */
+    public void setBiomaterials(Set<Biomaterial> biomaterials) {
+        this.biomaterials = biomaterials;
+    }
 
     /**
      * @return the experiment
@@ -133,17 +150,31 @@ public class FileSearchCriteria extends AbstractSearchCriteria {
     }
 
     /**
-     * @return the fileType
+     * @return the types
      */
-    public FileType getFileType() {
-        return fileType;
+    public Set<FileType> getTypes() {
+        return types;
     }
 
     /**
-     * @param fileType the fileType to set
+     * @param types the types to set
      */
-    public void setFileType(FileType fileType) {
-        this.fileType = fileType;
+    public void setTypes(Set<FileType> types) {
+        this.types = types;
+    }
+
+    /**
+     * @return the includeSupplemental
+     */
+    public boolean isIncludeSupplemental() {
+        return includeSupplemental;
+    }
+
+    /**
+     * @param includeSupplemental the includeSupplemental to set
+     */
+    public void setIncludeSupplemental(boolean includeSupplemental) {
+        this.includeSupplemental = includeSupplemental;
     }
 
     /**
@@ -175,30 +206,16 @@ public class FileSearchCriteria extends AbstractSearchCriteria {
     }
 
     /**
-     * @return the sampleNames
+     * @return the hybridizations
      */
-    public Set<String> getSampleNames() {
-        return sampleNames;
+    public Set<Hybridization> getHybridizations() {
+        return hybridizations;
     }
 
     /**
-     * @param sampleNames the sampleNames to set
+     * @param hybridizations the hybridizations to set
      */
-    public void setSampleNames(Set<String> sampleNames) {
-        this.sampleNames = sampleNames;
-    }
-
-    /**
-     * @return the hybridizationNames
-     */
-    public Set<String> getHybridizationNames() {
-        return hybridizationNames;
-    }
-
-    /**
-     * @param hybridizationNames the hybridizationNames to set
-     */
-    public void setHybridizationNames(Set<String> hybridizationNames) {
-        this.hybridizationNames = hybridizationNames;
+    public void setHybridizations(Set<Hybridization> hybridizations) {
+        this.hybridizations = hybridizations;
     }
 }

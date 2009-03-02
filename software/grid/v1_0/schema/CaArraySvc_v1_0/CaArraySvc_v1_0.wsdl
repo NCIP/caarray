@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0" xmlns:wsrp="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.xsd" xmlns:wsrlw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceLifetime-1.2-draft-01.wsdl" xmlns:wsdlpp="http://www.globus.org/namespaces/2004/10/WSDLPreprocessor" xmlns:gtwsdl1="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ServiceGroup-1.2-draft-01.wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing" xmlns:wsntw="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.wsdl" xmlns:wsrbfw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" xmlns:wsrpw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns2="http://gov.nih.nci.cagrid.data/DataService" xmlns:wns0="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns1="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" xmlns:ns16="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/CQLResultTypes" xmlns:ns14="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery" xmlns:ns12="http://transfer.cagrid.org/Transfer" xmlns:ns7="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" xmlns:ns9="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:ns18="http://gov.nih.nci.cagrid.data/DataServiceExceptions" xmlns:ns17="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice" xmlns:ns10="http://gov.nih.nci.cagrid.enumeration/EnumerationResponseContainer" xmlns:ns6="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" xmlns:ns8="http://schemas.xmlsoap.org/ws/2004/09/enumeration" xmlns:ns0="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment" xmlns:ns2="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary" xmlns:ns11="http://transfer.cagrid.org/TransferService/Context/types" xmlns:ns15="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet" xmlns:ns3="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" xmlns:ns5="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/types" xmlns:ns13="http://gov.nih.nci.cagrid.enumeration/CaGridEnumeration/types" xmlns:ns1="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external" xmlns:ns4="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" name="CaArraySvc_v1_0" targetNamespace="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0">
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0" xmlns:wsrp="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.xsd" xmlns:wsrlw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceLifetime-1.2-draft-01.wsdl" xmlns:wsdlpp="http://www.globus.org/namespaces/2004/10/WSDLPreprocessor" xmlns:gtwsdl1="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ServiceGroup-1.2-draft-01.wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing" xmlns:wsntw="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.wsdl" xmlns:wsrbfw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" xmlns:wsrpw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns2="http://gov.nih.nci.cagrid.data/DataService" xmlns:wns0="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns1="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" xmlns:ns20="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/CQLResultTypes" xmlns:ns18="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery" xmlns:ns16="http://transfer.cagrid.org/Transfer" xmlns:ns13="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:ns11="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" xmlns:ns22="http://gov.nih.nci.cagrid.data/DataServiceExceptions" xmlns:ns21="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice" xmlns:ns14="http://gov.nih.nci.cagrid.enumeration/EnumerationResponseContainer" xmlns:ns3="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value" xmlns:ns6="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.factor" xmlns:ns12="http://schemas.xmlsoap.org/ws/2004/09/enumeration" xmlns:ns10="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" xmlns:ns7="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" xmlns:ns1="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment" xmlns:ns4="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary" xmlns:ns15="http://transfer.cagrid.org/TransferService/Context/types" xmlns:ns19="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet" xmlns:ns5="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" xmlns:ns9="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/types" xmlns:ns17="http://gov.nih.nci.cagrid.enumeration/CaGridEnumeration/types" xmlns:ns2="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external" xmlns:ns8="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array" xmlns:ns0="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" name="CaArraySvc_v1_0" targetNamespace="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0">
   <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" location="../wsrf/properties/WS-ResourceProperties.wsdl" />
   <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" location="../wsrf/faults/WS-BaseFaults.wsdl" />
   <import namespace="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.wsdl" location="../wsrf/notification/WS-BaseN.wsdl" />
@@ -17,13 +17,16 @@
       <import namespace="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/CQLResultTypes" schemaLocation="./CaArraySvc_v1_0_CQLResultTypes.xsd" />
       <import namespace="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery" schemaLocation="./1_gov.nih.nci.cagrid.CQLQuery.xsd" />
       <import namespace="http://transfer.cagrid.org/Transfer" schemaLocation="./caGrid_Transfer.xsd" />
-      <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" schemaLocation="./xsd/cagrid/types/caGridMetadata.xsd" />
       <import namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing" schemaLocation="./addressing.xsd" />
+      <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" schemaLocation="./xsd/cagrid/types/caGridMetadata.xsd" />
       <import namespace="http://gov.nih.nci.cagrid.data/DataServiceExceptions" schemaLocation="./DataServiceExceptions.xsd" />
       <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice" schemaLocation="./xsd/cagrid/types/data/data.xsd" />
       <import namespace="http://gov.nih.nci.cagrid.enumeration/EnumerationResponseContainer" schemaLocation="./EnumerationResponseContainer.xsd" />
-      <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" schemaLocation="./xsd/cagrid/types/security/security.xsd" />
+      <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value" schemaLocation="./v1_0_gov.nih.nci.caarray.external.value.xsd" />
+      <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.factor" schemaLocation="./v1_0_gov.nih.nci.caarray.external.factor.xsd" />
       <import namespace="http://schemas.xmlsoap.org/ws/2004/09/enumeration" schemaLocation="./enumeration.xsd" />
+      <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" schemaLocation="./xsd/cagrid/types/security/security.xsd" />
+      <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" schemaLocation="./v1_0_gov.nih.nci.caarray.external.sample.xsd" />
       <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment" schemaLocation="./v1_0_gov.nih.nci.caarray.external.experiment.xsd" />
       <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary" schemaLocation="./v1_0_gov.nih.nci.caarray.external.vocabulary.xsd" />
       <import namespace="http://transfer.cagrid.org/TransferService/Context/types" schemaLocation="./TransferServiceContextTypes.xsd" />
@@ -32,6 +35,7 @@
       <import namespace="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/types" schemaLocation="./CaArraySvc_v1_0Types.xsd" />
       <import namespace="http://gov.nih.nci.cagrid.enumeration/CaGridEnumeration/types" schemaLocation="./CaGridEnumerationTypes.xsd" />
       <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external" schemaLocation="./v1_0_gov.nih.nci.caarray.external.xsd" />
+      <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array" schemaLocation="./v1_0_gov.nih.nci.caarray.external.array.xsd" />
       <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" schemaLocation="./v1_0_gov.nih.nci.caarray.external.data.xsd" />
       <element name="GetAllOrganismsRequest">
         <complexType>
@@ -41,7 +45,7 @@
       <element name="GetAllOrganismsResponse">
         <complexType>
           <sequence>
-            <element ref="ns0:Organism" minOccurs="1" maxOccurs="unbounded" />
+            <element ref="ns1:Organism" minOccurs="1" maxOccurs="unbounded" />
           </sequence>
         </complexType>
       </element>
@@ -51,7 +55,7 @@
             <element name="criteria">
               <complexType>
                 <sequence>
-                  <element ref="ns3:ExperimentSearchCriteria" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:ExperimentSearchCriteria" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -61,7 +65,7 @@
       <element name="SearchForExperimentsResponse">
         <complexType>
           <sequence>
-            <element ref="ns0:Experiment" minOccurs="1" maxOccurs="unbounded" />
+            <element ref="ns1:Experiment" minOccurs="1" maxOccurs="unbounded" />
           </sequence>
         </complexType>
       </element>
@@ -73,7 +77,7 @@
       <element name="GetAllPrincipalInvestigatorsResponse">
         <complexType>
           <sequence>
-            <element ref="ns0:Person" minOccurs="1" maxOccurs="unbounded" />
+            <element ref="ns1:Person" minOccurs="1" maxOccurs="unbounded" />
           </sequence>
         </complexType>
       </element>
@@ -85,7 +89,7 @@
       <element name="GetAllFileTypesResponse">
         <complexType>
           <sequence>
-            <element ref="ns4:FileType" minOccurs="1" maxOccurs="unbounded" />
+            <element ref="ns0:FileType" minOccurs="1" maxOccurs="unbounded" />
           </sequence>
         </complexType>
       </element>
@@ -95,7 +99,7 @@
             <element name="reference">
               <complexType>
                 <sequence>
-                  <element ref="ns1:CaArrayEntityReference" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns2:CaArrayEntityReference" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -105,7 +109,7 @@
       <element name="GetByReferenceResponse">
         <complexType>
           <sequence>
-            <element ref="ns1:AbstractCaArrayEntity" minOccurs="1" maxOccurs="1" />
+            <element ref="ns2:AbstractCaArrayEntity" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -115,7 +119,7 @@
             <element name="references">
               <complexType>
                 <sequence>
-                  <element ref="ns1:CaArrayEntityReference" minOccurs="1" maxOccurs="unbounded" />
+                  <element ref="ns2:CaArrayEntityReference" minOccurs="1" maxOccurs="unbounded" />
                 </sequence>
               </complexType>
             </element>
@@ -125,7 +129,7 @@
       <element name="GetByReferencesResponse">
         <complexType>
           <sequence>
-            <element ref="ns1:AbstractCaArrayEntity" minOccurs="1" maxOccurs="unbounded" />
+            <element ref="ns2:AbstractCaArrayEntity" minOccurs="1" maxOccurs="unbounded" />
           </sequence>
         </complexType>
       </element>
@@ -137,7 +141,7 @@
       <element name="EnumerateOrganismsResponse">
         <complexType>
           <sequence>
-            <element ref="ns10:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+            <element ref="ns14:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -147,7 +151,7 @@
             <element name="experimentSearchCriteria">
               <complexType>
                 <sequence>
-                  <element ref="ns3:ExperimentSearchCriteria" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:ExperimentSearchCriteria" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -157,7 +161,7 @@
       <element name="EnumerateExperimentsResponse">
         <complexType>
           <sequence>
-            <element ref="ns10:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+            <element ref="ns14:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -167,7 +171,7 @@
             <element name="fileDownloadRequest">
               <complexType>
                 <sequence>
-                  <element ref="ns3:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -178,7 +182,7 @@
       <element name="GetFileContentsZipTransferResponse">
         <complexType>
           <sequence>
-            <element ref="ns11:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
+            <element ref="ns15:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -188,7 +192,7 @@
             <element name="fileDownloadRequest">
               <complexType>
                 <sequence>
-                  <element ref="ns3:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -199,28 +203,7 @@
       <element name="GetFileContentsTransfersResponse">
         <complexType>
           <sequence>
-            <element ref="ns11:TransferServiceContextReference" minOccurs="1" maxOccurs="unbounded" />
-          </sequence>
-        </complexType>
-      </element>
-      <element name="EnumerateFileContentsRequest">
-        <complexType>
-          <sequence>
-            <element name="fileDownloadRequest">
-              <complexType>
-                <sequence>
-                  <element ref="ns3:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
-                </sequence>
-              </complexType>
-            </element>
-            <element name="compress" type="xs:boolean" minOccurs="1" maxOccurs="1" />
-          </sequence>
-        </complexType>
-      </element>
-      <element name="EnumerateFileContentsResponse">
-        <complexType>
-          <sequence>
-            <element ref="ns10:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+            <element ref="ns15:TransferServiceContextReference" minOccurs="1" maxOccurs="unbounded" />
           </sequence>
         </complexType>
       </element>
@@ -230,7 +213,7 @@
             <element name="fileDownloadRequest">
               <complexType>
                 <sequence>
-                  <element ref="ns3:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -241,7 +224,7 @@
       <element name="EnumerateFileContentTransfersResponse">
         <complexType>
           <sequence>
-            <element ref="ns10:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+            <element ref="ns14:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -251,7 +234,7 @@
             <element name="fileRef">
               <complexType>
                 <sequence>
-                  <element ref="ns1:CaArrayEntityReference" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns2:CaArrayEntityReference" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -262,28 +245,7 @@
       <element name="GetFileContentsTransferResponse">
         <complexType>
           <sequence>
-            <element ref="ns11:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
-          </sequence>
-        </complexType>
-      </element>
-      <element name="GetFileContentsRequest">
-        <complexType>
-          <sequence>
-            <element name="fileRef">
-              <complexType>
-                <sequence>
-                  <element ref="ns1:CaArrayEntityReference" minOccurs="1" maxOccurs="1" />
-                </sequence>
-              </complexType>
-            </element>
-            <element name="compress" type="xs:boolean" minOccurs="1" maxOccurs="1" />
-          </sequence>
-        </complexType>
-      </element>
-      <element name="GetFileContentsResponse">
-        <complexType>
-          <sequence>
-            <element ref="ns4:DataFileContents" minOccurs="1" maxOccurs="1" />
+            <element ref="ns15:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -293,7 +255,7 @@
             <element name="dataSetRequest">
               <complexType>
                 <sequence>
-                  <element ref="ns3:DataSetRequest" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:DataSetRequest" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -303,15 +265,115 @@
       <element name="GetDataSetResponse">
         <complexType>
           <sequence>
-            <element ref="ns4:DataSet" minOccurs="1" maxOccurs="1" />
+            <element ref="ns0:DataSet" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForBiomaterialsRequest">
+        <complexType>
+          <sequence>
+            <element name="criteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:BiomaterialSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForBiomaterialsResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns7:Biomaterial" minOccurs="1" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForHybridizationsRequest">
+        <complexType>
+          <sequence>
+            <element name="criteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:HybridizationSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForHybridizationsResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns7:Hybridization" minOccurs="1" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForExperimentsByKeywordRequest">
+        <complexType>
+          <sequence>
+            <element name="criteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:ExperimentKeywordSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForExperimentsByKeywordResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns1:Experiment" minOccurs="1" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForFilesRequest">
+        <complexType>
+          <sequence>
+            <element name="fileSearchCriteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:FileSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForFilesResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns0:DataFile" minOccurs="1" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForBiomaterialsByKeywordRequest">
+        <complexType>
+          <sequence>
+            <element name="criteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:BiomaterialKeywordSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForBiomaterialsByKeywordResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns7:Biomaterial" minOccurs="1" maxOccurs="unbounded" />
           </sequence>
         </complexType>
       </element>
       <element name="CaArraySvc_v1_0ResourceProperties">
         <complexType>
           <sequence>
-            <element ref="ns7:ServiceMetadata" />
-            <element ref="ns17:DomainModel" />
+            <element ref="ns11:ServiceMetadata" />
+            <element ref="ns21:DomainModel" />
           </sequence>
         </complexType>
       </element>
@@ -378,12 +440,6 @@
   <message name="GetFileContentsTransfersResponse">
     <part name="parameters" element="tns:GetFileContentsTransfersResponse" />
   </message>
-  <message name="EnumerateFileContentsRequest">
-    <part name="parameters" element="tns:EnumerateFileContentsRequest" />
-  </message>
-  <message name="EnumerateFileContentsResponse">
-    <part name="parameters" element="tns:EnumerateFileContentsResponse" />
-  </message>
   <message name="EnumerateFileContentTransfersRequest">
     <part name="parameters" element="tns:EnumerateFileContentTransfersRequest" />
   </message>
@@ -396,20 +452,41 @@
   <message name="GetFileContentsTransferResponse">
     <part name="parameters" element="tns:GetFileContentsTransferResponse" />
   </message>
-  <message name="GetFileContentsRequest">
-    <part name="parameters" element="tns:GetFileContentsRequest" />
-  </message>
-  <message name="GetFileContentsResponse">
-    <part name="parameters" element="tns:GetFileContentsResponse" />
-  </message>
   <message name="GetDataSetRequest">
     <part name="parameters" element="tns:GetDataSetRequest" />
   </message>
   <message name="GetDataSetResponse">
     <part name="parameters" element="tns:GetDataSetResponse" />
   </message>
-  <message name="FileSizeTooBigExceptionFaultMessage">
-    <part name="fault" element="ns5:FileSizeTooBigException" />
+  <message name="SearchForBiomaterialsRequest">
+    <part name="parameters" element="tns:SearchForBiomaterialsRequest" />
+  </message>
+  <message name="SearchForBiomaterialsResponse">
+    <part name="parameters" element="tns:SearchForBiomaterialsResponse" />
+  </message>
+  <message name="SearchForHybridizationsRequest">
+    <part name="parameters" element="tns:SearchForHybridizationsRequest" />
+  </message>
+  <message name="SearchForHybridizationsResponse">
+    <part name="parameters" element="tns:SearchForHybridizationsResponse" />
+  </message>
+  <message name="SearchForExperimentsByKeywordRequest">
+    <part name="parameters" element="tns:SearchForExperimentsByKeywordRequest" />
+  </message>
+  <message name="SearchForExperimentsByKeywordResponse">
+    <part name="parameters" element="tns:SearchForExperimentsByKeywordResponse" />
+  </message>
+  <message name="SearchForFilesRequest">
+    <part name="parameters" element="tns:SearchForFilesRequest" />
+  </message>
+  <message name="SearchForFilesResponse">
+    <part name="parameters" element="tns:SearchForFilesResponse" />
+  </message>
+  <message name="SearchForBiomaterialsByKeywordRequest">
+    <part name="parameters" element="tns:SearchForBiomaterialsByKeywordRequest" />
+  </message>
+  <message name="SearchForBiomaterialsByKeywordResponse">
+    <part name="parameters" element="tns:SearchForBiomaterialsByKeywordResponse" />
   </message>
   <!--============================================================
 
@@ -457,10 +534,6 @@
       <input message="tns:GetFileContentsTransfersRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsTransfersRequest" />
       <output message="tns:GetFileContentsTransfersResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsTransfersResponse" />
     </operation>
-    <operation name="enumerateFileContents">
-      <input message="tns:EnumerateFileContentsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateFileContentsRequest" />
-      <output message="tns:EnumerateFileContentsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateFileContentsResponse" />
-    </operation>
     <operation name="enumerateFileContentTransfers">
       <input message="tns:EnumerateFileContentTransfersRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateFileContentTransfersRequest" />
       <output message="tns:EnumerateFileContentTransfersResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateFileContentTransfersResponse" />
@@ -469,14 +542,29 @@
       <input message="tns:GetFileContentsTransferRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsTransferRequest" />
       <output message="tns:GetFileContentsTransferResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsTransferResponse" />
     </operation>
-    <operation name="getFileContents">
-      <input message="tns:GetFileContentsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsRequest" />
-      <output message="tns:GetFileContentsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsResponse" />
-      <fault name="FileSizeTooBigException" message="tns:FileSizeTooBigExceptionFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/FileSizeTooBigExceptionFaultMessage" />
-    </operation>
     <operation name="getDataSet">
       <input message="tns:GetDataSetRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetDataSetRequest" />
       <output message="tns:GetDataSetResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetDataSetResponse" />
+    </operation>
+    <operation name="searchForBiomaterials">
+      <input message="tns:SearchForBiomaterialsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForBiomaterialsRequest" />
+      <output message="tns:SearchForBiomaterialsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForBiomaterialsResponse" />
+    </operation>
+    <operation name="searchForHybridizations">
+      <input message="tns:SearchForHybridizationsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForHybridizationsRequest" />
+      <output message="tns:SearchForHybridizationsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForHybridizationsResponse" />
+    </operation>
+    <operation name="searchForExperimentsByKeyword">
+      <input message="tns:SearchForExperimentsByKeywordRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForExperimentsByKeywordRequest" />
+      <output message="tns:SearchForExperimentsByKeywordResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForExperimentsByKeywordResponse" />
+    </operation>
+    <operation name="searchForFiles">
+      <input message="tns:SearchForFilesRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForFilesRequest" />
+      <output message="tns:SearchForFilesResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForFilesResponse" />
+    </operation>
+    <operation name="searchForBiomaterialsByKeyword">
+      <input message="tns:SearchForBiomaterialsByKeywordRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForBiomaterialsByKeywordRequest" />
+      <output message="tns:SearchForBiomaterialsByKeywordResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForBiomaterialsByKeywordResponse" />
     </operation>
     <wsdl:operation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="GetMultipleResourceProperties">
       <wsdl:input name="GetMultipleResourcePropertiesRequest" message="wsrpw:GetMultipleResourcePropertiesRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetMultipleResourceProperties" />

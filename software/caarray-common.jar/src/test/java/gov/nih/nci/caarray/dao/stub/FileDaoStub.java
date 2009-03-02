@@ -82,10 +82,16 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
+import java.util.Collections;
+import java.util.List;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+
 import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 
 
 /**
@@ -112,6 +118,10 @@ public class FileDaoStub extends AbstractDaoStub implements FileDao {
     public void deleteHqlBlobsByProjectId(Long projectId) {
         // NOOP
 
+    }
+
+    public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {
+        return Collections.emptyList();
     }
 
 }

@@ -262,7 +262,9 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         }
         Query q = HibernateUtil.getCurrentSession().createFilter(collection, filterQueryStr.toString());
         q.setFirstResult(pageSortParams.getIndex());
-        q.setMaxResults(pageSortParams.getPageSize());
+        if (pageSortParams.getPageSize() > 0) {
+            q.setMaxResults(pageSortParams.getPageSize());            
+        }
         return q.list();
     }
 

@@ -94,21 +94,7 @@ public class FileType extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
     
     private String name;
-    private boolean raw;
-
-    /**
-     * @return the raw
-     */
-    public boolean isRaw() {
-        return raw;
-    }
-
-    /**
-     * @param raw the raw to set
-     */
-    public void setRaw(boolean raw) {
-        this.raw = raw;
-    }
+    private FileTypeCategory category;
 
     /**
      * @return the name
@@ -129,5 +115,19 @@ public class FileType extends AbstractCaArrayEntity {
      */
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * @return the category
+     */
+    public FileTypeCategory getCategory() {
+        return category;
+    }
+
+    /**
+     * @param category the category to set
+     */
+    public void setCategory(FileTypeCategory category) {
+        this.category = category;
     }
 }

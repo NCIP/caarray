@@ -135,7 +135,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
@@ -730,7 +729,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {
-        throw new NotImplementedException("To be implemented");
+        return getFileDao().searchFiles(params, criteria);
     }
     
     private SearchDao getSearchDao() {

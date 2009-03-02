@@ -82,6 +82,13 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
+
+import java.util.List;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.file</code> package.
  *
@@ -101,4 +108,13 @@ public interface FileDao extends CaArrayDao {
      * @param projectId the id of the project being manipulated
      */
     void deleteHqlBlobsByProjectId(Long projectId);
+    
+    /**
+     * Performs a query for files by the given criteria.
+     *
+     * @param params paging and sorting parameters
+     * @param criteria the criteria for the search
+     * @return a list of matching files
+     */
+    List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria);
 }

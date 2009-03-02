@@ -83,9 +83,8 @@
 package gov.nih.nci.caarray.services.external.v1_0.grid.service;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFileContents;
 import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
-import gov.nih.nci.caarray.external.v1_0.query.PageSortParams;
+import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -95,9 +94,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.cagrid.transfer.context.service.helper.TransferServiceHelper;
 import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
-import org.cagrid.transfer.descriptor.DataDescriptor;
 
 /**
  * @author dkokotov
@@ -108,14 +105,13 @@ public class FileTransferEnumIterator extends BaseEnumIterator<TransferServiceCo
     private boolean compress;
 
     public FileTransferEnumIterator(FileDownloadRequest fileDownloadRequest, boolean compress) throws RemoteException {
-        super(new QName("http://transfer.cagrid.org/TransferService/Context/types", "TransferServiceContextReference"),
-                "lsid", false);
+        super(new QName("http://transfer.cagrid.org/TransferService/Context/types", "TransferServiceContextReference"));
         this.leftToDownload = new ArrayList<CaArrayEntityReference>(fileDownloadRequest.getFiles());
         this.compress = compress;
     }
 
     @Override
-    protected List<TransferServiceContextReference> getNextResults(PageSortParams enumParams) throws IOException {
+    protected List<TransferServiceContextReference> getNextResults(PagingParams enumParams) throws IOException {
         int i = 0;
         List<TransferServiceContextReference> transferRefs = new ArrayList<TransferServiceContextReference>();
         for (Iterator<CaArrayEntityReference> fileRefIt = leftToDownload.iterator(); fileRefIt.hasNext()

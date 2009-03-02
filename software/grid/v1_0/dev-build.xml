@@ -36,6 +36,8 @@
           <include name="jbossall-client-*.jar"/>
           <include name="log4j-*.jar"/>
           <include name="rmiio-*.jar"/>
+          <include name="javacsv-*.jar"/>
+          <include name="castor-*.jar"/>
         </fileset>
     </path>
     <path id="service.build.extended.classpath">

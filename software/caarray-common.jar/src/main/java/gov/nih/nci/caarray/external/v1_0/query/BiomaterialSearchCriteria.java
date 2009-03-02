@@ -80,78 +80,64 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.external.v1_0.protocol;
+package gov.nih.nci.caarray.external.v1_0.query;
 
-import java.util.Date;
+import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 
 /**
  * @author dkokotov
  */
-public class ProtocolApplication extends AbstractCaArrayEntity {
+public class BiomaterialSearchCriteria extends AbstractSearchCriteria {
     private static final long serialVersionUID = 1L;
     
-    private Protocol protocol;
-    private String performer;
-    private Date date;
-    private Set<ParameterValue> parameterValues = new HashSet<ParameterValue>();
-
+    private CaArrayEntityReference experiment;
+    private Set<String> names = new HashSet<String>();
+    private Set<BiomaterialType> types = new HashSet<BiomaterialType>();
+    
     /**
-     * @return the protocol
+     * @return the names
      */
-    public Protocol getProtocol() {
-        return protocol;
+    public Set<String> getNames() {
+        return names;
     }
 
     /**
-     * @param protocol the protocol to set
+     * @param names the names to set
      */
-    public void setProtocol(Protocol protocol) {
-        this.protocol = protocol;
+    public void setNames(Set<String> names) {
+        this.names = names;
     }
 
     /**
-     * @return the performer
+     * @return the types
      */
-    public String getPerformer() {
-        return performer;
+    public Set<BiomaterialType> getTypes() {
+        return types;
     }
 
     /**
-     * @param performer the performer to set
+     * @param types the types to set
      */
-    public void setPerformer(String performer) {
-        this.performer = performer;
+    public void setTypes(Set<BiomaterialType> types) {
+        this.types = types;
     }
 
     /**
-     * @return the date
+     * @return the experiment
      */
-    public Date getDate() {
-        return date;
+    public CaArrayEntityReference getExperiment() {
+        return experiment;
     }
 
     /**
-     * @param date the date to set
+     * @param experiment the experiment to set
      */
-    public void setDate(Date date) {
-        this.date = date;
+    public void setExperiment(CaArrayEntityReference experiment) {
+        this.experiment = experiment;
     }
 
-    /**
-     * @return the parameterValues
-     */
-    public Set<ParameterValue> getParameterValues() {
-        return parameterValues;
-    }
-
-    /**
-     * @param parameterValues the parameterValues to set
-     */
-    public void setParameterValues(Set<ParameterValue> parameterValues) {
-        this.parameterValues = parameterValues;
-    }
 }

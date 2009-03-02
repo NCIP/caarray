@@ -27,6 +27,7 @@
       <pathelement location="${project.lib}/cacore32-client-*.jar" id="extra.jars.fileset"/>
         <fileset dir="${project.lib}" id="extra.jars.fileset">
           <include name="commons-collections-*.jar"/>
+          <include name="commons-lang-*.jar"/>
           <include name="commons-io-*.jar"/>
           <include name="csmapi-*.jar"/>
           <include name="ejb3-persistence-*.jar"/>
@@ -40,6 +41,7 @@
           <include name="log4j-*.jar"/>
           <include name="nci-commons-core-*.jar"/>
           <include name="cglib-*.jar"/>
+          <include name="castor-*.jar"/>
         </fileset>
     </path>
     <path id="service.build.extended.classpath">

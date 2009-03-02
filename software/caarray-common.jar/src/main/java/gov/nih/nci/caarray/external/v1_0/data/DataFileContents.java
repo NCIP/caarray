@@ -85,6 +85,8 @@ package gov.nih.nci.caarray.external.v1_0.data;
 import java.io.Serializable;
 
 /**
+ * DataFileContents represents a file, including metadata and contents, within caarray.
+ * 
  * @author dkokotov
  */
 public class DataFileContents implements Serializable {

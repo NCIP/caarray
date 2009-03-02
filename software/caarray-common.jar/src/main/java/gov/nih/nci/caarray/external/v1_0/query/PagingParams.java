@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caArray2
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or 
+ * This caArray2 Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate, 
+ * its rights in the caArray2 Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and 
- * have distributed to and by third parties the caarray-common-jar Software and any 
+ * and prepare derivative works of the caArray2 Software; (ii) distribute and 
+ * have distributed to and by third parties the caArray2 Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,45 +80,64 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.external.v1_0.sample;
+package gov.nih.nci.caarray.external.v1_0.query;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import java.io.Serializable;
 
 /**
- * @author dkokotov
+ * Bean for specifying paging and sorting constraints for a query.
  * 
+ * @author dkokotov
  */
-public abstract class AbstractExperimentalGraphNode extends AbstractCaArrayEntity {
+public class PagingParams implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    private String name;
-    private String externalId;
+    private int maxResults;
+    private int firstResult;
 
     /**
-     * @return the name
+     * Constructor.
+     * 
+     * @param maxResults page size
+     * @param firstResult start index
      */
-    public String getName() {
-        return name;
+    public PagingParams(int maxResults, int firstResult) {
+        this.maxResults = maxResults;
+        this.firstResult = firstResult;
+    }
+    
+    /**
+     * Empty constructor, for serialization.
+     */
+    public PagingParams() {
+        // noop
     }
 
     /**
-     * @param name the name to set
+     * @return the pageSize
      */
-    public void setName(String name) {
-        this.name = name;
+    public int getMaxResults() {
+        return maxResults;
     }
 
     /**
-     * @return the externalId
+     * @param pageSize the pageSize to set
      */
-    public String getExternalId() {
-        return externalId;
+    public void setMaxResults(int pageSize) {
+        this.maxResults = pageSize;
     }
 
     /**
-     * @param externalId the externalId to set
+     * @return the index
      */
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
+    public int getFirstResult() {
+        return firstResult;
+    }
+
+    /**
+     * @param index the index to set
+     */
+    public void setFirstResult(int index) {
+        this.firstResult = index;
     }
 }

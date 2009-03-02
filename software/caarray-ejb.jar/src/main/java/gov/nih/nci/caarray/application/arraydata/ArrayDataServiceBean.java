@@ -129,7 +129,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
      * {@inheritDoc}
      */
     public DataSet getData(AbstractArrayData arrayData) {
-        LogUtil.logSubsystemEntry(LOG, arrayData);
+        LogUtil.logSubsystemEntry(LOG);
         checkArguments(arrayData);
         loadDataSet(arrayData);
         LogUtil.logSubsystemExit(LOG);
@@ -145,7 +145,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
      * {@inheritDoc}
      */
     public DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types) {
-        LogUtil.logSubsystemEntry(LOG, arrayData);
+        LogUtil.logSubsystemEntry(LOG);
         checkArguments(arrayData);
         loadDataSet(arrayData, types);
         LogUtil.logSubsystemExit(LOG);

@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.external.v1_0.query;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.FileType;
+import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -96,12 +96,11 @@ public class FileSearchCriteria extends AbstractSearchCriteria {
     
     private CaArrayEntityReference experiment;
     private String extension;
-    private FileType type;
-    private boolean includeRaw;
-    private boolean includeDerived;
-    private Set<String> sampleNames = new HashSet<String>(); 
-    private Set<String> hybridizationNames = new HashSet<String>();
-
+    private Set<CaArrayEntityReference> types = new HashSet<CaArrayEntityReference>();
+    private Set<FileTypeCategory> categories = new HashSet<FileTypeCategory>();
+    private Set<CaArrayEntityReference> samples = new HashSet<CaArrayEntityReference>();
+    private Set<CaArrayEntityReference> hybridizations = new HashSet<CaArrayEntityReference>();
+    
     /**
      * @return the experiment
      */
@@ -131,72 +130,58 @@ public class FileSearchCriteria extends AbstractSearchCriteria {
     }
 
     /**
-     * @return the type
+     * @return the types
      */
-    public FileType getType() {
-        return type;
+    public Set<CaArrayEntityReference> getTypes() {
+        return types;
     }
 
     /**
-     * @param type the type to set
+     * @param types the types to set
      */
-    public void setType(FileType type) {
-        this.type = type;
+    public void setTypes(Set<CaArrayEntityReference> types) {
+        this.types = types;
     }
 
     /**
-     * @return the includeRaw
+     * @return the categories
      */
-    public boolean isIncludeRaw() {
-        return includeRaw;
+    public Set<FileTypeCategory> getCategories() {
+        return categories;
     }
 
     /**
-     * @param includeRaw the includeRaw to set
+     * @param categories the categories to set
      */
-    public void setIncludeRaw(boolean includeRaw) {
-        this.includeRaw = includeRaw;
+    public void setCategories(Set<FileTypeCategory> categories) {
+        this.categories = categories;
     }
 
     /**
-     * @return the includeDerived
+     * @return the samples
      */
-    public boolean isIncludeDerived() {
-        return includeDerived;
+    public Set<CaArrayEntityReference> getSamples() {
+        return samples;
     }
 
     /**
-     * @param includeDerived the includeDerived to set
+     * @param samples the samples to set
      */
-    public void setIncludeDerived(boolean includeDerived) {
-        this.includeDerived = includeDerived;
+    public void setSamples(Set<CaArrayEntityReference> samples) {
+        this.samples = samples;
     }
 
     /**
-     * @return the sampleNames
+     * @return the hybridizations
      */
-    public Set<String> getSampleNames() {
-        return sampleNames;
+    public Set<CaArrayEntityReference> getHybridizations() {
+        return hybridizations;
     }
 
     /**
-     * @param sampleNames the sampleNames to set
+     * @param hybridizations the hybridizations to set
      */
-    public void setSampleNames(Set<String> sampleNames) {
-        this.sampleNames = sampleNames;
-    }
-
-    /**
-     * @return the hybridizationNames
-     */
-    public Set<String> getHybridizationNames() {
-        return hybridizationNames;
-    }
-
-    /**
-     * @param hybridizationNames the hybridizationNames to set
-     */
-    public void setHybridizationNames(Set<String> hybridizationNames) {
-        this.hybridizationNames = hybridizationNames;
+    public void setHybridizations(Set<CaArrayEntityReference> hybridizations) {
+        this.hybridizations = hybridizations;
     }
 }

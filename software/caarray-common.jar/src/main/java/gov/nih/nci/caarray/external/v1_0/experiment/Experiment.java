@@ -92,6 +92,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Experiment represents a microarray experiment.
+ * 
  * @author dkokotov
  */
 public class Experiment extends AbstractCaArrayEntity {
@@ -107,7 +109,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Term> normalizationTypes = new HashSet<Term>();
     private Set<Term> qualityControlTypes = new HashSet<Term>();
     private ArrayProvider arrayProvider;
-    private Set<AssayType> assayTypes = new HashSet<AssayType>();
+    private AssayType assayType;
     private Set<Factor> factors = new HashSet<Factor>();
     
     /**
@@ -237,17 +239,17 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the assayTypes
+     * @return the assayType
      */
-    public Set<AssayType> getAssayTypes() {
-        return assayTypes;
+    public AssayType getAssayType() {
+        return assayType;
     }
 
     /**
-     * @param assayTypes the assayTypes to set
+     * @param assayType the assayType to set
      */
-    public void setAssayTypes(Set<AssayType> assayTypes) {
-        this.assayTypes = assayTypes;
+    public void setAssayType(AssayType assayType) {
+        this.assayType = assayType;
     }
 
     /**

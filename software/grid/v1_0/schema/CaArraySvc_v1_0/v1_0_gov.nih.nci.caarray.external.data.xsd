@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dat="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"
     xmlns:car="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
+    xmlns:sam="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"
     targetNamespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" elementFormDefault="qualified">
     <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
         schemaLocation="v1_0_gov.nih.nci.caarray.external.xsd" />
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.sample.xsd" />
 
      <xs:simpleType name="DataType">
 		<xs:restriction base="xs:string">
@@ -39,14 +42,8 @@
         <xs:complexContent>
             <xs:extension base="dat:AbstractDataColumn">
                 <xs:sequence>
-		        	<xs:element name="values">        	
-        		    	<xs:complexType>            	
-                			<xs:sequence>
-                    			<xs:element name="short" minOccurs="0" maxOccurs="unbounded" type="xs:short"/>
-		                    </xs:sequence>
-        		        </xs:complexType>
-            		</xs:element>
-                </xs:sequence>
+                    <xs:element name="values" type="xs:string"/>
+                </xs:sequence>                
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -55,13 +52,7 @@
         <xs:complexContent>
             <xs:extension base="dat:AbstractDataColumn">
                 <xs:sequence>
-		        	<xs:element name="values">        	
-        		    	<xs:complexType>            	
-                			<xs:sequence>
-                    			<xs:element name="long" minOccurs="0" maxOccurs="unbounded" type="xs:long"/>
-		                    </xs:sequence>
-        		        </xs:complexType>
-            		</xs:element>
+                    <xs:element name="values" type="xs:string"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -71,14 +62,8 @@
         <xs:complexContent>
             <xs:extension base="dat:AbstractDataColumn">
                 <xs:sequence>
-		        	<xs:element name="values">        	
-        		    	<xs:complexType>            	
-                			<xs:sequence>
-                    			<xs:element name="boolean" minOccurs="0" maxOccurs="unbounded" type="xs:boolean"/>
-		                    </xs:sequence>
-        		        </xs:complexType>
-            		</xs:element>
-                </xs:sequence>
+                    <xs:element name="values" type="xs:string" />
+                </xs:sequence>                
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -87,14 +72,8 @@
         <xs:complexContent>
             <xs:extension base="dat:AbstractDataColumn">
                 <xs:sequence>
-		        	<xs:element name="values">        	
-        		    	<xs:complexType>            	
-                			<xs:sequence>
-                    			<xs:element name="float" minOccurs="0" maxOccurs="unbounded" type="xs:float"/>
-		                    </xs:sequence>
-        		        </xs:complexType>
-            		</xs:element>
-                </xs:sequence>
+                    <xs:element name="values" type="xs:string" />
+                </xs:sequence>                
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -103,13 +82,7 @@
         <xs:complexContent>
             <xs:extension base="dat:AbstractDataColumn">
                 <xs:sequence>
-		        	<xs:element name="values">        	
-        		    	<xs:complexType>            	
-                			<xs:sequence>
-                    			<xs:element name="string" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
-		                    </xs:sequence>
-        		        </xs:complexType>
-            		</xs:element>
+                    <xs:element name="values" type="xs:string" />
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -119,13 +92,7 @@
         <xs:complexContent>
             <xs:extension base="dat:AbstractDataColumn">
                 <xs:sequence>
-		        	<xs:element name="values">        	
-        		    	<xs:complexType>            	
-                			<xs:sequence>
-                    			<xs:element name="double" minOccurs="0" maxOccurs="unbounded" type="xs:double"/>
-		                    </xs:sequence>
-        		        </xs:complexType>
-            		</xs:element>
+                    <xs:element name="values" type="xs:string"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -135,13 +102,7 @@
         <xs:complexContent>
             <xs:extension base="dat:AbstractDataColumn">
                 <xs:sequence>
-		        	<xs:element name="values">        	
-        		    	<xs:complexType>            	
-                			<xs:sequence>
-                    			<xs:element name="int" minOccurs="0" maxOccurs="unbounded" type="xs:int"/>
-		                    </xs:sequence>
-        		        </xs:complexType>
-            		</xs:element>
+                    <xs:element name="values" type="xs:string"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -157,6 +118,7 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="hybridization" minOccurs="1" maxOccurs="1" type="sam:Hybridization" />
         </xs:sequence>
     </xs:complexType>    
 
@@ -193,13 +155,23 @@
         </xs:sequence>
     </xs:complexType>    
 
+    <xs:element name="FileTypeCategory" type="dat:FileTypeCategory" />
+    <xs:simpleType name="FileTypeCategory">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="RAW"/>
+            <xs:enumeration value="DERIVED"/>
+            <xs:enumeration value="SUPPLEMENTAL"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:element name="FileType" type="dat:FileType" />
     <xs:complexType name="FileType">
         <xs:complexContent>
             <xs:extension base="car:AbstractCaArrayEntity">
-                <xs:sequence/>
-		<xs:attribute name="name" type="xs:long" />
-		<xs:attribute name="raw" type="xs:boolean" />
+                <xs:sequence>
+                    <xs:element name="category" minOccurs="1" maxOccurs="1" type="dat:FileTypeCategory" />
+                </xs:sequence>
+    		    <xs:attribute name="name" type="xs:long" />
 	    </xs:extension>
 	</xs:complexContent>
     </xs:complexType>

@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import static org.junit.Assert.assertEquals;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -90,6 +91,8 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
+import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -98,10 +101,13 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.io.ByteArrayInputStream;
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * @author Scott Miller
@@ -235,6 +241,73 @@ public class FileDaoTest extends AbstractDaoTest {
         Transaction tx = HibernateUtil.beginTransaction();
         DAO_OBJECT.deleteHqlBlobsByProjectId(12345678L);
         DAO_OBJECT.deleteSqlBlobsByProjectId(12345678L);
+        tx.commit();
+    }
+
+    @Test
+    public void testSearchByCriteria() throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+
+        saveSupportingObjects();
+        
+        CaArrayFile file1 = new CaArrayFile();
+        file1.setName("file1");
+        file1.setFileType(FileType.MAGE_TAB_IDF);
+        file1.setFileStatus(FileStatus.UPLOADED);
+        ByteArrayInputStream in1 = new ByteArrayInputStream("test idf".getBytes());
+        file1.writeContents(in1);
+        file1.setProject(DUMMY_PROJECT_1);
+        DUMMY_PROJECT_1.getFiles().add(file1);
+        DAO_OBJECT.save(file1);
+
+        CaArrayFile file2 = new CaArrayFile();
+        file2.setName("file2");
+        file2.setFileType(FileType.AFFYMETRIX_CEL);
+        file2.setFileStatus(FileStatus.UPLOADED);
+        in1 = new ByteArrayInputStream("test cel".getBytes());
+        file2.writeContents(in1);
+        file2.setProject(DUMMY_PROJECT_1);
+        DUMMY_PROJECT_1.getFiles().add(file2);
+        DAO_OBJECT.save(file2);
+
+        CaArrayFile file3 = new CaArrayFile();
+        file3.setName("file3");
+        file3.setFileType(FileType.AFFYMETRIX_CHP);
+        file3.setFileStatus(FileStatus.UPLOADED);
+        in1 = new ByteArrayInputStream("test chp".getBytes());
+        file3.writeContents(in1);
+        file3.setProject(DUMMY_PROJECT_1);
+        DUMMY_PROJECT_1.getFiles().add(file3);
+        DAO_OBJECT.save(file3);
+
+        CaArrayFile file4 = new CaArrayFile();
+        file4.setName("file4");
+        file4.setFileType(FileType.AFFYMETRIX_CDF);
+        file4.setFileStatus(FileStatus.UPLOADED);
+        in1 = new ByteArrayInputStream("test ad".getBytes());
+        file4.writeContents(in1);
+        DAO_OBJECT.save(file4);
+
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        
+        PageSortParams<CaArrayFile> params = new PageSortParams<CaArrayFile>(-1, 0, new AdHocSortCriterion<CaArrayFile>("name"), false);
+        FileSearchCriteria criteria = new FileSearchCriteria();
+        criteria.setExperiment(DUMMY_EXPERIMENT_1);
+        criteria.setIncludeDerived(true);
+        criteria.setIncludeRaw(true);
+        
+        List<CaArrayFile> files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(2, files.size());
+        assertEquals("file2", files.get(0).getName());
+        assertEquals("file3", files.get(1).getName());
+
+        criteria.setIncludeRaw(false);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(1, files.size());
+        assertEquals("file3", files.get(0).getName());
+        
         tx.commit();
     }
 }

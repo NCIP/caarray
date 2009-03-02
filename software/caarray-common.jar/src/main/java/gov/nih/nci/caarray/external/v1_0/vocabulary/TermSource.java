@@ -86,8 +86,9 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 
 
 /**
- * @author dkokotov
+ * A TermSource represents a controlled vocabulary / ontology.
  * 
+ * @author dkokotov
  */
 public class TermSource extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;

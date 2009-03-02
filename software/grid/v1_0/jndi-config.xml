@@ -87,6 +87,10 @@
           <name>dataService_classMappingsFilename</name>
           <value>ETC-PATH/@dataService_classMappingsFilename@</value>
         </parameter>
+        <parameter>
+          <name>dataService_enumIteratorType</name>
+          <value>@dataService_enumIteratorType@</value>
+        </parameter>
       </resourceParams>
     </resource>
     <resource name="home" type="gov.nih.nci.caarray.services.external.v1_0.grid.service.globus.resource.CaArraySvc_v1_0ResourceHome">

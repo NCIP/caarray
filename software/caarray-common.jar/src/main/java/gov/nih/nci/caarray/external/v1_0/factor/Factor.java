@@ -82,22 +82,19 @@
  */
 package gov.nih.nci.caarray.external.v1_0.factor;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 /**
+ * Factor represents an experimental factor, e.g. an independent variable within an experiment.
  * @author dkokotov
- * 
  */
 public class Factor extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
     
     private String name;
+    private String description;
     private Term type;
-    private Set<FactorValue> values = new HashSet<FactorValue>();
 
     /**
      * @return the name
@@ -112,6 +109,20 @@ public class Factor extends AbstractCaArrayEntity {
     public void setName(String name) {
         this.name = name;
     }
+    
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     /**
      * @return the type
@@ -125,19 +136,5 @@ public class Factor extends AbstractCaArrayEntity {
      */
     public void setType(Term type) {
         this.type = type;
-    }
-
-    /**
-     * @return the values
-     */
-    public Set<FactorValue> getValues() {
-        return values;
-    }
-
-    /**
-     * @param values the values to set
-     */
-    public void setValues(Set<FactorValue> values) {
-        this.values = values;
     }
 }

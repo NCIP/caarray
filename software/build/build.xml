@@ -1013,13 +1013,18 @@
             </fileset>
         </path>
         <pathtofileset name="common.compile.dependencies.fileset" pathrefid="common.compile.dependencies.path" dir="${project.lib}"/>
+    	
+    	<path id="external.api.dependencies.path">
+            <fileset refid="dozer.jar.fileset"/>
+            <fileset refid="rmiio.jar.fileset"/>    		
+    	</path>
+        <pathtofileset name="external.api.dependencies.fileset" pathrefid="external.api.dependencies.path" dir="${project.lib}"/>
 
         <path id="ejb.compile.dependencies.path">
             <fileset refid="jboss.dependencies.fileset"/>
             <fileset refid="common.compile.dependencies.fileset"/>
+        	<fileset refid="external.api.dependencies.fileset"/>
             <fileset refid="ejb3-persistence.jar.fileset"/>
-            <fileset refid="dozer.jar.fileset"/>
-            <fileset refid="rmiio.jar.fileset"/>
             <fileset refid="javassist.jar.fileset"/>
         </path>
 
@@ -1134,6 +1139,7 @@
             <fileset refid="jboss.dependencies.fileset"/>
             <fileset refid="common.compile.dependencies.fileset"/>
             <fileset refid="test.dependencies.fileset"/>
+            <fileset refid="external.api.dependencies.fileset"/>
         </path>
 
         <path id="common.test.dependencies.path">
@@ -1565,8 +1571,11 @@
             <fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
             <fileset dir="${caarray-client.dir}/src/distribution/resources" />
             <zipfileset prefix="lib" refid="caarray-client.dependencies.fileset" />
+        	<zipfileset prefix="lib" refid="external.api.dependencies.fileset" />
             <zipfileset prefix="lib" refid="jboss.dependencies.fileset" />
             <zipfileset dir="${caarray-client.target.dir}" includes="docs/**" />
+        	<zipfileset prefix="docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_client_model.eap" />
+        	<zipfileset prefix="example/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/*.java" />
             <zipfileset prefix="grid/lib" refid="grid.dependencies.lib.fileset" />
             <zipfileset prefix="grid/lib" refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
             <zipfileset prefix="grid/lib" refid="grid.dependencies.caarray-grid-svc.v1_0.build.fileset" />
@@ -2185,9 +2194,10 @@
             <classpath>
                 <fileset dir="${caarray-client.target.dir}" includes="caarray-client.jar" />
                 <path refid="common.test.dependencies.path" />
+                <path refid="external.api.dependencies.path" />
             </classpath>
             <include name="gov.nih.nci.caarray.test.base.TestProperties.java" />
-            <include name="**/api/java/**" />
+            <include name="**/api/**/java/**" />
         </javac>
     </target>
 
@@ -2199,7 +2209,7 @@
                 <path refid="test.grid.dependencies.path" />
             </classpath>
             <include name="gov.nih.nci.caarray.test.base.TestProperties.java" />
-            <include name="**/api/grid/**" />
+            <include name="**/api/**/grid/**" />
         </javac>
     </target>
 
@@ -2229,7 +2239,7 @@
     </target>
 
     <target name="test:api:run-tests" unless="notest" depends="init:third-party-paths,test:api:compile-tests,build:caarray-client.jar">
-        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/java" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" source.include="**/Api*.java" source.exclude="**/Abstract*.java" />
+        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/java" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" source.include="**/external/**/*.java" source.exclude="**/Abstract*.java" />
     </target>
 
     <target name="test:dataset" unless="notest" depends="init:third-party-paths,test:api:compile-tests,build:caarray-client.jar">

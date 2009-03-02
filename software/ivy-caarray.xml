@@ -252,7 +252,7 @@
 
         <dependency conf="project" name="yuicompressor" org="com.yahoo" rev="2.3.5"/>
 
-        <dependency conf="project" name="dozer" org="dozer" rev="4.2.1"/>
+        <dependency conf="project" name="dozer" org="dozer" rev="4.4.1"/>
 
         <dependency conf="project" name="rmiio" org="com.healthmarketscience" rev="2.0.2"/>
     </dependencies>

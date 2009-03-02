@@ -35,12 +35,13 @@
     </rule>
     <rule ref="rulesets/codesize.xml/CyclomaticComplexity">
         <properties>
-            <property name="reportLevel" value="7" />
+            <property name="reportLevel" value="10" />
         </properties>
     </rule>
 
     <rule ref="rulesets/coupling.xml">
         <exclude name="ExcessiveImports" />
+        <exclude name="CouplingBetweenObjects" />
     </rule>
 
     <rule ref="rulesets/design.xml">

@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray2
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caArray2 Software License (the License) is between NCI and You. You (or 
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caArray2 Software to (i) use, install, access, operate, 
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray2 Software; (ii) distribute and 
- * have distributed to and by third parties the caArray2 Software and any 
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and 
+ * have distributed to and by third parties the caarray-common-jar Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,47 +80,35 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external.v1_0.grid.service;
+package gov.nih.nci.caarray.external.v1_0.data;
 
-import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFileContents;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
-import gov.nih.nci.caarray.external.v1_0.query.PageSortParams;
-import gov.nih.nci.caarray.services.external.v1_0.data.FileSizeTooBigException;
-
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.xml.namespace.QName;
 
 /**
  * @author dkokotov
- * 
+ *
  */
-public class FileContentsEnumIterator extends BaseEnumIterator<DataFileContents> {
-    private List<CaArrayEntityReference> leftToDownload;
-    private boolean compress;
+public enum FileTypeCategory {
+    /**
+     * file type category for raw array data files.
+     */
+    RAW,
+    
+    /**
+     * file type category for derived array data files.
+     */
+    DERIVED,
+ 
+    /**
+     * file type category for supplemental files.
+     */
+    SUPPLEMENTAL;
 
-    public FileContentsEnumIterator(FileDownloadRequest fileDownloadRequest, boolean compress) throws RemoteException {
-        super(new QName("gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data", "DataFileContents"),
-                "lsid", false);
-        this.leftToDownload = new ArrayList<CaArrayEntityReference>(fileDownloadRequest.getFiles());
-        this.compress = compress;
-    }
-
-    @Override
-    protected List<DataFileContents> getNextResults(PageSortParams enumParams) throws FileSizeTooBigException {
-        int i = 0;
-        List<DataFileContents> contentsList = new ArrayList<DataFileContents>();
-        for (Iterator<CaArrayEntityReference> fileRefIt = leftToDownload.iterator(); fileRefIt.hasNext()
-                && i < enumParams.getMaxResults(); i++) {
-            CaArrayEntityReference fileRef = fileRefIt.next();
-            fileRefIt.remove();
-            DataFileContents contents = getCaArrayServer().getDataService().getFileContents(fileRef, compress);
-            contentsList.add(contents);
-        }
-        return contentsList;
+    private static final long serialVersionUID = 1L;
+    
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name();
     }
 }

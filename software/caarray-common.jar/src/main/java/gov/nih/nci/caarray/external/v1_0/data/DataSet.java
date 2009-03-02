@@ -87,8 +87,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * A DataSet represents the collection of data across several hybridizations for a particular set of quantities
+ * (QuantitationTypes) and design elements. 
+ *   
  * @author dkokotov
- * 
  */
 public class DataSet implements Serializable {
     private static final long serialVersionUID = 1L;

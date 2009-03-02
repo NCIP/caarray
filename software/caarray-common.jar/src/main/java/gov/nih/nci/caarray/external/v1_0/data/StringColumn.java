@@ -82,29 +82,77 @@
  */
 package gov.nih.nci.caarray.external.v1_0.data;
 
-import java.util.List;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+
+import com.csvreader.CsvReader;
+import com.csvreader.CsvWriter;
 
 
 /**
+ * A StringColumn represents a data column with string values.
+ * 
  * @author dkokotov
- *
  */
-public class StringColumn extends AbstractDataColumn {
+@SuppressWarnings({"PMD.MethodReturnsInternalArray", "PMD.ArrayIsStoredDirectly" })
+public final class StringColumn extends AbstractDataColumn {
     private static final long serialVersionUID = 1L;
 
-    private List<String> values;
+    private String[] values;
 
     /**
      * @return the values
      */
-    public List<String> getValues() {
+    public String[] getValues() {
         return values;
     }
 
     /**
      * @param values the values to set
      */
-    public void setValues(List<String> values) {
+    public void setValues(String[] values) {
         this.values = values;
+    }
+    
+    /**
+     * @return the values of this column as a comma-separated string. Each value will be encoded in this string
+     * by escaping any commas in the value with a backslash.
+     */
+    public String getValuesAsString() {
+        try {
+            StringWriter sw = new StringWriter();
+            CsvWriter csvWriter = new CsvWriter(sw, ',');
+            csvWriter.setEscapeMode(CsvWriter.ESCAPE_MODE_BACKSLASH);
+            csvWriter.writeRecord(this.values);
+            csvWriter.flush();
+            csvWriter.close();
+            return sw.toString();
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not encode as CSV record: " + e, e);
+        }
+    }
+ 
+    /**
+     * Sets the values of this column from a string, which must contain a comma-separated list of strings. Each
+     * such string will be unescaped by converting any backslash-comma combinations back to commas.
+     * @param s string containing a comma-separated list of strings.
+     */
+    public void setValuesAsString(String s) {
+        try {
+            CsvReader csvReader = new CsvReader(new StringReader(s), ',');
+            csvReader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+            if (csvReader.readRecord()) {
+                int length = csvReader.getColumnCount();
+                this.values = new String[length];
+                for (int i = 0; i < length; i++) {
+                    this.values[i] = csvReader.get(i);
+                }
+            }
+            csvReader.close();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not parse as CSV record: " + s, e);
+        }
+        
     }
 }

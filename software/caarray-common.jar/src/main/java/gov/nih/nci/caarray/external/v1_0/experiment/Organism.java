@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.external.v1_0.experiment;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 /**
@@ -123,12 +121,5 @@ public class Organism extends Term {
      */
     public void setScientificName(String scientificName) {
         this.scientificName = scientificName;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
     }
 }

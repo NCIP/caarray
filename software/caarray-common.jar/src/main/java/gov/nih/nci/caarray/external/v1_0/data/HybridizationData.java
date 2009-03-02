@@ -89,8 +89,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author dkokotov
+ * HybridizationData represents the set of measurements captured from a single hybridization.
  * 
+ * @author dkokotov
  */
 public class HybridizationData implements Serializable {
     private static final long serialVersionUID = 1L;

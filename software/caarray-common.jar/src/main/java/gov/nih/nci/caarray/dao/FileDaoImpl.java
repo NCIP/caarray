@@ -83,18 +83,31 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.BlobHolder;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Junction;
+import org.hibernate.criterion.Restrictions;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * DAO to manipulate file objects.
  */
+@SuppressWarnings("PMD.CyclomaticComplexity")
 class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
     private static final Logger LOG = Logger.getLogger(FileDaoImpl.class);
 
@@ -191,4 +204,43 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings({"unchecked", "PMD.CyclomaticComplexity", "PMD.NPathComplexity" })
+    public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {
+        Criteria c = HibernateUtil.getCurrentSession().createCriteria(CaArrayFile.class);
+        Junction junction = criteria.isAnd() ? Restrictions.conjunction() : Restrictions.disjunction();
+        c.add(junction);
+        junction.add(Restrictions.eq("project", criteria.getExperiment().getProject()));            
+        if (!criteria.getTypes().isEmpty()) {
+            junction.add(Restrictions.in("type", criteria.getTypes()));
+        }
+        if (criteria.getExtension() != null) {
+            junction.add(Restrictions.like("name", "%." + criteria.getExtension()));
+        }        
+        Set<String> includedTypes = new HashSet<String>();     
+        if (criteria.isIncludeDerived()) {
+            for (FileType ft : FileType.DERIVED_ARRAY_DATA_FILE_TYPES) {
+                includedTypes.add(ft.name());
+            }
+        }
+        if (criteria.isIncludeRaw()) {            
+            for (FileType ft : FileType.RAW_ARRAY_DATA_FILE_TYPES) {
+                includedTypes.add(ft.name());
+            }
+        }
+        Criterion typeCriterion = Restrictions.in("type", includedTypes);
+        if (criteria.isIncludeSupplemental()) {
+            typeCriterion = Restrictions.disjunction().add(typeCriterion).add(
+                    Restrictions.eq("status", FileStatus.SUPPLEMENTAL.name()));
+        }
+        junction.add(typeCriterion);
+        c.setFirstResult(params.getIndex());
+        if (params.getPageSize() > 0) {
+            c.setMaxResults(params.getPageSize());
+        }
+        c.addOrder(toOrder(params));
+        return c.list();
+    }
 }

@@ -80,9 +80,9 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.external.v1_0.protocol;
+package gov.nih.nci.caarray.external.v1_0.query;
 
-import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
+import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -90,112 +90,38 @@ import java.util.Set;
 /**
  * @author dkokotov
  */
-public class Protocol extends Term {
+public class HybridizationSearchCriteria extends AbstractSearchCriteria {
     private static final long serialVersionUID = 1L;
     
-    private String contact;
-    private String description;
-    private String hardware;
-    private String name;
-    private String software;
-    private Term type;
-    private Set<Parameter> parameters = new HashSet<Parameter>();
-
+    private CaArrayEntityReference experiment;
+    private Set<String> names = new HashSet<String>();
+    
     /**
-     * @return the contact
+     * @return the names
      */
-    public String getContact() {
-        return contact;
+    public Set<String> getNames() {
+        return names;
     }
 
     /**
-     * @param contact the contact to set
+     * @param names the names to set
      */
-    public void setContact(String contact) {
-        this.contact = contact;
+    public void setNames(Set<String> names) {
+        this.names = names;
     }
 
     /**
-     * @return the description
+     * @return the experiment
      */
-    public String getDescription() {
-        return description;
+    public CaArrayEntityReference getExperiment() {
+        return experiment;
     }
 
     /**
-     * @param description the description to set
+     * @param experiment the experiment to set
      */
-    public void setDescription(String description) {
-        this.description = description;
+    public void setExperiment(CaArrayEntityReference experiment) {
+        this.experiment = experiment;
     }
 
-    /**
-     * @return the hardware
-     */
-    public String getHardware() {
-        return hardware;
-    }
-
-    /**
-     * @param hardware the hardware to set
-     */
-    public void setHardware(String hardware) {
-        this.hardware = hardware;
-    }
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return the software
-     */
-    public String getSoftware() {
-        return software;
-    }
-
-    /**
-     * @param software the software to set
-     */
-    public void setSoftware(String software) {
-        this.software = software;
-    }
-
-    /**
-     * @return the type
-     */
-    public Term getType() {
-        return type;
-    }
-
-    /**
-     * @param type the type to set
-     */
-    public void setType(Term type) {
-        this.type = type;
-    }
-
-    /**
-     * @return the parameters
-     */
-    public Set<Parameter> getParameters() {
-        return parameters;
-    }
-
-    /**
-     * @param parameters the parameters to set
-     */
-    public void setParameters(Set<Parameter> parameters) {
-        this.parameters = parameters;
-    }
 }

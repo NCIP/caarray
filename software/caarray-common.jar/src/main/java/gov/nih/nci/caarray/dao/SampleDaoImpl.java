@@ -132,7 +132,9 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
             BiomaterialSearchCategory... categories) {
         Query q = getSearchQuery(false, params, keyword, categories);
         q.setFirstResult(params.getIndex());
-        q.setMaxResults(params.getPageSize());
+        if (params.getPageSize() > 0) {
+            q.setMaxResults(params.getPageSize());
+        }
         return q.list();
     }
 
@@ -156,7 +158,9 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         }
 
         q.setFirstResult(params.getIndex());
-        q.setMaxResults(params.getPageSize());
+        if (params.getPageSize() > 0) {
+            q.setMaxResults(params.getPageSize());
+        }
         return q.list();
     }
 
@@ -203,7 +207,9 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
             Category c, String keyword) {
         Query q = createQueryForSamplesByCharacteristicCategory(false, SELECT_DISTINCT + "s", params, c, keyword);
         q.setFirstResult(params.getIndex());
-        q.setMaxResults(params.getPageSize());
+        if (params.getPageSize() > 0) {
+            q.setMaxResults(params.getPageSize());
+        }
         return q.list();
     }
 

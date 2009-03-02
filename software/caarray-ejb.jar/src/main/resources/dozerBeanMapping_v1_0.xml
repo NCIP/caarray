@@ -6,24 +6,44 @@
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.array.ArrayDesign</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.array.ArrayDesign</class-b>   
+    	<field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.array.ArrayDesign">
+      		<a>id</a>
+     	 	<b>lsid</b>
+    	</field>
     	<field>
       		<a>provider.name</a>
      	 	<b>arrayProvider</b>
     	</field>
   	</mapping>  
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.project.AssayType</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.array.AssayType</class-b>   
+        <field>
+            <a>value</a>
+            <b>name</b>
+        </field>
+    </mapping>  
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.file.FileType</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.data.FileType</class-b>   
-    	<field>
-      		<a>rawArrayData</a>
-     	 	<b>raw</b>
-    	</field>
+        <field custom-converter="gov.nih.nci.caarray.services.external.FileTypeNameToLsidConverter" type="one-way">
+            <a>name</a>
+            <b>lsid</b>
+        </field>
+        <field type="one-way">
+            <a>name</a>
+            <b>name</b>
+        </field>
   	</mapping>  
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.project.Experiment</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.experiment.Experiment</class-b>   
+    	<field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.experiment.Experiment">
+      		<a>id</a>
+     	 	<b>lsid</b>
+    	</field>
     	<field>
-      		<a>manufacturer.name</a>
+      		<a>manufacturer</a>
      	 	<b>arrayProvider</b>
     	</field>
     	<field>
@@ -36,16 +56,28 @@
     	</field>
   	</mapping>  
 	<mapping> 
+    	<class-a>gov.nih.nci.caarray.domain.project.Factor</class-a>
+    	<class-b>gov.nih.nci.caarray.external.v1_0.factor.Factor</class-b>   
+    	<field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.factor.Factor">
+      		<a>id</a>
+     	 	<b>lsid</b>
+    	</field>
+  	</mapping>  
+	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.project.FactorValue</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.factor.FactorValue</class-b>   
-    	<field-exclude>
+    	<field custom-converter="gov.nih.nci.caarray.services.external.v1_0.FactorValueConverter">
       		<a>value</a>
      	 	<b>value</b>
-    	</field-exclude>
+    	</field>
   	</mapping>  
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.project.ExperimentContact</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.experimentExperimentalContact">
+            <a>id</a>
+            <b>lsid</b>
+        </field>
     	<field>
       		<a>contact</a>
      	 	<b>person</b>
@@ -54,22 +86,62 @@
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.contact.Person</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.experiment.Person</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.experiment.Person">
+            <a>id</a>
+            <b>lsid</b>
+        </field>
     	<field>
       		<a>email</a>
      	 	<b>emailAddress</b>
     	</field>
   	</mapping>  
+    <mapping> 
+        <class-a>edu.georgetown.pir.Organism</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.experiment.Organism</class-b>
+        <field type="one-way">
+            <a>scientificName</a>
+            <b>value</b>
+        </field>
+        <field>
+            <a>scientificName</a>
+            <b>scientificName</b>
+        </field>
+    </mapping>  
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.vocabulary.Term</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.vocabulary.Term</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.vocabulary.Term">
+            <a>id</a>
+            <b>lsid</b>
+        </field>
     	<field>
       		<a>source</a>
      	 	<b>termSource</b>
     	</field>
   	</mapping>  
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.vocabulary.TermSource</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource">
+            <a>id</a>
+            <b>lsid</b>
+        </field>
+    </mapping>  
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.vocabulary.Category</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.vocabulary.Category</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.vocabulary.Category">
+            <a>id</a>
+            <b>lsid</b>
+        </field>
+    </mapping>  
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.data.QuantitationType</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.data.QuantitationType</class-b>   
+    	<field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.data.QuantitationType">
+      		<a>id</a>
+     	 	<b>lsid</b>
+    	</field>
     	<field>
       		<a>type</a>
      	 	<b>dataType</b>
@@ -93,4 +165,172 @@
      	 	<b-hint>gov.nih.nci.caarray.external.v1_0.data.BooleanColumn,gov.nih.nci.caarray.external.v1_0.data.ShortColumn,gov.nih.nci.caarray.external.v1_0.data.LongColumn,gov.nih.nci.caarray.external.v1_0.data.IntegerColumn,gov.nih.nci.caarray.external.v1_0.data.FloatColumn,gov.nih.nci.caarray.external.v1_0.data.DoubleColumn,gov.nih.nci.caarray.external.v1_0.data.StringColumn</b-hint>
     	</field>
   	</mapping>    
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.data.ShortColumn</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.data.ShortColumn</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.DataValuesConverter">
+            <a>values</a>
+            <b>values</b>
+        </field>
+        <field-exclude>
+            <a>valuesAsString</a>
+            <b>valuesAsString</b>
+        </field-exclude>
+    </mapping>    
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.data.FloatColumn</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.data.FloatColumn</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.DataValuesConverter">
+            <a>values</a>
+            <b>values</b>
+        </field>
+        <field-exclude>
+            <a>valuesAsString</a>
+            <b>valuesAsString</b>
+        </field-exclude>
+    </mapping>    
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.data.BooleanColumn</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.data.BooleanColumn</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.DataValuesConverter">
+            <a>values</a>
+            <b>values</b>
+        </field>
+        <field-exclude>
+            <a>valuesAsString</a>
+            <b>valuesAsString</b>
+        </field-exclude>
+    </mapping>    
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.data.LongColumn</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.data.LongColumn</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.DataValuesConverter">
+            <a>values</a>
+            <b>values</b>
+        </field>
+        <field-exclude>
+            <a>valuesAsString</a>
+            <b>valuesAsString</b>
+        </field-exclude>
+    </mapping>    
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.data.DoubleColumn</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.data.DoubleColumn</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.DataValuesConverter">
+            <a>values</a>
+            <b>values</b>
+        </field>
+        <field-exclude>
+            <a>valuesAsString</a>
+            <b>valuesAsString</b>
+        </field-exclude>
+    </mapping>    
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.data.IntegerColumn</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.data.IntegerColumn</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.DataValuesConverter">
+            <a>values</a>
+            <b>values</b>
+        </field>
+        <field-exclude>
+            <a>valuesAsString</a>
+            <b>valuesAsString</b>
+        </field-exclude>
+    </mapping>    
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.data.StringColumn</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.data.StringColumn</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.DataValuesConverter">
+            <a>values</a>
+            <b>values</b>
+        </field>
+        <field-exclude>
+            <a>valuesAsString</a>
+            <b>valuesAsString</b>
+        </field-exclude>
+    </mapping>    
+	<mapping> 
+    	<class-a>gov.nih.nci.caarray.domain.file.CaArrayFile</class-a>
+    	<class-b>gov.nih.nci.caarray.external.v1_0.data.DataFile</class-b>   
+    	<field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.data.DataFile">
+      		<a>id</a>
+     	 	<b>lsid</b>
+    	</field>
+  	</mapping>    
+	<mapping> 
+    	<class-a>gov.nih.nci.caarray.domain.hybridization.Hybridization</class-a>
+    	<class-b>gov.nih.nci.caarray.external.v1_0.sample.Hybridization</class-b>   
+    	<field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.sample.Hybridization">
+      		<a>id</a>
+     	 	<b>lsid</b>
+    	</field>
+  	</mapping>    
+	<mapping> 
+    	<class-a>gov.nih.nci.caarray.domain.sample.Source</class-a>
+    	<class-b>gov.nih.nci.caarray.external.v1_0.sample.Biomaterial</class-b>   
+    	<field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.sample.Sample">
+      		<a>id</a>
+     	 	<b>lsid</b>
+    	</field>
+        <field>
+            <a>nodeType</a>
+            <b>type</b>
+        </field>
+  	</mapping>
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.sample.Sample</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.sample.Biomaterial</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.sample.Sample">
+            <a>id</a>
+            <b>lsid</b>
+        </field>
+        <field>
+            <a>nodeType</a>
+            <b>type</b>
+        </field>
+    </mapping>
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.sample.Extract</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.sample.Biomaterial</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.sample.Sample">
+            <a>id</a>
+            <b>lsid</b>
+        </field>
+        <field>
+            <a>nodeType</a>
+            <b>type</b>
+        </field>
+    </mapping>
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.sample.LabeledExtract</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.sample.Biomaterial</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.IdToLsidConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.sample.Sample">
+            <a>id</a>
+            <b>lsid</b>
+        </field>
+        <field>
+            <a>nodeType</a>
+            <b>type</b>
+        </field>
+    </mapping>
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.sample.Characteristic</class-b>   
+        <field type="one-way">
+            <a>term</a>
+            <b>termValue</b>
+        </field>
+    </mapping>  
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.sample.Characteristic</class-b>   
+        <field type="one-way">
+            <a>value</a>
+            <b>measurementValue</b>
+        </field>
+        <field>
+            <a>unit</a>
+            <b>value.unit</b>
+        </field>
+    </mapping>      
 </mappings>

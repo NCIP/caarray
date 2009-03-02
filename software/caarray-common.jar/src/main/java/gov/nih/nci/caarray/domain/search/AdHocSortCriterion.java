@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.domain.search;
 
-import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
 
 /**
  * Class for creating an ad-hoc sort criterion, ie when there is no enumeration of sort fields
@@ -90,7 +89,7 @@ import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
  * @param <T> the type of the entity to which the sort is to be applied
  * @author dkokotov
  */
-public class AdHocSortCriterion<T> implements SortCriterion<T> {
+public class AdHocSortCriterion<T> implements JoinableSortCriterion<T> {
     private final String orderField;
 
     /**
@@ -106,5 +105,12 @@ public class AdHocSortCriterion<T> implements SortCriterion<T> {
      */
     public String getOrderField() {
         return this.orderField;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String[] getJoins() {
+        return null;
     }
 }

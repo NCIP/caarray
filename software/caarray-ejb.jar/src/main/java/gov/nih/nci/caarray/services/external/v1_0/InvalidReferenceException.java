@@ -80,98 +80,46 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.external.v1_0.query;
+package gov.nih.nci.caarray.services.external.v1_0;
 
-import java.io.Serializable;
+import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 
 /**
- * Bean for specifying paging and sorting constraints for a query.
+ * Exception thrown to indicate that a passed in CaArrayEntityReference was
+ * invalid in some general way. Use of one of the subclasses of this may be more
+ * appropriate for certain specific types of invalid references. 
  * 
  * @author dkokotov
  */
-public class PageSortParams implements Serializable {
+public class InvalidReferenceException extends Exception {
     private static final long serialVersionUID = 1L;
     
-    private int maxResults;
-    private int firstResult;
-    private String sortField;
-    private boolean desc;
-
-    /**
-     * Constructor.
-     * 
-     * @param maxResults page size
-     * @param firstResult start index
-     * @param sortField the field to sort by
-     * @param desc true for descending sort
-     */
-    public PageSortParams(int maxResults, int firstResult, String sortField, boolean desc) {
-        this.maxResults = maxResults;
-        this.firstResult = firstResult;
-        this.sortField = sortField;
-        this.desc = desc;
-    }
+    private final CaArrayEntityReference reference;
     
     /**
-     * Empty constructor, for serialization.
+     * Constructor for no cause.
+     * @param reference the problematic reference
      */
-    public PageSortParams() {
-        // noop
+    public InvalidReferenceException(CaArrayEntityReference reference) {
+        super();
+        this.reference = reference;
     }
 
     /**
-     * @return the pageSize
+     * Constructor for given underlying cause.
+     * @param cause the cause
+     * @param reference the problematic reference
      */
-    public int getMaxResults() {
-        return maxResults;
+    public InvalidReferenceException(Throwable cause, CaArrayEntityReference reference) {
+        super(cause);
+        this.reference = reference;
     }
 
     /**
-     * @param pageSize the pageSize to set
+     * @return the reference
      */
-    public void setMaxResults(int pageSize) {
-        this.maxResults = pageSize;
+    public CaArrayEntityReference getReference() {
+        return reference;
     }
 
-    /**
-     * @return the index
-     */
-    public int getFirstResult() {
-        return firstResult;
-    }
-
-    /**
-     * @param index the index to set
-     */
-    public void setFirstResult(int index) {
-        this.firstResult = index;
-    }
-
-    /**
-     * @return the sortField
-     */
-    public String getSortField() {
-        return sortField;
-    }
-
-    /**
-     * @param sortField the sortField to set
-     */
-    public void setSortField(String sortField) {
-        this.sortField = sortField;
-    }
-
-    /**
-     * @return true to sort in descending order
-     */
-    public boolean isDesc() {
-        return desc;
-    }
-
-    /**
-     * @param desc true to sort in descending order
-     */
-    public void setDesc(boolean desc) {
-        this.desc = desc;
-    }
 }

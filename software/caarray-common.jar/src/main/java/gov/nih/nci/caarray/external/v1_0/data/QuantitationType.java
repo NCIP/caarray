@@ -87,8 +87,12 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
+ * A QuantitationType represents a quantity that can be measured by an array. A quantity is defined by its name
+ * and its data type. The supported data types are boolean, short, integer, long, float, double, and string. 
+ * 
  * @author dkokotov
  */
+@SuppressWarnings({"PMD.MethodReturnsInternalArray", "PMD.ArrayIsStoredDirectly" })
 public class QuantitationType extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
 
@@ -126,13 +130,15 @@ public class QuantitationType extends AbstractCaArrayEntity {
     private String dataType;
 
     /**
-     * @return the name
+     * @return the name of this quantity
      */
     public String getName() {
         return name;
     }
 
     /**
+     * Sets the name for this quanity.
+     * 
      * @param name the name to set
      */
     public void setName(String name) {
@@ -140,14 +146,16 @@ public class QuantitationType extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the dataType
+     * @return the data type of this quantity
      */
     public String getDataType() {
         return dataType;
     }
 
     /**
-     * @param dataType the dataType to set
+     * Sets the data type for the quantity.
+     * 
+     * @param dataType the data type to set
      */
     public void setDataType(String dataType) {
         this.dataType = dataType;

@@ -420,11 +420,11 @@ public interface ProjectManagementService {
      * criterion, then any instances for which that association is null will not be included in the results (as an inner
      * join is used)
      *
-     * @param <T> child of AbstractBioMaterial
+     * @param <T> subclass of AbstractBioMaterial, must be either Sample or Source
      * @param params paging and sorting parameters
      * @param keyword text to search for
      * @param categories Indicates which categories to search. Passing null will search all categories.
-     * @return a list of matching experiments
+     * @return a list of matching biomaterials
      */
     <T extends AbstractBioMaterial>List<T>  searchByCategory(PageSortParams<T> params, String keyword,
             BiomaterialSearchCategory... categories);

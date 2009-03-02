@@ -232,7 +232,9 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             SearchCategory... categories) {
         Query q = getSearchQuery(false, params, keyword, categories);
         q.setFirstResult(params.getIndex());
-        q.setMaxResults(params.getPageSize());
+        if (params.getPageSize() > 0) {
+            q.setMaxResults(params.getPageSize());
+        }
         return q.list();
     }
 

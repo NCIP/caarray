@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray2
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caArray2 Software License (the License) is between NCI and You. You (or 
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caArray2 Software to (i) use, install, access, operate, 
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray2 Software; (ii) distribute and 
- * have distributed to and by third parties the caArray2 Software and any 
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and 
+ * have distributed to and by third parties the caarray-common-jar Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,54 +80,49 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external.v1_0.data;
+package gov.nih.nci.caarray.external.v1_0.query;
+
+import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Exception thrown to indicate that a requested file or files were too big
- * to retrieve directly, and must be retrieved using a streaming-enabled method.
- * 
  * @author dkokotov
+ * 
  */
-public class FileSizeTooBigException extends Exception {
+public class BiomaterialKeywordSearchCriteria extends AbstractKeywordSearchCriteria {
     private static final long serialVersionUID = 1L;
     
-    private final long actualSize;
-    private final long maxAllowedSize;
+    private Set<BiomaterialSearchField> fields = new HashSet<BiomaterialSearchField>();
+    private Set<BiomaterialType> types = new HashSet<BiomaterialType>();
+    
 
     /**
-     * Constructor for no cause.
-     * @param actualSize the actual size of the file(s)
-     * @param maxAllowedSize the max allowed size of the file(s)
+     * @return the types
      */
-    public FileSizeTooBigException(long actualSize, long maxAllowedSize) {
-        super();
-        this.actualSize = actualSize;
-        this.maxAllowedSize = maxAllowedSize;
+    public Set<BiomaterialType> getTypes() {
+        return types;
     }
 
     /**
-     * Constructor for given underlying cause.
-     * @param cause the cause
-     * @param actualSize the actual size of the file(s)
-     * @param maxAllowedSize the max allowed size of the file(s)
+     * @param types the types to set
      */
-    public FileSizeTooBigException(Throwable cause, long actualSize, long maxAllowedSize) {
-        super(cause);
-        this.actualSize = actualSize;
-        this.maxAllowedSize = maxAllowedSize;
+    public void setTypes(Set<BiomaterialType> types) {
+        this.types = types;
     }
 
     /**
-     * @return the actual size of the file(s)
+     * @return the fields
      */
-    public long getActualSize() {
-        return actualSize;
+    public Set<BiomaterialSearchField> getFields() {
+        return fields;
     }
 
     /**
-     * @return the max allowed size of the file(s)
+     * @param fields the fields to set
      */
-    public long getMaxAllowedSize() {
-        return maxAllowedSize;
+    public void setFields(Set<BiomaterialSearchField> fields) {
+        this.fields = fields;
     }
 }

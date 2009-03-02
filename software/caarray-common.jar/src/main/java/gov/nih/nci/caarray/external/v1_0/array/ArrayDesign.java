@@ -83,21 +83,23 @@
 package gov.nih.nci.caarray.external.v1_0.array;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-
-import java.util.HashSet;
-import java.util.Set;
+import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 /**
- * @author dkokotov
+ * Representation of an array design.
  * 
+ * @author dkokotov
  */
 public class ArrayDesign extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
     
     private String name;
     private String version;
-    private Set<AssayType> assayTypes = new HashSet<AssayType>();
+    private AssayType assayType;
     private ArrayProvider arrayProvider;
+    private Term technologyType;
+    private Organism organism;
 
     /**
      * @return the name
@@ -128,17 +130,17 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the assayTypes
+     * @return the assayType
      */
-    public Set<AssayType> getAssayTypes() {
-        return assayTypes;
+    public AssayType getAssayType() {
+        return assayType;
     }
 
     /**
-     * @param assayTypes the assayTypes to set
+     * @param assayType the assayType to set
      */
-    public void setAssayTypes(Set<AssayType> assayTypes) {
-        this.assayTypes = assayTypes;
+    public void setAssayType(AssayType assayType) {
+        this.assayType = assayType;
     }
 
     /**
@@ -153,5 +155,33 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     public void setArrayProvider(ArrayProvider arrayProvider) {
         this.arrayProvider = arrayProvider;
+    }
+    
+    /**
+     * @return the technologyType
+     */
+    public Term getTechnologyType() {
+        return technologyType;
+    }
+
+    /**
+     * @param technologyType the technologyType to set
+     */
+    public void setTechnologyType(Term technologyType) {
+        this.technologyType = technologyType;
+    }
+
+    /**
+     * @return the organism
+     */
+    public Organism getOrganism() {
+        return organism;
+    }
+
+    /**
+     * @param organism the organism to set
+     */
+    public void setOrganism(Organism organism) {
+        this.organism = organism;
     }
 }

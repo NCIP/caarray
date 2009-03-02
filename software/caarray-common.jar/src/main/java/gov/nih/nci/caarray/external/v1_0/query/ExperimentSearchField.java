@@ -84,6 +84,10 @@ package gov.nih.nci.caarray.external.v1_0.query;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * @author dkokotov
  *
@@ -126,6 +130,13 @@ public class ExperimentSearchField implements Serializable {
     public static final ExperimentSearchField ARRAY_PROVIDER = new ExperimentSearchField("array_provider");
     
     /**
+     * No-op constructor for serialization.
+     */
+    public ExperimentSearchField() {
+        // no-op
+    }
+    
+    /**
      * create a new experiment search field with given name.
      * @param name the name of the field
      */
@@ -146,4 +157,27 @@ public class ExperimentSearchField implements Serializable {
     public void setName(String name) {
         this.name = name;
     }    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }

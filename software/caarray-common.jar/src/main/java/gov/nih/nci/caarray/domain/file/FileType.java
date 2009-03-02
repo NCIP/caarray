@@ -264,11 +264,31 @@ public enum FileType implements Comparable<FileType> {
      */
     SCANARRAY_CSV;
 
-    private static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = new LinkedHashSet<FileType>();
-    private static final Set<FileType> PARSEABLE_ARRAY_DESIGN_FILE_TYPES = new HashSet<FileType>();
-    private static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
-    private static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
-    private static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
+    /**
+     * The set of array design file types.
+     */
+    public static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = new LinkedHashSet<FileType>();
+    
+    /**
+     * The set of array design file types that the caArray can parse.
+     */    
+    public static final Set<FileType> PARSEABLE_ARRAY_DESIGN_FILE_TYPES = new HashSet<FileType>();
+    
+    /**
+     * The set of raw array data file types.
+     */
+    public static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
+
+    /**
+     * The set of parsed array data file types.
+     */
+    public static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
+    
+    /**
+     * The set of array data file types that caArray can parse.
+     */
+    public static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
+
     private static final Map<FileType, FileType> RAW_TO_DERIVED_MAP = new HashMap<FileType, FileType>();
     private static final Map<FileType, FileType> DERIVED_TO_RAW_MAP = new HashMap<FileType, FileType>();
 

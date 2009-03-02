@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caArray2
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or 
+ * This caArray2 Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate, 
+ * its rights in the caArray2 Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and 
- * have distributed to and by third parties the caarray-common-jar Software and any 
+ * and prepare derivative works of the caArray2 Software; (ii) distribute and 
+ * have distributed to and by third parties the caArray2 Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,93 +80,40 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.external.v1_0.sample;
+package gov.nih.nci.caarray.services.external.v1_0;
 
-import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.annotation.TermAnnotation;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-
-import java.util.HashSet;
-import java.util.Set;
+import gov.nih.nci.caarray.external.v1_0.value.MeasurementValue;
+import gov.nih.nci.caarray.external.v1_0.value.TermValue;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
+import net.sf.dozer.util.mapping.converters.CustomConverter;
 
 /**
- * @author dkokotov
+ * Converter for factor value. For now try converting to number; if successful, return a MeasurementValue, otherwise
+ * return a TermValue from the caarray term source.
  * 
+ * @author dkokotov
+ *
  */
-public class Sample extends AbstractExperimentalGraphNode {
-    private TermAnnotation diseaseState;
-    private TermAnnotation tissueSite;
-    private Set<CaArrayEntityReference> hybridizations = new HashSet<CaArrayEntityReference>();
-    private Set<DataFile> dataFiles = new HashSet<DataFile>();
-    private Set<Characteristic> characteristics;
-
+@SuppressWarnings("unchecked")
+public class FactorValueConverter implements CustomConverter {
     /**
-     * @return the hybridizations
+     * {@inheritDoc}
      */
-    public Set<CaArrayEntityReference> getHybridizations() {
-        return hybridizations;
-    }
-
-    /**
-     * @param hybridizations the hybridizations to set
-     */
-    public void setHybridizations(Set<CaArrayEntityReference> hybridizations) {
-        this.hybridizations = hybridizations;
-    }
-
-    /**
-     * @return the dataFiles
-     */
-    public Set<DataFile> getDataFiles() {
-        return dataFiles;
-    }
-
-    /**
-     * @param dataFiles the dataFiles to set
-     */
-    public void setDataFiles(Set<DataFile> dataFiles) {
-        this.dataFiles = dataFiles;
-    }
-
-    /**
-     * @return the diseaseState
-     */
-    public TermAnnotation getDiseaseState() {
-        return diseaseState;
-    }
-
-    /**
-     * @param diseaseState the diseaseState to set
-     */
-    public void setDiseaseState(TermAnnotation diseaseState) {
-        this.diseaseState = diseaseState;
-    }
-
-    /**
-     * @return the tissueSite
-     */
-    public TermAnnotation getTissueSite() {
-        return tissueSite;
-    }
-
-    /**
-     * @param tissueSite the tissueSite to set
-     */
-    public void setTissueSite(TermAnnotation tissueSite) {
-        this.tissueSite = tissueSite;
-    }
-    
-    /**
-     * @return the characteristics
-     */
-    public Set<Characteristic> getCharacteristics() {
-        return characteristics;
-    }
-
-    /**
-     * @param characteristics the characteristics to set
-     */
-    public void setCharacteristics(Set<Characteristic> characteristics) {
-        this.characteristics = characteristics;
+    public Object convert(Object dest, Object src, Class destClass, Class srcClass) {
+        String value = (String) src;
+        if (value == null) {
+            return null;
+        }
+        try {
+            Float measurement = Float.valueOf(value);
+            MeasurementValue mval = new MeasurementValue();
+            mval.setMeasurement(measurement);
+            return mval;
+        } catch (NumberFormatException e) {
+            TermValue tval = new TermValue();
+            Term term = new Term();
+            term.setValue(value);
+            return tval;
+        }
     }
 }

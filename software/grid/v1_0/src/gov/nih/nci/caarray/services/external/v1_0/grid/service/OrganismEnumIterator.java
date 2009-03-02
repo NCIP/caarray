@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.services.external.v1_0.grid.service;
 
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
-import gov.nih.nci.caarray.external.v1_0.query.PageSortParams;
+import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -97,12 +97,11 @@ import javax.xml.namespace.QName;
 public class OrganismEnumIterator extends BaseEnumIterator<Organism> {
 
     public OrganismEnumIterator() throws RemoteException {
-        super(new QName("gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment", "Organism"),
-                "scientificName", false);
+        super(new QName("gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment", "Organism"));
     }
 
     @Override
-    protected List<Organism> getNextResults(PageSortParams enumParams) {
+    protected List<Organism> getNextResults(PagingParams enumParams) {
         return getCaArrayServer().getSearchService().getAllOrganisms(enumParams);
         
     }

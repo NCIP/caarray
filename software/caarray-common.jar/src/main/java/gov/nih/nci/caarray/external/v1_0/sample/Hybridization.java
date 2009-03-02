@@ -82,34 +82,35 @@
  */
 package gov.nih.nci.caarray.external.v1_0.sample;
 
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.factor.FactorValue;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author dkokotov
+ * a Hybridization represents the product of hybridizing extracted genetic material with the probes on an array.
  * 
+ * @author dkokotov
  */
-public class Hybridization extends AbstractExperimentalGraphNode {
+public class Hybridization extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
     
-    private Set<DataFile> dataFiles = new HashSet<DataFile>();
+    private String name;
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
 
     /**
-     * @return the dataFiles
+     * @return the name
      */
-    public Set<DataFile> getDataFiles() {
-        return dataFiles;
+    public String getName() {
+        return name;
     }
 
     /**
-     * @param dataFiles the dataFiles to set
+     * @param name the name to set
      */
-    public void setDataFiles(Set<DataFile> dataFiles) {
-        this.dataFiles = dataFiles;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**

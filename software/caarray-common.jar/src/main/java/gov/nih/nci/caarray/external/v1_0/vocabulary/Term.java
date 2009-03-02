@@ -85,30 +85,17 @@ package gov.nih.nci.caarray.external.v1_0.vocabulary;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 
 /**
+ * A Term represents a value from a controlled vocabulary / ontology.
  * 
  * @author dkokotov
  */
 public class Term extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
     
-    private String value;
     private String accession;
     private String url;
     private TermSource termSource;
-
-    /**
-     * @return the value
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * @param value the value to set
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
+    private String value;
 
     /**
      * @return the accession
@@ -150,5 +137,19 @@ public class Term extends AbstractCaArrayEntity {
      */
     public void setTermSource(TermSource termSource) {
         this.termSource = termSource;
+    }
+    
+    /**
+     * @return the value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * @param value the value to set
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 }

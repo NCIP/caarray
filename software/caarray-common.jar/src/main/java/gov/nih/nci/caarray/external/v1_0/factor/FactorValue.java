@@ -82,61 +82,55 @@
  */
 package gov.nih.nci.caarray.external.v1_0.factor;
 
+import gov.nih.nci.caarray.external.v1_0.value.AbstractValue;
+
 import java.io.Serializable;
 
-import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.annotation.AbstractAnnotation;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * @author dkokotov
+ * FactorValue represents the value of an experimental factor for a hybridization chain.
  * 
+ * @author dkokotov
  */
 public class FactorValue implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    private CaArrayEntityReference hybridization;
-    private CaArrayEntityReference factor;    
-    private AbstractAnnotation value;
-
-    /**
-     * @return the hybridization
-     */
-    public CaArrayEntityReference getHybridization() {
-        return hybridization;
-    }
-
-    /**
-     * @param hybridization the hybridization to set
-     */
-    public void setHybridization(CaArrayEntityReference hybridization) {
-        this.hybridization = hybridization;
-    }
+    private Factor factor;    
+    private AbstractValue value;
 
     /**
      * @return the value
      */
-    public AbstractAnnotation getValue() {
+    public AbstractValue getValue() {
         return value;
     }
 
     /**
      * @param value the value to set
      */
-    public void setValue(AbstractAnnotation value) {
+    public void setValue(AbstractValue value) {
         this.value = value;
     }
 
     /**
      * @return the factor
      */
-    public CaArrayEntityReference getFactor() {
+    public Factor getFactor() {
         return factor;
     }
 
     /**
      * @param factor the factor to set
      */
-    public void setFactor(CaArrayEntityReference factor) {
+    public void setFactor(Factor factor) {
         this.factor = factor;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

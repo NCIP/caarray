@@ -82,16 +82,27 @@
  */
 package gov.nih.nci.caarray.external.v1_0.sample;
 
-import gov.nih.nci.caarray.external.v1_0.annotation.AbstractAnnotation;
+import java.io.Serializable;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+
+import gov.nih.nci.caarray.external.v1_0.value.AbstractValue;
+import gov.nih.nci.caarray.external.v1_0.value.MeasurementValue;
+import gov.nih.nci.caarray.external.v1_0.value.TermValue;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 /**
- * @author dkokotov
+ * Characteristic represents a loosely typed attribute associated with a sample. The attribute consists of a category
+ * and a value.
  * 
+ * @author dkokotov
  */
-public class Characteristic {
+public class Characteristic implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private Category category;
-    private AbstractAnnotation value;
+    private AbstractValue value;
 
     /**
      * @return the category
@@ -110,14 +121,65 @@ public class Characteristic {
     /**
      * @return the value
      */
-    public AbstractAnnotation getValue() {
+    public AbstractValue getValue() {
         return value;
     }
 
     /**
      * @param value the value to set
      */
-    public void setValue(AbstractAnnotation value) {
+    public void setValue(AbstractValue value) {
         this.value = value;
+    }
+
+    /**
+     * 
+     * @param term the term
+     */
+    public void setTermValue(Term term) {
+        TermValue tv = new TermValue(); 
+        tv.setTerm(term);
+        this.value = tv;
+    }
+
+    /**
+     * 
+     * @return the term
+     */
+    public Term getTermValue() {
+        if (this.value instanceof TermValue) {
+            return ((TermValue) this.value).getTerm();            
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 
+     * @param measurement the measurement
+     */
+    public void setMeasurementValue(Float measurement) {
+        MeasurementValue mv = new MeasurementValue(); 
+        mv.setMeasurement(measurement);
+        this.value = mv;
+    }
+    
+    /**
+     * 
+     * @return the measurement 
+     */
+    public Float getMeasurementValue() {
+        if (this.value instanceof MeasurementValue) {
+            return ((MeasurementValue) this.value).getMeasurement();            
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

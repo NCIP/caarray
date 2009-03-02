@@ -87,8 +87,8 @@ import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
+ * A DesignElement represents a single unit within an array for which measurements can be captured.
  * @author dkokotov
- * 
  */
 public class DesignElement implements Serializable {
     private static final long serialVersionUID = 1L;

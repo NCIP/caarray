@@ -87,14 +87,6 @@ public interface CaArraySvc_v1_0I {
   public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference[] getFileContentsTransfers(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compress) throws RemoteException ;
 
   /**
-   * Creates an enumeration that will return the file contents of the given files, using base 64 encoding
-   *
-   * @param fileDownloadRequest
-   * @param compress
-   */
-  public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateFileContents(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compress) throws RemoteException ;
-
-  /**
    * Returns an enumeration that will return transfer context service references for each file in the request
    *
    * @param fileDownloadRequest
@@ -109,16 +101,6 @@ public interface CaArraySvc_v1_0I {
    * @param compress
    */
   public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getFileContentsTransfer(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference fileRef,boolean compress) throws RemoteException ;
-
-  /**
-   * Returns the file meta data and contents of the file identified by the given reference
-   *
-   * @param fileRef
-   * @param compress
-   * @throws FileSizeTooBigException
-   *	
-   */
-  public gov.nih.nci.caarray.external.v1_0.data.DataFileContents getFileContents(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference fileRef,boolean compress) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.FileSizeTooBigException ;
 
   /**
    * REtrieves a parsed data set
@@ -139,6 +121,43 @@ public interface CaArraySvc_v1_0I {
    *	Thrown when a query is found to be improperly formed
    */
   public gov.nih.nci.cagrid.cqlresultset.CQLQueryResults query(gov.nih.nci.cagrid.cqlquery.CQLQuery cqlQuery) throws RemoteException, gov.nih.nci.cagrid.data.faults.QueryProcessingExceptionType, gov.nih.nci.cagrid.data.faults.MalformedQueryExceptionType ;
+
+  /**
+   * search for biomaterials matching criteria
+   *
+   * @param criteria
+   */
+  public gov.nih.nci.caarray.external.v1_0.sample.Biomaterial[] searchForBiomaterials(gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria criteria) throws RemoteException ;
+
+  /**
+   * search for hybridizations matching criteria
+   *
+   * @param criteria
+   * @return the list of hybridizations
+   */
+  public gov.nih.nci.caarray.external.v1_0.sample.Hybridization[] searchForHybridizations(gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria criteria) throws RemoteException ;
+
+  /**
+   * Searches for experiments using a keyword search across fields
+   *
+   * @param criteria
+   *	the keyword criteria
+   */
+  public gov.nih.nci.caarray.external.v1_0.experiment.Experiment[] searchForExperimentsByKeyword(gov.nih.nci.caarray.external.v1_0.query.ExperimentKeywordSearchCriteria criteria) throws RemoteException ;
+
+  /**
+   * Search for files matching given criteria
+   *
+   * @param fileSearchCriteria
+   */
+  public gov.nih.nci.caarray.external.v1_0.data.DataFile[] searchForFiles(gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria fileSearchCriteria) throws RemoteException ;
+
+  /**
+   * Search for biomaterials matching given keyword
+   *
+   * @param criteria
+   */
+  public gov.nih.nci.caarray.external.v1_0.sample.Biomaterial[] searchForBiomaterialsByKeyword(gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria criteria) throws RemoteException ;
 
 }
 

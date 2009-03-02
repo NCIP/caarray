@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.external.v1_0.query;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * @author dkokotov
  *
@@ -91,7 +93,7 @@ import java.io.Serializable;
 public abstract class AbstractSearchCriteria implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    private boolean and;
+    private boolean and = true;
 
     /**
      * @return the isAnd
@@ -105,5 +107,12 @@ public abstract class AbstractSearchCriteria implements Serializable {
      */
     public void setAnd(boolean and) {
         this.and = and;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

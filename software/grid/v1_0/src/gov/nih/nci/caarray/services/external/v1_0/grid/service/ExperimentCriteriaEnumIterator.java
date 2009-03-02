@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.services.external.v1_0.grid.service;
 
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.PageSortParams;
+import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -99,13 +99,12 @@ public class ExperimentCriteriaEnumIterator extends BaseEnumIterator<Experiment>
     private ExperimentSearchCriteria criteria;
     
     public ExperimentCriteriaEnumIterator(ExperimentSearchCriteria criteria) throws RemoteException {
-        super(new QName("gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment", "Experiment"),
-                "title", false);
+        super(new QName("gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment", "Experiment"));
         this.criteria = criteria;
     }
 
     @Override
-    protected List<Experiment> getNextResults(PageSortParams enumParams) {
+    protected List<Experiment> getNextResults(PagingParams enumParams) {
         return getCaArrayServer().getSearchService().searchForExperiments(criteria, enumParams);        
     }
 }

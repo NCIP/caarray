@@ -85,6 +85,8 @@ package gov.nih.nci.caarray.external.v1_0.experiment;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 
 /**
+ * Person is a simple representation of a person.
+ * 
  * @author dkokotov
  */
 public class Person extends AbstractCaArrayEntity {

@@ -82,16 +82,17 @@
  */
 package gov.nih.nci.caarray.external.v1_0.query;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author dkokotov
  * 
  */
-public class ExperimentKeywordSearchCriteria extends AbstractSearchCriteria {
+public class ExperimentKeywordSearchCriteria extends AbstractKeywordSearchCriteria {
     private static final long serialVersionUID = 1L;
     
-    private Set<ExperimentSearchField> fields;
+    private Set<ExperimentSearchField> fields = new HashSet<ExperimentSearchField>();
     
     /**
      * @return the fields

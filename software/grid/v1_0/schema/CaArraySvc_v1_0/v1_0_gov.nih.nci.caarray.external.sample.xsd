@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sam="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"
+    xmlns:car="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
+    xmlns:fac="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.factor"
+    xmlns:voc="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary"
+    xmlns:val="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value"
+    xmlns:exp="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"
+    targetNamespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" elementFormDefault="qualified">
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.xsd" />
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.factor"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.factor.xsd" />
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.vocabulary.xsd" />
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.value.xsd" />
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.experiment.xsd" />
+
+    <xs:element name="Characteristic" type="sam:Characteristic" />
+    <xs:complexType name="Characteristic">
+        <xs:sequence>
+            <xs:element name="category" minOccurs="0" maxOccurs="1" type="voc:Category" />                
+            <xs:element name="value" minOccurs="0" maxOccurs="1" type="val:AbstractValue" />                
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:element name="BiomaterialType" type="sam:BiomaterialType" />
+    <xs:simpleType name="BiomaterialType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SOURCE"/>
+            <xs:enumeration value="SAMPLE"/>
+            <xs:enumeration value="EXTRACT"/>
+            <xs:enumeration value="LABELED_EXTRACT"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="Biomaterial" type="sam:Biomaterial" />
+    <xs:complexType name="Biomaterial">
+        <xs:complexContent>
+            <xs:extension base="car:AbstractCaArrayEntity">
+                <xs:sequence>
+                    <xs:element name="diseaseType" minOccurs="0" maxOccurs="1" type="voc:Term" />                
+                    <xs:element name="tissueSite" minOccurs="0" maxOccurs="1" type="voc:Term" />                
+                    <xs:element name="materialType" minOccurs="0" maxOccurs="1" type="voc:Term" />                
+                    <xs:element name="cellType" minOccurs="0" maxOccurs="1" type="voc:Term" />
+                    <xs:element name="organism" minOccurs="0" maxOccurs="1" type="exp:Organism" />
+                    <xs:element name="characteristics">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="sam:Characteristic" minOccurs="0" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="type" minOccurs="1" maxOccurs="1" type="sam:BiomaterialType" />
+                </xs:sequence>
+                <xs:attribute name="name" type="xs:string" />
+                <xs:attribute name="externalId" type="xs:string" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:element name="Hybridization" type="sam:Hybridization" />
+    <xs:complexType name="Hybridization">
+        <xs:complexContent>
+            <xs:extension base="car:AbstractCaArrayEntity">
+				<xs:sequence>
+					<xs:element name="factorValues">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element ref="fac:FactorValue" minOccurs="0"	maxOccurs="unbounded" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+                <xs:attribute name="name" type="xs:string" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>    
+ </xs:schema>

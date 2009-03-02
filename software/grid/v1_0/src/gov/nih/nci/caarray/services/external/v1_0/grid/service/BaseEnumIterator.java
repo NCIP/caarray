@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.services.external.v1_0.grid.service;
 
-import gov.nih.nci.caarray.external.v1_0.query.PageSortParams;
+import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 
@@ -106,15 +106,11 @@ import org.globus.wsrf.encoding.ObjectSerializer;
  */
 public abstract class BaseEnumIterator<T> implements EnumIterator {
     private int lastResultIndex = 0;
-    private String orderField;
-    private boolean descending;
     private final CaArrayServer caArrayServer;
     private QName qname;
 
-    public BaseEnumIterator(QName objectQname, String orderField, boolean descending) throws RemoteException {
+    public BaseEnumIterator(QName objectQname) throws RemoteException {
         this.qname = objectQname;
-        this.orderField = orderField;
-        this.descending = descending;
         try {
             String jndiUrl = CaArraySvc_v1_0Impl.getJndiUrl();
             if (jndiUrl == null) {
@@ -140,8 +136,7 @@ public abstract class BaseEnumIterator<T> implements EnumIterator {
         
         // start building results
         try {
-            List<T> nextResults = getNextResults(new PageSortParams(ic.getMaxElements(), lastResultIndex,
-                    this.orderField, this.descending));
+            List<T> nextResults = getNextResults(new PagingParams(ic.getMaxElements(), lastResultIndex));
             lastResultIndex += nextResults.size();
             for (T result : nextResults) {
                 SOAPElement element = ObjectSerializer.toSOAPElement(result, this.qname);
@@ -156,7 +151,7 @@ public abstract class BaseEnumIterator<T> implements EnumIterator {
         }
     }
     
-    protected abstract List<T> getNextResults(PageSortParams enumParams) throws Exception;
+    protected abstract List<T> getNextResults(PagingParams enumParams) throws Exception;
     
     protected IterationResult wrapUpElements(List<SOAPElement> soapElements, boolean end) {
         SOAPElement[] elements = new SOAPElement[soapElements.size()];

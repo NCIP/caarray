@@ -87,7 +87,9 @@ import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * Base class in the caArray external domain model hierarchy, v.1.0.
+ * AbstractCaArrayEntity is the base class for objects in the caArray external model that can be dereferenced.
+ * An instance of AbstractCaArrayEntity has an LSID which can be used to retrieve that instance later. It can be
+ * thought of similarly to a URL or EPR.
  * 
  * @author dkokotov
  */
