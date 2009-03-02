@@ -2441,6 +2441,7 @@
         <copy file="${common.resources.jboss.conf.dir}/${jboss-mail-service.file}" todir="${jboss.deploy.dir}">
             <filterset refid="caarray.filterset" />
         </copy>
+    	<delete dir="${jboss.deploy.dir}/jbossweb-tomcat55.sar/jsf-libs" includes="commons-lang*.jar" quiet="true"/>
     </target>
 
     <target name="deploy:caarray.ear" depends="init:third-party-paths,build:caarray.ear,deploy:caarray.ear-dependencies">
