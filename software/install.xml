@@ -320,6 +320,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                 <include name="**/*" />
             </fileset>
         </ear>
+
+    	<!-- punt old commons lang jar -->
+        <delete dir="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/jsf-libs" includes="commons-lang*.jar" quiet="true"/>
     </target>
 
     <target name="install:jboss:caarray:configure" description="Configure caarray application" unless="exclude.jboss">
