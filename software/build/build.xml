@@ -2668,6 +2668,16 @@
 
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
+                <if>
+                    <equals arg1="legacy" arg2="@{version}" />
+                    <then>
+                        <var name="version.label" value=""/>
+                    </then>
+                    <else>
+                        <var name="version.label" value="_@{version}"/>
+                    </else>
+                </if>
+
                 <var name="caarraysvc.temp.dir" value="${caarray-grid-svc.base.dir}/@{version}/build/cagrid_CaArraySvc" />
                 <mkdir dir="${caarraysvc.temp.dir}" />
                 <mkdir dir="${caarraysvc.temp.dir}/server/default/deploy/wsrf.war" />
@@ -2676,13 +2686,13 @@
                     <property name="jboss.dir" value="${caarraysvc.temp.dir}" />
                     <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
                 </ant>
-                <var name="cagrid_CaArraySvc.zip" value="${caarray-grid-svc.base.dir}/@{version}/cagrid_CaArraySvc_@{version}.zip" />
+                <var name="cagrid_CaArraySvc.zip" value="${caarray-grid-svc.base.dir}/@{version}/cagrid_CaArraySvc${version.label}.zip" />
 
                 <!-- SCP create archive to jboss404 server -->
                 <remote-scp remoteScpFileToCopy="${cagrid_CaArraySvc.zip}" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.temp.dir}" />
 
                 <!-- explode archive to ${globoss.server.instance.home}/deploy/wsrf.war -->
-                <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="unzip -o ${globoss.temp.dir}/cagrid_CaArraySvc_@{version}.zip -d ${globoss.server.instance.home}/deploy/wsrf.war" />
+                <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="unzip -o ${globoss.temp.dir}/cagrid_CaArraySvc${version.label}.zip -d ${globoss.server.instance.home}/deploy/wsrf.war" />
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="jars" inheritall="false">
                     <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
                     <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
