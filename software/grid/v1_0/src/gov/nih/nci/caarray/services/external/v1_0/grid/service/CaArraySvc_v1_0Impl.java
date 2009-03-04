@@ -39,7 +39,7 @@ import com.healthmarketscience.rmiio.SimpleRemoteOutputStream;
 
 /**
  * Implementation of the v1.1 of the CaArray grid service
- * 
+ *
  * @created by Introduce Toolkit version 1.2
  */
 public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
@@ -53,7 +53,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
             if (jndiUrl == null) {
                 throw new RemoteException("Could not connect to server: invalid JNDI configuration");
             }
-            
+
             caArrayServer = new CaArrayServer(jndiUrl);
             caArrayServer.connect();
         } catch (ServerConnectionException e) {
@@ -135,7 +135,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
               IOUtils.closeQuietly(is);
               FileUtils.deleteQuietly(retrievedFile.getFile());
           }
-          
+
           return TransferServiceHelper.createTransferContext(zipFile, null, true);
       } catch (IOException e) {
         throw new RemoteException("Unable to create zip of files");
@@ -143,7 +143,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
           if (zos != null) {
               IOUtils.closeQuietly(zos);
           }
-      }      
+      }
   }
 
   public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference[] getFileContentsTransfers(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compress) throws RemoteException {
@@ -177,14 +177,14 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
       RetrievedFile retrievedFile = retrieveFileContentsWithRmiStream(server, fileRef, compress);
       if (retrievedFile != null) {
           long fileSize = compress ? retrievedFile.getFileMetadata().getCompressedSize() : retrievedFile
-                    .getFileMetadata().getUncompressedSize();              
+                    .getFileMetadata().getUncompressedSize();
           ref = TransferServiceHelper.createTransferContext(retrievedFile.getFile(), new DataDescriptor(
-                  fileSize, retrievedFile.getFileMetadata().getName()), true);                              
-      }      
+                  fileSize, retrievedFile.getFileMetadata().getName()), true);
+      }
       return ref;
-      
+
   }
-  
+
   private static RetrievedFile retrieveFileContentsWithRmiStream(CaArrayServer server,
           CaArrayEntityReference fileRef, boolean compress) throws IOException {
     RemoteOutputStreamServer ostream = null;
@@ -206,10 +206,10 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
         if (file != null && fileMetadata == null) {
             file.delete();
         }
-    }        
+    }
     return fileMetadata == null ? null : new RetrievedFile(file, fileMetadata);
   }
-  
+
   private static final class RetrievedFile {
         private final File file;
         private final DataFile fileMetadata;
@@ -235,7 +235,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
          */
         public DataFile getFileMetadata() {
             return fileMetadata;
-        }        
+        }
     }
 
   public gov.nih.nci.caarray.external.v1_0.data.DataSet getDataSet(gov.nih.nci.caarray.external.v1_0.query.DataSetRequest dataSetRequest) throws RemoteException {
@@ -246,7 +246,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
   public static String getJndiUrl() {
       try {
           final Properties jndiProp = new Properties();
-          jndiProp.load(CaArraySvc_v1_0Impl.class.getResourceAsStream("/gov/nih/nci/cagrid/caarray/jndi.properties"));
+          jndiProp.load(CaArraySvc_v1_0Impl.class.getResourceAsStream("/gov/nih/nci/caarray/services/external/v1_0/grid/jndi.properties"));
 
           return jndiProp.getProperty("java.naming.provider.url");
       } catch (IOException e) {

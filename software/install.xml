@@ -39,6 +39,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <property name="temp.dir" value="${basedir}/temp" />
     <property name="this.dir" value="${basedir}" />
 
+    <!-- grid service-related properties -->
+    <property name="caarray-grid-svc.versions" value="legacy,v1_0" />
+
     <!-- Paths -->
     <path id="bda-utils.classpath">
         <fileset dir="${bda-utils.dir}">
@@ -257,7 +260,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             <equals arg1="${ldap.authentication.disabled}" arg2="false" />
             <then>
                 <copy file="${jboss-conf.dir.target}/security-config-ldap.xml" tofile="${temp.dir}/caarray.ear/META-INF/security-config.xml"/>
-
                 <xmlconfig in="${temp.dir}/caarray.ear/META-INF/security-config.xml" verbose="false">
                     <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']" value="${ldap.host}" />
                     <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']" value="${ldap.searchbase}" />
@@ -431,12 +433,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     </target>
 
     <target name="-install:jboss:configure:update-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
-        <replaceregexp match="(org.jboss.Main) (?!--host=)" replace="org.jboss.Main --host=${grid.static.hostname} " byline="true">
-            <fileset dir="${jboss.home}/bin">
-                <include name="run.bat"/>
-                <include name="run.sh"/>
-            </fileset>
-        </replaceregexp>
+        <set-host-flag-in-start-jboss-scripts jboss.bin.dir="${jboss.home}/bin" host.flag.value="${jboss.server.hostname}"/>
     </target>
 
     <!-- Wrapper target to deploy JBOSS container -->
@@ -523,47 +520,61 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         -install:grid:configure:webXml
         "/>
 
-
     <target name="-install:grid:configure:update-shutdown">
         <jboss-update-shutdown jboss.home="${grid.home}" jboss.server.hostname="${grid.server.hostname}" jboss.server.jndi.port="${grid.server.jndi.port}" />
     </target>
 
     <target name="-install:grid:configure:secure-console" description="Configure JBoss ports using bindings files" unless="exclude.jboss">
-    <secure-jboss-console jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.web.password="${grid.web.password}"/>
+        <secure-jboss-console jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.web.user="${grid.web.user}" jboss.web.password="${grid.web.password}"/>
     </target>
 
-    <target name="install:grid:deploy" description="Deploy Caarray2 application">
-        <unzip dest="${temp.dir}/grid" src="${basedir}/grid/cagrid_CaArraySvc.zip" />
-        <unzip src="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common.jar" dest="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common" />
-
-        <replaceregexp file="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common/gov/nih/nci/cagrid/caarray/jndi.properties" byline="true"
-            match="^(java.naming.provider.url)=(.*)"
-            replace="\1=jnp://${jboss.server.hostname}:${jboss.server.jndi.port}"/>
-
-
-        <delete file="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common.jar" />
-
-        <jar jarfile="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common.jar" compress="false" manifest="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common/META-INF/MANIFEST.MF">
-            <fileset dir="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common">
-                <include name="*/**" />
-            </fileset>
-        </jar>
-
-        <delete dir="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common" />
-
-        <zip destfile="${basedir}/grid/cagrid_CaArraySvc.zip">
-            <zipfileset dir="${temp.dir}/grid" />
-        </zip>
-
-
-        <delete dir="${grid.home}/server/default/deploy/wsrf.war"/>
+    <target name="install:grid:deploy" description="Deploy Caarray2 grid service applications.">
+        <delete >
+            <fileset dir="${grid.home}/server/default/deploy" includes="wsrf.war"/>
+        </delete>
         <delete>
             <fileset dir="${grid.home}/server/default/lib" includes="cog-jglobus.jar cog-tomcat.jar cryptix32.jar cryptix.jar cryptix-asn1.jar jce-jdk13-125.jar log4j-1.2.8.jar puretls.jar"/>
         </delete>
-        <unzip dest="${grid.home}/server/default" src="${basedir}/grid/jboss-globus-serverinstance-config.zip" />
-        <unzip dest="${grid.home}/server/default/deploy/wsrf.war" src="${basedir}/grid/cagrid_CaArraySvc.zip" />
-    </target>
+        <for param="version" list="${caarray-grid-svc.versions}">
+            <sequential>
+                <if>
+                    <equals arg1="legacy" arg2="@{version}" />
+                    <then>
+                        <var name="version.label" value=""/>
+                    </then>
+                    <else>
+                        <var name="version.label" value="_@{version}"/>
+                    </else>
+                </if>
+                <unzip dest="${temp.dir}/grid${version.label}" src="${basedir}/grid/cagrid_CaArraySvc${version.label}.zip"/>
 
+                <unzip src="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common.jar" dest="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common" />
+
+                <replaceregexp byline="true" match="^(java.naming.provider.url)=(.*)" replace="\1=jnp://${jboss.server.hostname}:${jboss.server.jndi.port}">
+                    <fileset dir="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common">
+                        <include name="**/jndi.properties"/>
+                    </fileset>
+                </replaceregexp>
+
+                <delete file="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common.jar" />
+
+                <jar jarfile="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common.jar" compress="false" manifest="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common/META-INF/MANIFEST.MF">
+                    <fileset dir="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common">
+                        <include name="*/**" />
+                    </fileset>
+                </jar>
+
+                <delete dir="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common" />
+
+                <zip destfile="${basedir}/grid/cagrid_CaArraySvc${version.label}.zip">
+                    <zipfileset dir="${temp.dir}/grid${version.label}" />
+                </zip>
+
+                <unzip dest="${grid.home}/server/default/deploy/wsrf.war" src="${basedir}/grid/cagrid_CaArraySvc${version.label}.zip" />
+            </sequential>
+        </for>
+        <unzip dest="${grid.home}/server/default" src="${basedir}/grid/jboss-globus-serverinstance-config.zip" />
+    </target>
 
     <target name="-install:grid:configure:ports" description="Configure grid service based on properties">
 
@@ -577,49 +588,58 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     </target>
 
     <target name="-install:grid:configure:serviceMetadataXml" description="Configure caArray's grid service serviceMetadata.xml.">
-        <xmlconfig in="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/etc/cagrid_CaArraySvc/serviceMetadata.xml" verbose="false">
+        <for param="service.metadata.xml.file">
+            <path>
+                <fileset dir="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/etc">
+                    <include name="cagrid_CaArraySvc*/serviceMetadata.xml"/>
+                </fileset>
+            </path>
+            <sequential>
+                <xmltask source="@{service.metadata.xml.file}" dest="@{service.metadata.xml.file}">
+                    <!-- set ResearchCenter element's attributes -->
+                    <replace path="//*[local-name()='ResearchCenter']/@displayName" withText="${research.center.displayName}"/>
+                    <replace path="//*[local-name()='ResearchCenter']/@shortName" withText="${research.center.shortName}"/>
 
-            <!-- set ResearchCenter element's attributes -->
-            <update path="//*[local-name()='ResearchCenter']/@displayName" value="${research.center.displayName}" />
-            <update path="//*[local-name()='ResearchCenter']/@shortName" value="${research.center.shortName}" />
+                    <!-- set ResearchCenter element's child address element's attributes -->
+                    <replace path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@country" withText="${research.center.address.country}"/>
+                    <replace path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@locality" withText="${research.center.address.locality}"/>
+                    <replace path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@postalCode" withText="${research.center.address.postalCode}"/>
+                    <replace path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@stateProvince" withText="${research.center.address.stateProvince}"/>
+                    <replace path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@street1" withText="${research.center.address.street1}"/>
 
-            <!-- set ResearchCenter element's child address element's attributes -->
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@country" value="${research.center.address.country}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@locality" value="${research.center.address.locality}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@postalCode" value="${research.center.address.postalCode}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@stateProvince" value="${research.center.address.stateProvince}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@street1" value="${research.center.address.street1}" />
-
-            <!-- set ResearchCenter element's child pointOfContactCollection elements' child PointOfContact element's attributes -->
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@affiliation" value="${point.of.contact.affiliation}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@email" value="${point.of.contact.email}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@firstName" value="${point.of.contact.firstName}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@lastName" value="${point.of.contact.lastName}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@phoneNumber" value="${point.of.contact.phoneNumber}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@role" value="${point.of.contact.role}" />
-
-        </xmlconfig>
+                    <!-- set ResearchCenter element's child pointOfContactCollection elements' child PointOfContact element's attributes -->
+                    <replace path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@affiliation" withText="${point.of.contact.affiliation}"/>
+                    <replace path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@email" withText="${point.of.contact.email}"/>
+                    <replace path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@firstName" withText="${point.of.contact.firstName}"/>
+                    <replace path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@lastName" withText="${point.of.contact.lastName}"/>
+                    <replace path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@phoneNumber" withText="${point.of.contact.phoneNumber}"/>
+                    <replace path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@role" withText="${point.of.contact.role}"/>
+                </xmltask>
+            </sequential>
+        </for>
     </target>
 
     <target name="-install:grid:configure:webXml" description="Configure caArray's grid service web.xml.">
-        <xmlconfig in="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/web.xml" verbose="false">
-            <update path="/web-app/servlet/init-param/param-value[text()='80']" value="${grid.static.port}" />
-        </xmlconfig>
+        <xmltask source="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/web.xml" dest="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/web.xml">
+            <replace path="/web-app/servlet/init-param/param-value[text()='80']/text()" withText="${grid.static.port}"/>
+        </xmltask>
     </target>
 
     <target name="-install:grid:configure:wsdl" description="Configure grid service based on properties">
-        <replace dir="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war" token="%token.server.hostname%:%token.jboss.jndi.port%" value="${grid.server.hostname}:${grid.server.port}">
-            <include name="**/*.wsdl" />
+        <replace dir="${grid.home}/server/${jboss.server.name}/deploy" token="%token.server.hostname%:%token.jboss.jndi.port%" value="${grid.server.hostname}:${grid.server.port}">
+            <include name="wsrf.war/**/*.wsdl" />
         </replace>
-        <replace dir="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war" token="localhost:8080" value="${grid.server.hostname}:${grid.server.port}">
-            <include name="**/*.wsdl" />
+        <replace dir="${grid.home}/server/${jboss.server.name}/deploy" token="localhost:8080" value="${grid.server.hostname}:${grid.server.port}">
+            <include name="wsrf.war/**/*.wsdl" />
         </replace>
-        <replaceregexp file="${grid.home}/server/${grid.server.name}/deploy/wsrf.war/WEB-INF/etc/cagrid_CaArraySvc/CaArraySvc_registration.xml" byline="true"
-            match="^(.*wsa:Address.).*(.\/wsa:Address.)"
-            replace="\1${grid.index.url}\2"/>
-
-        <replace file="${grid.home}/server/${grid.server.name}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" token="@LOGICAL_HOST@" value="${grid.static.hostname}"/>
-
+        <replaceregexp byline="true" match="^(.*wsa:Address.).*(.\/wsa:Address.)" replace="\1${grid.index.url}\2">
+            <fileset dir="${grid.home}/server/${grid.server.name}/deploy">
+                <include name="wsrf.war/WEB-INF/etc/cagrid_CaArraySvc*/CaArraySvc*_registration.xml"/>
+            </fileset>
+        </replaceregexp>
+        <replace dir="${grid.home}/server/${grid.server.name}/deploy" token="@LOGICAL_HOST@" value="${grid.static.hostname}">
+            <include name="wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd"/>
+        </replace>
     </target>
 
     <target name="upgrade:init">
@@ -644,4 +664,18 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </filterset>
         </copy>
     </target>
+
+    <macrodef name="set-host-flag-in-start-jboss-scripts">
+        <attribute name="jboss.bin.dir" />
+        <attribute name="host.flag.value" />
+        <sequential>
+            <replaceregexp match="(org.jboss.Main) (?!--host=)" replace="org.jboss.Main --host=@{host.flag.value} " byline="true">
+                <fileset dir="@{jboss.bin.dir}">
+                    <include name="run.bat"/>
+                    <include name="run.sh"/>
+                </fileset>
+            </replaceregexp>
+        </sequential>
+    </macrodef>
+
 </project>

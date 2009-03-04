@@ -6,108 +6,108 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 <project name="caarray-build" default="build:all" basedir="."
     xmlns:ivy="antlib:org.apache.ivy.ant"
     >
-  <description>
+    <description>
         This file is used to build, bundle and deploy the NCIA application.  The build targets of this file calls the appropriate targets in all the sub-projects.  The dist targets create a distribution that can be used by the local (a directory) and remote (a zip archive) deployment targets.  The deploy targets handle local and remote installation of the application.   The distribution is installed via ant.  Both install and upgrade distributions/installs are supported.
     </description>
 
-  <!-- Property file related properties and tasks -->
-  <property name="project.name" value="caarray"/>
-  <property environment="env" />
-  <!-- The project.properties stores properties that are shared between both build.xml and install.xml. Typically properties that are related to the distribution directories, or files. -->
-  <property file="local.properties" />
-  <property file="project.properties" />
-  <!-- added for remote deployments since file is copied to root of install dir -->
-  <basename property="properties.file.name" file="${properties.file}"/>
-  <property file="${properties.file}" />
+    <!-- Property file related properties and tasks -->
+    <property name="project.name" value="caarray"/>
+    <property environment="env" />
+    <!-- The project.properties stores properties that are shared between both build.xml and install.xml. Typically properties that are related to the distribution directories, or files. -->
+    <property file="local.properties" />
+    <property file="project.properties" />
+    <!-- added for remote deployments since file is copied to root of install dir -->
+    <basename property="properties.file.name" file="${properties.file}"/>
+    <property file="${properties.file}" />
 
-  <!-- Default install time targets passed by deploy targets to the installer, can be overridden by being set on the command line if different target is desitred.  -->
-  <property name="install.target" value="install" />
-  <property name="upgrade.target" value="upgrade" />
+    <!-- Default install time targets passed by deploy targets to the installer, can be overridden by being set on the command line if different target is desitred.  -->
+    <property name="install.target" value="install" />
+    <property name="upgrade.target" value="upgrade" />
 
-  <!-- Generic build time properties -->
-  <property name="project.name" value="caarray"/>
-  <property name="lib.dir" value="${basedir}/lib" />
-  <property name="resources.dir" value="${basedir}/resources" />
-  <property name="reports.dir" value="${basedir}/reports" />
-  <property name="temp.dir" value="${basedir}/temp" />
-  <property name="global.ivy.settings.file" location="common/ivysettings.xml" />
+    <!-- Generic build time properties -->
+    <property name="project.name" value="caarray"/>
+    <property name="lib.dir" value="${basedir}/lib" />
+    <property name="resources.dir" value="${basedir}/resources" />
+    <property name="reports.dir" value="${basedir}/reports" />
+    <property name="temp.dir" value="${basedir}/temp" />
+    <property name="global.ivy.settings.file" location="common/ivysettings.xml" />
 
-  <property name="caarray.dist.dir" value="${basedir}/target" />
-  <property name="db.dir" value="${caarray.dist.dir}/db" />
-  <property name="config.dir" value="${caarray.dist.dir}/config" />
-
-
-  <!-- Used by dist:*:prep to copy resource files to distribution area -->
-  <property name="common.src.dir" value="${basedir}/${common.dist.relative.dir}" />
-  <property name="common.target.dir" value="${caarray.dist.dir}/${common.dist.relative.dir}" />
-
-  <!-- TODO: Update these to get dynamically from SVN -->
-
-  <property name="caarray.name.installer" value="caarray_install_" />
-  <property name="caarray.name.upgrader" value="caarray_upgrade_" />
-  <property name="dist.dir" value="${basedir}/dist" />
-  <property name="caarray.lib.dir" value="${basedir}/lib" />
-  <property name="caarray.src.dir" value="${basedir}" />
-  <property name="caarray.sql.target.dir" value="${caarray.src.dir}/caarraydb/target/sql" />
-  <property name="caarray.sql.src.dir" value="${caarray.src.dir}/caarraydb/src/main/sql" />
-  <property name="caarray.ear.target.dir" value="${caarray.src.dir}/caarray.ear/target" />
-  <property name="caarray.grid.target.dir" value="${caarray.src.dir}/grid/v1_0" />
+    <property name="caarray.dist.dir" value="${basedir}/target" />
+    <property name="db.dir" value="${caarray.dist.dir}/db" />
+    <property name="config.dir" value="${caarray.dist.dir}/config" />
 
 
-  <property name="lib.dir" value="${basedir}/lib" />
-  <property name="bda-utils.dir" value="${basedir}/bda-utils" />
-  <property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
+    <!-- Used by dist:*:prep to copy resource files to distribution area -->
+    <property name="common.src.dir" value="${basedir}/${common.dist.relative.dir}" />
+    <property name="common.target.dir" value="${caarray.dist.dir}/${common.dist.relative.dir}" />
 
-  <property name="tools.dist.dir" value="${basedir}/tools"/>
-  <property name="jboss.dest.file" value="${tools.dist.dir}/${jboss.binaries.file}"/>
-  <property name="grid.dest.file" value="${tools.dist.dir}/${jboss.grid-binaries.file}"/>
+    <!-- TODO: Update these to get dynamically from SVN -->
 
-  <property name="db.src.dir" value="${basedir}/${db.dist.relative.dir}" />
-  <property name="jboss-conf.target.dir" value="${caarray.dist.dir}/${jboss-conf.dist.relative.dir}" />
+    <property name="caarray.name.installer" value="caarray_install_" />
+    <property name="caarray.name.upgrader" value="caarray_upgrade_" />
+    <property name="dist.dir" value="${basedir}/dist" />
+    <property name="caarray.lib.dir" value="${basedir}/lib" />
+    <property name="caarray.src.dir" value="${basedir}" />
+    <property name="caarray.sql.target.dir" value="${caarray.src.dir}/caarraydb/target/sql" />
+    <property name="caarray.sql.src.dir" value="${caarray.src.dir}/caarraydb/src/main/sql" />
+    <property name="caarray.ear.target.dir" value="${caarray.src.dir}/caarray.ear/target" />
+    <property name="caarray.grid.dir" value="${caarray.src.dir}/grid" />
 
 
-  <!-- delegate retrieval of third-party dependencies -->
-  <ant antfile="${basedir}/build/build.xml" inheritall="false" target="init:bootstrap:dependencies" dir="${basedir}">
-    <property name="no.ivy" value="${no.ivy}"/>
-    <property name="clean.bootstrap.libs.and.ivy.cache" value="${clean.bootstrap.libs.and.ivy.cache}"/>
-    <property name="local.repo.dir" value="${local.repo.dir}"/>
-  </ant>
+    <property name="lib.dir" value="${basedir}/lib" />
+    <property name="bda-utils.dir" value="${basedir}/bda-utils" />
+    <property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
 
-  <!-- Paths -->
-  <path id="project.classpath">
-    <fileset dir="${lib.dir}">
-      <include name="**/*.jar" />
-    </fileset>
-  </path>
+    <property name="tools.dist.dir" value="${basedir}/tools"/>
+    <property name="jboss.dest.file" value="${tools.dist.dir}/${jboss.binaries.file}"/>
+    <property name="grid.dest.file" value="${tools.dist.dir}/${jboss.grid-binaries.file}"/>
 
-  <path id="bda-utils.classpath">
-    <fileset dir="${bda-utils.dir}">
-      <include name="**/*.jar" />
-    </fileset>
-  </path>
+    <property name="db.src.dir" value="${basedir}/${db.dist.relative.dir}" />
+    <property name="jboss-conf.target.dir" value="${caarray.dist.dir}/${jboss-conf.dist.relative.dir}" />
 
-  <!-- Includes- include BDA marcos -->
-  <import file="${bda-utils.dir}/bda-build-utils-${bda.version}.xml" />
 
-  <target name="diagnostics" description="diagnostics">
-    <echoproperties/>
-    <diagnostics/>
-  </target>
+    <!-- delegate retrieval of third-party dependencies -->
+    <ant antfile="${basedir}/build/build.xml" inheritall="false" target="init:bootstrap:dependencies" dir="${basedir}">
+        <property name="no.ivy" value="${no.ivy}"/>
+        <property name="clean.bootstrap.libs.and.ivy.cache" value="${clean.bootstrap.libs.and.ivy.cache}"/>
+        <property name="local.repo.dir" value="${local.repo.dir}"/>
+    </ant>
 
-  <target name="clean">
-    <delete dir="${temp.dir}"/>
-  </target>
+    <!-- Paths -->
+    <path id="project.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
 
-  <target name="init" >
-    <mkdir dir="${tools.dist.dir}"/>
+    <path id="bda-utils.classpath">
+        <fileset dir="${bda-utils.dir}">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
 
-    <!-- start from scratch to make sure no stale
+    <!-- Includes- include BDA marcos -->
+    <import file="${bda-utils.dir}/bda-build-utils-${bda.version}.xml" />
+
+    <target name="diagnostics" description="diagnostics">
+        <echoproperties/>
+        <diagnostics/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${temp.dir}"/>
+    </target>
+
+    <target name="init" >
+        <mkdir dir="${tools.dist.dir}"/>
+
+        <!-- start from scratch to make sure no stale
              lib definitinos, esp during dev -->
-    <available file="${jboss.dest.file}" property="jboss.tools.exists"/>
-  </target>
+        <available file="${jboss.dest.file}" property="jboss.tools.exists"/>
+    </target>
 
-  <!-- Wrapper build target, call appropriate builds for sub-projects -->
-  <target name="build:all" description="Builds all the sub projects, putting artifacts in the project level target directory, used by distribution targets to make distributions"
+    <!-- Wrapper build target, call appropriate builds for sub-projects -->
+    <target name="build:all" description="Builds all the sub projects, putting artifacts in the project level target directory, used by distribution targets to make distributions"
         depends="
         clean,
         init,
@@ -115,8 +115,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         build:init-sql
             "/>
 
-  <!-- Produces all distributions: installer, upgrader and source -->
-  <target name="dist" description="Makes all distributions: installer, upgrader and source"
+    <!-- Produces all distributions: installer, upgrader and source -->
+    <target name="dist" description="Makes all distributions: installer, upgrader and source"
         depends="
             build:all,
             dist:installer,
@@ -128,482 +128,491 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         "/>
 
 
-  <!-- Creates the installer distribution used by automated or manual remote installations -->
-  <target name="dist:installer" depends="dist:installer:prep">
-    <delete file="${dist.dir}/${caarray.install.zip.file}" />
-    <zip destfile="${dist.dir}/${caarray.install.zip.file}" basedir="${caarray.dist.dir}" />
-  </target>
+    <!-- Creates the installer distribution used by automated or manual remote installations -->
+    <target name="dist:installer" depends="dist:installer:prep">
+        <delete file="${dist.dir}/${caarray.install.zip.file}" />
+        <zip destfile="${dist.dir}/${caarray.install.zip.file}" basedir="${caarray.dist.dir}" />
+    </target>
 
 
-  <!-- Creates upgrader distribution -->
-  <target name="dist:upgrader" depends="dist:upgrader:prep">
-    <delete file="${dist.dir}/${caarray.upgrade.zip.file}" />
-    <zip destfile="${dist.dir}/${caarray.upgrade.zip.file}" basedir="${caarray.dist.dir}" />
-  </target>
+    <!-- Creates upgrader distribution -->
+    <target name="dist:upgrader" depends="dist:upgrader:prep">
+        <delete file="${dist.dir}/${caarray.upgrade.zip.file}" />
+        <zip destfile="${dist.dir}/${caarray.upgrade.zip.file}" basedir="${caarray.dist.dir}" />
+    </target>
 
 
-  <target name="dist:src">
-    <delete file="${dist.dir}/${caarray.src.zip.file}" />
-    <zip destfile="${dist.dir}/${caarray.src.zip.file}">
-      <fileset dir="${basedir}" excludes="dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" />
-    </zip>
-  </target>
+    <target name="dist:src">
+        <delete file="${dist.dir}/${caarray.src.zip.file}" />
+        <zip destfile="${dist.dir}/${caarray.src.zip.file}">
+            <fileset dir="${basedir}" excludes="dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" />
+        </zip>
+    </target>
 
-  <target name="dist:javadoc">
-    <delete file="${dist.dir}/${caarray.javadoc.zip.file}" />
-    <zip destfile="${dist.dir}/${caarray.javadoc.zip.file}">
-      <fileset dir="${basedir}/caarray-client.jar/target/docs/api"/>
-    </zip>
-  </target>
+    <target name="dist:javadoc">
+        <delete file="${dist.dir}/${caarray.javadoc.zip.file}" />
+        <zip destfile="${dist.dir}/${caarray.javadoc.zip.file}">
+            <fileset dir="${basedir}/caarray-client.jar/target/docs/api"/>
+        </zip>
+    </target>
 
-  <target name="dist:caarray-client.zip">
-    <delete file="${dist.dir}/${caarray.client-zip.zip.file}" />
-    <copy file="${basedir}/caarray-client.jar/target/caarray-client.zip" tofile="${dist.dir}/${caarray.client-zip.zip.file}"/>
-  </target>
+    <target name="dist:caarray-client.zip">
+        <delete file="${dist.dir}/${caarray.client-zip.zip.file}" />
+        <copy file="${basedir}/caarray-client.jar/target/caarray-client.zip" tofile="${dist.dir}/${caarray.client-zip.zip.file}"/>
+    </target>
 
-  <target name="dist:gui-installer" description="Makes Gui-Installer distribution">
-    <mkdir dir="${basedir}/gui-installer/target"/>
-    <gui-installer-prep-caarray target.dir="${basedir}/gui-installer/target" download.dir="${basedir}/gui-installer/target" bda-utils.dir="${bda-utils.dir}" izpack-custom.svn.dir="${basedir}/gui-installer/target/custom"/>
-    <ant inheritAll="false" inheritRefs="false"
+    <target name="dist:gui-installer" description="Makes Gui-Installer distribution">
+        <mkdir dir="${basedir}/gui-installer/target"/>
+        <gui-installer-prep-caarray target.dir="${basedir}/gui-installer/target" download.dir="${basedir}/gui-installer/target" bda-utils.dir="${bda-utils.dir}" izpack-custom.svn.dir="${basedir}/gui-installer/target/custom"/>
+        <ant inheritAll="false" inheritRefs="false"
             antfile="install.xml"
             target="build:installer"
-            dir="${basedir}/gui-installer"
-            >
-      <property name="compile.jar.dir" value="${basedir}/gui-installer/target/izpack-4.0.1"/>
-    </ant>
-  </target>
+            dir="${basedir}/gui-installer">
+            <property name="compile.jar.dir" value="${basedir}/gui-installer/target/izpack-4.0.1"/>
+        </ant>
+    </target>
 
-  <macrodef name="gui-installer-prep-caarray">
-    <attribute name="bda-utils.dir" default="${bda-download.dir}" />
-    <attribute name="gui-installer.dir" default="${gui-installer.dir}" />
-    <attribute name="target.dir" default="${target.dir}"/>
-    <attribute name="download.dir" default="${download.dir}" />
-    <attribute name="dist.dir" default="${dist.dir}"/>
-    <attribute name="izpack.binary.name" default="izpack-4.0.1" />
-    <attribute name="izpack.binary.file" default="izpack-4.0.1.zip" />
-    <attribute name="izpack.binary.uri" default="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/techstack-2008/os-independent" />
-    <attribute name="izpack-custom.svn.url" default="http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-installer/src-custom"/>
-    <attribute name="izpack-custom.svn.dir" default="${target.dir}/izpack-custom"/>
-    <attribute name="product.name" default="caArray-installer" />
-    <attribute name="product.version" default="2.1.0" />
-    <sequential>
-      <tstamp>
-        <format property="JAR_STAMP" pattern="MMddyyyyhhmmss" unit="millisecond" />
-      </tstamp>
+    <macrodef name="gui-installer-prep-caarray">
+        <attribute name="bda-utils.dir" default="${bda-download.dir}" />
+        <attribute name="gui-installer.dir" default="${gui-installer.dir}" />
+        <attribute name="target.dir" default="${target.dir}"/>
+        <attribute name="download.dir" default="${download.dir}" />
+        <attribute name="dist.dir" default="${dist.dir}"/>
+        <attribute name="izpack.binary.name" default="izpack-4.0.1" />
+        <attribute name="izpack.binary.file" default="izpack-4.0.1.zip" />
+        <attribute name="izpack.binary.uri" default="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/techstack-2008/os-independent" />
+        <attribute name="izpack-custom.svn.url" default="http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-installer/src-custom"/>
+        <attribute name="izpack-custom.svn.dir" default="${target.dir}/izpack-custom"/>
+        <attribute name="product.name" default="caArray-installer" />
+        <attribute name="product.version" default="2.1.0" />
+        <sequential>
+          <tstamp>
+            <format property="JAR_STAMP" pattern="MMddyyyyhhmmss" unit="millisecond" />
+          </tstamp>
 
-      <!-- Cleanup target area -->
-      <delete dir="@{target.dir}/@{izpack.binary.name}" />
+          <!-- Cleanup target area -->
+          <delete dir="@{target.dir}/@{izpack.binary.name}" />
 
-      <!-- Extract izpack -->
-      <get src="@{izpack.binary.uri}/@{izpack.binary.file}" dest="@{download.dir}/@{izpack.binary.file}" usetimestamp="true"/>
-      <unzip dest="@{target.dir}" src="@{download.dir}/@{izpack.binary.file}" />
+          <!-- Extract izpack -->
+          <get src="@{izpack.binary.uri}/@{izpack.binary.file}" dest="@{download.dir}/@{izpack.binary.file}" usetimestamp="true"/>
+          <unzip dest="@{target.dir}" src="@{download.dir}/@{izpack.binary.file}" />
 
-      <!-- Check out izpack custom code and copy into extracted izpack dist -->
-      <osfamily property="os.family"/>
-      <switch value="${os.family}">
-        <case value="windows">
-          <echo message="Retreiving izpack custom code from svn task."/>
-          <svn-co
-            svn.checkout.url="@{izpack-custom.svn.url}"
-            svn.checkout.dir="@{izpack-custom.svn.dir}"
-            />
-        </case>
-        <case value="unix">
-          <echo message="Retreiving izpack custom code from svn command line."/>
-          <mkdir dir="@{izpack-custom.svn.dir}"/>
-          <exec osfamily="unix" executable="svn" spawn="true">
-            <arg line="co @{izpack-custom.svn.url} @{izpack-custom.svn.dir}" />
-          </exec>
-        </case>
-        <default>
-          <fail message="Unexpected OS type ${os.family}"/>
-        </default>
-      </switch>
-      <sleep seconds="10"/>
+          <!-- Check out izpack custom code and copy into extracted izpack dist -->
+          <osfamily property="os.family"/>
+          <switch value="${os.family}">
+            <case value="windows">
+              <echo message="Retreiving izpack custom code from svn task."/>
+              <svn-co
+                svn.checkout.url="@{izpack-custom.svn.url}"
+                svn.checkout.dir="@{izpack-custom.svn.dir}"
+                />
+            </case>
+            <case value="unix">
+              <echo message="Retreiving izpack custom code from svn command line."/>
+              <mkdir dir="@{izpack-custom.svn.dir}"/>
+              <exec osfamily="unix" executable="svn" spawn="true">
+                <arg line="co @{izpack-custom.svn.url} @{izpack-custom.svn.dir}" />
+              </exec>
+            </case>
+            <default>
+              <fail message="Unexpected OS type ${os.family}"/>
+            </default>
+          </switch>
+          <sleep seconds="10"/>
 
-      <copy todir="@{target.dir}/@{izpack.binary.name}/src/lib" overwrite="true">
-        <fileset dir="@{izpack-custom.svn.dir}" />
-      </copy>
+          <copy todir="@{target.dir}/@{izpack.binary.name}/src/lib" overwrite="true">
+            <fileset dir="@{izpack-custom.svn.dir}" />
+          </copy>
 
-      <xmltask failWithoutMatch="true" source="@{target.dir}/@{izpack.binary.name}/src/build.xml"
-        dest="@{target.dir}/@{izpack.binary.name}/src/build.xml">
-        <insert path="//target[@name='build.listeners']" position="before" file="@{izpack-custom.svn.dir}/resources/ProgressBarInstallerListener.xml"/>
-      </xmltask>
+          <xmltask failWithoutMatch="true" source="@{target.dir}/@{izpack.binary.name}/src/build.xml"
+            dest="@{target.dir}/@{izpack.binary.name}/src/build.xml">
+            <insert path="//target[@name='build.listeners']" position="before" file="@{izpack-custom.svn.dir}/resources/ProgressBarInstallerListener.xml"/>
+          </xmltask>
 
-      <!-- support for custom panels -->
-      <xmltask failWithoutMatch="true" source="@{target.dir}/@{izpack.binary.name}/src/build.xml" dest="@{target.dir}/@{izpack.binary.name}/src/build.xml">
-        <insert path="//target[@name='build.panels']" file="@{izpack-custom.svn.dir}/resources/CustomPanels.xml"/>
-      </xmltask>
+          <!-- support for custom panels -->
+          <xmltask failWithoutMatch="true" source="@{target.dir}/@{izpack.binary.name}/src/build.xml" dest="@{target.dir}/@{izpack.binary.name}/src/build.xml">
+            <insert path="//target[@name='build.panels']" file="@{izpack-custom.svn.dir}/resources/CustomPanels.xml"/>
+          </xmltask>
 
-    <copy file="@{izpack-custom.svn.dir}/resources/eng.xml" todir="@{target.dir}/@{izpack.binary.name}/bin/langpacks/installer" overwrite="true" />
+        <copy file="@{izpack-custom.svn.dir}/resources/eng.xml" todir="@{target.dir}/@{izpack.binary.name}/bin/langpacks/installer" overwrite="true" />
 
-    <!-- Copy over library files -->
-    <mkdir dir="@{target.dir}/@{izpack.binary.name}/lib"/>
-    <copy todir="@{target.dir}/@{izpack.binary.name}/lib">
-      <fileset dir="@{bda-utils.dir}">
-        <include name="ant-1.7.0.jar"/>
-        <include name="ant-launcher-1.7.0.jar"/>
-        <include name="ant-nodeps-1.7.0.jar"/>
-        <include name="mysql-connector-java-*.jar"/>
-      </fileset>
-    </copy>
+        <!-- Copy over library files -->
+        <mkdir dir="@{target.dir}/@{izpack.binary.name}/lib"/>
+        <copy todir="@{target.dir}/@{izpack.binary.name}/lib">
+          <fileset dir="@{bda-utils.dir}">
+            <include name="ant-1.7.0.jar"/>
+            <include name="ant-launcher-1.7.0.jar"/>
+            <include name="ant-nodeps-1.7.0.jar"/>
+            <include name="mysql-connector-java-*.jar"/>
+          </fileset>
+        </copy>
 
-    <!-- Compile the izpack with custom code -->
-    <ant inheritall="false" antfile="@{target.dir}/@{izpack.binary.name}/src/build.xml" />
+        <!-- Compile the izpack with custom code -->
+        <ant inheritall="false" antfile="@{target.dir}/@{izpack.binary.name}/src/build.xml" />
 
-    <if>
-      <os family="unix" />
-      <then>
-        <chmod dir="@{target.dir}/@{izpack.binary.name}/bin" perm="ugo+rx" includes="compile" />
-      </then>
-    </if>
-  </sequential>
-</macrodef>
+        <if>
+          <os family="unix" />
+          <then>
+            <chmod dir="@{target.dir}/@{izpack.binary.name}/bin" perm="ugo+rx" includes="compile" />
+          </then>
+        </if>
+      </sequential>
+    </macrodef>
 
-<target name="build:caarray">
-  <ant antfile="${basedir}/build/build.xml" inheritall="false" target="clean-build-with-zips" dir="${basedir}">
-    <property name="local.globoss.home" value="${loc.globoss.home}"/>
-  </ant>
-</target>
+    <target name="build:caarray">
+        <ant antfile="${basedir}/build/build.xml" inheritall="false" target="clean-build-with-zips" dir="${basedir}">
+             <property name="local.globoss.home" value="${loc.globoss.home}"/>
+        </ant>
+    </target>
 
-<target name="build:init-sql">
-  <ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-schema-sql" dir="${basedir}">
-    <property name="no.ivy" value="true"/>
-  </ant>
-  <ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-mged-sql" dir="${basedir}">
-    <property name="no.ivy" value="true"/>
-  </ant>
-</target>
+    <target name="build:init-sql">
+        <ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-schema-sql" dir="${basedir}">
+            <property name="no.ivy" value="true"/>
+        </ant>
+        <ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-mged-sql" dir="${basedir}">
+            <property name="no.ivy" value="true"/>
+        </ant>
+    </target>
 
 
-<target name="retrieve:jboss" unless="jboss.tools.exists">
-  <get src="${jboss.src.url}"
+    <target name="retrieve:jboss" unless="jboss.tools.exists">
+        <get src="${jboss.src.url}"
             dest="${jboss.dest.file}"/>
-  <get src="${jboss.src.url}.MD5"
+        <get src="${jboss.src.url}.MD5"
             dest="${jboss.dest.file}.MD5"/>
-  <checksum file="${jboss.dest.file}" verifyProperty="jboss.cksum.ok"/>
-  <if>
-    <equals arg1="${jboss.cksum.ok}" arg2="true"/>
-    <then>
-      <echo message="Downloaded jboss sucessfully"/>
-    </then>
-    <else>
-      <fail message="Failed to download jboss file sucessfully."/>
-    </else>
-  </if>
-</target>
+        <checksum file="${jboss.dest.file}" verifyProperty="jboss.cksum.ok"/>
+        <if>
+            <equals arg1="${jboss.cksum.ok}" arg2="true"/>
+            <then>
+                <echo message="Downloaded jboss sucessfully"/>
+            </then>
+            <else>
+                <fail message="Failed to download jboss file sucessfully."/>
+            </else>
+        </if>
+    </target>
 
-<target name="retrieve:jboss404" unless="grid.tools.exists">
-  <get src="${jboss.grid-src.url}"
+    <target name="retrieve:jboss404" unless="grid.tools.exists">
+        <get src="${jboss.grid-src.url}"
             dest="${grid.dest.file}"/>
 
-  <!-- delete unneeded "all" and "minimal" configurations as only "default" is needed -->
-  <property name="jboss.temp.staging.dir" value="${grid.dest.file}.jboss.temp.staging"/>
-  <mkdir dir="${jboss.temp.staging.dir}"/>
-  <unzip src="${grid.dest.file}" dest="${jboss.temp.staging.dir}"/>
-  <delete file="${grid.dest.file}"/>
-  <!-- be careful as these configurations might not be there in future if zip updated -->
-  <delete dir="${jboss.temp.staging.dir}/jboss-4.0.4.GA/server/all" failonerror="false"/>
-  <delete dir="${jboss.temp.staging.dir}/jboss-4.0.4.GA/server/minimal" failonerror="false"/>
-  <zip update="true" destfile="${grid.dest.file}" basedir="${jboss.temp.staging.dir}"/>
-  <delete dir="${jboss.temp.staging.dir}"/>
-</target>
+        <!-- delete unneeded "all" and "minimal" configurations as only "default" is needed -->
+        <property name="jboss.temp.staging.dir" value="${grid.dest.file}.jboss.temp.staging"/>
+        <mkdir dir="${jboss.temp.staging.dir}"/>
+        <unzip src="${grid.dest.file}" dest="${jboss.temp.staging.dir}"/>
+        <delete file="${grid.dest.file}"/>
+        <!-- be careful as these configurations might not be there in future if zip updated -->
+        <delete dir="${jboss.temp.staging.dir}/jboss-4.0.4.GA/server/all" failonerror="false"/>
+        <delete dir="${jboss.temp.staging.dir}/jboss-4.0.4.GA/server/minimal" failonerror="false"/>
+        <zip update="true" destfile="${grid.dest.file}" basedir="${jboss.temp.staging.dir}"/>
+        <delete dir="${jboss.temp.staging.dir}"/>
+    </target>
 
-<target name="dist:tools:retrieve" depends="retrieve:jboss,retrieve:jboss404">
+    <target name="dist:tools:retrieve" depends="retrieve:jboss,retrieve:jboss404">
 
-</target>
+    </target>
 
-<target name="run-caarray2-build" depends="
+    <target name="run-caarray2-build" depends="
         clean,
         init,
         build:caarray,
         build:init-sql">
-</target>
+    </target>
 
 
-<target name="copy-caarray2-application" depends="run-caarray2-build">
-  <copy todir="${caarray.dist.dir}/ear" overwrite="true">
-    <fileset dir="${caarray.ear.target.dir}" includes="**/*.ear" />
-  </copy>
+    <target name="copy-caarray2-application" depends="run-caarray2-build">
+        <copy todir="${caarray.dist.dir}/ear" overwrite="true">
+            <fileset dir="${caarray.ear.target.dir}" includes="**/*.ear" />
+        </copy>
 
-  <copy todir="${caarray.dist.dir}/grid" file="${caarray.grid.target.dir}/cagrid_CaArraySvc.zip" overwrite="true" />
-  <copy todir="${caarray.dist.dir}/grid" file="${caarray.src.dir}/build/resources/deploy/jboss-globus-serverinstance-config.zip" />
-</target>
+        <copy todir="${caarray.dist.dir}/grid" overwrite="true" flatten="true">
+            <fileset dir="${caarray.grid.dir}">
+                <include name="**/cagrid_CaArraySvc*.zip"/>
+            </fileset>
+        </copy>
+        <copy todir="${caarray.dist.dir}/grid" file="${caarray.src.dir}/build/resources/deploy/jboss-globus-serverinstance-config.zip" />
+    </target>
 
-<target name="dist:installer:prep" depends="copy-caarray2-application,dist:tools:retrieve">
-  <copy todir="${db.dist.relative.dir}" overwrite="true">
-    <fileset dir="${caarray.sql.target.dir}" includes="*.sql" />
-  </copy>
+    <target name="dist:installer:prep" depends="copy-caarray2-application,dist:tools:retrieve">
+        <copy todir="${db.dist.relative.dir}" overwrite="true">
+            <fileset dir="${caarray.sql.target.dir}" includes="*.sql" />
+        </copy>
 
-  <copy todir="${db.dist.relative.dir}" overwrite="true">
-    <fileset dir="${caarray.sql.src.dir}" includes="*.sql" />
-  </copy>
+        <copy todir="${db.dist.relative.dir}" overwrite="true">
+            <fileset dir="${caarray.sql.src.dir}" includes="*.sql" />
+        </copy>
 
-  <copy todir="${jboss-conf.target.dir}" overwrite="true">
-    <fileset dir="${caarray.src.dir}/build/resources/deploy">
-      <include name="*.xml" />
-    </fileset>
-  </copy>
+        <copy todir="${jboss-conf.target.dir}" overwrite="true">
+            <fileset dir="${caarray.src.dir}/build/resources/deploy">
+                <include name="*.xml" />
+            </fileset>
+        </copy>
 
-  <copy tofile="${caarray.dist.dir}/build-caarray-app.xml" file="${caarray.src.dir}/build/build.xml" overwrite="true" />
-  <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/ivy-caarray.xml" overwrite="true"/>
-  <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/ivy-caarray-settings.xml" overwrite="true"/>
-  <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/caarray-ivy-build.xml" overwrite="true"/>
-
-
-  <copy todir="${caarray.dist.dir}/docs">
-    <fileset dir="${basedir}/installer-docs">
-      <include name="*/**" />
-    </fileset>
-  </copy>
-
-  <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/build/macrodefs.xml" overwrite="true" />
+        <copy tofile="${caarray.dist.dir}/build-caarray-app.xml" file="${caarray.src.dir}/build/build.xml" overwrite="true" />
+        <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/ivy-caarray.xml" overwrite="true"/>
+        <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/ivy-caarray-settings.xml" overwrite="true"/>
+        <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/caarray-ivy-build.xml" overwrite="true"/>
 
 
-  <copy todir="${caarray.dist.dir}/lib" overwrite="true">
-    <fileset dir="${caarray.src.dir}/lib">
-      <include name="**/*.jar" />
-    </fileset>
-  </copy>
+        <copy todir="${caarray.dist.dir}/docs">
+            <fileset dir="${basedir}/installer-docs">
+                <include name="*/**" />
+            </fileset>
+        </copy>
 
-  <copy todir="${caarray.dist.dir}" overwrite="true">
-    <fileset dir="${basedir}">
-      <include name="install.xml" />
-      <include name="install.properties" />
-      <include name="*properties.template" />
-      <include name="project.properties" />
-    </fileset>
-  </copy>
+        <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/build/macrodefs.xml" overwrite="true" />
 
-  <!-- configure install.properties to point to the prod grid index service -->
-  <replace file="${caarray.dist.dir}/install.properties" token="grid.index.url=http://training03.cagrid.org:6080/wsrf/services/DefaultIndexService">
-    <replacevalue>
-      <![CDATA[#grid.index.url=http://training03.cagrid.org:6080/wsrf/services/DefaultIndexService
-grid.index.url=http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService]]>
-    </replacevalue>
-  </replace>
 
-  <!-- Rename install.xml to build.xml so manual installs will not need to include the -f optoin on ant, simplifying the install proces. -->
-  <move file="${caarray.dist.dir}/install.xml" tofile="${caarray.dist.dir}/build.xml"/>
+        <copy todir="${caarray.dist.dir}/lib" overwrite="true">
+            <fileset dir="${caarray.src.dir}/lib">
+                <include name="**/*.jar" />
+            </fileset>
+        </copy>
 
-  <replaceregexp file="${caarray.dist.dir}/build.xml" byline="true"
+        <copy todir="${caarray.dist.dir}" overwrite="true">
+            <fileset dir="${basedir}">
+                <include name="install.xml" />
+                <include name="install.properties" />
+                <include name="*properties.template" />
+                <include name="project.properties" />
+            </fileset>
+        </copy>
+
+        <!-- configure install.properties to point to the prod grid index service -->
+        <replace file="${caarray.dist.dir}/install.properties" token="grid.index.url=http://training03.cagrid.org:6080/wsrf/services/DefaultIndexService">
+            <replacevalue><![CDATA[#grid.index.url=http://training03.cagrid.org:6080/wsrf/services/DefaultIndexService
+grid.index.url=http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService]]></replacevalue>
+        </replace>
+
+        <!-- Rename install.xml to build.xml so manual installs will not need to include the -f optoin on ant, simplifying the install proces. -->
+        <move file="${caarray.dist.dir}/install.xml" tofile="${caarray.dist.dir}/build.xml"/>
+
+        <replaceregexp file="${caarray.dist.dir}/build.xml" byline="true"
             match="(.project.*default=.)\w+(.\s+.*)"
             replace="\1install\2"/>
 
-  <replaceregexp file="${caarray.dist.dir}/build.xml" byline="true"
+        <replaceregexp file="${caarray.dist.dir}/build.xml" byline="true"
             match="(.*property name=.properties.file. value=.)[\w\.\d\-\_\$\{\}\/]+(.\s*\/.*)"
             replace="\1install.properties\2"/>
 
 
-  <copy todir="${caarray.dist.dir}/tools">
-    <fileset dir="${basedir}/tools">
-      <include name="*/**" />
-    </fileset>
-  </copy>
-  <!-- Copy over BDA macrodefs and libraries -->
-  <copy todir="${caarray.dist.dir}/bda-utils" overwrite="true">
-    <fileset dir="${bda-utils.dir}">
-      <include name="**/*"/>
-    </fileset>
-  </copy>
+        <copy todir="${caarray.dist.dir}/tools">
+            <fileset dir="${basedir}/tools">
+                <include name="*/**" />
+            </fileset>
+        </copy>
+        <!-- Copy over BDA macrodefs and libraries -->
+        <copy todir="${caarray.dist.dir}/bda-utils" overwrite="true">
+            <fileset dir="${bda-utils.dir}">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
 
-  <!-- This  copies common files over
+        <!-- This  copies common files over
         -->
-  <copy todir="${common.target.dir}" overwrite="true">
-    <fileset dir="${common.src.dir}">
-      <include name="**/*" />
-    </fileset>
-  </copy>
-</target>
+        <copy todir="${common.target.dir}" overwrite="true">
+            <fileset dir="${common.src.dir}">
+                <include name="**/*" />
+            </fileset>
+        </copy>
+    </target>
 
-<target name="install:set-default-target">
-  <copy todir="${caarray.dist.dir}" overwrite="true" file="install.properties" />
+    <target name="install:set-default-target">
+        <copy todir="${caarray.dist.dir}" overwrite="true" file="install.properties" />
 
-  <replaceregexp file="${caarray.dist.dir}/build.xml" byline="true"
+        <replaceregexp file="${caarray.dist.dir}/build.xml" byline="true"
             match="(.project.*default=.)\w+(.\s+.*)"
             replace="\1install\2"/>
 
-  <replaceregexp file="${caarray.dist.dir}/build.xml" byline="true"
+        <replaceregexp file="${caarray.dist.dir}/build.xml" byline="true"
             match="(.*property name=.properties.file. value=.)[\w\.\d\-\_\$\{\}\/]+(.\s*\/.*)"
             replace="\1install.properties\2"/>
 
-</target>
+    </target>
 
-<target name="dist:upgrader:prep" >
+    <target name="dist:upgrader:prep" >
 
-  <delete dir="${caarray.dist.dir}" />
+        <delete dir="${caarray.dist.dir}" />
 
-  <copy todir="${caarray.dist.dir}/ear" overwrite="true">
-    <fileset dir="${caarray.ear.target.dir}" includes="**/*.ear" />
-  </copy>
+        <copy todir="${caarray.dist.dir}/ear" overwrite="true">
+            <fileset dir="${caarray.ear.target.dir}" includes="**/*.ear" />
+        </copy>
 
-  <copy todir="${caarray.dist.dir}/grid" file="${caarray.grid.target.dir}/cagrid_CaArraySvc.zip" overwrite="true" />
-  <copy todir="${caarray.dist.dir}/grid" file="${caarray.src.dir}/build/resources/deploy/jboss-globus-serverinstance-config.zip" />
+        <copy todir="${caarray.dist.dir}/grid" overwrite="true">
+            <fileset dir="${caarray.grid.dir}">
+                <include name="cagrid_CaArraySvc*.zip"/>
+            </fileset>
+        </copy>
+        <copy todir="${caarray.dist.dir}/grid" file="${caarray.src.dir}/build/resources/deploy/jboss-globus-serverinstance-config.zip" />
 
-  <copy todir="${caarray.dist.dir}" overwrite="true" file="upgrade.properties" />
+        <copy todir="${caarray.dist.dir}" overwrite="true" file="upgrade.properties" />
 
-  <!-- Copy install related xml and properties files -->
-  <copy todir="${caarray.dist.dir}" overwrite="true">
-    <fileset dir="${basedir}">
-      <include name="install.xml" />
-      <include name="upgrade.properties" />
-      <include name="*properties.template" />
-      <include name="project.properties" />
-    </fileset>
-  </copy>
+        <!-- Copy install related xml and properties files -->
+        <copy todir="${caarray.dist.dir}" overwrite="true">
+            <fileset dir="${basedir}">
+                <include name="install.xml" />
+                <include name="upgrade.properties" />
+                <include name="*properties.template" />
+                <include name="project.properties" />
+            </fileset>
+        </copy>
 
 
-  <!-- Rename install.xml to build.xml to simply install but not having to provide -f option to ant command line -->
-  <move file="${caarray.dist.dir}/install.xml" tofile="${caarray.dist.dir}/build.xml" />
+        <!-- Rename install.xml to build.xml to simply install but not having to provide -f option to ant command line -->
+        <move file="${caarray.dist.dir}/install.xml" tofile="${caarray.dist.dir}/build.xml" />
 
-  <replaceregexp file="${caarray.dist.dir}/build.xml" byline="true"
+        <replaceregexp file="${caarray.dist.dir}/build.xml" byline="true"
             match="(.project.*default=.)\w+(.\s+.*)"
             replace="\1upgrade\2"/>
 
-  <replaceregexp file="${caarray.dist.dir}/build.xml" byline="true"
+        <replaceregexp file="${caarray.dist.dir}/build.xml" byline="true"
             match="(.*property name=.properties.file. value=.)[\w\.\d\-\_\$\{\}\/]+(.\s*\/.*)"
             replace="\1upgrade.properties\2"/>
 
 
-  <!-- Copy BDA macrodefs and library files -->
-  <copy todir="${caarray.dist.dir}/bda-utils" overwrite="true">
-    <fileset dir="${bda-utils.dir}">
-      <exclude name="**/*.zip" />
-    </fileset>
-  </copy>
+        <!-- Copy BDA macrodefs and library files -->
+        <copy todir="${caarray.dist.dir}/bda-utils" overwrite="true">
+            <fileset dir="${bda-utils.dir}">
+                <exclude name="**/*.zip" />
+            </fileset>
+        </copy>
 
-  <!-- This  copies common files over
+        <!-- This  copies common files over
         -->
-  <copy todir="${common.target.dir}" overwrite="true">
-    <fileset dir="${common.src.dir}">
-      <include name="**/*" />
-    </fileset>
-  </copy>
-</target>
+        <copy todir="${common.target.dir}" overwrite="true">
+            <fileset dir="${common.src.dir}">
+                <include name="**/*" />
+            </fileset>
+        </copy>
+    </target>
 
-<target name="create-installer-zip">
-  <property name="caarray.zip.file" value="${caarray.name.installer}${caarray.version}_${caarray.revision}.zip" />
+    <target name="create-installer-zip">
+        <property name="caarray.zip.file" value="${caarray.name.installer}${caarray.version}_${caarray.revision}.zip" />
 
-  <zip destfile="${dist.dir}/${caarray.zip.file}">
-    <zipfileset dir="${caarray.dist.dir}" prefix="caarray" />
-    <zipfileset dir="${bda-utils.dir}" prefix="bda-utils" />
-  </zip>
-</target>
+        <zip destfile="${dist.dir}/${caarray.zip.file}">
+            <zipfileset dir="${caarray.dist.dir}" prefix="caarray" />
+            <zipfileset dir="${bda-utils.dir}" prefix="bda-utils" />
+        </zip>
+    </target>
 
-<target name="upgrade:init" description="Initializes installer environment">
-  <delete dir="${caarray.dist.dir}" quiet="false" />
-  <mkdir dir="${caarray.dist.dir}" />
-</target>
+    <target name="upgrade:init" description="Initializes installer environment">
+        <delete dir="${caarray.dist.dir}" quiet="false" />
+        <mkdir dir="${caarray.dist.dir}" />
+    </target>
 
-<target name="copy-caarray2-upgrader">
-  <copy todir="${caarray.dist.dir}/ear" overwrite="true">
-    <fileset dir="${caarray.ear.target.dir}" includes="**/*.ear" />
-  </copy>
+    <target name="copy-caarray2-upgrader">
+        <copy todir="${caarray.dist.dir}/ear" overwrite="true">
+            <fileset dir="${caarray.ear.target.dir}" includes="**/*.ear" />
+        </copy>
 
-  <copy todir="${caarray.dist.dir}/grid" file="${caarray.grid.target.dir}/cagrid_CaArraySvc.zip" overwrite="true" />
-  <copy todir="${caarray.dist.dir}/grid" file="${caarray.src.dir}/build/resources/deploy/jboss-globus-serverinstance-config.zip" />
-</target>
+        <copy todir="${caarray.dist.dir}/grid" overwrite="true">
+            <fileset dir="${caarray.grid.dir}">
+                <include name="cagrid_CaArraySvc*.zip"/>
+            </fileset>
+        </copy>
+        <copy todir="${caarray.dist.dir}/grid" file="${caarray.src.dir}/build/resources/deploy/jboss-globus-serverinstance-config.zip" />
+    </target>
 
-<target name="create-upgrader-zip">
-  <property name="caarray.zip.file.upgrade" value="${caarray.name.upgrader}${caarray.version}_${caarray.revision}.zip" />
+    <target name="create-upgrader-zip">
+        <property name="caarray.zip.file.upgrade" value="${caarray.name.upgrader}${caarray.version}_${caarray.revision}.zip" />
 
-  <zip destfile="${dist.dir}/${caarray.zip.file.upgrade}">
-    <zipfileset dir="${caarray.dist.dir}" prefix="caarray" />
-    <zipfileset dir="${bda-utils.dir}" prefix="bda-utils" includes="**/lib/*,*"/>
-  </zip>
-</target>
+        <zip destfile="${dist.dir}/${caarray.zip.file.upgrade}">
+            <zipfileset dir="${caarray.dist.dir}" prefix="caarray" />
+            <zipfileset dir="${bda-utils.dir}" prefix="bda-utils" includes="**/lib/*,*"/>
+        </zip>
+    </target>
 
-<!-- Installs the application locally. Requires a local instance of mysql. Will use the target from install.xml specified in ${install.target} (defaults to install unless passed in on command line).  Calls ant from exec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install. This target will use differnt properties based on linux (linux-install.properties) or windows (windows-install.properties) installs. It only supports using those properties files for now, so if you want to change install time properites edit these files. -->
-<target name="deploy:local:install" depends="dist:installer:prep" description="Installs the application and required binaries on the local machine, used for developer desktops and ci environments" >
-  <!-- deploy:local fails about basedirectory in real strange place macrodefs:319, this should fix it -->
-  <mkdir dir="${caarray.dist.dir}/lib"/>
-  <copy todir="${caarray.dist.dir}">
-    <fileset dir="${basedir}">
-      <include name="*.properties"/>
-    </fileset>
-  </copy>
-  <exec osfamily="unix" executable="ant" dir="${caarray.dist.dir}">
-    <!-- use alternate properties file since default has replace values -->
-    <arg value="-Dproperties.file=linux-install.properties"/>
-    <!-- force reinstall of database and jboss without prompting -->
-    <arg value="-Dforce.reinstall=true"/>
-    <arg value="${install.target}"/>
-  </exec>
-  <exec osfamily="windows" executable="ant.bat" dir="${caarray.dist.dir}">
-    <!-- use alternate properties file since default has replace values -->
-    <arg value="-Dproperties.file=windows-install.properties"/>
-    <!-- force reinstall of database and jboss without prompting -->
-    <arg value="-Dforce.reinstall=true"/>
-    <arg value="${install.target}"/>
-  </exec>
+    <!-- Installs the application locally. Requires a local instance of mysql. Will use the target from install.xml specified in ${install.target} (defaults to install unless passed in on command line).  Calls ant from exec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install. This target will use differnt properties based on linux (linux-install.properties) or windows (windows-install.properties) installs. It only supports using those properties files for now, so if you want to change install time properites edit these files. -->
+    <target name="deploy:local:install" depends="dist:installer:prep" description="Installs the application and required binaries on the local machine, used for developer desktops and ci environments" >
+        <!-- deploy:local fails about basedirectory in real strange place macrodefs:319, this should fix it -->
+        <mkdir dir="${caarray.dist.dir}/lib"/>
+        <copy todir="${caarray.dist.dir}">
+            <fileset dir="${basedir}">
+                <include name="*.properties"/>
+            </fileset>
+        </copy>
+        <exec osfamily="unix" executable="ant" dir="${caarray.dist.dir}">
+            <!-- use alternate properties file since default has replace values -->
+            <arg value="-Dproperties.file=linux-install.properties"/>
+            <!-- force reinstall of database and jboss without prompting -->
+            <arg value="-Dforce.reinstall=true"/>
+            <arg value="${install.target}"/>
+        </exec>
+        <exec osfamily="windows" executable="ant.bat" dir="${caarray.dist.dir}">
+            <!-- use alternate properties file since default has replace values -->
+            <arg value="-Dproperties.file=windows-install.properties"/>
+            <!-- force reinstall of database and jboss without prompting -->
+            <arg value="-Dforce.reinstall=true"/>
+            <arg value="${install.target}"/>
+        </exec>
 
-</target>
+    </target>
 
-<!-- Upgrades the application locally. Requires a local instance of mysql. Will use the target from install.xml specified in ${upgrade.target} (defaults to upgrade unless passed in on command line).  Calls ant from exec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install. This target will use differnt properties based on linux (linux-install.properties) or windows (windows-install.properties) upgrades. It only supports using those properties files for now, so if you want to change install time properites edit these files. -->
-<target name="deploy:local:upgrade" depends="dist:upgrader:prep" description="Upgrades the application on the local machine, used for developer desktops and ci environments" >
-  <!-- deploy:local fails about basedirectory in real strange place macrodefs:319, this should fix it -->
-  <mkdir dir="${caarray.dist.dir}/lib"/>
-  <copy todir="${caarray.dist.dir}">
-    <fileset dir="${basedir}">
-      <include name="*.properties"/>
-    </fileset>
-  </copy>
-  <exec osfamily="unix" executable="ant" dir="${caarray.dist.dir}">
-    <!-- use alternate properties file since default has replace values -->
-    <arg value="-Dproperties.file=linux-upgrade.properties"/>
-    <!-- force reinstall of database and jboss without prompting -->
-    <arg value="-Dforce.reinstall=true"/>
-    <arg value="${upgrade.target}"/>
-  </exec>
-  <exec osfamily="windows" executable="ant.bat" dir="${caarray.dist.dir}">
-    <!-- use alternate properties file since default has replace values -->
-    <arg value="-Dproperties.file=windows-upgrade.properties"/>
-    <!-- force reinstall of database and jboss without prompting -->
-    <arg value="-Dforce.reinstall=true"/>
-    <arg value="${upgrade.target}"/>
-  </exec>
-  <echo message="The server is not started as part of local deployment.  You will need to run $JBOSS_HOME/bin/run.bat (or run.sh if you are linux)."/>
-</target>
+    <!-- Upgrades the application locally. Requires a local instance of mysql. Will use the target from install.xml specified in ${upgrade.target} (defaults to upgrade unless passed in on command line).  Calls ant from exec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install. This target will use differnt properties based on linux (linux-install.properties) or windows (windows-install.properties) upgrades. It only supports using those properties files for now, so if you want to change install time properites edit these files. -->
+    <target name="deploy:local:upgrade" depends="dist:upgrader:prep" description="Upgrades the application on the local machine, used for developer desktops and ci environments" >
+        <!-- deploy:local fails about basedirectory in real strange place macrodefs:319, this should fix it -->
+        <mkdir dir="${caarray.dist.dir}/lib"/>
+        <copy todir="${caarray.dist.dir}">
+            <fileset dir="${basedir}">
+                <include name="*.properties"/>
+            </fileset>
+        </copy>
+        <exec osfamily="unix" executable="ant" dir="${caarray.dist.dir}">
+            <!-- use alternate properties file since default has replace values -->
+            <arg value="-Dproperties.file=linux-upgrade.properties"/>
+            <!-- force reinstall of database and jboss without prompting -->
+            <arg value="-Dforce.reinstall=true"/>
+            <arg value="${upgrade.target}"/>
+        </exec>
+        <exec osfamily="windows" executable="ant.bat" dir="${caarray.dist.dir}">
+            <!-- use alternate properties file since default has replace values -->
+            <arg value="-Dproperties.file=windows-upgrade.properties"/>
+            <!-- force reinstall of database and jboss without prompting -->
+            <arg value="-Dforce.reinstall=true"/>
+            <arg value="${upgrade.target}"/>
+        </exec>
+        <echo message="The server is not started as part of local deployment.  You will need to run $JBOSS_HOME/bin/run.bat (or run.sh if you are linux)."/>
+    </target>
 
-<!-- Install the application remotely. Depends on above targets to copy and extract distribution. Will use the target from install.xml specified in ${install.target} (defaults to install unless passed in on command line).  Calls ant from sshexec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install. Requires specifying -Dproperties.file=@file@ on the command line to point installer to correct enviornment to install into -->
-<target name="deploy:remote:install" depends="
+    <!-- Install the application remotely. Depends on above targets to copy and extract distribution. Will use the target from install.xml specified in ${install.target} (defaults to install unless passed in on command line).  Calls ant from sshexec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install. Requires specifying -Dproperties.file=@file@ on the command line to point installer to correct enviornment to install into -->
+    <target name="deploy:remote:install" depends="
         build:all,
         dist:installer">
-  <deploy-files dist.file="${caarray.install.zip.file}" />
-  <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${install.target}" />
-</target>
+        <deploy-files dist.file="${caarray.install.zip.file}" />
+        <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${install.target}" />
+    </target>
 
-<!-- Upgrades the application remotely. Depends on above targets to copy and extract distribution. Will use the target from install.xml specified in ${upgrade.target} (defaults to upgrade unless passed in on command line).  Calls ant from sshexec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install. Requires specifying -Dproperties.file=@file@ on the command line to point upgrader to correct enviornment to upgrade -->
-<target name="deploy:remote:upgrade" depends="
+    <!-- Upgrades the application remotely. Depends on above targets to copy and extract distribution. Will use the target from install.xml specified in ${upgrade.target} (defaults to upgrade unless passed in on command line).  Calls ant from sshexec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install. Requires specifying -Dproperties.file=@file@ on the command line to point upgrader to correct enviornment to upgrade -->
+    <target name="deploy:remote:upgrade" depends="
         build:all,
         dist:upgrader
         ">
-  <deploy-files dist.file="${caarray.upgrade.zip.file}" />
-  <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${upgrade.target}" />
-</target>
+        <deploy-files dist.file="${caarray.upgrade.zip.file}" />
+        <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${upgrade.target}" />
+    </target>
 
 
-<macrodef name="deploy-files">
-  <attribute name="ssh.user" default="${ssh.server.username}" />
-  <attribute name="ssh.host" default="${ssh.server.hostname}" />
-  <attribute name="remote.directory.property.name" default="ssh.dir.temp" />
-  <attribute name="properties.file" default="${properties.file}" />
-  <attribute name="dist.dir" default="${dist.dir}" />
-  <attribute name="dist.file" />
-  <sequential>
-    <!-- Validate remote directory is valid -->
-    <propertycopy name="remote.dir" from="@{remote.directory.property.name}" />
-    <check-valid-directory-name directory.property="remote.dir" />
-    <!-- Delete/re-create remote directory -->
-    <remote-ssh remotesshcommand="rm -rf ${remote.dir};mkdir -p ${remote.dir}" />
-    <!-- work around for issue where basedir is required but is not currently used -->
-    <remote-ssh remotesshcommand="mkdir -p ${remote.dir}/lib" />
+    <macrodef name="deploy-files">
+        <attribute name="ssh.user" default="${ssh.server.username}" />
+        <attribute name="ssh.host" default="${ssh.server.hostname}" />
+        <attribute name="remote.directory.property.name" default="ssh.dir.temp" />
+        <attribute name="properties.file" default="${properties.file}" />
+        <attribute name="dist.dir" default="${dist.dir}" />
+        <attribute name="dist.file" />
+        <sequential>
+            <!-- Validate remote directory is valid -->
+            <propertycopy name="remote.dir" from="@{remote.directory.property.name}" />
+            <check-valid-directory-name directory.property="remote.dir" />
+            <!-- Delete/re-create remote directory -->
+            <remote-ssh remotesshcommand="rm -rf ${remote.dir};mkdir -p ${remote.dir}" />
+            <!-- work around for issue where basedir is required but is not currently used -->
+            <remote-ssh remotesshcommand="mkdir -p ${remote.dir}/lib" />
 
-    <!-- copy distribution and prop file to remote system -->
-    <remote-scp remoteScpFileToCopy="@{dist.dir}/@{dist.file}" remoteScpToDir="@{ssh.user}@@@{ssh.host}:${remote.dir}" />
-    <remote-scp remoteScpFileToCopy="@{properties.file}" remoteScpToDir="@{ssh.user}@@@{ssh.host}:${remote.dir}" />
-    <!-- Extract zip file -->
-    <remote-ssh remotesshcommand="cd ${remote.dir}; unzip -q @{dist.file}" />
-  </sequential>
-</macrodef>
+            <!-- copy distribution and prop file to remote system -->
+            <remote-scp remoteScpFileToCopy="@{dist.dir}/@{dist.file}" remoteScpToDir="@{ssh.user}@@@{ssh.host}:${remote.dir}" />
+            <remote-scp remoteScpFileToCopy="@{properties.file}" remoteScpToDir="@{ssh.user}@@@{ssh.host}:${remote.dir}" />
+            <!-- Extract zip file -->
+            <remote-ssh remotesshcommand="cd ${remote.dir}; unzip -q @{dist.file}" />
+        </sequential>
+    </macrodef>
 </project>
