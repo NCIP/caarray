@@ -90,6 +90,8 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.Role;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup;
+import gov.nih.nci.security.dao.ProtectionElementSearchCriteria;
+import gov.nih.nci.security.dao.SearchCriteria;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 import gov.nih.nci.security.system.ApplicationSessionFactory;
@@ -494,6 +496,34 @@ public final class AuthorizationManagerExtensions {
                     + StringUtilities.stringArrayToString(roleIds) + " to Group "
                     + group.getGroupId() + " and Protection Group" + protectionGroup.getProtectionGroupId() + "|");
         }
+    }
+
+    /**
+     * This method returns the ProtectionElement for a given objectId, attributeName, and attributeValue.  This method
+     * is adapted from AuthorizationManager.getProtectionElement(String, String) but also takes the
+     * attributeValue and application to identify the specific instance.
+     * @param objectId The object id of the protection element to be obtained
+     * @param attributeName The attribute name of the protection element to be obtained
+     * @param value the value of the property for the instance
+     * @param appName application context name
+     * @return ProtectionElement Returns the ProtectionElement if found, else null
+     */
+    // adapted from CSM code
+    @SuppressWarnings("unchecked")
+    public static ProtectionElement getProtectionElement(String objectId, String attributeName, String value,
+            String appName) {
+        ProtectionElement pe = new ProtectionElement();
+        pe.setObjectId(objectId);
+        pe.setAttribute(attributeName);
+        pe.setValue(value);
+        SearchCriteria sc = new ProtectionElementSearchCriteria(pe);
+        List<ProtectionElement> pes = SecurityUtils.getAuthorizationManager().getObjects(sc);
+        if (pes.size() != 1) {
+            throw new IllegalStateException(String.format("More than one ProtectionElement found for "
+                    + "objectId %2, attribute %s, value %s, and application %s", objectId, attributeName, value,
+                    appName));
+        }
+        return pes.get(0);
     }
 
     /**

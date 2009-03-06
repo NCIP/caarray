@@ -132,7 +132,7 @@ public class CollaboratorsActionTest extends AbstractCaarrayTest {
     @Test
     public void testList() {
         action.listGroups();
-        assertTrue(pstub.isGetCalled());
+        assertTrue(pstub.isGetForUserCalled());
         assertNotNull(action.getGroups());
     }
 
@@ -143,8 +143,23 @@ public class CollaboratorsActionTest extends AbstractCaarrayTest {
         CollaboratorGroup cg = new CollaboratorGroup(group, owner);
         action.setTargetGroup(cg);
         action.delete();
-        assertTrue(pstub.isGetCalled());
+        assertTrue(pstub.isGetForUserCalled());
         assertEquals(cg, pstub.getCurrentGroup());
+    }
+
+    @Test
+    public void testChangeOwner() throws Exception {
+        User owner = new User();
+        Group group = new Group();
+        CollaboratorGroup cg = new CollaboratorGroup(group, owner);
+        cg.setId(1L);
+        action.setTargetGroup(cg);
+        action.setUsers(new ArrayList<String>());
+        action.getUsers().add("newOwner");
+        action.changeOwner();
+        assertTrue(pstub.isChangeOwnerCalled());
+        assertTrue(pstub.isGetForUserCalled());
+        assertEquals(1L, pstub.getCurrentGroupId());
     }
 
     @Test

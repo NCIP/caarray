@@ -145,6 +145,11 @@ public final class SecurityUtils {
     /** The name of the group for anonymous access permissions. */
     public static final String ANONYMOUS_GROUP = "__anonymous__";
 
+    /**
+     * The name of the group for system administrator access permissions.
+     */
+    public static final String SYSTEM_ADMINISTRATOR_GROUP = "SystemAdministrator";
+
     /** The privilege for Browsing a Protectable. * */
     public static final String BROWSE_PRIVILEGE = "ACCESS";
     /** The privilege for Reading a Protectable. * */
@@ -162,6 +167,8 @@ public final class SecurityUtils {
     public static final String WRITE_ROLE = "Write";
     /** The role for modifying the permissions of a Protectable. * */
     public static final String PERMISSIONS_ROLE = "Permissions";
+
+    private static final String[] OWNER_ROLES;
 
     private static String caarrayAppName;
     private static AuthorizationManager authMgr;
@@ -189,6 +196,9 @@ public final class SecurityUtils {
         } catch (CSConfigurationException e) {
             LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
         }
+        OWNER_ROLES = new String[] {getRoleByName(BROWSE_ROLE).getId().toString(),
+                getRoleByName(READ_ROLE).getId().toString(), getRoleByName(WRITE_ROLE).getId().toString(),
+                getRoleByName(PERMISSIONS_ROLE).getId().toString() };
     }
 
     /**
@@ -236,8 +246,6 @@ public final class SecurityUtils {
     public static User getAnonymousUser() {
         return anonymousUser;
     }
-
-
 
     static void handleBiomaterialChanges(Collection<Project> projects, Collection<Protectable> protectables) {
         if (projects == null) {
@@ -506,12 +514,8 @@ public final class SecurityUtils {
         // http://opensource.atlassian.com/projects/hibernate/browse/HHH-2593
         // Thus, we do an extra association here. Yuck!
         Group g = getSingletonGroup(user);
-        String[] ownerRoles =
-                {getRoleByName(BROWSE_ROLE).getId().toString(), getRoleByName(READ_ROLE).getId().toString(),
-                        getRoleByName(WRITE_ROLE).getId().toString(),
-                        getRoleByName(PERMISSIONS_ROLE).getId().toString() };
         authMgr.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(), g.getGroupId().toString(),
-                ownerRoles);
+                OWNER_ROLES);
     }
 
     @SuppressWarnings("unchecked")
@@ -528,6 +532,25 @@ public final class SecurityUtils {
             return g;
         }
         return groupList.get(0);
+    }
+
+    /**
+     * Change the owner of a ProtectionElement.
+     * @param protectionElementId ID of ProtectionElement to update
+     * @param newOwner the new owner of the ProtectionElement
+     * @throws CSException on a CSM error
+     */
+    public static void changeOwner(String protectionElementId, User newOwner) throws CSException {
+        ProtectionGroup pg = (ProtectionGroup) authMgr.getProtectionGroups(protectionElementId).iterator().next();
+        User oldOwner = (User) authMgr.getOwners(protectionElementId).iterator().next();
+        authMgr.assignOwners(protectionElementId, new String[] {newOwner.getUserId().toString()});
+
+        // see comment in addOwner() about why we have to maintain this extra association
+        Group oldOwnerGroup = getSingletonGroup(oldOwner);
+        AuthorizationManagerExtensions.clearProtectionGroupRoles(oldOwnerGroup, Collections.singleton(pg), caarrayApp);
+        Group newOwnerGroup = getSingletonGroup(newOwner);
+        authMgr.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(), newOwnerGroup.getGroupId()
+                .toString(), OWNER_ROLES);
     }
 
     private static void handleNewProject(Project p, ProtectionGroup pg) throws CSTransactionException {
@@ -690,7 +713,15 @@ public final class SecurityUtils {
         return hasPrivilege(p, user, PERMISSIONS_PRIVILEGE);
     }
 
+    @SuppressWarnings("PMD.EmptyCatchBlock")
     private static boolean hasPrivilege(Protectable p, User user, String privilege) {
+        try {
+            if (isSystemAdministrator(user)) {
+                return true;
+            }
+        } catch (CSObjectNotFoundException e) {
+            // just treat the user as a non-admin
+        }
         // if the protectable is not yet saved, assume user only has access if he is the current user
         if (p.getId() == null) {
             return UsernameHolder.getCsmUser().equals(user);
@@ -705,6 +736,23 @@ public final class SecurityUtils {
                             .getLoginName(), privilege, p.getClass().getName(), p.getId()));
             return false;
         }
+    }
+
+    /**
+     * Checks if the user is a system administrator.
+     * @param user user to check
+     * @return true if the user is a system administrator, false otherwise
+     * @throws CSObjectNotFoundException on CSM exception
+     */
+    @SuppressWarnings("unchecked")
+    public static boolean isSystemAdministrator(User user) throws CSObjectNotFoundException {
+        Set<Group> groups = authMgr.getGroups(user.getUserId().toString());
+        for (Group g : groups) {
+            if (g.getGroupName().equalsIgnoreCase(SYSTEM_ADMINISTRATOR_GROUP)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     static Class<?> getNonGLIBClass(Object o) {

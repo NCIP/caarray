@@ -159,7 +159,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
 
     @Before
     public void setUpService() {
-        UsernameHolder.setUser("caarrayadmin");
+        UsernameHolder.setUser(STANDARD_USER);
         ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
         projectManagementServiceBean.setDaoFactory(this.daoFactoryStub);
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
@@ -280,7 +280,6 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
 
     }
-
 
     @Test
     public void testUnpackFiles() throws Exception {
@@ -538,7 +537,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
     @Test
     public void testSetUseTcgaPolicy() throws Exception {
         Project project = this.projectManagementService.getProject(123L);
-        UsernameHolder.setUser("caarrayadmin");
+        UsernameHolder.setUser(STANDARD_USER);
         createProtectionGroup(project);
         assertFalse(project.isUseTcgaPolicy());
         this.projectManagementService.setUseTcgaPolicy(123L, true);
@@ -546,7 +545,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         assertTrue(project.isUseTcgaPolicy());
     }
 
-    @Test  (expected = IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     @SuppressWarnings("unchecked")
     public void testGetSampleByExternalIdReturnsNonUniqueResult() throws Exception {
         ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;
@@ -567,6 +566,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
 
         assertNull(this.projectManagementService.getSampleByExternalId(project, "def"));
     }
+
     @Test
     public void testGetSampleByExternalIdReturnsNull() throws Exception {
         ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;
@@ -584,6 +584,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
 
         assertNull(this.projectManagementService.getSampleByExternalId(project, "abc"));
     }
+
     @Test
     public void testGetSampleByExternalId() throws Exception {
         ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;

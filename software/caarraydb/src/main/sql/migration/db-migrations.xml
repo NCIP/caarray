@@ -54,4 +54,8 @@
     <migration fromVersion="2.2.0.rc2" toVersion="2.2.0.rc3">
         <sql-script>migrate-2.2.0.rc2-to-2.2.0.rc3.sql</sql-script>
     </migration>
+    <migration fromVersion="2.2.0.rc3" toVersion="2.2.1.rc1">
+        <sql-script>migrate-2.2.0.rc3-to-2.2.1.rc1.sql</sql-script>
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.CsmFilterMigrator</migrator-class>
+    </migration>
 </migrations>

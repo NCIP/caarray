@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.permissions;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
@@ -115,6 +116,12 @@ public interface PermissionsManagementService {
     List<CollaboratorGroup> getCollaboratorGroups();
 
     /**
+     * Get all the collaborator groups owned by the current user.
+     * @return all collaborator groups owned by the current user
+     */
+    List<CollaboratorGroup> getCollaboratorGroupsForCurrentUser();
+
+    /**
      * Create a new CollaboratorGroup.  The owner of the group will be the
      * currently logged in user.  The group will have no members.
      *
@@ -133,8 +140,8 @@ public interface PermissionsManagementService {
      * @throws CSTransactionException  on CSM error
      * @throws CSObjectNotFoundException on CSM error
      */
-    void addUsers(CollaboratorGroup targetGroup, List<String> users)
-    throws CSTransactionException, CSObjectNotFoundException;
+    void addUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException,
+            CSObjectNotFoundException;
 
     /**
      * Adds users to a CSM group.
@@ -143,8 +150,7 @@ public interface PermissionsManagementService {
      * @throws CSTransactionException on CSM error
      * @throws CSObjectNotFoundException on CSM error
      */
-    void addUsers(String groupName, String... usernames)
-    throws CSTransactionException, CSObjectNotFoundException;
+    void addUsers(String groupName, String... usernames) throws CSTransactionException, CSObjectNotFoundException;
 
     /**
      * Removes users from the target group.
@@ -163,11 +169,11 @@ public interface PermissionsManagementService {
      * @throws CSTransactionException on CSM error
      * @throws CSObjectNotFoundException on CSM error
      */
-    void rename(CollaboratorGroup targetGroup, String groupName)
-    throws CSTransactionException, CSObjectNotFoundException;
+    void rename(CollaboratorGroup targetGroup, String groupName) throws CSTransactionException,
+            CSObjectNotFoundException;
 
     /**
-     * Returs users matching the given example user.
+     * Returns users matching the given example user.
      *
      * @param u example user (may be null)
      * @return users in the system meeting the criteria
@@ -180,4 +186,13 @@ public interface PermissionsManagementService {
      * @param profile the profile to create or update
      */
     void saveAccessProfile(AccessProfile profile);
+
+    /**
+     * Changes the owner of a collaboration group.
+     *
+     * @param targetGroupId ID of group to change owner of
+     * @param username new owner
+     * @throws CSException on CSM error
+     */
+    void changeOwner(Long targetGroupId, String username) throws CSException;
 }
