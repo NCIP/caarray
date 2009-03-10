@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+$Id: install.xml 4757 2008-05-15 20:43:31Z zengje $
+$HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
+-->
+<project name="caarray-installer" default="upgrade" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+    <description>
+        Apache Ant-based installer for caArray2.
+    </description>
+
+    <!-- Properties file related properties and tasks -->
+    <property environment="env" />
+    <property file="project.properties"/>
+    <property name="properties.file" value="${basedir}/upgrade.properties"/>
+    <replaceregexp file="${properties.file}" byline="true" match="^([\w\d.]+)=(.*[\w\d\/\{\}\\]+)[ \t]+\r*$" replace="\1=\2"/>
+    <replaceregexp file="${properties.file}" byline="true" match="^([\w\d.]+)=[ \t]+(.*[\w\d\/\{\}\\]+)\r*$" replace="\1=\2"/>
+    <property file="${properties.file}" />
+
+    <!-- Generic properties -->
+    <property name="lib.dir" value="${basedir}/lib" />
+    <property name="working.dir" value="${basedir}/working" />
+
+
+    <!-- Install Time properties -->
+    <!-- Source and target directories -->
+    <property name="bda-utils.dir.src" value="${bda-utils.dir}" />
+    <property name="tools.dir.src" value="${basedir}/${tools.dist.relative.dir}" />
+    <property name="common.dir.src" value="${basedir}/${common.dist.relative.dir}" />
+    <property name="common.dir.target" value="${working.dir}/${common.dist.relative.dir}" />
+    <property name="db.dir.target" value="${working.dir}/${db.dist.relative.dir}" />
+    <property name="jboss-conf.dir.target" value="${working.dir}/${jboss-conf.dist.relative.dir}" />
+
+    <!-- *-ds.xml and EAR -->
+    <property name="caarray.dir.dist" value="${basedir}/${caarray.dist.relative.dir}" />
+    <property name="caarray.ds.file" value="caarray-mysql-ds.xml" />
+    <property name="mail.service.file" value="mail-service.xml" />
+    <property name="caarray.ear.file" value="caarray.ear" />
+
+    <property name="temp.dir" value="${basedir}/temp" />
+    <property name="this.dir" value="${basedir}" />
+
+    <!-- Paths -->
+    <path id="bda-utils.classpath">
+        <fileset dir="${bda-utils.dir}">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+    <!-- Task definitions -->
+    <taskdef uri="antlib:org.apache.ant.antunit" resource="org/apache/ant/antunit/antlib.xml">
+        <classpath>
+            <pathelement location="${bda-utils.dir}/antunit-1.0.jar" />
+        </classpath>
+    </taskdef>
+    <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="bda-utils.classpath" />
+    <taskdef name="for" classname="net.sf.antcontrib.logic.ForTask">
+        <classpath>
+            <pathelement location="${bda-utils.dir}/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath>
+            <pathelement location="${bda-utils.dir}/ant-contrib-1.0b3.jar"/>
+            <pathelement location="${bda-utils.dir}/bcel-5.1.jar"/>
+            <pathelement location="${bda-utils.dir}/commons-httpclient-3.0.1.jar"/>
+            <pathelement location="${bda-utils.dir}/commons-logging-1.0.4.jar"/>
+            <pathelement location="${bda-utils.dir}/ivy-1.3.1.jar"/>
+        </classpath>
+    </taskdef>
+
+    <!-- Conditionals -->
+    <available file="${jboss.home}/server/${jboss.server.name}/conf/jboss-service.xml" property="jboss.exists"/>
+    <!-- caarray can use either Oracle or MySQL as its database platform, this is controled by the database.type property.  Based on the value of this property sent several variables for use during install -->
+    <switch value="${database.type}">
+        <case value="oracle">
+            <property name="database.dialect" value="org.hibernate.dialect.OracleDialect"/>
+            <property name="is.oracle" value="true"/>
+            <property name="database.driver.file" value="${bda-utils.dir}/ojdbc14-10.2.0.3.0.jar"/>
+            <property name="database.driver" value="oracle.jdbc.driver.OracleDriver"/>
+        </case>
+        <case value="mysql">
+            <property name="database.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+            <property name="is.mysql" value="true"/>
+            <property name="database.driver.file" value="${bda-utils.dir}/mysql-connector-java-5.0.5.jar"/>
+            <property name="database.driver" value="com.mysql.jdbc.Driver"/>
+        </case>
+        <case value="postgresql">
+            <property name="database.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="is.postgresql" value="true"/>
+            <property name="database.driver.file" value="${bda-utils.dir}/postgresql-jdbc3-8.3-603.jar"/>
+            <property name="database.driver" value="org.postgresql.Driver"/>
+        </case>
+        <default>
+            <fail message="Invalid database type ${database.type}"/>
+        </default>
+    </switch>
+
+    <!-- figure out whether to use install-properties.template or upgrade-proprties.template -->
+    <propertyregex property="properties.file.type"
+        input="${properties.file}"
+        regexp=".*(install|upgrade).*"
+        select="\1"
+        />
+    <echo message="Properties file type = ${properties.file.type}"/>
+    <if>
+        <equals arg1="${properties.file.type}" arg2="install" />
+        <then>
+            <property name="properties.template.file" value="install-properties.template" />
+        </then>
+        <elseif>
+            <equals arg1="${properties.file.type}" arg2="upgrade" />
+            <then>
+                <property name="properties.template.file" value="upgrade-properties.template" />
+            </then>
+        </elseif>
+    </if>
+    <!-- Includes-->
+    <import file="${bda-utils.dir}/bda-build-utils-${bda.version}.xml" />
+
+
+    <!-- Read db configs from existing ds.xml if it exists -->
+    <available file="${jboss.home}/server/${jboss.server.name}/deploy/${caarray.ds.file}" property="ds.exists"/>
+    <if>
+        <isset property="ds.exists"/>
+        <then>
+            <jboss-read-dbconfig
+                jboss.ds-xml.file="${caarray.ds.file}"
+                />
+        </then>
+        <else>
+            <echo message="Warning- could not find ${jboss.home}/server/${jboss.server.name}/deploy/${caarray.ds.file}"/>
+        </else>
+    </if>
+
+    <!-- There is any issue with copying files with a filtersfile, any properties with a value of
+        another property do not get expanded (xx=${yy} @xx@ will be replaced with ${yy} not the
+        value).  I have defined a filter set below for these properties, I then two two copies
+        one to the resource.dir.temp using the filterset and then one to the desired directory
+        with the filter file.  If you add new properties that refer to other properties in the
+        properties file please add them to the filterset-pre below.
+         Also you should include properties that are declared in this file, like database info below.
+    -->
+    <property name="resource.dir.temp" value="${working.dir}/tmp" />
+    <filterset id="filterset.pre">
+        <filter token="application.base.path" value="${application.base.path}"/>
+        <filter token="application.url" value="${application.url}"/>
+        <filter token="database.url" value="${database.url}"/>
+        <filter token="database.clm.url" value="${database.url}"/>
+        <filter token="database.system.url" value="${database.system.url}"/>
+        <filter token="jboss.home" value="${jboss.home}"/>
+        <!-- added internal properties that may be used in a filtered copy -->
+        <filter token="database.driver" value="${database.driver}"/>
+        <filter token="database.dialect" value="${database.dialect}"/>
+        <filter token="hibernate.cfg.file.path" value="${hibernate.cfg.file.path}"/>
+    </filterset>
+
+
+    <!-- Start logging -->
+    <mkdir dir="${log.dir}" />
+    <tstamp>
+        <format property="install.time" pattern="yyyy-MM-dd-HH-mm" />
+    </tstamp>
+    <record loglevel="debug" name="${log.dir}/install-${install.time}.debug.log" action="start"/>
+    <record loglevel="info" name="${log.dir}/install-${install.time}.info.log" action="start"/>
+
+
+    <!-- Installer section -->
+    <target name="diag">
+        <echoproperties/>
+    </target>
+
+    <!-- Clean up destination directory -->
+    <target name="install:clean" description="Removes all files from the local filesystem">
+        <sleep seconds="5" />
+        <delete dir="${application.base.path}" quiet="false" />
+    </target>
+
+    <!-- Does directory management and copy some files with filtering to ensure token expansion -->
+    <target name="install:init" description="Does directory management to initialize install">
+        <mkdir dir="${working.dir}" />
+        <delete dir="${working.dir}"/>
+        <mkdir dir="${working.dir}" />
+        <mkdir dir="${resource.dir.temp}"/>
+        <!-- Copy files to ensure values containing variables are expanded, such properties are stored in filterset.pre -->
+        <copy todir="${resource.dir.temp}" filtering="true">
+            <fileset dir="${common.dir.src}">
+                <include name="**/*"/>
+            </fileset>
+            <filterset refid="filterset.pre"/>
+        </copy>
+        <copy todir="${common.dir.target}" filtering="true">
+            <fileset dir="${resource.dir.temp}">
+                <include name="**/*"/>
+            </fileset>
+            <filterset>
+                <filtersfile file="${properties.file}"/>
+                <filtersfile file="project.properties"/>
+            </filterset>
+        </copy>
+    </target>
+
+    <!-- Wrapper install database target, depends on both MySQL and Oracle sub-targets, ifs should ensure only one is run.  Target path can be skipped by exlude.database also calls upgrade:database -->
+    <target name="install:database" description="Re-creates database and users from baseline and applys incremental database changes." unless="exclude.database" depends="install:init">
+        <property name="caarraydb.sql.dir" value="${db.dir.target}/tmp" />
+        <copy todir="${caarraydb.sql.dir}" filtering="true">
+            <fileset dir="${db.dir.target}">
+                <include name="**/*"/>
+            </fileset>
+            <filterset>
+                <filtersfile file="${properties.file}"/>
+                <filtersfile file="project.properties"/>
+            </filterset>
+        </copy>
+        <ant antfile="${this.dir}/build-caarray-app.xml" target="database:execute-sql">
+            <property name="drop-schema-sql.exists" value="true" />
+            <property name="create-schema-sql.exists" value="true" />
+        </ant>
+        <delete dir="${caarraydb.sql.dir}"/>
+    </target>
+
+    <target name="install:jboss:binaries" description="Unzip JBoss binary" unless="exclude.jboss">
+        <java jar="${tools.dir.src}/${jboss.binaries.file}" fork="true">
+            <arg line="-installGroup ejb3 installpath=${jboss.home}"/>
+        </java>
+        <if>
+            <os family="unix"/>
+            <then>
+                <chmod dir="${jboss.home}/bin" perm="ugo+rx" includes="**/*.sh"/>
+            </then>
+        </if>
+    </target>
+
+    <target name="install:jboss:grid-binaries" description="Unzip JBoss binary for grid services" unless="exclude.jboss.grid">
+        <unzip dest="${application.base.path}" src="${tools.dir.src}/${jboss.grid-binaries.file}" />
+    </target>
+
+    <target name="install:jboss:caarray" description="Deploy caarray caarray.ear" unless="exclude.jboss">
+        <!-- added to ensure working.dirs are fresh for our install -->
+        <delete dir="${jboss.home}/server/${jboss.server.name}/tmp"/>
+        <delete dir="${jboss.home}/server/${jboss.server.name}/work"/>
+
+        <copy file="${temp.dir}/caarray.ear.to_deploy/${caarray.ear.file}" todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true" />
+        <copy file="${database.driver.file}" todir="${jboss.home}/server/${jboss.server.name}/lib" overwrite="true" />
+    </target>
+
+    <target name="install:jboss:caarray:re-configure" description="Update xml files in meta-inf directory of ear that have deployment attributes">
+        <delete dir="${temp.dir}" />
+        <mkdir dir="${temp.dir}/caarray.ear.to_deploy" />
+        <mkdir dir="${temp.dir}/caarray.ear" />
+        <mkdir dir="${temp.dir}/caarray-common.jar" />
+        <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
+        <unjar src="${temp.dir}/caarray.ear/caarray-common.jar" dest="${temp.dir}/caarray-common.jar"/>
+        <unjar src="${temp.dir}/caarray.ear/caarray.war" dest="${temp.dir}/caarray.war"/>
+        <move file="${temp.dir}/caarray-common.jar/csm/caarray.csm.new.hibernate.cfg.xml" tofile="${temp.dir}/caarray-common.jar/csm/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
+        <jar destfile="${temp.dir}/caarray.ear/caarray-common.jar" basedir="${temp.dir}/caarray-common.jar" update="false" manifest="${temp.dir}/caarray-common.jar/META-INF/MANIFEST.MF"/>
+
+        <if>
+            <equals arg1="${ldap.authentication.disabled}" arg2="false" />
+            <then>
+                <copy file="${jboss-conf.dir.target}/security-config-ldap.xml" tofile="${temp.dir}/caarray.ear/META-INF/security-config.xml"/>
+
+                <xmlconfig in="${temp.dir}/caarray.ear/META-INF/security-config.xml" verbose="false">
+                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']" value="${ldap.host}" />
+                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']" value="${ldap.searchbase}" />
+                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']" value="${ldap.searchprefix}" />
+
+                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']" value="${database.url}" />
+                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']" value="${database.user}" />
+                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']" value="${database.password}" />
+                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']" value="${database.driver}" />
+                </xmlconfig>
+            </then>
+            <else>
+                <copy file="${jboss-conf.dir.target}/security-config.xml" tofile="${temp.dir}/caarray.ear/META-INF/security-config.xml"/>
+
+                <xmlconfig in="${temp.dir}/caarray.ear/META-INF/security-config.xml" verbose="false">
+                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']" value="${database.url}" />
+                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']" value="${database.user}" />
+                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']" value="${database.password}" />
+                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']" value="${database.driver}" />
+                </xmlconfig>
+            </else>
+        </if>
+
+        <!-- set the mergeDuplicateBiomaterialsMigrator.renameHybridizations value (default it to false as it is not set in GUI "fresh" install, upgrade installer sets the value so) -->
+        <property name="mergeDuplicateBiomaterialsMigrator.renameHybridizations" value="true"/>
+        <xmlconfig in="${temp.dir}/caarray.war/WEB-INF/classes/db-migrations.xml" verbose="false">
+            <update path="//migrator-class/@renameHybridizations" value="${mergeDuplicateBiomaterialsMigrator.renameHybridizations}" />
+        </xmlconfig>
+
+        <!-- set the UptUrl value -->
+        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/web.xml" match="uptUrl&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="uptUrl&lt;/param-name&gt;&lt;param-value&gt;${upt.url}&lt;/param-value&gt;" byline="false"/>
+
+        <!-- set the ldap.host value -->
+        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/web.xml" match="ldapHost&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="ldapHost&lt;/param-name&gt;&lt;param-value&gt;${ldap.host}&lt;/param-value&gt;" byline="false"/>
+
+        <!-- make sure migration sql scripts get filtered to get property values (insert registration email, etc.) -->
+        <copy todir="${temp.dir}/caarray.war/WEB-INF/classes/temp" filtering="true" overwrite="true">
+            <fileset dir="${temp.dir}/caarray.war/WEB-INF/classes">
+                <include name="*.sql"/>
+            </fileset>
+            <filterset>
+                <filtersfile file="${properties.file}"/>
+                <filtersfile file="project.properties"/>
+            </filterset>
+        </copy>
+        <copy todir="${temp.dir}/caarray.war/WEB-INF/classes" overwrite="true">
+            <fileset dir="${temp.dir}/caarray.war/WEB-INF/classes/temp">
+                <include name="*.sql"/>
+            </fileset>
+        </copy>
+        <delete dir="${temp.dir}/caarray.war/WEB-INF/classes/temp"/>
+
+        <war destfile="${temp.dir}/caarray.ear/caarray.war">
+            <fileset dir="${temp.dir}/caarray.war"/>
+        </war>
+
+        <ear destfile="${temp.dir}/caarray.ear.to_deploy/${caarray.ear.file}" appxml="${temp.dir}/caarray.ear/META-INF/application.xml" update="false" duplicate="preserve">
+            <metainf dir="${temp.dir}/caarray.ear/META-INF" includes="*.xml" excludes="jboss-service.xml" />
+            <fileset dir="${temp.dir}/caarray.ear">
+                <include name="**/*" />
+            </fileset>
+        </ear>
+    </target>
+
+    <target name="install:jboss:caarray:configure" description="Configure caarray application" unless="exclude.jboss">
+        <copy file="${jboss-conf.dir.target}/${caarray.ds.file}" todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true" />
+        <copy file="${jboss-conf.dir.target}/${mail.service.file}" todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true" />
+    </target>
+
+    <!-- Wrapper target to configure jboss container, not deployed application -->
+    <target name="install:jboss:configure" description="Configure caArray JBoss installation" unless="exclude.jboss"
+        depends="install:jboss:binaries,
+        -install:jboss:configure:ports,
+        -install:jboss:configure:log4j,
+        -install:jboss:configure:secure-console,
+        -install:jboss:configure:update-shutdown,
+        -install:jboss:configure:update-runconf,
+        -install:jboss:configure:update-runscripts
+        "/>
+
+    <!-- Configure ports used by JBOSS (either bindings or editing jboss config.files) -->
+    <target name="-install:jboss:configure:ports" description="Configure caarray" unless="exclude.jboss">
+        <replaceregexp file="${bda-utils.dir}/resource/template-binding.xml" byline="true"
+            match="@grid."
+            replace="@jboss."/>
+
+        <jboss-bindings
+            jboss.server.bindingfile.location="${jboss.home}/server/${jboss.server.name}/conf/bindings.xml"
+            jboss.server.binding.template.location="${bda-utils.dir}/resource/template-binding.xml"
+            />
+    </target>
+
+    <!-- Configure log4j settings based on contents of caarray/software/resrouces/deploy/log4j.block.xml -->
+    <target name="-install:jboss:configure:log4j" unless="exclude.jboss">
+        <!--
+        <property name="log4j.block.file" value="${resource.dir.target}/log4j.block.xml"/>
+        <loadfile
+            property="xml.content"
+            srcFile="${log4j.block.file}"/>
+
+        <replaceregexp file="${jboss.home}/server/default/conf/log4j.xml" byline="true"
+            match="(^.*\/log4j:configuration.)"
+            replace="${xml.content}${line.separator}\1"/>
+        -->
+    </target>
+
+    <target name="-install:jboss:configure:secure-console" description="Configure JBoss ports using bindings files" unless="exclude.jboss">
+        <secure-jboss-console/>
+    </target>
+
+    <!-- Calls to bda macros for basic functionality -->
+    <target name="install:jboss:stop" if="jboss.exists" unless="exclude.jboss">
+        <jboss-stop-jboss jboss.server.jndi.port="${jboss.server.jndi.port}"/>
+        <jboss-stop-jboss />
+    </target>
+    <target name="install:jboss:start"  unless="exclude.jboss">
+        <if>
+            <not>
+                <isset property="exclude.start.servers"/>
+            </not>
+            <then>
+                <jboss-start-jboss />
+            </then>
+        </if>
+        <sleep seconds="15"/>
+    </target>
+    <target name="install:validation:pre-install">
+        <validate-pre-install />
+    </target>
+    <target name="install:validation:pre-install:ports">
+        <validate-ports-preinstall />
+    </target>
+    <target name="install:grid:start"  unless="exclude.jboss.grid">
+        <if>
+            <not>
+                <isset property="exclude.start.servers"/>
+            </not>
+            <then>
+                <jboss-start-jboss jboss.home="${grid.home}"/>
+            </then>
+        </if>
+        <sleep seconds="15"/>
+    </target>
+
+    <target name="install:grid:stop" if="jboss.exists" unless="exclude.jboss.grid">
+        <jboss-stop-jboss jboss.home="${grid.home}" jboss.server.hostname="${grid.server.hostname}" jboss.server.jndi.port="${grid.server.jndi.port}"/>
+    </target>
+
+
+
+    <target name="install:validation:post-install">
+        <if>
+            <not>
+                <isset property="exclude.start.servers"/>
+            </not>
+            <then>
+                <validate-post-install />
+            </then>
+        </if>
+    </target>
+
+    <target name="-install:jboss:configure:update-shutdown" unless="exclude.jboss">
+        <jboss-update-shutdown />
+    </target>
+
+     <target name="-install:jboss:configure:update-runconf" description="Updates run.conf JAVA_OPTS and sets to property">
+         <jboss-update-runconf/>
+    </target>
+
+    <target name="-install:jboss:configure:update-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
+        <replaceregexp match="(org.jboss.Main) (?!--host=)" replace="org.jboss.Main --host=${grid.static.hostname} " byline="true">
+            <fileset dir="${jboss.home}/bin">
+                <include name="run.bat"/>
+                <include name="run.sh"/>
+            </fileset>
+        </replaceregexp>
+    </target>
+
+    <!-- Wrapper target to deploy JBOSS container -->
+    <target name="install:jboss" unless="exclude.jboss"
+        depends="
+        install:validation:pre-install,
+        install:jboss:stop,
+        install:validation:pre-install:ports,
+        install:clean,
+        install:init,
+        install:jboss:binaries,
+        install:jboss:caarray:re-configure,
+        install:jboss:caarray,
+        install:jboss:caarray:configure,
+        install:jboss:configure,
+        install:jboss:start
+        " />
+
+    <!-- Wrapper target to deploy all containers to one server -->
+    <target name="install" description="Installs and configures JBOSS, creates database, and deploys application"
+        depends="
+        install:validation:pre-install,
+        install:jboss:stop,
+        install:grid:stop,
+        install:validation:pre-install:ports,
+        install:clean,
+        install:init,
+        install:database,
+        install:jboss,
+        install:jboss:start,
+        install:carray-grid,
+        install:grid:start,
+        install:validation:post-install
+        "/>
+<!-- carpla -->
+	 <target name="install_without_grid" description="Installs and configures JBOSS, creates database, and deploys application"
+	        depends="
+	        install:validation:pre-install,
+	        install:jboss:stop,
+	      
+	        install:validation:pre-install:ports,
+	        install:clean,
+	        install:init,
+	        install:database,
+	        install:jboss,
+	        install:jboss:start,
+	       
+	        install:validation:post-install
+	        "/>
+
+		
+	
+	
+	
+	
+	
+	
+	
+
+    <!-- Wrapper target to upgrade jboss container. Does not install or configure binaries -->
+    <target name="upgrade:jboss" unless="exclude.jboss"
+        depends="
+        install:validation:pre-install,
+        install:jboss:stop,
+        install:jboss:caarray:re-configure,
+        -install:jboss:configure:secure-console,
+        -install:jboss:configure:update-runscripts,
+        install:jboss:caarray,
+        install:jboss:start
+        " />
+
+    <!-- Wrapper target to upgrade all container. Does not install or configure binaries -->
+    <target name="upgrade" description="Deploys application and runs incremental database build"
+        depends="
+        upgrade:init,
+        install:validation:pre-install,
+        install:jboss:stop,
+        install:grid:stop,
+        upgrade:jboss,
+        upgrade:carray-grid,
+        install:grid:start,
+        install:validation:post-install
+        "/>
+
+
+    <target name="install:carray-grid" description="Grouping of caArray Grid application targets"
+        depends="install:jboss:grid-binaries,
+        install:grid:deploy,
+        install:grid:configure
+        "/>
+
+    <target name="upgrade:carray-grid" description="Grouping of caArray Grid application targets"
+        depends="install:grid:deploy,
+        -install:grid:configure:wsdl,
+        -install:grid:configure:serviceMetadataXml,
+        -install:grid:configure:secure-console,
+        -install:grid:configure:webXml
+    "/>
+
+    <target name="install:grid:configure" description="Configure caarray" unless="exclude.jboss"
+        depends="install:jboss:grid-binaries,
+        -install:grid:configure:update-shutdown,
+        -install:grid:configure:ports,
+        -install:grid:configure:wsdl,
+        -install:grid:configure:serviceMetadataXml,
+        -install:grid:configure:secure-console,
+        -install:grid:configure:webXml
+        "/>
+
+
+    <target name="-install:grid:configure:update-shutdown">
+        <jboss-update-shutdown jboss.home="${grid.home}" jboss.server.hostname="${grid.server.hostname}" jboss.server.jndi.port="${grid.server.jndi.port}" />
+    </target>
+
+    <target name="-install:grid:configure:secure-console" description="Configure JBoss ports using bindings files" unless="exclude.jboss">
+    <secure-jboss-console jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.web.password="${grid.web.password}"/>
+    </target>
+
+    <target name="install:grid:deploy" description="Deploy Caarray2 application">
+        <unzip dest="${temp.dir}/grid" src="${basedir}/grid/cagrid_CaArraySvc.zip" />
+        <unzip src="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common.jar" dest="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common" />
+
+        <replaceregexp file="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common/gov/nih/nci/cagrid/caarray/jndi.properties" byline="true"
+            match="^(java.naming.provider.url)=(.*)"
+            replace="\1=jnp://${jboss.server.hostname}:${jboss.server.jndi.port}"/>
+
+
+        <delete file="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common.jar" />
+
+        <jar jarfile="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common.jar" compress="false" manifest="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common/META-INF/MANIFEST.MF">
+            <fileset dir="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common">
+                <include name="*/**" />
+            </fileset>
+        </jar>
+
+        <delete dir="${temp.dir}/grid/WEB-INF/lib/CaArraySvc-common" />
+
+        <zip destfile="${basedir}/grid/cagrid_CaArraySvc.zip">
+            <zipfileset dir="${temp.dir}/grid" />
+        </zip>
+
+
+        <delete dir="${grid.home}/server/default/deploy/wsrf.war"/>
+        <delete>
+            <fileset dir="${grid.home}/server/default/lib" includes="cog-jglobus.jar cog-tomcat.jar cryptix32.jar cryptix.jar cryptix-asn1.jar jce-jdk13-125.jar log4j-1.2.8.jar puretls.jar"/>
+        </delete>
+        <unzip dest="${grid.home}/server/default" src="${basedir}/grid/jboss-globus-serverinstance-config.zip" />
+        <unzip dest="${grid.home}/server/default/deploy/wsrf.war" src="${basedir}/grid/cagrid_CaArraySvc.zip" />
+    </target>
+
+
+    <target name="-install:grid:configure:ports" description="Configure grid service based on properties">
+
+        <replaceregexp file="${bda-utils.dir}/resource/template-binding.xml" byline="true"
+            match="@jboss."
+            replace="@grid."/>
+        <echo message="grid.home :: ${grid.home}"/>
+        <jboss-bindings
+            jboss.home="${grid.home}" jboss.server.bindingfile.location="${grid.home}/server/default/conf/bindings.xml"
+        />
+    </target>
+
+    <target name="-install:grid:configure:serviceMetadataXml" description="Configure caArray's grid service serviceMetadata.xml.">
+        <xmlconfig in="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/etc/cagrid_CaArraySvc/serviceMetadata.xml" verbose="false">
+
+            <!-- set ResearchCenter element's attributes -->
+            <update path="//*[local-name()='ResearchCenter']/@displayName" value="${research.center.displayName}" />
+            <update path="//*[local-name()='ResearchCenter']/@shortName" value="${research.center.shortName}" />
+
+            <!-- set ResearchCenter element's child address element's attributes -->
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@country" value="${research.center.address.country}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@locality" value="${research.center.address.locality}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@postalCode" value="${research.center.address.postalCode}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@stateProvince" value="${research.center.address.stateProvince}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@street1" value="${research.center.address.street1}" />
+
+            <!-- set ResearchCenter element's child pointOfContactCollection elements' child PointOfContact element's attributes -->
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@affiliation" value="${point.of.contact.affiliation}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@email" value="${point.of.contact.email}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@firstName" value="${point.of.contact.firstName}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@lastName" value="${point.of.contact.lastName}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@phoneNumber" value="${point.of.contact.phoneNumber}" />
+            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@role" value="${point.of.contact.role}" />
+
+        </xmlconfig>
+    </target>
+
+    <target name="-install:grid:configure:webXml" description="Configure caArray's grid service web.xml.">
+        <xmlconfig in="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/web.xml" verbose="false">
+            <update path="/web-app/servlet/init-param/param-value[text()='80']" value="${grid.static.port}" />
+        </xmlconfig>
+    </target>
+
+    <target name="-install:grid:configure:wsdl" description="Configure grid service based on properties">
+        <replace dir="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war" token="%token.server.hostname%:%token.jboss.jndi.port%" value="${grid.server.hostname}:${grid.server.port}">
+            <include name="**/*.wsdl" />
+        </replace>
+        <replace dir="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war" token="localhost:8080" value="${grid.server.hostname}:${grid.server.port}">
+            <include name="**/*.wsdl" />
+        </replace>
+        <replaceregexp file="${grid.home}/server/${grid.server.name}/deploy/wsrf.war/WEB-INF/etc/cagrid_CaArraySvc/CaArraySvc_registration.xml" byline="true"
+            match="^(.*wsa:Address.).*(.\/wsa:Address.)"
+            replace="\1${grid.index.url}\2"/>
+
+        <replace file="${grid.home}/server/${grid.server.name}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" token="@LOGICAL_HOST@" value="${grid.static.hostname}"/>
+
+    </target>
+
+    <target name="upgrade:init">
+        <echo  message="Checking if database properties exist.  If they do not on an upgrade install then ${jboss.home}/server/${jboss.server.name}/deploy/${caarray.ds.file} may not exist."/>
+        <property name="db.prop.list" value="database.url,database.user,database.password,database.name"/>
+        <properties-exist properties.list="${db.prop.list}"/>
+
+        <!-- Copy files to ensure values containing variables are expanded, such properties are stored in filterset.pre -->
+        <copy todir="${resource.dir.temp}" filtering="true">
+            <fileset dir="${common.dir.src}">
+                <include name="**/*"/>
+            </fileset>
+            <filterset refid="filterset.pre"/>
+        </copy>
+        <copy todir="${common.dir.target}" filtering="true">
+            <fileset dir="${resource.dir.temp}">
+                <include name="**/*"/>
+            </fileset>
+            <filterset>
+                <filtersfile file="${properties.file}"/>
+                <filtersfile file="project.properties"/>
+            </filterset>
+        </copy>
+    </target>
+</project>
