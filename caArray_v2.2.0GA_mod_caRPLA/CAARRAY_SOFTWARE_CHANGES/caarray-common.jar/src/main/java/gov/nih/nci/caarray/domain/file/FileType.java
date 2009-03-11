@@ -254,24 +254,9 @@ public enum FileType implements Comparable<FileType> {
 	 * The caRPLA SDRF counterpart : .sradf
 	 */
 	RPLA_TAB_SRADF,
-	
-	
-	
 	RPLA_TAB_TIFF,
 	RPLA_TAB_TXT,
 	//carpla
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     /**
@@ -336,6 +321,14 @@ public enum FileType implements Comparable<FileType> {
         PARSEABLE_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
         PARSEABLE_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_CSV);
         PARSEABLE_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
+        
+        //carpla 
+        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(RPLA_TAB_SRADF);
+        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(RPLA_TAB_RPLAIDF);
+        //carpla
+        
+        
+        
         RAW_TO_DERIVED_MAP.put(AGILENT_RAW_TXT, AGILENT_DERIVED_TXT);
         DERIVED_TO_RAW_MAP.put(AGILENT_DERIVED_TXT, AGILENT_RAW_TXT);
     }

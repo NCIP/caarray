@@ -24,7 +24,8 @@
 									write_changes:carray.war,
 									rmdir:rplatab.jar,
 		                            write:rplatab.jar,
-									write:lib" />
+									write:lib,
+									write_changes_top_level_dir" />
 
 	<target name="restore:all" depends="restore:build,
 										restore:caarray-common.jar,
@@ -159,41 +160,30 @@
 			</fileset>
 		</copy>
 	</target>
-	
-	
+
+
 	<target name="write:lib">
-			<copy todir="${modded.dir}/lib" verbose="true" overwrite="true">
-				<fileset dir="${changes.dir}/lib">
-					<exclude name="**/ORIG_AND_DOCS" />
-					<exclude name="**/ORIG_AND_DOCS/*" />
-				</fileset>
-			</copy>
-		</target>
+		<copy todir="${modded.dir}/lib" verbose="true" overwrite="true">
+			<fileset dir="${changes.dir}/lib">
+				<exclude name="**/ORIG_AND_DOCS" />
+				<exclude name="**/ORIG_AND_DOCS/*" />
+			</fileset>
+		</copy>
+	</target>
+
+
 	
-	
-	
-	
+
+	<target name="write_changes_top_level_dir">
+		<copy todir="${modded.dir}" verbose="true" overwrite="true">
+			<fileset dir="${changes.dir}/software_top_level_dir">
+				<exclude name="**/ORIG_AND_DOCS" />
+				<exclude name="**/ORIG_AND_DOCS/*" />
+			</fileset>
+		</copy>
+	</target>
 
 
-	<!-- top level dir restore and mod targets 
-
-		<target name="restore_top_level_dir_files">
-			
-			  <delete file="${modded.dir}/"/>
-			
-			
-		</target>
-
-		<target name="write_changes_top_level_dir">
-			<copy todir="${modded.dir}/caarray.war" verbose="true" overwrite="true">
-				<fileset dir="${changes.dir}/caarray.war">
-					<exclude name="**/ORIG_AND_DOCS" />
-					<exclude name="**/ORIG_AND_DOCS/*" />
-				</fileset>
-			</copy>
-		</target>
-
--->
 
 
 

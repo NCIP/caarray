@@ -1584,6 +1584,47 @@
 		</jar>
 	</target>
 
+
+
+	<target name="build:rplatab.jar" depends="compile:rplatab.jar">
+		<mkdir dir="${rplatab.target.dir}" />
+		<pathconvert pathsep=" " property="flattened.common.dependencies" refid="common.compile.dependencies.path">
+			<flattenmapper />
+		</pathconvert>
+		<echo file="${rplatab.target.dir}/flattened_dependencies" message="./lib/${flattened.common.dependencies}" />
+		<replace file="${rplatab.target.dir}/flattened_dependencies" token=" " value=" ./lib/" />
+		<loadfile srcfile="${rplatab.target.dir}/flattened_dependencies" property="processed.common.dependencies.ready.for.manifest.classpath" />
+		<jar destfile="${rplatab.jar}">
+			<manifest>
+				<attribute name="Class-Path" value="${processed.common.dependencies.ready.for.manifest.classpath}" />
+				<section name="gov/nih/nci/caarray/">
+					<attribute name="Specification-Title" value="caArray" />
+					<attribute name="Specification-Version" value="${svn.url} ${svn.revision}" />
+					<attribute name="Specification-Vendor" value="LBNL" />
+					<attribute name="Implementation-Title" value="caArray" />
+					<attribute name="Implementation-Version" value="${svn.url} ${svn.revision}" />
+					<attribute name="Implementation-Vendor" value="LBNL" />
+				</section>
+			</manifest>
+			<fileset dir="${rplatab.classes.dir}" />
+		</jar>
+	</target>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	<target name="build:functional:caarray-common.jar" depends="build:caarray-common.jar, test:instrument-functional:caarray-common.jar" />
 
 	<target name="build:caarray-ejb.jar" depends="compile:caarray-ejb.jar,svn:getinfo">
@@ -1763,6 +1804,9 @@
 				<fileset dir="${caarray-common.target.dir}">
 					<include name="caarray-common.jar" />
 				</fileset>
+				<fileset dir="${rplatab.target.dir}">
+					<include name="rplatab.jar" />
+				</fileset>
 				<fileset dir="${caarray-ear.target.dir}">
 					<include name="lib/*.jar" />
 				</fileset>
@@ -1770,7 +1814,11 @@
 		</sequential>
 	</macrodef>
 
-	<target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar,svn:getinfo">
+	<target name="build:caarray.ear" depends="	build:caarray.war,
+												build:caarray-ejb.jar,
+												build:caarray-common.jar,
+												build:rplatab.jar,
+												svn:getinfo">
 		<build-caarray.ear />
 	</target>
 
