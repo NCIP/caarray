@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.j2ee.ejbjarproject</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/j2ee-ejbjarproject/3">
+            <name>caarray-ejb.jar</name>
+            <minimum-ant-version>1.6.5</minimum-ant-version>
+            <explicit-platform explicit-source-supported="true"/>
+            <included-library>reference.caarray-common_jar.jar</included-library>
+            <included-library>file.reference.javaee-5.0.jar</included-library>
+            <included-library>file.reference.dom4j-1.6.1.jar</included-library>
+            <included-library>file.reference.AffxFusion-noversion.jar</included-library>
+            <included-library>file.reference.castor-1.0.2.jar</included-library>
+            <included-library>file.reference.cglib-2.1_3.jar</included-library>
+            <included-library>file.reference.commons-lang-2.4.jar</included-library>
+            <included-library>file.reference.clm-4.0.jar</included-library>
+            <included-library>file.reference.csmapi-4.0.beta.jar</included-library>
+            <included-library>file.reference.javacsv-1.0.jar</included-library>
+            <included-library>file.reference.mysql-connector-java-5.0.5.jar</included-library>
+            <included-library>file.reference.netcdf-2.2.20.07.jar</included-library>
+            <included-library>file.reference.xerces-J-1.4.0.jar</included-library>
+            <included-library>file.reference.xercesImpl-2.7.1.jar</included-library>
+            <included-library>file.reference.commons-configuration-1.5.jar</included-library>
+            <included-library>file.reference.axis-1.4.2_10.jar</included-library>
+            <included-library>file.reference.caGrid-cql-1.0-1.2.jar</included-library>
+            <included-library>file.reference.caGrid-data-common-1.1.jar</included-library>
+            <included-library>file.reference.caGrid-data-stubs-1.1.jar</included-library>
+            <included-library>file.reference.caGrid-sdkQuery32-core-1.1.jar</included-library>
+            <included-library>file.reference.ejb3-persistence-1.0.1.jar</included-library>
+            <included-library>file.reference.hibernate-3.2.0.ga.jar</included-library>
+            <included-library>file.reference.hibernate-annotations-3.2.0.GA.jar</included-library>
+            <included-library>file.reference.nci-commons-core-1.0.12.jar</included-library>
+            <included-library>file.reference.commons-beanutils-1.7.0.jar</included-library>
+            <included-library>file.reference.commons-collections-3.2.jar</included-library>
+            <included-library>file.reference.commons-io-1.4.jar</included-library>
+            <included-library>file.reference.commons-logging-1.0.4.jar</included-library>
+            <included-library>file.reference.json-lib-2.2.2-jdk15.jar</included-library>
+            <included-library>file.reference.log4j-1.2.13.jar</included-library>
+            <included-library>file.reference.spring-1.2.8.jar</included-library>
+            <source-roots>
+                <root id="src.dir"/>
+                <root id="src.dir2"/>
+            </source-roots>
+            <test-roots>
+                <root id="test.src.dir"/>
+                <root id="test.src.dir2"/>
+            </test-roots>
+        </data>
+        <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
+            <reference>
+                <foreign-project>caarray-common_jar</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>nbbuild.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
+                <foreign-project>test-data</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>nbbuild.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+        </references>
+    </configuration>
+</project>
