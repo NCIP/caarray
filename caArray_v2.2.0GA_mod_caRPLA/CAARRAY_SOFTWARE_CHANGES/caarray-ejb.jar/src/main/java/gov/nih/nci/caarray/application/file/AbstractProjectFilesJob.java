@@ -100,125 +100,195 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+//carpla_begin_add
+import gov.nih.nci.caarray.application.translation.rplatab.RplaTabTranslator;
+
+//carpla_end_add
+
 /**
  * Encapsulates the data necessary for a project file management job.
  */
 abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 
-    private static final long serialVersionUID = 1L;
+	private static final long	serialVersionUID	= 1L;
 
-    private final long projectId;
-    private final Set<Long> fileIds = new HashSet<Long>();
-    private final boolean reimportingMagetab;
+	private final long			projectId;
+	private final Set<Long>		fileIds				= new HashSet<Long>();
+	private final boolean		reimportingMagetab;
 
-    AbstractProjectFilesJob(String username, Project targetProject, CaArrayFileSet fileSet) {
-        super(username);
-        boolean isReimporting = false;
-        this.projectId = targetProject.getId();
-        for (CaArrayFile file : fileSet.getFiles()) {
-            this.fileIds.add(file.getId());
-            if (!isReimporting && file.getType().equals(FileType.MAGE_TAB_IDF.name())) {
-                for (CaArrayFile importedFile : targetProject.getImportedFiles()) {
-                    if (importedFile.getType().equals(FileType.MAGE_TAB_IDF.name())) {
-                        isReimporting = true;
-                        break;
-                    }
-                }
-            }
-        }
-        this.reimportingMagetab = isReimporting;
-    }
+	AbstractProjectFilesJob(String username,
+							Project targetProject,
+							CaArrayFileSet fileSet) {
+		super(username);
+		boolean isReimporting = false;
+		this.projectId = targetProject.getId();
+		for (CaArrayFile file : fileSet.getFiles()) {
+			this.fileIds.add(file.getId());
+			if (!isReimporting && file	.getType()
+										.equals(FileType.MAGE_TAB_IDF.name())) {
+				for (CaArrayFile importedFile : targetProject.getImportedFiles()) {
+					if (importedFile.getType()
+									.equals(FileType.MAGE_TAB_IDF.name())) {
+						isReimporting = true;
+						break;
+					}
+				}
+			}
+		}
+		this.reimportingMagetab = isReimporting;
+	}
 
-    Set<Long> getFileIds() {
-        return this.fileIds;
-    }
+	Set<Long> getFileIds () {
+		return this.fileIds;
+	}
 
-    long getProjectId() {
-        return this.projectId;
-    }
+	long getProjectId () {
+		return this.projectId;
+	}
 
-    MageTabTranslator getMageTabTranslator() {
-        return (MageTabTranslator) ServiceLocatorFactory.getLocator().lookup(MageTabTranslator.JNDI_NAME);
-    }
+	MageTabTranslator getMageTabTranslator () {
+		return (MageTabTranslator) ServiceLocatorFactory.getLocator()
+														.lookup(MageTabTranslator.JNDI_NAME);
+	}
 
-    ArrayDataService getArrayDataService() {
-        return (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
-    }
+	
 
-    CaArrayFileSet getFileSet(Project project) {
-        CaArrayFileSet fileSet = new CaArrayFileSet(project);
-        List<CaArrayFile> files = getDaoFactory().getSearchDao().retrieveByIds(CaArrayFile.class,
-                new ArrayList<Long>(this.fileIds));
-        fileSet.addAll(files);
-        return fileSet;
-    }
+	ArrayDataService getArrayDataService () {
+		return (ArrayDataService) ServiceLocatorFactory	.getLocator()
+														.lookup(ArrayDataService.JNDI_NAME);
+	}
 
-    Project getProject() {
-        return getDaoFactory().getSearchDao().retrieve(Project.class, this.projectId);
-    }
+	CaArrayFileSet getFileSet ( Project project) {
+		CaArrayFileSet fileSet = new CaArrayFileSet(project);
+		List<CaArrayFile> files = getDaoFactory()	.getSearchDao()
+													.retrieveByIds(	CaArrayFile.class,
+																	new ArrayList<Long>(this.fileIds));
+		fileSet.addAll(files);
+		return fileSet;
+	}
 
-    void doValidate(CaArrayFileSet fileSet) {
-        MageTabDocumentSet mTabSet = validateAnnotation(fileSet);
-        validateArrayData(fileSet, mTabSet);
-    }
+	Project getProject () {
+		return getDaoFactory().getSearchDao().retrieve(	Project.class,
+														this.projectId);
+	}
 
-    private MageTabDocumentSet validateAnnotation(CaArrayFileSet fileSet) {
-        return getMageTabImporter().validateFiles(fileSet, this.reimportingMagetab);
-    }
+	// carpla_begin_mod
+	void doValidate ( CaArrayFileSet fileSet) {
 
-    private void validateArrayData(CaArrayFileSet fileSet, MageTabDocumentSet mTabSet) {
-        getArrayDataImporter().validateFiles(fileSet, mTabSet);
-    }
+		if (containsRplaIDF(fileSet)) {
+			LOG.info("rplaidf found");
+			validateRplaAnnotation(fileSet);
+			// what will i be validating here?
 
-    ArrayDataImporter getArrayDataImporter() {
-        return new ArrayDataImporter(getArrayDataService(), getDaoFactory());
-    }
+		} else {
+			MageTabDocumentSet mTabSet = validateAnnotation(fileSet);
+			validateArrayData(fileSet, mTabSet);
+		}
+	}
 
-    MageTabImporter getMageTabImporter() {
-        return new MageTabImporter(getMageTabTranslator(), getDaoFactory());
-    }
+	// carpla_end_mod
 
-    @Override
-    void setInProgressStatus() {
-        setStatus(getInProgressStatus());
-    }
+	private MageTabDocumentSet validateAnnotation ( CaArrayFileSet fileSet) {
+		return getMageTabImporter().validateFiles(	fileSet,
+													this.reimportingMagetab);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException {
-        PreparedStatement s = con.prepareStatement(
-                "update caarrayfile set status = ? where project = ? and status = ?");
-        FileStatus newStatus;
-        switch(getInProgressStatus()) {
-        case IMPORTING:
-            newStatus = FileStatus.IMPORT_FAILED;
-            break;
-        case VALIDATING:
-            newStatus = FileStatus.VALIDATION_ERRORS;
-            break;
-        default:
-            newStatus = FileStatus.IMPORT_FAILED;
-        }
-        int i = 1;
-        s.setString(i++, newStatus.toString());
-        s.setLong(i++, getProjectId());
-        s.setString(i++, getInProgressStatus().toString());
-        return s;
-    }
+	
+	// carpla_begin_add
+	RplaTabTranslator getRplaTabTranslator () {
+		return (RplaTabTranslator) ServiceLocatorFactory.getLocator()
+														.lookup(RplaTabTranslator.JNDI_NAME);
+	}
+ 
+	
+	private void validateRplaAnnotation ( CaArrayFileSet fileSet) {
+		LOG.info("validateRplaAnnotation--todo? : counterpart of validateArrayData");
+		getRplaTabImporter().validateFiles(fileSet);
 
-    private void setStatus(FileStatus status) {
-        CaArrayFileSet fileSet = getFileSet(getProject());
-        fileSet.updateStatus(status);
-    }
+	}
+	
+	RplaTabImporter getRplaTabImporter () {
+		return new RplaTabImporter(getRplaTabTranslator(), getDaoFactory());
+	}
+	
+	
+	private boolean containsRplaIDF ( CaArrayFileSet fileSet) {
+		Set<CaArrayFile> files = fileSet.getFiles();
+		Iterator itie = files.iterator();
+		boolean found_rplaidf = false;
+		while (itie.hasNext()) {
+			CaArrayFile file = (CaArrayFile) itie.next();
+			if (file.getFileType() == FileType.RPLA_TAB_RPLAIDF) {
+				found_rplaidf = true;
+			}
 
-    abstract FileStatus getInProgressStatus();
+		}
+		return found_rplaidf;
+	}
 
-    /**
-     * @return the reimportingMagetab
-     */
-    public boolean isReimportingMagetab() {
-        return reimportingMagetab;
-    }
+	
+	
+	// carpla_end_add
+	
+	
+	
+	
+	private void validateArrayData (	CaArrayFileSet fileSet,
+										MageTabDocumentSet mTabSet)
+	{
+		getArrayDataImporter().validateFiles(fileSet, mTabSet);
+	}
+
+	ArrayDataImporter getArrayDataImporter () {
+		return new ArrayDataImporter(getArrayDataService(), getDaoFactory());
+	}
+
+	MageTabImporter getMageTabImporter () {
+		return new MageTabImporter(getMageTabTranslator(), getDaoFactory());
+	}
+
+	@Override
+	void setInProgressStatus () {
+		setStatus(getInProgressStatus());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	PreparedStatement getUnexpectedErrorPreparedStatement ( Connection con)
+																			throws SQLException
+	{
+		PreparedStatement s = con.prepareStatement("update caarrayfile set status = ? where project = ? and status = ?");
+		FileStatus newStatus;
+		switch (getInProgressStatus()) {
+		case IMPORTING:
+			newStatus = FileStatus.IMPORT_FAILED;
+			break;
+		case VALIDATING:
+			newStatus = FileStatus.VALIDATION_ERRORS;
+			break;
+		default:
+			newStatus = FileStatus.IMPORT_FAILED;
+		}
+		int i = 1;
+		s.setString(i++, newStatus.toString());
+		s.setLong(i++, getProjectId());
+		s.setString(i++, getInProgressStatus().toString());
+		return s;
+	}
+
+	private void setStatus ( FileStatus status) {
+		CaArrayFileSet fileSet = getFileSet(getProject());
+		fileSet.updateStatus(status);
+	}
+
+	abstract FileStatus getInProgressStatus ();
+
+	/**
+	 * @return the reimportingMagetab
+	 */
+	public boolean isReimportingMagetab () {
+		return reimportingMagetab;
+	}
 }
