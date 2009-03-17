@@ -60,7 +60,10 @@
     }
 
     updateJobSummary = function() {
-    $('jobSizeContent').innerHTML= jobNumFiles + " Files, " +formatFileSize(jobSize);
+        var jobSizeContent = $('jobSizeContent');
+        if(jobSizeContent) {
+            jobSizeContent.innerHTML= jobNumFiles + " Files, " +formatFileSize(jobSize);
+        }
     }
 
   checkRefFileSelection = function(findRefUrl) {
