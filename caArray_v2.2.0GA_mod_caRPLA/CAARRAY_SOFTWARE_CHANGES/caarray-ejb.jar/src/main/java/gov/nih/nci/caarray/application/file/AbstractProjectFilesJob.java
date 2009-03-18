@@ -116,6 +116,15 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 	private final Set<Long>		fileIds				= new HashSet<Long>();
 	private final boolean		reimportingMagetab;
 
+	//carpla_begin_add
+	private static final Logger	LOG					= Logger.getLogger(AbstractProjectFilesJob.class);
+	//carpla_end_add
+	
+	
+	
+	
+	
+	
 	AbstractProjectFilesJob(String username,
 							Project targetProject,
 							CaArrayFileSet fileSet) {
