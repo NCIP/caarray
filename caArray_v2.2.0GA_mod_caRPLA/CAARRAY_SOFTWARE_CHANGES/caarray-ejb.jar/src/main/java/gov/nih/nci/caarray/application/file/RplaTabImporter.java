@@ -134,8 +134,6 @@ public class RplaTabImporter {
 
 	}
 
-	
-
 	private void handleInvalidRplaTab ( CaArrayFileSet fileSet,
 										InvalidDataException e)
 	{
@@ -192,8 +190,6 @@ public class RplaTabImporter {
 		;
 	}
 
-
-
 	private RplaTabInputFileSet getInputFileSet ( CaArrayFileSet fileSet) {
 		RplaTabInputFileSet inputFileSet = new RplaTabInputFileSet();
 		for (CaArrayFile caArrayFile : fileSet.getFiles()) {
@@ -202,7 +198,6 @@ public class RplaTabImporter {
 		return inputFileSet;
 	}
 
-	
 	// carplafix
 	private void addInputFile ( RplaTabInputFileSet inputFileSet,
 								CaArrayFile caArrayFile)
