@@ -323,8 +323,11 @@ public enum FileType implements Comparable<FileType> {
         PARSEABLE_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
         
         //carpla 
-        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(RPLA_TAB_SRADF);
-        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(RPLA_TAB_RPLAIDF);
+        RAW_ARRAY_DATA_FILE_TYPES.add(RPLA_TAB_TIFF);
+        DERIVED_ARRAY_DATA_FILE_TYPES.add(RPLA_TAB_TXT);
+        
+        
+        
         //carpla
         
         

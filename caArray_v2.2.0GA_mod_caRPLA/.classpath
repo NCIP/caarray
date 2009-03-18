@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="src/main/java/" kind="src" path="CAARRAY_CHANGES/caarrray-common.jar"/>
-	<classpathentry kind="src" path="CAARRAY_CHANGES/caarrray-common.jar/src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/lib/jboss-common.jar"/>
 	<classpathentry kind="lib" path="/lib/acegi-security-1.0.5.jar"/>
@@ -131,5 +129,8 @@
 	<classpathentry kind="lib" path="/lib/xmlconfig.jar"/>
 	<classpathentry kind="lib" path="/lib/xwork-2.0.4.jar"/>
 	<classpathentry kind="src" path="/caarray-common.jar"/>
+	<classpathentry kind="lib" path="/caRPLA/rplatab.jar/target/rplatab.jar"/>
+	<classpathentry kind="lib" path="/caRPLA/caarray-ejb.jar/target/caarray-ejb.jar"/>
+	<classpathentry kind="lib" path="/caRPLA/caarray-common.jar/target/caarray-common.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

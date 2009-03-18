@@ -170,11 +170,11 @@ public enum FileExtension {
 	DATA(FileType.MAGE_TAB_DATA_MATRIX),
 
 	// carpla
-	RPLAIDF(FileType.RPLA_TAB_RPLAIDF), // caRPLA
-	SRADF(FileType.RPLA_TAB_SRADF), // caRPLA
+	RPLAIDF(FileType.RPLA_TAB_RPLAIDF, "RPLAIDF.TXT"), // caRPLA
+	SRADF(FileType.RPLA_TAB_SRADF, "SRADF.TXT"), // caRPLA
 	TXT(FileType.RPLA_TAB_TXT), // caRPLA not sure how the txt extension is
-								// supposed to be handled given the other
-								// FileTypeS based on .txt,
+	// supposed to be handled given the other
+	// FileTypeS based on .txt,
 	// anyway adding it here
 	TIF(FileType.RPLA_TAB_TIFF), // caRPLA
 	// carpla

@@ -59,6 +59,7 @@ public class RplaTabImporter {
 		updateFileStatus(fileSet, FileStatus.VALIDATING);
 
 		RplaTabInputFileSet inputSet = getInputFileSet(fileSet);
+
 		try {
 			updateFileStatus(fileSet, FileStatus.VALIDATED);
 
@@ -204,6 +205,9 @@ public class RplaTabImporter {
 	{
 
 		FileType type = caArrayFile.getFileType();
+		LOG.info("will try to add:" + caArrayFile.getName()
+					+ " of type:"
+					+ type.getName());
 		if (FileType.RPLA_TAB_RPLAIDF.equals(type)) {
 			RplaIdfFile ridffile = new RplaIdfFile();
 			try {
@@ -228,6 +232,7 @@ public class RplaTabImporter {
 		else {
 			try {
 				inputFileSet.addFile(getFile(caArrayFile));
+
 			} catch (Exception e) {
 
 				e.printStackTrace();

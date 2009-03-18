@@ -117,7 +117,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 	private final boolean		reimportingMagetab;
 
 	//carpla_begin_add
-	private static final Logger	LOG					= Logger.getLogger(AbstractProjectFilesJob.class);
+//	private static final Logger	LOG					= Logger.getLogger(AbstractProjectFilesJob.class);
 	//carpla_end_add
 	
 	
@@ -185,7 +185,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 	void doValidate ( CaArrayFileSet fileSet) {
 
 		if (containsRplaIDF(fileSet)) {
-			LOG.info("rplaidf found");
+			//LOG.info("rplaidf found");
 			validateRplaAnnotation(fileSet);
 			// what will i be validating here?
 
@@ -211,7 +211,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
  
 	
 	private void validateRplaAnnotation ( CaArrayFileSet fileSet) {
-		LOG.info("validateRplaAnnotation--todo? : counterpart of validateArrayData");
+		//LOG.info("validateRplaAnnotation--todo? : counterpart of validateArrayData");
 		getRplaTabImporter().validateFiles(fileSet);
 
 	}
