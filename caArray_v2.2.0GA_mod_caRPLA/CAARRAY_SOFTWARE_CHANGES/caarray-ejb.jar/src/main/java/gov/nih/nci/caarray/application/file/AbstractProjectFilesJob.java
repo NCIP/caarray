@@ -102,7 +102,7 @@ import java.util.Set;
 
 //carpla_begin_add
 import gov.nih.nci.caarray.application.translation.rplatab.RplaTabTranslator;
-
+import java.util.Iterator;
 //carpla_end_add
 
 /**
