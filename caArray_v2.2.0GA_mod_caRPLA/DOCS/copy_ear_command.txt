@@ -1,0 +1,1 @@
+cp /bioimaging/home/gvf/workspace/caRPLA/target/ear/caarray.ear /bioimaging/home/gvf/dev/apps/caarray/jboss-4.0.5.GA/server/default/deploy/
