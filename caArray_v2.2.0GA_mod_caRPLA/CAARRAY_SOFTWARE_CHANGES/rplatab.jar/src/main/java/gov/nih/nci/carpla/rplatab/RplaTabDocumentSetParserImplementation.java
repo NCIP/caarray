@@ -121,15 +121,13 @@ public class RplaTabDocumentSetParserImplementation
 	// ####################################################################
 	private void readRplaIdf (	RplaTabDocumentSet rplaTabDocumentSet,
 								RplaTabInputFileSet rplaTabInputFileSet)
-																		
 
 	{
-		
-			RplaIdfReader rplaIdfReader = new RplaIdfReader();
 
-			RplaIdfReader.readRplaIdfFile(	rplaTabDocumentSet,
-											rplaTabInputFileSet);
-	
+		RplaIdfReader rplaIdfReader = new RplaIdfReader();
+
+		RplaIdfReader.readRplaIdfFile(rplaTabDocumentSet, rplaTabInputFileSet);
+
 	}
 
 	// ####################################################################
