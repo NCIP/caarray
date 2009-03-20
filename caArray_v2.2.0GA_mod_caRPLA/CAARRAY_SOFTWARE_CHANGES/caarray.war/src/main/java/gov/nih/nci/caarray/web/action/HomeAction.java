@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common-jar Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,75 +80,118 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.search;
+package gov.nih.nci.caarray.web.action;
 
-import gov.nih.nci.caarray.domain.ResourceBasedEnum;
+import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.application.browse.BrowseService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.domain.search.BrowseCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.opensymphony.xwork2.Action;
 
 /**
+ * Action for displaying the home page.
  * @author Winston Cheng
- * 
  */
-public enum BrowseCategory implements ResourceBasedEnum {
-	/**
-	 * Experiments.
-	 */
-	EXPERIMENTS("browse.category.experiments", null, "p"),
-	/**
-	 * Organisms.
-	 */
-	ORGANISMS(
-				"browse.category.organisms",
-					null,
-					"p.experiment.organism.scientificName"),
-	/**
-	 * Array providers.
-	 */
-	ARRAY_PROVIDERS(
-					"browse.category.arrayProviders",
-						null,
-						"p.experiment.manufacturer"),
+public class HomeAction {
+    /**
+     * This holds the name and count for each item in the browse box.
+     */
+    public class BrowseItems {
+        private final BrowseCategory category;
+        private final String resourceKey;
+        private final int count;
 
-	// carpla_begin_mod
-	/**
-	 * Array designs.
-	 */
-	ARRAY_DESIGNS(
-					"browse.category.arrayDesigns",
-						"p.experiment.arrayDesigns a",
-						"a");
+        /**
+         * Constructor for a browse option.
+         * @param resourceKey label for this item
+         * @param count number of groups in this category
+         */
+        public BrowseItems(String resourceKey, int count) {
+            this.category = null;
+            this.resourceKey = resourceKey;
+            this.count = count;
+        }
+        /**
+         * Constructor for a browse option.
+         * @param category the browse category
+         * @param count number of groups in this category
+         */
+        public BrowseItems(BrowseCategory category, int count) {
+            this.category = category;
+            this.resourceKey = category.getResourceKey();
+            this.count = count;
+        }
+        /**
+         * @return the browse category
+         */
+        public BrowseCategory getCategory() {
+            return category;
+        }
+        /**
+         * @return the resourceKey
+         */
+        public String getResourceKey() {
+            return resourceKey;
+        }
+        /**
+         * @return the count
+         */
+        public int getCount() {
+            return count;
+        }
+    }
 
-	//ANTIBODIES("browse.category.antibodies", null, "p");
-	// carpla_end_add
+    private List<BrowseItems> browseItems;
+    private List<Category> categories = new ArrayList<Category>();
+    private List<Organism> organisms = new ArrayList<Organism>();
+    
+    /**
+     * @return the browse items
+     */
+    public List<BrowseItems> getBrowseItems() {
+        return browseItems;
+    }
 
-	private final String	resourceKey;
-	private String			join;
-	private String			field;
+    /**
+     * @return the categories
+     */
+    public List<Category> getCategories() {
+        return categories;
+    }
 
-	private BrowseCategory(String resourceKey, String join, String field) {
-		this.resourceKey = resourceKey;
-		this.field = field;
-		this.join = join;
-	}
+    /**
+     * @return the filterOrganisms
+     */
+    public List<Organism> getOrganisms() {
+        return organisms;
+    }
 
-	/**
-	 * @return the resource key that should be used to retrieve a label for this
-	 *         BrowseCategory in the UI
-	 */
-	public String getResourceKey () {
-		return this.resourceKey;
-	}
+    /**
+     * @return input
+     */
+    public String execute() {
+        BrowseService bs = CaArrayActionHelper.getBrowseService();
+        browseItems = new ArrayList<BrowseItems>();
+        for (BrowseCategory cat : BrowseCategory.values()) {
+            browseItems.add(new BrowseItems(cat, bs.countByBrowseCategory(cat)));
+        }
+        browseItems.add(new BrowseItems("browse.report.hybridizations", bs.hybridizationCount()));
+        browseItems.add(new BrowseItems("browse.report.users", bs.userCount()));
+        
+        //carpla_begin
+        browseItems.add(new BrowseItems("browse.report.antibodies", bs.antibodyCount()));
+        //carpla_end
+        
+        
+        VocabularyService voc = CaArrayActionHelper.getVocabularyService();
+        this.categories = voc.searchForCharacteristicCategory("");
+        this.organisms = voc.getOrganisms();
 
-	/**
-	 * @return the join table
-	 */
-	public String getJoin () {
-		return join;
-	}
-
-	/**
-	 * @return the field that represents this category
-	 */
-	public String getField () {
-		return field;
-	}
+        return Action.INPUT;
+    }
 }

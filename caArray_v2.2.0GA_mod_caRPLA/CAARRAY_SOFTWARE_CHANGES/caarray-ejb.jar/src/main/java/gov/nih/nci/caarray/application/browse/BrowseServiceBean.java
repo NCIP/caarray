@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caarray-ejb-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or
+ * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common-jar Software and any
+ * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-ejb-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,75 +80,106 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.search;
+package gov.nih.nci.caarray.application.browse;
 
-import gov.nih.nci.caarray.domain.ResourceBasedEnum;
+import gov.nih.nci.caarray.dao.BrowseDao;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.BrowseCategory;
+
+import java.util.List;
+
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * @author Winston Cheng
- * 
+ *
  */
-public enum BrowseCategory implements ResourceBasedEnum {
-	/**
-	 * Experiments.
-	 */
-	EXPERIMENTS("browse.category.experiments", null, "p"),
-	/**
-	 * Organisms.
-	 */
-	ORGANISMS(
-				"browse.category.organisms",
-					null,
-					"p.experiment.organism.scientificName"),
-	/**
-	 * Array providers.
-	 */
-	ARRAY_PROVIDERS(
-					"browse.category.arrayProviders",
-						null,
-						"p.experiment.manufacturer"),
+@Local(BrowseService.class)
+@Stateless
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+public class BrowseServiceBean implements BrowseService {
+    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
-	// carpla_begin_mod
-	/**
-	 * Array designs.
-	 */
-	ARRAY_DESIGNS(
-					"browse.category.arrayDesigns",
-						"p.experiment.arrayDesigns a",
-						"a");
+    private BrowseDao getBrowseDao() {
+        return this.daoFactory.getBrowseDao();
+    }
+    CaArrayDaoFactory getDaoFactory() {
+        return this.daoFactory;
+    }
 
-	//ANTIBODIES("browse.category.antibodies", null, "p");
-	// carpla_end_add
+    void setDaoFactory(CaArrayDaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
 
-	private final String	resourceKey;
-	private String			join;
-	private String			field;
+    /**
+     * {@inheritDoc}
+     */
+    public int countByBrowseCategory(BrowseCategory cat) {
+        return getBrowseDao().countByBrowseCategory(cat);
+    }
 
-	private BrowseCategory(String resourceKey, String join, String field) {
-		this.resourceKey = resourceKey;
-		this.field = field;
-		this.join = join;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public int hybridizationCount() {
+        return getBrowseDao().hybridizationCount();
+    }
+    
 
-	/**
-	 * @return the resource key that should be used to retrieve a label for this
-	 *         BrowseCategory in the UI
-	 */
-	public String getResourceKey () {
-		return this.resourceKey;
-	}
+    
+    //carpla_begin
+   public int antibodyCount() {
+       return getBrowseDao().antibodyCount();
+   }
 
-	/**
-	 * @return the join table
-	 */
-	public String getJoin () {
-		return join;
-	}
+    //carpla_end
+    
+    
+    
+    
+    
+    
+    
 
-	/**
-	 * @return the field that represents this category
-	 */
-	public String getField () {
-		return field;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public int institutionCount() {
+        return getBrowseDao().institutionCount();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int userCount() {
+        return getBrowseDao().userCount();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Object[]> tabList(BrowseCategory cat) {
+        return getBrowseDao().tabList(cat);
+    }
+    /**
+     * {@inheritDoc}
+     */
+    public List<Project> browseList(PageSortParams<Project> params, BrowseCategory cat, Number fieldId) {
+        return getBrowseDao().browseList(params, cat, fieldId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int browseCount(BrowseCategory cat, Number fieldId) {
+        return getBrowseDao().browseCount(cat, fieldId);
+    }
+
+
 }

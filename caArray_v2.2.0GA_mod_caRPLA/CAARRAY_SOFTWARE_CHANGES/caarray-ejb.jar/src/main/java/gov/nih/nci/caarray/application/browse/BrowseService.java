@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caarray-ejb-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or
+ * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common-jar Software and any
+ * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-ejb-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,75 +80,75 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.search;
+package gov.nih.nci.caarray.application.browse;
 
-import gov.nih.nci.caarray.domain.ResourceBasedEnum;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.BrowseCategory;
+
+import java.util.List;
+
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * @author Winston Cheng
- * 
+ *
  */
-public enum BrowseCategory implements ResourceBasedEnum {
-	/**
-	 * Experiments.
-	 */
-	EXPERIMENTS("browse.category.experiments", null, "p"),
-	/**
-	 * Organisms.
-	 */
-	ORGANISMS(
-				"browse.category.organisms",
-					null,
-					"p.experiment.organism.scientificName"),
-	/**
-	 * Array providers.
-	 */
-	ARRAY_PROVIDERS(
-					"browse.category.arrayProviders",
-						null,
-						"p.experiment.manufacturer"),
-
-	// carpla_begin_mod
-	/**
-	 * Array designs.
-	 */
-	ARRAY_DESIGNS(
-					"browse.category.arrayDesigns",
-						"p.experiment.arrayDesigns a",
-						"a");
-
-	//ANTIBODIES("browse.category.antibodies", null, "p");
-	// carpla_end_add
-
-	private final String	resourceKey;
-	private String			join;
-	private String			field;
-
-	private BrowseCategory(String resourceKey, String join, String field) {
-		this.resourceKey = resourceKey;
-		this.field = field;
-		this.join = join;
-	}
-
-	/**
-	 * @return the resource key that should be used to retrieve a label for this
-	 *         BrowseCategory in the UI
-	 */
-	public String getResourceKey () {
-		return this.resourceKey;
-	}
-
-	/**
-	 * @return the join table
-	 */
-	public String getJoin () {
-		return join;
-	}
-
-	/**
-	 * @return the field that represents this category
-	 */
-	public String getField () {
-		return field;
-	}
+public interface BrowseService {
+    /**
+     * The default JNDI name to use to lookup <code>BrowseService</code>.
+     */
+    String JNDI_NAME = "caarray/BrowseServiceBean/local";
+    /**
+     * @param cat browse category
+     * @return number of items in the given category
+     */
+    int countByBrowseCategory(BrowseCategory cat);
+    /**
+     * @return the total number of hybridizations
+     */
+    int hybridizationCount();
+    /**
+     * @return the total number of registered institutions
+     */
+    int institutionCount();
+    /**
+     * @return the total number of registered users
+     */
+    int userCount();
+  
+    
+    
+    //carpla_begin
+    int antibodyCount();
+    //carpla_end
+    
+    /**
+     * Finds the breakdown of groups within a given category and returns
+     * a list of [name, id, projectCount] objects, which can be used
+     * to populate browse tabs.
+     * @param cat category
+     * @return tabs
+     */
+    
+    List<Object[]> tabList(BrowseCategory cat);
+    /**
+     * Returns a list of projects constrained by a browse category and id. Note that this method currently only supports
+     *
+     * SortCriterions that are either simple properties of the target class or required single-valued associations from
+     * it. If a non-required association is used in the sort criterion, then any instances for which that association is
+     * null will not be included in the results (as an inner join is used)
+     *
+     * @param params paging and sorting parameters
+     * @param cat browse category
+     * @param fieldId id for the field specified by the category
+     * @return a list of matching projects
+     */
+    List<Project> browseList(PageSortParams<Project> params, BrowseCategory cat, Number fieldId);
+    /**
+     * Returns the count of projects constrained by a browse category and id.
+     * @param cat browse category
+     * @param fieldId id for the field specified by the category
+     * @return number of results
+     */
+    int browseCount(BrowseCategory cat, Number fieldId);
 }
