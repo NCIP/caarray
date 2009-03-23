@@ -200,6 +200,7 @@ public interface PermissionsManagementService {
      * Get all collaboration groups owned by a user.
      *
      * @param userId owner.
+     * @return list of collaboration groups ownd by the viven user.
      */
     List<CollaboratorGroup> getCollaboratorGroupsForOwner(long userId);
 }

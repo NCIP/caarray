@@ -346,6 +346,9 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         LogUtil.logSubsystemExit(LOG);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public List<CollaboratorGroup> getCollaboratorGroupsForOwner(long userId) {
         LogUtil.logSubsystemEntry(LOG, userId);
         List<CollaboratorGroup> result = getDaoFactory().getCollaboratorGroupDao().getAllForUser(userId);

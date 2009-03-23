@@ -124,6 +124,9 @@ public class CollaboratorGroupDaoImpl extends AbstractCaArrayDaoImpl implements 
         return getAllForUser(userId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public List<CollaboratorGroup> getAllForUser(long userId) {
         Query query = getCurrentSession().createQuery("SELECT cg FROM " + CollaboratorGroup.class.getName() + " cg, "
                 + Group.class.getName() + " g"

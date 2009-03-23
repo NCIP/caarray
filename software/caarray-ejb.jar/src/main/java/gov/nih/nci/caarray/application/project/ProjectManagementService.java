@@ -231,7 +231,7 @@ public interface ProjectManagementService {
 
     /**
      * Gets a the projects belonging to the given user.
-     * @see gov.nih.nci.caarray.dao.ProjectDao#getProjectsForOwner(gov.nih.nci.security.authorization.domainobjects.User)
+     * @see gov.nih.nci.caarray.dao.ProjectDao#getProjectsForOwner(User)
      * @param user owner of the desired projects.
      *
      * @return all projects directly related to the givenuser.
