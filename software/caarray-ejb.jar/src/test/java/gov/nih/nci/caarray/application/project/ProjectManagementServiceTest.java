@@ -196,10 +196,17 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
     }
 
     @Test
+    public void testGetProjectsForOwner() {
+        User u = UsernameHolder.getCsmUser();
+        List<Project> projects = this.projectManagementService.getProjectsForOwner(u);
+        assertSame(Collections.EMPTY_LIST, projects);
+    }
+
+    @Test
     public void testGetProject() {
         Project project = this.projectManagementService.getProject(123L);
         assertNotNull(project);
-        assertEquals(123L, project.getId());
+        assertEquals(123L, project.getId().longValue());
     }
 
     @Test

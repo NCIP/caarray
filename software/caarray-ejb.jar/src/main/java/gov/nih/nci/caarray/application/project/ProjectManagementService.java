@@ -100,6 +100,7 @@ import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
+import gov.nih.nci.security.authorization.domainobjects.User;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
@@ -227,6 +228,15 @@ public interface ProjectManagementService {
      * @return public or non-public projects directly related to the current user, as described above
      */
     List<Project> getMyProjects(boolean showPublic, PageSortParams<Project> pageSortParams);
+
+    /**
+     * Gets a the projects belonging to the given user.
+     * @see gov.nih.nci.caarray.dao.ProjectDao#getProjectsForOwner(gov.nih.nci.security.authorization.domainobjects.User)
+     * @param user owner of the desired projects.
+     *
+     * @return all projects directly related to the givenuser.
+     */
+    List<Project> getProjectsForOwner(User user);
 
     /**
      * Gets the count of projects belonging to the current user. The count of either public or non-public projects

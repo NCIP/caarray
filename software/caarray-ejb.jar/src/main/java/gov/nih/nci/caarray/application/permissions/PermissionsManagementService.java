@@ -195,4 +195,11 @@ public interface PermissionsManagementService {
      * @throws CSException on CSM error
      */
     void changeOwner(Long targetGroupId, String username) throws CSException;
+
+    /**
+     * Get all collaboration groups owned by a user.
+     *
+     * @param userId owner.
+     */
+    List<CollaboratorGroup> getCollaboratorGroupsForOwner(long userId);
 }

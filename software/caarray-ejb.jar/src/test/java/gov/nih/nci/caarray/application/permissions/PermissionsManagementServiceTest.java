@@ -82,10 +82,12 @@
  */
 package gov.nih.nci.caarray.application.permissions;
 
+import java.util.Collections;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.dao.CollaboratorGroupDao;
@@ -282,6 +284,13 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
         CollaboratorGroup retrieved = (CollaboratorGroup) stub.getSavedObject();
         assertEquals("caarrayuser", retrieved.getOwner().getLoginName());
         tx.commit();
+    }
+    
+    @Test
+    public void testGetCollaboratorGroupsForOwner() throws Exception {
+        User u = UsernameHolder.getCsmUser();
+        List<CollaboratorGroup> l = this.permissionsManagementService.getCollaboratorGroupsForOwner(u.getUserId().longValue());
+        assertSame(Collections.EMPTY_LIST, l);
     }
 
     @SuppressWarnings("unchecked")

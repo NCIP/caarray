@@ -278,4 +278,8 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
         return changeOwnerCalled;
     }
 
+    public List<CollaboratorGroup> getCollaboratorGroupsForOwner(long userId) {
+        return Collections.emptyList();
+    }
+
 }

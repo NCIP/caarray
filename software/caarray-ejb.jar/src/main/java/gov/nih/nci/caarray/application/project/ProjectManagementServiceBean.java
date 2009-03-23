@@ -118,6 +118,7 @@ import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
+import gov.nih.nci.security.authorization.domainobjects.User;
 import java.io.File;
 import java.io.InputStream;
 import java.util.HashSet;
@@ -416,6 +417,16 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public int getMyProjectCount(boolean showPublic) {
         LogUtil.logSubsystemEntry(LOG, showPublic);
         int result = getProjectDao().getProjectCountForCurrentUser(showPublic);
+        LogUtil.logSubsystemExit(LOG);
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Project> getProjectsForOwner(User user) {
+        LogUtil.logSubsystemEntry(LOG, user);
+        List<Project> result = getProjectDao().getProjectsForOwner(user);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }

@@ -1321,6 +1321,9 @@
     </target>
 
     <target name="configure-datasource-for-test">
+        <copy todir="${caarray-common.classes.dir}" overwrite="true">
+            <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml,ValidatorMessages.properties" />
+        </copy>
         <copy todir="${caarray-common.test.classes.dir}" overwrite="true">
             <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml,MGEDOntology.owl" />
         </copy>

@@ -105,4 +105,12 @@ public interface CollaboratorGroupDao extends CaArrayDao {
      */
     List<CollaboratorGroup> getAllForCurrentUser();
 
+    /**
+     * Get all the collaborator groups owned by the given user.
+     *
+     * @param userId owner's userId.
+     * @return all CollaboratorGroups owned by the given user
+     */
+    List<CollaboratorGroup> getAllForUser(long userId);
+
 }

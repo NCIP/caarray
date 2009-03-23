@@ -139,4 +139,11 @@ public class CollaboratorGroupDaoStub extends AbstractDaoStub implements Collabo
         return savedObject;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public List<CollaboratorGroup> getAllForUser(long userId) {
+        return Collections.emptyList();
+    }
+
 }

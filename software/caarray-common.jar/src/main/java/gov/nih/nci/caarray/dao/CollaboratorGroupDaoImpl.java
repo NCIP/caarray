@@ -120,10 +120,14 @@ public class CollaboratorGroupDaoImpl extends AbstractCaArrayDaoImpl implements 
      */
     @SuppressWarnings("unchecked")
     public List<CollaboratorGroup> getAllForCurrentUser() {
+        Long userId = UsernameHolder.getCsmUser().getUserId();
+        return getAllForUser(userId);
+    }
+
+    public List<CollaboratorGroup> getAllForUser(long userId) {
         Query query = getCurrentSession().createQuery("SELECT cg FROM " + CollaboratorGroup.class.getName() + " cg, "
                 + Group.class.getName() + " g"
                 + " WHERE cg.groupId = g.groupId AND cg.ownerId = :ownerId ORDER BY g.groupName");
-        Long userId = UsernameHolder.getCsmUser().getUserId();
         return query.setLong("ownerId", userId).list();
     }
 }

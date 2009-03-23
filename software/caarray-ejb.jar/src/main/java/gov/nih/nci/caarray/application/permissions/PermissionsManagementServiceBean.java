@@ -345,4 +345,12 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         getDaoFactory().getCollaboratorGroupDao().save(cg);
         LogUtil.logSubsystemExit(LOG);
     }
+
+    public List<CollaboratorGroup> getCollaboratorGroupsForOwner(long userId) {
+        LogUtil.logSubsystemEntry(LOG, userId);
+        List<CollaboratorGroup> result = getDaoFactory().getCollaboratorGroupDao().getAllForUser(userId);
+        LogUtil.logSubsystemExit(LOG);
+        return result;
+
+    }
 }
