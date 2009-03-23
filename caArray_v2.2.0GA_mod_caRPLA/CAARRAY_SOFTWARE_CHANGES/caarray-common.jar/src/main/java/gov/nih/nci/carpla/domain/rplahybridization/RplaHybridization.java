@@ -25,14 +25,7 @@ import org.hibernate.validator.Length;
 public class RplaHybridization extends AbstractCaArrayEntity {
 
 	
-	// #################################################################
-	// not sure if there is any reason to have this here, except possibly to
-	// explicitly call out some factor value(s)
-	// that relate to something other than the samples on the array
-	// such as a protocol parameter in array creation or in array hybridization
-	// @OneToMany(fetch = FetchType.LAZY)
-	// private Set<FactorValue> _factorValues = new HashSet<FactorValue>();
-	// #################################################################
+	
 
 	private Date	_date;
 

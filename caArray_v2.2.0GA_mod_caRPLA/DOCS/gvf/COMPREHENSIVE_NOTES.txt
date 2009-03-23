@@ -1,3 +1,79 @@
+2009/03/23
+
+Experiment WILL HAVE ONLY one Assay type
+
+All samples in RPLA-TAB will become RPLASamples.
+What are reasons for using RPLASamples.
+
+1) Extends Sample so has all that Sample has. and in future, could use sample grouping when anf if
+2) discriminator in table shoudl prevent misfires in interface as
+actual Sample ( like downloading data, etc...)
+
+Won't confuse the two. They are different, so subclass is way of
+differentiating
+
+WRONG...rplasample extending from sample will inherit
+other associations...maybe shoudl inherit from 
+abstract bio material instead.
+
+consider search capability ( taht exists for samples) for rplasamples?
+
+=========
+
+
+Overview
+
+model changes
+
+Extension overview / technical approach
+
+possible recorded demo
+send docs to Zhang
+
+----
+
+show graphically changed files in each jar, ( and docs are in place)
+"cleaner and easier to understand  than pathces or svn merge"
+
+
+future work visualize micriovigene
+pg, supercurve
+
+eventually register model 
+
+
+Decide what makes sense to see/use through web interface:
+
+	Add   | Edit   | Delete
+Abs
+Samples
+RplaArrays
+RplaHybs
+Expfactiors
+factorvalues
+Image data
+
+==========
+
+Decide on use cases finally:
+
+Be able to make a copy of rplarray, or just another link to it?
+
+so rplarrays don't necessarily belong to Experiment, right?
+
+How to reference existing Ab in system when importing? When, for examples
+user wants to import data from a new rplahybridization
+
+===========================
+have count on front page of rplahybs on initial page
+When RPLA assay type is chosen, elide 
+Provider
+Organism  ( both these maybe not if myltiple associations allowed)
+also elide Import panel options ( autogeneration thing)
+
+include text about carpla instance in intiali page
+===================
+
 
 occurs to me that 
 "matched smaples are higher-lelev issue and probably outside of scope of this proejct,

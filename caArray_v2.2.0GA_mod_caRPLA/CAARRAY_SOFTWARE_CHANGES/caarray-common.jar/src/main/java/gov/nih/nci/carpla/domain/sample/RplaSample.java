@@ -15,6 +15,7 @@ import javax.persistence.OneToOne;
 import org.apache.commons.lang.builder.CompareToBuilder;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.carpla.domain.rplarray.RplaReporter;
 
@@ -22,45 +23,62 @@ import gov.nih.nci.carpla.domain.rplarray.RplaReporter;
 public class RplaSample extends Sample implements Comparable {
 
 	// ##############################################
-	private RplaReporter	_rplaReporter;
+	private Set<FactorValue>	_factorValues	= new HashSet<FactorValue>();
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	public RplaReporter getRplaReporter () {
-		return _rplaReporter;
-	}
-
-	public void setRplaReporter ( RplaReporter reporter) {
-		_rplaReporter = reporter;
-	}
-
+	private Set<RplaFeature>	_rplaFeatures	= new HashSet<RplaFeature>();
 	// ##############################################
+	
+	
+	
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public Set<FactorValue> getFactorValues () {
+		return _factorValues;
+	}
 
-	private Set<RplaSample>	_descendantRplaSamples	= new HashSet<RplaSample>();
+	public void setFactorValues ( Set<FactorValue> factorValues) {
+
+		_factorValues = factorValues;
+	}
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	public Set<RplaSample> getDescendantRplaSamples () {
-
-		return _descendantRplaSamples;
+	public Set<RplaFeature> getRplaFeatures () {
+		return _rplaFeatures;
 	}
 
-	public void setDescendantRplaSamples ( Set<RplaSample> samples) {
-		_descendantRplaSamples = samples;
+	public void setRplaFeatures ( Set<RplaFeature> features) {
+		_rplaFeatures = features;
 	}
 
-	// ##############################################
+	// "sub-sampling" is deferred
 
-	private RplaSample	_sourceRplaSample;
-
-	
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	public RplaSample getSourceRplaSample () {
-		return _sourceRplaSample;
-	}
-
-	public void setSourceRplaSample ( RplaSample rplaSample) {
-		_sourceRplaSample = rplaSample;
-
-	}
+	//
+	// private Set<RplaSample> _descendantRplaSamples = new
+	// HashSet<RplaSample>();
+	//
+	// @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	// public Set<RplaSample> getDescendantRplaSamples () {
+	//
+	// return _descendantRplaSamples;
+	// }
+	//
+	// public void setDescendantRplaSamples ( Set<RplaSample> samples) {
+	// _descendantRplaSamples = samples;
+	// }
+	//
+	// // ##############################################
+	//
+	// private RplaSample _sourceRplaSample;
+	//
+	//	
+	// @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	// public RplaSample getSourceRplaSample () {
+	// return _sourceRplaSample;
+	// }
+	//
+	// public void setSourceRplaSample ( RplaSample rplaSample) {
+	// _sourceRplaSample = rplaSample;
+	//
+	// }
 
 	public int compareTo ( Object o) {
 		RplaSample myClass = (RplaSample) o;

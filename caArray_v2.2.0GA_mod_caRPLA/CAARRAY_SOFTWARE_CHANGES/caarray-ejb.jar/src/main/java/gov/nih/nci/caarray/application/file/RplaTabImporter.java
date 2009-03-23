@@ -177,11 +177,7 @@ public class RplaTabImporter {
 		}
 	}
 
-	private boolean isMageTabFile ( CaArrayFile file) {
-		return FileType.MAGE_TAB_ADF.equals(file.getFileType()) || FileType.MAGE_TAB_DATA_MATRIX.equals(file.getFileType())
-				|| FileType.MAGE_TAB_IDF.equals(file.getFileType())
-				|| FileType.MAGE_TAB_SDRF.equals(file.getFileType());
-	}
+	
 
 	private boolean isRplaTabFile ( CaArrayFile file) {
 		return FileType.RPLA_TAB_RPLAIDF.equals(file.getFileType()) || FileType.RPLA_TAB_SRADF.equals(file.getFileType())

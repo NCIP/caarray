@@ -19,25 +19,68 @@ import gov.nih.nci.caarray.validation.UniqueConstraintField;
 
 @Entity
 @Table(name = "antibody")
-
 public class Antibody extends AbstractCaArrayEntity
 
 {
 
-	// private List<AntibodyValidation> _antibodyValidations = new
-	// ArrayList<AntibodyValidation>();
-	private String						_catalogId;
-	private String						_comment;
-	private String						_epitope;
-	private String						_immunogen;
-	private String						_lotId;
-	private String						_name;
-//	private Organization				_provider;
-	private String						_specificity;
-	//private List<Gene>					_targetGenes	= new ArrayList<Gene>();
-	// support in future -Vector of Antibody Data Sheet Files
 
-	//private MeasurementCharacteristic	_targetProteinMolecularWeight;
+	// -----------------------------------------------------------
+	private List<AntibodyValidation>	_antibodyValidations	= new ArrayList<AntibodyValidation>();
+	public List<AntibodyValidation> getAntibodyValidations () {
+		return _antibodyValidations;
+
+	}
+
+	public setAntibodyValidations ( List<AntibodyValidation> abValidations) {
+		_antibodyValidations = abValidations;
+
+	}
+
+	// -----------------------------------------------------------
+	private List<Gene>	_targetGenes	= new ArrayList<Gene>();
+
+	@ManyToMany
+	public List<Gene> getTargetGenes () {
+		return _targetGenes;
+	}
+
+	public void setTargetGenes ( List<Gene> genes) {
+		_targetGenes = genes;
+	}
+
+	
+	// -----------------------------------------------------------
+	private Organization	_provider;
+
+	public Organization getProvider () {
+		return _provider;
+	}
+
+	public void setProvider ( Organization _provider) {
+		this._provider = _provider;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	// -----------------------------------------------------------
+	private MeasurementCharacteristic	_targetProteinMolecularWeight;
+
+	public MeasurementCharacteristic getTargetProteinMolecularWeight () {
+		return _targetProteinMolecularWeight;
+	}
+
+	public void setTargetProteinMolecularWeight ( MeasurementCharacteristic proteinMolecularWeight)
+	{
+		_targetProteinMolecularWeight = proteinMolecularWeight;
+	}
+
+	// -----------------------------------------------------------
+	private String	_name;
 
 	public void setName ( String name) {
 		_name = name;
@@ -50,7 +93,9 @@ public class Antibody extends AbstractCaArrayEntity
 		return _name;
 	}
 
-	
+	// -----------------------------------------------------------
+	private String	_catalogId;
+
 	@Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
 	public String getCatalogId () {
 		return _catalogId;
@@ -60,6 +105,8 @@ public class Antibody extends AbstractCaArrayEntity
 		_catalogId = id;
 	}
 
+	// -----------------------------------------------------------
+	private String	_comment;
 
 	@Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
 	public String getComment () {
@@ -70,6 +117,8 @@ public class Antibody extends AbstractCaArrayEntity
 		this._comment = comment;
 	}
 
+	// -----------------------------------------------------------
+	private String	_epitope;
 
 	@Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
 	public String getEpitope () {
@@ -80,7 +129,9 @@ public class Antibody extends AbstractCaArrayEntity
 		this._epitope = _epitope;
 	}
 
-	
+	// -----------------------------------------------------------
+	private String	_immunogen;
+
 	@Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
 	public String getImmunogen () {
 		return _immunogen;
@@ -89,6 +140,9 @@ public class Antibody extends AbstractCaArrayEntity
 	public void setImmunogen ( String _immunogen) {
 		this._immunogen = _immunogen;
 	}
+
+	// -----------------------------------------------------------
+	private String	_lotId;
 
 	@Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
 	public String getLotId () {
@@ -99,14 +153,10 @@ public class Antibody extends AbstractCaArrayEntity
 		_lotId = id;
 	}
 
-	//public Organization getProvider () {
-	//	return _provider;
-	//}
+	
 
-	//public void setProvider ( Organization _provider) {
-	//	this._provider = _provider;
-	//}
-
+	// -----------------------------------------------------------
+	private String	_specificity;
 
 	@Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
 	public String getSpecificity () {
@@ -116,23 +166,5 @@ public class Antibody extends AbstractCaArrayEntity
 	public void setSpecificity ( String _specificity) {
 		this._specificity = _specificity;
 	}
-
-	//@ManyToMany
-	//public List<Gene> getTargetGenes () {
-		//return _targetGenes;
-	//}
-
-//	public void setTargetGenes ( List<Gene> genes) {
-	//	_targetGenes = genes;
-//	}
-
-	//public MeasurementCharacteristic getTargetProteinMolecularWeight () {
-	////	return _targetProteinMolecularWeight;
-	//}
-
-	//public void setTargetProteinMolecularWeight ( MeasurementCharacteristic proteinMolecularWeight)
-	//{
-//		_targetProteinMolecularWeight = proteinMolecularWeight;
-//	}
 
 }

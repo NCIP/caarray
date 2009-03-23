@@ -6,7 +6,7 @@ import gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
-public class AntibodyValidation {
+public abstract class AntibodyValidation {
 
 	private String						_validationId;
 	private Sample						_sampleUsed;
