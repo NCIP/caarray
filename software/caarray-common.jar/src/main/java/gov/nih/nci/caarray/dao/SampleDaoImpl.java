@@ -336,11 +336,10 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         sb.append(FROM_KEYWORD + Sample.class.getName() + " s");
         sb.append(getJoinClause(false, null, c));
         sb.append(getWhereClause(c));
-        sb.append(" AND s.experiment = :exp" + ORDER_BY + "name");
+        sb.append(" AND s.experiment = :exp" + ORDER_BY + "s.name");
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
         q.setEntity("exp", e);
         q.setString(KEYWORD_SUB, "%" + keyword + "%");
-
 
         return q.list();
     }
@@ -421,7 +420,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
             JoinableSortCriterion<? extends AbstractBioMaterial> sortCrit, Set<String> joins) {
         String[] orderByJoins = null;
 
-        if (!count) {
+        if (!count && sortCrit != null) {
             orderByJoins = sortCrit.getJoins();
         }
 
