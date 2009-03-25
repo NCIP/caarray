@@ -931,4 +931,261 @@ could use OBO--could use OBO terms in some particular namespace ( obo::) as colu
 look at OBO for celllines....
 
 
+===================================
+
+
+
+
+
+Validation and Parser Module Design
+
+
+There will be two distinct modules for validating and parsing a caRPLA data set into objects suitable for the caArray-caRPLA instance database.
+
+
+Validation, here, means the following:
+
+    1) That the .rpla-idf is syntactically valid
+    2) That terms in the .sradf match the .rpla-idf file appropriately
+    3) That the .sradf is syntactically valid
+    4) That all referenced files can be found
+   
+   
+
+The first module will validate the .rpla-idf file and the .sradf files.
+The result of a successful validation for the data set will be an XML document that will contain the following:
+
+    1) All data from the  .rpla-idf file  wrapped in XML elements.
+    2) The column headers from the .sradf file along with their column indexes. The heirarchy of these XML data elements follows implicitly from the MAGE-TAB specification. See the example below.
+    3) List of all referenced files
+    4) List of all term sources
+
+An XML schema document will be provided for the generated XML file.  
+
+The flexible structure of a MAGE-TAB-derived format is handled using a grammar specification and a parser generator.
+The current implementation of this first module uses JavaCC, a popular open-source parser generator.
+More information about JavaCC is available at https://javacc.dev.java.net/
+
+
+The second module will use the resultant XML file and data set files to create objects appropriate for persistence in the caArray-caRPLA instance. Object generation in this module can leverage XSLT stylesheets (for dynamic code generation) and XML parsing.
+
+The validation and implicit data heirarchy following the MAGE-TAB-derived formal grammar is abstracted away into the first module. The subsequent object generation tasks are separated from this validation. A side benefit is that different secondary modules could be used for persistence in other applications or using other languages besides Java.
+
+
+====================
+
+
+The .rpla-idf file
+File format is derived from the MAGE-TAB spec., v1.0, January 31, 2007.
+Variations from the MAGE-TAB .idf format are underlined.
+
+An antibody used in an RPLArray must be listed here and is referenced from an .sradf file.
+
+Multiple antibodies can be used in the experiment (following MAGE-TAB convention of using additional columns and so each antibody has its own fields).
+
+Antibody names must be unique in the .rpla-idf file.
+Antibodies in the database will not be uniquely identified by name, and will require additional fields, such as the fields below, for unique identification.
+There will be a policy for matching an antibody listed in this file to an existing antibody in the database.
+
+
+HUGO is one possible preferred term source for describing antibody targets.
+http://www.gene.ucl.ac.uk/nomenclature/
+
+The .rpla-idf file may point to multiple *.sradf files.
+
+===============================================================
+
+
+Investigation Title
+Experimental Design
+Experimental Factor Name
+Experimental Factor Type
+Experimental Factor Term Source REF
+Antibody Name
+Antigen Name
+Antigen Name Term Source REF
+Antibody Provider
+Antibody Catalog ID
+Antibody Lot ID
+Antibody Comment
+Person Last Name
+Person First Name
+Person Email
+Person Phone
+Person Address
+Person Affiliation
+Person Roles
+Person Roles Term Source REF
+Quality Control Type
+Quality Control Term Source REF
+Replicate Type
+Replicate Term Source REF
+Normalization Type
+Normalization Term Source REF
+Date of Experiment
+Public Release Date
+PubMed ID
+Publication DOI
+Publication Author List
+Publication Title
+Publication Status
+Publication Status Term Source REF
+Experiment Description
+Protocol Name
+Protocol Type
+Protocol Description
+Protocol Parameters
+Protocol Hardware
+Protocol Software
+Protocol Contact
+Protocol Term Source REF
+SRADF File
+Term Source Name
+Term Source File
+Term Source Version
+
+----------------------------------------------------
+Validation policy notes for .rpla-idf files:
+
+Number of columns must match up where appropriate.
+Factor names cannot be identical.
+
+There must be at least one antibody and antibody names cannot be identical
+
+There must be at least one sradf file.
+.sradf files cannot be of zero size.
+Quotes around sradf filepath are optional.
+All sradf files references must be found. The parser can accommodate both relative and absolute paths.
+TODO: Test window paths.
+Spaces, but not tabs, are allowed in sradf file path
+
+For better readabality, new lines are allowed after
+
+Experimental Factor Term Source
+Antibody Comment
+Person Roles Term Source REF
+Quality Control Term Source REF
+Replicate Term Source REF
+Normalization Term Source REF
+Public Release Date
+Publication Status Term Source REF
+Experiment Description
+Protocol Term Source REF
+SRADF File
+----------------------------------------------------
+
+==================
+
+
+The .sradf file
+
+The .sradf file can refer to more than one array. The .sradf file is in three basic parts. 
+These parts will be referred to as a samples section, an array locations section, and lastly, an array data section.
+
+Samples section
+The samples section is a subset extracted from MAGE-TAB and serves to enumerate BioSamples and possibly their BioSource provenance. 
+It is required that the sample name referenced in the array location section be present in this section. 
+It is also required that every sample name in a single .sradf file be unique, so multiple arrays using the same sample names for different samples will require multiple .sradf files.
+
+Array Locations section
+
+In this section, samples are associated with an array, array location and dilution of the sample. 
+Multiple arrays can be present in this section. For example, the same sample from the samples section may be split among multiple arrays.
+
+Array Data section
+
+This section serves to map an array with the particular antibody used for hybridization, protocols used in the array creation, hybridization, scanning, quantitation, normalization, and resultant files. 
+"Antibody Name" must refer to an antibody in the .rpla-idf. 
+Protocols need to reference protocols listed in the .rpla-idf. 
+For purposes of clarity, protocols that have to do with array creation, hybridization, image acquisition, and derived array data are explicitly named. 
+They could all potentially refer to the same protocol in the .rpla-idf.
+
+There *must* be at least one image file per distinct array within the data set. 
+There can be multiple image files present, each with an associated protocol. 
+Having imaged a hybridized array is a logical stopping place where the data set can be submitted to a repository and later reviewed.
+
+At a later time, the user can submit measured array data files or derived array data files and associate them with an existing array and source data files through the web interface.
+
+Adding measured and derived array data files through the web interface will require entering the mandatory protocol and its various fields. 
+Potentially, a protocol could be copied and so only modified fields edited. 
+This process would require browsing existing protocols and since protocol names in the .rpla-idf ( and MAGE-TAB .idf) need only be unique within the data set, it would make the most sense to be able to browse protocols and see in what experiment(s) they were used.
+
+
+Columns in .sradf
+
+Columns are listed below for the reader but the formal grammar serves to describe the possible column structure with rigor.
+
+
+
+Source Name (and associated information such as Characteristics, Provider, MaterialType, Description,...)
+Protocol REF (and associated information; points to protocols enumerated in the .idf file)
+Sample Name (and associated information such as Characteristics, MaterialType, Description,...)
+Reporter Group
+Factor Value
+//samples data here
+--end of Samples section delimiter--
+Array Name
+BlockColumn
+BlockRow
+Column
+Row
+Sample Name
+Reporter Group
+Dilution Value
+Dilution Unit
+Dilution Unit Term Source REF
+Reporter Group
+//array locations data here
+---end of array Locations section delimiter---
+ArrayCreationProtocol REF
+Array Name
+ArrayHybridizationProtocol REF
+Antibody Name (antibody used on array -> Antibody Name in .rpla-idf)
+ImageAcquisitionProtocol REF
+Image File
+MeasuredArrayDataProtocol REF
+Array Data File
+DerivedArrayDataProtocol REF
+Derived Array Data File
+Factor Value
+//array data data here
+---end of array data section delimiter---
+
+--------------------------------------------
+
+Formal Grammar for .sradf file format
+
+The JavaCC grammars for each section can be found the *.jj files. 
+
+[] means optional
+* means 0 or more
++ means at least 1
+
+The MAGE-TAB spec. does not currently have a formal grammar.
+
+---------------------------------------
+Validation policy notes for sradf files:
+
+Any *REF must resolve according to the  .rpla-idf file
+Any sample name in the array locations section must be found in the samples section, and not necessarily the last Sample in a row.
+There muct be uniqueness in each row for the following four fields (Array Name,	BlockColumn,	BlockRow,	Column,	Row )
+
+Any array in the array data section must refer to an array in the array locations section
+
+Tabs in quotes in the sradf file are not supported. TODO: invalidate files with such.
+There must be the correct number of columns in each section.
+
+* Data Matrix files are not yet supported in the grammar.
+
+==============
+
+
+
+
+
+
+
+
+
+
 
