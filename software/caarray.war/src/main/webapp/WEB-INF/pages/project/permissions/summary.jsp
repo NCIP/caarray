@@ -32,6 +32,7 @@
         </tr>
         <c:if test="${hasSamples}">
         <tr id="samples_${profile.id}" style="display:none"><td colspan="2">
+          <div class="scrolltable" style="height: auto; max-height: 500px; width: 400px; overflow-x: hidden">
             <table class="searchresults permissiontable">
             <tbody>
       <jsp:useBean id="sampleComparator" class="gov.nih.nci.caarray.domain.sample.Sample$ByNameComparator"/>
@@ -58,11 +59,13 @@
       </s:sort>
             </tbody>
             </table>
+            </div>
         </td></tr>
         </c:if>
     </s:iterator>
     </tbody>
 </table>
+
 
 <script type="text/javascript">
     function toggleList(id, link){
