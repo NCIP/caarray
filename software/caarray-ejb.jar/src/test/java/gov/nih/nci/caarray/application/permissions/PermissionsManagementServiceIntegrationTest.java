@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-ejb-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-ejb-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,156 +80,81 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.fileaccess;
+package gov.nih.nci.caarray.application.permissions;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
-import gov.nih.nci.caarray.domain.MultiPartBlob;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.AbstractCaarrayIntegrationTest;
+import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.GenericDataServiceStub;
+import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 /**
- *
+ * Test cases for service.
  */
-@SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class FileAccessServiceTest extends AbstractCaarrayTest {
+@SuppressWarnings("PMD")
+public class PermissionsManagementServiceIntegrationTest extends AbstractCaarrayIntegrationTest {
 
-    private FileAccessServiceBean fileAccessService;
-    private Transaction transaction;
+    private static final String TEST = "test";
+    private PermissionsManagementService permissionsManagementService;
+    private final GenericDataServiceStub genericDataServiceStub = new GenericDataServiceStub();
 
     @Before
-    public void setUp() {
+    public void setup() {
+        this.permissionsManagementService = createPermissionsManagementService(this.genericDataServiceStub);
+    }
+    
+    private static PermissionsManagementService createPermissionsManagementService(GenericDataService genericDataServiceStub) {
+        PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean();
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(GenericDataService.JNDI_NAME, genericDataServiceStub);
         MysqlDataSource ds = new MysqlDataSource();
         Configuration config = HibernateUtil.getConfiguration();
         ds.setUrl(config.getProperty("hibernate.connection.url"));
         ds.setUser(config.getProperty("hibernate.connection.username"));
         ds.setPassword(config.getProperty("hibernate.connection.password"));
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
-        this.fileAccessService = new FileAccessServiceBean();
-        HibernateUtil.setFiltersEnabled(false);
-        this.transaction = HibernateUtil.beginTransaction();
-        TemporaryFileCacheLocator.resetTemporaryFileCache();
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(TemporaryFileCacheLocator.DEFAULT);
-    }
+        bean.setGenericDataService(genericDataServiceStub);
 
-    @After
-    public void tearDown() {
-        TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
-        if (this.transaction != null) {
-            this.transaction.rollback();
-        }
+        return bean;
     }
 
     @Test
-    public void testAdd() throws IOException, FileAccessException {
-        File file = File.createTempFile("pre", ".ext");
-        file.deleteOnExit();
-        CaArrayFile caArrayFile = this.fileAccessService.add(file);
-        assertEquals(file.getName(), caArrayFile.getName());
-        assertNull(caArrayFile.getFileType());
+    public void testChangeOwner() throws Exception {
+        UsernameHolder.setUser(STANDARD_USER);
+        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        CollaboratorGroup created = this.permissionsManagementService.create(TEST);
+        tx.commit();
+        assertEquals(STANDARD_USER, created.getOwner().getLoginName());
+        tx = HibernateUtil.getCurrentSession().beginTransaction();
+        List<CollaboratorGroup> groups = this.permissionsManagementService.getCollaboratorGroupsForOwner(created
+                .getOwner().getUserId());
+        tx.commit();
+        assertEquals(1, groups.size());
 
-        file = File.createTempFile("pre", ".cdf");
-        file.deleteOnExit();
-        caArrayFile = this.fileAccessService.add(file);
-        assertEquals(FileType.AFFYMETRIX_CDF, caArrayFile.getFileType());
-
-        caArrayFile = this.fileAccessService.add(GenepixArrayDataFiles.GPR_3_0_6);
-        assertEquals(FileType.GENEPIX_GPR, caArrayFile.getFileType());
-    }
-
-    /**
-     * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#getFile(gov.nih.nci.caarray.domain.file.CaArrayFile)}.
-     * @throws FileAccessException
-     */
-    @Test
-    public void testGetFile() throws Exception {
-        MultiPartBlob.setBlobSize(100);
-        File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
-        CaArrayFile caArrayFile = this.fileAccessService.add(file);
-        HibernateUtil.getCurrentSession().save(caArrayFile);
-        HibernateUtil.getCurrentSession().flush();
-        File retrievedFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
-        assertEquals(file.getName(), retrievedFile.getName());
-        assertEquals(file.length(), retrievedFile.length());
-        assertTrue(file.exists());
-        assertTrue(retrievedFile.exists());
-
-        InputStream originalIs = new FileInputStream(file);
-        byte[] originalBytes = IOUtils.toByteArray(originalIs);
-        IOUtils.closeQuietly(originalIs);
-
-        InputStream retrievedIs = new FileInputStream(retrievedFile);
-        byte[] retrievedBytes = IOUtils.toByteArray(retrievedIs);
-        IOUtils.closeQuietly(retrievedIs);
-        assertEquals(originalBytes.length, retrievedBytes.length);
-        for (int i = 0; i < originalBytes.length; i++) {
-            assertEquals(new Byte(originalBytes[i]), new Byte(retrievedBytes[i])); // NOPMD
-        }
-
-        TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(caArrayFile);
-        assertFalse(retrievedFile.exists());
-    }
-
-    /**
-     * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#unzipFiles(java.util.List, java.util.List)}.
-     * @throws FileAccessException
-     */
-    @Test
-    public void testUnzipFilesSingle() throws FileAccessException {
-        File file1 = MageTabDataFiles.SPECIFICATION_ZIP;
-
-        List<File> uploadFiles = new ArrayList<File>();
-        uploadFiles.add(file1);
-
-        List<String> uploadFileNames = new ArrayList<String>();
-        uploadFileNames.add(MageTabDataFiles.SPECIFICATION_ZIP.getName());
-
-        assertEquals(1, uploadFiles.size());
-        this.fileAccessService.unzipFiles(uploadFiles, uploadFileNames);
-        assertEquals(16, uploadFiles.size());
-    }
-
-    /**
-     * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#unzipFiles(java.util.List, java.util.List)}.
-     */
-    @Test
-    public void testUnzipFilesMultiple() {
-        File file1 = MageTabDataFiles.SPECIFICATION_ZIP;
-        File file2 = MageTabDataFiles.EBI_TEMPLATE_IDF;
-
-        List<File> uploadFiles = new ArrayList<File>();
-        uploadFiles.add(file1);
-        uploadFiles.add(file2);
-
-        List<String> uploadFileNames = new ArrayList<String>();
-        uploadFileNames.add(MageTabDataFiles.SPECIFICATION_ZIP.getName());
-
-        assertEquals(2, uploadFiles.size());
-        this.fileAccessService.unzipFiles(uploadFiles, uploadFileNames);
-        assertEquals(17, uploadFiles.size());
+        UsernameHolder.setUser("systemadministrator");
+        User caarrayuser = SecurityUtils.getAuthorizationManager().getUser("caarrayuser");
+        tx = HibernateUtil.getCurrentSession().beginTransaction();
+        groups = this.permissionsManagementService.getCollaboratorGroupsForOwner(caarrayuser.getUserId());
+        assertEquals(0, groups.size());
+        this.permissionsManagementService.changeOwner(created.getId(), "caarrayuser");
+        tx.commit();
+        tx = HibernateUtil.getCurrentSession().beginTransaction();
+        groups = this.permissionsManagementService.getCollaboratorGroupsForOwner(caarrayuser.getUserId());
+        tx.commit();
+        assertEquals(1, groups.size());
     }
 }

@@ -272,21 +272,6 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
     }
 
     @Test
-    public void testChangeOwner() throws Exception {
-        UsernameHolder.setUser(STANDARD_USER);
-        CollaboratorGroup created = this.permissionsManagementService.create(TEST);
-        assertEquals(STANDARD_USER, created.getOwner().getLoginName());
-
-        UsernameHolder.setUser("systemadministrator");
-        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
-        this.permissionsManagementService.changeOwner(created.getId(), "caarrayuser");
-        CollaboratorGroupDaoStub stub = (CollaboratorGroupDaoStub) this.daoFactoryStub.getCollaboratorGroupDao();
-        CollaboratorGroup retrieved = (CollaboratorGroup) stub.getSavedObject();
-        assertEquals("caarrayuser", retrieved.getOwner().getLoginName());
-        tx.commit();
-    }
-    
-    @Test
     public void testGetCollaboratorGroupsForOwner() throws Exception {
         User u = UsernameHolder.getCsmUser();
         List<CollaboratorGroup> l = this.permissionsManagementService.getCollaboratorGroupsForOwner(u.getUserId().longValue());
@@ -296,7 +281,7 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
     @SuppressWarnings("unchecked")
     @After
     public void after() {
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.setFiltersEnabled(false);
         Session s = HibernateUtil.getCurrentSession();
         Transaction tx = s.beginTransaction();
         Iterator<Group> it = s.createQuery("FROM " + Group.class.getName() + " g where g.groupName like '" + TEST + "%'")

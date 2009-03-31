@@ -136,7 +136,7 @@ public class CollaboratorGroupDaoTest extends AbstractDaoTest {
 
         tx = HibernateUtil.beginTransaction();
         s = HibernateUtil.getCurrentSession();
-        assertEquals(2, DAO_OBJECT.getAll().size());
+        assertEquals(1, DAO_OBJECT.getAll().size());
         tx.commit();
 
         UsernameHolder.setUser(STANDARD_USER);
@@ -213,6 +213,9 @@ public class CollaboratorGroupDaoTest extends AbstractDaoTest {
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
+        // turn off filters for sys admin
+        HibernateUtil.setFiltersEnabled(false);
+        HibernateUtil.disableFilters();
         s = HibernateUtil.getCurrentSession();
         // user 8 is "systemadministrator"
         User otherOwner = (User) s.load(User.class, 8L);

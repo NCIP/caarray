@@ -220,7 +220,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
     @Test
     public void testGetArrayDesign() throws Exception {
         Transaction tx = null;
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.setFiltersEnabled(false);
         try {
             tx = HibernateUtil.beginTransaction();
             ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getId());
@@ -235,7 +235,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
     @Test
     public void testChangeArrayDesignFile() throws Exception {
         Transaction tx = null;
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.setFiltersEnabled(false);
         try {
             tx = HibernateUtil.beginTransaction();
             ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getId());
@@ -260,7 +260,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
     @Test
     public void testGetArrayDesignByLsid() throws Exception {
         Transaction tx = null;
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.setFiltersEnabled(false);
         try {
             tx = HibernateUtil.beginTransaction();
             ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getLsidAuthority(),
@@ -287,7 +287,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
     @Test
     public void testArrayDesignProviders() throws Exception {
         Transaction tx = null;
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.setFiltersEnabled(false);
         try {
             tx = HibernateUtil.beginTransaction();
             List<Organization> providers = DAO_OBJECT.getArrayDesignProviders();
@@ -337,7 +337,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
     public void testGetRawArrayData() {
         // normally arraydata would be associated with samples, but in this it is not
         // so disable the security filters
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.setFiltersEnabled(false);
         Transaction tx = null;
         CaArrayFile file = new CaArrayFile();
         RawArrayData rawData = new RawArrayData();
@@ -367,7 +367,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
     public void testGetDerivedArrayData() {
         // normally arraydata would be associated with samples, but in this it is not
         // so disable the security filters
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.setFiltersEnabled(false);
         Transaction tx = null;
         CaArrayFile file = new CaArrayFile();
         DerivedArrayData derivedArrayData = new DerivedArrayData();
@@ -459,7 +459,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
     @Test
     public void testDeleteArrayDesignDetails() throws Exception {
         Transaction tx = null;
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.setFiltersEnabled(false);
         try {
             tx = HibernateUtil.beginTransaction();
             ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_2.getId());

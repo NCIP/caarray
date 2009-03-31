@@ -232,7 +232,7 @@ public final class UpgradeManager {
     private void bindSessionWithSecurity(boolean securityEnabled) {
         HibernateUtil.unbindAndCleanupSession();
         SecurityUtils.setPrivilegedMode(!securityEnabled);
-        HibernateUtil.enableFilters(securityEnabled);
+        HibernateUtil.setFiltersEnabled(securityEnabled);
         HibernateUtil.openAndBindSession();
     }
 

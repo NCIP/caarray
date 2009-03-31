@@ -148,7 +148,7 @@ public class ProjectOverviewActionTest extends AbstractCaarrayTest {
     @Test
     public void testLoad() throws Exception {
         this.action.setProject(projectManagementServiceStub.getProject(1L));
-        assertEquals(Action.INPUT, this.action.load());
+        assertEquals(ProjectOverviewAction.WORKSPACE_RESULT, this.action.load());
         assertEquals(projectManagementServiceStub.getTissueSitesForExperiment(null).size(), this.action.getTissueSites().size());
         assertEquals(projectManagementServiceStub.getDiseaseStatesForExperiment(null).size(), this.action.getDiseaseState().size());
         assertEquals(projectManagementServiceStub.getMaterialTypesForExperiment(null).size(), this.action.getMaterialTypes().size());

@@ -111,7 +111,6 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -174,7 +173,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         projectManagementServiceBean.setSessionContext(this.sessionContextStub);
         this.projectManagementService = projectManagementServiceBean;
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectManagementService);
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.setFiltersEnabled(false);
         transaction = HibernateUtil.beginTransaction();
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessService));
         TemporaryFileCacheLocator.resetTemporaryFileCache();
@@ -424,42 +423,6 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         file1.setFileStatus(FileStatus.IMPORTED);
         this.projectManagementService.saveProject(project);
         this.projectManagementService.copySource(project, 1L);
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testDeleteProject() throws Exception {
-        Project project = new Project();
-        project.setId(1L);
-        this.projectManagementService.saveProject(project);
-        assertEquals(project, this.daoFactoryStub.projectDao.lastSaved);
-
-        Project retrieved = this.projectManagementService.getProject(1L);
-        assertEquals(project, retrieved);
-
-        this.projectManagementService.deleteProject(project);
-        retrieved = this.projectManagementService.getProject(1L);
-        assertNull(retrieved.getExperiment().getTitle());
-    }
-
-    @Test(expected = ProposalWorkflowException.class)
-    @SuppressWarnings("deprecation")
-    public void testDeleteNonDraftProject() throws Exception {
-        Project project = new Project();
-        project.setId(1L);
-        project.setStatus(ProposalStatus.IN_PROGRESS);
-        this.projectManagementService.saveProject(project);
-        this.projectManagementService.deleteProject(project);
-    }
-
-    @Test(expected = PermissionDeniedException.class)
-    @SuppressWarnings("deprecation")
-    public void testDeleteUnownedProject() throws Exception {
-        Project project = new Project();
-        project.setId(1L);
-        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
-        this.projectManagementService.saveProject(project);
-        this.projectManagementService.deleteProject(project);
     }
 
     /**

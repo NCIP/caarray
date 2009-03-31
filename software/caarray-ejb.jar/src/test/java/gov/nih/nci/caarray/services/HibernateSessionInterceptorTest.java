@@ -100,7 +100,7 @@ public class HibernateSessionInterceptorTest extends AbstractCaarrayTest {
 
     @Before
     public void setUp() {
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.setFiltersEnabled(false);
     }
 
     @Test

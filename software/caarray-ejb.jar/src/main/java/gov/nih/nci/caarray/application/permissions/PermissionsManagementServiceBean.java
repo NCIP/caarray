@@ -87,14 +87,12 @@ import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
-import gov.nih.nci.caarray.security.AuthorizationManagerExtensions;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.exceptions.CSException;
@@ -338,9 +336,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         User newOwner = am.getUser(username);
         cg.setOwner(newOwner);
 
-        ProtectionElement pe = AuthorizationManagerExtensions.getProtectionElement(CollaboratorGroup.class.getName(),
-                "id", cg.getId().toString(), am.getApplicationContext().getApplicationName());
-        SecurityUtils.changeOwner(pe.getProtectionElementId().toString(), newOwner);
+        SecurityUtils.changeOwner(cg, newOwner);
 
         getDaoFactory().getCollaboratorGroupDao().save(cg);
         LogUtil.logSubsystemExit(LOG);

@@ -174,7 +174,7 @@ public final class HibernateUtil {
     /**
      * @param enable enabled. This should generally only be called via test code.
      */
-    public static void enableFilters(boolean enable) {
+    public static void setFiltersEnabled(boolean enable) {
         filtersEnabled = enable;
     }
 
@@ -225,6 +225,13 @@ public final class HibernateUtil {
         } finally {
             enableFilters(session);
         }
+    }
+
+    /**
+     * Disable filters on the current session.
+     */
+    public static void disableFilters() {
+        disableFilters(getCurrentSession());
     }
 
     private static void disableFilters(Session session) {

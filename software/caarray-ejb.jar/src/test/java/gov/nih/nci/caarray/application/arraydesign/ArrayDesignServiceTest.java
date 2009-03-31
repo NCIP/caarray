@@ -184,7 +184,7 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
         DUMMY_TERM.setValue("testval");
         DUMMY_TERM.setCategory(cat);
         DUMMY_TERM.setSource(ts);
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.setFiltersEnabled(false);
         this.transaction = HibernateUtil.beginTransaction();
     }
 

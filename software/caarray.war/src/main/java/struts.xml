@@ -302,7 +302,15 @@
             <result name="success">/WEB-INF/pages/protocol/list.jsp</result>
             <result name="projectEdit">/WEB-INF/pages/vocabulary/reloadProject.jsp</result>
         </action>
-
+        <action name="ownership/*" class="gov.nih.nci.caarray.web.action.OwnershipAction" method="{1}">
+            <result name="success">/WEB-INF/pages/ownership/{1}.jsp</result>
+            <result name="listOwners" type="redirect-action">ownership/listOwners</result>
+            <result name="assets">/WEB-INF/pages/ownership/assets.jsp</result>
+            <result name="newOwner">/WEB-INF/pages/ownership/newOwner.jsp</result>
+        </action>
+        <action name="ajax/ownership/*" class="gov.nih.nci.caarray.web.action.OwnershipAction" method="{1}">
+            <result name="success">/WEB-INF/pages/ownership/{1}.jsp</result>            
+        </action>
     </package>
 
     <package name="registration" namespace="/registration" extends="default">

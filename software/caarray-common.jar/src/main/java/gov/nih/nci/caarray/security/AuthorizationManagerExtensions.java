@@ -90,8 +90,7 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.Role;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup;
-import gov.nih.nci.security.dao.ProtectionElementSearchCriteria;
-import gov.nih.nci.security.dao.SearchCriteria;
+import gov.nih.nci.security.authorization.domainobjects.UserProtectionElement;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 import gov.nih.nci.security.system.ApplicationSessionFactory;
@@ -135,16 +134,46 @@ public final class AuthorizationManagerExtensions {
     }
 
     /**
-     * Add the user with given id to the set of owners of the protection element with given id. If that user was
-     * already an owner of that protection element, then this method is a no-op.
-     * @param protectionElementId if of the protection element to modify.
-     * @param user id of the user to add to the set of owners.
+     * Add the given user to the set of owners of the protection element with given ID. If that user was already an
+     * owner of that protection element, then this method is a no-op.
+     * @param protectionElementId ID of the protection element to modify
+     * @param user user to add to the set of owners.
      * @param appName application context name
      * @throws CSTransactionException if there is an error in performing the operation
      */
-    @SuppressWarnings("unchecked")
     public static void addOwner(Long protectionElementId, User user, String appName) throws CSTransactionException {
+        updateOwner(protectionElementId, null, user, appName, true);
+    }
 
+    /**
+     * Replace the current owner with a new owner, for the protection element with given id.  If the protection
+     * element has multiple owners, only <code>oldOwner</code> will be modified.
+     * @param protectionElementId ID of the protection element to modify
+     * @param oldOwner owner to remove from the set of owners
+     * @param newOwner owner to add to the set of owners
+     * @param appName application context name
+     * @throws CSTransactionException if there is an error in performing the operation
+     */
+    public static void replaceOwner(Long protectionElementId, User oldOwner, User newOwner, String appName)
+            throws CSTransactionException {
+        updateOwner(protectionElementId, oldOwner, newOwner, appName, false);
+    }
+
+    /**
+     * Add the user with given ID to the set of owners of the protection element with given id or set the user as the
+     * only owner, depending on the value of <code>addOwnder</code>. If that user was already an owner of that
+     * protection element, then this method is a no-op.
+     * @param protectionElementId ID of the protection element to modify
+     * @param oldOwner current owner
+     * @param newOwner user to add to the set of owners.
+     * @param appName application context name
+     * @param addOwner true if the user should be added to the existing set of owners, false to replace the old owner
+     * with the new owner
+     * @throws CSTransactionException if there is an error in performing the operation
+     */
+    @SuppressWarnings("unchecked")
+    private static void updateOwner(Long protectionElementId, User oldOwner, User newOwner, String appName,
+            boolean addOwner) throws CSTransactionException {
         Session s = null;
         Transaction t = null;
 
@@ -158,7 +187,12 @@ public final class AuthorizationManagerExtensions {
                 owners = new HashSet<User>();
                 pe.setOwners(owners);
             }
-            owners.add(user);
+            if (addOwner) {
+                owners.add(newOwner);
+            } else {
+                owners.remove(oldOwner);
+                owners.add(newOwner);
+            }
             s.update(pe);
             s.flush();
             t.commit();
@@ -168,30 +202,150 @@ public final class AuthorizationManagerExtensions {
                 t.rollback();
             } catch (Exception ex3) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Authorization|||addOwner|Failure|Error in Rolling Back Transaction|" + ex3.getMessage());
+                    LOG.debug("Authorization|||updateOwner|Failure|Error in Rolling Back Transaction|"
+                            + ex3.getMessage());
                 }
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Authorization|||addOwner|Failure|Error in adding the Owner " + user.getLoginName()
-                        + "for the Protection Element Id " + protectionElementId + "|");
+                LOG.debug("Authorization|||updateOwner|Failure|Error in setting " + newOwner.getLoginName()
+                        + " as the owner for the Protection Element Id " + protectionElementId + "|");
             }
-            throw new CSTransactionException("An error occured in assigning Owners to the Protection Element\n"
+            throw new CSTransactionException("An error occured in updating owners of the Protection Element\n"
                     + ex.getMessage(), ex);
         } finally {
             try {
                 s.close();
             } catch (Exception ex2) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Authorization|||addOwner|Failure|Error in Closing Session |" + ex2.getMessage());
+                    LOG.debug("Authorization|||updateOwner|Failure|Error in Closing Session |" + ex2.getMessage());
                 }
             }
         }
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Authorization|||addOwner|Success|Successful in adding the Owner " + user
-                    + "for the Protection Element Id " + protectionElementId + "|");
+            LOG.debug("Authorization|||updateOwner|Success|Successful in updating " + newOwner
+                    + " as the owner for the Protection Element Id " + protectionElementId + "|");
         }
     }
 
+    /**
+     * Replace an existing owner of the protection elements with given IDs with a new owner.
+     * @param protectionElementIds IDs of the protection elements to modify
+     * @param oldOwner existing owner of the protection elements
+     * @param newOwner the new owner of the protection elements
+     * @param appName application context name
+     * @throws CSTransactionException if there is an error in performing the operation
+     */
+    public static void replaceOwner(List<Long> protectionElementIds, User oldOwner, User newOwner, String appName)
+            throws CSTransactionException {
+        Session s = null;
+        Transaction t = null;
+
+        try {
+            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory(appName));
+            t = s.beginTransaction();
+
+            Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
+            String inClause = HibernateHelper.buildInClause(protectionElementIds, "protectionElement.id", idBlocks);
+            String queryString = "update " + UserProtectionElement.class.getName()
+                    + " set user = :newOwner where user = :oldOwner and " + inClause;
+            Query q = s.createQuery(queryString);
+            q.setParameter("newOwner", newOwner);
+            q.setParameter("oldOwner", oldOwner);
+            HibernateHelper.bindInClauseParameters(q, idBlocks);
+            q.executeUpdate();
+            s.flush();
+            t.commit();
+        } catch (Exception ex) {
+            LOG.error(ex);
+            try {
+                t.rollback();
+            } catch (Exception ex3) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Authorization|||updateOwner|Failure|Error in Rolling Back Transaction|"
+                            + ex3.getMessage());
+                }
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Authorization|||updateOwner|Failure|Error in setting the Owner " + newOwner.getLoginName()
+                        + " for " + protectionElementIds.size() + " Protection Elements|");
+            }
+            throw new CSTransactionException("An error occured in assigning Owner to the Protection Elements\n"
+                    + ex.getMessage(), ex);
+        } finally {
+            try {
+                s.close();
+            } catch (Exception ex2) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Authorization|||updateOwner|Failure|Error in Closing Session |" + ex2.getMessage());
+                }
+            }
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Authorization|||updateOwner|Success|Successful in adding the Owner " + newOwner.getLoginName()
+                    + " for " + protectionElementIds.size() + " Protection Elements|");
+        }
+    }
+
+    /**
+     * Change the group owner in the Group/Role/ProtectionGroup mapping for the given Protection Groups.
+     * @param protectionGroupIds IDs of the protection groups to modify - must not be null or empty
+     * @param oldOwnerGroup the current owner group
+     * @param newOwnerGroup the new owner group
+     * @param appName application context name
+     * @throws CSTransactionException if there is an error in performing the operation
+     */
+    public static void updateGroupForRoleProtectionGroup(List<Long> protectionGroupIds, Group oldOwnerGroup,
+            Group newOwnerGroup, String appName) throws CSTransactionException {
+        Session s = null;
+        Transaction t = null;
+
+        try {
+            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory(appName));
+            t = s.beginTransaction();
+
+            Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
+            String inClause = HibernateHelper.buildInClause(protectionGroupIds,
+                    "ugrpg.protectionGroup.protectionGroupId", idBlocks);
+            String queryString = "update " + UserGroupRoleProtectionGroup.class.getName()
+                    + " ugrpg set ugrpg.group = :newOwnerGroup where ugrpg.group = :oldOwnerGroup and " + inClause;
+            Query q = s.createQuery(queryString);
+            q.setParameter("newOwnerGroup", newOwnerGroup);
+            q.setParameter("oldOwnerGroup", oldOwnerGroup);
+            HibernateHelper.bindInClauseParameters(q, idBlocks);
+            q.executeUpdate();
+            s.flush();
+            t.commit();
+        } catch (Exception ex) {
+            LOG.error(ex);
+            try {
+                t.rollback();
+            } catch (Exception ex3) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Authorization|||updateGroupForRoleProtectionGroup|Failure|"
+                            + "Error in Rolling Back Transaction|" + ex3.getMessage());
+                }
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Authorization|||updateGroupForRoleProtectionGroup|Failure|Error in changing the group to "
+                        + newOwnerGroup + " for " + protectionGroupIds.size() + " Protection Groups|");
+            }
+            throw new CSTransactionException("An error occured in changing the group owner of the Protection Groups\n"
+                    + ex.getMessage(), ex);
+        } finally {
+            try {
+                s.close();
+            } catch (Exception ex2) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Authorization|||updateGroupForRoleProtectionGroup|Failure|Error in Closing Session |"
+                            + ex2.getMessage());
+                }
+            }
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Authorization|||updateGroupForRoleProtectionGroup|Success|Successful in changing the group to "
+                    + newOwnerGroup + " for " + protectionGroupIds.size() + " Protection Groups|");
+        }
+    }
 
     /**
      * The method checks the permission for a user for a given Instance. The ProtectionElement for the instance is
@@ -411,7 +565,8 @@ public final class AuthorizationManagerExtensions {
     /**
      * Add roles to a protection group for a group.  Adapted from
      * {@link gov.nih.nci.security.dao.AuthorizationDAO#assignGroupRoleToProtectionGroup(String, String, String[])}
-     * but can be used if the Group and ProtectionGroup have already been loaded.
+     * but can be used if the Group and ProtectionGroup have already been loaded and removes any roles for the group
+     * that aren't in the list of given roles.
      * @param protectionGroup protection group to which to add roles
      * @param group group for which to add roles
      * @param roles roles to add
@@ -496,34 +651,6 @@ public final class AuthorizationManagerExtensions {
                     + StringUtilities.stringArrayToString(roleIds) + " to Group "
                     + group.getGroupId() + " and Protection Group" + protectionGroup.getProtectionGroupId() + "|");
         }
-    }
-
-    /**
-     * This method returns the ProtectionElement for a given objectId, attributeName, and attributeValue.  This method
-     * is adapted from AuthorizationManager.getProtectionElement(String, String) but also takes the
-     * attributeValue and application to identify the specific instance.
-     * @param objectId The object id of the protection element to be obtained
-     * @param attributeName The attribute name of the protection element to be obtained
-     * @param value the value of the property for the instance
-     * @param appName application context name
-     * @return ProtectionElement Returns the ProtectionElement if found, else null
-     */
-    // adapted from CSM code
-    @SuppressWarnings("unchecked")
-    public static ProtectionElement getProtectionElement(String objectId, String attributeName, String value,
-            String appName) {
-        ProtectionElement pe = new ProtectionElement();
-        pe.setObjectId(objectId);
-        pe.setAttribute(attributeName);
-        pe.setValue(value);
-        SearchCriteria sc = new ProtectionElementSearchCriteria(pe);
-        List<ProtectionElement> pes = SecurityUtils.getAuthorizationManager().getObjects(sc);
-        if (pes.size() != 1) {
-            throw new IllegalStateException(String.format("More than one ProtectionElement found for "
-                    + "objectId %2, attribute %s, value %s, and application %s", objectId, attributeName, value,
-                    appName));
-        }
-        return pes.get(0);
     }
 
     /**

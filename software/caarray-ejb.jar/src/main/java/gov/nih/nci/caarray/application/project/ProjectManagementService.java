@@ -99,8 +99,9 @@ import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.exceptions.CSException;
+
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
@@ -424,7 +425,7 @@ public interface ProjectManagementService {
      * @param categories Indicates which categories to search. Passing null will search all categories.
      * @return a list of matching experiments
      */
-    <T extends AbstractBioMaterial>List<T>  searchByCategory(PageSortParams<T> params, String keyword,
+    <T extends AbstractBioMaterial>List<T> searchByCategory(PageSortParams<T> params, String keyword,
             BiomaterialSearchCategory... categories);
 
 
@@ -482,5 +483,13 @@ public interface ProjectManagementService {
      */
     int searchCount(String keyword, BiomaterialSearchCategory... categories);
 
+    /**
+     * Changes the owner of a project.
+     *
+     * @param projectId ID of project to change owner of
+     * @param newOwner username of new owner
+     * @throws CSException on CSM error
+     */
+    void changeOwner(Long projectId, String newOwner) throws CSException;
 
 }
