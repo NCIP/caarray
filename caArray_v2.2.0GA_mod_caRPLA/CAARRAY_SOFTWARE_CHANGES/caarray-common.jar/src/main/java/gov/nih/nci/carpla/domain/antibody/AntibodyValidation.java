@@ -21,4 +21,22 @@ public abstract class AntibodyValidation {
 	private MeasurementCharacteristic	_dilution;
 	private String						_comment;
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
