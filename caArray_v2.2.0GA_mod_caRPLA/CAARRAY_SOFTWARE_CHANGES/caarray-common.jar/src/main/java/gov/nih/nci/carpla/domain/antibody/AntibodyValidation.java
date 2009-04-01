@@ -11,10 +11,13 @@ public abstract class AntibodyValidation {
 	private String						_validationId;
 	private Sample						_sampleUsed;
 	private Person						_validationPerformer;
+	
+	//below should be set of images
 	private Image						_image;
-	private Term						_result;
-	private Term						_validationType;
-	private Term						_bandResult;
+	
+	private Term						_validationResult;
+	private Term						_validationMethod;
+	private Term						_grade
 	private MeasurementCharacteristic	_dilution;
 	private String						_comment;
 

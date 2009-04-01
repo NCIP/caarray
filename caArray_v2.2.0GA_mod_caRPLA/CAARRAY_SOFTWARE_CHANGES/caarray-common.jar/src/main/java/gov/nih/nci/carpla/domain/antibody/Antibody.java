@@ -22,6 +22,24 @@ import gov.nih.nci.caarray.validation.UniqueConstraintField;
 public class Antibody extends AbstractCaArrayEntity
 
 {
+	
+	
+	private Set<RplaHybridization>	_rplaHybridizations	= new HashSet<RplaHybridization>();
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public Set<RplaHybridization> getRplaHybridizations () {
+		return _rplaHybridizations;
+	}
+
+	public void setRplaHybridization( Set<RplaHybridization> rplaHybridizations) {
+		this._rplaHybridizations = rplaHybridizations;
+	}
+
+	
+	
+	
+	
+	
 
 
 	// -----------------------------------------------------------

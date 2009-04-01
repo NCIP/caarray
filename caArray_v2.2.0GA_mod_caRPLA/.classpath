@@ -128,7 +128,6 @@
 	<classpathentry kind="lib" path="/lib/xml-apis.jar"/>
 	<classpathentry kind="lib" path="/lib/xmlconfig.jar"/>
 	<classpathentry kind="lib" path="/lib/xwork-2.0.4.jar"/>
-	<classpathentry kind="src" path="/caarray-common.jar"/>
 	<classpathentry kind="lib" path="/caRPLA/rplatab.jar/target/rplatab.jar"/>
 	<classpathentry kind="lib" path="/caRPLA/caarray-ejb.jar/target/caarray-ejb.jar"/>
 	<classpathentry kind="lib" path="/caRPLA/caarray-common.jar/target/caarray-common.jar"/>

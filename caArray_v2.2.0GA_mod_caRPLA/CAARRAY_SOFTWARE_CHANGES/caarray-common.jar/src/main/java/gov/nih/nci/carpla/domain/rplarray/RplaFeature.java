@@ -16,15 +16,10 @@ import gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic;
 
 @Entity
 @Table(name = "rplafeature")
-public class RplaFeature extends AbstractCaArrayObject{
+public class RplaFeature extends AbstractCaArrayObject {
 
+	// ------------------------------------------------------------
 	private MeasurementCharacteristic	_dilution;
-	private RplaReporter				_rplaReporter;
-
-	private int							_blockColumn;
-	private int							_blockRow;
-	private int							_column;
-	private int							_row;
 
 	@OneToOne
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
@@ -36,14 +31,8 @@ public class RplaFeature extends AbstractCaArrayObject{
 		this._dilution = _dilution;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	public RplaReporter getRplaReporter () {
-		return _rplaReporter;
-	}
-
-	public void setRplaReporter ( RplaReporter reporter) {
-		_rplaReporter = reporter;
-	}
+	// ------------------------------------------------------------
+	private int	_blockColumn;
 
 	@NotNull
 	public int getBlockColumn () {
@@ -54,6 +43,9 @@ public class RplaFeature extends AbstractCaArrayObject{
 		_blockColumn = column;
 	}
 
+	// ------------------------------------------------------------
+	private int	_blockRow;
+
 	@NotNull
 	public int getBlockRow () {
 		return _blockRow;
@@ -62,6 +54,9 @@ public class RplaFeature extends AbstractCaArrayObject{
 	public void setBlockRow ( int row) {
 		_blockRow = row;
 	}
+
+	// ------------------------------------------------------------
+	private int	_column;
 
 	@NotNull
 	public int getCol () {
@@ -72,6 +67,10 @@ public class RplaFeature extends AbstractCaArrayObject{
 		this._column = column;
 	}
 
+	// ------------------------------------------------------------
+
+	private int	_row;
+
 	@NotNull
 	public int getRow () {
 		return _row;
@@ -81,4 +80,24 @@ public class RplaFeature extends AbstractCaArrayObject{
 		this._row = row;
 	}
 
+	// ------------------------------------------------------------
+
+	private RplaSample	_rplaSample;
+	
+	public  RplaSample getRplaSample () {
+		return _rplaSample;
+	}
+
+	public void setRplaSample ( RplaSample rplaSample) {
+		this._rplaSample = rplaSample;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

@@ -30,13 +30,13 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 @Table(name = "rplarray")
 public class RplArray extends AbstractCaArrayEntity {
 
-	private String				_name;
-
-	// private ProtocolApplication _creationProtocolApplication;
-	//private RplArrayGroup		_rplArrayGroup;
-	private Person				_provider;
-	private Set<RplaFeature>	_features	= new HashSet<RplaFeature>();
-	private Set<RplaReporter>	_reporters	= new HashSet<RplaReporter>();
+	
+	
+	
+	
+	
+	// --------------------------------------------------------
+	private String	_name;
 
 	@NotNull
 	@Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
@@ -48,31 +48,90 @@ public class RplArray extends AbstractCaArrayEntity {
 		_name = name;
 	}
 
-	// public ProtocolApplication getCreationProtocolApplication () {
-	// return _creationProtocolApplication;
-	// }
+	// --------------------------------------------------------
+	private String	_comment;
 
-	// public void setCreationProtocolApplication ( ProtocolApplication
-	// protocolApplication)
-	// {
-	// _creationProtocolApplication = protocolApplication;
-	// }
+	@NotNull
+	@Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
+	public String getComment () {
+		return this._comment;
+	}
 
-	//public RplArrayGroup getRplArrayGroup () {
-		//return _rplArrayGroup;
-	//}
-
-	//public void setRplArrayGroup ( RplArrayGroup arrayGroup) {
-		//_rplArrayGroup = arrayGroup;
-	//}
+	public void setComment ( String comment) {
+		_comment = comment;
+	}
 	
-	public Person getProvider () {
-		return _provider;
+	
+	// --------------------------------------------------------
+	private String	_barcode;
+
+	@NotNull
+	@Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
+	public String getBarcode () {
+		return this._barcode;
 	}
 
-	public void setProvider ( Person _provider) {
-		this._provider = _provider;
+	public void setBarcode ( String barcode) {
+		_barcode = barcode;
 	}
+	
+	
+	
+	
+	// --------------------------------------------------------
+	private RplaHybridization	_rplaHybridization;
+
+	public RplaHybridization getRplaHybridization () {
+		return _rplaHybridization;
+	}
+
+	public void setRplaHybridization ( RplaHybridization rplaHybridization) {
+		_rplaHybridization = rplaHybridization;
+	}
+	
+	
+	
+	
+	
+	// --------------------------------------------------------
+	private ProtocolApplication	_creationProtocolApplication;
+
+	public ProtocolApplication getCreationProtocolApplication () {
+		return _creationProtocolApplication;
+	}
+
+	public void setCreationProtocolApplication ( ProtocolApplication protocolApplication)
+	{
+		this._creationProtocolApplication = protocolApplication;
+	}
+
+	// --------------------------------------------------------
+	private RplArrayGroup	_rplArrayGroup;
+
+	public RplArrayGroup getRplArrayGroup () {
+		return _rplArrayGroup;
+	}
+
+	public void setRplArrayGroup ( RplArrayGroup arrayGroup) {
+		_rplArrayGroup = arrayGroup;
+	}
+
+	// --------------------------------------------------------
+
+	private Organization	_providerOrganization;
+
+	public Organization getProvider () {
+		return _providerOrganization;
+	}
+
+	public void setProvider ( Organization provider) {
+		this._providerOrganization = provider;
+	}
+
+	// --------------------------------------------------------
+
+	private Set<RplaFeature>	_features	= new HashSet<RplaFeature>();
+
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public Set<RplaFeature> getRplaFeatures () {
 		return _features;
@@ -82,13 +141,19 @@ public class RplArray extends AbstractCaArrayEntity {
 		this._features = _features;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	public Set<RplaReporter> getRplaReporters () {
-		return _reporters;
-	}
+	
+	// --------------------------------------------------------
 
-	public void setRplaReporters ( Set<RplaReporter> _reporters) {
-		this._reporters = _reporters;
-	}
-
+	private RplaHybridization _rplaHybridization ;
+	
+	public RplaHybridization getRplaHybridization
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

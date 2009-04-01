@@ -3,6 +3,7 @@
 	<name>caArray_v2.2.0GA_mod_caRPLA</name>
 	<comment></comment>
 	<projects>
+		<project>caArray_v2.2.0GA</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
