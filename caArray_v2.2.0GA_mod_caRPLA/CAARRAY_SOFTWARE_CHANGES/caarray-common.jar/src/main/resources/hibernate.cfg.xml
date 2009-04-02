@@ -30,7 +30,7 @@
       
      <!-- <mapping class="gov.nih.nci.carpla.domain.rplarray.RplaReporter"/> -->
       <mapping class="gov.nih.nci.carpla.domain.rplarray.RplaFeature"/>
-      <mapping class="gov.nih.nci.carpla.domain.sample.RplaSample"/>
+      <mapping class="gov.nih.nci.carpla.domain.rplarray.RplaSample"/>
         
         
         <!-- carpla -->
