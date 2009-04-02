@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.services.external.v1_0.data;
 
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
@@ -89,18 +92,30 @@ import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.DataFileContents;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.DesignElement;
+import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile;
+import gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile;
+import gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile;
+import gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.services.external.v1_0.BaseV1_0ExternalService;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -113,11 +128,13 @@ import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 import org.apache.commons.collections.ListUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.RemoteBinding;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.healthmarketscience.rmiio.RemoteOutputStream;
 import com.healthmarketscience.rmiio.RemoteOutputStreamClient;
 
@@ -141,7 +158,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     /**
      * {@inheritDoc}
      */
-    public DataSet getDataSet(DataSetRequest request) {
+    public DataSet getDataSet(DataSetRequest request) throws InvalidReferenceException, InconsistentDataSetsException {
         LOG.info("Received data retrieval request");
         checkRequest(request);
         List<gov.nih.nci.caarray.domain.data.DataSet> dataSets = getDataSets(request);
@@ -152,18 +169,19 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         HibernateUtil.getCurrentSession().clear();
         return externalDataSet;
     }
-    
+
     private DataSet toExternalDataSet(gov.nih.nci.caarray.domain.data.DataSet dataSet) {
         DataSet externalDataSet = new DataSet();
         mapCollection(dataSet.getQuantitationTypes(), externalDataSet.getQuantitationTypes(), QuantitationType.class);
         mapCollection(dataSet.getDesignElementList().getDesignElements(), externalDataSet.getDesignElements(),
                 DesignElement.class);
         mapCollection(dataSet.getHybridizationDataList(), externalDataSet.getDatas(),
-                gov.nih.nci.caarray.external.v1_0.data.HybridizationData.class);        
+                gov.nih.nci.caarray.external.v1_0.data.HybridizationData.class);
         return externalDataSet;
     }
 
-    private List<gov.nih.nci.caarray.domain.data.DataSet> getDataSets(DataSetRequest request) {
+    private List<gov.nih.nci.caarray.domain.data.DataSet> getDataSets(DataSetRequest request)
+            throws InvalidReferenceException {
         List<AbstractArrayData> arrayDatas = getArrayDatas(request);
         List<gov.nih.nci.caarray.domain.data.DataSet> dataSets = new ArrayList<gov.nih.nci.caarray.domain.data.DataSet>(
                 arrayDatas.size());
@@ -174,7 +192,8 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     }
 
     private gov.nih.nci.caarray.domain.data.DataSet createMergedDataSet(
-            List<gov.nih.nci.caarray.domain.data.DataSet> dataSets, DataSetRequest request) {
+            List<gov.nih.nci.caarray.domain.data.DataSet> dataSets, DataSetRequest request)
+            throws InconsistentDataSetsException {
         gov.nih.nci.caarray.domain.data.DataSet dataSet = new gov.nih.nci.caarray.domain.data.DataSet();
         dataSet.getQuantitationTypes().addAll(getQuantitationTypes(request));
         addDesignElementList(dataSet, dataSets);
@@ -183,13 +202,13 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     }
 
     private void addDesignElementList(gov.nih.nci.caarray.domain.data.DataSet dataSet,
-            List<gov.nih.nci.caarray.domain.data.DataSet> dataSets) {
+            List<gov.nih.nci.caarray.domain.data.DataSet> dataSets) throws InconsistentDataSetsException {
         if (dataSets.isEmpty()) {
             dataSet.setDesignElementList(new DesignElementList());
         } else if (allDesignElementListsAreConsistent(dataSets)) {
             dataSet.setDesignElementList(dataSets.get(0).getDesignElementList());
         } else {
-            throw new IllegalArgumentException("The DataSet requested data from inconsistent design elemeents");
+            throw new InconsistentDataSetsException("The DataSet requested data from inconsistent design elemeents");
         }
     }
 
@@ -239,11 +258,10 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         }
     }
 
-    private List<AbstractArrayData> getArrayDatas(DataSetRequest request) {
+    private List<AbstractArrayData> getArrayDatas(DataSetRequest request) throws InvalidReferenceException {
         List<Hybridization> hybridizations = getHybridizations(request);
         List<CaArrayFile> files = getFiles(request);
-        List<gov.nih.nci.caarray.domain.data.QuantitationType> quantitationTypes = 
-            getQuantitationTypes(request);
+        List<gov.nih.nci.caarray.domain.data.QuantitationType> quantitationTypes = getQuantitationTypes(request);
         List<AbstractArrayData> arrayDatas = new ArrayList<AbstractArrayData>(hybridizations.size());
 
         for (Hybridization hybridization : hybridizations) {
@@ -296,18 +314,18 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
                 && arrayData.getDataSet().getQuantitationTypes().containsAll(quantitationTypes);
     }
 
-    private List<Hybridization> getHybridizations(DataSetRequest request) {
+    private List<Hybridization> getHybridizations(DataSetRequest request) throws InvalidReferenceException {
         List<Hybridization> hybridizations = new ArrayList<Hybridization>(request.getHybridizations().size());
         for (CaArrayEntityReference hybRef : request.getHybridizations()) {
-            hybridizations.add((Hybridization) getByLsid(hybRef.getLsid()));
-        }        
+            hybridizations.add(getRequiredByLsid(hybRef.getId(), Hybridization.class));
+        }
         return hybridizations;
     }
 
-    private List<CaArrayFile> getFiles(DataSetRequest request) {
+    private List<CaArrayFile> getFiles(DataSetRequest request) throws InvalidReferenceException {
         List<CaArrayFile> files = new ArrayList<CaArrayFile>(request.getDataFiles().size());
         for (CaArrayEntityReference fileRef : request.getDataFiles()) {
-            files.add((CaArrayFile) getByLsid(fileRef.getLsid()));
+            files.add(getRequiredByLsid(fileRef.getId(), CaArrayFile.class));
         }
         return files;
     }
@@ -316,28 +334,106 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         List<gov.nih.nci.caarray.domain.data.QuantitationType> types = 
             new ArrayList<gov.nih.nci.caarray.domain.data.QuantitationType>(request.getDataFiles().size());
         for (CaArrayEntityReference qtRef : request.getQuantitationTypes()) {
-            types.add((gov.nih.nci.caarray.domain.data.QuantitationType) getByLsid(qtRef.getLsid()));
+            types.add((gov.nih.nci.caarray.domain.data.QuantitationType) getByLsid(qtRef.getId()));
         }
         return types;
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public DataFile streamFileContents(CaArrayEntityReference fileRef, boolean compress, RemoteOutputStream out) {
-        CaArrayFile file = (CaArrayFile) getByLsid(fileRef.getLsid());
+    public DataFile streamFileContents(CaArrayEntityReference fileRef, boolean compress, RemoteOutputStream out)
+            throws InvalidReferenceException, DataTransferException {
+        CaArrayFile file = getRequiredByLsid(fileRef.getId(), CaArrayFile.class);
         DataFile fileMetadata = new DataFile();
         fileMetadata.setCompressedSize(file.getCompressedSize());
         fileMetadata.setUncompressedSize(file.getUncompressedSize());
         fileMetadata.setName(file.getName());
-        fileMetadata.setLsid(file.getLsid());
+        fileMetadata.setId(file.getLsid());
         try {
             OutputStream osWrap = RemoteOutputStreamClient.wrap(out);
             IOUtils.copy(compress ? file.readCompressedContents() : file.readContents(), osWrap);
             osWrap.flush();
         } catch (IOException e) {
             LOG.warn("Could not write file contents to remote output stream", e);
+            throw new DataTransferException("Could not write file contents to remote output stream", e);
         }
         return fileMetadata;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public MageTabFileSet exportMageTab(CaArrayEntityReference experimentRef) throws InvalidReferenceException,
+            DataTransferException {
+        gov.nih.nci.caarray.domain.project.Experiment experiment = getRequiredByLsid(experimentRef.getId(),
+                gov.nih.nci.caarray.domain.project.Experiment.class);
+        File idfFile = null;
+        File sdrfFile = null;
+        TemporaryFileCache tempCache = TemporaryFileCacheLocator.getTemporaryFileCache();
+        try {
+            // Create temporary files to store the resulting MAGE-TAB.
+            String baseFileName = experiment.getPublicIdentifier();
+            String idfFileName = baseFileName + ".idf";
+            String sdrfFileName = baseFileName + ".sdrf";
+            idfFile = tempCache.createFile(idfFileName);
+            sdrfFile = tempCache.createFile(sdrfFileName);
+
+            // Translate the experiment and export to the temporary files.
+            MageTabExporter exporter = getMageTabExporter();
+            MageTabDocumentSet docSet = exporter.exportToMageTab(experiment, idfFile, sdrfFile);
+            SdrfDocument sdrfDoc = docSet.getSdrfDocuments().iterator().next();
+
+            List<String> fileNames = new ArrayList<String>();
+            for (ArrayDataFile file : sdrfDoc.getAllArrayDataFiles()) {
+                fileNames.add(file.getName());
+            }
+            for (DerivedArrayDataFile file : sdrfDoc.getAllDerivedArrayDataFiles()) {
+                fileNames.add(file.getName());
+            }
+            for (ArrayDataMatrixFile file : sdrfDoc.getAllArrayDataMatrixFiles()) {
+                fileNames.add(file.getName());
+            }
+            for (DerivedArrayDataMatrixFile file : sdrfDoc.getAllDerivedArrayDataMatrixFiles()) {
+                fileNames.add(file.getName());
+            }
+            List<CaArrayFile> dataFiles = getDataService().pageAndFilterCollection(experiment.getProject().getFiles(),
+                    "name", fileNames,
+                    new PageSortParams<CaArrayFile>(-1, 0, new AdHocSortCriterion<CaArrayFile>("name"), false));
+
+            MageTabFileSet mageTabSet = new MageTabFileSet();
+            mageTabSet.setIdf(toDataFileContents(idfFile, FileType.MAGE_TAB_IDF));
+            mageTabSet.setSdrf(toDataFileContents(sdrfFile, FileType.MAGE_TAB_SDRF));
+            mapCollection(dataFiles, mageTabSet.getDataFiles(), DataFile.class);
+
+            // Delete temporary files.
+            tempCache.delete(idfFile);
+            tempCache.delete(sdrfFile);
+
+            return mageTabSet;
+        } catch (IOException e) {
+            LOG.error("Error exporting to MAGE-TAB", e);
+            throw new DataTransferException("Could not generate idf/sdrf: ", e);
+        } finally {
+            if (idfFile != null) {
+                tempCache.delete(idfFile);
+            }
+            if (sdrfFile != null) {
+                tempCache.delete(sdrfFile);
+            }
+        }
+    }
+
+    private DataFileContents toDataFileContents(File mageTabFile, FileType fileType) throws IOException {
+        DataFileContents dfc = new DataFileContents();
+        dfc.setContents(FileUtils.readFileToByteArray(mageTabFile));
+        dfc.setCompressed(false);
+        DataFile metadata = new DataFile();
+        metadata.setName(mageTabFile.getName());
+        metadata.setUncompressedSize(mageTabFile.length());
+        metadata.setCompressedSize(-1);
+        metadata.setFileType(mapEntity(fileType, gov.nih.nci.caarray.external.v1_0.data.FileType.class));
+        dfc.setFileMetadata(metadata);
+        return dfc;
     }
 }

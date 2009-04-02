@@ -315,7 +315,7 @@
             <element name="criteria">
               <complexType>
                 <sequence>
-                  <element ref="ns5:ExperimentKeywordSearchCriteria" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:KeywordSearchCriteria" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -366,6 +366,79 @@
         <complexType>
           <sequence>
             <element ref="ns7:Biomaterial" minOccurs="1" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetMageTabExportRequest">
+        <complexType>
+          <sequence>
+            <element name="experimentRef">
+              <complexType>
+                <sequence>
+                  <element ref="ns2:CaArrayEntityReference" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetMageTabExportResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns0:MageTabFileSet" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetMageTabZipTransferRequest">
+        <complexType>
+          <sequence>
+            <element name="experimentRef">
+              <complexType>
+                <sequence>
+                  <element ref="ns2:CaArrayEntityReference" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="compressIndividually" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetMageTabZipTransferResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns15:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetAllArrayDataTypesRequest">
+        <complexType>
+          <sequence />
+        </complexType>
+      </element>
+      <element name="GetAllArrayDataTypesResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns0:ArrayDataType" minOccurs="1" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForQuantitationTypesRequest">
+        <complexType>
+          <sequence>
+            <element name="criteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:QuantitationTypeSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SearchForQuantitationTypesResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns0:QuantitationType" minOccurs="1" maxOccurs="unbounded" />
           </sequence>
         </complexType>
       </element>
@@ -488,6 +561,30 @@
   <message name="SearchForBiomaterialsByKeywordResponse">
     <part name="parameters" element="tns:SearchForBiomaterialsByKeywordResponse" />
   </message>
+  <message name="GetMageTabExportRequest">
+    <part name="parameters" element="tns:GetMageTabExportRequest" />
+  </message>
+  <message name="GetMageTabExportResponse">
+    <part name="parameters" element="tns:GetMageTabExportResponse" />
+  </message>
+  <message name="GetMageTabZipTransferRequest">
+    <part name="parameters" element="tns:GetMageTabZipTransferRequest" />
+  </message>
+  <message name="GetMageTabZipTransferResponse">
+    <part name="parameters" element="tns:GetMageTabZipTransferResponse" />
+  </message>
+  <message name="GetAllArrayDataTypesRequest">
+    <part name="parameters" element="tns:GetAllArrayDataTypesRequest" />
+  </message>
+  <message name="GetAllArrayDataTypesResponse">
+    <part name="parameters" element="tns:GetAllArrayDataTypesResponse" />
+  </message>
+  <message name="SearchForQuantitationTypesRequest">
+    <part name="parameters" element="tns:SearchForQuantitationTypesRequest" />
+  </message>
+  <message name="SearchForQuantitationTypesResponse">
+    <part name="parameters" element="tns:SearchForQuantitationTypesResponse" />
+  </message>
   <!--============================================================
 
                        P O R T T Y P E
@@ -565,6 +662,22 @@
     <operation name="searchForBiomaterialsByKeyword">
       <input message="tns:SearchForBiomaterialsByKeywordRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForBiomaterialsByKeywordRequest" />
       <output message="tns:SearchForBiomaterialsByKeywordResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForBiomaterialsByKeywordResponse" />
+    </operation>
+    <operation name="getMageTabExport">
+      <input message="tns:GetMageTabExportRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetMageTabExportRequest" />
+      <output message="tns:GetMageTabExportResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetMageTabExportResponse" />
+    </operation>
+    <operation name="getMageTabZipTransfer">
+      <input message="tns:GetMageTabZipTransferRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetMageTabZipTransferRequest" />
+      <output message="tns:GetMageTabZipTransferResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetMageTabZipTransferResponse" />
+    </operation>
+    <operation name="getAllArrayDataTypes">
+      <input message="tns:GetAllArrayDataTypesRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetAllArrayDataTypesRequest" />
+      <output message="tns:GetAllArrayDataTypesResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetAllArrayDataTypesResponse" />
+    </operation>
+    <operation name="searchForQuantitationTypes">
+      <input message="tns:SearchForQuantitationTypesRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForQuantitationTypesRequest" />
+      <output message="tns:SearchForQuantitationTypesResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForQuantitationTypesResponse" />
     </operation>
     <wsdl:operation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="GetMultipleResourceProperties">
       <wsdl:input name="GetMultipleResourcePropertiesRequest" message="wsrpw:GetMultipleResourcePropertiesRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetMultipleResourceProperties" />

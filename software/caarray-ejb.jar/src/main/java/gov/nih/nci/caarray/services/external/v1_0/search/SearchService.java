@@ -86,21 +86,25 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
+import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
+import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.ExperimentKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
-import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
+import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.util.List;
@@ -128,6 +132,14 @@ public interface SearchService {
      */
     List<FileType> getAllFileTypes(PagingParams pagingParams);
 
+    /**
+     * Retrieve list of array data types types in caArray.
+     * 
+     * @param pagingParams paging parameters.
+     * @return the subset of the array data types specified by the given paging params.
+     */
+    List<ArrayDataType> getAllArrayDataTypes(PagingParams pagingParams);
+    
     /**
      * Retrieve list of providers in caArray.
      * 
@@ -187,18 +199,20 @@ public interface SearchService {
      * 
      * @param references a list of references identifying the entity to retrieve.
      * @return the instances identified by the references. this list will have the same length as the references list,
-     *         and the i-th element will be the entity for the i-th reference, or null if that reference does not
-     *         identify a valid entity.
+     *         and the i-th element will be the entity for the i-th reference.
+     * @throws NoEntityMatchingReferenceException if there is no entity matching any reference in the list
      */
-    List<AbstractCaArrayEntity> getByReferences(List<CaArrayEntityReference> references);
+    List<AbstractCaArrayEntity> getByReferences(List<CaArrayEntityReference> references)
+            throws NoEntityMatchingReferenceException;
 
     /**
      * Retrieves an entity identified by the given reference.
      * 
      * @param reference a reference identifying the entity to retrieve.
-     * @return the entity identified by the reference, or null if there is no corresponding entity.
+     * @return the entity identified by the reference.
+     * @throws NoEntityMatchingReferenceException if there is no entity with given reference.
      */
-    AbstractCaArrayEntity getByReference(CaArrayEntityReference reference);
+    AbstractCaArrayEntity getByReference(CaArrayEntityReference reference) throws NoEntityMatchingReferenceException;
 
     /**
      * Returns a list of experiments satisfying the given search criteria.
@@ -206,17 +220,19 @@ public interface SearchService {
      * @param criteria the search criteria.
      * @param pagingParams paging params.
      * @return the list of experiments matching criteria, subject to the paging specifications.
+     * @throws InvalidReferenceException if the search criteria includes any invalid references.
      */
-    List<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, PagingParams pagingParams);
+    List<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, PagingParams pagingParams)
+            throws InvalidReferenceException;
 
     /**
-     * Returns a list of experiments satisfying the given keyword search criteria.
+     * Returns a list of experiments matching the given keyword.
      * 
-     * @param criteria the search criteria.
+     * @param criteria the keyword criteria to search for.
      * @param pagingParams paging params.
      * @return the list of experiments matching criteria, subject to the paging specifications.
      */
-    List<Experiment> searchForExperimentsByKeyword(ExperimentKeywordSearchCriteria criteria, PagingParams pagingParams);
+    List<Experiment> searchForExperimentsByKeyword(KeywordSearchCriteria criteria, PagingParams pagingParams);
 
     /**
      * Returns a list of data files satisfying the given search criteria.
@@ -224,28 +240,51 @@ public interface SearchService {
      * @param criteria the search criteria.
      * @param pagingParams paging params.
      * @return the list of files matching criteria, subject to the paging specifications.
+     * @throws InvalidReferenceException if the search criteria includes any invalid references.
      */
-    List<DataFile> searchForFiles(FileSearchCriteria criteria, PagingParams pagingParams);
+    List<DataFile> searchForFiles(FileSearchCriteria criteria, PagingParams pagingParams)
+            throws InvalidReferenceException;
     
     /**
-     * Returns a list of biomaterials satisfying the given keyword search criteria.
+     * Returns a list of biomaterials matching the given keyword. 
      * 
-     * @param criteria the search criteria.
+     * @param criteria the keyword criteria to search for.
      * @param pagingParams paging params.
-     * @return the list of biomaterials matching criteria, subject to the paging specifications.
+     * @return the list of biomaterials matching the criteria, subject to the paging specifications.
      */
     List<Biomaterial> searchForBiomaterialsByKeyword(BiomaterialKeywordSearchCriteria criteria,
             PagingParams pagingParams);
 
     /**
-     * Searches for entities based on the given CQL query.
+     * Returns a list of quantitation types satisfying the given search criteria.
+     * 
+     * @param criteria the search criteria.
+     * @param pagingParams paging params.
+     * @return the list of quantitation types matching criteria, subject to the paging specifications.
+     * @throws InvalidReferenceException if the search criteria includes any invalid references.
+     */
+    List<QuantitationType> searchForQuantitationTypes(QuantitationTypeSearchCriteria criteria,
+            PagingParams pagingParams) throws InvalidReferenceException;
+
+    /**
+     * Searches for entities based on the given CQL query. At present, only the classname of the target object is
+     * considered.
      * 
      * @param cqlQuery the CQL query.
-     * @param params paging parameters. these will be ignored if the "count only" modifier is specified for
-     *            the query. may be left as null to retrieve all results with default ordering.
+     * @param params paging parameters. these will be ignored if the "count only" modifier is specified for the query.
+     *            may be left as null to retrieve all results with default ordering.
      * 
      * @return the result for the provided query. May be the list of objects, list of attribute values, or the count,
      *         depending upon the query modifiers.
      */
-    List<?> search(CQLQuery cqlQuery, PagingParams params);
+    List<?> searchByCQL(CQLQuery cqlQuery, PagingParams params);
+
+    /**
+     * Do a query by example.
+     * @param <T> type of the example entity
+     * @param example the example entity to query for
+     * @param pagingParams paging params.
+     * @return list of entities matching example, subject to paging params
+     */
+    <T extends AbstractCaArrayEntity> List<T> searchByExample(T example, PagingParams pagingParams);
 }

@@ -106,6 +106,13 @@
                             </xs:sequence>
                         </xs:complexType>
                     </xs:element>
+                    <xs:element name="arrayDesigns">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="arr:ArrayDesign" minOccurs="0" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
                 </xs:sequence>
                 <xs:attribute name="description" type="xs:string" />
                 <xs:attribute name="title" type="xs:string" />

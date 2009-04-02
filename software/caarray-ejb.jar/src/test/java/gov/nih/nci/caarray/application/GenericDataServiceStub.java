@@ -159,6 +159,14 @@ public class GenericDataServiceStub implements GenericDataService {
     /**
      * {@inheritDoc}
      */
+    public <T extends PersistentObject> List<T> pageAndFilterCollection(Collection<T> collection, String property,
+            List<? extends Serializable> values, PageSortParams<T> pageSortParams) {
+        return new ArrayList<T>(collection);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders)
             throws IllegalAccessException, InstantiationException {
         return new ArrayList<T>();

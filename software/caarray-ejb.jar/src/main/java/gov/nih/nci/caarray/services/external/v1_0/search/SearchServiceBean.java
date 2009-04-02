@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -101,21 +102,22 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
+import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
+import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchField;
-import gov.nih.nci.caarray.external.v1_0.query.ExperimentKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchField;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
+import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
@@ -123,6 +125,7 @@ import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.services.external.v1_0.BaseV1_0ExternalService;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
 import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.cagrid.cqlquery.Object;
@@ -131,12 +134,12 @@ import gov.nih.nci.cagrid.cqlquery.QueryModifier;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.security.PermitAll;
@@ -147,11 +150,11 @@ import javax.interceptor.Interceptors;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.Order;
 import org.jboss.annotation.ejb.RemoteBinding;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
-import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
@@ -163,49 +166,12 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 @Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class })
 @TransactionTimeout(SearchServiceBean.TIMEOUT_SECONDS)
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
-@SuppressWarnings("PMD") // temporary, as this is experimental
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public class SearchServiceBean extends BaseV1_0ExternalService implements SearchService {
+    private static final Logger LOG = Logger.getLogger(SearchServiceBean.class);
+    
     static final int TIMEOUT_SECONDS = 1800;
-    
-    private static final Map<String, SearchCategory> EXPERIMENT_SEARCH_CATEGORY_MAP = 
-        new HashMap<String, SearchCategory>();
-    static {
-        EXPERIMENT_SEARCH_CATEGORY_MAP.put(ExperimentSearchField.ARRAY_DESIGN.getName(), SearchCategory.ARRAY_DESIGN);
-        EXPERIMENT_SEARCH_CATEGORY_MAP.put(ExperimentSearchField.ARRAY_PROVIDER.getName(),
-                SearchCategory.ARRAY_PROVIDER);
-        EXPERIMENT_SEARCH_CATEGORY_MAP.put(ExperimentSearchField.DISEASE_STATE.getName(), SearchCategory.DISEASE_STATE);
-        EXPERIMENT_SEARCH_CATEGORY_MAP.put(ExperimentSearchField.ORGANISM.getName(), SearchCategory.ORGANISM);
-        EXPERIMENT_SEARCH_CATEGORY_MAP.put(ExperimentSearchField.PUBLIC_ID.getName(), SearchCategory.EXPERIMENT_ID);
-        EXPERIMENT_SEARCH_CATEGORY_MAP.put(ExperimentSearchField.SAMPLE_NAME.getName(), SearchCategory.SAMPLE);
-        EXPERIMENT_SEARCH_CATEGORY_MAP.put(ExperimentSearchField.TITLE.getName(), SearchCategory.EXPERIMENT_TITLE);
-    }
-    
-    private static final Map<String, SearchSampleCategory> SAMPLE_SEARCH_CATEGORY_MAP = 
-        new HashMap<String, SearchSampleCategory>();
-    static {
-        SAMPLE_SEARCH_CATEGORY_MAP.put(BiomaterialSearchField.NAME.getName(), SearchSampleCategory.SAMPLE_NAME);
-        SAMPLE_SEARCH_CATEGORY_MAP
-                .put(BiomaterialSearchField.EXTERNAL_ID.getName(), SearchSampleCategory.SAMPLE_EXTERNAL_ID);
-        SAMPLE_SEARCH_CATEGORY_MAP.put(BiomaterialSearchField.DISEASE_STATE.getName(),
-                SearchSampleCategory.SAMPLE_DISEASE_STATE);
-        SAMPLE_SEARCH_CATEGORY_MAP
-                .put(BiomaterialSearchField.TISSUE_SITE.getName(), SearchSampleCategory.SAMPLE_TISSUE_SITE);
-        SAMPLE_SEARCH_CATEGORY_MAP.put(BiomaterialSearchField.ORGANISM.getName(), SearchSampleCategory.SAMPLE_ORGANISM);
-    }
-
-    private static final Map<String, SearchSourceCategory> SOURCE_SEARCH_CATEGORY_MAP = 
-        new HashMap<String, SearchSourceCategory>();
-    static {
-        SOURCE_SEARCH_CATEGORY_MAP.put(BiomaterialSearchField.NAME.getName(), null);
-        SOURCE_SEARCH_CATEGORY_MAP
-                .put(BiomaterialSearchField.EXTERNAL_ID.getName(), null);
-        SOURCE_SEARCH_CATEGORY_MAP.put(BiomaterialSearchField.DISEASE_STATE.getName(),
-                SearchSourceCategory.SAMPLE_DISEASE_STATE);
-        SOURCE_SEARCH_CATEGORY_MAP
-                .put(BiomaterialSearchField.TISSUE_SITE.getName(), SearchSourceCategory.SAMPLE_TISSUE_SITE);
-        SOURCE_SEARCH_CATEGORY_MAP.put(BiomaterialSearchField.ORGANISM.getName(), SearchSourceCategory.SAMPLE_ORGANISM);
-    }
-    
+        
     /**
      * {@inheritDoc}
      */
@@ -218,11 +184,34 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
                     actualParams.getFirstResult(), Order.asc("name"));
             mapCollection(designs, externalDesigns, ArrayDesign.class);
         } catch (IllegalAccessException e) {
-            // log it
+            LOG.error("Could not retrieve array designs", e);
+            throw new IllegalStateException("Could not retrieve array designs", e);
         } catch (InstantiationException e) {
-            // log
+            LOG.error("Could not retrieve array designs", e);
+            throw new IllegalStateException("Could not retrieve array designs", e);
         }
         return externalDesigns;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<ArrayDataType> getAllArrayDataTypes(PagingParams pagingParams) {
+        List<ArrayDataType> externalTypes = new ArrayList<ArrayDataType>();
+        try {
+            PagingParams actualParams = defaultIfNull(pagingParams);
+            List<gov.nih.nci.caarray.domain.data.ArrayDataType> types = getDataService().retrieveAll(
+                    gov.nih.nci.caarray.domain.data.ArrayDataType.class, actualParams.getMaxResults(),
+                    actualParams.getFirstResult(), Order.asc("name"));
+            mapCollection(types, externalTypes, ArrayDataType.class);
+        } catch (IllegalAccessException e) {
+            LOG.error("Could not retrieve array data types", e);
+            throw new IllegalStateException("Could not retrieve array data types", e);
+        } catch (InstantiationException e) {
+            LOG.error("Could not retrieve array data types", e);
+            throw new IllegalStateException("Could not retrieve array data types", e);
+        }
+        return externalTypes;
     }
 
     /**
@@ -237,9 +226,11 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
                     Order.asc("scientificName"));
             mapCollection(organisms, externalOrganisms, Organism.class);
         } catch (IllegalAccessException e) {
-            // log it
+            LOG.error("Could not retrieve organisms", e);
+            throw new IllegalStateException("Could not retrieve organisms", e);
         } catch (InstantiationException e) {
-            // log
+            LOG.error("Could not retrieve organisms", e);
+            throw new IllegalStateException("Could not retrieve organisms", e);
         }
         return externalOrganisms;
     }
@@ -247,7 +238,8 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     /**
      * {@inheritDoc}
      */
-    public List<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, PagingParams pagingParams) {
+    public List<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, PagingParams pagingParams)
+            throws InvalidReferenceException {
         List<Experiment> externalExperiments = new ArrayList<Experiment>();
         com.fiveamsolutions.nci.commons.data.search.PageSortParams<gov.nih.nci.caarray.domain.project.Experiment> 
             actualParams = toInternalParams(defaultIfNull(pagingParams), "title", false);
@@ -261,19 +253,18 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     }
 
     private gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria toInternalCriteria(
-            ExperimentSearchCriteria criteria) {
+            ExperimentSearchCriteria criteria) throws InvalidReferenceException {
         gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria intCriteria = 
             new gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria();
-        intCriteria.setAnd(criteria.isAnd());
         intCriteria.setTitle(criteria.getTitle());
-        if (criteria.getOrganisms() != null) {
-            for (CaArrayEntityReference orgRef : criteria.getOrganisms()) {
-                intCriteria.getOrganisms().add((edu.georgetown.pir.Organism) getByLsid(orgRef.getLsid()));
-            }
+        intCriteria.setPublicIdentifier(criteria.getPublicIdentifier());
+        if (criteria.getOrganism() != null) {
+            intCriteria
+                    .setOrganism(getRequiredByLsid(criteria.getOrganism().getId(), edu.georgetown.pir.Organism.class));
         }
         if (criteria.getPrincipalInvestigator() != null) {
-            intCriteria.setPrincipalInvestigator((gov.nih.nci.caarray.domain.contact.Person) getByLsid(criteria
-                    .getPrincipalInvestigator().getLsid()));
+            intCriteria.setPrincipalInvestigator(getRequiredByLsid(criteria.getPrincipalInvestigator().getId(),
+                    gov.nih.nci.caarray.domain.contact.Person.class));
         }
         if (criteria.getArrayProvider() != null) {
             Organization example = new Organization();
@@ -292,18 +283,13 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     /**
      * {@inheritDoc}
      */
-    public List<Experiment> searchForExperimentsByKeyword(ExperimentKeywordSearchCriteria criteria, 
-            PagingParams pagingParams) {
+    public List<Experiment> searchForExperimentsByKeyword(KeywordSearchCriteria criteria, PagingParams pagingParams) {
         List<Experiment> externalExperiments = new ArrayList<Experiment>();
         com.fiveamsolutions.nci.commons.data.search.PageSortParams<gov.nih.nci.caarray.domain.project.Project> 
             actualParams = toInternalParams(defaultIfNull(pagingParams), ProjectSortCriterion.TITLE, false);
         String keyword = criteria.getKeyword();
-        List<SearchCategory> categories = new ArrayList<SearchCategory>();
-        for (ExperimentSearchField field : criteria.getFields()) {
-            categories.add(EXPERIMENT_SEARCH_CATEGORY_MAP.get(field.getName()));
-        }
-        List<Project> projects = getProjectManagementService()
-                .searchByCategory(actualParams, keyword, categories.toArray(new SearchCategory[categories.size()]));
+        List<Project> projects = getProjectManagementService().searchByCategory(actualParams, keyword,
+                SearchCategory.values());
         for (Project p : projects) {
             gov.nih.nci.caarray.domain.project.Experiment exp = p.getExperiment();
             applySecurityPolicies(exp);
@@ -316,7 +302,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     /**
      * {@inheritDoc}
      */
-    public List<Biomaterial> searchForBiomaterialsByKeyword(BiomaterialKeywordSearchCriteria criteria, 
+    public List<Biomaterial> searchForBiomaterialsByKeyword(BiomaterialKeywordSearchCriteria criteria,
             PagingParams pagingParams) {
         List<Biomaterial> externalSamples = new ArrayList<Biomaterial>();
         
@@ -331,25 +317,14 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
             sourceParams = toInternalParams(defaultIfNull(pagingParams), SourceJoinableSortCriterion.NAME, false);
         String keyword = criteria.getKeyword();
         
-        List<SearchSampleCategory> sampleCategories = new ArrayList<SearchSampleCategory>();
-        List<SearchSourceCategory> sourceCategories = new ArrayList<SearchSourceCategory>();
-        for (BiomaterialSearchField field : criteria.getFields()) {
-            if (SAMPLE_SEARCH_CATEGORY_MAP.get(field.getName()) != null) {
-                sampleCategories.add(SAMPLE_SEARCH_CATEGORY_MAP.get(field.getName()));                
-            }
-            if (SOURCE_SEARCH_CATEGORY_MAP.get(field.getName()) != null) {
-                sourceCategories.add(SOURCE_SEARCH_CATEGORY_MAP.get(field.getName()));
-            }
-        }
-
-        if (!sampleCategories.isEmpty() && types.contains(BiomaterialType.SAMPLE)) {
+        if (types.contains(BiomaterialType.SAMPLE)) {
             List<gov.nih.nci.caarray.domain.sample.Sample> samples = getProjectManagementService().searchByCategory(
-                    sampleParams, keyword, sampleCategories.toArray(new SearchSampleCategory[sampleCategories.size()]));
+                    sampleParams, keyword, SearchSampleCategory.values());
             mapCollection(samples, externalSamples, Biomaterial.class);            
         }
-        if (!sourceCategories.isEmpty() && types.contains(BiomaterialType.SOURCE)) {
+        if (types.contains(BiomaterialType.SOURCE)) {
             List<gov.nih.nci.caarray.domain.sample.Source> sources = getProjectManagementService().searchByCategory(
-                    sourceParams, keyword, sourceCategories.toArray(new SearchSourceCategory[sourceCategories.size()]));
+                    sourceParams, keyword, SearchSourceCategory.values());
             mapCollection(sources, externalSamples, Biomaterial.class);            
         }
         return externalSamples;                
@@ -390,18 +365,22 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public AbstractCaArrayEntity getByReference(CaArrayEntityReference reference) {
+    public AbstractCaArrayEntity getByReference(CaArrayEntityReference reference)
+            throws NoEntityMatchingReferenceException {
         Class<? extends AbstractCaArrayEntity> entityClass = 
-            (Class<? extends AbstractCaArrayEntity>) getClassFromLsid(reference.getLsid());
-        PersistentObject entity = getByLsid(reference.getLsid());
-        AbstractCaArrayEntity externalEntity = mapEntity(entity, entityClass);
-        return externalEntity;
+            (Class<? extends AbstractCaArrayEntity>) getClassFromLsid(reference.getId());
+        java.lang.Object entity = getByLsid(reference.getId());
+        if (entity == null) {
+            throw new NoEntityMatchingReferenceException(reference);
+        }
+        return mapEntity(entity, entityClass);
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<AbstractCaArrayEntity> getByReferences(List<CaArrayEntityReference> references) {
+    public List<AbstractCaArrayEntity> getByReferences(List<CaArrayEntityReference> references)
+            throws NoEntityMatchingReferenceException {
         List<AbstractCaArrayEntity> results = new ArrayList<AbstractCaArrayEntity>();
         for (CaArrayEntityReference reference : references) {
             AbstractCaArrayEntity entity = getByReference(reference);
@@ -413,7 +392,8 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     /**
      * {@inheritDoc}
      */
-    public List<DataFile> searchForFiles(FileSearchCriteria criteria, PagingParams pagingParams) {
+    public List<DataFile> searchForFiles(FileSearchCriteria criteria, PagingParams pagingParams)
+            throws InvalidReferenceException {
         List<DataFile> externalFiles = new ArrayList<DataFile>();
         com.fiveamsolutions.nci.commons.data.search.PageSortParams<CaArrayFile> actualParams = 
             toInternalParams(defaultIfNull(pagingParams), "name", false);
@@ -424,10 +404,10 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         return externalFiles;
     };
 
-    private gov.nih.nci.caarray.domain.search.FileSearchCriteria toInternalCriteria(FileSearchCriteria criteria) {
+    private gov.nih.nci.caarray.domain.search.FileSearchCriteria toInternalCriteria(FileSearchCriteria criteria)
+            throws InvalidReferenceException {
         gov.nih.nci.caarray.domain.search.FileSearchCriteria intCriteria = 
             new gov.nih.nci.caarray.domain.search.FileSearchCriteria();
-        intCriteria.setAnd(criteria.isAnd());
         intCriteria.setExtension(criteria.getExtension());
         Set<FileTypeCategory> categories = new HashSet<FileTypeCategory>(criteria.getCategories());
         if (categories.isEmpty()) {
@@ -437,12 +417,12 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         intCriteria.setIncludeDerived(categories.contains(FileTypeCategory.DERIVED));
         intCriteria.setIncludeSupplemental(categories.contains(FileTypeCategory.SUPPLEMENTAL));
         if (criteria.getExperiment() != null) {
-            intCriteria.setExperiment((gov.nih.nci.caarray.domain.project.Experiment) getByLsid(criteria
-                    .getExperiment().getLsid()));
+            intCriteria.setExperiment(getRequiredByLsid(criteria.getExperiment().getId(),
+                    gov.nih.nci.caarray.domain.project.Experiment.class));
         }
         for (CaArrayEntityReference typeRef : criteria.getTypes()) {
-            String typeName = new LSID(typeRef.getLsid()).getObjectId();            
-            intCriteria.getTypes().add(gov.nih.nci.caarray.domain.file.FileType.valueOf(typeName));
+            intCriteria.getTypes().add(
+                    getRequiredByLsid(typeRef.getId(), gov.nih.nci.caarray.domain.file.FileType.class));
         }
         return intCriteria;
     }
@@ -455,53 +435,31 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public java.util.List<?> search(gov.nih.nci.cagrid.cqlquery.CQLQuery cqlQuery, PagingParams params) {
+    public java.util.List<?> searchByCQL(gov.nih.nci.cagrid.cqlquery.CQLQuery cqlQuery, PagingParams params) {
         Object o = cqlQuery.getTarget();
         QueryModifier qm = cqlQuery.getQueryModifier();
         try {
             Class<? extends AbstractCaArrayEntity> entityClass = (Class<? extends AbstractCaArrayEntity>) Class
                     .forName(o.getName());
-            Class<? extends PersistentObject> internalEntityClass = CLASS_MAP.get(entityClass);
+            EntityHandler<? extends AbstractCaArrayEntity> resolver = getEntityHandlerRegistry().getResolver(
+                    entityClass);
             if (qm != null && qm.isCountOnly()) {
-                List<? extends PersistentObject> results = getDataService().retrieveAll(internalEntityClass);
-                return Collections.singletonList(Integer.valueOf(results.size()));
+                int count = resolver.countQueryByCQL(o);
+                return Collections.singletonList(count);
             } else {
-                PagingParams actualParams = defaultIfNull(params);
-                List<? extends PersistentObject> results = getDataService().retrieveAll(internalEntityClass,
-                        actualParams.getMaxResults(), actualParams.getFirstResult(), Order.asc("id"));
-                List<AbstractCaArrayEntity> externalResults = new ArrayList<AbstractCaArrayEntity>();
-                mapCollection(results, externalResults, entityClass);
+                List<? extends AbstractCaArrayEntity> results = resolver.queryByCQL(o, defaultIfNull(params));
                 if (qm != null) {
                     if (!ArrayUtils.isEmpty(qm.getAttributeNames())) {                        
-                        String[] attrNames = qm.getAttributeNames();
-                        List<java.lang.Object[]> attributeResults = new ArrayList<java.lang.Object[]>();
-                        for (AbstractCaArrayEntity externalResult : externalResults) {
-                            java.lang.Object[] attributeResult = new java.lang.Object[attrNames.length];
-                            for (int i = 0; i < attrNames.length; i++) {
-                                attributeResult[i] = PropertyUtils.getProperty(externalResult, attrNames[i]);
-                            }
-                            attributeResults.add(attributeResult);
-                        }
-                        return attributeResults;
+                        return toAttributeResults(results, qm.getAttributeNames());
                     } else if (qm.getDistinctAttribute() != null) {
-                        List<java.lang.Object> attributeResults = new ArrayList<java.lang.Object>();
-                        for (AbstractCaArrayEntity externalResult : externalResults) {
-                            java.lang.Object attributeResult = PropertyUtils.getProperty(externalResult, qm
-                                    .getDistinctAttribute());
-                            if (!attributeResults.contains(attributeResult)) {
-                                attributeResults.add(attributeResult);                                
-                            }
-                        }
-                        return attributeResults;                        
+                        return toDistinctAttributeResults(results, qm.getDistinctAttribute());
                     }
                 }
-                return externalResults;
+                return results;
             }
         } catch (IllegalAccessException e) {
             return Collections.emptyList();
         } catch (ClassNotFoundException e) {
-            return Collections.emptyList();
-        } catch (InstantiationException e) {
             return Collections.emptyList();
         } catch (NoSuchMethodException e) {
             return Collections.emptyList();
@@ -509,19 +467,53 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
             return Collections.emptyList();
         }
     }
+    
+    private List<java.lang.Object[]> toAttributeResults(List<? extends AbstractCaArrayEntity> results,
+            String[] attrNames) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        List<java.lang.Object[]> attributeResults = new ArrayList<java.lang.Object[]>();
+        for (AbstractCaArrayEntity externalResult : results) {
+            java.lang.Object[] attributeResult = new java.lang.Object[attrNames.length];
+            for (int i = 0; i < attrNames.length; i++) {
+                attributeResult[i] = PropertyUtils.getProperty(externalResult, attrNames[i]);
+            }
+            attributeResults.add(attributeResult);
+        }
+        return attributeResults;
+    }
+    
+    private List<java.lang.Object> toDistinctAttributeResults(List<? extends AbstractCaArrayEntity> results,
+            String attrName) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Set<java.lang.Object> attributeResults = new HashSet<java.lang.Object>();
+        for (AbstractCaArrayEntity externalResult : results) {
+            java.lang.Object attributeResult = PropertyUtils.getProperty(externalResult, attrName);
+            if (!attributeResults.contains(attributeResult)) {
+                attributeResults.add(attributeResult);                                
+            }
+        }
+        return new ArrayList<java.lang.Object>(attributeResults);                                
+    }
 
+    /**
+     * {@inheritDoc}
+     */    
+    @SuppressWarnings("unchecked")
+    public <T extends AbstractCaArrayEntity> List<T> searchByExample(T example, PagingParams pagingParams) {
+        EntityHandler<T> resolver = getEntityHandlerRegistry().getResolver((Class<T>) example.getClass());
+        return resolver.queryByExample(example, defaultIfNull(pagingParams));
+    }
+    
     /**
      * {@inheritDoc}
      */
     public List<Hybridization> searchForHybridizations(HybridizationSearchCriteria criteria, PagingParams pagingParams)
             throws InvalidReferenceException {
-        gov.nih.nci.caarray.domain.project.Experiment e = getByLsid(criteria.getExperiment().getLsid(),
+        gov.nih.nci.caarray.domain.project.Experiment e = getRequiredByLsid(criteria.getExperiment().getId(),
                 gov.nih.nci.caarray.domain.project.Experiment.class);
         List<Hybridization> externalHybs = new ArrayList<Hybridization>();
         PageSortParams<gov.nih.nci.caarray.domain.hybridization.Hybridization> actualParams = 
             toInternalParams(defaultIfNull(pagingParams), "name", false);
-        List<gov.nih.nci.caarray.domain.hybridization.Hybridization> hybs = getDataService().pageCollection(
-                e.getHybridizations(), actualParams);
+        List<gov.nih.nci.caarray.domain.hybridization.Hybridization> hybs = getDataService().pageAndFilterCollection(
+                e.getHybridizations(), "name", new LinkedList<String>(criteria.getNames()), actualParams);
         mapCollection(hybs, externalHybs, Hybridization.class);
         return externalHybs;
     }
@@ -531,34 +523,85 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
      */
     public List<Biomaterial> searchForBiomaterials(BiomaterialSearchCriteria criteria, PagingParams pagingParams)
             throws InvalidReferenceException {
-        gov.nih.nci.caarray.domain.project.Experiment e = getByLsid(criteria.getExperiment().getLsid(),
+        gov.nih.nci.caarray.domain.project.Experiment e = getRequiredByLsid(criteria.getExperiment().getId(),
                 gov.nih.nci.caarray.domain.project.Experiment.class);
         List<Biomaterial> externalSamples = new ArrayList<Biomaterial>();
         Set<BiomaterialType> types = criteria.getTypes();
         if (types.isEmpty()) {
             types = EnumSet.allOf(BiomaterialType.class);
         }
+        
         if (types.contains(BiomaterialType.SOURCE)) {
-            List<gov.nih.nci.caarray.domain.sample.Source> sources = getDataService().pageCollection(
-                    e.getSources(), toInternalParams(defaultIfNull(pagingParams), "name", false, Source.class));
+            List<gov.nih.nci.caarray.domain.sample.Source> sources = pageAndFilterBiomaterials(e.getSources(), criteria
+                    .getNames(), pagingParams, Source.class);
             mapCollection(sources, externalSamples, Biomaterial.class);            
         }
         if (types.contains(BiomaterialType.SAMPLE)) {
-            List<gov.nih.nci.caarray.domain.sample.Sample> samples = getDataService().pageCollection(e.getSamples(),
-                    toInternalParams(defaultIfNull(pagingParams), "name", false, Sample.class));
+            List<gov.nih.nci.caarray.domain.sample.Sample> samples = pageAndFilterBiomaterials(e.getSamples(), criteria
+                    .getNames(), pagingParams, Sample.class);
             mapCollection(samples, externalSamples, Biomaterial.class);
         }
         if (types.contains(BiomaterialType.EXTRACT)) {
-            List<gov.nih.nci.caarray.domain.sample.Extract> extracts = getDataService().pageCollection(e.getExtracts(),
-                    toInternalParams(defaultIfNull(pagingParams), "name", false, Extract.class));
+            List<gov.nih.nci.caarray.domain.sample.Extract> extracts = pageAndFilterBiomaterials(e.getExtracts(),
+                    criteria.getNames(), pagingParams, Extract.class);
             mapCollection(extracts, externalSamples, Biomaterial.class);
         }
         if (types.contains(BiomaterialType.LABELED_EXTRACT)) {
-            List<gov.nih.nci.caarray.domain.sample.LabeledExtract> labeledExtracts = getDataService().pageCollection(
-                    e.getLabeledExtracts(),
-                    toInternalParams(defaultIfNull(pagingParams), "name", false, LabeledExtract.class));
+            List<gov.nih.nci.caarray.domain.sample.LabeledExtract> labeledExtracts = pageAndFilterBiomaterials(e
+                    .getLabeledExtracts(), criteria.getNames(), pagingParams, LabeledExtract.class);
             mapCollection(labeledExtracts, externalSamples, Biomaterial.class);
         }
         return externalSamples;
+    }
+    
+    private <T extends AbstractBioMaterial> List<T> pageAndFilterBiomaterials(Collection<T> biomaterials,
+            Set<String> names, PagingParams pagingParams, Class<T> biomaterialClass) {
+        return getDataService().pageAndFilterCollection(biomaterials, "name", new LinkedList<String>(names),
+                toInternalParams(defaultIfNull(pagingParams), "name", false, biomaterialClass));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<QuantitationType> searchForQuantitationTypes(QuantitationTypeSearchCriteria criteria,
+            PagingParams pagingParams) {
+        List<QuantitationType> externalTypes = new ArrayList<QuantitationType>();
+        com.fiveamsolutions.nci.commons.data.search.PageSortParams<gov.nih.nci.caarray.domain.data.QuantitationType> 
+            actualParams = toInternalParams(defaultIfNull(pagingParams), "name", false);
+        gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria internalCriteria = 
+            toInternalCriteria(criteria);
+        List<gov.nih.nci.caarray.domain.data.QuantitationType> types = getDaoFactory().getArrayDao()
+                .searchForQuantitationTypes(actualParams, internalCriteria);
+        mapCollection(types, externalTypes, QuantitationType.class);
+        HibernateUtil.getCurrentSession().clear();
+        return externalTypes;  
+    }
+
+    private gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria toInternalCriteria(
+            QuantitationTypeSearchCriteria criteria) {
+        gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria intCriteria = 
+            new gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria();
+        
+        intCriteria.setHybridization((gov.nih.nci.caarray.domain.hybridization.Hybridization) getByLsid(criteria
+                .getHybridization().getId()));
+        
+        for (CaArrayEntityReference arrayDataTypeRef : criteria.getArrayDataTypes()) {
+            intCriteria.getArrayDataTypes().add(
+                    (gov.nih.nci.caarray.domain.data.ArrayDataType) getByLsid(arrayDataTypeRef.getId()));
+        }
+        
+        for (CaArrayEntityReference fileTypeRef : criteria.getFileTypes()) {
+            String fileTypeName = new LSID(fileTypeRef.getId()).getObjectId();            
+            intCriteria.getFileTypes().add(gov.nih.nci.caarray.domain.file.FileType.valueOf(fileTypeName));
+        }
+        
+        Set<FileTypeCategory> categories = new HashSet<FileTypeCategory>(criteria.getFileTypeCategories());
+        if (categories.isEmpty()) {
+            categories.addAll(EnumSet.allOf(FileTypeCategory.class));
+        }
+        intCriteria.setIncludeRaw(categories.contains(FileTypeCategory.RAW));
+        intCriteria.setIncludeDerived(categories.contains(FileTypeCategory.DERIVED));
+        
+        return intCriteria;
     }
 }

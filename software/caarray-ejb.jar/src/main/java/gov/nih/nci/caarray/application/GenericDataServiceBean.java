@@ -218,6 +218,14 @@ public class GenericDataServiceBean implements GenericDataService {
             PageSortParams<T> pageSortParams) {
         return this.daoFactory.getSearchDao().pageCollection(collection, pageSortParams);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> pageAndFilterCollection(Collection<T> collection, String property,
+            List<? extends Serializable> values, PageSortParams<T> pageSortParams) {
+        return this.daoFactory.getSearchDao().pageAndFilterCollection(collection, property, values, pageSortParams);
+    }
 
     /**
      * {@inheritDoc}

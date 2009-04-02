@@ -7,7 +7,7 @@
             <jvmarg value="-DGLOBUS_LOCATION=${ext.globus.dir}" />
             <jvmarg value="-agentlib:yjpagent=sessionname=GridClient"/>
         	<jvmarg value="-XX:+HeapDumpOnOutOfMemoryError"/>
-            <jvmarg value="-Xmx128m"/>
+            <jvmarg value="-Xmx256m"/>
             <jvmarg value="-Xdebug"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8788,server=y,suspend=n"/>
             <arg value="-url" />

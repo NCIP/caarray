@@ -17,142 +17,118 @@
     <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"
         schemaLocation="v1_0_gov.nih.nci.caarray.external.sample.xsd" />
 
-    <xs:element name="AbstractSearchCriteria" type="qry:AbstractSearchCriteria" />
-    <xs:complexType name="AbstractSearchCriteria">
-        <xs:attribute name="and" type="xs:boolean" />
-    </xs:complexType>
-
     <xs:element name="ExperimentSearchCriteria" type="qry:ExperimentSearchCriteria" />
     <xs:complexType name="ExperimentSearchCriteria">
-        <xs:complexContent>
-            <xs:extension base="qry:AbstractSearchCriteria">
-                <xs:sequence>
-                    <xs:element name="organisms">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <xs:element ref="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded" />
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>
-                    <xs:element name="principalInvestigator" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
-                    <xs:element name="arrayProvider" type="arr:ArrayProvider" minOccurs="0" maxOccurs="1" />
-                    <xs:element name="assayType" type="arr:AssayType" minOccurs="0" maxOccurs="1" />
-                </xs:sequence>
-                <xs:attribute name="title" type="xs:string" />
-            </xs:extension>
-        </xs:complexContent>
+        <xs:sequence>
+            <xs:element name="organism" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
+            <xs:element name="principalInvestigator" type="car:CaArrayEntityReference" minOccurs="0"
+                maxOccurs="1" />
+            <xs:element name="arrayProvider" type="arr:ArrayProvider" minOccurs="0" maxOccurs="1" />
+            <xs:element name="assayType" type="arr:AssayType" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="title" type="xs:string" />
+        <xs:attribute name="publicIdentifier" type="xs:string" />
     </xs:complexType>
     
     <xs:element name="FileSearchCriteria" type="qry:FileSearchCriteria" />
     <xs:complexType name="FileSearchCriteria">
-        <xs:complexContent>
-            <xs:extension base="qry:AbstractSearchCriteria">
-                <xs:sequence>
-                    <xs:element name="experiment" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
-                    <xs:element name="types">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <xs:element ref="car:AbstractCaArrayEntity" minOccurs="0" maxOccurs="unbounded" />
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>                    
-                    <xs:element name="categories">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <xs:element ref="dat:FileTypeCategory" minOccurs="0" maxOccurs="unbounded" />
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>                    
-                </xs:sequence>
-                <xs:attribute name="extension" type="xs:string" />
-            </xs:extension>
-        </xs:complexContent>
+        <xs:sequence>
+            <xs:element name="experiment" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
+            <xs:element name="types">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="car:AbstractCaArrayEntity" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="categories">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="dat:FileTypeCategory" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="extension" type="xs:string" />
     </xs:complexType>
     
     <xs:element name="BiomaterialSearchCriteria" type="qry:BiomaterialSearchCriteria" />
     <xs:complexType name="BiomaterialSearchCriteria">
-        <xs:complexContent>
-            <xs:extension base="qry:AbstractSearchCriteria">
-                <xs:sequence>
-                    <xs:element name="experiment" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
-                    <xs:element name="names">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>                    
-                    <xs:element name="types">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <xs:element ref="sam:BiomaterialType" minOccurs="0" maxOccurs="unbounded" />
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>                    
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
+        <xs:sequence>
+            <xs:element name="experiment" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
+            <xs:element name="names">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="types">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="sam:BiomaterialType" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
     </xs:complexType>
 
     <xs:element name="HybridizationSearchCriteria" type="qry:HybridizationSearchCriteria" />
     <xs:complexType name="HybridizationSearchCriteria">
-        <xs:complexContent>
-            <xs:extension base="qry:AbstractSearchCriteria">
-                <xs:sequence>
-                    <xs:element name="experiment" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
-                    <xs:element name="names">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>                    
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
+        <xs:sequence>
+            <xs:element name="experiment" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
+            <xs:element name="names">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
     </xs:complexType>
 
-    <xs:element name="AbstractKeywordSearchCriteria" type="qry:AbstractKeywordSearchCriteria" />
-    <xs:complexType name="AbstractKeywordSearchCriteria">
+    <xs:element name="QuantitationTypeSearchCriteria" type="qry:QuantitationTypeSearchCriteria" />
+    <xs:complexType name="QuantitationTypeSearchCriteria">
+        <xs:sequence>
+            <xs:element name="hybridization" type="car:AbstractCaArrayEntity" minOccurs="1" maxOccurs="1" />
+            <xs:element name="fileTypes">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="car:AbstractCaArrayEntity" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="fileTypeCategories">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="dat:FileTypeCategory" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="arrayDataTypes">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="car:AbstractCaArrayEntity" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="KeywordSearchCriteria" type="qry:KeywordSearchCriteria" />
+    <xs:complexType name="KeywordSearchCriteria">
         <xs:attribute name="keyword" type="xs:string" />
-    </xs:complexType>
-
-    <xs:element name="ExperimentSearchField" type="qry:ExperimentSearchField" />
-    <xs:complexType name="ExperimentSearchField">
-        <xs:attribute name="name" type="xs:string" />
-    </xs:complexType>
-
-    <xs:element name="ExperimentKeywordSearchCriteria" type="qry:ExperimentKeywordSearchCriteria" />
-    <xs:complexType name="ExperimentKeywordSearchCriteria">
-        <xs:complexContent>
-            <xs:extension base="qry:AbstractKeywordSearchCriteria">
-                <xs:sequence>
-                    <xs:element name="fields">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <xs:element ref="qry:ExperimentSearchField" minOccurs="1" maxOccurs="unbounded" />
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
-    <xs:element name="BiomaterialSearchField" type="qry:BiomaterialSearchField" />
-    <xs:complexType name="BiomaterialSearchField">
-        <xs:attribute name="name" type="xs:string" />
     </xs:complexType>
 
     <xs:element name="BiomaterialKeywordSearchCriteria" type="qry:BiomaterialKeywordSearchCriteria" />
     <xs:complexType name="BiomaterialKeywordSearchCriteria">
         <xs:complexContent>
-            <xs:extension base="qry:AbstractKeywordSearchCriteria">
+            <xs:extension base="qry:KeywordSearchCriteria">
                 <xs:sequence>
-                    <xs:element name="fields">
+                    <xs:element name="types">
                         <xs:complexType>
                             <xs:sequence>
-                                <xs:element ref="qry:BiomaterialSearchField" minOccurs="1" maxOccurs="unbounded" />
+                                <xs:element ref="sam:BiomaterialType" minOccurs="0" maxOccurs="unbounded" />
                             </xs:sequence>
                         </xs:complexType>
                     </xs:element>

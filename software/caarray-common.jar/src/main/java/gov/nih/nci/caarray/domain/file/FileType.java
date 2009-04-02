@@ -83,9 +83,8 @@
 
 package gov.nih.nci.caarray.domain.file;
 
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -263,72 +262,43 @@ public enum FileType implements Comparable<FileType> {
      * ScanArray CSV format data type.
      */
     SCANARRAY_CSV;
-
-    /**
-     * The set of array design file types.
-     */
-    public static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = new LinkedHashSet<FileType>();
     
     /**
      * The set of array design file types that the caArray can parse.
      */    
-    public static final Set<FileType> PARSEABLE_ARRAY_DESIGN_FILE_TYPES = new HashSet<FileType>();
+    public static final Set<FileType> PARSEABLE_ARRAY_DESIGN_FILE_TYPES = EnumSet.of(AFFYMETRIX_CDF, AFFYMETRIX_CLF,
+            AFFYMETRIX_PGF, ILLUMINA_DESIGN_CSV, GENEPIX_GAL);
+
+    /**
+     * The set of array design file types.
+     */
+    public static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = EnumSet.of(AFFYMETRIX_CDF, AFFYMETRIX_CLF,
+            AFFYMETRIX_PGF, ILLUMINA_DESIGN_CSV, GENEPIX_GAL, AGILENT_CSV, AGILENT_XML, IMAGENE_TPL, NIMBLEGEN_NDF,
+            UCSF_SPOT_SPT, MAGE_TAB_ADF);
     
     /**
      * The set of raw array data file types.
      */
-    public static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
+    public static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = EnumSet.of(ILLUMINA_IDAT, AFFYMETRIX_CEL,
+            AGILENT_RAW_TXT, AFFYMETRIX_DAT, AGILENT_TSV, IMAGENE_TIF, GEO_SOFT, GEO_GSM, SCANARRAY_CSV);
 
     /**
      * The set of parsed array data file types.
      */
-    public static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
+    public static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CHP, AFFYMETRIX_EXP,
+            AFFYMETRIX_TXT, AFFYMETRIX_RPT, ILLUMINA_DATA_CSV, ILLUMINA_DATA_TXT, GENEPIX_GPR, IMAGENE_TXT,
+            AGILENT_DERIVED_TXT, NIMBLEGEN_GFF, NIMBLEGEN_TXT);
     
     /**
      * The set of array data file types that caArray can parse.
      */
-    public static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
+    public static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CEL, AFFYMETRIX_CHP,
+            ILLUMINA_DATA_CSV, GENEPIX_GPR);
 
     private static final Map<FileType, FileType> RAW_TO_DERIVED_MAP = new HashMap<FileType, FileType>();
     private static final Map<FileType, FileType> DERIVED_TO_RAW_MAP = new HashMap<FileType, FileType>();
 
     static {
-        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
-        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CLF);
-        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_PGF);
-        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
-        PARSEABLE_ARRAY_DESIGN_FILE_TYPES.add(GENEPIX_GAL);
-        ARRAY_DESIGN_FILE_TYPES.addAll(PARSEABLE_ARRAY_DESIGN_FILE_TYPES);
-        ARRAY_DESIGN_FILE_TYPES.add(AGILENT_CSV);
-        ARRAY_DESIGN_FILE_TYPES.add(AGILENT_XML);
-        ARRAY_DESIGN_FILE_TYPES.add(IMAGENE_TPL);
-        ARRAY_DESIGN_FILE_TYPES.add(NIMBLEGEN_NDF);
-        ARRAY_DESIGN_FILE_TYPES.add(UCSF_SPOT_SPT);
-        ARRAY_DESIGN_FILE_TYPES.add(MAGE_TAB_ADF);
-        RAW_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_IDAT);
-        RAW_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
-        RAW_ARRAY_DATA_FILE_TYPES.add(AGILENT_RAW_TXT);
-        RAW_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_DAT);
-        RAW_ARRAY_DATA_FILE_TYPES.add(AGILENT_TSV);
-        RAW_ARRAY_DATA_FILE_TYPES.add(IMAGENE_TIF);
-        RAW_ARRAY_DATA_FILE_TYPES.add(GEO_SOFT);
-        RAW_ARRAY_DATA_FILE_TYPES.add(GEO_GSM);
-        RAW_ARRAY_DATA_FILE_TYPES.add(SCANARRAY_CSV);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_EXP);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_TXT);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_RPT);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_CSV);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_TXT);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(IMAGENE_TXT);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(AGILENT_DERIVED_TXT);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(NIMBLEGEN_GFF);
-        DERIVED_ARRAY_DATA_FILE_TYPES.add(NIMBLEGEN_TXT);
-        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
-        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
-        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_CSV);
-        PARSEABLE_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
         RAW_TO_DERIVED_MAP.put(AGILENT_RAW_TXT, AGILENT_DERIVED_TXT);
         DERIVED_TO_RAW_MAP.put(AGILENT_DERIVED_TXT, AGILENT_RAW_TXT);
     }
@@ -380,13 +350,6 @@ public enum FileType implements Comparable<FileType> {
      */
     public String getName() {
         return name();
-    }
-
-    /**
-     * @return the ArrayDesignFileTypes
-     */
-    public static Set<FileType> getArrayDesignFileTypes() {
-        return ARRAY_DESIGN_FILE_TYPES;
     }
 
     /**

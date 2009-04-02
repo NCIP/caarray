@@ -172,6 +172,26 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		
 		
 	}
+					
+	public static void authorizeGetMageTabExport() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeGetMageTabZipTransfer() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeGetAllArrayDataTypes() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeSearchForQuantitationTypes() throws RemoteException {
+		
+		
+	}
 	
 	
 	public boolean isPermitted(Subject peerSubject, MessageContext context, QName operation)
@@ -359,6 +379,38 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		} else if(operation.getLocalPart().equals("searchForBiomaterialsByKeyword")){
 			try{
 				authorizeSearchForBiomaterialsByKeyword();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("getMageTabExport")){
+			try{
+				authorizeGetMageTabExport();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("getMageTabZipTransfer")){
+			try{
+				authorizeGetMageTabZipTransfer();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("getAllArrayDataTypes")){
+			try{
+				authorizeGetAllArrayDataTypes();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("searchForQuantitationTypes")){
+			try{
+				authorizeSearchForQuantitationTypes();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();

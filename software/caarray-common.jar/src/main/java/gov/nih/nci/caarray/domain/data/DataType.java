@@ -118,11 +118,6 @@ public enum DataType {
     DOUBLE(Double.class),
 
     /**
-     * Values should be represented as Java <code>char</code> primitives.
-     */
-    CHARACTER(Character.class),
-
-    /**
      * Values should be represented as Java <code>Strings</code>.
      */
     STRING(String.class);
@@ -131,6 +126,20 @@ public enum DataType {
 
     private DataType(Class<?> typeClass) {
         this.typeClass = typeClass;
+    }
+
+    /**
+     * Returns the DataType enumeration value corresponding to the given type class.
+     * @param typeClass the type class
+     * @return the matching DataType
+     */
+    public static DataType fromTypeClass(Class<?> typeClass) {
+        for (DataType dt : values()) {
+            if (dt.getTypeClass().equals(typeClass)) {
+                return dt;
+            }
+        }
+        throw new IllegalArgumentException("Type class " + typeClass + " does not correspond to a DataType constant");
     }
 
     /**

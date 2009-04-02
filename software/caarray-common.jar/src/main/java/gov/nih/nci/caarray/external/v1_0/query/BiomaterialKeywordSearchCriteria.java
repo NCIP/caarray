@@ -91,10 +91,9 @@ import java.util.Set;
  * @author dkokotov
  * 
  */
-public class BiomaterialKeywordSearchCriteria extends AbstractKeywordSearchCriteria {
+public class BiomaterialKeywordSearchCriteria extends KeywordSearchCriteria {
     private static final long serialVersionUID = 1L;
     
-    private Set<BiomaterialSearchField> fields = new HashSet<BiomaterialSearchField>();
     private Set<BiomaterialType> types = new HashSet<BiomaterialType>();
     
 
@@ -110,19 +109,5 @@ public class BiomaterialKeywordSearchCriteria extends AbstractKeywordSearchCrite
      */
     public void setTypes(Set<BiomaterialType> types) {
         this.types = types;
-    }
-
-    /**
-     * @return the fields
-     */
-    public Set<BiomaterialSearchField> getFields() {
-        return fields;
-    }
-
-    /**
-     * @param fields the fields to set
-     */
-    public void setFields(Set<BiomaterialSearchField> fields) {
-        this.fields = fields;
     }
 }

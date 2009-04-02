@@ -411,9 +411,6 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         case BOOLEAN:
             validateBoolean(value, result, line, column);
             break;
-        case CHARACTER:
-            validateCharacter(value, result, line, column);
-            break;
         case DOUBLE:
             validateDouble(value, result, line, column);
             break;
@@ -440,13 +437,6 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         if (!"0".equals(value) && !"1".equals(value)) {
             result.addMessage(Type.ERROR,
                     "Invalid boolean value: " + value + ". Legal values are 0 or 1.", line, column);
-        }
-    }
-
-    private void validateCharacter(String value, FileValidationResult result, int line, int column) {
-        if (value.length() != 1) {
-            result.addMessage(
-                    Type.ERROR, "Invalid character value: " + value + ". Must be exactly one character.", line, column);
         }
     }
 

@@ -113,6 +113,7 @@ public class FactorValueConverter implements CustomConverter {
             TermValue tval = new TermValue();
             Term term = new Term();
             term.setValue(value);
+            tval.setTerm(term);
             return tval;
         }
     }

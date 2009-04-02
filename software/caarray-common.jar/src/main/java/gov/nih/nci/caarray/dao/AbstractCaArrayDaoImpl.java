@@ -91,6 +91,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -290,6 +291,14 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     
     static Order toOrder(PageSortParams<?> params) {
         String orderField = params.getSortCriterion().getOrderField();
+        return params.isDesc() ? Order.desc(orderField) : Order.asc(orderField);
+    }
+    
+    static Order toOrder(PageSortParams<?> params, String alias) {
+        String orderField = params.getSortCriterion().getOrderField();
+        if (!StringUtils.isEmpty(alias)) {
+            orderField = alias + "." + orderField;
+        }
         return params.isDesc() ? Order.desc(orderField) : Order.asc(orderField);
     }
 }

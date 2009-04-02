@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -93,11 +94,12 @@ import java.util.Set;
  * @author dkokotov
  * 
  */
-public class ExperimentSearchCriteria extends AbstractSearchCriteria {
+public class ExperimentSearchCriteria implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private String title;
-    private Set<CaArrayEntityReference> organisms = new HashSet<CaArrayEntityReference>();
+    private String publicIdentifier;
+    private CaArrayEntityReference organism;
     private ArrayProvider arrayProvider;
     private AssayType assayType;
     private CaArrayEntityReference principalInvestigator;
@@ -118,17 +120,17 @@ public class ExperimentSearchCriteria extends AbstractSearchCriteria {
     }
 
     /**
-     * @return the organisms
+     * @return the organism
      */
-    public Set<CaArrayEntityReference> getOrganisms() {
-        return organisms;
+    public CaArrayEntityReference getOrganism() {
+        return organism;
     }
 
     /**
-     * @param organisms the organisms to set
+     * @param organism the organism to set
      */
-    public void setOrganisms(Set<CaArrayEntityReference> organisms) {
-        this.organisms = organisms;
+    public void setOrganism(CaArrayEntityReference organism) {
+        this.organism = organism;
     }
 
     /**
@@ -185,5 +187,19 @@ public class ExperimentSearchCriteria extends AbstractSearchCriteria {
      */
     public void setAnnotations(Set<AnnotationCriterion> annotations) {
         this.annotations = annotations;
+    }
+
+    /**
+     * @return the publicIdentifier
+     */
+    public String getPublicIdentifier() {
+        return publicIdentifier;
+    }
+
+    /**
+     * @param publicIdentifier the publicIdentifier to set
+     */
+    public void setPublicIdentifier(String publicIdentifier) {
+        this.publicIdentifier = publicIdentifier;
     }
 }

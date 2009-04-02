@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.domain.sample.Sample;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -174,6 +175,12 @@ public class GenericDataServiceTest extends AbstractCaarrayTest {
     public void testFilterCollection() {
         this.service.filterCollection(null, null, null);
         assertEquals(1, ((SearchDaoStub)this.daoFactoryStub.getSearchDao()).getCallsToFiltercollection());
+    }
+
+    @Test
+    public void testPageAndFilterCollection() {
+        this.service.pageAndFilterCollection(new ArrayList<Sample>(), "name", null, null);
+        assertEquals(1, ((SearchDaoStub)this.daoFactoryStub.getSearchDao()).getCallsToPageAndFilterCollection());
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {

@@ -99,7 +99,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
@@ -148,25 +147,20 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
 
     }
 
-    private int removeAssociationsByBlobHolderId(List idList) {
-
+    private int removeAssociationsByBlobHolderId(List<Long> idList) {
         String sql = "delete from CAARRAYFILE_BLOB_PARTS where blob_parts in (:b_parts)";
-
         Query q = HibernateUtil.getCurrentSession().createSQLQuery(sql);
         q.setParameterList("b_parts", idList);
         q.executeUpdate();
 
         sql = "delete from DATACOLUMN_BLOB_PARTS where blob_parts in (:b_parts)";
-
         q = HibernateUtil.getCurrentSession().createSQLQuery(sql);
         q.setParameterList("b_parts", idList);
         return q.executeUpdate();
     }
 
-    private int removeBlobHoldersById(List idList) {
-
+    private int removeBlobHoldersById(List<Long> idList) {
         String sql = "delete from BLOB_HOLDER where id in (:b_parts)";
-
         Query q = HibernateUtil.getCurrentSession().createSQLQuery(sql);
         q.setParameterList("b_parts", idList);
         return q.executeUpdate();
@@ -188,6 +182,7 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public void deleteHqlBlobsByProjectId(Long projectId) {
         List list = this.getBlobPartIdsForProject(projectId);
         if (list != null && !list.isEmpty()) {
@@ -210,14 +205,12 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
     @SuppressWarnings({"unchecked", "PMD.CyclomaticComplexity", "PMD.NPathComplexity" })
     public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {
         Criteria c = HibernateUtil.getCurrentSession().createCriteria(CaArrayFile.class);
-        Junction junction = criteria.isAnd() ? Restrictions.conjunction() : Restrictions.disjunction();
-        c.add(junction);
-        junction.add(Restrictions.eq("project", criteria.getExperiment().getProject()));            
+        c.add(Restrictions.eq("project", criteria.getExperiment().getProject()));            
         if (!criteria.getTypes().isEmpty()) {
-            junction.add(Restrictions.in("type", criteria.getTypes()));
+            c.add(Restrictions.in("type", criteria.getTypes()));
         }
         if (criteria.getExtension() != null) {
-            junction.add(Restrictions.like("name", "%." + criteria.getExtension()));
+            c.add(Restrictions.ilike("name", "%." + criteria.getExtension()));
         }        
         Set<String> includedTypes = new HashSet<String>();     
         if (criteria.isIncludeDerived()) {
@@ -235,7 +228,7 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
             typeCriterion = Restrictions.disjunction().add(typeCriterion).add(
                     Restrictions.eq("status", FileStatus.SUPPLEMENTAL.name()));
         }
-        junction.add(typeCriterion);
+        c.add(typeCriterion);
         c.setFirstResult(params.getIndex());
         if (params.getPageSize() > 0) {
             c.setMaxResults(params.getPageSize());

@@ -98,6 +98,7 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -235,4 +236,8 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
         return new ArrayList<ArrayDesign>();
     }
 
+    public List<QuantitationType> searchForQuantitationTypes(PageSortParams<QuantitationType> params,
+            QuantitationTypeSearchCriteria criteria) {
+        return new ArrayList<QuantitationType>();
+    }
 }

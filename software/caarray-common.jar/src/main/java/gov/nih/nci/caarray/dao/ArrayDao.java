@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria;
 
 import java.util.List;
 import java.util.Map;
@@ -293,4 +294,13 @@ public interface ArrayDao extends CaArrayDao {
      */
     List<ArrayDesign> getArrayDesigns(ArrayDesignDetails arrayDesignDetails);
 
+    /**
+     * Performs a query for quantitation types by the given criteria.
+     *
+     * @param params paging and sorting parameters
+     * @param criteria the criteria for the search
+     * @return a list of matching quantitation types
+     */
+    List<QuantitationType> searchForQuantitationTypes(PageSortParams<QuantitationType> params,
+            QuantitationTypeSearchCriteria criteria);
 }

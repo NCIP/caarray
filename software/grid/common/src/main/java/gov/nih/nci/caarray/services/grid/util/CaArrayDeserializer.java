@@ -132,7 +132,7 @@ public class CaArrayDeserializer extends SDKDeserializer {
             } else {
                 LOG.error("Castor mapping was null!  Using default mapping.");
             }
-            unmarshall.setValidation(true);
+            unmarshall.setValidation(false);
         } catch (MappingException e) {
             LOG.error("Problem establishing castor mapping!  Using default mapping.", e);
         }

@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 
 import java.io.File;
 
@@ -105,6 +106,7 @@ public interface MageTabExporter {
      * @param experiment the experiment whose content needs to be translated into MAGE-TAB files.
      * @param idfFile the File which will hold the IDF document.
      * @param sdrfFile the File which will hold the SDRF document.
+     * @return the MageTabDocumentSet 
      */
-    void exportToMageTab(Experiment experiment, File idfFile, File sdrfFile);
+    MageTabDocumentSet exportToMageTab(Experiment experiment, File idfFile, File sdrfFile);
 }

@@ -84,50 +84,19 @@ package gov.nih.nci.caarray.external.v1_0.data;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * A QuantitationType represents a quantity that can be measured by an array. A quantity is defined by its name
- * and its data type. The supported data types are boolean, short, integer, long, float, double, and string. 
+ * and its data type, which identifies the value domain for the values of that quantity. 
+ * The supported data types are boolean, short, integer, long, float, double, and string. 
  * 
  * @author dkokotov
  */
 @SuppressWarnings({"PMD.MethodReturnsInternalArray", "PMD.ArrayIsStoredDirectly" })
 public class QuantitationType extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
-
-    /**
-     * The boolean data type.
-     */
-    public static final String BOOLEAN = "BOOLEAN";
-    /**
-     * The integer data type.
-     */
-    public static final String INTEGER = "INTEGER";
-    /**
-     * The double data type.
-     */
-    public static final String DOUBLE = "DOUBLE";
-    /**
-     * The float data type.
-     */
-    public static final String FLOAT = "FLOAT";
-    /**
-     * The short data type.
-     */
-    public static final String SHORT = "SHORT";
-    /**
-     * The long data type.
-     */
-    public static final String LONG = "LONG";
-    /**
-     * The string data type.
-     */    
-    public static final String STRING = "STRING";
-
     
     private String name;
-    private String dataType;
+    private DataType dataType;
 
     /**
      * @return the name of this quantity
@@ -148,7 +117,7 @@ public class QuantitationType extends AbstractCaArrayEntity {
     /**
      * @return the data type of this quantity
      */
-    public String getDataType() {
+    public DataType getDataType() {
         return dataType;
     }
 
@@ -157,14 +126,7 @@ public class QuantitationType extends AbstractCaArrayEntity {
      * 
      * @param dataType the data type to set
      */
-    public void setDataType(String dataType) {
+    public void setDataType(DataType dataType) {
         this.dataType = dataType;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
     }
 }

@@ -95,9 +95,7 @@ import java.util.Set;
  * 
  * @author dkokotov
  */
-public class FileSearchCriteria extends AbstractSearchCriteria {
-    private static final long serialVersionUID = 1L;
-
+public class FileSearchCriteria {
     private Experiment experiment;
     private String extension;
     private Set<FileType> types = new HashSet<FileType>();

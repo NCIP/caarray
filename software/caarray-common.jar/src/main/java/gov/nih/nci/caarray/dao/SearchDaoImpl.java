@@ -99,6 +99,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.LockMode;
@@ -265,6 +266,39 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         if (pageSortParams.getPageSize() > 0) {
             q.setMaxResults(pageSortParams.getPageSize());            
         }
+        return q.list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends PersistentObject> List<T> pageAndFilterCollection(Collection<T> collection, String property,
+            List<? extends Serializable> values, PageSortParams<T> pageSortParams) {
+        StringBuilder filterQueryStr = new StringBuilder();
+
+        Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
+        if (!CollectionUtils.isEmpty(values)) {
+            filterQueryStr.append("where ").append(HibernateHelper.buildInClause(values, property, idBlocks));
+        }
+
+        SortCriterion<T> sortCrit = pageSortParams.getSortCriterion();
+        if (sortCrit != null) {
+            filterQueryStr.append(" ORDER BY this.").append(sortCrit.getOrderField());
+            if (pageSortParams.isDesc()) {
+                filterQueryStr.append(" desc");
+            }
+        }
+        
+        Query q = HibernateUtil.getCurrentSession().createFilter(collection, filterQueryStr.toString());
+        if (!idBlocks.isEmpty()) {
+            HibernateHelper.bindInClauseParameters(q, idBlocks);            
+        }
+        q.setFirstResult(pageSortParams.getIndex());
+        if (pageSortParams.getPageSize() > 0) {
+            q.setMaxResults(pageSortParams.getPageSize());            
+        }
+        
         return q.list();
     }
 

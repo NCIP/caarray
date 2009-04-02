@@ -85,7 +85,9 @@ package gov.nih.nci.caarray.services.external.v1_0.data;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
+import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 
 import javax.ejb.Remote;
 
@@ -106,10 +108,19 @@ public interface DataService {
         
     /**
      * Retrieves the parsed data set identified by the given request.
-     * @param dataSetRequest a DataSetRequest instance identifying the parsed data to be retrieved.
+     * 
+     * @param dataSetRequest a DataSetRequest instance identifying the parsed data to be retrieved. The request must 
+     * specify at least one hybridization or one file, and at least one quantitation type.  
+     * @throws InvalidReferenceException if any of the hybridization, file or quantitation references in the
+     * dataSetRequest are not valid 
+     * @throws InconsistentDataSetsException if the data sets for the hybridizations and/or files in the request are
+     * not consistent, e.g. do not correspond to the same design element list.
+     * @throws IllegalArgumentException if the data set request is null, or does not have at least one hybridization
+     * or file, or does not have at least one quantitation type
      * @return the data set.
      */
-    DataSet getDataSet(DataSetRequest dataSetRequest);
+    DataSet getDataSet(DataSetRequest dataSetRequest) throws InvalidReferenceException, InconsistentDataSetsException,
+            IllegalArgumentException;
         
     /**
      * Retrieves the file metadata and contents for the file identified by the given reference. The file
@@ -120,6 +131,21 @@ public interface DataService {
      * @param out the remote output stream (using the rmiio library) to which the file contents will
      * be written.
      * @return a DataFile instance containing the file metadata for the retrieved file. 
+     * @throws InvalidReferenceException if the fileRef is not a valid file reference.
+     * @throws DataTransferException if there is an error streaming the data.
      */
-    DataFile streamFileContents(CaArrayEntityReference fileRef, boolean compressed, RemoteOutputStream out);
+    DataFile streamFileContents(CaArrayEntityReference fileRef, boolean compressed, RemoteOutputStream out)
+            throws InvalidReferenceException, DataTransferException;
+    
+    /**
+     * Retrieves a set of files containg the mage tab IDF and SDRF for the experiment identified by the given reference.
+     * The IDF and SDRF are generated dynamically.
+     * 
+     * @param experimentRef reference identifying the experiment
+     * @return the set of IDF and SDRF files. 
+     * @throws InvalidReferenceException if the experimentRef is not a valid experiment reference.
+     * @throws DataTransferException if there is an error generating the mage-tab file data
+     */    
+    MageTabFileSet exportMageTab(CaArrayEntityReference experimentRef) throws InvalidReferenceException,
+            DataTransferException;
 }

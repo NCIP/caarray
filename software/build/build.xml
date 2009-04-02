@@ -161,7 +161,7 @@
         <include name="CaArraySvc_v1_0-common.jar" />
         <include name="CaArraySvc_v1_0-stubs.jar" />
     </fileset>
-    <fileset dir="${caarray-grid-svc.base.dir}/legacy/lib" id="grid.dependencies.caarray-grid-svc.lib.fileset">
+    <fileset dir="${caarray-grid-svc.base.dir}/v1_0/lib" id="grid.dependencies.caarray-grid-svc.lib.fileset">
         <include name="caGrid-data-utils-1.2.jar" />
         <include name="caGrid-core-1.2.jar" />
         <include name="caGrid-core-resources-1.2.jar" />
@@ -173,6 +173,7 @@
         <include name="caGrid-Transfer-client-1.2.jar" />
         <include name="caGrid-Transfer-common-1.2.jar" />
         <include name="caGrid-Transfer-stubs-1.2.jar" />
+        <include name="caGrid-wsEnum-stubs-1.2.jar" />
         <include name="commons-httpclient-3.0.jar" />
     </fileset>
 
@@ -186,6 +187,9 @@
             <property name="bda-utils.dir" value="${bda-utils.dir}"/>
             <property name="bda.utils.build.file" value="${bda.utils.build.file}"/>
         </ant>
+
+    	<validate-pre-build application.base.path="${basedir}/tools" wscore.relative.dir="ws-core-4.0.3"/>
+
         <!-- paths and filesets to define needed dependencies, which have been retrieved by ivy above -->
         <path id="project.jars.path">
             <fileset dir="${project.lib}" id="project.jars.fileset">
@@ -979,11 +983,9 @@
             <fileset refid="javaee.jar.fileset"/>
             <fileset refid="dom4j.jar.fileset"/>
             <fileset refid="affxfusion.jar.fileset"/>
-            <fileset refid="castor.jar.fileset"/>
             <fileset refid="cglib.jar.fileset"/>
             <fileset refid="commons-lang.jar.fileset"/>
             <fileset refid="clm.jar.fileset"/>
-            <fileset refid="csmapi.jar.fileset"/>
             <fileset refid="javacsv.jar.fileset"/>
             <fileset refid="mysql-connector-java.jar.fileset"/>
             <fileset refid="netcdf.jar.fileset"/>
@@ -1010,6 +1012,8 @@
                 <include name="${json-lib.jar}"/>
                 <include name="${log4j.jar}"/>
                 <include name="${spring.jar}"/>
+                <include name="${castor.jar}"/>
+            	<include name="${csmapi.jar}"/>
             </fileset>
         </path>
         <pathtofileset name="common.compile.dependencies.fileset" pathrefid="common.compile.dependencies.path" dir="${project.lib}"/>
@@ -1109,8 +1113,8 @@
             <fileset refid="svnClientAdapter.jar.fileset"/>
             <fileset refid="svnjavahl.jar.fileset"/>
         </path>
-
-        <path id="unit.test.dependencies.path">
+        
+    	<path id="unit.test.dependencies.path">
             <fileset refid="jboss.dependencies.fileset"/>
             <fileset id="test.dependencies.fileset" dir="${project.lib}">
                 <include name="${antlr.jar}"/>
@@ -1469,7 +1473,7 @@
         </javac>
     </target>
 
-    <target name="compile:caarray-grid-svc" depends="init:third-party-paths,validate-pre-build,compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar,build:caarray-grid-svc.common.jar">
+    <target name="compile:caarray-grid-svc" depends="init:third-party-paths,compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar,build:caarray-grid-svc.common.jar">
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
                 <copy file="${caarray-grid-svc.base.dir}/@{version}/deploy.properties.orig" tofile="${caarray-grid-svc.base.dir}/@{version}/deploy.properties">
@@ -1507,7 +1511,7 @@
     <!-- ******************************************************************* -->
 
     <target name="clean-build-with-zips" depends="clean,
-        validate-pre-build,
+        init:third-party-paths,
         build:caarray-client.jar,
         build:caarray-common.jar,
         build:caarray-ejb.jar,
@@ -1517,18 +1521,15 @@
         build:caarray-client.zip,
         create-grid-zip"/>
 
-    <target name="build" description="Builds the application without deploying." depends="validate-pre-build,build:caarray-client.jar,
+    <target name="build" description="Builds the application without deploying." depends="init:third-party-paths,
+    	build:caarray-client.jar,
         build:caarray-common.jar,
         build:caarray-ejb.jar,
         build:caarray.war,
         build:caarray.ear,
         build:caarray-grid-svc"/>
 
-    <target name="validate-pre-build" depends="init:third-party-paths">
-        <validate-pre-build application.base.path="${basedir}/tools" wscore.relative.dir="ws-core-4.0.3"/>
-    </target>
-
-    <target name="build-functional" depends="validate-pre-build,
+    <target name="build-functional" depends="init:third-party-paths,
         build:caarray-client.jar,
         build:functional:caarray.ear,
         build:caarray-grid-svc" description="Builds the application without deploying." />
@@ -1831,7 +1832,7 @@
         </jar>
     </target>
 
-    <target name="build:caarray-grid-svc" depends="init:third-party-paths,validate-pre-build,compile:caarray-grid-svc, build:caarray-grid-svc.common.jar">
+    <target name="build:caarray-grid-svc" depends="init:third-party-paths,compile:caarray-grid-svc, build:caarray-grid-svc.common.jar">
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="jars" inheritall="false">
@@ -2037,8 +2038,9 @@
     </target>
 
     <target name="test:junit-caarray.war" unless="notest" depends="init:third-party-paths,test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data">
-        <!-- need to make sure there aren't duplicate struts.xml on classpath! -->
-        <move file="${test.data.classes.dir}/struts.xml" tofile="${test.data.classes.dir}/struts.xml.renamed" failonerror="false" />
+        <copy todir="${caarray-war.classes.dir}">
+            <fileset dir="${caarray-war.src.dir}" includes="struts.xml,struts.properties,validators.xml" />
+        </copy>
         <caarray-run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${caarray-ejb.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};" classpathref.id="war.test.dependencies.path" />
     </target>
 
@@ -2239,7 +2241,7 @@
     </target>
 
     <target name="test:api:run-tests" unless="notest" depends="init:third-party-paths,test:api:compile-tests,build:caarray-client.jar">
-    	<caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/java" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" source.include="**/Api*.java" source.exclude="**/Abstract*.java" />
+    	<caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/java" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" source.include="**/api/**/java/**/*.java" source.exclude="**/Abstract*.java" />
     </target>
 
     <target name="test:dataset" unless="notest" depends="init:third-party-paths,test:api:compile-tests,build:caarray-client.jar">
@@ -2247,7 +2249,7 @@
     </target>
 
     <target name="test:grid:run-tests" unless="notest"  depends="init:third-party-paths,test:grid:compile-tests,build:caarray-client.jar,build:caarray-grid-svc">
-        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/grid" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref.id="test.grid.dependencies.path" source.include="**/Grid*.java" source.exclude="**/Abstract*.java" />
+        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/grid" classpath="${test.classes.dir};${caarray-client.jar};${caarray-grid-svc.common.jar};${caarray-client.resources.dir};" classpathref.id="test.grid.dependencies.path" source.include="**/api/**/grid/**/*.java" source.exclude="**/Abstract*.java" />
     </target>
 
     <!-- ******************************************************************* -->
@@ -2454,7 +2456,7 @@
 
     <target name="deploy:caarray-grid-svc" depends="init:third-party-paths,deploy:caarray-grid-svc-globus, deploy:caarray-grid-svc-jboss"/>
 
-    <target name="deploy:caarray-grid-svc-globus" depends="init:third-party-paths,validate-pre-build,build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useGlobus">
+    <target name="deploy:caarray-grid-svc-globus" depends="init:third-party-paths,build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useGlobus">
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="deployGlobus" inheritall="false">
@@ -2464,7 +2466,7 @@
         </for>
     </target>
 
-    <target name="deploy:caarray-grid-svc-jboss" depends="init:third-party-paths,validate-pre-build,build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useJBoss">
+    <target name="deploy:caarray-grid-svc-jboss" depends="init:third-party-paths,build:caarray-grid-svc,prepare:create-local.properties" if="internal.grid.useJBoss">
         <unzip src="${jboss-globus-serverinstance-config.zip}" dest="${globoss.server.instance.home}" />
         <replace file="${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd">
             <replacefilter token="@LOGICAL_HOST@" value="${grid.static.hostname}" />
@@ -2489,7 +2491,7 @@
 
     <target name="undeploy:caarray-grid-svc" depends="init:third-party-paths,undeploy:caarray-grid-svc-globus, undeploy:caarray-grid-svc-jboss"/>
 
-    <target name="undeploy:caarray-grid-svc-globus" depends="init:third-party-paths,validate-pre-build,prepare:create-local.properties" if="internal.grid.useJBoss">
+    <target name="undeploy:caarray-grid-svc-globus" depends="init:third-party-paths,prepare:create-local.properties" if="internal.grid.useJBoss">
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployJBoss" inheritall="false">
@@ -2500,7 +2502,7 @@
         </for>
     </target>
 
-    <target name="undeploy:caarray-grid-svc-jboss" depends="validate-pre-build,prepare:create-local.properties">
+    <target name="undeploy:caarray-grid-svc-jboss" depends="init:third-party-paths,prepare:create-local.properties">
         <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployJBoss" inheritall="false">
             <property name="jboss.dir" value="${globoss.home}"/>
             <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
@@ -2545,7 +2547,7 @@
         </for>
     </target>
 
-    <target name="create-grid-zip" depends="validate-pre-build">
+    <target name="create-grid-zip" depends="init:third-party-paths">
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
                 <var name="caarraysvc.temp.dir" value="${caarray-grid-svc.base.dir}/@{version}/build/cagrid_CaArraySvc" />
@@ -2663,7 +2665,7 @@
         <remote-scp remoteScpFileToCopy="${target.dir}/archFileReplace/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" />
     </target>
 
-    <target name="remote-grid:deploy-grid" unless="nodeploy" depends="init:third-party-paths,validate-pre-build">
+    <target name="remote-grid:deploy-grid" unless="nodeploy" depends="init:third-party-paths">
         <echo message="Deploying Grid to jboss server at ${ssh.grid.hostname}..." />
 
         <for param="version" list="${caarray-grid-svc.versions}">
@@ -2757,13 +2759,13 @@
         <echoproperties />
     </target>
 
-    <target name="pre-build-checks" depends="init:third-party-paths,validate-pre-build">
+    <target name="pre-build-checks" depends="init:third-party-paths">
         <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="pre-build-checks">
             <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </ant>
     </target>
 
-    <target name="post-build-checks" depends="init:third-party-paths,validate-pre-build">
+    <target name="post-build-checks" depends="init:third-party-paths">
         <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="post-build-checks">
             <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </ant>
@@ -2815,5 +2817,4 @@
             <packageset dir="${caarray-grid-svc.base.dir}/v1_0/src" />
         </javadoc>
     </target>
-
 </project>

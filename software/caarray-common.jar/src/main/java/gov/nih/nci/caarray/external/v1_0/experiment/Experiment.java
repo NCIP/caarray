@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.external.v1_0.experiment;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.factor.Factor;
@@ -111,6 +112,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private ArrayProvider arrayProvider;
     private AssayType assayType;
     private Set<Factor> factors = new HashSet<Factor>();
+    private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
     
     /**
      * @return the publicIdentifier
@@ -278,5 +280,19 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     public void setQualityControlTypes(Set<Term> qualityControlTypes) {
         this.qualityControlTypes = qualityControlTypes;
+    }
+    
+    /**
+     * @return the arrayDesigns
+     */
+    public Set<ArrayDesign> getArrayDesigns() {
+        return arrayDesigns;
+    }
+
+    /**
+     * @param arrayDesigns the arrayDesigns to set
+     */
+    public void setArrayDesigns(Set<ArrayDesign> arrayDesigns) {
+        this.arrayDesigns = arrayDesigns;
     }
 }

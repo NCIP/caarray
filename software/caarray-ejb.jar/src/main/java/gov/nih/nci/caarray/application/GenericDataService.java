@@ -210,6 +210,27 @@ public interface GenericDataService extends com.fiveamsolutions.nci.commons.serv
      <T extends PersistentObject> List<T> pageCollection(Collection<T> collection, PageSortParams<T> pageSortParams);
 
      /**
+      * Optionally filters the given collection based on given property and values and returns a subset of the results 
+      * based on given sorting and paging params. It is intended that the collection may be proxied and implementations
+      * will be able to query the persistent store without initializing the whole collection.
+      *
+      * Note that this method currently only supports SortCriterions that are either simple properties of the target
+      * class or required single-valued associations from it. If a non-required association is used in the sort
+      * criterion, then any instances for which that association is null will not be included in the results 
+      * (because an inner join is used)
+      *
+      * @param <T> the class of objects to expect in return.
+      * @param collection the collection from which to retrieve the subset
+      * @param property the property of the objects in the target collection to filter on
+      * @param values the expected values for the property. An in comparison is used. If values is null or empty, then
+      * no filtering will be done
+      * @param pageSortParams parameters specifying how the collection is to be sorted and which page is to be retrieved
+      * @return the list of objects representing the requested subset of the collection.
+      */
+     <T extends PersistentObject> List<T> pageAndFilterCollection(Collection<T> collection, String property,
+             List<? extends Serializable> values, PageSortParams<T> pageSortParams);
+
+     /**
       * Returns the size of a given collection. The intention is that this collection is proxied, and the
       * implementations of this will be able to calculate the size without initializing it.
       * @param collection the collection whose size to calculate

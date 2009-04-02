@@ -291,10 +291,11 @@ public class FileDaoTest extends AbstractDaoTest {
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
+        Experiment e = CaArrayDaoFactory.INSTANCE.getSearchDao().retrieve(Experiment.class, DUMMY_EXPERIMENT_1.getId());
         
         PageSortParams<CaArrayFile> params = new PageSortParams<CaArrayFile>(-1, 0, new AdHocSortCriterion<CaArrayFile>("name"), false);
         FileSearchCriteria criteria = new FileSearchCriteria();
-        criteria.setExperiment(DUMMY_EXPERIMENT_1);
+        criteria.setExperiment(e);
         criteria.setIncludeDerived(true);
         criteria.setIncludeRaw(true);
         

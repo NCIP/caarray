@@ -8,7 +8,8 @@
     <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"
         schemaLocation="v1_0_gov.nih.nci.caarray.external.sample.xsd" />
 
-     <xs:simpleType name="DataType">
+    <xs:element name="DataType" type="dat:DataType"/>
+    <xs:simpleType name="DataType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="BOOLEAN"/>
 			<xs:enumeration value="LONG"/>
@@ -30,8 +31,27 @@
 	</xs:complexContent>
     </xs:complexType>
 
+    <xs:element name="ArrayDataType" type="dat:ArrayDataType" />
+    <xs:complexType name="ArrayDataType">
+        <xs:complexContent>
+            <xs:extension base="car:AbstractCaArrayEntity">
+                <xs:sequence>
+		    <xs:element name="quantitationTypes">        	
+		        <xs:complexType>            	
+			    <xs:sequence>
+			        <xs:element ref="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded"/>
+			    </xs:sequence>
+			</xs:complexType>
+		    </xs:element>
+                </xs:sequence>                
+		<xs:attribute name="name" type="xs:string" />
+		<xs:attribute name="version" type="xs:string" />
+	    </xs:extension>
+	</xs:complexContent>
+    </xs:complexType>
+
     <xs:element name="AbstractDataColumn" type="dat:AbstractDataColumn" />
-    <xs:complexType name="AbstractDataColumn">
+    <xs:complexType name="AbstractDataColumn" abstract="true">
 		<xs:sequence>
         	<xs:element name="quantitationType" minOccurs="0" maxOccurs="1" type="dat:QuantitationType" />
         </xs:sequence>
@@ -197,5 +217,20 @@
 			<xs:element name="contents" minOccurs="1" maxOccurs="1" type="xs:base64Binary" />
         </xs:sequence>
 		<xs:attribute name="compressed" type="xs:boolean" />
+    </xs:complexType>
+
+    <xs:element name="MageTabFileSet" type="dat:MageTabFileSet" />
+    <xs:complexType name="MageTabFileSet">
+    	<xs:sequence>
+	    <xs:element name="idf" minOccurs="1" maxOccurs="1" type="dat:DataFileContents" />
+	    <xs:element name="sdrf" minOccurs="1" maxOccurs="1" type="dat:DataFileContents" />
+	    <xs:element name="dataFiles">        	
+	        <xs:complexType>            	
+		    <xs:sequence>
+		        <xs:element ref="dat:DataFile" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
     </xs:complexType>
  </xs:schema>

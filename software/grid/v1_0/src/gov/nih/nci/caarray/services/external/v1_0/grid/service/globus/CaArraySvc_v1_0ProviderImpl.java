@@ -118,7 +118,7 @@ public class CaArraySvc_v1_0ProviderImpl{
 
     public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsByKeywordResponse searchForExperimentsByKeyword(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsByKeywordRequest params) throws RemoteException {
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsByKeywordResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsByKeywordResponse();
-    boxedResult.setExperiment(impl.searchForExperimentsByKeyword(params.getCriteria().getExperimentKeywordSearchCriteria()));
+    boxedResult.setExperiment(impl.searchForExperimentsByKeyword(params.getCriteria().getKeywordSearchCriteria()));
     return boxedResult;
   }
 
@@ -131,6 +131,30 @@ public class CaArraySvc_v1_0ProviderImpl{
     public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsByKeywordResponse searchForBiomaterialsByKeyword(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsByKeywordRequest params) throws RemoteException {
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsByKeywordResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsByKeywordResponse();
     boxedResult.setBiomaterial(impl.searchForBiomaterialsByKeyword(params.getCriteria().getBiomaterialKeywordSearchCriteria()));
+    return boxedResult;
+  }
+
+    public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabExportResponse getMageTabExport(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabExportRequest params) throws RemoteException {
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabExportResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabExportResponse();
+    boxedResult.setMageTabFileSet(impl.getMageTabExport(params.getExperimentRef().getCaArrayEntityReference()));
+    return boxedResult;
+  }
+
+    public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferResponse getMageTabZipTransfer(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferRequest params) throws RemoteException {
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferResponse();
+    boxedResult.setTransferServiceContextReference(impl.getMageTabZipTransfer(params.getExperimentRef().getCaArrayEntityReference(),params.isCompressIndividually()));
+    return boxedResult;
+  }
+
+    public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllArrayDataTypesResponse getAllArrayDataTypes(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllArrayDataTypesRequest params) throws RemoteException {
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllArrayDataTypesResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllArrayDataTypesResponse();
+    boxedResult.setArrayDataType(impl.getAllArrayDataTypes());
+    return boxedResult;
+  }
+
+    public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForQuantitationTypesResponse searchForQuantitationTypes(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForQuantitationTypesRequest params) throws RemoteException {
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForQuantitationTypesResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForQuantitationTypesResponse();
+    boxedResult.setQuantitationType(impl.searchForQuantitationTypes(params.getCriteria().getQuantitationTypeSearchCriteria()));
     return boxedResult;
   }
 

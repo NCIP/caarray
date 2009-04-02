@@ -499,6 +499,69 @@ public class SearchDaoTest {
     }
 
     @Test
+    public void testPageAndFilterCollection() {
+        Transaction tx = null;
+        try {
+            // set up dummy data
+            tx = HibernateUtil.beginTransaction();
+            Session s = HibernateUtil.getCurrentSession();
+            Organism org = new Organism();
+            org.setScientificName("Foo");
+            org.setTermSource(DUMMY_TERM_SOURCE);
+            Project project = new Project();
+            project.getExperiment().setTitle("test experiment.");
+            project.getExperiment().setAssayTypeEnum(AssayType.ACGH);
+            project.getExperiment().setOrganism(org);
+            project.getExperiment().setManufacturer(new Organization());
+            Source source = new Source();
+            source.setName("Source 1 Name");
+            source.setDescription("ZZZ");
+            project.getExperiment().getSources().add(source);
+            Source source2 = new Source();
+            source2.setName("Source 2 Name");
+            source2.setDescription("AAA");
+            project.getExperiment().getSources().add(source2);
+            s.save(project);
+            s.flush();
+            s.clear();
+
+            PageSortParams<Source> params = new PageSortParams<Source>(1, 1, SourceSortCriterion.NAME, false);
+            Experiment e = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
+            
+            List<Source> filteredList = SEARCH_DAO.pageAndFilterCollection(e.getSources(), "name", null, params);
+            assertEquals(1, filteredList.size());
+            assertEquals("Source 2 Name", filteredList.get(0).getName());    
+            
+            s.clear();
+            e = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
+            filteredList = SEARCH_DAO.pageAndFilterCollection(e.getSources(), "name", Arrays.asList("Source 1 Name", "Source 2 Name"), params);
+            assertEquals(1, filteredList.size());
+            assertEquals("Source 2 Name", filteredList.get(0).getName());    
+
+            s.clear();
+            e = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
+            params.setIndex(0);
+            filteredList = SEARCH_DAO.pageAndFilterCollection(e.getSources(), "name", Collections.singletonList("Source 1 Name"), params);
+            assertEquals(1, filteredList.size());
+            assertEquals("Source 1 Name", filteredList.get(0).getName());    
+
+            s.clear();
+            e = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
+            params.setPageSize(2);
+            params.setIndex(0);
+            params.setSortCriterion(SourceSortCriterion.DESCRIPTION);
+            params.setDesc(true);
+            filteredList = SEARCH_DAO.pageAndFilterCollection(e.getSources(), "name", Arrays.asList("Source 1 Name", "Source 2 Name"), params);
+            assertEquals(2, filteredList.size());
+            assertEquals("Source 1 Name", filteredList.get(0).getName());    
+            assertEquals("Source 2 Name", filteredList.get(1).getName());    
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during search by example: " + e.getMessage());
+        }
+    }
+
+    @Test
     public void testDefect10709() {
         CQLQuery cqlQuery = new CQLQuery();
         gov.nih.nci.cagrid.cqlquery.Object target = new gov.nih.nci.cagrid.cqlquery.Object();

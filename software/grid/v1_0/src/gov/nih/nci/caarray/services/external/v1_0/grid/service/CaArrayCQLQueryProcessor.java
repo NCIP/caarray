@@ -123,7 +123,7 @@ public class CaArrayCQLQueryProcessor extends LazyCQLQueryProcessor {
      */
     protected List<?> queryCaArrayService(final CQLQuery cqlQuery) {
         LOG.debug("querying ....");
-        return caArrayServer.getSearchService().search(cqlQuery, null);
+        return caArrayServer.getSearchService().searchByCQL(cqlQuery, null);
     }
 
     /**

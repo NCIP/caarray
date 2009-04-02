@@ -6,7 +6,7 @@
         schemaLocation="v1_0_gov.nih.nci.caarray.external.vocabulary.xsd" />
 
     <xs:element name="AbstractValue" type="val:AbstractValue" />
-    <xs:complexType name="AbstractValue">
+    <xs:complexType name="AbstractValue" abstract="true">
         <xs:sequence>
             <xs:element name="unit" minOccurs="0" maxOccurs="1" type="voc:Term" />                
         </xs:sequence>

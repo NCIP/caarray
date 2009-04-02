@@ -13,13 +13,15 @@
             <mkdir dir="@{xml.output.dir}" />
             <property name="jdwp.port" value="8000"/>
             <property name="should.suspend.vm.for.debugging" value="n"/>
-            <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="once" maxmemory="512m">
-                <!--jvmarg value="-Xdebug"/>
-                <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jdwp.port},server=y,suspend=${should.suspend.vm.for.debugging}"/-->
+            <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="once" maxmemory="1024m">
+                <jvmarg value="-Xdebug"/>
+                <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jdwp.port},server=y,suspend=${should.suspend.vm.for.debugging}"/>
                 <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.file}" />
                 <sysproperty key="server.hostname" value="${jboss.server.hostname}" />
                 <sysproperty key="server.port" value="${jboss.server.port}" />
                 <sysproperty key="server.jndi.port" value="${jboss.server.jndi.port}" />
+                <sysproperty key="globoss.server.hostname" value="${globoss.server.hostname}" />
+                <sysproperty key="globoss.server.http.port" value="${globoss.server.http.port}" />
                 <sysproperty key="selenium.server.port" value="${selenium.server.port}" />
                 <classpath>
                     <pathelement path="@{instrumented.classes}" />

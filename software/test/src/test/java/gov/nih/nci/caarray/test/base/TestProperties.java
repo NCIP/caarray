@@ -95,8 +95,8 @@ public final class TestProperties {
 
     public static final String SERVER_HOSTNAME_DEFAULT = "localhost";
     public static final String SERVER_PORT_DEFAULT = "8080";
-    public static final String SERVER_JNDI_PORT_DEFAULT = "11299";
-    public static final String GRID_SERVER_PORT_DEFAULT = "80";
+    public static final String SERVER_JNDI_PORT_DEFAULT = "1099";
+    public static final String GRID_SERVER_PORT_DEFAULT = "8080";
 
     public static final String SELENIUM_SERVER_PORT_KEY = "selenium.server.port";
     public static final String SELENIUM_SERVER_PORT_DEFAULT = "8081";
@@ -143,8 +143,8 @@ public final class TestProperties {
         return Integer.parseInt(System.getProperty(GRID_SERVER_PORT_KEY, GRID_SERVER_PORT_DEFAULT));
     }
 
-    public static String getGridServiceUrl() {
-        return ("http://" + getGridServerHostname() + ":" + getGridServerPort() + "/wsrf/services/cagrid/CaArraySvc");
+    public static String getBaseGridServiceUrl() {
+        return ("http://" + getGridServerHostname() + ":" + getGridServerPort() + "/wsrf/services/cagrid/");
     }
     // Experiment names and array designs used in API tests
     public static String getAffymetrixSpecificationDesignName() {

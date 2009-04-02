@@ -89,14 +89,14 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
- * Represents the heading for a "column" of array data, indicating the name and primitive typeClass
- * of the data.
+ * Represents the heading for a "column" of array data, indicating the name and primitive typeClass of the data.
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable = false)
@@ -118,6 +118,7 @@ public final class QuantitationType extends AbstractCaArrayObject {
 
     private String name;
     private String type;
+    private Set<ArrayDataType> arrayDataTypes = new HashSet<ArrayDataType>();
 
     /**
      * @return the name
@@ -179,4 +180,26 @@ public final class QuantitationType extends AbstractCaArrayObject {
         this.type = type;
     }
 
+    /**
+     * @return the array data types which include this quantitation type
+     */
+    @ManyToMany(mappedBy = "quantitationTypes")
+    public Set<ArrayDataType> getArrayDataTypes() {
+        return arrayDataTypes;
+    }
+
+    /**
+     * @param arrayDataTypes the arrayDataTypes to set
+     */
+    public void setArrayDataTypes(Set<ArrayDataType> arrayDataTypes) {
+        this.arrayDataTypes = arrayDataTypes;
+    }
+
+    /**
+     * @return the data type of this quantitation type as a DataType constant
+     */
+    @Transient
+    public DataType getDataType() {
+        return DataType.fromTypeClass(getTypeClass());
+    }
 }

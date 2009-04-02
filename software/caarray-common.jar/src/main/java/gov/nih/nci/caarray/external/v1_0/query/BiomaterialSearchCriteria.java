@@ -85,13 +85,14 @@ package gov.nih.nci.caarray.external.v1_0.query;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author dkokotov
  */
-public class BiomaterialSearchCriteria extends AbstractSearchCriteria {
+public class BiomaterialSearchCriteria implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private CaArrayEntityReference experiment;

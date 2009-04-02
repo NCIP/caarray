@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
@@ -94,12 +95,12 @@ import gov.nih.nci.caarray.security.SecurityPolicy;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import net.sf.dozer.util.mapping.MapperIF;
-
-import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 
 /**
@@ -146,10 +147,17 @@ public abstract class AbstractExternalService {
     }
 
     /**
+     * @return the MAGE-TAB Exporter service
+     */
+    protected MageTabExporter getMageTabExporter() {
+        return (MageTabExporter) ServiceLocatorFactory.getLocator().lookup(MageTabExporter.JNDI_NAME);
+    }
+
+    /**
      * @return an instance of the Dozer Mapper.
      */
     protected MapperIF getMapper() {
-        return BeanMapperLookup.getMapper(BeanMapperLookup.VERSION_1_0);
+        return BeanMapperLookup.getMapper(getMapperVersionKey());
     }
     
     /**
@@ -173,7 +181,22 @@ public abstract class AbstractExternalService {
             out.add((T) mapper.map(obj, outClass));
         }
     }
-    
+
+    /**
+     * Map the given collection of objects from one domain model to another. Used to convert between internal and 
+     * external domain models.
+     * @param <S> type of objects being converted
+     * @param <T> type of objects to convert to
+     * @param in the collection of objects to convert
+     * @param outClass the class of the objects to convert to.
+     * @return the list of converted objects.
+     */
+    protected <S, T> List<T> mapCollection(Collection<S> in, Class<T> outClass) {
+        List<T> out = new ArrayList<T>();
+        mapCollection(in, out, outClass);
+        return out;
+    }
+
     /**
      * Map the given object from one domain model to another. Used to convert between internal and 
      * external domain models.
@@ -193,7 +216,7 @@ public abstract class AbstractExternalService {
      * @param lsid the LSID
      * @return the entity
      */
-    protected abstract PersistentObject getByLsid(String lsid);
+    protected abstract Object getByLsid(String lsid);
 
     /**
      * Return the class of the entity identified by the given LSID. 

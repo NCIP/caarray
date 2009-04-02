@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.services.external.v1_0.grid.service;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -104,7 +105,7 @@ public class ExperimentCriteriaEnumIterator extends BaseEnumIterator<Experiment>
     }
 
     @Override
-    protected List<Experiment> getNextResults(PagingParams enumParams) {
+    protected List<Experiment> getNextResults(PagingParams enumParams) throws InvalidReferenceException {
         return getCaArrayServer().getSearchService().searchForExperiments(criteria, enumParams);        
     }
 }

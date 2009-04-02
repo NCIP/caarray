@@ -101,7 +101,7 @@ public class AbstractApiTest {
         System.out.println(header + ": " + outputText);
     }
 
-    protected StringBuilder buildStackTrace(Throwable t) {
+    protected static StringBuilder buildStackTrace(Throwable t) {
         StringWriter sw = new StringWriter();
         t.printStackTrace(new PrintWriter(sw, true));
         return new StringBuilder(sw.toString());

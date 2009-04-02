@@ -105,6 +105,7 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
 
     int callsToFiltercollection = 0;
+    int callsToPageAndFilterCollection = 0;
 
     /**
      * {@inheritDoc}
@@ -174,6 +175,15 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
             PageSortParams<T> pageSortParams) {
         return null;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> pageAndFilterCollection(Collection<T> collection, String property,
+            List<? extends Serializable> values, PageSortParams<T> pageSortParams) {
+        this.callsToPageAndFilterCollection++;
+        return new ArrayList<T>(collection);
+    }
 
     /**
      * {@inheritDoc}
@@ -191,6 +201,7 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
 
     public void reset() {
         this.callsToFiltercollection = 0;
+        this.callsToPageAndFilterCollection = 0;
     }
 
     /**
@@ -202,5 +213,19 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
 
     public <T extends AbstractCaArrayEntity> T getEntityByLsid(Class<T> entityClass, LSID lsid) {
         return null;
+    }
+
+    /**
+     * @return the callsToPageAndFilterCollection
+     */
+    public int getCallsToPageAndFilterCollection() {
+        return callsToPageAndFilterCollection;
+    }
+
+    /**
+     * @param callsToPageAndFilterCollection the callsToPageAndFilterCollection to set
+     */
+    public void setCallsToPageAndFilterCollection(int callsToPageAndFilterCollection) {
+        this.callsToPageAndFilterCollection = callsToPageAndFilterCollection;
     }
 }

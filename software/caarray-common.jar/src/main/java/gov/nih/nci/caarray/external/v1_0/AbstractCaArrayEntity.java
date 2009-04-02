@@ -88,7 +88,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * AbstractCaArrayEntity is the base class for objects in the caArray external model that can be dereferenced.
- * An instance of AbstractCaArrayEntity has an LSID which can be used to retrieve that instance later. It can be
+ * An instance of AbstractCaArrayEntity has an id which can be used to retrieve that instance later. It can be
  * thought of similarly to a URL or EPR.
  * 
  * @author dkokotov
@@ -96,20 +96,27 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public abstract class AbstractCaArrayEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    private String lsid;
+    private String id;
 
     /**
-     * @return the lsid
+     * @return the id
      */
-    public String getLsid() {
-        return lsid;
+    public String getId() {
+        return id;
     }
 
     /**
-     * @param lsid the lsid to set
+     * @param id the id to set
      */
-    public void setLsid(String lsid) {
-        this.lsid = lsid;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * @return a reference to this entity
+     */
+    public CaArrayEntityReference getReference() {
+        return new CaArrayEntityReference(this.id);
     }
     
     /**

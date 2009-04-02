@@ -117,7 +117,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -280,24 +279,25 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     @SuppressWarnings({UNCHECKED, "PMD.NPathComplexity" })
     public List<Experiment> searchByCriteria(PageSortParams<Experiment> params, ExperimentSearchCriteria criteria) {
         Criteria c = HibernateUtil.getCurrentSession().createCriteria(Experiment.class);
-        Junction junction = criteria.isAnd() ? Restrictions.conjunction() : Restrictions.disjunction();
-        c.add(junction);
         if (criteria.getTitle() != null) {
-            junction.add(Restrictions.eq("title", criteria.getTitle()));
+            c.add(Restrictions.eq("title", criteria.getTitle()));
         }
-        if (criteria.getOrganisms() != null && !criteria.getOrganisms().isEmpty()) {
-            junction.add(Restrictions.in("organism", criteria.getOrganisms()));
+        if (criteria.getPublicIdentifier() != null) {
+            c.add(Restrictions.eq("publicIdentifier", criteria.getPublicIdentifier()));
+        }
+        if (criteria.getOrganism() != null) {
+            c.add(Restrictions.eq("organism", criteria.getOrganism()));
         }
         if (criteria.getAssayType() != null) {
-            junction.add(Restrictions.eq("assayType", criteria.getAssayType().name()));
+            c.add(Restrictions.eq("assayType", criteria.getAssayType().name()));
         }
         if (criteria.getArrayProvider() != null) {
-            junction.add(Restrictions.eq("manufacturer", criteria.getArrayProvider()));
+            c.add(Restrictions.eq("manufacturer", criteria.getArrayProvider()));
         }
         if (criteria.getPrincipalInvestigator() != null) {
             c.createAlias("experimentContacts", "ec", CriteriaSpecification.LEFT_JOIN);
             c.createAlias("ec.roles", "r", CriteriaSpecification.LEFT_JOIN);
-            junction.add(Restrictions.and(Restrictions.eq("ec.person", criteria.getPrincipalInvestigator()),
+            c.add(Restrictions.and(Restrictions.eq("ec.person", criteria.getPrincipalInvestigator()),
                     Restrictions.eq("r.value", ExperimentContact.PI_ROLE)));
         }
         c.setFirstResult(params.getIndex());

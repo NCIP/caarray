@@ -96,29 +96,39 @@ import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
+import gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UnfilteredCallback;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
@@ -498,4 +508,54 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         return query.list();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<QuantitationType> searchForQuantitationTypes(PageSortParams<QuantitationType> params,
+            QuantitationTypeSearchCriteria criteria) {
+        Criteria c = HibernateUtil.getCurrentSession().createCriteria(HybridizationData.class);
+        c.createCriteria("hybridization").add(Restrictions.eq("id", criteria.getHybridization().getId()));
+        c.createCriteria("dataSet").createAlias("quantitationTypes", "qt").createAlias("arrayData", "ad");
+        c.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        
+        if (!criteria.getArrayDataTypes().isEmpty()) {
+            List<Long> ids = new LinkedList<Long>();
+            for (ArrayDataType type : criteria.getArrayDataTypes()) {
+                ids.add(type.getId());
+            }
+            c.createCriteria("ad.type").add(Restrictions.in("id", ids));
+        }
+        
+
+        Set<FileType> fileTypes = new HashSet<FileType>();
+        if (criteria.isIncludeRaw()) {
+            fileTypes.addAll(FileType.RAW_ARRAY_DATA_FILE_TYPES);
+        }
+        if (criteria.isIncludeDerived()) {
+            fileTypes.addAll(FileType.DERIVED_ARRAY_DATA_FILE_TYPES);            
+        }
+        fileTypes.addAll(criteria.getFileTypes());
+        if (!fileTypes.isEmpty()) {
+            List<String> typeNames = new ArrayList<String>();
+            for (FileType type : fileTypes) {
+                typeNames.add(type.name());
+            }
+            c.createCriteria("ad.dataFile").add(Restrictions.in("type", typeNames));
+        }
+        
+        c.setFirstResult(params.getIndex());
+        if (params.getPageSize() > 0) {
+            c.setMaxResults(params.getPageSize());
+        }
+        c.addOrder(toOrder(params, "qt"));
+        
+        List<Map<String, Object>> results = c.list();
+        List<QuantitationType> qTypes = SetUniqueList.decorate(new LinkedList<QuantitationType>());
+        for (Map<String, Object> row : results) {
+            QuantitationType qt = (QuantitationType) row.get("qt");
+            qTypes.add(qt);
+        }
+        return qTypes;
+    }
 }

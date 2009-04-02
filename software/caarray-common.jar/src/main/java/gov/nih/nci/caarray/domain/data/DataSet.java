@@ -95,6 +95,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -110,9 +111,26 @@ public final class DataSet extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = 4430513886275629776L;
 
+    private AbstractArrayData arrayData;
     private List<HybridizationData> hybridizationDataList = new ArrayList<HybridizationData>();
     private List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
     private DesignElementList designElementList;
+
+    
+    /**
+     * @return the arrayData
+     */
+    @OneToOne(mappedBy = "dataSet")
+    public AbstractArrayData getArrayData() {
+        return arrayData;
+    }
+
+    /**
+     * @param arrayData the arrayData to set
+     */
+    public void setArrayData(AbstractArrayData arrayData) {
+        this.arrayData = arrayData;
+    }
 
     /**
      * @return the hybridizationDatas

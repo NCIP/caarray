@@ -82,9 +82,6 @@
  */
 package gov.nih.nci.caarray.domain.search;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
@@ -95,11 +92,10 @@ import gov.nih.nci.caarray.domain.project.AssayType;
  * 
  * @author dkokotov
  */
-public class ExperimentSearchCriteria extends AbstractSearchCriteria {
-    private static final long serialVersionUID = 1L;
-    
+public class ExperimentSearchCriteria {
     private String title;
-    private Set<Organism> organisms = new HashSet<Organism>();
+    private String publicIdentifier;
+    private Organism organism;
     private Organization arrayProvider;
     private AssayType assayType;
     private Person principalInvestigator;
@@ -119,17 +115,17 @@ public class ExperimentSearchCriteria extends AbstractSearchCriteria {
     }
 
     /**
-     * @return the organisms
+     * @return the organism
      */
-    public Set<Organism> getOrganisms() {
-        return organisms;
+    public Organism getOrganism() {
+        return organism;
     }
 
     /**
-     * @param organisms the organisms to set
+     * @param organism the organism to set
      */
-    public void setOrganisms(Set<Organism> organisms) {
-        this.organisms = organisms;
+    public void setOrganism(Organism organism) {
+        this.organism = organism;
     }
 
     /**
@@ -172,5 +168,19 @@ public class ExperimentSearchCriteria extends AbstractSearchCriteria {
      */
     public void setPrincipalInvestigator(Person principalInvestigator) {
         this.principalInvestigator = principalInvestigator;
+    }
+
+    /**
+     * @return the publicIdentifier
+     */
+    public String getPublicIdentifier() {
+        return publicIdentifier;
+    }
+
+    /**
+     * @param publicIdentifier the publicIdentifier to set
+     */
+    public void setPublicIdentifier(String publicIdentifier) {
+        this.publicIdentifier = publicIdentifier;
     }
 }

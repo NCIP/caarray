@@ -84,13 +84,14 @@ package gov.nih.nci.caarray.external.v1_0.query;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author dkokotov
  */
-public class HybridizationSearchCriteria extends AbstractSearchCriteria {
+public class HybridizationSearchCriteria implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private CaArrayEntityReference experiment;

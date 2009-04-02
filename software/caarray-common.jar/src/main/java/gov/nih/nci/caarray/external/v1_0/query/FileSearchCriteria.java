@@ -85,13 +85,14 @@ package gov.nih.nci.caarray.external.v1_0.query;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author dkokotov
  */
-public class FileSearchCriteria extends AbstractSearchCriteria {
+public class FileSearchCriteria implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private CaArrayEntityReference experiment;

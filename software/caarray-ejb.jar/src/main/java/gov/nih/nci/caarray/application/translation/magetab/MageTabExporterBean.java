@@ -170,15 +170,10 @@ public class MageTabExporterBean implements MageTabExporter {
         new HashMap<gov.nih.nci.caarray.domain.vocabulary.TermSource, TermSource>();
 
     /**
-     * Takes an Experiment, constructs a MAGE-TAB IDF and SDRF describing the sample-data relationships and
-     * annotations, and exports the MAGE-TAB into files.
-     *
-     * @param experiment the experiment whose content needs to be translated into MAGE-TAB files.
-     * @param idfFile the File which will hold the IDF document.
-     * @param sdrfFile the File which will hold the SDRF document.
+     * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-    public void exportToMageTab(Experiment experiment, File idfFile, File sdrfFile) {
+    public MageTabDocumentSet exportToMageTab(Experiment experiment, File idfFile, File sdrfFile) {
         LogUtil.logSubsystemEntry(LOG, experiment);
 
         MageTabFileSet fileSet = new MageTabFileSet();
@@ -206,6 +201,7 @@ public class MageTabExporterBean implements MageTabExporter {
         allDerivedArrayDataMatrixFiles.clear();
 
         LogUtil.logSubsystemExit(LOG);
+        return mageTabDocumentSet;
     }
 
     /**

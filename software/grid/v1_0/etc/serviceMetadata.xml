@@ -137,7 +137,7 @@
       </ns2:Operation>
       <ns2:Operation description="" name="searchForExperimentsByKeyword">
        <ns2:inputParameterCollection>
-        <ns2:InputParameter qName="ns33:ExperimentKeywordSearchCriteria" dimensionality="1" index="0" isArray="false" isRequired="false" name="criteria" xmlns:ns33="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+        <ns2:InputParameter qName="ns33:KeywordSearchCriteria" dimensionality="1" index="0" isArray="false" isRequired="false" name="criteria" xmlns:ns33="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
        </ns2:inputParameterCollection>
        <ns2:Output qName="ns34:Experiment" dimensionality="1" isArray="true" xmlns:ns34="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"/>
        <ns2:faultCollection/>
@@ -156,6 +156,33 @@
        <ns2:Output qName="ns38:Biomaterial" dimensionality="1" isArray="true" xmlns:ns38="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"/>
        <ns2:faultCollection/>
       </ns2:Operation>
+      <ns2:Operation description="" name="getMageTabExport">
+       <ns2:inputParameterCollection>
+        <ns2:InputParameter qName="ns39:CaArrayEntityReference" dimensionality="1" index="0" isArray="false" isRequired="false" name="experimentRef" xmlns:ns39="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
+       </ns2:inputParameterCollection>
+       <ns2:Output qName="ns40:MageTabFileSet" dimensionality="1" isArray="false" xmlns:ns40="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"/>
+       <ns2:faultCollection/>
+      </ns2:Operation>
+      <ns2:Operation description="" name="getMageTabZipTransfer">
+       <ns2:inputParameterCollection>
+        <ns2:InputParameter qName="ns41:CaArrayEntityReference" dimensionality="1" index="0" isArray="false" isRequired="false" name="experimentRef" xmlns:ns41="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
+        <ns2:InputParameter qName="xsd:boolean" dimensionality="1" index="1" isArray="false" isRequired="false" name="compressIndividually" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+       </ns2:inputParameterCollection>
+       <ns2:Output qName="ns42:TransferServiceContextReference" dimensionality="1" isArray="false" xmlns:ns42="http://transfer.cagrid.org/TransferService/Context/types"/>
+       <ns2:faultCollection/>
+      </ns2:Operation>
+      <ns2:Operation description="" name="getAllArrayDataTypes">
+       <ns2:inputParameterCollection/>
+       <ns2:Output qName="ns43:ArrayDataType" dimensionality="1" isArray="true" xmlns:ns43="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"/>
+       <ns2:faultCollection/>
+      </ns2:Operation>
+      <ns2:Operation description="" name="searchForQuantitationTypes">
+       <ns2:inputParameterCollection>
+        <ns2:InputParameter qName="ns44:QuantitationTypeSearchCriteria" dimensionality="1" index="0" isArray="false" isRequired="false" name="criteria" xmlns:ns44="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+       </ns2:inputParameterCollection>
+       <ns2:Output qName="ns45:QuantitationType" dimensionality="1" isArray="true" xmlns:ns45="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"/>
+       <ns2:faultCollection/>
+      </ns2:Operation>
      </ns2:operationCollection>
      <ns2:contextPropertyCollection>
       <ns2:ContextProperty description="" name="{gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata}ServiceMetadata"/>
@@ -166,50 +193,50 @@
      <ns2:operationCollection>
       <ns2:Operation description="" name="PullOp">
        <ns2:inputParameterCollection>
-        <ns2:InputParameter qName="ns39:Pull" dimensionality="1" index="0" isArray="false" isRequired="false" name="pull" xmlns:ns39="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+        <ns2:InputParameter qName="ns46:Pull" dimensionality="1" index="0" isArray="false" isRequired="false" name="pull" xmlns:ns46="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
        </ns2:inputParameterCollection>
-       <ns2:Output qName="ns40:PullResponse" dimensionality="1" isArray="false" xmlns:ns40="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+       <ns2:Output qName="ns47:PullResponse" dimensionality="1" isArray="false" xmlns:ns47="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
        <ns2:faultCollection/>
       </ns2:Operation>
       <ns2:Operation description="" name="RenewOp">
        <ns2:inputParameterCollection>
-        <ns2:InputParameter qName="ns41:Renew" dimensionality="1" index="0" isArray="false" isRequired="false" name="renew" xmlns:ns41="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+        <ns2:InputParameter qName="ns48:Renew" dimensionality="1" index="0" isArray="false" isRequired="false" name="renew" xmlns:ns48="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
        </ns2:inputParameterCollection>
-       <ns2:Output qName="ns42:RenewResponse" dimensionality="1" isArray="false" xmlns:ns42="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+       <ns2:Output qName="ns49:RenewResponse" dimensionality="1" isArray="false" xmlns:ns49="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
        <ns2:faultCollection/>
       </ns2:Operation>
       <ns2:Operation description="" name="GetStatusOp">
        <ns2:inputParameterCollection>
-        <ns2:InputParameter qName="ns43:GetStatus" dimensionality="1" index="0" isArray="false" isRequired="false" name="status" xmlns:ns43="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+        <ns2:InputParameter qName="ns50:GetStatus" dimensionality="1" index="0" isArray="false" isRequired="false" name="status" xmlns:ns50="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
        </ns2:inputParameterCollection>
-       <ns2:Output qName="ns44:GetStatusResponse" dimensionality="1" isArray="false" xmlns:ns44="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+       <ns2:Output qName="ns51:GetStatusResponse" dimensionality="1" isArray="false" xmlns:ns51="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
        <ns2:faultCollection/>
       </ns2:Operation>
       <ns2:Operation description="" name="ReleaseOp">
        <ns2:inputParameterCollection>
-        <ns2:InputParameter qName="ns45:Release" dimensionality="1" index="0" isArray="false" isRequired="false" name="release" xmlns:ns45="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+        <ns2:InputParameter qName="ns52:Release" dimensionality="1" index="0" isArray="false" isRequired="false" name="release" xmlns:ns52="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
        </ns2:inputParameterCollection>
        <ns2:faultCollection/>
       </ns2:Operation>
       <ns2:Operation description="" name="getServiceSecurityMetadata">
        <ns2:inputParameterCollection/>
-       <ns2:Output qName="ns46:ServiceSecurityMetadata" dimensionality="1" isArray="false" xmlns:ns46="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security"/>
+       <ns2:Output qName="ns53:ServiceSecurityMetadata" dimensionality="1" isArray="false" xmlns:ns53="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security"/>
        <ns2:faultCollection/>
       </ns2:Operation>
      </ns2:operationCollection>
      <ns2:contextPropertyCollection/>
     </ns2:ServiceContext>
    </ns2:serviceContextCollection>
-   <ns47:SemanticMetadata conceptCode="C63541" conceptDefinition="A service available on a system that coordinates resources that are not subject to central control, using open, general purpose protocols and interfaces to deliver nontrivial qualities of services." conceptName="Grid Service" order="0" xmlns:ns47="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common"/>
-   <ns48:SemanticMetadata conceptCode="C63544" conceptDefinition="A web service which accepts as input a query targeted at a data resource addressable by the system and returns information to the client in the form of one or more data objects." conceptName="Data Grid Service" order="1" xmlns:ns48="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common"/>
+   <ns54:SemanticMetadata conceptCode="C63541" conceptDefinition="A service available on a system that coordinates resources that are not subject to central control, using open, general purpose protocols and interfaces to deliver nontrivial qualities of services." conceptName="Grid Service" order="0" xmlns:ns54="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common"/>
+   <ns55:SemanticMetadata conceptCode="C63544" conceptDefinition="A web service which accepts as input a query targeted at a data resource addressable by the system and returns information to the client in the form of one or more data objects." conceptName="Data Grid Service" order="1" xmlns:ns55="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common"/>
   </ns2:Service>
  </ns1:serviceDescription>
  <ns1:hostingResearchCenter>
-  <ns49:ResearchCenter displayName="" shortName="" xmlns:ns49="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common">
-   <ns49:Address country="" locality="" postalCode="" stateProvince="" street1="" street2=""/>
-   <ns49:pointOfContactCollection>
-    <ns49:PointOfContact affiliation="" email="" firstName="" lastName="" phoneNumber="" role=""/>
-   </ns49:pointOfContactCollection>
-  </ns49:ResearchCenter>
+  <ns56:ResearchCenter displayName="" shortName="" xmlns:ns56="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common">
+   <ns56:Address country="" locality="" postalCode="" stateProvince="" street1="" street2=""/>
+   <ns56:pointOfContactCollection>
+    <ns56:PointOfContact affiliation="" email="" firstName="" lastName="" phoneNumber="" role=""/>
+   </ns56:pointOfContactCollection>
+  </ns56:ResearchCenter>
  </ns1:hostingResearchCenter>
 </ns1:ServiceMetadata>

@@ -94,7 +94,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class CaArrayEntityReference implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    private String lsid;
+    private String id;
 
     /**
      * Empty constructor, for use by tooling.
@@ -108,21 +108,21 @@ public class CaArrayEntityReference implements Serializable {
      * @param lsid the LSID
      */
     public CaArrayEntityReference(String lsid) {
-        this.lsid = lsid;
+        this.id = lsid;
     }
 
     /**
      * @return the lsid
      */
-    public String getLsid() {
-        return lsid;
+    public String getId() {
+        return id;
     }
 
     /**
      * @param lsid the lsid to set
      */
-    public void setLsid(String lsid) {
-        this.lsid = lsid;
+    public void setId(String lsid) {
+        this.id = lsid;
     }    
     
     /**

@@ -167,7 +167,6 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings(UNCHECKED)
     public int countSourcesByCharacteristicCategory(Category c, String keyword) {
         StringBuffer sb = new StringBuffer();
 
@@ -186,9 +185,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings(UNCHECKED)
     public int countSamplesByCharacteristicCategory(Category c, String keyword) {
-
         Query q = createQueryForSamplesByCharacteristicCategory(true, "SELECT count(DISTINCT s)", null, c, keyword);
 
         if (q == null) {

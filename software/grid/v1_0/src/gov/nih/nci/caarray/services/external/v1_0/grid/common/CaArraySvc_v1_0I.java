@@ -141,9 +141,8 @@ public interface CaArraySvc_v1_0I {
    * Searches for experiments using a keyword search across fields
    *
    * @param criteria
-   *	the keyword criteria
    */
-  public gov.nih.nci.caarray.external.v1_0.experiment.Experiment[] searchForExperimentsByKeyword(gov.nih.nci.caarray.external.v1_0.query.ExperimentKeywordSearchCriteria criteria) throws RemoteException ;
+  public gov.nih.nci.caarray.external.v1_0.experiment.Experiment[] searchForExperimentsByKeyword(gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria criteria) throws RemoteException ;
 
   /**
    * Search for files matching given criteria
@@ -158,6 +157,34 @@ public interface CaArraySvc_v1_0I {
    * @param criteria
    */
   public gov.nih.nci.caarray.external.v1_0.sample.Biomaterial[] searchForBiomaterialsByKeyword(gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria criteria) throws RemoteException ;
+
+  /**
+   * Returns an export of an experiment as a set of mage-tab IDF and SDRF, along with metadata for associated data files
+   *
+   * @param experimentRef
+   */
+  public gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet getMageTabExport(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef) throws RemoteException ;
+
+  /**
+   * returns a transfer reference for retrieving a zipped mage tab export of an experiment. The zip will include the idf and sdrf and all referenced data files
+   *
+   * @param experimentRef
+   * @param compressIndividually
+   */
+  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getMageTabZipTransfer(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef,boolean compressIndividually) throws RemoteException ;
+
+  /**
+   * Retrieve all array data types in system
+   *
+   */
+  public gov.nih.nci.caarray.external.v1_0.data.ArrayDataType[] getAllArrayDataTypes() throws RemoteException ;
+
+  /**
+   * Search for quantitation types matching criteria
+   *
+   * @param criteria
+   */
+  public gov.nih.nci.caarray.external.v1_0.data.QuantitationType[] searchForQuantitationTypes(gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria criteria) throws RemoteException ;
 
 }
 
