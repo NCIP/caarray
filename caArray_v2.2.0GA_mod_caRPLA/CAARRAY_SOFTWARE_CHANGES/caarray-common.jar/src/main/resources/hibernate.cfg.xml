@@ -27,7 +27,7 @@
        
          <mapping class="gov.nih.nci.carpla.domain.rplahybridization.RplaHybridization"/>
        <mapping class="gov.nih.nci.carpla.domain.antibody.Antibody"/>
-      
+      <mapping class="gov.nih.nci.carpla.domain.antibody.AntibodyValidation"/>
      <!-- <mapping class="gov.nih.nci.carpla.domain.rplarray.RplaReporter"/> -->
       <mapping class="gov.nih.nci.carpla.domain.rplarray.RplaFeature"/>
       <mapping class="gov.nih.nci.carpla.domain.rplarray.RplaSample"/>
