@@ -8,7 +8,7 @@
 	<!-- go to 	mod_dir/build and run ant -->
 	<property name="orig.dir" value="${basedir}/../caArray_v2.2.0GA" />
 	<property name="changes.dir" value="${basedir}/CAARRAY_SOFTWARE_CHANGES" />
-	<property name="modded.dir" value="${basedir}/../caRPLA" />
+	<property name="modded.dir" value="${basedir}/../caArray2/software" />
 	<property name="modded.test.dir" value="${basedir}/../testcopying" />
 
 
