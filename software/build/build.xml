@@ -1211,6 +1211,7 @@
                 <include name="${wsrf_core_stubs_enum.jar}"/>
                 <include name="${wss4j.jar}" />
                 <include name="${xercesImpl.jar}" />
+                <include name="${castor.jar}" />
             </fileset>
         </path>
 
