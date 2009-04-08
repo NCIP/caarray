@@ -293,6 +293,9 @@ public class MageTabDataFiles {
     public static final File FEATURE_13141_DIRECTORY = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id").getFile());
 
+    public static final File DUPLICATE_TERM_SOURCES_DIRECTORY = new File(MageTabDataFiles.class
+            .getResource("/magetab/duplicate_term_source_refs").getFile());
+
     public static final File FEATURE_13141_ZIP = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/valid.zip").getFile());
 
@@ -307,6 +310,14 @@ public class MageTabDataFiles {
 
     public static final File FEATURE_13141_INVALID_ZIP = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/invalid.zip").getFile());
+
+    public static final File DUPLICATE_TERM_SOURCES_INVALID_IDF = new File(MageTabDataFiles.class
+            .getResource("/magetab/duplicate_term_source_refs/"
+            + "experiment-id-1015897589852334_01_2sources1extract.idf").getFile());
+
+    public static final File DUPLICATE_TERM_SOURCES_INVALID_SDRF = new File(MageTabDataFiles.class
+            .getResource("/magetab/duplicate_term_source_refs/"
+            + "experiment-id-1015897589852334_01_2sources1extract.sdrf").getFile());
 
     public static final File FEATURE_13141_INVALID_IDF = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/invalid.idf").getFile());

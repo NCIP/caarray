@@ -248,6 +248,16 @@ public final class TestMageTabSets {
     public static final MageTabDocumentSet INVALID_FEATURE_13141_DATA_SET = getSet(INVALID_FEATURE_13141_INPUT_SET);
 
     /**
+     * Invalid MAGE-TAB input set containing multiple IDF files.
+     */
+    public static final MageTabFileSet INVALID_DUPLICATE_TERM_SOURCES_INPUT_SET = getInvalidDuplicateTermSourcesInputSet();
+    
+    /**
+     * Document set parsed...
+     */
+    public static final MageTabDocumentSet INVALID_DUPLICATE_TERM_SOURCES_DATA_SET = getSet(INVALID_DUPLICATE_TERM_SOURCES_INPUT_SET);
+
+    /**
      * Document set parsed ...
      */
     public static final MageTabFileSet DEFECT_16421 = getDefect16421ErrorInputSet();
@@ -340,6 +350,15 @@ public final class TestMageTabSets {
         fileSet.addSdrf(MageTabDataFiles.FEATURE_13141_INVALID_SDRF2);
         addCelFiles(fileSet, MageTabDataFiles.FEATURE_13141_DIRECTORY);
         return fileSet;
+    }
+
+    private static MageTabFileSet getInvalidDuplicateTermSourcesInputSet() {
+        MageTabFileSet mageTabFileSet = new MageTabFileSet();
+        mageTabFileSet.addIdf(MageTabDataFiles.DUPLICATE_TERM_SOURCES_INVALID_IDF);
+        mageTabFileSet.addSdrf(MageTabDataFiles.DUPLICATE_TERM_SOURCES_INVALID_SDRF);
+        addCelFiles(mageTabFileSet, MageTabDataFiles.DUPLICATE_TERM_SOURCES_DIRECTORY);
+        addChpFiles(mageTabFileSet, MageTabDataFiles.DUPLICATE_TERM_SOURCES_DIRECTORY);
+        return mageTabFileSet;
     }
 
     private static MageTabFileSet getMisplacedFactorValuesInputSet() {

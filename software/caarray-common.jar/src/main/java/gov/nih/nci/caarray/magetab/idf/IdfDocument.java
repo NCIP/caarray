@@ -774,6 +774,13 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     /**
+     * @return the List of TermSource objects associated with this IdfDocument.
+     */
+    public List<TermSource> getDocTermSources() {
+        return docTermSources;
+    }
+
+    /**
      * Adds an error message with the current line and column number.
      * @param message error message
      */

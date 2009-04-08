@@ -129,6 +129,7 @@ public class MageTabTranslatorBean implements MageTabTranslator {
      */
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public ValidationResult validate(MageTabDocumentSet documentSet, CaArrayFileSet fileSet) {
+        validateIdfFile(documentSet);
         validateSdrfs(documentSet, fileSet);
         return documentSet.getValidationResult();
     }
@@ -155,6 +156,10 @@ public class MageTabTranslatorBean implements MageTabTranslator {
     private void validateSdrfs(MageTabDocumentSet documentSet, CaArrayFileSet fileSet) {
         new SdrfTranslator(documentSet, fileSet, null, this.daoFactory, getVocabularyService()).
                 validate();
+    }
+
+    private void validateIdfFile(MageTabDocumentSet mageTabDocumentSet) {
+        new IdfTranslator(mageTabDocumentSet, null, this.daoFactory).validate();
     }
 
     private VocabularyService getVocabularyService() {

@@ -88,14 +88,10 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 
 /**
@@ -107,7 +103,6 @@ final class TermSourceTranslator extends AbstractTranslator {
     private static final Logger LOG = Logger.getLogger(TermSourceTranslator.class);
 
     private final VocabularyService vocabularyService;
-    private final Map<TermSourceKey, TermSource> termSourceByName = new HashMap<TermSourceKey, TermSource>();
 
     TermSourceTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
             VocabularyService vocabularyService, CaArrayDaoFactory daoFatory) {
@@ -123,14 +118,8 @@ final class TermSourceTranslator extends AbstractTranslator {
     }
 
     private void translate(gov.nih.nci.caarray.magetab.TermSource termSource) {
-        // first, check that we haven
         TermSource source = lookupSource(termSource);
-        // check that this does not match (via unique constraints) one of the sources we've already created.
-        TermSourceKey nameKey = new TermSourceKey(source.getName(), source.getVersion());
-        if (!termSourceByName.containsKey(nameKey)) {
-            getTranslationResult().addSource(termSource, source);
-            termSourceByName.put(nameKey, source);
-        }
+        getTranslationResult().addSource(termSource, source);
     }
 
     private TermSource lookupSource(gov.nih.nci.caarray.magetab.TermSource termSource) {
@@ -247,59 +236,6 @@ final class TermSourceTranslator extends AbstractTranslator {
                 return 1;
             }
             return ts1.getVersion().compareToIgnoreCase(ts2.getVersion()) * -1;
-        }
-    }
-
-    /**
-     * Key class for looking up term sources in the cache by the Term Source natural keys.
-     */
-    private static final class TermSourceKey {
-        private final String name;
-        private final String version;
-
-        public TermSourceKey(String name, String version) {
-            this.name = name;
-            this.version = version;
-        }
-
-        /**
-         * @return the name
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * @return the version
-         */
-        public String getVersion() {
-            return version;
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.lang.Object#hashCode()
-         */
-        @Override
-        public int hashCode() {
-            return HashCodeBuilder.reflectionHashCode(this);
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof TermSourceKey)) {
-                return false;
-            }
-            if (this == obj) {
-                return true;
-            }
-            return EqualsBuilder.reflectionEquals(this, obj);
         }
     }
 }

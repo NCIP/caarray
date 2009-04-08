@@ -171,12 +171,12 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         locatorStub.addLookup(VocabularyService.JNDI_NAME, this.vocabularyServiceStub);
         this.translator = mageTabTranslatorBean;
     }
-    
+
     @Test
     public void testDefect17200() throws InvalidDataException, MageTabParsingException {
-        MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_17200; 
+        MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_17200;
         MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet, false);
-        assertTrue(docSet.getValidationResult().isValid());        
+        assertTrue(docSet.getValidationResult().isValid());
         CaArrayFileSet fileSet = new CaArrayFileSet();
         for (File file : mageTabSet.getAllFiles()) {
             CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
@@ -201,9 +201,9 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         fileSet = new CaArrayFileSet();
         fileSet.add(fileAccessServiceStub.add(MageTabDataFiles.DEFECT_17200_GPR));
         docSet = MageTabParser.INSTANCE.parse(mageTabSet, false);
-        assertTrue(docSet.getValidationResult().isValid());        
+        assertTrue(docSet.getValidationResult().isValid());
         result = this.translator.validate(docSet, fileSet);
-        assertTrue(result.isValid());        
+        assertTrue(result.isValid());
     }
 
     @Test
@@ -483,6 +483,27 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         for (Sample s : e.getSamples()) {
             assertNotNull(s.getExternalSampleId());
         }
+    }
+
+    @Test
+    public void testValidateInvalidDuplicateTermSources() {
+        CaArrayFileSet caArrayFileSet = TestMageTabSets.getFileSet(TestMageTabSets.INVALID_DUPLICATE_TERM_SOURCES_DATA_SET);
+        ValidationResult validationResult = this.translator.validate(TestMageTabSets.INVALID_DUPLICATE_TERM_SOURCES_DATA_SET, caArrayFileSet);
+        assertFalse(validationResult.getMessages().isEmpty());
+        assertEquals(7, validationResult.getMessages(ValidationMessage.Type.ERROR).size());
+        String prototypeOneErrorString =
+            "Duplicate term source version '*unversioned*' "
+            + "and URL 'http://ncicb.nci.nih.gov/' for term source named '%s'.";
+        String prototypeTwoErrorString =
+            "Duplicate term source version '*unversioned*' "
+            + "and URL 'http://foo2.com/' for term source named '%s'.";
+        assertEquals(String.format(prototypeOneErrorString, "LM_3"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(0).getMessage());
+        assertEquals(String.format(prototypeOneErrorString, "LM_2"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(1).getMessage());
+        assertEquals(String.format(prototypeOneErrorString, "LM_1"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(2).getMessage());
+        assertEquals(String.format(prototypeOneErrorString, "LM"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(3).getMessage());
+        assertEquals(String.format(prototypeTwoErrorString, "FOO2"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(4).getMessage());
+        assertEquals(String.format(prototypeTwoErrorString, "FOO"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(5).getMessage());
+        assertEquals("Duplicate term source name 'FOO'.", validationResult.getMessages(ValidationMessage.Type.ERROR).get(6).getMessage());
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
