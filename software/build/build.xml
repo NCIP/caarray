@@ -895,13 +895,6 @@
         </path>
         <property name="ncicb-ant.jar" refid="ncicb-ant.jar.fileset" />
 
-        <path id="xmlconfig.jar.path">
-            <fileset dir="${project.lib}" id="xmlconfig.jar.fileset">
-                <include name="xmlconfig-*.jar"/>
-            </fileset>
-        </path>
-        <property name="xmlconfig.jar" refid="xmlconfig.jar.fileset" />
-
         <path id="nci-commons-core.jar.path">
             <fileset dir="${project.lib}" id="nci-commons-core.jar.fileset">
                 <include name="nci-commons-core-*.jar"/>
@@ -1017,10 +1010,10 @@
             </fileset>
         </path>
         <pathtofileset name="common.compile.dependencies.fileset" pathrefid="common.compile.dependencies.path" dir="${project.lib}"/>
-    	
+
     	<path id="external.api.dependencies.path">
             <fileset refid="dozer.jar.fileset"/>
-            <fileset refid="rmiio.jar.fileset"/>    		
+            <fileset refid="rmiio.jar.fileset"/>
     	</path>
         <pathtofileset name="external.api.dependencies.fileset" pathrefid="external.api.dependencies.path" dir="${project.lib}"/>
 
@@ -1113,7 +1106,7 @@
             <fileset refid="svnClientAdapter.jar.fileset"/>
             <fileset refid="svnjavahl.jar.fileset"/>
         </path>
-        
+
     	<path id="unit.test.dependencies.path">
             <fileset refid="jboss.dependencies.fileset"/>
             <fileset id="test.dependencies.fileset" dir="${project.lib}">
@@ -1231,7 +1224,6 @@
 
         <taskdef name="ncitask" classname="gov.nih.ncicb.anttasks.PropertyValidator" classpathref="project.jars.path"/>
 
-        <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="project.jars.path" />
     </target>
 
 
@@ -2591,11 +2583,11 @@
         <echo message="Configuring caarray-mysql database..." />
         <mkdir dir="${target.dir}" />
         <copy todir="${target.dir}/deploy/" file="${common.resources.jboss.conf.dir}/${mysql.datasource.file}" />
-        <xmlconfig in="${target.dir}/deploy/${mysql.datasource.file}" verbose="false">
-            <update path="//datasources/local-tx-datasource/connection-url" value="jdbc:mysql://${database.server}:${database.port}/${database.name}" />
-            <update path="//datasources/local-tx-datasource/user-name" value="${database.user}" />
-            <update path="//datasources/local-tx-datasource/password" value="${database.password}" />
-        </xmlconfig>
+		<xmltask source="${target.dir}/deploy/${mysql.datasource.file}" dest="${target.dir}/deploy/${mysql.datasource.file}">
+			<replace path="//datasources/local-tx-datasource/connection-url/text()" withText="jdbc:mysql://${database.server}:${database.port}/${database.name}"/>
+			<replace path="//datasources/local-tx-datasource/user-name/text()" withText="${database.user}"/>
+			<replace path="//datasources/local-tx-datasource/password/text()" withText="${database.password}"/>
+		</xmltask>
     </target>
 
     <target name="-remote-jboss:configure-jboss-mailservice" unless="nodeploy" depends="init:third-party-paths">

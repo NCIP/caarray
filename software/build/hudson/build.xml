@@ -51,7 +51,6 @@ $HeadURL:  $
 			<pathelement location="${bda-utils.dir}/ivy-1.3.1.jar"/>
 		</classpath>
 	</taskdef>
-	  <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="bda-utils.classpath" />
 
 	<import file="${bda-utils.dir}/bda-build-utils-0.1.xml" />
 
@@ -60,16 +59,16 @@ $HeadURL:  $
 		<for list="${prop.list}" param="prop.list.item" delimiter=",">
 			<sequential>
 				<echo message="Checking for existence of @{prop.list.item}"/>
-				<if>    
-					<not>   
+				<if>
+					<not>
 						<isset property="@{prop.list.item}"/>
-					</not>  
-					<then>  
+					</not>
+					<then>
 						<fail message="Usage is 'ant -Dsvn.user.name=svnusername -Dsvn.user.pass=svnpassword'."/>
-					</then> 
-				</if>   
+					</then>
+				</if>
 			</sequential>
-		</for>  
+		</for>
 	</target>
 	<target name="init">
 		<mkdir dir="${working.dir}"/>
@@ -97,11 +96,11 @@ $HeadURL:  $
 		<input message="This target will overwrite the current configuration of hudson.  It may also break hudson.  We will backup your existing configuration before begining.  Are you sure you want to proceed?"
 			validargs="y,n"
 			addproperty="accept.deploy2hudson" />
-		<if>    
+		<if>
 			<equals arg1="${accept.deploy2hudson}" arg2="n"/>
-			<then>  
+			<then>
 				<fail message="User tereminated the build."/>
-			</then> 
+			</then>
 		</if>
 		<echo message="Backing up ${hudson.dir} to ${user.home}/hudson-config-backup.zip before deploy"/>
 		<delete file="${user.home}/hudson-config-backup.zip"/>
@@ -109,14 +108,14 @@ $HeadURL:  $
 			<zipfileset dir="${hudson.dir}">
 				<exclude name="**/workspace/**/*"/>
 			</zipfileset>
-		</zip>  
+		</zip>
 
 		<copy todir="${hudson.dir}">
 			<fileset dir="${svn.conf.dir}">
 				<include name="**/*"/>
 			</fileset>
 		</copy>
-		
+
 	</target>
 	<target name="svn-add" depends="validate:svn:props">
 		<exec os="Linux" executable="svn" spawn="false">
@@ -186,26 +185,26 @@ $HeadURL:  $
 			</sequential>
 		</for>
 	</target>
-	
+
 	<target name="install:tomcat:binaries" description="Install tomcat" unless="tomcat.exists">
 		<delete dir="${tomcat.home}"/>
 		<unzip dest="${application.base.path}" src="${tomcat.dest.file}" />
 		<if>
 			<os family="unix"/>
 			<then>
-				<chmod dir="${tomcat.home}/bin" perm="ugo+rx" 
+				<chmod dir="${tomcat.home}/bin" perm="ugo+rx"
 					includes="**/*.sh"/>
 			</then>
 		</if>
 	</target>
 	<target name="install:tomcat:configure" description="Configure tomcat (change ports)" unless="tomcat.exists">
-		<xmlconfig in="${tomcat.home}/conf/server.xml" verbose="false">
-			<update path="(//Connector)[@port=8080]/@port" value="${tomcat.port.http}" />
-			<update path="(//Connector)[@redirectPort=8443]/@redirectPort" value="${tomcat.port.ssl}" />
-			<update path="(//Connector)[@port=8009]/@port" value="${tomcat.port.ajp}" />
-			<update path="(//Connector)[@port=8443]/@port" value="${tomcat.port.ssl}" />
-			<update path="(//Server)[@port=8005]/@port" value="${tomcat.port.shutdown}" />
-		</xmlconfig>
+		<xmltask source="${tomcat.home}/conf/server.xml" dest="${tomcat.home}/conf/server.xml">
+			<replace path="(//Connector)[@port=8080]/@port" withText="${tomcat.port.http}"/>
+			<replace path="(//Connector)[@redirectPort=8443]/@redirectPort" withText="${tomcat.port.ssl}"/>
+			<replace path="(//Connector)[@port=8009]/@port" withText="${tomcat.port.ajp}"/>
+			<replace path="(//Connector)[@port=8443]/@port" withText="${tomcat.port.ssl}"/>
+			<replace path="(//Server)[@port=8005]/@port" withText="${tomcat.port.shutdown}"/>
+		</xmltask>
 	</target>
 	<target name="install:tomcat" description="Install tomcat" unless="tomcat.exists"
 		depends="
@@ -260,11 +259,11 @@ $HeadURL:  $
 					<case value="unix">
 						<echo message="For bash shell you can edit the $HOME/.bash_profile and add 'export HUDSON_HOME=${hudson.dir}'"/>
 						<echo message="For other shells refer to you operating system documentation (you can check your shell by 'echo $SHELL')"/>
-					</case> 
+					</case>
 					<case value="windows">
 						<echo message="Right click on MyComputer, select Proeprties, select Advanced tab, click on Environment Variables, click on New under System Variables,  and set HUDSON_HOME to ${hudson.dir}"/>
 						<echo message="Don't forget to close all existing CMD windows before trying to use this variable."/>
-					</case> 
+					</case>
 				</switch>
 				<echo message="Once environment variable is set and tomcat is started you can access it at http://localhost:${tomcat.port.http}/hudson"/>
 			</then>
@@ -280,7 +279,7 @@ $HeadURL:  $
 			<zipfileset dir="${hudson.dir}">
 				<include name="**/builds/**/*"/>
 			</zipfileset>
-		</zip>  
+		</zip>
 	</target>
 	<target name="artifacts:restore">
 		<unzip dest="${hudson.dir}" src="${artifacts.backup.file}" />
