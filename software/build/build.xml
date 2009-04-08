@@ -110,7 +110,7 @@
     <property name="asm.3.0.lib" value="${lib.dir}/caarray-asm_3.0" />
     <property name="project.lib" value="${lib.dir}/caarray-project" />
     <property name="bda-utils.dir" value="${basedir}/bda-utils" />
-    <property name="bda.version" value="0.11.0" />
+    <property name="bda.version" value="0.10.1" />
     <property name="bda.utils.build.file" value="${bda-utils.dir}/bda-build-utils-${bda.version}.xml"/>
     <property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
 
@@ -1017,10 +1017,10 @@
             </fileset>
         </path>
         <pathtofileset name="common.compile.dependencies.fileset" pathrefid="common.compile.dependencies.path" dir="${project.lib}"/>
-
+    	
     	<path id="external.api.dependencies.path">
             <fileset refid="dozer.jar.fileset"/>
-            <fileset refid="rmiio.jar.fileset"/>
+            <fileset refid="rmiio.jar.fileset"/>    		
     	</path>
         <pathtofileset name="external.api.dependencies.fileset" pathrefid="external.api.dependencies.path" dir="${project.lib}"/>
 
@@ -1113,7 +1113,7 @@
             <fileset refid="svnClientAdapter.jar.fileset"/>
             <fileset refid="svnjavahl.jar.fileset"/>
         </path>
-
+        
     	<path id="unit.test.dependencies.path">
             <fileset refid="jboss.dependencies.fileset"/>
             <fileset id="test.dependencies.fileset" dir="${project.lib}">
