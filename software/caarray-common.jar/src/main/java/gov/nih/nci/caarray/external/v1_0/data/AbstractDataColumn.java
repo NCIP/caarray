@@ -93,6 +93,9 @@ import java.io.Serializable;
 public abstract class AbstractDataColumn implements Serializable {
     private static final long serialVersionUID = 1L;
     
+    /** separator to use for encoding an array of values as string, except for StringColumn. */
+    protected static final String SEPARATOR = " ";
+    
     private QuantitationType quantitationType;
 
     /**

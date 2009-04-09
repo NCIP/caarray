@@ -82,7 +82,11 @@
  */
 package gov.nih.nci.caarray.external.v1_0.array;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
@@ -95,11 +99,13 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
     
     private String name;
+    private String lsid;
     private String version;
     private AssayType assayType;
     private ArrayProvider arrayProvider;
     private Term technologyType;
     private Organism organism;
+    private Set<DataFile> files = new HashSet<DataFile>();
 
     /**
      * @return the name
@@ -183,5 +189,33 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     public void setOrganism(Organism organism) {
         this.organism = organism;
+    }
+
+    /**
+     * @return the lsid
+     */
+    public String getLsid() {
+        return lsid;
+    }
+
+    /**
+     * @param lsid the lsid to set
+     */
+    public void setLsid(String lsid) {
+        this.lsid = lsid;
+    }
+
+    /**
+     * @return the files
+     */
+    public Set<DataFile> getFiles() {
+        return files;
+    }
+
+    /**
+     * @param files the files to set
+     */
+    public void setFiles(Set<DataFile> files) {
+        this.files = files;
     }
 }

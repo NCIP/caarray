@@ -248,13 +248,13 @@
   <class name="gov.nih.nci.caarray.domain.data.ShortColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
     <map-to xml="ShortColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
-      <bind-xml name="values" node="attribute" />
+      <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.LongColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
     <map-to xml="LongColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
-      <bind-xml name="values" node="attribute" />
+      <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.AbstractArrayData" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
@@ -278,13 +278,13 @@
   <class name="gov.nih.nci.caarray.domain.data.BooleanColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
     <map-to xml="BooleanColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
-      <bind-xml name="values" node="attribute" />
+      <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.FloatColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
     <map-to xml="FloatColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
-      <bind-xml name="values" node="attribute" />
+      <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.DerivedArrayData" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractArrayData">
@@ -308,19 +308,19 @@
   <class name="gov.nih.nci.caarray.domain.data.StringColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
     <map-to xml="StringColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
-      <bind-xml name="values" node="attribute" />
+      <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.DoubleColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
     <map-to xml="DoubleColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
-      <bind-xml name="values" node="attribute" />
+      <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.IntegerColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
     <map-to xml="IntegerColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
-      <bind-xml name="values" node="attribute" />
+      <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.file.CaArrayFile" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">

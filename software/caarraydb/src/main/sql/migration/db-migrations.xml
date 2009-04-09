@@ -62,4 +62,8 @@
         <sql-script>MigrationScript4.1MySQL.sql</sql-script>
         <migrator-class>gov.nih.nci.caarray.web.upgrade.CsmFilterMigrator</migrator-class>
     </migration>
+    <migration fromVersion="2.3.0.alpha2" toVersion="2.3.0.rc1">
+        <sql-script>migrate-2.3.0.alpha2-to-2.3.0.rc1.sql</sql-script>
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.CsmFilterMigrator</migrator-class>
+    </migration>
 </migrations>

@@ -48,7 +48,7 @@ CREATE TABLE csm_filter_clause (
   target_class_attribute_type VARCHAR (100) NOT NULL,
   target_class_alias VARCHAR (100),
   target_class_attribute_alias VARCHAR (100),
-  generated_sql_user VARCHAR (4000) NOT NULL,
+  generated_sql_user VARCHAR (8000) NOT NULL,
   generated_sql_group VARCHAR (4000) NOT NULL,
   application_id BIGINT NOT NULL,
   update_date DATE,

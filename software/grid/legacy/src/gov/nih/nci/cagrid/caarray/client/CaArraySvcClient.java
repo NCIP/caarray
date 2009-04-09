@@ -123,10 +123,26 @@ public class CaArraySvcClient extends CaArraySvcClientBase {
                 System.out.println("Time for simple data service retrieval: " + sw.toString());
               
                 CaArrayFile file = new CaArrayFile();
-                file.setId(6L);
+                file.setId(21L);
                 byte[] fileData = client.readFileUsingGridTransfer(file);
                 System.out.println("File data: ");
                 IOUtils.write(fileData, System.out);
+                
+                DataRetrievalRequest drr = new DataRetrievalRequest();
+                QuantitationType qt = new QuantitationType();
+                qt.setId(1L);
+                drr.addQuantitationType(qt);
+                qt = new QuantitationType();
+                qt.setId(2L);
+                drr.addQuantitationType(qt);
+                qt = new QuantitationType();
+                qt.setId(3L);
+                drr.addQuantitationType(qt);
+                Hybridization h = new Hybridization();
+                h.setId(7L);
+                drr.addHybridization(h);
+                DataSet ds = client.getDataSet(drr);
+                introspectDataSet(client, ds);
                 
               // place client calls here if you want to use this main as a
               // test....

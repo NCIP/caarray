@@ -83,11 +83,15 @@
 package gov.nih.nci.caarray.example.external.v1_0;
 
 
+import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
+import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
 import java.rmi.RemoteException;
+import java.util.Arrays;
 
 import org.apache.axis.types.URI.MalformedURIException;
 
@@ -126,17 +130,17 @@ public class GridApiExample {
         CaArraySvc_v1_0Client client;
         try {
             client = new CaArraySvc_v1_0Client(url);
-//            Organism[] orgs = client.getAllOrganisms();
-//            System.out.println("Organisms: " + Arrays.asList(orgs));
-//            System.out.println("Successfully ran query");
-//            FileType[] fileTypes = client.getAllFileTypes();
-//            System.out.println("File Types: " + Arrays.asList(fileTypes));
-//            System.out.println("Successfully ran query");            
-//            Person[] pis = client.getAllPrincipalInvestigators();
-//            System.out.println("PIs: " + Arrays.asList(pis));
-//            System.out.println("Successfully ran query");   
+            Organism[] orgs = client.getAllOrganisms();
+            System.out.println("Organisms: " + Arrays.asList(orgs));
+            System.out.println("Successfully ran query");
+            FileType[] fileTypes = client.getAllFileTypes();
+            System.out.println("File Types: " + Arrays.asList(fileTypes));
+            System.out.println("Successfully ran query");            
+            Person[] pis = client.getAllPrincipalInvestigators();
+            System.out.println("PIs: " + Arrays.asList(pis));
+            System.out.println("Successfully ran query");   
             ExperimentSearchCriteria experimentCrit = new ExperimentSearchCriteria();
-            experimentCrit.setTitle("");            
+            experimentCrit.setTitle("Expression profiling reveals fundamental biological differences in acute myeloid leukemia");            
             Experiment[] exps = client.searchForExperiments(experimentCrit);
             for (Experiment exp : exps) {
                 System.out.println("Exp: " + exp.getPublicIdentifier());                

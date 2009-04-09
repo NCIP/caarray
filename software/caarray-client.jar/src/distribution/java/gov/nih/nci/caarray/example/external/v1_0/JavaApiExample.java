@@ -111,15 +111,20 @@ import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
+import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.cqlquery.Object;
 import gov.nih.nci.cagrid.cqlquery.QueryModifier;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.StopWatch;
@@ -139,6 +144,7 @@ public class JavaApiExample {
 
     private String hostname = DEFAULT_SERVER;
     private int port = DEFAULT_JNDI_PORT;
+    private CaArrayServer server;
 
     public static void main(String[] args) {
         JavaApiExample client = new JavaApiExample();
@@ -157,7 +163,7 @@ public class JavaApiExample {
      * Downloads data using the caArray Remote Java API.
      */
     public void runTest() {
-        CaArrayServer server = new CaArrayServer(hostname, port);
+        server = new CaArrayServer(hostname, port);
         try {
             server.connect();
             System.out.println("Successfully connected to server");
@@ -170,6 +176,7 @@ public class JavaApiExample {
             StopWatch sw = new StopWatch();
             
             SearchService searchService = server.getSearchService();
+            DataService dataService = server.getDataService();
             
             List<Organism> organisms = searchService.getAllOrganisms(null);
             System.out.println("Organism count " + organisms.size());
@@ -182,9 +189,13 @@ public class JavaApiExample {
                     "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:1"));
             System.out.println("Retrieved organism by reference: " + o);
             
-            List<ArrayDesign> designs = searchService.getAllArrayDesigns(new PagingParams(15, 5));
+            List<ArrayDesign> designs = searchService.getAllArrayDesigns(null);
             System.out.println("Design count: " + designs.size());
             System.out.println("Designs: " + designs);
+            for (DataFile file : designs.iterator().next().getFiles()) {
+                downloadAndPrintFile(file);
+            }
+            
             
             List<ArrayProvider> providers = searchService.getAllProviders(null);
             System.out.println("Providers: " + providers);
@@ -250,7 +261,6 @@ public class JavaApiExample {
                 System.out.println("Quantitation Type name: " + quantAttrs[0]);
             }
             
-            DataService dataService = server.getDataService();
             DataSetRequest dataRequest = new DataSetRequest();
             FileSearchCriteria fileCriteria = new FileSearchCriteria();
             fileCriteria.setExperiment(new CaArrayEntityReference(
@@ -258,20 +268,7 @@ public class JavaApiExample {
             fileCriteria.setCategories(EnumSet.of(FileTypeCategory.RAW));
             List<DataFile> files = searchService.searchForFiles(fileCriteria, null);
             for (DataFile file : files) {
-                System.out.println("File Metadata: " + file);
-                RemoteOutputStreamServer ostream = null;
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                try {                    
-                    ostream = new SimpleRemoteOutputStream(bos);
-                    dataService.streamFileContents(file.getReference(), true, ostream.export());
-                    System.out.println("File Contents: ");
-                    IOUtils.write(bos.toByteArray(), System.out);
-                    System.out.println();
-                } finally {
-                    if (ostream != null) {
-                        ostream.close();
-                    }
-                }        
+                downloadAndPrintFile(file);
                 dataRequest.getDataFiles().add(file.getReference());
             }
 
@@ -307,7 +304,7 @@ public class JavaApiExample {
             for (QuantitationType qt : quantitationTypes) {
                 System.out.println("QT: " + qt);
                 dataRequest.getQuantitationTypes().add(qt.getReference());
-            }            
+            }
 
             sw.reset();
             sw.start();
@@ -338,6 +335,23 @@ public class JavaApiExample {
             System.out.println("Couldn't run query: " + t);
             t.printStackTrace(System.err);
             System.exit(1);
+        }
+    }
+    
+    private void downloadAndPrintFile(DataFile file) throws InvalidReferenceException, DataTransferException, IOException {
+        System.out.println("File Metadata: " + file);
+        RemoteOutputStreamServer ostream = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            ostream = new SimpleRemoteOutputStream(bos);
+            server.getDataService().streamFileContents(file.getReference(), true, ostream.export());
+            System.out.println("File Contents: ");
+            IOUtils.copy(new GZIPInputStream(new ByteArrayInputStream(bos.toByteArray())), System.out);
+            System.out.println();
+        } finally {
+            if (ostream != null) {
+                ostream.close();
+            }
         }
     }
 }

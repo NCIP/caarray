@@ -175,11 +175,11 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
                     // ------------------ FILE DATA RETRIEVAL TESTS
                     FileDownloadRequest fileReq = new FileDownloadRequest();
                     CaArrayEntityReference fileRef1 = new CaArrayEntityReference(
-                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:8");
+                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:1");
                     CaArrayEntityReference fileRef2 = new CaArrayEntityReference(
-                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:9");
+                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:2");
                     CaArrayEntityReference fileRef3 = new CaArrayEntityReference(
-                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:10");
+                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:6");
                     fileReq.getFiles().add(fileRef1);
                     fileReq.getFiles().add(fileRef2);
                     fileReq.getFiles().add(fileRef3);
@@ -315,6 +315,7 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
                     hsc.setExperiment(new CaArrayEntityReference(
                             "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
                     Hybridization[] hybs = client.searchForHybridizations(hsc);
+                    System.out.println("Hyb search by creteria: ");
                     for (Hybridization hyb : hybs) {
                         System.out.println("hyb: " + hyb);
                         // dataRequest.getHybridizations().add(hyb.getReference());
@@ -325,10 +326,13 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
                     bsc.setExperiment(new CaArrayEntityReference(
                             "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
                     bsc.setTypes(EnumSet.of(BiomaterialType.SOURCE, BiomaterialType.SAMPLE));
-                    bsc.getNames().add("TK6neo replicate 1");
-                    bsc.getNames().add("TK6neo replicate 2");            
+                    bsc.getNames().add("TK6MDR1 replicate 2");
+                    bsc.getNames().add("TK6MDR1 replicate 2");
+                    System.out.println("Biomaterial search by creteria: ");
                     Biomaterial[] bms = client.searchForBiomaterials(bsc);
-                    System.out.println("Biomaterials by criteria: " + Arrays.asList(bms));
+                    for (Biomaterial bm : bms) {
+                        System.out.println("BM: " + bm);
+                    }
 
                     // file search test
                     FileSearchCriteria fileCriteria = new FileSearchCriteria();
@@ -344,12 +348,6 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
                     ArrayDataType[] arrayDataTypes = client.getAllArrayDataTypes();
                     System.out.println("Array data types: " + Arrays.asList(arrayDataTypes));
                     
-//                    ArrayDataType celDataType = (ArrayDataType) client.getByReference(new CaArrayEntityReference(
-//                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.ArrayDataType:3"));            
-//                    for (QuantitationType qt : celDataType.getQuantitationTypes()) {
-//                        System.out.println("CEL QT: " + qt);
-//                        dataRequest.getQuantitationTypes().add(qt.getReference());
-//                    }
                     for (int i = 16; i <= 22; i++) {
                         CaArrayEntityReference qRef = new CaArrayEntityReference(
                                 "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:"

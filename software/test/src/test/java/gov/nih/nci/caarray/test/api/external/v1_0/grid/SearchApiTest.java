@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.test.api.external.v1_0.grid;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 
 import java.rmi.RemoteException;
@@ -105,12 +105,12 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         } catch (RemoteException e) {
             StringBuilder trace = buildStackTrace(e);
             logForSilverCompatibility(TEST_OUTPUT, "Remote exception: " + e + "\nTrace: " + trace);
-            assertTrue("Remote exception: " + e, false);
+            fail("Remote exception: " + e);
         } catch (Throwable t) {
             // Catches things like out-of-memory errors and logs them.
             StringBuilder trace = buildStackTrace(t);
             logForSilverCompatibility(TEST_OUTPUT, "Throwable: " + t + "\nTrace: " + trace);
-            assertTrue("Throwable: " + t, false);
+            fail("Throwable: " + t);
         }
     }
 }

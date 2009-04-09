@@ -96,14 +96,17 @@ import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -309,6 +312,58 @@ public class FileDaoTest extends AbstractDaoTest {
         assertEquals(1, files.size());
         assertEquals("file3", files.get(0).getName());
         
+        tx.commit();
+    }
+    
+    @Test
+    public void testFilePermissions() throws Exception {
+        UsernameHolder.setUser(STANDARD_USER);
+        Transaction tx = HibernateUtil.beginTransaction();
+
+        saveSupportingObjects();
+        
+        CaArrayFile file1 = new CaArrayFile();
+        file1.setName("file1");
+        file1.setFileType(FileType.MAGE_TAB_IDF);
+        file1.setFileStatus(FileStatus.UPLOADED);
+        ByteArrayInputStream in1 = new ByteArrayInputStream("test idf".getBytes());
+        file1.writeContents(in1);
+        file1.setProject(DUMMY_PROJECT_1);
+        DUMMY_PROJECT_1.getFiles().add(file1);
+        DAO_OBJECT.save(file1);
+
+        CaArrayFile file2 = new CaArrayFile();
+        file2.setName("file2");
+        file2.setFileType(FileType.AFFYMETRIX_CDF);
+        file2.setFileStatus(FileStatus.UPLOADED);
+        in1 = new ByteArrayInputStream("test cdf".getBytes());
+        file2.writeContents(in1);
+        DAO_OBJECT.save(file2);
+
+        CaArrayFile file3 = new CaArrayFile();
+        file3.setName("file3");
+        file3.setFileType(FileType.AFFYMETRIX_CDF);
+        file3.setFileStatus(FileStatus.IMPORTED);
+        in1 = new ByteArrayInputStream("test cdf".getBytes());
+        file3.writeContents(in1);
+        DAO_OBJECT.save(file3);
+
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        List<CaArrayFile> files = CaArrayDaoFactory.INSTANCE.getSearchDao().retrieveAll(CaArrayFile.class, Order.asc("name"));
+        assertEquals(3, files.size());
+        assertEquals("file1", files.get(0).getName());
+        assertEquals("file2", files.get(1).getName());
+        assertEquals("file3", files.get(2).getName());
+        tx.commit();
+        
+        tx = HibernateUtil.beginTransaction();
+        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
+        files = CaArrayDaoFactory.INSTANCE.getSearchDao().retrieveAll(CaArrayFile.class, Order.asc("name"));
+        assertEquals(2, files.size());
+        assertEquals("file2", files.get(0).getName());
+        assertEquals("file3", files.get(1).getName());
         tx.commit();
     }
 }

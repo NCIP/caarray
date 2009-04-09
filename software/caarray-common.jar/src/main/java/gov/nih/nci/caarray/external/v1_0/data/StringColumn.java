@@ -82,13 +82,7 @@
  */
 package gov.nih.nci.caarray.external.v1_0.data;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-
-import com.csvreader.CsvReader;
-import com.csvreader.CsvWriter;
-
+import gov.nih.nci.caarray.util.CaArrayUtils;
 
 /**
  * A StringColumn represents a data column with string values.
@@ -120,17 +114,7 @@ public final class StringColumn extends AbstractDataColumn {
      * by escaping any commas in the value with a backslash.
      */
     public String getValuesAsString() {
-        try {
-            StringWriter sw = new StringWriter();
-            CsvWriter csvWriter = new CsvWriter(sw, ',');
-            csvWriter.setEscapeMode(CsvWriter.ESCAPE_MODE_BACKSLASH);
-            csvWriter.writeRecord(this.values);
-            csvWriter.flush();
-            csvWriter.close();
-            return sw.toString();
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not encode as CSV record: " + e, e);
-        }
+        return CaArrayUtils.joinAsCsv(this.values);
     }
  
     /**
@@ -139,20 +123,6 @@ public final class StringColumn extends AbstractDataColumn {
      * @param s string containing a comma-separated list of strings.
      */
     public void setValuesAsString(String s) {
-        try {
-            CsvReader csvReader = new CsvReader(new StringReader(s), ',');
-            csvReader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
-            if (csvReader.readRecord()) {
-                int length = csvReader.getColumnCount();
-                this.values = new String[length];
-                for (int i = 0; i < length; i++) {
-                    this.values[i] = csvReader.get(i);
-                }
-            }
-            csvReader.close();
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Could not parse as CSV record: " + s, e);
-        }
-        
+        this.values = CaArrayUtils.splitFromCsv(s);
     }
 }

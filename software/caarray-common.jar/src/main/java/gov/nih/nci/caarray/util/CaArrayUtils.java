@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.util;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -93,7 +96,11 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+
+import com.csvreader.CsvReader;
+import com.csvreader.CsvWriter;
 
 /**
  * Utility classes for our project.
@@ -212,5 +219,281 @@ public final class CaArrayUtils {
                 }
             }
         }
+    }
+    
+    /**
+     * <p>Joins the elements of the provided array into a single String
+     * containing the provided list of elements.</p>
+     *
+     * @param values the values to join together, may be null (in which case an empty String is returned)
+     * @param separator the separator to use
+     * @return the joined String, empty if null array input
+     */
+    public static String join(boolean[] values, String separator) {
+        if (values == null || values.length == 0) {
+            return StringUtils.EMPTY;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(values[0]);
+        for (int i = 1; i < values.length; i++) {
+            sb.append(separator).append(values[i]);
+        }
+        return sb.toString();
+     }
+
+    /**
+     * <p>Joins the elements of the provided array into a single String
+     * containing the provided list of elements.</p>
+     *
+     * @param values the values to join together, may be null (in which case an empty String is returned)
+     * @param separator the separator to use
+     * @return the joined String, empty if null array input
+     */
+    public static String join(int[] values, String separator) {
+        if (values == null || values.length == 0) {
+            return StringUtils.EMPTY;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(values[0]);
+        for (int i = 1; i < values.length; i++) {
+            sb.append(separator).append(values[i]);
+        }
+        return sb.toString();
+     }
+
+    /**
+     * <p>Joins the elements of the provided array into a single String
+     * containing the provided list of elements.</p>
+     *
+     * @param values the values to join together, may be null (in which case an empty String is returned)
+     * @param separator the separator to use
+     * @return the joined String, empty if null array input
+     */
+    public static String join(long[] values, String separator) {
+        if (values == null || values.length == 0) {
+            return StringUtils.EMPTY;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(values[0]);
+        for (int i = 1; i < values.length; i++) {
+            sb.append(separator).append(values[i]);
+        }
+        return sb.toString();
+     }
+
+    /**
+     * <p>Joins the elements of the provided array into a single String
+     * containing the provided list of elements.</p>
+     *
+     * @param values the values to join together, may be null (in which case an empty String is returned)
+     * @param separator the separator to use
+     * @return the joined String, empty if null array input
+     */
+    public static String join(short[] values, String separator) {
+        if (values == null || values.length == 0) {
+            return StringUtils.EMPTY;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(values[0]);
+        for (int i = 1; i < values.length; i++) {
+            sb.append(separator).append(values[i]);
+        }
+        return sb.toString();
+     }
+
+    /**
+     * <p>Joins the elements of the provided array into a single String
+     * containing the provided list of elements.</p>
+     *
+     * @param values the values to join together, may be null (in which case an empty String is returned)
+     * @param separator the separator to use
+     * @return the joined String, empty if null array input
+     */
+    public static String join(double[] values, String separator) {
+        if (values == null || values.length == 0) {
+            return StringUtils.EMPTY;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(values[0]);
+        for (int i = 1; i < values.length; i++) {
+            sb.append(separator).append(values[i]);
+        }
+        return sb.toString();
+     }
+
+    /**
+     * <p>Joins the elements of the provided array into a single String
+     * containing the provided list of elements.</p>
+     *
+     * @param values the values to join together, may be null (in which case an empty String is returned)
+     * @param separator the separator to use
+     * @return the joined String, empty if null array input
+     */
+    public static String join(float[] values, String separator) {
+        if (values == null || values.length == 0) {
+            return StringUtils.EMPTY;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(values[0]);
+        for (int i = 1; i < values.length; i++) {
+            sb.append(separator).append(values[i]);
+        }
+        return sb.toString();
+     }
+    
+    /**
+     * Joins the given values as a comma-separated string. Each value will be encoded in this string
+     * by escaping any commas in the value with a backslash.
+     * @param values the values to join (null is acceptable).
+     * @return the CSV string consisting of the values. If the values were null, an empty String.
+     */
+    public static String joinAsCsv(String[] values) {
+        if (values == null) {
+            return StringUtils.EMPTY;
+        }
+        try {
+            StringWriter sw = new StringWriter();
+            CsvWriter csvWriter = new CsvWriter(sw, ',');
+            csvWriter.setEscapeMode(CsvWriter.ESCAPE_MODE_BACKSLASH);
+            csvWriter.setUseTextQualifier(false);
+            csvWriter.writeRecord(values);
+            csvWriter.flush();
+            csvWriter.close();
+            return sw.toString();
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not encode as CSV record: " + e, e);
+        }
+    }
+
+    
+    /**
+     * <p>Splits the provided text into an array of parsed boolean values, using specified separator.</p>
+     * 
+     * <p>Each value should be encoded using the literal representation of the XML Schema xs:boolean type</p>
+     * @param s the string to parse
+     * @param separator the separator between values
+     * @return the array of parsed values
+     */
+    public static boolean[] splitIntoBooleans(String s, String separator) {
+        String[] splits = StringUtils.split(s, separator);
+        boolean[] values = new boolean[splits.length];
+        for (int i = 0; i < splits.length; i++) {
+            values[i] = Boolean.parseBoolean(splits[i]);
+        }
+        return values;
+    }
+
+    /**
+     * <p>Splits the provided text into an array of parsed short values, using specified separator.</p>
+     * 
+     * <p>Each value should be encoded using the literal representation of the XML Schema xs:short type</p>
+     * @param s the string to parse
+     * @param separator the separator between values
+     * @return the array of parsed values
+     */
+    public static short[] splitIntoShorts(String s, String separator) {
+        String[] splits = StringUtils.split(s, separator);
+        short[] values = new short[splits.length];
+        for (int i = 0; i < splits.length; i++) {
+            values[i] = Short.parseShort(splits[i]);
+        }
+        return values;
+    }
+
+    /**
+     * <p>Splits the provided text into an array of parsed long values, using specified separator.</p>
+     * 
+     * <p>Each value should be encoded using the literal representation of the XML Schema xs:long type</p>
+     * @param s the string to parse
+     * @param separator the separator between values
+     * @return the array of parsed values
+     */
+    public static long[] splitIntoLongs(String s, String separator) {
+        String[] splits = StringUtils.split(s, separator);
+        long[] values = new long[splits.length];
+        for (int i = 0; i < splits.length; i++) {
+            values[i] = Long.parseLong(splits[i]);
+        }
+        return values;
+    }
+
+    /**
+     * <p>Splits the provided text into an array of parsed int values, using specified separator.</p>
+     * 
+     * <p>Each value should be encoded using the literal representation of the XML Schema xs:int type</p>
+     * @param s the string to parse
+     * @param separator the separator between values
+     * @return the array of parsed values
+     */
+    public static int[] splitIntoInts(String s, String separator) {
+        String[] splits = StringUtils.split(s, separator);
+        int[] values = new int[splits.length];
+        for (int i = 0; i < splits.length; i++) {
+            values[i] = Integer.parseInt(splits[i]);
+        }
+        return values;
+    }
+
+    /**
+     * <p>Splits the provided text into an array of parsed float values, using specified separator.</p>
+     * 
+     * <p>Each value should be encoded using the literal representation of the XML Schema xs:float type</p>
+     * @param s the string to parse
+     * @param separator the separator between values
+     * @return the array of parsed values
+     */
+    public static float[] splitIntoFloats(String s, String separator) {
+        String[] splits = StringUtils.split(s, separator);
+        float[] values = new float[splits.length];
+        for (int i = 0; i < splits.length; i++) {
+            values[i] = Float.parseFloat(splits[i]);
+        }
+        return values;
+    }
+
+    /**
+     * <p>Splits the provided text into an array of parsed double values, using specified separator.</p>
+     * 
+     * <p>Each value should be encoded using the literal representation of the XML Schema xs:double type</p>
+     * @param s the string to parse
+     * @param separator the separator between values
+     * @return the array of parsed values
+     */
+    public static double[] splitIntoDoubles(String s, String separator) {
+        String[] splits = StringUtils.split(s, separator);
+        double[] values = new double[splits.length];
+        for (int i = 0; i < splits.length; i++) {
+            values[i] = Double.parseDouble(splits[i]);
+        }
+        return values;
+    }
+    
+    /**
+     * <p>Splits the provided CSV String into an array of parsed values.</p>
+     * 
+     * Each value within the String will be unescaped by converting any backslash-comma combinations back to commas.
+     * @param s string containing a comma-separated list of strings.
+     * @return the array of parsed Strings. If s did not contain any comma separated Strings, an empty 
+     * String. If s was not a valid CSV string, an IllegalArgumentException is thrown. 
+     */
+    public static String[] splitFromCsv(String s) {
+        try {
+            CsvReader csvReader = new CsvReader(new StringReader(s), ',');
+            csvReader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
+            csvReader.setUseTextQualifier(false);
+            String[] values = ArrayUtils.EMPTY_STRING_ARRAY;
+            if (csvReader.readRecord()) {
+                int length = csvReader.getColumnCount();
+                values = new String[length];
+                for (int i = 0; i < length; i++) {
+                    values[i] = csvReader.get(i);
+                }
+            }
+            csvReader.close();
+            return values;
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not parse as CSV record: " + s, e);
+        }
+        
     }
 }

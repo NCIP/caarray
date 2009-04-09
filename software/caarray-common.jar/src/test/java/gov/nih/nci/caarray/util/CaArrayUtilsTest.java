@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caArray2
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or 
+ * This caArray2 Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate, 
+ * its rights in the caArray2 Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and 
- * have distributed to and by third parties the caarray-common-jar Software and any 
+ * and prepare derivative works of the caArray2 Software; (ii) distribute and 
+ * have distributed to and by third parties the caArray2 Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,50 +80,84 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.external.v1_0.data;
+package gov.nih.nci.caarray.util;
 
-import gov.nih.nci.caarray.util.CaArrayUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 
+import java.util.Arrays;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.junit.Test;
 
 /**
- * A LongColumn represents a data column with long values.
- * 
  * @author dkokotov
  */
-@SuppressWarnings({"PMD.MethodReturnsInternalArray", "PMD.ArrayIsStoredDirectly" })
-public final class LongColumn extends AbstractDataColumn {
-    private static final long serialVersionUID = 1L;
-    
-    private long[] values;
+public class CaArrayUtilsTest extends AbstractCaarrayTest {
+    private static String EMPTY_STRING = "";
 
-    /**
-     * @return the values
-     */
-    public long[] getValues() {
-        return values;
+    @Test
+    public void testJoinValues() {
+        assertEquals(EMPTY_STRING, CaArrayUtils.join((boolean[]) null, " "));
+        assertEquals("true", CaArrayUtils.join(new boolean[] { true }, ","));
+        assertEquals("true;false;true", CaArrayUtils.join(new boolean[] { true, false, true }, ";"));
+
+        assertEquals(EMPTY_STRING, CaArrayUtils.join((short[]) null, " "));
+        assertEquals("0", CaArrayUtils.join(new short[] { 0 }, ","));
+        assertEquals("3;1;2", CaArrayUtils.join(new short[] { 3, 1, 2 }, ";"));
+
+        assertEquals(EMPTY_STRING, CaArrayUtils.join((long[]) null, " "));
+        assertEquals("5", CaArrayUtils.join(new long[] { 5L }, ","));
+        assertEquals("15/19/13", CaArrayUtils.join(new long[] { 15L, 19L, 13L }, "/"));
+
+        assertEquals(EMPTY_STRING, CaArrayUtils.join((int[]) null, " "));
+        assertEquals("1001", CaArrayUtils.join(new int[] { 1001 }, ","));
+        assertEquals("-1 0 -2", CaArrayUtils.join(new int[] { -1, 0, -2 }, " "));
+
+        assertEquals(EMPTY_STRING, CaArrayUtils.join((float[]) null, " "));
+        assertEquals("1.65", CaArrayUtils.join(new float[] { 1.65f }, ","));
+        assertEquals("0.0 0.33 -3.76", CaArrayUtils.join(new float[] { 0f, 0.33f, -3.76f }, " "));
+
+        assertEquals(EMPTY_STRING, CaArrayUtils.join((double[]) null, " "));
+        assertEquals("0.3333333333333333", CaArrayUtils.join(new double[] { 1.0 / 3.0 }, ","));
+        assertEquals("0.0;-0.7142857142857143;0.8461538461538461", CaArrayUtils.join(new double[] { 0, -5.0 / 7.0,
+                11.0 / 13.0 }, ";"));
+        
+        assertEquals(EMPTY_STRING, CaArrayUtils.joinAsCsv(null));
+        assertEquals("Iam\\,Dan\n", CaArrayUtils.joinAsCsv(new String[] { "Iam,Dan" }));
+        assertEquals("I,m\\,e,mi ne\n", CaArrayUtils.joinAsCsv(new String[] { "I", "m,e", "mi ne"}));
     }
 
-    /**
-     * @param values the values to set
-     */
-    public void setValues(long[] values) {
-        this.values = values;
-    }
+    @Test
+    public void testSplitValues() {
+        assertTrue(Arrays.equals(ArrayUtils.EMPTY_BOOLEAN_ARRAY, CaArrayUtils.splitIntoBooleans(EMPTY_STRING, " ")));
+        assertTrue(Arrays.equals(new boolean[] { true }, CaArrayUtils.splitIntoBooleans("true", ",")));
+        assertTrue(Arrays.equals(new boolean[] { true, false, true }, CaArrayUtils.splitIntoBooleans("true;false;true", ";")));
 
-    /**
-     * @return the values of this column, in a space-separated representation, where each value is 
-     * encoded using the literal representation of the xs:long type defined in the XML Schema standard.
-     */
-    public String getValuesAsString() {
-        return CaArrayUtils.join(this.values, SEPARATOR);
-    }
-    
-    /**
-     * Set values from a String representation. The string should contain a list of space-separated
-     * values, with each value encoded using the literal representation of the xs:long type defined in XML Schema.
-     * @param s the string containing the space-separated values
-     */
-    public void setValuesAsString(String s) {
-        this.values = CaArrayUtils.splitIntoLongs(s, SEPARATOR);
+        assertTrue(Arrays.equals(ArrayUtils.EMPTY_SHORT_ARRAY, CaArrayUtils.splitIntoShorts(EMPTY_STRING, " ")));
+        assertTrue(Arrays.equals(new short[] { 0 }, CaArrayUtils.splitIntoShorts("0", ",")));
+        assertTrue(Arrays.equals(new short[] { 3, 1, 2 }, CaArrayUtils.splitIntoShorts("3;1;2", ";")));
+
+        assertTrue(Arrays.equals(ArrayUtils.EMPTY_LONG_ARRAY, CaArrayUtils.splitIntoLongs(EMPTY_STRING, " ")));
+        assertTrue(Arrays.equals(new long[] { 5L }, CaArrayUtils.splitIntoLongs("5", ",")));
+        assertTrue(Arrays.equals(new long[] { 15L, 19L, 13L }, CaArrayUtils.splitIntoLongs("15/19/13", "/")));
+
+        assertTrue(Arrays.equals(ArrayUtils.EMPTY_INT_ARRAY, CaArrayUtils.splitIntoInts(EMPTY_STRING, " ")));
+        assertTrue(Arrays.equals(new int[] { 1001 }, CaArrayUtils.splitIntoInts("1001", ",")));
+        assertTrue(Arrays.equals(new int[] { -1, 0, -2 }, CaArrayUtils.splitIntoInts("-1 0 -2", " ")));
+
+        assertTrue(Arrays.equals(ArrayUtils.EMPTY_FLOAT_ARRAY, CaArrayUtils.splitIntoFloats(EMPTY_STRING, " ")));
+        assertTrue(Arrays.equals(new float[] { 1.65f }, CaArrayUtils.splitIntoFloats("1.65", ",")));
+        assertTrue(Arrays.equals(new float[] { 0f, 0.33f, -3.76f }, CaArrayUtils.splitIntoFloats("0 0.33 -3.76", " ")));
+
+        assertTrue(Arrays.equals(ArrayUtils.EMPTY_DOUBLE_ARRAY, CaArrayUtils.splitIntoDoubles(EMPTY_STRING, " ")));
+        assertTrue(Arrays.equals(new double[] { 1.0 / 3.0 }, CaArrayUtils.splitIntoDoubles("0.3333333333333333", ",")));
+        assertTrue(Arrays.equals(new double[] { 0, -5.0 / 7.0, 11.0 / 13.0 }, CaArrayUtils.splitIntoDoubles(
+                "0.0;-0.7142857142857143;0.8461538461538461", ";")));
+        
+        assertTrue(Arrays.equals(ArrayUtils.EMPTY_STRING_ARRAY, CaArrayUtils.splitFromCsv(EMPTY_STRING)));
+        assertTrue(Arrays.equals(new String[] { "Iam,Dan" }, CaArrayUtils.splitFromCsv("Iam\\,Dan")));
+        assertTrue(Arrays.equals(new String[] { "I", "m,e", "mi ne"}, CaArrayUtils.splitFromCsv("I,m\\,e,mi ne")));
     }
 }

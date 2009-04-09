@@ -99,6 +99,9 @@
     <field name="technologyType" type="gov.nih.nci.caarray.external.v1_0.vocabulary.Term">
       <bind-xml name="arr:technologyType" node="element" />
     </field>
+    <field name="files" type="gov.nih.nci.caarray.external.v1_0.data.DataFile" collection="collection">
+      <bind-xml name="DataFile" location="files" node="element" />
+    </field>
   </class>  
   <class name="gov.nih.nci.caarray.external.v1_0.experiment.Organism" extends="gov.nih.nci.caarray.external.v1_0.vocabulary.Term">
     <map-to xml="Organism" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment" />

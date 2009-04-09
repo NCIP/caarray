@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.external.v1_0.data;
 
-import org.apache.commons.lang.StringUtils;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 
 
 /**
@@ -115,15 +115,7 @@ public final class ShortColumn extends AbstractDataColumn {
      * encoded using the literal representation of the xs:short type defined in the XML Schema standard.
      */
     public String getValuesAsString() {
-        if (this.values == null || this.values.length == 0) {
-            return StringUtils.EMPTY;
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.values[0]);
-        for (int i = 1; i < this.values.length; i++) {
-            sb.append(" ").append(this.values[i]);
-        }
-        return sb.toString();
+        return CaArrayUtils.join(this.values, SEPARATOR);
      }
     
     /**
@@ -132,10 +124,6 @@ public final class ShortColumn extends AbstractDataColumn {
      * @param s the string containing the space-separated values
      */
     public void setValuesAsString(String s) {
-        String[] splits = StringUtils.split(s, " ");
-        values = new short[splits.length];
-        for (int i = 0; i < splits.length; i++) {
-            values[i] = Short.parseShort(splits[i]);
-        }
+        this.values = CaArrayUtils.splitIntoShorts(s, SEPARATOR);
     }
 }

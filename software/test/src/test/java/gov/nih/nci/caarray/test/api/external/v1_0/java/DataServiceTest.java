@@ -106,4 +106,9 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
             fail("Unexpected exception: " + e);
         }
     }
+    
+    @Test
+    public void testDownloadArrayDesignFile() {
+        
+    }
 }

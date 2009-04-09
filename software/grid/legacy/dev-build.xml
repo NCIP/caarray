@@ -41,6 +41,7 @@
           <include name="log4j-*.jar"/>
           <include name="nci-commons-core-*.jar"/>
           <include name="cglib-*.jar"/>
+          <include name="javacsv-*.jar"/>
           <include name="castor-*.jar"/>
         </fileset>
     </path>

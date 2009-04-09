@@ -83,6 +83,8 @@
 
 package gov.nih.nci.caarray.domain.data;
 
+import gov.nih.nci.caarray.util.CaArrayUtils;
+
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
@@ -111,6 +113,24 @@ public class ShortColumn extends AbstractDataColumn {
         setSerializableValues(values);
     }
     
+    /**
+     * @return the values of this column, in a space-separated representation, where each value is 
+     * encoded using the literal representation of the xs:short type defined in the XML Schema standard.
+     */
+    @Transient
+    public String getValuesAsString() {
+        return CaArrayUtils.join(getValues(), SEPARATOR);
+     }
+    
+    /**
+     * Set values from a String representation. The string should contain a list of space-separated
+     * values, with each value encoded using the literal representation of the xs:short type defined in XML Schema.
+     * @param s the string containing the space-separated values
+     */
+    public void setValuesAsString(String s) {
+        setValues(CaArrayUtils.splitIntoShorts(s, SEPARATOR));
+    }
+
     /**
      * {@inheritDoc}
      */

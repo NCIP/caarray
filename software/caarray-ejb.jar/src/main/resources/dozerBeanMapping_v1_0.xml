@@ -14,6 +14,10 @@
       		<a>provider.name</a>
      	 	<b>arrayProvider</b>
     	</field>
+        <field>
+            <a>designFiles</a>
+            <b>files</b>
+        </field>
   	</mapping>  
     <mapping> 
         <class-a>gov.nih.nci.caarray.domain.project.AssayType</class-a>
