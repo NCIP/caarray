@@ -59,12 +59,20 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
         </s:form>
     <caarray:focusFirstElement formId="projectForm"/>
         <script type="text/javascript">
+            var selectedDesigns;
+        
             startArrayDesignLookup = function() {
                 $("progressMsg").show();
+                selectedDesigns=$F('projectForm_project_experiment_arrayDesigns');
             }
 
             finishArrayDesignLookup = function() {
                 Effect.Fade("progressMsg");
+                $A($('projectForm_project_experiment_arrayDesigns').options).each(function(opt) {
+                    if (selectedDesigns.indexOf(opt.value) >= 0) {
+                        opt.selected = true;
+                    }
+                });
             }
         </script>
 
