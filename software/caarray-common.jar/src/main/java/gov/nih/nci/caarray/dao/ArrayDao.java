@@ -101,6 +101,7 @@ import gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
@@ -135,26 +136,18 @@ public interface ArrayDao extends CaArrayDao {
     List<ArrayDesign> getArrayDesigns();
 
     /**
-     * Returns the list of ArrayDesigns with the given provider.
-     * @param provider the provider
-     * @param importedOnly whether to only return ArrayDesigns which have finished importing (ie
-     * whose corresponding design file has a status of IMPORTED). if true only those array designs
-     * are returned, otherwise, all array designs are.
-     * @return the List&lt;ArrayDesign&gt; of the array designs whose
-     * provider is the given provider
-     */
-    List<ArrayDesign> getArrayDesignsForProvider(Organization provider, boolean importedOnly);
-
-    /**
-     * Returns the list of ArrayDesigns with the given provider and assay type.
-     * @param provider the provider
-     * @param assayType the assay type
+     * Returns the list of ArrayDesigns with at least one of the given assay types and the provider.  Either the
+     * provider or the list of assayTypes is required.  If the list of assay types is null or empty, the function
+     * will return the list of array designs for the given provider.  If the provider is null, the function will
+     * return the list of array designs associated with any of the assay types passed in.
+     * @param provider the provider is optional if the list of assayTypes is provided
+     * @param assayTypes the list of assay types is optional if provider is specified
      * @param importedOnly whether to only return ArrayDesigns which have finished importing (ie
      * whose corresponding design file has a status of IMPORTED). if true only those array designs
      * are returned, otherwise, all array designs are.
      * @return the List&lt;ArrayDesign&gt; of the array designs with the given provider and assay type
      */
-    List<ArrayDesign> getArrayDesigns(Organization provider, AssayType assayType, boolean importedOnly);
+    List<ArrayDesign> getArrayDesigns(Organization provider, Set<AssayType> assayTypes, boolean importedOnly);
 
     /**
      * Returns the list of Organizations that are a provider for at least

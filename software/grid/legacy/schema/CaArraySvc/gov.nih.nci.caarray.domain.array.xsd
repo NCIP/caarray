@@ -5,6 +5,7 @@
     xmlns:gov.nih.nci.caarray.domain.contact="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.contact"
     xmlns:gov.nih.nci.caarray.domain.file="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.file"
     xmlns:gov.nih.nci.caarray.domain.protocol="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.protocol"
+    xmlns:gov.nih.nci.caarray.domain.project="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"
     xmlns:gov.nih.nci.caarray.domain.vocabulary="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.vocabulary"
     xmlns:gov.nih.nci.cabio.domain="gme://caArray.caBIG/2.1/gov.nih.nci.cabio.domain"
     targetNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.array" elementFormDefault="qualified">
@@ -20,6 +21,8 @@
         schemaLocation="gov.nih.nci.cabio.domain.xsd" />
     <xs:import namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.protocol"
         schemaLocation="gov.nih.nci.caarray.domain.protocol.xsd" />
+    <xs:import namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"
+        schemaLocation="gov.nih.nci.caarray.domain.project.xsd" />
     <xs:import namespace="gme://caArray.caBIG/2.1/edu.georgetown.pir" schemaLocation="edu.georgetown.pir.xsd" />
     <xs:element name="ArrayGroup" type="ArrayGroup" />
     <xs:complexType name="ArrayGroup">
@@ -101,10 +104,16 @@
                             </xs:choice>
                         </xs:complexType>
                     </xs:element>
+                    <xs:element name="assayTypes" minOccurs="0">
+                        <xs:complexType>
+                            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                <xs:element ref="gov.nih.nci.caarray.domain.project:AssayType" />
+                            </xs:choice>
+                        </xs:complexType>
+                     </xs:element>
                 </xs:sequence>
                 <xs:attribute name="name" type="xs:string" />
                 <xs:attribute name="description" type="xs:string" />
-                <xs:attribute name="assayType" type="xs:string" />
                 <xs:attribute name="version" type="xs:string" />
             </xs:extension>
         </xs:complexContent>

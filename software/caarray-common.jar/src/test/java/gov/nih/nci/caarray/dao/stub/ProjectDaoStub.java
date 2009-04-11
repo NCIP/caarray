@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Extract;
@@ -199,5 +200,12 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
 
     public List<Experiment> searchByCriteria(PageSortParams<Experiment> params, ExperimentSearchCriteria criteria) {
         return Collections.emptyList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<AssayType> getAssayTypes() {
+        return null;
     }
 }

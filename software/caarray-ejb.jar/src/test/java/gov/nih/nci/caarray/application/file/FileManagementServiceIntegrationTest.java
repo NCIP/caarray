@@ -103,7 +103,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -114,7 +113,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
-import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
@@ -127,7 +125,6 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -198,7 +195,6 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         Date currDate = new Date();
         DUMMY_EXPERIMENT_1.setDate(currDate);
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
-        DUMMY_EXPERIMENT_1.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
     }
 
@@ -523,7 +519,6 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         design.setVersion("2.0");
         design.setProvider(DUMMY_PROVIDER);
         design.setLsidForEntity("authority:namespace:" + designFile.getName());
-        design.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
         design.addDesignFile(this.fileAccessService.add(designFile));
         design.setTechnologyType(DUMMY_TERM);
         design.setOrganism(DUMMY_ORGANISM);

@@ -27,12 +27,18 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.util.Date;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.junit.Before;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 public class AbstractProjectDaoTest extends AbstractDaoTest {
+    
+    protected static AssayType DUMMY_ASSAYTYPE_1;
+    protected static AssayType DUMMY_ASSAYTYPE_2;
+
     // Experiment
     protected static Organism DUMMY_ORGANISM = new Organism();
     protected static Organization DUMMY_PROVIDER = new Organization();
@@ -101,6 +107,8 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_3 = new Experiment();
         DUMMY_TERM_SOURCE = new TermSource();
         DUMMY_CATEGORY = new Category();
+        DUMMY_ASSAYTYPE_1 = new AssayType("aCGH");
+        DUMMY_ASSAYTYPE_2 = new AssayType("Methylation");
 
         // Contacts
         DUMMY_EXPERIMENT_CONTACT = new ExperimentContact();
@@ -204,16 +212,19 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         Date currDate = new Date();
         DUMMY_EXPERIMENT_1.setDate(currDate);
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
-        DUMMY_EXPERIMENT_1.setAssayTypeEnum(AssayType.ACGH);
+        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+        assayTypes.add(DUMMY_ASSAYTYPE_1);
+        DUMMY_EXPERIMENT_1.setAssayTypes(assayTypes);
         DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
 
         DUMMY_EXPERIMENT_2.setTitle("New DummyExperiment2");
-        DUMMY_EXPERIMENT_2.setAssayTypeEnum(AssayType.ACGH);
+        assayTypes = new TreeSet<AssayType>();
+        assayTypes.add(DUMMY_ASSAYTYPE_1);
+        assayTypes.add(DUMMY_ASSAYTYPE_2);
+        DUMMY_EXPERIMENT_2.setAssayTypes(assayTypes);
         DUMMY_EXPERIMENT_2.setOrganism(DUMMY_ORGANISM);
-        DUMMY_EXPERIMENT_2.setManufacturer(DUMMY_PROVIDER);
 
         DUMMY_EXPERIMENT_3.setTitle("Ahab DummyExperiment3");
-        DUMMY_EXPERIMENT_3.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_3.setManufacturer(DUMMY_PROVIDER);
     }
@@ -312,6 +323,8 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         VOCABULARY_DAO.save(DUMMY_NORMALIZATION_TYPE);
         VOCABULARY_DAO.save(DUMMY_FACTOR_TYPE_1);
         VOCABULARY_DAO.save(DUMMY_FACTOR_TYPE_2);
+        DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
+        DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
     }
 
 }

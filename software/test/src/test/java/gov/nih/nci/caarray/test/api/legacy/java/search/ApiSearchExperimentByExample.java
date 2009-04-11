@@ -194,11 +194,12 @@ public class ApiSearchExperimentByExample extends AbstractApiTest {
                 return false;
             }
             // Check if retrieved experiment has mandatory fields.
-            if (retrievedExperiment.getTitle() == null || retrievedExperiment.getAssayType() == null) {
+            if (retrievedExperiment.getTitle() == null || retrievedExperiment.getAssayTypes() == null
+                    && retrievedExperiment.getManufacturer() == null) {
                 return false;
             }
-            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getAssayType(): "
-                    + retrievedExperiment.getAssayType());
+            logForSilverCompatibility(TRAVERSE_OBJECT_GRAPH, "Experiment.getAssayTypes(): "
+                    + retrievedExperiment.getAssayTypes());
         }
         return true;
     }

@@ -154,7 +154,8 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      */
     @SuppressWarnings("unchecked")
     public List<ArrayDesign> getArrayDesigns() {
-        return getCurrentSession().createCriteria(ArrayDesign.class).list();
+        return getCurrentSession().createCriteria(ArrayDesign.class).setResultTransformer(
+                Criteria.DISTINCT_ROOT_ENTITY).list();
     }
 
     /**
@@ -171,42 +172,55 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<ArrayDesign> getArrayDesignsForProvider(Organization provider, boolean importedOnly) {
-        StringBuilder queryStr = new StringBuilder("select distinct ad from ").append(ArrayDesign.class.getName())
-                .append(" ad join ad.designFiles designFile where ad.provider = :provider ");
-        if (importedOnly) {
-            queryStr.append(" and (designFile.status = :status1 or designFile.status = :status2) ");
+    public List<ArrayDesign> getArrayDesigns(Organization provider, Set<AssayType> assayTypes, boolean importedOnly) {
+        boolean containsAssayType = false;
+        if (assayTypes != null && !assayTypes.isEmpty()) {
+            containsAssayType = true;
         }
-        queryStr.append("order by ad.name asc");
+        StringBuilder queryStr = generateArrayDesignQuery(provider, containsAssayType, assayTypes, importedOnly);
         Query query = getCurrentSession().createQuery(queryStr.toString());
-        query.setEntity("provider", provider);
+        if (provider != null) {
+            query.setEntity("provider", provider);
+        }
+        if (containsAssayType) {
+            int i = 0;
+            for (AssayType type : assayTypes) {
+                query.setLong("assayType" + i, type.getId());
+                i++;
+            }
+        }
+
         if (importedOnly) {
             query.setString("status1", FileStatus.IMPORTED.name());
             query.setString("status2", FileStatus.IMPORTED_NOT_PARSED.name());
         }
         return query.list();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    public List<ArrayDesign> getArrayDesigns(Organization provider, AssayType assayType, boolean importedOnly) {
-        StringBuilder queryStr = new StringBuilder("select distinct ad from ").append(ArrayDesign.class.getName())
-                .append(" ad join ad.designFiles designFile").append(
-                        " where ad.provider = :provider and ad.assayType = :assayType ");
+    private StringBuilder generateArrayDesignQuery(Organization provider, boolean containsAssayType,
+            Set<AssayType> assayTypes, boolean importedOnly) {
+        StringBuilder queryStr = new StringBuilder("select distinct ad from " + ArrayDesign.class.getName()
+                + " ad join ad.designFiles designFile join ad.assayTypes assayType where");
+        if (provider != null) {
+            queryStr.append(" ad.provider = :provider ");
+            if (containsAssayType) {
+                queryStr.append("and ");
+            }
+        }
+        if (containsAssayType) {
+            queryStr.append("(");
+            for (int i = 0; i < assayTypes.size(); i++) {
+                if (i > 0) {
+                    queryStr.append(" or");
+                }
+                queryStr.append(" assayType = :assayType" + i);
+            }
+            queryStr.append(")");
+        }
         if (importedOnly) {
             queryStr.append(" and (designFile.status = :status1 or designFile.status = :status2) ");
         }
         queryStr.append("order by ad.name asc");
-        Query query = getCurrentSession().createQuery(queryStr.toString());
-        query.setEntity("provider", provider);
-        query.setString("assayType", assayType.getValue());
-        if (importedOnly) {
-            query.setString("status1", FileStatus.IMPORTED.name());
-            query.setString("status2", FileStatus.IMPORTED_NOT_PARSED.name());
-        }
-        return query.list();
+        return queryStr;
     }
 
     /**

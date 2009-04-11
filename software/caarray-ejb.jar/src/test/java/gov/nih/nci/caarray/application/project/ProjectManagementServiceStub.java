@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -355,6 +356,18 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         t1.setId(1L);
         terms.add(t1);
         return terms;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("deprecation")
+    public List<AssayType> getAssayTypes() {
+        List<AssayType> assayTypes = new ArrayList<AssayType>();
+        AssayType a1 = new AssayType();
+        a1.setId(1L);
+        assayTypes.add(a1);
+        return assayTypes;
     }
 
     /**

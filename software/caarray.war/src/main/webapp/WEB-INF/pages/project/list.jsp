@@ -3,8 +3,8 @@
 <script type="text/javascript">
     confirmDelete = function() {
         if ( confirm('<fmt:message key="project.confirmDelete"/>') ) {
-        	$('delete_progress').show();
-        	return true;
+          $('delete_progress').show();
+          return true;
         }
 
         return false;
@@ -14,7 +14,7 @@
 <%@page import="gov.nih.nci.caarray.domain.project.ProposalStatus"%>
 <c:set var="draftStatus" value="<%= ProposalStatus.DRAFT %>"/>
 <div id="delete_progress" class="confirm_msg" style="display: none; margin: 3px 3px">
-	Experiment deletion is in progress.
+  Experiment deletion is in progress.
 </div>
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <display:table class="searchresults" cellspacing="0" list="${projects}" requestURI="${sortUrl}"
@@ -38,9 +38,11 @@
             </c:choose>
         </display:column>
         <display:column property="experiment.title" sortProperty="TITLE" title="Experiment Title" escapeXml="true" sortable="true" maxLength="30"/>
-        <display:column sortProperty="ASSAY_TYPE" title="Assay Type" sortable="true" >
-            <s:if test="${row.experiment.assayTypeEnum != null}">
-                <fmt:message key="${row.experiment.assayTypeEnum.resourceKey}" />
+        <display:column titleKey="project.experiment.assayTypes" >
+            <s:if test="${row.experiment.assayTypes != null}">
+                <c:forEach items="${row.experiment.assayTypes}" var="currType" varStatus="status">
+                    <c:if test="${!status.first}">, </c:if>${currType.name}
+                </c:forEach>
             </s:if>
             <s:else>&nbsp;
             </s:else>

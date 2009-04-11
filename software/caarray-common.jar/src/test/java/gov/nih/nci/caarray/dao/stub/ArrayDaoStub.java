@@ -103,6 +103,7 @@ import gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.math.NumberUtils;
 
@@ -134,14 +135,7 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     /**
      * {@inheritDoc}
      */
-    public List<ArrayDesign> getArrayDesignsForProvider(Organization provider, boolean importedOnly) {
-        return new ArrayList<ArrayDesign>();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<ArrayDesign> getArrayDesigns(Organization provider, AssayType assayType, boolean importedOnly) {
+    public List<ArrayDesign> getArrayDesigns(Organization provider, Set<AssayType> assayTypes, boolean importedOnly) {
         return new ArrayList<ArrayDesign>();
     }
 

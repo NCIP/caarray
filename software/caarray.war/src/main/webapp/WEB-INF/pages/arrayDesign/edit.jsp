@@ -62,9 +62,22 @@
                                 <s:textfield theme="readonly" key="arrayDesign.lsid" size="50" tabindex="2"/>
                             </s:if>
                             <s:textarea key="arrayDesign.description" cols="80" rows="5" tabindex="3"/>
-                            <s:select theme="${lockedTheme}" required="true" key="arrayDesign.assayType" tabindex="4"
-                                      list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
-                                      listKey="getValue()" headerKey="" headerValue="--Please select an Assay Type--"/>
+                            <c:url var="autocompleteUrl" value="/protected/ajax/arrayDesign/generateAssayList.action" />
+                            <s:if test="${!locked && editMode}">
+                                <caarray:listSelector baseId="assayTypes" listField="${arrayDesign.assayTypes}" listFieldName="arrayDesign.assayTypes"
+                                          tabIndex="1" objectValue="id" required="true" multiple="true" hideAddButton="true"
+                                          showFilter="false" autocompleteUrl="${autocompleteUrl}"/>
+                            </s:if>
+                            <s:else>
+                                <tr>
+                                    <td class="tdLabel"><label class="label"><span class="required">*</span>Assay Type</label></td>
+                                    <td>
+                                        <c:forEach items="${arrayDesign.assayTypes}" var="currType" varStatus="status">
+                                            <c:if test="${!status.first}">, </c:if>${currType.name}
+                                        </c:forEach>
+                                    </td>
+                                </tr>
+                            </s:else>
                             <s:select theme="${lockedTheme}" required="true" key="arrayDesign.provider" tabindex="5"
                                       list="providers" listKey="id" listValue="name"
                                       headerKey="" headerValue="--Please select a Provider--" value="arrayDesign.provider.id"/>

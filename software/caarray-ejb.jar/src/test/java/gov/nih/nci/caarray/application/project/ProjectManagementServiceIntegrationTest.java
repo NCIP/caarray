@@ -109,6 +109,8 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Date;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
@@ -140,6 +142,8 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayInte
     private static Person DUMMY_PERSON = new Person();
     private static Organization DUMMY_ORGANIZATION = new Organization();
 
+    private static AssayType DUMMY_ASSAY_TYPE;
+
     private static CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
     private static CaArrayFile DUMMY_FILE_2 = new CaArrayFile();
 
@@ -151,6 +155,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayInte
         DUMMY_ORGANISM = new Organism();
         DUMMY_PROVIDER = new Organization();
         DUMMY_PROJECT_1 = new Project();
+        DUMMY_ASSAY_TYPE = new AssayType();
 
         DUMMY_EXPERIMENT_1 = new Experiment();
 
@@ -166,6 +171,9 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayInte
 
         // Initialize all the dummy objects needed for the tests.
         initializeProjects();
+        Transaction tx = HibernateUtil.beginTransaction();
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAY_TYPE);
+        tx.commit();
     }
 
     /**
@@ -194,7 +202,10 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayInte
         Date currDate = new Date();
         DUMMY_EXPERIMENT_1.setDate(currDate);
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
-        DUMMY_EXPERIMENT_1.setAssayTypeEnum(AssayType.ACGH);
+        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+        DUMMY_ASSAY_TYPE.setName("Gene Expression");
+        assayTypes.add(DUMMY_ASSAY_TYPE);
+        DUMMY_EXPERIMENT_1.setAssayTypes(assayTypes);
         DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
     }
 

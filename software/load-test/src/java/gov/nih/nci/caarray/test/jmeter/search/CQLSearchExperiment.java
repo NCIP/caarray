@@ -234,12 +234,14 @@ public class CQLSearchExperiment extends CaArrayJmeterSampler implements JavaSam
                 return false;
             }
             // Check if retrieved experiment has mandatory fields.
-            if (retrievedExperiment.getTitle() == null || retrievedExperiment.getAssayType() == null) {
+            if ((retrievedExperiment.getTitle() == null) 
+                    || (retrievedExperiment.getAssayTypes() == null && retrievedExperiment.getManufacturer() == null)) {
                 return false;
             }
         }
         return true;
     }
+
 
     /**
      * Cleans up after the test.

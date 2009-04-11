@@ -93,6 +93,10 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.junit.Test;
 
@@ -131,7 +135,11 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
             org.setTermSource(ts);
             caArrayFile.setProject(new Project());
             caArrayFile.getProject().getExperiment().setTitle("TestFileExperiment1");
-            caArrayFile.getProject().getExperiment().setAssayTypeEnum(AssayType.ACGH);
+            SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+            AssayType assayType = new AssayType("aCGH");
+            assayTypes.add(assayType);
+            save(assayType);
+            caArrayFile.getProject().getExperiment().setAssayTypes(assayTypes);
             caArrayFile.getProject().getExperiment().setOrganism(org);
             caArrayFile.getProject().getExperiment().setManufacturer(new Organization());
             save(caArrayFile.getProject());

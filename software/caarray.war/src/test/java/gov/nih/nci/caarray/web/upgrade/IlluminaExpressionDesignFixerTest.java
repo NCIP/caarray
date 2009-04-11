@@ -106,6 +106,8 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -159,7 +161,11 @@ public class IlluminaExpressionDesignFixerTest extends AbstractCaarrayTest {
         designFile.setFileType(FileType.ILLUMINA_DESIGN_CSV);
 
         ILLUMINA_DESIGN.addDesignFile(designFile);
-        ILLUMINA_DESIGN.setAssayTypeEnum(AssayType.GENE_EXPRESSION);
+        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+        AssayType assayType = new AssayType("Gene Expression");
+        assayType.setId(3L);
+        assayTypes.add(assayType);
+        ILLUMINA_DESIGN.setAssayTypes(assayTypes);
         ILLUMINA_DESIGN.setId(1L);
         ILLUMINA_DESIGN.setName("illumina design");
 

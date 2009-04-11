@@ -187,7 +187,7 @@
                             <s:if test="${!empty arrayDesign.designFiles}">
                                 <s:select theme="readonly" list="arrayDesign.designFiles" value="arrayDesign.designFiles" listValue="name" label="Current File" multiple="true"/>
                             </s:if>
-				<s:hidden name="arrayDesign.id"/>
+							<s:hidden name="arrayDesign.id"/>
 	                        <s:hidden name="arrayDesign.description"/>
 	                        <s:hidden name="arrayDesign.assayType"/>
 	                        <s:hidden name="arrayDesign.provider"/>
@@ -196,10 +196,14 @@
 	                        <s:hidden name="arrayDesign.organism"/>
 	                        <s:hidden name="createMode"/>
 	                        <s:hidden name="editMode"/>
+                            <s:hidden name="arrayDesign.assayTypes"/>
+                            <c:forEach items="${arrayDesign.assayTypes}" var="currAssayType">
+                                <input name="arrayDesign.assayTypes" type="hidden" value="<s:property value='#attr.currAssayType.id'/>"/>
+                            </c:forEach>
                             <s:if test="${editMode && !locked}">
                                 <s:file id="upload0" required="${empty arrayDesign.id}" name="upload" label="Browse to File" tabindex="9"/>
                                 <s:select id="fileFormatType0" name="fileFormatType" key="arrayDesign.designFile.fileType" tabindex="10"
-                                          list="@gov.nih.nci.caarray.domain.file.FileType@getArrayDesignFileTypes()"
+                                          list="@gov.nih.nci.caarray.domain.file.FileType@ARRAY_DESIGN_FILE_TYPES"
                                           listValue="%{getText('experiment.files.filetype.' + name)}"
                                           listKey="name" headerKey="" headerValue="Automatic"/>
                             </s:if>

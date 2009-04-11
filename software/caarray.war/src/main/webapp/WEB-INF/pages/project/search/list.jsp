@@ -20,8 +20,10 @@
             </c:choose>
         </display:column>
         <display:column property="experiment.title" sortProperty="TITLE" titleKey="search.result.experimentTitle" sortable="true" maxLength="30"/>
-        <display:column sortProperty="ASSAY_TYPE" titleKey="search.result.assayType" sortable="true">
-            <fmt:message key="${row.experiment.assayTypeEnum.resourceKey}" />
+        <display:column titleKey="search.result.assayTypes">
+            <c:forEach items="${row.experiment.assayTypes}" var="currType" varStatus="status">
+                <c:if test="${!status.first}">, </c:if>${currType.name}
+            </c:forEach>
         </display:column>
         <display:column titleKey="search.result.pi">
             <a href="mailto:${row.experiment.mainPointOfContact.contact.email}?subject=${row.experiment.title}" class="email">${row.experiment.mainPointOfContact.contact.lastName}<img src="<c:url value="/images/ico_sendmail.gif"/>" alt="" style="padding-left:5px" /></a>

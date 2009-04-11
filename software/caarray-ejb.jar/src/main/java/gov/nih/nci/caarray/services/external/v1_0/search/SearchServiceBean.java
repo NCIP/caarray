@@ -273,8 +273,9 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
             intCriteria.setArrayProvider(provider);
         }
         if (criteria.getAssayType() != null) {
-            AssayType at = AssayType.getByValue(criteria.getAssayType().getName());
-            intCriteria.setAssayType(at);
+            AssayType example = new AssayType(criteria.getAssayType().getName());
+            AssayType assayType = CaArrayUtils.uniqueResult(getDaoFactory().getSearchDao().query(example));
+            intCriteria.setAssayType(assayType);
         }
         // need to handle the rest of the criteria
         return intCriteria;

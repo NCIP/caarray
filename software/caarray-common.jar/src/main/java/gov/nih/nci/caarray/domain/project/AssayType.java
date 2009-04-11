@@ -82,100 +82,72 @@
  */
 package gov.nih.nci.caarray.domain.project;
 
-import gov.nih.nci.caarray.domain.ResourceBasedEnum;
 
-import java.util.HashMap;
-import java.util.Map;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * An enumeration of different assay types that an Experiment can perform.
+ * Represents a single assay type associated with an Experiment or Array Design.
  */
-public enum AssayType implements ResourceBasedEnum {
-    /**
-     * Array design used to interrogate gene expression: transcription of genetically encoded information into an
-     * intermediary message (messenger RNA) and subsequent translation into a functional protein.
-     */
-    GENE_EXPRESSION("geneExpression"),
-    /**
-     * Array design used to interrogate single nucleotide polymorphisms (SNPs): variations of a single nucleotide at a
-     * specific location of the genome due to base substitution, present at an appreciable frequency between individuals
-     * of a single interbreeding population.
-     */
-    SNP("snp"),
-    /**
-     * Array design used to interrogate exons; the sequences of a gene that are present in the final, mature, spliced
-     * messenger RNA molecule from that gene.
-     */
-    EXON("exon"),
-    /**
-     * Array design used to interrogate aCGH.
-     */
-    ACGH("aCGH"),
+@Entity
+public class AssayType extends AbstractCaArrayEntity implements Comparable<AssayType> {
+
+    private static final long serialVersionUID = 68829322193456517L;
+
+    private String name;
 
     /**
-     * Assay type used to interrogate miRNA.
+     * @deprecated hibernate & castor only
      */
-    MICRORNA("microRNA"),
-
+    @Deprecated
+    public AssayType() {
+        // hibernate & castor only
+    }
     /**
-     * Assay type used to interrogate methylation.
+     * @param name the name
      */
-    METHYLATION("methylation");
-
-    
-    private static final String RESOURCE_KEY_PREFIX = "assayType.";
-
-    private static Map<String, AssayType> valueToTypeMap = new HashMap<String, AssayType>();
-    
-    private final String value;
-
-    AssayType(String value) {
-        this.value = value;
+    public AssayType(String name) {
+        this.name = name;
     }
 
     /**
-     * @return the resource key that should be used to retrieve a label for this AssayType in the UI
+     * Gets the name.
+     * @return the name
      */
-    public String getResourceKey() {
-        return RESOURCE_KEY_PREFIX + getValue();
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public String getName() {
+        return name;
     }
 
     /**
-     * @return the value
+     * Sets the name.
+     * @param name the name to set
      */
-    public String getValue() {
-        return value;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    private static Map<String, AssayType> getValueToTypeMap() {
-        if (valueToTypeMap.isEmpty()) {
-            for (AssayType type : values()) {
-                valueToTypeMap.put(type.getValue(), type);
-            }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * Compares assayTypes by name.
+     * @param o other assayType to compare to
+     * @return result of comparison
+     */
+    public int compareTo(AssayType o) {
+        if (o == null) {
+            return 1;
         }
-        return valueToTypeMap;
-    }
-    
-    /**
-     * Returns the <code>AssayType</code> corresponding to the given value. Returns null
-     * for null value.
-     * 
-     * @param value the value to match
-     * @return the matching type.
-     */
-    public static AssayType getByValue(String value) {
-        checkType(value);
-        return getValueToTypeMap().get(value);
-    }
-
-    /**
-     * Checks to see that the value given is a legal <code>AssayType</code> value.
-     * 
-     * @param value the value to check;
-     */
-    public static void checkType(String value) {
-        if (value != null && !getValueToTypeMap().containsKey(value)) {
-            throw new IllegalArgumentException("No matching type for " + value);
-        }
+        return this.getName().compareToIgnoreCase(o.getName());
     }
 }

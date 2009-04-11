@@ -63,7 +63,13 @@
                 <xs:sequence>
                     <xs:element name="organism" minOccurs="0" maxOccurs="1" type="exp:Organism" />
                     <xs:element name="arrayProvider" minOccurs="0" maxOccurs="1" type="arr:ArrayProvider" />
-                    <xs:element name="assayType" minOccurs="0" maxOccurs="1" type="arr:AssayType" />
+                    <xs:element name="assayTypes">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="arr:AssayType" minOccurs="0" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
                     <xs:element name="contacts">
                         <xs:complexType>
                             <xs:sequence>

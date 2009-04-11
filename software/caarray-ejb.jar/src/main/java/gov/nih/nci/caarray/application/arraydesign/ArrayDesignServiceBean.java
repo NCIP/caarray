@@ -223,7 +223,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     public boolean isDuplicate(ArrayDesign arrayDesign) {
         List<ArrayDesign> providerDesigns =
-            getDaoFactory().getArrayDao().getArrayDesignsForProvider(arrayDesign.getProvider(), false);
+            getDaoFactory().getArrayDao().getArrayDesigns(arrayDesign.getProvider(), null, false);
         for (ArrayDesign providerDesign : providerDesigns) {
             if (!arrayDesign.equals(providerDesign)
                     && arrayDesign.getName().equalsIgnoreCase(providerDesign.getName())) {
@@ -376,19 +376,9 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
-    public List<ArrayDesign> getImportedArrayDesignsForProvider(Organization provider) {
+    public List<ArrayDesign> getImportedArrayDesigns(Organization provider, Set<AssayType> assayTypes) {
         LogUtil.logSubsystemEntry(LOG);
-        List<ArrayDesign> designs = getArrayDao().getArrayDesignsForProvider(provider, true);
-        LogUtil.logSubsystemExit(LOG);
-        return designs;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<ArrayDesign> getImportedArrayDesigns(Organization provider, AssayType assayType) {
-        LogUtil.logSubsystemEntry(LOG);
-        List<ArrayDesign> designs = getArrayDao().getArrayDesigns(provider, assayType, true);
+        List<ArrayDesign> designs = getArrayDao().getArrayDesigns(provider, assayTypes, true);
         LogUtil.logSubsystemExit(LOG);
         return designs;
     }
@@ -475,7 +465,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     private boolean validateLockedDesign(ArrayDesign arrayDesign) {
         ArrayDesign loadedArrayDesign = getArrayDesign(arrayDesign.getId());
         if (!loadedArrayDesign.getProvider().equals(arrayDesign.getProvider())
-                || !loadedArrayDesign.getAssayType().equals(arrayDesign.getAssayType())
+                || !loadedArrayDesign.getAssayTypes().equals(arrayDesign.getAssayTypes())
                 || !loadedArrayDesign.getDesignFiles().equals(arrayDesign.getDesignFiles())) {
             return false;
         }

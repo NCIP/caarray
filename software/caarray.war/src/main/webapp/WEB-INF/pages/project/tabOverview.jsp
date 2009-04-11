@@ -29,11 +29,12 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
                 <s:textfield theme="readonly" label="Experiment URL" value="%{#attr.permalinkUrl}">
                     <s:param name="url">true</s:param>
                 </s:textfield>
-            </c:if>    
-            <s:select required="true" key="project.experiment.assayType" tabindex="5"
-                      list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
-                      listKey="getValue()" headerKey="" headerValue="--Select an Assay Type--"/>
-            <s:select key="project.experiment.manufacturer" tabindex="6" required="true"
+            </c:if>
+            <c:url var="autocompleteUrl" value="/protected/ajax/project/listTab/Overview/generateAssayList.action" />
+            <caarray:listSelector baseId="assayTypes" listField="${project.experiment.assayTypes}" listFieldName="project.experiment.assayTypes"
+                tabIndex="1" showFilter="false" objectValue="id" required="false" multiple="true" hideAddButton="true"
+                autocompleteUrl="${autocompleteUrl}"/>
+            <s:select key="project.experiment.manufacturer" tabindex="6" required="false"
                       list="manufacturers" listKey="id" listValue="name"
                       headerKey="" headerValue="--Select a Provider--" value="project.experiment.manufacturer.id">
                 <s:param name="after">
@@ -75,11 +76,11 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
             </s:if>
             <ajax:select baseUrl="${getArrayDesignsUrl}"
                 source="projectForm_project_experiment_manufacturer" target="projectForm_project_experiment_arrayDesigns"
-                parameters="manufacturerId={projectForm_project_experiment_manufacturer},assayTypeValue={projectForm_project_experiment_assayType}"
+                parameters="manufacturerId={projectForm_project_experiment_manufacturer}, assayTypeValues={assayTypesSelectedItemValues}"
                 preFunction="startArrayDesignLookup" postFunction="finishArrayDesignLookup" executeOnLoad="${execOnLoad}"/>
             <ajax:select baseUrl="${getArrayDesignsUrl}"
-                source="projectForm_project_experiment_assayType" target="projectForm_project_experiment_arrayDesigns"
-                parameters="manufacturerId={projectForm_project_experiment_manufacturer},assayTypeValue={projectForm_project_experiment_assayType}"
+                source="assayTypesSelectedItemValues" target="projectForm_project_experiment_arrayDesigns"
+                parameters="manufacturerId={projectForm_project_experiment_manufacturer}, assayTypeValues={assayTypesSelectedItemValues}"
                 preFunction="startArrayDesignLookup" postFunction="finishArrayDesignLookup"/>
         </c:if>
 

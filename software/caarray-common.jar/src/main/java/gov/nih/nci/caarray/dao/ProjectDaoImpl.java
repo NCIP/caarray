@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -289,7 +290,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             c.add(Restrictions.eq("organism", criteria.getOrganism()));
         }
         if (criteria.getAssayType() != null) {
-            c.add(Restrictions.eq("assayType", criteria.getAssayType().name()));
+            c.add(Restrictions.eq("assayType", criteria.getAssayType()));
         }
         if (criteria.getArrayProvider() != null) {
             c.add(Restrictions.eq("manufacturer", criteria.getArrayProvider()));
@@ -377,6 +378,15 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      * {@inheritDoc}
      */
     @SuppressWarnings(UNCHECKED)
+    public List<AssayType> getAssayTypes() {
+        String queryString = "from " + AssayType.class.getName() + " c order by c.name asc";
+        return HibernateUtil.getCurrentSession().createQuery(queryString).setCacheable(true).list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
     public Set<Sample> getUnfilteredSamplesForProject(final Project project) {
         UnfilteredCallback unfilteredCallback = new UnfilteredCallback() {
             public Object doUnfiltered(Session s) {
@@ -428,5 +438,4 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         query.setString("name", bioMaterialName);
         return (T) query.uniqueResult();
     }
-
 }

@@ -110,7 +110,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Term> normalizationTypes = new HashSet<Term>();
     private Set<Term> qualityControlTypes = new HashSet<Term>();
     private ArrayProvider arrayProvider;
-    private AssayType assayType;
+    private Set<AssayType> assayTypes = new HashSet<AssayType>();
     private Set<Factor> factors = new HashSet<Factor>();
     private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
     
@@ -241,17 +241,17 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the assayType
+     * @return the assayTypes
      */
-    public AssayType getAssayType() {
-        return assayType;
+    public Set<AssayType> getAssayTypes() {
+        return assayTypes;
     }
 
     /**
-     * @param assayType the assayType to set
+     * @param assayTypes the assayTypes to set
      */
-    public void setAssayType(AssayType assayType) {
-        this.assayType = assayType;
+    public void setAssayTypes(Set<AssayType> assayTypes) {
+        this.assayTypes = assayTypes;
     }
 
     /**

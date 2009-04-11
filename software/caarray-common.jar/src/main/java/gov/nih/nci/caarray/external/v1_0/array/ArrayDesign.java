@@ -101,10 +101,10 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private String name;
     private String lsid;
     private String version;
-    private AssayType assayType;
     private ArrayProvider arrayProvider;
     private Term technologyType;
     private Organism organism;
+    private Set<AssayType> assayTypes = new HashSet<AssayType>();
     private Set<DataFile> files = new HashSet<DataFile>();
 
     /**
@@ -133,20 +133,6 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    /**
-     * @return the assayType
-     */
-    public AssayType getAssayType() {
-        return assayType;
-    }
-
-    /**
-     * @param assayType the assayType to set
-     */
-    public void setAssayType(AssayType assayType) {
-        this.assayType = assayType;
     }
 
     /**
@@ -217,5 +203,19 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     public void setFiles(Set<DataFile> files) {
         this.files = files;
+    }
+
+    /**
+     * @return the assayTypes
+     */
+    public Set<AssayType> getAssayTypes() {
+        return assayTypes;
+    }
+
+    /**
+     * @param assayTypes the assayTypes to set
+     */
+    public void setAssayTypes(Set<AssayType> assayTypes) {
+        this.assayTypes = assayTypes;
     }
 }

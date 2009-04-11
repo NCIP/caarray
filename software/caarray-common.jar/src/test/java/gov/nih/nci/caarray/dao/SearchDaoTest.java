@@ -110,6 +110,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -139,6 +141,8 @@ public class SearchDaoTest {
 
     private static final SearchDao SEARCH_DAO = CaArrayDaoFactory.INSTANCE.getSearchDao();
     private static final ProtocolDao PROTOCOL_DAO = CaArrayDaoFactory.INSTANCE.getProtocolDao();
+
+    private static AssayType DUMMY_ASSAYTYPE_1 = new AssayType("aCGH");
 
     /**
      * Define the dummy objects that will be used by the tests.
@@ -445,7 +449,9 @@ public class SearchDaoTest {
             org.setTermSource(DUMMY_TERM_SOURCE);
             Project project = new Project();
             project.getExperiment().setTitle("test experiment.");
-            project.getExperiment().setAssayTypeEnum(AssayType.ACGH);
+            SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+            assayTypes.add(DUMMY_ASSAYTYPE_1);
+            project.getExperiment().setAssayTypes(assayTypes);
             project.getExperiment().setOrganism(org);
             project.getExperiment().setManufacturer(new Organization());
             Source source = new Source();
@@ -456,6 +462,7 @@ public class SearchDaoTest {
             source2.setName("Source 2 Name");
             source2.setDescription("AAA");
             project.getExperiment().getSources().add(source2);
+            s.save(DUMMY_ASSAYTYPE_1);
             s.save(project);
             s.flush();
             s.clear();
@@ -510,7 +517,9 @@ public class SearchDaoTest {
             org.setTermSource(DUMMY_TERM_SOURCE);
             Project project = new Project();
             project.getExperiment().setTitle("test experiment.");
-            project.getExperiment().setAssayTypeEnum(AssayType.ACGH);
+            SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+            assayTypes.add(DUMMY_ASSAYTYPE_1);
+            project.getExperiment().setAssayTypes(assayTypes);
             project.getExperiment().setOrganism(org);
             project.getExperiment().setManufacturer(new Organization());
             Source source = new Source();
@@ -521,6 +530,7 @@ public class SearchDaoTest {
             source2.setName("Source 2 Name");
             source2.setDescription("AAA");
             project.getExperiment().getSources().add(source2);
+            s.save(DUMMY_ASSAYTYPE_1);
             s.save(project);
             s.flush();
             s.clear();

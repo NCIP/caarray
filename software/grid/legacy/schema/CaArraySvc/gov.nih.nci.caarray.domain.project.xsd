@@ -153,10 +153,16 @@
                             </xs:choice>
                         </xs:complexType>
                     </xs:element>
+                    <xs:element name="assayTypes" minOccurs="0">
+                        <xs:complexType>
+                            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                <xs:element ref="AssayType" />
+                            </xs:choice>
+                        </xs:complexType>
+                    </xs:element>
                     <xs:element name="organism" minOccurs="0" maxOccurs="1" type="edu.georgetown.pir:Organism" />
                 </xs:sequence>
                 <xs:attribute name="date" type="xs:dateTime" />
-                <xs:attribute name="assayType" type="xs:string" />
                 <xs:attribute name="designDescription" type="xs:string" />
                 <xs:attribute name="qualityControlDescription" type="xs:string" />
                 <xs:attribute name="replicateDescription" type="xs:string" />
@@ -167,6 +173,15 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    <xs:element name="AssayType" type="AssayType" />
+    <xs:complexType name="AssayType">
+        <xs:complexContent>
+            <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
+                <xs:attribute name="value" type="xs:string" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <xs:element name="Project" type="Project" />
     <xs:complexType name="Project">
         <xs:complexContent>

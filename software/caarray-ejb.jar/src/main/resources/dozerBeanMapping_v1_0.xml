@@ -19,14 +19,6 @@
             <b>files</b>
         </field>
   	</mapping>  
-    <mapping> 
-        <class-a>gov.nih.nci.caarray.domain.project.AssayType</class-a>
-        <class-b>gov.nih.nci.caarray.external.v1_0.array.AssayType</class-b>   
-        <field>
-            <a>value</a>
-            <b>name</b>
-        </field>
-    </mapping>  
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.file.FileType</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.data.FileType</class-b>   

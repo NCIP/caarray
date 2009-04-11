@@ -91,7 +91,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author dkokotov
  */
-public class AssayType implements Serializable {
+public class AssayType implements Serializable, Comparable<AssayType> {
     private static final long serialVersionUID = 1L;
     
     private String name;
@@ -130,5 +130,15 @@ public class AssayType implements Serializable {
      */
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int compareTo(AssayType o) {
+        if (o == null) {
+            return 1;
+        }
+        return this.getName().compareToIgnoreCase(o.getName());
     }
 }

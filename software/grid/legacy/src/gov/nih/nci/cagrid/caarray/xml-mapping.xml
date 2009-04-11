@@ -139,9 +139,6 @@
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
-    <field name="assayType" type="string">
-      <bind-xml name="assayType" node="attribute" />
-    </field>
     <field name="description" type="string">
       <bind-xml name="description" node="attribute" />
     </field>
@@ -168,6 +165,9 @@
     </field>
     <field name="designFiles" type="gov.nih.nci.caarray.domain.file.CaArrayFile" collection="collection">
       <bind-xml name="CaArrayFile" type="gov.nih.nci.caarray.domain.file.CaArrayFile" location="designFiles" node="element" />
+    </field>
+    <field name="assayTypes" type="gov.nih.nci.caarray.domain.project.AssayType" collection="collection">
+      <bind-xml name="AssayType" location="assayTypes" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.AbstractDesignElement" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
@@ -388,9 +388,6 @@
     <field name="date" type="date">
       <bind-xml name="date" node="attribute" />
     </field>
-    <field name="assayType" type="string">
-      <bind-xml name="assayType" node="attribute" />
-    </field>
     <field name="designDescription" type="string">
       <bind-xml name="designDescription" node="attribute" />
     </field>
@@ -456,6 +453,15 @@
     </field>
     <field name="arrayDesigns" type="gov.nih.nci.caarray.domain.array.ArrayDesign" collection="collection">
       <bind-xml name="ArrayDesign" type="gov.nih.nci.caarray.domain.array.ArrayDesign" location="arrayDesigns" node="element" />
+    </field>
+    <field name="assayTypes" type="gov.nih.nci.caarray.domain.project.AssayType" collection="collection">
+      <bind-xml name="AssayType" location="assayTypes" node="element" />
+    </field>  
+  </class>
+  <class name="gov.nih.nci.caarray.domain.project.AssayType" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+    <map-to xml="AssayType" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project" />
+    <field name="name" type="string">
+      <bind-xml name="name" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.project.Project" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">

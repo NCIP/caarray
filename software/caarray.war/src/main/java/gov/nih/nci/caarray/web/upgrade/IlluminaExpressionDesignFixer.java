@@ -113,6 +113,7 @@ public final class IlluminaExpressionDesignFixer extends AbstractMigrator implem
     private static final int TARGET_HEADER_INDEX = 1;
     private static final int SYMBOL_HEADER_INDEX = 6;
     private static final int DEFINITION_HEADER_INDEX = 10;
+    private static final int GENE_EXPRESSION_INDEX = 3;
 
     private static final int HEADERS_SIZE = 13;
 
@@ -215,9 +216,15 @@ public final class IlluminaExpressionDesignFixer extends AbstractMigrator implem
     }
 
     private boolean isIlluminaExpressionDesign(ArrayDesign design) {
+        boolean containsGeneExpression = false;
+        for (AssayType currType : design.getAssayTypes()) {
+            if (currType.getId() == GENE_EXPRESSION_INDEX) {
+                containsGeneExpression = true;
+            }
+        }
         return design.getFirstDesignFile() != null
-            && FileType.ILLUMINA_DESIGN_CSV.equals(design.getFirstDesignFile().getFileType())
-            && AssayType.GENE_EXPRESSION.equals(design.getAssayTypeEnum());
+                && FileType.ILLUMINA_DESIGN_CSV.equals(design.getFirstDesignFile().getFileType())
+                && containsGeneExpression;
     }
 
 }

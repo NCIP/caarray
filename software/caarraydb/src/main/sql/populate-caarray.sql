@@ -49,6 +49,14 @@ insert into term_categories (term_id, category_id) select term.id, category.id f
 insert into term (value, source) select 'In Print', term_source.id from term_source where term_source.name='caArray';
 insert into term_categories (term_id, category_id) select term.id, category.id from term, category where term.value = 'In Print' and category.name = 'PublicationStatus';
 
+-- Assay Type
+insert into assay_type (name) value ('aCGH');
+insert into assay_type (name) value ('Exon');
+insert into assay_type (name) value ('Gene Expression');
+insert into assay_type (name) value ('Methylation');
+insert into assay_type (name) value ('microRNA');
+insert into assay_type (name) value ('SNP');
+
 insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank, term_source) select 9606, 'human', 'Homo sapiens', 'species', id from term_source where term_source.name='ncbitax';
 insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank, term_source) select 10090, 'house mouse', 'Mus musculus', 'species', id from term_source where term_source.name='ncbitax';
 insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank, term_source) select 10116, 'norway rat', 'Rattus norvegicus', 'species', id from term_source where term_source.name='ncbitax';

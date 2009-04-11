@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -386,6 +387,12 @@ public interface ProjectManagementService {
      * @return the list of terms
      */
     List<Term> getMaterialTypesForExperiment(Experiment experiment);
+
+    /**
+     * Returns the list of all Assay Types.
+     * @return the List&lt;AssayType&gt; of assay types
+     */
+    List<AssayType> getAssayTypes();
 
     /**
      * Get cell types for the experiment and category.

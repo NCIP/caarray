@@ -133,6 +133,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -153,8 +155,6 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 @SuppressWarnings("PMD")
 public class ProjectDaoTest extends AbstractProjectDaoTest {
     private static final Logger LOG = Logger.getLogger(ProjectDaoTest.class);
-
-
 
     private static void checkVisible(Project p) {
         // per Change Request 13332, when projects are created in Draft status
@@ -220,6 +220,8 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             tx = HibernateUtil.beginTransaction();
             saveSupportingObjects();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
@@ -418,6 +420,8 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             saveSupportingObjects();
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
             tx = HibernateUtil.beginTransaction();
@@ -452,6 +456,8 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         Transaction tx = HibernateUtil.beginTransaction();
         saveSupportingObjects();
         HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
@@ -488,6 +494,8 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             saveSupportingObjects();
             assertTrue(SecurityUtils.canWrite(DUMMY_PROJECT_1, UsernameHolder.getCsmUser()));
             HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+            HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+            HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
             Long experimentId = DUMMY_PROJECT_1.getExperiment().getId();
             tx.commit();
             assertNotNull(experimentId);
@@ -759,7 +767,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
-            assertNotNull(p.getExperiment().getAssayTypeEnum());
+            assertNotNull(p.getExperiment().getAssayTypes());
             policies = p.getRemoteApiSecurityPolicies(UsernameHolder.getCsmUser());
             assertEquals(1, policies.size());
             assertTrue(policies.contains(SecurityPolicy.BROWSE));
@@ -794,6 +802,8 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         Transaction tx = HibernateUtil.beginTransaction();
         saveSupportingObjects();
         HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
         tx.commit();
 
         //check initial settings.. drafts should be not visible
@@ -834,6 +844,8 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         Transaction tx = HibernateUtil.beginTransaction();
         saveSupportingObjects();
         HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
@@ -872,6 +884,8 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         saveSupportingObjects();
         DUMMY_PROJECT_1.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
         HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
         assertFalse(DUMMY_PROJECT_1.isUseTcgaPolicy());
         tx.commit();
 
@@ -929,6 +943,8 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         DAO_OBJECT.save(DUMMY_PROJECT_1);
         DAO_OBJECT.save(DUMMY_PROJECT_2);
         DAO_OBJECT.save(DUMMY_PROJECT_3);
+        DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
+        DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
         tx.commit();
         tx = HibernateUtil.beginTransaction();
 
@@ -973,6 +989,8 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         DAO_OBJECT.save(DUMMY_PROJECT_1);
         DAO_OBJECT.save(DUMMY_PROJECT_2);
         DAO_OBJECT.save(DUMMY_PROJECT_3);
+        DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
+        DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
         tx.commit();
         tx = HibernateUtil.beginTransaction();
 
@@ -1016,10 +1034,14 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             org.setTermSource(DUMMY_TERM_SOURCE);
             Experiment e = new Experiment();
             e.setTitle("test title");
-            e.setAssayTypeEnum(AssayType.ACGH);
+            SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+            assayTypes.add(DUMMY_ASSAYTYPE_1);
+            e.setAssayTypes(assayTypes);
             e.setManufacturer(new Organization());
             e.setOrganism(org);
             DAO_OBJECT.save(e);
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
+            DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
             assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
             assertEquals(0, DAO_OBJECT.getDiseaseStatesForExperiment(e).size());
             assertEquals(0, DAO_OBJECT.getTissueSitesForExperiment(e).size());

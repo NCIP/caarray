@@ -11,8 +11,7 @@
     xmlns:sam="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"
     xmlns:val="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value"
      >
-     
-     
+          
   <class name="gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity">
     <map-to xml="AbstractCaArrayEntity" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external" />
     <field name="id" type="string">
@@ -87,8 +86,8 @@
     <field name="version" type="string">
       <bind-xml name="version" node="attribute" />
     </field>
-    <field name="assayType" type="gov.nih.nci.caarray.external.v1_0.array.AssayType">
-      <bind-xml name="arr:assayType" node="element" />
+    <field name="assayTypes" type="gov.nih.nci.caarray.external.v1_0.array.AssayType" collection="collection">
+      <bind-xml name="AssayType" location="assayTypes" node="element" />
     </field>
     <field name="arrayProvider" type="gov.nih.nci.caarray.external.v1_0.array.ArrayProvider">
       <bind-xml name="arr:arrayProvider" node="element" />
@@ -153,8 +152,8 @@
     <field name="arrayProvider" type="gov.nih.nci.caarray.external.v1_0.array.ArrayProvider">
       <bind-xml name="exp:arrayProvider" node="element" />
     </field>
-    <field name="assayType" type="gov.nih.nci.caarray.external.v1_0.array.AssayType">
-      <bind-xml name="exp:assayType" node="element" />
+    <field name="assayTypes" type="gov.nih.nci.caarray.external.v1_0.array.AssayType" collection="collection">
+      <bind-xml name="AssayType" location="assayTypes" node="element" />
     </field>
     <field name="contacts" type="gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact" collection="collection">
       <bind-xml name="ExperimentalContact" type="gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact" location="contacts" node="element" />

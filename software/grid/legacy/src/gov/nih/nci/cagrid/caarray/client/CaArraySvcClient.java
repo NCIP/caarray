@@ -106,18 +106,18 @@ public class CaArraySvcClient extends CaArraySvcClientBase {
                 Object target = new Object();
                 cqlQuery.setTarget(target);
 
-                target.setName(Sample.class.getName());
+                target.setName(Experiment.class.getName());
                 Attribute a = new Attribute();
                 a.setName("id");
-                a.setValue("3476");
+                a.setValue("1");
                 a.setPredicate(Predicate.EQUAL_TO);
                 target.setAttribute(a);
 
                 CQLQueryResults results = client.query(cqlQuery);
                 CQLQueryResultsIterator iter = new CQLQueryResultsIterator(results, CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
                 while (iter.hasNext()) {
-                    Sample e = (Sample) iter.next();
-                    System.out.println("Sample: " + e.getName());
+                    Experiment e = (Experiment) iter.next();
+                    System.out.println("Exp: " + e.getTitle() +"; assay types: " + e.getAssayTypes());
                 }
                 sw.stop();
                 System.out.println("Time for simple data service retrieval: " + sw.toString());

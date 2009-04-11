@@ -214,7 +214,8 @@ public class SearchExperimentByExample extends CaArrayJmeterSampler implements J
                 return false;
             }
             // Check if retrieved experiment has mandatory fields.
-            if (retrievedExperiment.getTitle() == null || retrievedExperiment.getAssayType() == null) {
+            if ((retrievedExperiment.getTitle() == null)
+                    || (retrievedExperiment.getAssayTypes() == null && retrievedExperiment.getManufacturer() == null)) {
                 return false;
             }
         }
