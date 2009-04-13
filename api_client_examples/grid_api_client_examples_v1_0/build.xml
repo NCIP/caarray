@@ -112,7 +112,7 @@
     <!-- ** DOWNLOAD FILE CONTENTS                                        ** -->
     <!-- ******************************************************************* -->
     <target name="download_file" depends="build">
-        <java classname="caarray.client.examples.DownloadFile">
+        <java classname="caarray.client.examples.grid.DownloadFile">
             <classpath>
                 <pathelement path="${classes.dir}" />
                 <fileset dir="${lib.dir}">
@@ -125,7 +125,7 @@
     </target>
 
     <target name="download_file_zip" depends="build">
-        <java classname="caarray.client.examples.DownloadFileZipFromExperiment">
+        <java classname="caarray.client.examples.grid.DownloadFileZipFromExperiment">
             <classpath>
                 <pathelement path="${classes.dir}" />
                 <fileset dir="${lib.dir}">
@@ -138,7 +138,7 @@
     </target>
 
     <target name="download_multiple_files" depends="build">
-        <java classname="caarray.client.examples.DownloadMultipleFiles">
+        <java classname="caarray.client.examples.grid.DownloadMultipleFiles">
             <classpath>
                 <pathelement path="${classes.dir}" />
                 <fileset dir="${lib.dir}">
@@ -154,7 +154,7 @@
     <!-- ** DOWNLOAD DATA COLUMNS                                         ** -->
     <!-- ******************************************************************* -->
     <target name="download_data_columns_from_file" depends="build">
-        <java classname="caarray.client.examples.DownloadDataColumnsFromFile">
+        <java classname="caarray.client.examples.grid.DownloadDataColumnsFromFile">
             <classpath>
                 <pathelement path="${classes.dir}" />
                 <fileset dir="${lib.dir}">
@@ -167,7 +167,7 @@
     </target>
 
     <target name="download_data_columns_from_hyb" depends="build">
-        <java classname="caarray.client.examples.DownloadDataColumnsFromHybridizations">
+        <java classname="caarray.client.examples.grid.DownloadDataColumnsFromHybridizations">
             <classpath>
                 <pathelement path="${classes.dir}" />
                 <fileset dir="${lib.dir}">
@@ -183,7 +183,7 @@
     <!-- ** DOWNLOAD SAMPLE ANNOTATIONS                                   ** -->
     <!-- ******************************************************************* -->
     <target name="download_sample_annotations" depends="build">
-        <java classname="caarray.client.examples.DownloadSampleAnnotationsForHybridizations">
+        <java classname="caarray.client.examples.grid.DownloadSampleAnnotationsForHybridizations">
             <classpath>
                 <pathelement path="${classes.dir}" />
                 <fileset dir="${lib.dir}">
@@ -199,7 +199,7 @@
     <!-- ** LOOKUP ENTITIES IN PREPARATION FOR MAKING OTHER API CALLS     ** -->
     <!-- ******************************************************************* -->
     <target name="lookup_entities" depends="build">
-        <java classname="caarray.client.examples.LookUpEntities">
+        <java classname="caarray.client.examples.grid.LookUpEntities">
             <classpath>
                 <pathelement path="${classes.dir}" />
                 <fileset dir="${lib.dir}">
@@ -215,7 +215,7 @@
     <!-- ** DOWNLOAD A MAGE-TAB EXPORT OF AN EXPERIMENT                   ** -->
     <!-- ******************************************************************* -->
     <target name="download_magetab_export" depends="build">
-        <java classname="caarray.client.examples.DownloadMageTabExport">
+        <java classname="caarray.client.examples.grid.DownloadMageTabExport">
             <classpath>
                 <pathelement path="${classes.dir}" />
                 <fileset dir="${lib.dir}">
@@ -231,7 +231,7 @@
     <!-- ** DOWNLOAD ARRAY DESIGN FILES                                   ** -->
     <!-- ******************************************************************* -->
     <target name="download_array_design" depends="build">
-        <java classname="caarray.client.examples.DownloadArrayDesignForHybridization">
+        <java classname="caarray.client.examples.grid.DownloadArrayDesignForHybridization">
             <classpath>
                 <pathelement path="${classes.dir}" />
                 <fileset dir="${lib.dir}">
