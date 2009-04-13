@@ -228,7 +228,7 @@ public class DownloadDataColumnsFromHybridizations {
         searchCriteria.setHybridizations(hybridizationRefs);
         searchCriteria.getTypes().add(chpFileTypeRef);
         DataFile[] dataFiles = client.searchForFiles(searchCriteria);
-        if (dataFiles == 0 || dataFiles.length == 0) {
+        if (dataFiles == null || dataFiles.length == 0) {
             return false;
         } else {
             return true;

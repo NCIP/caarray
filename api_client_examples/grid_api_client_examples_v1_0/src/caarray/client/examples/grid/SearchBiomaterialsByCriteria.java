@@ -95,7 +95,7 @@ import java.rmi.RemoteException;
  */
 public class SearchBiomaterialsByCriteria {
     private static CaArraySvc_v1_0Client client = null;
-    private static final String EXTERNAL_ID = "MY_EXTERNAL_ID_12345";
+    private static final String EXTERNAL_ID = "API_TEST_EXTERNAL_ID_01";
 
     public static void main(String[] args) {
         SearchBiomaterialsByCriteria seeker = new SearchBiomaterialsByCriteria();

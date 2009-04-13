@@ -83,19 +83,19 @@
 package caarray.client.examples.grid;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
-import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import org.apache.axis.types.URI.MalformedURIException;
 import org.apache.commons.io.IOUtils;
@@ -104,45 +104,62 @@ import org.cagrid.transfer.context.client.helper.TransferClientHelper;
 import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
 
 /**
- * A client downloading a zip of files from an experiment using the caArray Grid service API.
+ * A client downloading the array design file associated with a hybridization using the caArray Grid service API.
  *
  * @author Rashmi Srinivasa
  */
-public class DownloadFileZipFromExperiment {
+public class DownloadArrayDesignForHybridization {
     private static CaArraySvc_v1_0Client client = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
-    // private static final String EXPERIMENT_PUBLIC_IDENTIFIER = BaseProperties.AFFYMETRIX_EXPERIMENT_PUBLIC_IDENTIFIER;
+    private static final String HYBRIDIZATION_NAME = BaseProperties.HYBRIDIZATION_NAME_01;
 
     public static void main(String[] args) {
-        DownloadFileZipFromExperiment downloader = new DownloadFileZipFromExperiment();
+        DownloadArrayDesignForHybridization downloader = new DownloadArrayDesignForHybridization();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
-            System.out.println("Downloading file zip from " + EXPERIMENT_TITLE + "...");
+            System.out.println("Downloading array design file for hybridization " + HYBRIDIZATION_NAME + " in " + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
-            System.out.println("Error while downloading file zip.");
+            System.out.println("Error while downloading array design file.");
             t.printStackTrace();
         }
     }
 
     private void download() throws RemoteException, MalformedURIException, IOException, Exception {
-        CaArrayEntityReference experimentRef = searchForExperiment();
+        DataSetRequest dataSetRequest = new DataSetRequest();
+        // Select an experiment of interest.
+        CaArrayEntityReference experimentRef = selectExperiment();
         if (experimentRef == null) {
-            System.err.println("Could not find experiment with the requested title or public identifier.");
+            System.err.println("Could not find experiment with the requested title.");
             return;
         }
-        List<CaArrayEntityReference> fileRefs = searchForFiles(experimentRef);
-        if (fileRefs == null) {
-            System.err.println("Could not find any files that match the search criteria.");
+
+        // Select hybridization of interest in the experiment.
+        Hybridization hybridization = selectHybridization(experimentRef);
+        if (hybridization == null) {
+            System.err.println("Could not find hybridization with requested name in the selected experiment.");
             return;
         }
-        downloadZipOfFiles(fileRefs);
+
+    // Get array design associated with the hybridization.
+    ArrayDesign arrayDesign = hybridization.getArrayDesign();
+    if (arrayDesign == null) {
+            System.err.println("No array design associated with the hybridization.");
+            return;
+        }
+    Set<DataFile> arrayDesignFiles = arrayDesign.getFiles();
+
+    for (DataFile arrayDesignFile : arrayDesignFiles) {
+        System.out.println("Downloading array design file " + arrayDesignFile.getName());
+        CaArrayEntityReference fileRef = new CaArrayEntityReference(arrayDesignFile.getId());
+        downloadContents(fileRef);
+    }
     }
 
     /**
-     * Search for an experiment based on its title or public identifier.
+     * Search for experiments and select one.
      */
-    private CaArrayEntityReference searchForExperiment() throws RemoteException {
+    private CaArrayEntityReference selectExperiment() throws RemoteException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
@@ -152,7 +169,7 @@ public class DownloadFileZipFromExperiment {
         // experimentSearchCriteria.setPublicIdentifier(EXPERIMENT_PUBLIC_IDENTIFIER);
 
         Experiment[] experiments = client.searchForExperiments(experimentSearchCriteria);
-        if (experiments.length <= 0) {
+        if (experiments == null || experiments.length <= 0) {
             return null;
         }
 
@@ -164,65 +181,33 @@ public class DownloadFileZipFromExperiment {
     }
 
     /**
-     * Search for a certain type or category of files in an experiment.
+     * Select hybridization with given name in the experiment.
      */
-    private List<CaArrayEntityReference> searchForFiles(CaArrayEntityReference experimentRef) throws RemoteException {
-        // Search for all raw data files in the experiment. (Experiment ref is a mandatory parameter.)
-        FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
-        fileSearchCriteria.setExperiment(experimentRef);
-        fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
-        fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
-
-        // Alternatively, search for all AFFYMETRIX_CEL data files)
-        // CaArrayEntityReference celFileTypeRef = getCelFileType();
-        // fileSearchCriteria.getTypes().add(celFileTypeRef);
-
-        // Alternatively, search for all derived data files with extension .CHP)
-        // fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
-        // fileSearchCriteria.setExtension(".CHP");
-
-        DataFile[] files = client.searchForFiles(fileSearchCriteria);
-        if (files.length <= 0) {
+    private Hybridization selectHybridization(CaArrayEntityReference experimentRef) throws RemoteException {
+        HybridizationSearchCriteria searchCriteria = new HybridizationSearchCriteria();
+        searchCriteria.setExperiment(experimentRef);
+    searchCriteria.getNames().add(HYBRIDIZATION_NAME);
+        Hybridization[] hybridizations = client.searchForHybridizations(searchCriteria);
+        if (hybridizations == null || hybridizations.length <= 0) {
             return null;
         }
 
-        // Return references to the files.
-        List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
-        for (DataFile file : files) {
-            CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
-            fileRefs.add(fileRef);
-        }
-        return fileRefs;
+        return hybridizations[0];
     }
 
-//    private CaArrayEntityReference getCelFileType() {
-//        FileType exampleFileType = new FileType();
-//        exampleFileType.setName("AFFYMETRIX_CEL");
-//        FileType[] fileTypes = client.searchByExample(exampleFileType);
-//        FileType celFileType = fileTypes[0];
-//        CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference(celFileType.getId());
-//        return celFileTypeRef;
-//    }
-
-    /**
-     * Download a zip of the given files.
-     */
-    private void downloadZipOfFiles(List<CaArrayEntityReference> fileRefs) throws RemoteException, MalformedURIException, IOException, Exception {
-        FileDownloadRequest downloadRequest = new FileDownloadRequest();
-        downloadRequest.setFiles(fileRefs);
-        boolean compressEachIndividualFile = false;
+    private void downloadContents(CaArrayEntityReference fileRef) throws RemoteException, MalformedURIException, IOException, Exception {
+        boolean compressFile = false;
         long startTime = System.currentTimeMillis();
-        TransferServiceContextReference serviceContextRef = client.getFileContentsZipTransfer(downloadRequest,
-                compressEachIndividualFile);
-        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef
-                .getEndpointReference());
+        TransferServiceContextReference serviceContextRef = client.getFileContentsTransfer(fileRef, compressFile);
+        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef.getEndpointReference());
         InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
         long totalTime = System.currentTimeMillis() - startTime;
         byte[] byteArray = IOUtils.toByteArray(stream);
+
         if (byteArray != null) {
             System.out.println("Retrieved " + byteArray.length + " bytes in " + totalTime + " ms.");
         } else {
-            System.err.println("Error: Retrieved null byte array.");
+            System.out.println("Error: Retrieved null byte array.");
         }
     }
 }

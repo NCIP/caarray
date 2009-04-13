@@ -18,6 +18,7 @@ Java clients to test the caArray GRID API v1.0:
      search_experiments_by_keyword
      search_biomaterials_by_criteria
      search_biomaterials_by_keyword
+     select_files
      download_file
      download_file_zip
      download_multiple_files
@@ -25,6 +26,8 @@ Java clients to test the caArray GRID API v1.0:
      download_data_columns_from_hyb
      download_sample_annotations
      lookup_entities
+     download_magetab_export
+     download_array_design
 
 NOTE: The output of the tests depends on certain data being available
 in the caArray system you are connecting to. Most tests rely on the

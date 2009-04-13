@@ -93,6 +93,22 @@
     </target>
 
     <!-- ******************************************************************* -->
+    <!-- ** SELECT FILES                                                  ** -->
+    <!-- ******************************************************************* -->
+    <target name="select_files" depends="build">
+        <java classname="caarray.client.examples.grid.SelectFiles">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
+            <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
+        </java>
+    </target>
+
+    <!-- ******************************************************************* -->
     <!-- ** DOWNLOAD FILE CONTENTS                                        ** -->
     <!-- ******************************************************************* -->
     <target name="download_file" depends="build">
@@ -184,6 +200,38 @@
     <!-- ******************************************************************* -->
     <target name="lookup_entities" depends="build">
         <java classname="caarray.client.examples.LookUpEntities">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
+            <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
+        </java>
+    </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** DOWNLOAD A MAGE-TAB EXPORT OF AN EXPERIMENT                   ** -->
+    <!-- ******************************************************************* -->
+    <target name="download_magetab_export" depends="build">
+        <java classname="caarray.client.examples.DownloadMageTabExport">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
+            <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
+        </java>
+    </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** DOWNLOAD ARRAY DESIGN FILES                                   ** -->
+    <!-- ******************************************************************* -->
+    <target name="download_array_design" depends="build">
+        <java classname="caarray.client.examples.DownloadArrayDesignForHybridization">
             <classpath>
                 <pathelement path="${classes.dir}" />
                 <fileset dir="${lib.dir}">

@@ -100,6 +100,12 @@ public final class BaseProperties {
     public static final String GENEPIX_EXPERIMENT = "Genepix Experiment for API Testing";
     public static final String ILLUMINA_EXPERIMENT = "Illumina Experiment for API Testing";
 
+    // Sample names and hybridization names
+    public static final String SAMPLE_NAME_01 = "ApiTestSample01";
+    public static final String SAMPLE_NAME_02 = "ApiTestSample02";
+    public static final String HYBRIDIZATION_NAME_01 = "ApiTestHybridization01";
+    public static final String HYBRIDIZATION_NAME_02 = "ApiTestHybridization02";
+
     // Quantitation types
     public static final String AFFYMETRIX_CHP_QUANTITATION_TYPES = "CHPSignal,CHPSignalLogRatio";
     public static final String AFFYMETRIX_CEL_QUANTITATION_TYPES = "CELX,CELY,CELintensity,CELintensityStdev";

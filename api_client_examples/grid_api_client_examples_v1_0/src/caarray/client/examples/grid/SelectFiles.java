@@ -84,59 +84,85 @@ package caarray.client.examples.grid;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
-import org.apache.axis.types.URI.MalformedURIException;
-import org.apache.commons.io.IOUtils;
-import org.cagrid.transfer.context.client.TransferServiceContextClient;
-import org.cagrid.transfer.context.client.helper.TransferClientHelper;
-import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
+import java.util.Set;
 
 /**
- * A client downloading a zip of files from an experiment using the caArray Grid service API.
+ * A client selecting files from an experiment using the caArray Grid service API.
  *
  * @author Rashmi Srinivasa
  */
-public class DownloadFileZipFromExperiment {
+public class SelectFiles {
     private static CaArraySvc_v1_0Client client = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
-    // private static final String EXPERIMENT_PUBLIC_IDENTIFIER = BaseProperties.AFFYMETRIX_EXPERIMENT_PUBLIC_IDENTIFIER;
+    private static final String SAMPLE_NAME_01 = BaseProperties.SAMPLE_NAME_01;
+    private static final String SAMPLE_NAME_02 = BaseProperties.SAMPLE_NAME_02;
 
     public static void main(String[] args) {
-        DownloadFileZipFromExperiment downloader = new DownloadFileZipFromExperiment();
+        SelectFiles selector = new SelectFiles();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
-            System.out.println("Downloading file zip from " + EXPERIMENT_TITLE + "...");
-            downloader.download();
+            CaArrayEntityReference experimentRef = selector.searchForExperiment();
+            if (experimentRef == null) {
+                System.out.println("Could not find experiment with the requested title.");
+                return;
+            }
+            System.out.println("Selecting files in experiment: " + EXPERIMENT_TITLE + "...");
+            selector.selectFilesInExperiment(experimentRef);
+            System.out.println("Selecting files associated with samples: " + SAMPLE_NAME_01 + ", " + SAMPLE_NAME_02 + "...");
+            selector.selectFilesFromSamples(experimentRef);
         } catch (Throwable t) {
-            System.out.println("Error while downloading file zip.");
+            System.err.println("Error while selecting files.");
             t.printStackTrace();
         }
     }
 
-    private void download() throws RemoteException, MalformedURIException, IOException, Exception {
-        CaArrayEntityReference experimentRef = searchForExperiment();
-        if (experimentRef == null) {
-            System.err.println("Could not find experiment with the requested title or public identifier.");
-            return;
-        }
-        List<CaArrayEntityReference> fileRefs = searchForFiles(experimentRef);
+    private void selectFilesInExperiment(CaArrayEntityReference experimentRef) throws RemoteException {
+        List<CaArrayEntityReference> fileRefs = selectRawFiles(experimentRef);
         if (fileRefs == null) {
-            System.err.println("Could not find any files that match the search criteria.");
+            System.out.println("Could not find any raw files in the experiment.");
+        } else {
+            System.out.println("Found " + fileRefs.size() + " raw files in the experiment.");
+        }
+        fileRefs = selectCelFiles(experimentRef);
+        if (fileRefs == null) {
+            System.out.println("Could not find any Affymetrix CEL files in the experiment.");
+        } else {
+            System.out.println("Found " + fileRefs.size() + " Affymetrix CEL files in the experiment.");
+        }
+        fileRefs = selectChpFiles(experimentRef);
+        if (fileRefs == null) {
+            System.out.println("Could not find any derived files with extension .CHP in the experiment.");
+        } else {
+            System.out.println("Found " + fileRefs.size() + " derived files with extension .CHP in the experiment.");
+        }
+    }
+
+    private void selectFilesFromSamples(CaArrayEntityReference experimentRef) throws RemoteException {
+        Set<CaArrayEntityReference> sampleRefs = searchForSamples(experimentRef);
+        if (sampleRefs == null || sampleRefs.size() <= 0) {
+            System.out.println("Could not find the requested samples.");
             return;
         }
-        downloadZipOfFiles(fileRefs);
+        List<CaArrayEntityReference> fileRefs = selectRawFilesFromSamples(experimentRef, sampleRefs);
+        if (fileRefs == null) {
+            System.out.println("Could not find any raw files associated with the given samples.");
+        } else {
+            System.out.println("Found " + fileRefs.size() + " raw files associated with the given samples.");
+        }
     }
 
     /**
@@ -164,22 +190,33 @@ public class DownloadFileZipFromExperiment {
     }
 
     /**
-     * Search for a certain type or category of files in an experiment.
+     * Search for samples based on name.
      */
-    private List<CaArrayEntityReference> searchForFiles(CaArrayEntityReference experimentRef) throws RemoteException {
-        // Search for all raw data files in the experiment. (Experiment ref is a mandatory parameter.)
+    private Set<CaArrayEntityReference> searchForSamples(CaArrayEntityReference experimentRef) throws RemoteException {
+        BiomaterialSearchCriteria criteria = new BiomaterialSearchCriteria();
+        criteria.setExperiment(experimentRef);
+        criteria.getNames().add(SAMPLE_NAME_01);
+        criteria.getNames().add(SAMPLE_NAME_02);
+        criteria.getTypes().add(BiomaterialType.SAMPLE);
+        Biomaterial[] samples = client.searchForBiomaterials(criteria);
+        if (samples == null || samples.length <= 0) {
+            return null;
+        }
+        Set<CaArrayEntityReference> sampleRefs = new HashSet<CaArrayEntityReference>();
+        for (Biomaterial sample : samples) {
+            CaArrayEntityReference sampleRef = new CaArrayEntityReference(sample.getId());
+            sampleRefs.add(sampleRef);
+        }
+        return sampleRefs;
+    }
+
+    /**
+     * Select all raw data files in the experiment.
+     */
+    private List<CaArrayEntityReference> selectRawFiles(CaArrayEntityReference experimentRef) throws RemoteException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
-        fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
-
-        // Alternatively, search for all AFFYMETRIX_CEL data files)
-        // CaArrayEntityReference celFileTypeRef = getCelFileType();
-        // fileSearchCriteria.getTypes().add(celFileTypeRef);
-
-        // Alternatively, search for all derived data files with extension .CHP)
-        // fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
-        // fileSearchCriteria.setExtension(".CHP");
 
         DataFile[] files = client.searchForFiles(fileSearchCriteria);
         if (files.length <= 0) {
@@ -190,39 +227,92 @@ public class DownloadFileZipFromExperiment {
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
         for (DataFile file : files) {
             CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
+            System.out.print(file.getName() + "  ");
             fileRefs.add(fileRef);
         }
         return fileRefs;
     }
 
-//    private CaArrayEntityReference getCelFileType() {
-//        FileType exampleFileType = new FileType();
-//        exampleFileType.setName("AFFYMETRIX_CEL");
-//        FileType[] fileTypes = client.searchByExample(exampleFileType);
-//        FileType celFileType = fileTypes[0];
-//        CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference(celFileType.getId());
-//        return celFileTypeRef;
-//    }
+    /**
+     * Select all Affymetrix CEL data files in the experiment.
+     */
+    private List<CaArrayEntityReference> selectCelFiles(CaArrayEntityReference experimentRef) throws RemoteException {
+        FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
+        fileSearchCriteria.setExperiment(experimentRef);
+
+        CaArrayEntityReference celFileTypeRef = getCelFileType();
+        fileSearchCriteria.getTypes().add(celFileTypeRef);
+
+        DataFile[] files = client.searchForFiles(fileSearchCriteria);
+        if (files.length <= 0) {
+            return null;
+        }
+
+        // Return references to the files.
+        List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
+        for (DataFile file : files) {
+            CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
+            System.out.print(file.getName() + "  ");
+            fileRefs.add(fileRef);
+        }
+        return fileRefs;
+    }
+
+    private CaArrayEntityReference getCelFileType() {
+        FileType exampleFileType = new FileType();
+        exampleFileType.setName("AFFYMETRIX_CEL");
+        FileType[] fileTypes = client.searchByExample(exampleFileType);
+        FileType celFileType = fileTypes[0];
+        CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference(celFileType.getId());
+        return celFileTypeRef;
+    }
 
     /**
-     * Download a zip of the given files.
+     * Select all derived data files with extension .CHP in the experiment.
      */
-    private void downloadZipOfFiles(List<CaArrayEntityReference> fileRefs) throws RemoteException, MalformedURIException, IOException, Exception {
-        FileDownloadRequest downloadRequest = new FileDownloadRequest();
-        downloadRequest.setFiles(fileRefs);
-        boolean compressEachIndividualFile = false;
-        long startTime = System.currentTimeMillis();
-        TransferServiceContextReference serviceContextRef = client.getFileContentsZipTransfer(downloadRequest,
-                compressEachIndividualFile);
-        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef
-                .getEndpointReference());
-        InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
-        long totalTime = System.currentTimeMillis() - startTime;
-        byte[] byteArray = IOUtils.toByteArray(stream);
-        if (byteArray != null) {
-            System.out.println("Retrieved " + byteArray.length + " bytes in " + totalTime + " ms.");
-        } else {
-            System.err.println("Error: Retrieved null byte array.");
+    private List<CaArrayEntityReference> selectChpFiles(CaArrayEntityReference experimentRef) throws RemoteException {
+        FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
+        fileSearchCriteria.setExperiment(experimentRef);
+
+        fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
+        fileSearchCriteria.setExtension(".CHP");
+
+        DataFile[] files = client.searchForFiles(fileSearchCriteria);
+        if (files.length <= 0) {
+            return null;
         }
+
+        // Return references to the files.
+        List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
+        for (DataFile file : files) {
+            CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
+            System.out.print(file.getName() + "  ");
+            fileRefs.add(fileRef);
+        }
+        return fileRefs;
+    }
+
+    /**
+     * Select all raw data files associated with the given samples.
+     */
+    private List<CaArrayEntityReference> selectRawFilesFromSamples(CaArrayEntityReference experimentRef, Set<CaArrayEntityReference> sampleRefs) throws RemoteException {
+        FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
+        fileSearchCriteria.setExperiment(experimentRef);
+        fileSearchCriteria.setSamples(sampleRefs);
+        fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
+
+        DataFile[] files = client.searchForFiles(fileSearchCriteria);
+        if (files.length <= 0) {
+            return null;
+        }
+
+        // Return references to the files.
+        List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
+        for (DataFile file : files) {
+            CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
+            System.out.print(file.getName() + "  ");
+            fileRefs.add(fileRef);
+        }
+        return fileRefs;
     }
 }

@@ -82,6 +82,8 @@
  */
 package caarray.client.examples.grid;
 
+import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
@@ -89,6 +91,7 @@ import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact;
+import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.factor.Factor;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
@@ -140,6 +143,8 @@ public class LookUpEntities {
         lookupTerms();
         lookupTermSources();
         lookupPrincipalInvestigators();
+        lookupEntityByReference();
+        lookupEntitiesByReference();
         //lookupAnnotationCategories();
         //lookupAnnotationValues(category);
     }
@@ -321,5 +326,36 @@ public class LookUpEntities {
             System.out.print(investigator.getLastName() + "  ");
         }
         System.out.println("End of principal investigator lookup.");
+    }
+
+    private void lookupEntityByReference() throws RemoteException {
+        CaArrayEntityReference organismRef = new CaArrayEntityReference(
+                "URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5");
+        startTime = System.currentTimeMillis();
+        Organism organism = (Organism) client.getByReference(organismRef);
+        totalTime = System.currentTimeMillis() - startTime;
+        if (organism == null) {
+            System.out.println("Could not find organism.");
+        } else {
+            System.out.println("Found organism " + organism.getScientificName() + " in " + totalTime + " ms.");
+        }
+    }
+
+    private void lookupEntitiesByReference() throws RemoteException {
+        CaArrayEntityReference[] organismRefs = new CaArrayEntityReference[2];
+        organismRefs[0] = new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5");
+        organismRefs[1] = new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:3");
+        startTime = System.currentTimeMillis();
+        AbstractCaArrayEntity[] organisms = client.getByReferences(organismRefs);
+        totalTime = System.currentTimeMillis() - startTime;
+        if (organisms == null || organisms.length <= 0) {
+            System.out.println("Could not find organisms.");
+        } else {
+            for (AbstractCaArrayEntity entity : organisms) {
+                Organism organism = (Organism) entity;
+                System.out.println("Found organism: " + organism.getScientificName());
+            }
+            System.out.println("Found " + organisms.length + " organisms in " + totalTime + " ms.");
+        }
     }
 }

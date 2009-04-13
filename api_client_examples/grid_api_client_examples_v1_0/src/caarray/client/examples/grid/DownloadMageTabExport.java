@@ -83,19 +83,13 @@
 package caarray.client.examples.grid;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
-import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.axis.types.URI.MalformedURIException;
 import org.apache.commons.io.IOUtils;
@@ -104,23 +98,22 @@ import org.cagrid.transfer.context.client.helper.TransferClientHelper;
 import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
 
 /**
- * A client downloading a zip of files from an experiment using the caArray Grid service API.
+ * A client downloading contents of a single file using the caArray Grid service API.
  *
  * @author Rashmi Srinivasa
  */
-public class DownloadFileZipFromExperiment {
+public class DownloadMageTabExport {
     private static CaArraySvc_v1_0Client client = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
-    // private static final String EXPERIMENT_PUBLIC_IDENTIFIER = BaseProperties.AFFYMETRIX_EXPERIMENT_PUBLIC_IDENTIFIER;
 
     public static void main(String[] args) {
-        DownloadFileZipFromExperiment downloader = new DownloadFileZipFromExperiment();
+        DownloadMageTabExport downloader = new DownloadMageTabExport();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
-            System.out.println("Downloading file zip from " + EXPERIMENT_TITLE + "...");
+            System.out.println("Exporting MAGE-TAB of experiment: " + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
-            System.out.println("Error while downloading file zip.");
+            System.out.println("Error while downloading MAGE-TAB export.");
             t.printStackTrace();
         }
     }
@@ -128,101 +121,41 @@ public class DownloadFileZipFromExperiment {
     private void download() throws RemoteException, MalformedURIException, IOException, Exception {
         CaArrayEntityReference experimentRef = searchForExperiment();
         if (experimentRef == null) {
-            System.err.println("Could not find experiment with the requested title or public identifier.");
+            System.err.println("Could not find experiment with the requested title.");
             return;
         }
-        List<CaArrayEntityReference> fileRefs = searchForFiles(experimentRef);
-        if (fileRefs == null) {
-            System.err.println("Could not find any files that match the search criteria.");
-            return;
+        boolean compressIndividualFiles = false;
+        long startTime = System.currentTimeMillis();
+        TransferServiceContextReference serviceContextRef = client.getMageTabZipTransfer(experimentRef, compressIndividualFiles);
+        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef.getEndpointReference());
+        InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
+        long totalTime = System.currentTimeMillis() - startTime;
+        byte[] byteArray = IOUtils.toByteArray(stream);
+
+        if (byteArray != null) {
+            System.out.println("Retrieved " + byteArray.length + " bytes in " + totalTime + " ms.");
+        } else {
+            System.out.println("Error: Retrieved null byte array.");
         }
-        downloadZipOfFiles(fileRefs);
     }
 
     /**
-     * Search for an experiment based on its title or public identifier.
+     * Search for an experiment based on its title.
      */
     private CaArrayEntityReference searchForExperiment() throws RemoteException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
 
-        // ... OR Search for experiment with the given public identifier.
-        // ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
-        // experimentSearchCriteria.setPublicIdentifier(EXPERIMENT_PUBLIC_IDENTIFIER);
-
         Experiment[] experiments = client.searchForExperiments(experimentSearchCriteria);
-        if (experiments.length <= 0) {
+        if (experiments == null || experiments.length <= 0) {
             return null;
         }
 
         // Assuming that only one experiment was found, pick the first result.
-        // This will always be true for a search by public identifier, but may not be true for a search by title.
+        // This assumption will not always be true.
         Experiment experiment = experiments[0];
         CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
         return experimentRef;
-    }
-
-    /**
-     * Search for a certain type or category of files in an experiment.
-     */
-    private List<CaArrayEntityReference> searchForFiles(CaArrayEntityReference experimentRef) throws RemoteException {
-        // Search for all raw data files in the experiment. (Experiment ref is a mandatory parameter.)
-        FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
-        fileSearchCriteria.setExperiment(experimentRef);
-        fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
-        fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
-
-        // Alternatively, search for all AFFYMETRIX_CEL data files)
-        // CaArrayEntityReference celFileTypeRef = getCelFileType();
-        // fileSearchCriteria.getTypes().add(celFileTypeRef);
-
-        // Alternatively, search for all derived data files with extension .CHP)
-        // fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
-        // fileSearchCriteria.setExtension(".CHP");
-
-        DataFile[] files = client.searchForFiles(fileSearchCriteria);
-        if (files.length <= 0) {
-            return null;
-        }
-
-        // Return references to the files.
-        List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
-        for (DataFile file : files) {
-            CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
-            fileRefs.add(fileRef);
-        }
-        return fileRefs;
-    }
-
-//    private CaArrayEntityReference getCelFileType() {
-//        FileType exampleFileType = new FileType();
-//        exampleFileType.setName("AFFYMETRIX_CEL");
-//        FileType[] fileTypes = client.searchByExample(exampleFileType);
-//        FileType celFileType = fileTypes[0];
-//        CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference(celFileType.getId());
-//        return celFileTypeRef;
-//    }
-
-    /**
-     * Download a zip of the given files.
-     */
-    private void downloadZipOfFiles(List<CaArrayEntityReference> fileRefs) throws RemoteException, MalformedURIException, IOException, Exception {
-        FileDownloadRequest downloadRequest = new FileDownloadRequest();
-        downloadRequest.setFiles(fileRefs);
-        boolean compressEachIndividualFile = false;
-        long startTime = System.currentTimeMillis();
-        TransferServiceContextReference serviceContextRef = client.getFileContentsZipTransfer(downloadRequest,
-                compressEachIndividualFile);
-        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef
-                .getEndpointReference());
-        InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
-        long totalTime = System.currentTimeMillis() - startTime;
-        byte[] byteArray = IOUtils.toByteArray(stream);
-        if (byteArray != null) {
-            System.out.println("Retrieved " + byteArray.length + " bytes in " + totalTime + " ms.");
-        } else {
-            System.err.println("Error: Retrieved null byte array.");
-        }
     }
 }
