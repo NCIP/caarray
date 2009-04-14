@@ -524,7 +524,7 @@ public final class CaArrayUtils {
         if ("true".equals(value) || "1".equals(value)) {
             return true;
         } else if ("false".equals(value) || "0".equals(value)) {
-            return true;
+            return false;
         } else { 
             throw new IllegalArgumentException(value + " is not a valid boolean"); 
         }
