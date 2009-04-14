@@ -139,8 +139,8 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
 
                     // enumerateExperiments test
                     ExperimentSearchCriteria experimentCrit = new ExperimentSearchCriteria();
-                    experimentCrit.setOrganism(new CaArrayEntityReference(
-                            "URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5"));
+                    experimentCrit.setAssayType(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.array.AssayType:2"));            
+                    experimentCrit.setArrayProvider(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.array.ArrayProvider:1"));            
                     System.out.println("Experiment Criteria Enum Search");
 
                     EnumerationResponseContainer expEnum = client.enumerateExperiments(experimentCrit);
@@ -352,7 +352,7 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
                         CaArrayEntityReference qRef = new CaArrayEntityReference(
                                 "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:"
                                         + i);
-                        if (i < 18) {
+                        if (i <= 18) {
                             dataRequest.getQuantitationTypes().add(qRef);                            
                         }
                     }

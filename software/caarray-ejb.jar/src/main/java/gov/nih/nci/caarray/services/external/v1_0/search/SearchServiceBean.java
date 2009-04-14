@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.services.external.v1_0.search;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
@@ -126,7 +125,6 @@ import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.services.external.v1_0.BaseV1_0ExternalService;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
-import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.cagrid.cqlquery.Object;
 import gov.nih.nci.cagrid.cqlquery.QueryModifier;
@@ -267,15 +265,12 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
                     gov.nih.nci.caarray.domain.contact.Person.class));
         }
         if (criteria.getArrayProvider() != null) {
-            Organization example = new Organization();
-            example.setName(criteria.getArrayProvider().getName());
-            Organization provider = CaArrayUtils.uniqueResult(getDaoFactory().getSearchDao().query(example));
-            intCriteria.setArrayProvider(provider);
+            intCriteria.setArrayProvider(getRequiredByLsid(criteria.getArrayProvider().getId(),
+                    gov.nih.nci.caarray.domain.contact.Organization.class));
         }
         if (criteria.getAssayType() != null) {
-            AssayType example = new AssayType(criteria.getAssayType().getName());
-            AssayType assayType = CaArrayUtils.uniqueResult(getDaoFactory().getSearchDao().query(example));
-            intCriteria.setAssayType(assayType);
+            intCriteria.setAssayType(getRequiredByLsid(criteria.getAssayType().getId(),
+                    gov.nih.nci.caarray.domain.project.AssayType.class));
         }
         // need to handle the rest of the criteria
         return intCriteria;

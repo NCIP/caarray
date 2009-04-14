@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.services.external.v1_0;
 
 import gov.nih.nci.caarray.domain.LSID;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
@@ -91,6 +92,8 @@ import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
+import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
@@ -171,6 +174,10 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
         entityHandlerRegistry.addResolver(ArrayDataType.class, new PersistentObjectHandler<ArrayDataType>(
                 gov.nih.nci.caarray.domain.data.ArrayDataType.class));
         entityHandlerRegistry.addResolver(gov.nih.nci.caarray.external.v1_0.data.FileType.class, new FileTypeHandler());
+        entityHandlerRegistry.addResolver(AssayType.class, new PersistentObjectHandler<AssayType>(
+                gov.nih.nci.caarray.domain.project.AssayType.class));
+        entityHandlerRegistry.addResolver(ArrayProvider.class, new PersistentObjectHandler<ArrayProvider>(
+                Organization.class));
     }
     
     /**

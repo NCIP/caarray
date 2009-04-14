@@ -104,6 +104,11 @@ public enum SearchCategory implements ResourceBasedEnum {
     EXPERIMENT_ID("search.category.experimentId", new String[] {"p.experiment e"}, "e.publicIdentifier"),
 
     /**
+     * Experiment title.
+     */
+    EXPERIMENT_DESCRIPTION("search.category.experimentDescription", new String[] {"p.experiment e"}, "e.description"),
+
+    /**
      * Array provider.
      */
     ARRAY_PROVIDER("search.category.arrayProvider", new String[] {"p.experiment e", "e.manufacturer m"}, "m.name"),

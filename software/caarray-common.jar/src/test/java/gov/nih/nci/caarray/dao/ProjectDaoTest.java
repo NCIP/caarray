@@ -108,6 +108,8 @@ import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
+import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -978,6 +980,59 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         // test search by title
         projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment1", SearchCategory.EXPERIMENT_TITLE);
         assertTrue(DUMMY_PROJECT_1.equals(projects.get(0)));
+
+        // test search by desription
+        projects = DAO_OBJECT.searchByCategory(psp, "Desc", SearchCategory.EXPERIMENT_DESCRIPTION);
+        assertTrue(DUMMY_PROJECT_1.equals(projects.get(0)));
+
+        tx.commit();
+    }
+
+    @Test
+    public void testSearchByCriteria() {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
+        DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
+        DAO_OBJECT.save(DUMMY_PROJECT_1);
+        DAO_OBJECT.save(DUMMY_PROJECT_2);
+        DAO_OBJECT.save(DUMMY_PROJECT_3);
+        tx.commit();
+        tx = HibernateUtil.beginTransaction();
+
+        // test search by title
+        PageSortParams<Experiment> psp = new PageSortParams<Experiment>(20, 0, new AdHocSortCriterion<Experiment>(
+                "title"), false);
+        ExperimentSearchCriteria crit = new ExperimentSearchCriteria();
+        crit.setTitle(DUMMY_EXPERIMENT_1.getTitle());
+        List<Experiment> experiments = DAO_OBJECT.searchByCriteria(psp, crit);
+        assertEquals(1, experiments.size());
+        assertEquals(DUMMY_EXPERIMENT_1, experiments.get(0));
+        
+        // test search by assay type
+        crit = new ExperimentSearchCriteria();
+        crit.setAssayType(DUMMY_ASSAYTYPE_1);
+        experiments = DAO_OBJECT.searchByCriteria(psp, crit);
+        assertEquals(2, experiments.size());
+        assertEquals(DUMMY_EXPERIMENT_1, experiments.get(0));
+        assertEquals(DUMMY_EXPERIMENT_2, experiments.get(1));
+        
+        // test search by assay type and public id
+        crit = new ExperimentSearchCriteria();
+        crit.setPublicIdentifier(DUMMY_EXPERIMENT_2.getPublicIdentifier());
+        crit.setAssayType(DUMMY_ASSAYTYPE_1);
+        experiments = DAO_OBJECT.searchByCriteria(psp, crit);
+        assertEquals(1, experiments.size());
+        assertEquals(DUMMY_EXPERIMENT_2, experiments.get(0));
+        
+        // test search by manufacturer
+        crit = new ExperimentSearchCriteria();
+        crit.setArrayProvider(DUMMY_PROVIDER);
+        crit.setOrganism(DUMMY_ORGANISM);
+        experiments = DAO_OBJECT.searchByCriteria(psp, crit);
+        assertEquals(2, experiments.size());
+        assertEquals(DUMMY_EXPERIMENT_3, experiments.get(0));
+        assertEquals(DUMMY_EXPERIMENT_1, experiments.get(1));
 
         tx.commit();
     }

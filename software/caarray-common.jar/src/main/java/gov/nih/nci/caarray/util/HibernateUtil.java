@@ -86,8 +86,11 @@ import gov.nih.nci.caarray.security.SecurityInterceptor;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHelper;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -247,4 +250,21 @@ public final class HibernateUtil {
     public static void reinitializeCsmFilters() {
         getHibernateHelper().reinitializeCsmFilters(SecurityUtils.getAuthorizationManager());
     }
+    
+    /**
+     * Sets the named parameters in the given query from the given map.
+     * @param params map of parameter name -> value(s) for that named parameter.
+     * @param q the query
+     */
+    public static void setQueryParams(final Map<String, Object> params, Query q) {
+        for (String key : params.keySet()) {
+            Object value = params.get(key);
+            if (value instanceof Collection<?>) {
+                q.setParameterList(key, (Collection<?>) value);
+            } else {
+                q.setParameter(key, value);
+            }
+        }
+    }
+
 }

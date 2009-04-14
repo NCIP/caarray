@@ -294,6 +294,11 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         return params.isDesc() ? Order.desc(orderField) : Order.asc(orderField);
     }
     
+    static String toHqlOrder(PageSortParams<?> params) {
+        return new StringBuilder("ORDER BY ").append(params.getSortCriterion().getOrderField()).append(
+                params.isDesc() ? " desc" : " asc").toString();
+    }
+    
     static Order toOrder(PageSortParams<?> params, String alias) {
         String orderField = params.getSortCriterion().getOrderField();
         if (!StringUtils.isEmpty(alias)) {

@@ -23,8 +23,8 @@
             <xs:element name="organism" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
             <xs:element name="principalInvestigator" type="car:CaArrayEntityReference" minOccurs="0"
                 maxOccurs="1" />
-            <xs:element name="arrayProvider" type="arr:ArrayProvider" minOccurs="0" maxOccurs="1" />
-            <xs:element name="assayType" type="arr:AssayType" minOccurs="0" maxOccurs="1" />
+            <xs:element name="arrayProvider" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
+            <xs:element name="assayType" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
         </xs:sequence>
         <xs:attribute name="title" type="xs:string" />
         <xs:attribute name="publicIdentifier" type="xs:string" />

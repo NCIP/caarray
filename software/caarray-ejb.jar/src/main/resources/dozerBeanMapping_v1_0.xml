@@ -11,7 +11,7 @@
      	 	<b>id</b>
     	</field>
     	<field>
-      		<a>provider.name</a>
+      		<a>provider</a>
      	 	<b>arrayProvider</b>
     	</field>
         <field>
@@ -19,6 +19,22 @@
             <b>files</b>
         </field>
   	</mapping>  
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.project.AssayType</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.array.AssayType</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.array.AssayType">
+            <a>id</a>
+            <b>id</b>
+        </field>
+    </mapping>  
+    <mapping> 
+        <class-a>gov.nih.nci.caarray.domain.contact.Organization</class-a>
+        <class-b>gov.nih.nci.caarray.external.v1_0.array.ArrayProvider</class-b>   
+        <field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.array.ArrayProvider">
+            <a>id</a>
+            <b>id</b>
+        </field>
+    </mapping>  
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.file.FileType</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.data.FileType</class-b>   

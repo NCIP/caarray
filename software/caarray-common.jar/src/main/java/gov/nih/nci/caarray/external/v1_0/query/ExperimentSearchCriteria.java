@@ -83,8 +83,6 @@
 package gov.nih.nci.caarray.external.v1_0.query;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
-import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -100,8 +98,8 @@ public class ExperimentSearchCriteria implements Serializable {
     private String title;
     private String publicIdentifier;
     private CaArrayEntityReference organism;
-    private ArrayProvider arrayProvider;
-    private AssayType assayType;
+    private CaArrayEntityReference arrayProvider;
+    private CaArrayEntityReference assayType;
     private CaArrayEntityReference principalInvestigator;
     private Set<AnnotationCriterion> annotations = new HashSet<AnnotationCriterion>();
 
@@ -136,28 +134,28 @@ public class ExperimentSearchCriteria implements Serializable {
     /**
      * @return the arrayProvider
      */
-    public ArrayProvider getArrayProvider() {
+    public CaArrayEntityReference getArrayProvider() {
         return arrayProvider;
     }
 
     /**
      * @param arrayProvider the arrayProvider to set
      */
-    public void setArrayProvider(ArrayProvider arrayProvider) {
+    public void setArrayProvider(CaArrayEntityReference arrayProvider) {
         this.arrayProvider = arrayProvider;
     }
 
     /**
      * @return the assayType
      */
-    public AssayType getAssayType() {
+    public CaArrayEntityReference getAssayType() {
         return assayType;
     }
 
     /**
      * @param assayType the assayType to set
      */
-    public void setAssayType(AssayType assayType) {
+    public void setAssayType(CaArrayEntityReference assayType) {
         this.assayType = assayType;
     }
 

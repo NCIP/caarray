@@ -316,7 +316,7 @@ public final class CaArrayUtils {
         StringBuilder sb = new StringBuilder();
         sb.append(values[0]);
         for (int i = 1; i < values.length; i++) {
-            sb.append(separator).append(values[i]);
+            sb.append(separator).append(toXmlString(values[i]));
         }
         return sb.toString();
      }
@@ -336,7 +336,7 @@ public final class CaArrayUtils {
         StringBuilder sb = new StringBuilder();
         sb.append(values[0]);
         for (int i = 1; i < values.length; i++) {
-            sb.append(separator).append(values[i]);
+            sb.append(separator).append(toXmlString(values[i]));
         }
         return sb.toString();
      }
@@ -378,7 +378,7 @@ public final class CaArrayUtils {
         String[] splits = StringUtils.split(s, separator);
         boolean[] values = new boolean[splits.length];
         for (int i = 0; i < splits.length; i++) {
-            values[i] = Boolean.parseBoolean(splits[i]);
+            values[i] = xmlStringToBoolean(splits[i]);
         }
         return values;
     }
@@ -446,7 +446,7 @@ public final class CaArrayUtils {
         String[] splits = StringUtils.split(s, separator);
         float[] values = new float[splits.length];
         for (int i = 0; i < splits.length; i++) {
-            values[i] = Float.parseFloat(splits[i]);
+            values[i] = xmlStringToFloat(splits[i]);
         }
         return values;
     }
@@ -463,7 +463,7 @@ public final class CaArrayUtils {
         String[] splits = StringUtils.split(s, separator);
         double[] values = new double[splits.length];
         for (int i = 0; i < splits.length; i++) {
-            values[i] = Double.parseDouble(splits[i]);
+            values[i] = xmlStringToDouble(splits[i]);
         }
         return values;
     }
@@ -493,7 +493,64 @@ public final class CaArrayUtils {
             return values;
         } catch (IOException e) {
             throw new IllegalArgumentException("Could not parse as CSV record: " + s, e);
+        }        
+    }
+    
+    private static String toXmlString(float value) {
+        if (Float.isNaN(value)) {
+            return "NaN";
+        } else if (value == Float.POSITIVE_INFINITY) {
+            return "INF";
+        } else if (value == Float.NEGATIVE_INFINITY) {
+            return "-INF";
+        } else { 
+            return Float.toString(value);
         }
-        
+    }
+    
+    private static String toXmlString(double value) {
+        if (Double.isNaN(value)) {
+            return "NaN";
+        } else if (value == Double.POSITIVE_INFINITY) {
+            return "INF";
+        } else if (value == Double.NEGATIVE_INFINITY) {
+            return "-INF";
+        } else { 
+            return Double.toString(value);
+        }
+    }
+    
+    private static boolean xmlStringToBoolean(String value) {
+        if ("true".equals(value) || "1".equals(value)) {
+            return true;
+        } else if ("false".equals(value) || "0".equals(value)) {
+            return true;
+        } else { 
+            throw new IllegalArgumentException(value + " is not a valid boolean"); 
+        }
+    }
+    
+    private static float xmlStringToFloat(String value) {
+        if ("NaN".equals(value)) {
+            return Float.NaN;
+        } else if ("INF".equals(value)) {
+            return Float.POSITIVE_INFINITY;
+        } else if ("-INF".equals(value)) {
+            return Float.NEGATIVE_INFINITY;
+        } else {
+            return Float.parseFloat(value);
+        }
+    }
+
+    private static double xmlStringToDouble(String value) {
+        if ("NaN".equals(value)) {
+            return Double.NaN;
+        } else if ("INF".equals(value)) {
+            return Double.POSITIVE_INFINITY;
+        } else if ("-INF".equals(value)) {
+            return Double.NEGATIVE_INFINITY;
+        } else {
+            return Double.parseDouble(value);
+        }
     }
 }

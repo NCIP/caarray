@@ -159,7 +159,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     @Test
     public void testSearchExperiments() {
         ExperimentSearchCriteria crit = new ExperimentSearchCriteria();
-        crit.setArrayProvider(new ArrayProvider("Affymetrix"));
+        crit.setTitle("dsfdsf");
         try {
             List<Experiment> experiments = caArrayServer.getSearchService().searchForExperiments(crit, null);
             assertEquals(2, experiments.size());
@@ -170,7 +170,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         }
 
         crit = new ExperimentSearchCriteria();
-        crit.setAssayType(new AssayType("geneExpression"));
+        crit.setPublicIdentifier("admin-00001");
         try {
             List<Experiment> experiments = caArrayServer.getSearchService().searchForExperiments(crit, null);
             assertEquals(3, experiments.size());

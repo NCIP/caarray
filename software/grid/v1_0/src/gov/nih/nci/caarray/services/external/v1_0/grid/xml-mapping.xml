@@ -66,13 +66,13 @@
       <bind-xml name="voc:termSource" node="element" />
     </field>
   </class>
-  <class name="gov.nih.nci.caarray.external.v1_0.array.ArrayProvider">
+  <class name="gov.nih.nci.caarray.external.v1_0.array.ArrayProvider" extends="gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity">
     <map-to xml="ArrayProvider" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
   </class>
-  <class name="gov.nih.nci.caarray.external.v1_0.array.AssayType">
+  <class name="gov.nih.nci.caarray.external.v1_0.array.AssayType" extends="gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity">
     <map-to xml="AssayType" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
@@ -342,10 +342,10 @@
     <field name="principalInvestigator" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference">
       <bind-xml name="qry:principalInvestigator" node="element" />
     </field>
-    <field name="arrayProvider" type="gov.nih.nci.caarray.external.v1_0.array.ArrayProvider">
+    <field name="arrayProvider" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference">
       <bind-xml name="qry:arrayProvider" node="element" />
     </field>
-    <field name="assayType" type="gov.nih.nci.caarray.external.v1_0.array.AssayType">
+    <field name="assayType" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference">
       <bind-xml name="qry:assayType" node="element" />
     </field>
   </class>

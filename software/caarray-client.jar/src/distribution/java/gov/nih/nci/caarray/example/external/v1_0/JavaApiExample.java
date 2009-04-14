@@ -214,7 +214,7 @@ public class JavaApiExample {
             System.out.println("PIs: " + pis);            
             
             ExperimentSearchCriteria experimentCrit = new ExperimentSearchCriteria();
-            experimentCrit.setOrganism(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5"));            
+            experimentCrit.setPrincipalInvestigator(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Person:9"));            
             List<Experiment> exps = searchService.searchForExperiments(experimentCrit, new PagingParams(5, 0));
             System.out.println("Experiments by criteria: " + exps);
             

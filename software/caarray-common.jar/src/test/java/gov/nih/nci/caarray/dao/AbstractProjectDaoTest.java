@@ -216,6 +216,7 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         assayTypes.add(DUMMY_ASSAYTYPE_1);
         DUMMY_EXPERIMENT_1.setAssayTypes(assayTypes);
         DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
+        DUMMY_EXPERIMENT_1.setPublicIdentifier("admin-00001");
 
         DUMMY_EXPERIMENT_2.setTitle("New DummyExperiment2");
         assayTypes = new TreeSet<AssayType>();
@@ -223,10 +224,12 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         assayTypes.add(DUMMY_ASSAYTYPE_2);
         DUMMY_EXPERIMENT_2.setAssayTypes(assayTypes);
         DUMMY_EXPERIMENT_2.setOrganism(DUMMY_ORGANISM);
+        DUMMY_EXPERIMENT_2.setPublicIdentifier("admin-00002");
 
         DUMMY_EXPERIMENT_3.setTitle("Ahab DummyExperiment3");
         DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_3.setManufacturer(DUMMY_PROVIDER);
+        DUMMY_EXPERIMENT_3.setPublicIdentifier("admin-00003");
     }
 
     protected static void setExperimentContacts() {

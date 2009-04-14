@@ -108,16 +108,17 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -279,34 +280,46 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     @SuppressWarnings({UNCHECKED, "PMD.NPathComplexity" })
     public List<Experiment> searchByCriteria(PageSortParams<Experiment> params, ExperimentSearchCriteria criteria) {
-        Criteria c = HibernateUtil.getCurrentSession().createCriteria(Experiment.class);
+        StringBuilder from = new StringBuilder("SELECT e FROM ").append(Experiment.class.getName()).append(" e");
+        StringBuilder where = new StringBuilder("WHERE (1=1)");
+        Map<String, Object> queryParams = new HashMap<String, Object>();
         if (criteria.getTitle() != null) {
-            c.add(Restrictions.eq("title", criteria.getTitle()));
+            where.append(" AND upper(e.title) = upper(:title)");
+            queryParams.put("title", criteria.getTitle());
         }
         if (criteria.getPublicIdentifier() != null) {
-            c.add(Restrictions.eq("publicIdentifier", criteria.getPublicIdentifier()));
+            where.append(" AND upper(e.publicIdentifier) = upper(:pid)");
+            queryParams.put("pid", criteria.getPublicIdentifier());
         }
         if (criteria.getOrganism() != null) {
-            c.add(Restrictions.eq("organism", criteria.getOrganism()));
+            from.append(" INNER JOIN e.organism o");
+            where.append(" AND o.id = :organism_id");
+            queryParams.put("organism_id", criteria.getOrganism().getId());            
         }
         if (criteria.getAssayType() != null) {
-            c.add(Restrictions.eq("assayType", criteria.getAssayType()));
+            from.append(" LEFT JOIN e.assayTypes at");
+            where.append(" AND at.id = :assay_type_id");
+            queryParams.put("assay_type_id", criteria.getAssayType().getId());            
         }
         if (criteria.getArrayProvider() != null) {
-            c.add(Restrictions.eq("manufacturer", criteria.getArrayProvider()));
+            from.append(" LEFT JOIN e.manufacturer m");
+            where.append(" AND m.id = :array_provider_id");
+            queryParams.put("array_provider_id", criteria.getArrayProvider().getId());            
         }
         if (criteria.getPrincipalInvestigator() != null) {
-            c.createAlias("experimentContacts", "ec", CriteriaSpecification.LEFT_JOIN);
-            c.createAlias("ec.roles", "r", CriteriaSpecification.LEFT_JOIN);
-            c.add(Restrictions.and(Restrictions.eq("ec.person", criteria.getPrincipalInvestigator()),
-                    Restrictions.eq("r.value", ExperimentContact.PI_ROLE)));
+            from.append(" LEFT JOIN e.experimentContacts ec LEFT JOIN ec.roles r LEFT JOIN ec.contact p");
+            where.append(" AND r.value = :pi_role AND p.id = :pi_id");
+            queryParams.put("pi_role", ExperimentContact.PI_ROLE);            
+            queryParams.put("pi_id", criteria.getPrincipalInvestigator().getId());            
         }
-        c.setFirstResult(params.getIndex());
+        Query q = HibernateUtil.getCurrentSession().createQuery(
+                from.append(" ").append(where).append(" ").append(toHqlOrder(params)).toString());
+        HibernateUtil.setQueryParams(queryParams, q);
+        q.setFirstResult(params.getIndex());
         if (params.getPageSize() > 0) {
-            c.setMaxResults(params.getPageSize());
+            q.setMaxResults(params.getPageSize());
         }
-        c.addOrder(toOrder(params));
-        return c.list();
+        return q.list();
     }
 
     private static String getJoinClause(SearchCategory... categories) {
