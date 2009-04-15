@@ -179,7 +179,7 @@ public class VocabularyActionTest extends AbstractCaarrayTest {
 
         assertEquals(Action.INPUT, this.action.list());
         assertTrue(this.action.isEditMode());
-        assertEquals(1l, this.action.getReturnProjectId());
+        assertEquals(1l, this.action.getReturnProjectId().longValue());
         assertEquals(RETURN_INITIAL_TAB1, this.action.getReturnInitialTab1());
         assertEquals(RETURN_INITIAL_TAB2, this.action.getReturnInitialTab2());
         assertEquals(RETURN_INITIAL_TAB2_URL, this.action.getReturnInitialTab2Url());

@@ -332,7 +332,7 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
     private void checkGenepixDesign(ArrayDesign design, String expectedName, int expectedNumberOfFeatures,
             int largestExpectedBlockColumn, int largestExpectedBlockRow) {
         assertEquals(expectedName, design.getName());
-        assertEquals(expectedNumberOfFeatures, design.getNumberOfFeatures());
+        assertEquals(expectedNumberOfFeatures, design.getNumberOfFeatures().intValue());
         assertEquals(expectedNumberOfFeatures, design.getDesignDetails().getFeatures().size());
         assertEquals(expectedNumberOfFeatures, design.getDesignDetails().getProbes().size());
         Iterator<PhysicalProbe> probeIt = design.getDesignDetails().getProbes().iterator();
@@ -374,7 +374,7 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
         assertEquals("Affymetrix.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
         assertEquals("Test3", arrayDesign.getLsidObjectId());
-        assertEquals(15876, arrayDesign.getNumberOfFeatures());
+        assertEquals(15876, arrayDesign.getNumberOfFeatures().intValue());
     }
 
     @Test
@@ -389,7 +389,7 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
         assertEquals("Affymetrix.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
         assertEquals("Test3", design.getLsidObjectId());
-        assertEquals(15876, design.getNumberOfFeatures());
+        assertEquals(15876, design.getNumberOfFeatures().intValue());
     }
 
     @Test
@@ -402,7 +402,7 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
         assertEquals("Affymetrix.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
         assertEquals("Mapping10K_Xba131-xda", arrayDesign.getLsidObjectId());
-        assertEquals(506944, arrayDesign.getNumberOfFeatures());
+        assertEquals(506944, arrayDesign.getNumberOfFeatures().intValue());
     }
 
     @Test
@@ -417,7 +417,7 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
         assertEquals("Affymetrix.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
         assertEquals("HuEx-1_0-st-v1-test", arrayDesign.getLsidObjectId());
-        assertEquals(1024, arrayDesign.getNumberOfFeatures());
+        assertEquals(1024, arrayDesign.getNumberOfFeatures().intValue());
     }
 
     @Test
@@ -436,7 +436,7 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
         assertEquals("Affymetrix.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
         assertEquals(arrayDesignName, design.getLsidObjectId());
-        assertEquals(1024, design.getNumberOfFeatures());
+        assertEquals(1024, design.getNumberOfFeatures().intValue());
 
         assertEquals(94, design.getDesignDetails().getLogicalProbes().size());
         assertEquals(364, design.getDesignDetails().getProbes().size());
@@ -476,7 +476,7 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
         assertEquals("illumina.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
         assertEquals("Human_WG-6", arrayDesign.getLsidObjectId());
-        assertEquals(47296, arrayDesign.getNumberOfFeatures());
+        assertEquals(47296, arrayDesign.getNumberOfFeatures().intValue());
     }
 
     @Test
@@ -499,7 +499,7 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
         assertEquals("illumina.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
         assertEquals("HumanHap300v2_A", arrayDesign.getLsidObjectId());
-        assertEquals(318237, arrayDesign.getNumberOfFeatures());
+        assertEquals(318237, arrayDesign.getNumberOfFeatures().intValue());
     }
 
     @Test

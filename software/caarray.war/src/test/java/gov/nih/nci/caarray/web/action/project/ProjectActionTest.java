@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
@@ -201,7 +200,7 @@ public class ProjectActionTest extends AbstractCaarrayTest {
 
     @Test
     public void testChangeStatus() {
-        this.action.setWorkflowStatus(ProposalStatus.DRAFT);
+        this.action.setWorkflowStatus(Boolean.FALSE);
         this.action.setProject(this.getTestProject(1l));
         assertEquals(WORKSPACE, this.action.changeWorkflowStatus());
         assertEquals(1, projectManagementServiceStub.getChangeWorkflowStatusCount());
@@ -220,7 +219,7 @@ public class ProjectActionTest extends AbstractCaarrayTest {
     @Test
     public void testDeleteNonDraft() {
         this.action.setProject(this.getTestProject(1l));
-        this.action.getProject().setStatus(ProposalStatus.PUBLIC);
+        this.action.getProject().setLocked(true);
         assertEquals(WORKSPACE, this.action.delete());
         assertTrue(ActionHelper.getMessages().get(0).contains("project.deleteOnlyDrafts"));
     }
@@ -248,8 +247,8 @@ public class ProjectActionTest extends AbstractCaarrayTest {
             if (UsernameHolder.getUser().equals("unauthorizeduser")) {
                 throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
             }
-            if (project.getStatus() != ProposalStatus.DRAFT) {
-                throw new ProposalWorkflowException("Cannot delete a non-draft project");
+            if (project.islocked()) {
+                throw new ProposalWorkflowException("Cannot delete unlocked project");
             }
             // assume success if the checks pass
         }

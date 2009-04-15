@@ -6,7 +6,7 @@
 
 <c:set var="canWriteProject" value="${caarrayfn:canWrite(project, caarrayfn:currentUser())}"/>
 <c:choose>
-    <c:when test="${project.saveAllowed && canWriteProject}">
+    <c:when test="${!project.locked && canWriteProject}">
         <c:set var="defaultSortVal" value="2" />
     </c:when>
     <c:otherwise>
@@ -18,7 +18,7 @@
     <display:table class="searchresults" cellspacing="0" defaultsort="${defaultSortVal}" list="${files}" requestURI="${sortUrl}"
         sort="list" id="row" excludedParams="project.id selectedFileIds __checkbox_selectedFileIds">
         <caarray:displayTagProperties/>
-        <c:if test="${project.saveAllowed && canWriteProject}">
+        <c:if test="${!project.locked && canWriteProject}">
            <display:column title="<input type='checkbox' name='selectAllCheckbox' onclick='toggleAllFiles(this.checked, $(&quot;selectFilesForm&quot;));' >">
              <c:set var="boxvalue" value="false"/>
              <c:forEach items="${selectedFileIds}" var="sid">

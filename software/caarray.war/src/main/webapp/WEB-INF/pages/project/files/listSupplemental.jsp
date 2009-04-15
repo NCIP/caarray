@@ -14,7 +14,7 @@
             <%@ include file="/WEB-INF/pages/project/files/listTable.jsp" %>
         </s:form>
     </div>
-    <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser()) && (!project.importingData)}">
+    <c:if test="${!project.locked && caarrayfn:canWrite(project, caarrayfn:currentUser()) && (!project.importingData)}">
         <caarray:actions divclass="actionsthin">
             <c:url value="/protected/ajax/project/files/deleteSupplementalFiles.action" var="deleteUrl" />
             <caarray:linkButton actionClass="delete" text="Delete" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${deleteUrl}', 'tabboxlevel2wrapper');" />

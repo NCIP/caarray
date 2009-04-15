@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<%@ page import="gov.nih.nci.caarray.domain.project.ProposalStatus"%>
 
 <html>
 <head>
@@ -32,11 +31,11 @@
 
   submitWorkflowForm = function() {
     var confirmMsg = "Are you sure you want to change the project's status?";
-    <c:if test="${!project.submissionAllowed && !project.makingPublicAllowed && project.public}">
-        confirmMsg += " This action will place the experiment in the \"<fmt:message key='proposalStatus.inProgress'/>\" state, allowing you to edit it again.";
+    <c:if test="${project.locked}">
+        confirmMsg += " This action will place the experiment in the \"Unlocked\" state, allowing you to edit it again.";
     </c:if>
     if (TabUtils.hasFormChanges()) {
-        confirmMsg = "There are unsaved changed in your form that will be lost. Are you sure you want to proceed to change the project's status?";
+        confirmMsg = "There are unsaved changed in your form that will be lost. Are you sure you want to proceed to change the project's status to \"Locked\"?";
     }
     if (confirm(confirmMsg)) {
         $('workflowForm').submit();
@@ -55,18 +54,14 @@
         <jsp:attribute name="extraContent">
         <c:if test="${!empty project.id && caarrayfn:isOwner(project, caarrayfn:currentUser())}">
             <c:choose>
-                <c:when test="${project.submissionAllowed}">
-                    <c:set var="newWorkflowStatus" value="<%= ProposalStatus.IN_PROGRESS %>"/>
-                    <c:set var="buttonTitle" value="Submit Experiment Proposal"/>
+                <c:when test="${!project.locked}">
+                    <c:set var="newWorkflowStatus" value="true"/>
+                    <c:set var="buttonTitle" value="Lock Experiment Proposal"/>
                 </c:when>
-                <c:when test="${project.makingPublicAllowed}">
-                    <c:set var="newWorkflowStatus" value="<%= ProposalStatus.PUBLIC %>"/>
-                    <c:set var="buttonTitle" value="Make Experiment Public"/>
-                </c:when>
-                <c:when test="${project.public}">
-                    <c:set var="newWorkflowStatus" value="<%= ProposalStatus.IN_PROGRESS %>"/>
-                    <c:set var="buttonTitle" value="Retract Experiment from Public Accessibility"/>
-                </c:when>
+                <c:otherwise>
+                    <c:set var="newWorkflowStatus" value="false"/>
+                    <c:set var="buttonTitle" value="UnLock Experiment Proposal"/>
+                </c:otherwise>
             </c:choose>
             <c:if test="${!empty newWorkflowStatus}">
                 <s:form namespace="/protected" action="project/changeWorkflowStatus" id="workflowForm" cssStyle="display: inline">

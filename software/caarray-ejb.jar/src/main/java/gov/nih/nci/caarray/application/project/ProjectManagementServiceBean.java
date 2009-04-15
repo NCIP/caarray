@@ -101,7 +101,6 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
@@ -260,18 +259,18 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException {
+    public void changeProjectLockStatus(long projectId, boolean newStatus) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, projectId);
         Project project = getDaoFactory().getSearchDao().retrieve(Project.class, projectId);
         if (!project.isOwner(UsernameHolder.getCsmUser())) {
             LogUtil.logSubsystemExit(LOG);
             throw new PermissionDeniedException(project, "WORKFLOW_CHANGE", UsernameHolder.getUser());
         }
-        if (!project.getStatus().canTransitionTo(newStatus)) {
+        if (project.islocked() == newStatus) {
             LogUtil.logSubsystemExit(LOG);
-            throw new ProposalWorkflowException("Cannot transition project to status " + newStatus);
+            throw new ProposalWorkflowException("project already " + (newStatus ? " locked" : "unlocked"));
         }
-        project.setStatus(newStatus);
+        project.setLocked(newStatus);
 
         getProjectDao().save(project);
         LogUtil.logSubsystemExit(LOG);
@@ -318,9 +317,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             LogUtil.logSubsystemExit(LOG);
             throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
         }
-        if (project.getStatus() != ProposalStatus.DRAFT) {
+        if (project.islocked()) {
             LogUtil.logSubsystemExit(LOG);
-            throw new ProposalWorkflowException("Cannot delete a non-draft project");
+            throw new ProposalWorkflowException("Cannot delete a locked project");
         }
         // remove the blobs
         getFileDao().deleteHqlBlobsByProjectId(project.getId());
@@ -400,9 +399,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     private void checkIfProjectSaveAllowed(Project project) throws ProposalWorkflowException,
             InconsistentProjectStateException {
-        if (!project.isSaveAllowed()) {
+        if (project.islocked()) {
             LogUtil.logSubsystemExit(LOG);
-            throw new ProposalWorkflowException("Cannot save project in current state");
+            throw new ProposalWorkflowException("Cannot save a locked project");
         }
         checkArrayDesignManufacturer(project);
         checkArrayDesignsConsistent(project);
@@ -412,9 +411,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public List<Project> getMyProjects(boolean showPublic, PageSortParams<Project> pageSortParams) {
-        LogUtil.logSubsystemEntry(LOG, showPublic);
-        List<Project> result = getProjectDao().getProjectsForCurrentUser(showPublic, pageSortParams);
+    public List<Project> getMyProjects(PageSortParams<Project> pageSortParams) {
+        LogUtil.logSubsystemEntry(LOG);
+        List<Project> result = getProjectDao().getProjectsForCurrentUser(pageSortParams);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -422,9 +421,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public int getMyProjectCount(boolean showPublic) {
-        LogUtil.logSubsystemEntry(LOG, showPublic);
-        int result = getProjectDao().getProjectCountForCurrentUser(showPublic);
+    public int getMyProjectCount() {
+        LogUtil.logSubsystemEntry(LOG);
+        int result = getProjectDao().getProjectCountForCurrentUser();
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -457,10 +456,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             LogUtil.logSubsystemExit(LOG);
             throw new PermissionDeniedException(project, SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder
                     .getUser());
-        }
-        if (!project.isPermissionsEditingAllowed()) {
-            LogUtil.logSubsystemExit(LOG);
-            throw new ProposalWorkflowException("Cannot edit project permissions in current state");
         }
         AccessProfile profile = project.addGroupProfile(group);
         getProjectDao().save(project);

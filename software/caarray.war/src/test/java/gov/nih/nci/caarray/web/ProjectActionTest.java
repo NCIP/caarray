@@ -158,7 +158,7 @@ public class ProjectActionTest extends AbstractCaarrayTest {
         request.setSession(session);
         ServletActionContext.setRequest(request);
         assertNotNull(this.workspaceAction.getProjects());
-        String result = this.workspaceAction.myProjects();
+        String result = this.workspaceAction.workspace();
         assertEquals(Action.SUCCESS, result);
     }
 

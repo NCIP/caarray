@@ -115,8 +115,6 @@ import java.util.TreeSet;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -153,7 +151,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     private static final int PUBLIC_ID_COMPONENT_LENGTH = 5;
 
-    private ProposalStatus status = ProposalStatus.DRAFT;
+    private boolean locked;
     private Experiment experiment = new Experiment();
     private SortedSet<CaArrayFile> files = new TreeSet<CaArrayFile>();
     private SortedSet<CaArrayFile> importedFiles = new TreeSet<CaArrayFile>();
@@ -165,7 +163,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private boolean useTcgaPolicy = false;
     private transient Set<User> owners;
     private Date lastUpdated = new Date();
-    private boolean publicIdLocked = false;
 
     /**
      * Hibernate and caster constructor.
@@ -179,66 +176,22 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * Gets the workflow status of this project. Hibernate use only
      *
-     * @return the status
+     * @return the true if this project is in a lock box.
      */
-    @Enumerated(EnumType.STRING)
     @NotNull
-    @Column(name = "status")
+    @Column(name = "locked")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
-    private ProposalStatus getStatusInternal() {
-        return this.status;
+    public boolean islocked() {
+        return this.locked;
     }
 
     /**
      * Sets the workflow status of this project. Hibernate use only
      *
-     * @param status the status to set
+     * @param locked the locked status to set.
      */
-    private void setStatusInternal(ProposalStatus statusInternal) {
-        this.status = statusInternal;
-    }
-
-    /**
-     * Gets the workflow status of this project.
-     *
-     * @return the status
-     */
-    @Transient
-    public ProposalStatus getStatus() {
-        return getStatusInternal();
-    }
-
-    /**
-     * Sets the workflow status of this project.
-     *
-     * @param status the status to set
-     */
-    public void setStatus(ProposalStatus status) {
-        setStatusInternal(status);
-        // in progress projects get automatically set to browsable, if they weren't before
-        if (status == ProposalStatus.IN_PROGRESS) {
-            setPublicIdLocked(true);
-            // this is correct for both submitting a draft project and retracting a project
-            // from public availability. in the former, we need to make sure the project is visible
-            // if it wasn't before; in the latter we need to remove the public read access
-            getPublicProfile().setSecurityLevel(SecurityLevel.VISIBLE);
-        }
-
-        // public projects are effectively read rights to all and write rights to no one
-        // we leave the host and profile access profiles alone, however, in case they revert
-        // to in progress status. prohibition against writing is enforced in the application
-        // layer based on workflow status
-        if (status == ProposalStatus.PUBLIC) {
-            getPublicProfile().setSecurityLevel(SecurityLevel.READ);
-        }
-    }
-
-    /**
-     * @return whether the project can be saved in its current state
-     */
-    @Transient
-    public boolean isSaveAllowed() {
-        return !isPublic();
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 
     /**
@@ -252,46 +205,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
                 return file.getFileStatus().equals(FileStatus.IMPORTING);
             }
         });
-    }
-
-    /**
-     * @return whether the project can be submitted in its current state
-     */
-    @Transient
-    public boolean isSubmissionAllowed() {
-        return getStatus() != ProposalStatus.PUBLIC && getStatus().canTransitionTo(ProposalStatus.IN_PROGRESS);
-    }
-
-    /**
-     * @return whether the project can be made public in its current state
-     */
-    @Transient
-    public boolean isMakingPublicAllowed() {
-        return getStatus().canTransitionTo(ProposalStatus.PUBLIC);
-    }
-
-    /**
-     * @return whether the project's permissions can be edited in its current state
-     */
-    @Transient
-    public boolean isPermissionsEditingAllowed() {
-        return !isPublic();
-    }
-
-    /**
-     * @return whether the project is currently public
-     */
-    @Transient
-    public boolean isPublic() {
-        return getStatus() == ProposalStatus.PUBLIC;
-    }
-
-    /**
-     * @return whether the project is currently in draft status
-     */
-    @Transient
-    public boolean isDraft() {
-        return getStatus() == ProposalStatus.DRAFT;
     }
 
     /**
@@ -630,33 +543,22 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      * If the public id has been locked, then this method is a no-op.
      */
     public void recalculatePublicId() {
-        if (isPublicIdLocked()) {
+        if (islocked()) {
             return;
         }
         if (getExperiment().getId() == null) {
             return;
         }
-        Person pi = (Person) getExperiment().getPrimaryInvestigator().getContact();
+        String lastName = "anonymous";
+        final ExperimentContact primaryInvestigator = getExperiment().getPrimaryInvestigator();
+        if (primaryInvestigator != null) {
+            Person pi = (Person) primaryInvestigator.getContact();
+            lastName = StringUtils.lowerCase(pi.getLastName());
+        }        
         String piComponent = StringUtils.substring(
-                CharSetUtils.keep(StringUtils.lowerCase(pi.getLastName()), "A-Za-z"), 0, PUBLIC_ID_COMPONENT_LENGTH);
+                CharSetUtils.keep(lastName, "A-Za-z"), 0, PUBLIC_ID_COMPONENT_LENGTH);
         String idComponent = StringUtils.leftPad(getExperiment().getId().toString(), PUBLIC_ID_COMPONENT_LENGTH, "0");
         getExperiment().setPublicIdentifier(piComponent + "-" + idComponent);
-    }
-
-    /**
-     * @return whether the public identifier has been locked from further editing
-     */
-    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
-    public boolean isPublicIdLocked() {
-        return publicIdLocked;
-    }
-
-    /**
-     * For hibernate use only.
-     * @param publicIdLocked whether the public identifier has been locked from further editing
-     */
-    private void setPublicIdLocked(boolean publicIdLocked) {
-        this.publicIdLocked = publicIdLocked;
     }
 
     /**

@@ -100,7 +100,6 @@ import com.opensymphony.xwork2.Action;
 public class ProjectWorkspaceActionTest extends AbstractCaarrayTest {
     private final ProjectWorkspaceAction action = new ProjectWorkspaceAction();
 
-    private static final int PUBLIC_COUNT = 3;
     private static final int WORK_QUEUE_COUNT = 5;
 
     @Before
@@ -112,26 +111,13 @@ public class ProjectWorkspaceActionTest extends AbstractCaarrayTest {
     @Test
     public void testWorkspace() {
         assertEquals(Action.SUCCESS, action.workspace());
-        assertEquals(PUBLIC_COUNT, action.getPublicCount());
-        assertEquals(WORK_QUEUE_COUNT, action.getWorkQueueCount());
-    }
-
-    @Test
-    public void testPublicProjects() {
-        assertEquals(Action.SUCCESS, action.publicProjects());
-        assertEquals(PUBLIC_COUNT, action.getProjects().getFullListSize());
-    }
-
-    @Test
-    public void testMyProjects() {
-        assertEquals(Action.SUCCESS, action.myProjects());
         assertEquals(WORK_QUEUE_COUNT, action.getProjects().getFullListSize());
     }
 
     private static class LocalProjectManagementService extends ProjectManagementServiceStub {
         @Override
-        public int getMyProjectCount(boolean showPublic) {
-            return showPublic ? PUBLIC_COUNT : WORK_QUEUE_COUNT;
+        public int getMyProjectCount() {
+            return WORK_QUEUE_COUNT;
         }
     }
 }

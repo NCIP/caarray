@@ -92,7 +92,6 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -164,14 +163,14 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public int getMyProjectCount(boolean showPublic) {
+    public int getMyProjectCount() {
         return 0;
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<Project> getMyProjects(boolean showPublic, PageSortParams<Project> pageSortParams) {
+    public List<Project> getMyProjects(PageSortParams<Project> pageSortParams) {
         return Collections.EMPTY_LIST;
     }
 
@@ -268,7 +267,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException {
+    public void changeProjectLockStatus(long projectId, boolean newStatus) throws ProposalWorkflowException {
         this.changeWorkflowStatusCount++;
         if (projectId == 999) {
             throw new ProposalWorkflowException();

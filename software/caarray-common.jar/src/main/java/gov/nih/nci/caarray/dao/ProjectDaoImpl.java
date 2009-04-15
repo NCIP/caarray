@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -169,8 +168,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     }
 
     @SuppressWarnings(UNCHECKED)
-    public List<Project> getProjectsForCurrentUser(boolean showPublic, PageSortParams pageSortParams) {
-        Query q = getProjectsForUserQuery(showPublic, false, pageSortParams);
+    public List<Project> getProjectsForCurrentUser(PageSortParams pageSortParams) {
+        Query q = getProjectsForUserQuery(false, pageSortParams);
         q.setFirstResult(pageSortParams.getIndex());
         q.setMaxResults(pageSortParams.getPageSize());
         return q.list();
@@ -179,13 +178,13 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
-    public int getProjectCountForCurrentUser(boolean showPublic) {
-        Query q = getProjectsForUserQuery(showPublic, true, null);
+    public int getProjectCountForCurrentUser() {
+        Query q = getProjectsForUserQuery(true, null);
         return ((Number) q.uniqueResult()).intValue();
     }
 
     @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
-    private Query getProjectsForUserQuery(boolean showPublic, boolean count,
+    private Query getProjectsForUserQuery(boolean count,
             PageSortParams<Project> pageSortParams) {
         User user  = UsernameHolder.getCsmUser();
         SortCriterion<Project> sortCrit = pageSortParams != null ? pageSortParams.getSortCriterion() : null;
@@ -205,8 +204,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         if (!count) {
             queryStr.append(" left join fetch p.experiment e");
         }
-        queryStr.append(" where p.statusInternal ").append(showPublic ? " = " : " != ")
-                .append(" :status and (p.id in ").append(ownerSubqueryStr).append(" or p.id in ").append(
+        queryStr.append(" where (p.id in ").append(ownerSubqueryStr).append(" or p.id in ").append(
                         collabSubqueryStr).append(")");
         if (!count && sortCrit != null) {
             queryStr.append(" ORDER BY p.").append(sortCrit.getOrderField());
@@ -216,7 +214,6 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         }
 
         Query query = getCurrentSession().createQuery(queryStr.toString());
-        query.setParameter("status", ProposalStatus.PUBLIC);
         query.setString("objectId", Project.class.getName());
         query.setString("attribute", "id");
         query.setEntity("application", SecurityUtils.getApplication());

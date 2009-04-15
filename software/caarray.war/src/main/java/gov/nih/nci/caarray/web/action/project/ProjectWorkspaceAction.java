@@ -102,63 +102,17 @@ public class ProjectWorkspaceAction {
     private final SortablePaginatedList<Project, ProjectSortCriterion> projects =
             new SortablePaginatedList<Project, ProjectSortCriterion>(PAGE_SIZE, ProjectSortCriterion.PUBLIC_ID.name(),
                     ProjectSortCriterion.class);
-    private int publicCount;
-    private int workQueueCount;
 
     /**
-     * Renders the workspace page.
+     * Renders the workspace page, with the list of all the users projects.
      *
      * @return path String
      */
     @SkipValidation
     public String workspace() {
-        updateCounts();
+        this.projects.setList(getProjectManagementService().getMyProjects(this.projects.getPageSortParams()));
+        this.projects.setFullListSize(getProjectManagementService().getMyProjectCount());
         return Action.SUCCESS;
-    }
-
-    /**
-     * Retrieve list of public projects.
-     *
-     * @return path String
-     */
-    @SkipValidation
-    public String publicProjects() {
-        updateCounts();
-        this.projects.setList(getProjectManagementService().getMyProjects(true, this.projects.getPageSortParams()));
-        this.projects.setFullListSize(getPublicCount());
-        return Action.SUCCESS;
-    }
-
-    /**
-     * Retrieve the list of my experiments.
-     *
-     * @return path string.
-     */
-    @SkipValidation
-    public String myProjects() {
-        updateCounts();
-        this.projects.setList(getProjectManagementService().getMyProjects(false, this.projects.getPageSortParams()));
-        this.projects.setFullListSize(getWorkQueueCount());
-        return Action.SUCCESS;
-    }
-
-    private void updateCounts() {
-        this.publicCount = getProjectManagementService().getMyProjectCount(true);
-        this.workQueueCount = getProjectManagementService().getMyProjectCount(false);
-    }
-
-    /**
-     * @return the publicCount
-     */
-    public int getPublicCount() {
-        return publicCount;
-    }
-
-    /**
-     * @return the workQueueCount
-     */
-    public int getWorkQueueCount() {
-        return workQueueCount;
     }
 
     /**

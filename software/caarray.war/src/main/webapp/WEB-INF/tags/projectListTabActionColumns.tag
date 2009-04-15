@@ -21,7 +21,7 @@
 	        <c:set var="action" value="${fn:substring(action, 1, fn:length(action))}"/>
 	    </c:if>
 	    <display:column titleKey="button.${action}">
-	        <c:if test="${!editableOnly || project.saveAllowed && canWriteProject && canWriteItem && (!project.importingData)}">
+	        <c:if test="${!editableOnly || !project.locked && canWriteProject && canWriteItem && (!project.importingData)}">
 	            <caarray:projectListTabActionLink entityName="${entityName}" action="${action}" itemId="${item.id}" isSubtab="${isSubtab}" confirmText="${confirmText}"/>
 	        </c:if>
 	    </display:column>

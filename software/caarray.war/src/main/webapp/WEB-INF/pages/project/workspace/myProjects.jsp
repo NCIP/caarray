@@ -1,10 +1,18 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<caarray:tabPane>
-    <c:url value="/protected/ajax/project/workspace/myProjects.action" var="sortUrl" />
-    <%@ include file="/WEB-INF/pages/project/list.jsp" %>
-</caarray:tabPane>
+<html>
+<head>
+    <title>My Experiment Workspace</title>
+</head>
+<body>
+    <h1>My Experiment Workspace</h1>
+    <caarray:helpPrint/>
+    <c:url value="/protected/ajax/project/workspace.action" var="myProjectsUrl" />
 
-<script type="text/javascript">
-$('work_queue_count').innerHTML = '${workQueueCount}';
-$('public_count').innerHTML = '${publicCount}';
-</script>
+    <fmt:message key="project.workspace.tabs.myProjects" var="myProjectsTitle" />
+    <caarray:successMessages />
+    <div class="padme">
+        <c:url value="/protected/ajax/project/workspace.action" var="sortUrl" />
+    <%@ include file="/WEB-INF/pages/project/list.jsp" %>
+    </div>
+</body>
+</html>

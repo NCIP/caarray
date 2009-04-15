@@ -218,11 +218,11 @@
         </action>
 
         <action name="project/workspace" class="gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction" method="workspace">
-            <result name="success">/WEB-INF/pages/project/workspace/tabs.jsp</result>
+            <result name="success">/WEB-INF/pages/project/workspace/myProjects.jsp</result>
         </action>
 
-        <action name="ajax/project/workspace/*" class="gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction" method="{1}">
-            <result name="success">/WEB-INF/pages/project/workspace/{1}.jsp</result>
+        <action name="ajax/project/workspace" class="gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction" method="workspace">
+            <result name="success">/WEB-INF/pages/project/workspace/myProjects.jsp</result>
         </action>
 
         <action name="project/create" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="create">

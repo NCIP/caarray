@@ -213,7 +213,6 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      * @param personVal
      *            the person contact
      */
-    @Transient
     public void setPerson(final Person personVal) {
         this.contact = personVal;
     }

@@ -2,16 +2,11 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.helper.EmailHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
@@ -31,7 +26,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 public class ProjectAction extends AbstractBaseProjectAction {
     private static final long serialVersionUID = 1L;
 
-    private ProposalStatus workflowStatus;
+    private boolean workflowStatus;
 
     /**
      * create new project.
@@ -134,30 +129,24 @@ public class ProjectAction extends AbstractBaseProjectAction {
      */
     public String changeWorkflowStatus() {
         try {
-            ProposalStatus oldStatus = getProject().getStatus();
-            getProjectManagementService().changeProjectStatus(getProject().getId(), this.workflowStatus);
+            boolean oldStatus = getProject().islocked();
+            getProjectManagementService().changeProjectLockStatus(getProject().getId(), workflowStatus);
             List<String> args = new ArrayList<String>();
             args.add(StringUtils.abbreviate(getProject().getExperiment().getTitle(), TRUNCATED_TITLE_WIDTH));
-            args.add(getText(this.workflowStatus.getResourceKey()));
-            if (oldStatus == ProposalStatus.PUBLIC) {
+            args.add(workflowStatus ? "Locked" : "Unlocked");
+            if (oldStatus) {
                 args.add(getText("project.workflowStatusUpdated.retractPublic"));
             } else {
                 args.add("");
             }
             ActionHelper.saveMessage(getText("project.workflowStatusUpdated", args));
-            if (oldStatus == ProposalStatus.DRAFT && this.workflowStatus == ProposalStatus.IN_PROGRESS) {
-                sendSubmitExperimentEmail();
-            }
             return WORKSPACE_RESULT;
         } catch (ProposalWorkflowException e) {
             List<String> args = new ArrayList<String>();
             args.add(getProject().getExperiment().getTitle());
-            args.add(getText(this.workflowStatus.getResourceKey()));
+            args.add(workflowStatus ? "Locked" : "Unlocked");
             ActionHelper.saveMessage(getText("project.workflowProblem", args));
             return INPUT;
-        } catch (MessagingException e) {
-            LOG.warn("Could not send email for experiment submission", e);
-            return WORKSPACE_RESULT;
         }
     }
 
@@ -174,24 +163,10 @@ public class ProjectAction extends AbstractBaseProjectAction {
             ActionHelper.saveMessage(getText("project.deleted"));
         } catch (ProposalWorkflowException e) {
             List<String> args = new ArrayList<String>();
-            args.add(getText(ProposalStatus.DRAFT.getResourceKey()));
+            args.add("Unlocked");
             ActionHelper.saveMessage(getText("project.deleteOnlyDrafts", args));
         }
         return WORKSPACE_RESULT;
-    }
-
-    /**
-     * @throws MessagingException
-     *
-     */
-    private void sendSubmitExperimentEmail() throws MessagingException {
-        HttpServletRequest request = ServletActionContext.getRequest();
-        String ctxPath = request.getContextPath();
-        String requestUri = request.getRequestURI();
-        String fullUrl = request.getRequestURL().toString();
-        String projectLink = getProjectDetailsLink(StringUtils.substringBefore(fullUrl, requestUri) + ctxPath,
-                getProject().getExperiment().getPublicIdentifier());
-        EmailHelper.sendSubmitExperimentEmail(getProject(), projectLink);
     }
 
     /**
@@ -206,16 +181,16 @@ public class ProjectAction extends AbstractBaseProjectAction {
     }
 
     /**
-     * @return the workflowStatus
+     * @return the lock workflowStatus
      */
-    public ProposalStatus getWorkflowStatus() {
+    public boolean isWorkflowStatus() {
         return this.workflowStatus;
     }
 
     /**
-     * @param workflowStatus the workflowStatus to set
+     * @param workflowStatus the lock workflowStatus to set
      */
-    public void setWorkflowStatus(ProposalStatus workflowStatus) {
+    public void setWorkflowStatus(boolean workflowStatus) {
         this.workflowStatus = workflowStatus;
     }
 }

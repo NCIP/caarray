@@ -46,3 +46,7 @@ insert into array_design_assay_types (array_design, assay_types) select id, '4' 
 insert into array_design_assay_types (array_design, assay_types) select id, '5' from array_design where assay_type="microRNA";
 insert into array_design_assay_types (array_design, assay_types) select id, '6' from array_design where assay_type="SNP";
 alter table array_design drop column assay_type;
+
+-- Implementation of Items 18907 and 19034 - separate project locking, and publication.
+alter table project change column public_id_locked locked bit not null;
+alter table project drop column status;

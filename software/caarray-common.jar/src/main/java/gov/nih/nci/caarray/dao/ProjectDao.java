@@ -105,7 +105,7 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  */
 public interface ProjectDao extends CaArrayDao {
     /**
-     * Gets a subset of the projects belonging to the current user. Either public or non-public projects directly
+     * Gets a subset of the projects belonging to the current user. Projects directly
      * related to the current user are returned. A project is directly related to a user if the user is either the data
      * owner or in a collaboration group which has been granted access to the project. The subset to retrieve depends on
      * the page and sort specifications in pageSortParams
@@ -115,25 +115,21 @@ public interface ProjectDao extends CaArrayDao {
      * criterion, then any instances for which that association is null will not be included in the results (as an inner
      * join is used)
      *
-     * @param showPublic if true, then only projects in the "Public" workflow status are returned; if false, then only
-     *            projects in workflow statuses other than "Public" are returned.
      * @param pageSortParams specifies the sorting to apply and which page of the full result set to return
      *
      * @return public or non-public projects directly related to the current user, as described above
      */
-    List<Project> getProjectsForCurrentUser(boolean showPublic, PageSortParams<Project> pageSortParams);
+    List<Project> getProjectsForCurrentUser(PageSortParams<Project> pageSortParams);
 
     /**
-     * Gets the count of projects belonging to the current user. The count of either public or non-public projects
+     * Gets the count of projects belonging to the current user. The count of all projects
      * directly related to the current user are returned. A project is directly related to a user if the user is
      * either the data owner or in a collaboration group which has been granted access to the project.
      *
-     * @param showPublic if true, then only projects in the "Public" workflow status are included; if false,
-     * then only projects in workflow statuses other than "Public" are included in the count.
      *
      * @return the count of public or non-public projects directly related to the current user, as described above
      */
-    int getProjectCountForCurrentUser(boolean showPublic);
+    int getProjectCountForCurrentUser();
 
     /**
      * Performs a query for experiments by text matching for the given keyword.

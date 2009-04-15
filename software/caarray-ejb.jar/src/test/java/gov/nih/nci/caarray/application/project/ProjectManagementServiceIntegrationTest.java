@@ -82,7 +82,11 @@
  */
 package gov.nih.nci.caarray.application.project;
 
+import com.fiveamsolutions.nci.commons.util.UsernameHolder;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.AbstractCaarrayIntegrationTest;
 import gov.nih.nci.caarray.application.GenericDataService;
@@ -100,7 +104,6 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -192,7 +195,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayInte
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
         DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_1.setManufacturer(DUMMY_PROVIDER);
-        DUMMY_PROJECT_1.setStatus(ProposalStatus.IN_PROGRESS);
+        DUMMY_PROJECT_1.setLocked(false);
 
     }
 
@@ -268,7 +271,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayInte
             this.projectManagementService.saveProject(DUMMY_PROJECT_1);
             t.commit();
 
-            DUMMY_PROJECT_1.setStatus(ProposalStatus.DRAFT);
+            DUMMY_PROJECT_1.setLocked(false);
 
             t = HibernateUtil.beginTransaction();
             this.projectManagementService.saveProject(DUMMY_PROJECT_1);
@@ -291,5 +294,5 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayInte
         }
     }
 
-
+    
 }

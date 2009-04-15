@@ -267,7 +267,7 @@ public class ArrayDesignServiceIntegrationTest extends AbstractCaarrayIntegratio
                 AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
             checkChpDesignElementList(designElementList, AffymetrixArrayDesignFiles.TEST3_CDF);
             t.commit();
-            assertEquals(15876, design.getNumberOfFeatures());
+            assertEquals(15876, design.getNumberOfFeatures().intValue());
 
             // now try to re-import the design over itself
             t = HibernateUtil.beginTransaction();
@@ -288,7 +288,7 @@ public class ArrayDesignServiceIntegrationTest extends AbstractCaarrayIntegratio
             designElementList = AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
             checkChpDesignElementList(designElementList, AffymetrixArrayDesignFiles.TEST3_CDF);
             t.commit();
-            assertEquals(15876, design.getNumberOfFeatures());
+            assertEquals(15876, design.getNumberOfFeatures().intValue());
         } catch (Exception e) {
             if (t != null && t.isActive()) {
                 t.rollback();
@@ -339,7 +339,7 @@ public class ArrayDesignServiceIntegrationTest extends AbstractCaarrayIntegratio
 
             t = HibernateUtil.beginTransaction();
             design = this.arrayDesignService.getArrayDesign(design.getId());
-            assertEquals(1024, design.getNumberOfFeatures());
+            assertEquals(1024, design.getNumberOfFeatures().intValue());
             assertEquals(94, design.getDesignDetails().getLogicalProbes().size());
             assertEquals(364, design.getDesignDetails().getProbes().size());
             assertEquals(1024, design.getDesignDetails().getFeatures().size());
@@ -353,7 +353,7 @@ public class ArrayDesignServiceIntegrationTest extends AbstractCaarrayIntegratio
             assertEquals("Affymetrix.com", otherDesign.getLsidAuthority());
             assertEquals("PhysicalArrayDesign", otherDesign.getLsidNamespace());
             assertEquals("HuEx-1_0-st-ta1-test", otherDesign.getLsidObjectId());
-            assertEquals(1024, otherDesign.getNumberOfFeatures());
+            assertEquals(1024, otherDesign.getNumberOfFeatures().intValue());
             assertEquals(94, otherDesign.getDesignDetails().getLogicalProbes().size());
             assertEquals(364, otherDesign.getDesignDetails().getProbes().size());
             assertEquals(1024, otherDesign.getDesignDetails().getFeatures().size());

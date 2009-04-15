@@ -213,7 +213,7 @@ public class ProtocolManagementActionTest extends AbstractCaarrayTest {
         assertEquals(null, ServletActionContext.getRequest().getSession().getAttribute("returnInitialTab2"));
         assertEquals(null, ServletActionContext.getRequest().getSession().getAttribute("returnInitialTab2Url"));
 
-        assertEquals(1L, this.action.getReturnProjectId());
+        assertEquals(1L, this.action.getReturnProjectId().intValue());
         assertEquals("test1", this.action.getReturnInitialTab1());
         assertEquals("test2", this.action.getReturnInitialTab2());
         assertEquals("test2Url", this.action.getReturnInitialTab2Url());

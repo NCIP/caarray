@@ -1016,8 +1016,8 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
 
         assertEquals(LIST_UNIMPORTED,action.listUnimported());
         assertEquals(6,action.getFiles().size());
-        assertEquals(3,action.getFileStatusCountMap().get(FileStatus.UPLOADED));
-        assertEquals(3,action.getFileStatusCountMap().get(FileStatus.IMPORT_FAILED));
+        assertEquals(3,action.getFileStatusCountMap().get(FileStatus.UPLOADED).intValue());
+        assertEquals(3,action.getFileStatusCountMap().get(FileStatus.IMPORT_FAILED).intValue());
 
         action.setFileType(FileType.AGILENT_CSV.name());
         assertEquals(LIST_UNIMPORTED,action.listUnimported());
@@ -1053,7 +1053,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         action.setFileStatus(FileStatus.UPLOADED.name());
         assertEquals(LIST_UNIMPORTED,action.listUnimported());
         assertEquals(2,action.getFiles().size());
-        assertEquals(2,action.getFileStatusCountMap().get(FileStatus.UPLOADED));
+        assertEquals(2,action.getFileStatusCountMap().get(FileStatus.UPLOADED).intValue());
     }
 
     private SortedSet<CaArrayFile> getUnimportedFileSet() {

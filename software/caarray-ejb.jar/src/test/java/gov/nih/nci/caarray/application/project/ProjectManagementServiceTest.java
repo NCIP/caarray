@@ -111,7 +111,6 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -190,7 +189,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
     @Test
     public void testGetWorkspaceProjects() {
         List<Project> projects =
-                this.projectManagementService.getMyProjects(false, new PageSortParams<Project>(10000, 1,
+                this.projectManagementService.getMyProjects(new PageSortParams<Project>(10000, 1,
                         ProjectSortCriterion.PUBLIC_ID, false));
         assertNotNull(projects);
     }
@@ -199,7 +198,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
     public void testGetProject() {
         Project project = this.projectManagementService.getProject(123L);
         assertNotNull(project);
-        assertEquals(123L, project.getId());
+        assertEquals(123L, project.getId().longValue());
     }
 
     @Test
@@ -438,10 +437,10 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
 
     @Test(expected = ProposalWorkflowException.class)
     @SuppressWarnings("deprecation")
-    public void testDeleteNonDraftProject() throws Exception {
+    public void testDeleteLockedProject() throws Exception {
         Project project = new Project();
         project.setId(1L);
-        project.setStatus(ProposalStatus.IN_PROGRESS);
+        project.setLocked(true);
         this.projectManagementService.saveProject(project);
         this.projectManagementService.deleteProject(project);
     }
@@ -673,7 +672,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
          * {@inheritDoc}
          */
         @Override
-        public List<Project> getProjectsForCurrentUser(boolean showPublic, PageSortParams<Project> pageSortParams) {
+        public List<Project> getProjectsForCurrentUser(PageSortParams<Project> pageSortParams) {
             return new ArrayList<Project>();
         }
 

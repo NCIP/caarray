@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -205,16 +204,16 @@ public interface ProjectManagementService {
     void deleteProject(Project project) throws ProposalWorkflowException;
 
     /**
-     * Moves a project into a new workflow status.
+     * Lock or unlock Project.
      *
      * @param projectId the id of the project to move to the given status
-     * @param newStatus the new workflow status
+     * @param newStatus the new lock status
      * @throws ProposalWorkflowException if the project's current status does not allow a transition to the given status
      */
-    void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException;
+    void changeProjectLockStatus(long projectId, boolean newStatus) throws ProposalWorkflowException;
 
     /**
-     * Gets a subset of the projects belonging to the current user. Either public or non-public projects directly
+     * Gets a subset of the projects belonging to the current user. All projects directly
      * related to the current user are returned. A project is directly related to a user if the user is either the data
      * owner or in a collaboration group which has been granted access to the project. The subset to retrieve depends on
      * the page and sort specifications in pageSortParams
@@ -224,25 +223,20 @@ public interface ProjectManagementService {
      * criterion, then any instances for which that association is null will not be included in the results (as an inner
      * join is used)
      *
-     * @param showPublic if true, then only projects in the "Public" workflow status are returned; if false, then only
-     *            projects in workflow statuses other than "Public" are returned.
      * @param pageSortParams specifies the sorting to apply and which page of the full result set to return
      *
-     * @return public or non-public projects directly related to the current user, as described above
+     * @return all projects directly related to the current user, as described above
      */
-    List<Project> getMyProjects(boolean showPublic, PageSortParams<Project> pageSortParams);
+    List<Project> getMyProjects(PageSortParams<Project> pageSortParams);
 
     /**
-     * Gets the count of projects belonging to the current user. The count of either public or non-public projects
+     * Gets the count of projects belonging to the current user. The count of all projects
      * directly related to the current user are returned. A project is directly related to a user if the user is either
      * the data owner or in a collaboration group which has been granted access to the project.
      *
-     * @param showPublic if true, then only projects in the "Public" workflow status are included; if false, then only
-     *            projects in workflow statuses other than "Public" are included in the count.
-     *
-     * @return the count of public or non-public projects directly related to the current user, as described above
+     * @return the count of all projects directly related to the current user, as described above
      */
-    int getMyProjectCount(boolean showPublic);
+    int getMyProjectCount();
 
     /**
      * sets whether the project with given id uses the tcga policy.

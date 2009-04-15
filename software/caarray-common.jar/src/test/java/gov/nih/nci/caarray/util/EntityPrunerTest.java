@@ -127,7 +127,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         B b = new B();
         pruner.makeLeaf(b);
 
-        assertEquals(b.getId(), 1L);
+        assertEquals(1L, b.getId().longValue());
         assertNull(b.getA());
         assertNull(b.getOther());
         assertTrue(b.getOtherList().isEmpty());
@@ -151,7 +151,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
 
         assertNotNull(b.getUser());
         assertNull(b.getUnserializable());
-        assertEquals(b.getId(), 1L);
+        assertEquals(1L, b.getId().longValue());
         assertNotNull(b.getA());
         assertNotNull(b.getOther());
         assertFalse(b.getOtherList().isEmpty());
@@ -159,7 +159,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         assertFalse(b.getOtherMap().entrySet().isEmpty());
         assertFalse(b.getOtherCollection().isEmpty());
 
-        assertEquals(1L, b.getA().getId());
+        assertEquals(1L, b.getA().getId().longValue());
         assertNull(b.getA().getA());
         assertNull(b.getOther().getA());
         assertNull(b.getOtherList().iterator().next().getA());

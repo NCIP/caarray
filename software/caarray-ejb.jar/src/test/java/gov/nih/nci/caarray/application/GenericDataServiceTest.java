@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.Sample;
 
 import java.io.Serializable;
@@ -133,7 +132,7 @@ public class GenericDataServiceTest extends AbstractCaarrayTest {
 
         obj = this.service.getPersistentObject(Project.class, 1l);
 
-        if(((Project)obj).getStatus().equals(ProposalStatus.DRAFT))
+        if(!((Project)obj).islocked())
         {
             assertEquals(SecurityLevel.NO_VISIBILITY, ((Project) obj).getPublicProfile().getSecurityLevel());
         }

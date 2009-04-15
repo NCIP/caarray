@@ -141,7 +141,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
 
             saveSupportingObjects();
 
-            int size = DAO_OBJECT.getProjectCountForCurrentUser(false);
+            int size = DAO_OBJECT.getProjectCountForCurrentUser();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
@@ -170,7 +170,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             saveSupportingObjects();
-            int size = DAO_OBJECT.getProjectCountForCurrentUser(false);
+            int size = DAO_OBJECT.getProjectCountForCurrentUser();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
@@ -208,7 +208,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             saveSupportingObjects();
-            int size = DAO_OBJECT.getProjectCountForCurrentUser(false);
+            int size = DAO_OBJECT.getProjectCountForCurrentUser();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
@@ -242,7 +242,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             saveSupportingObjects();
-            int size = DAO_OBJECT.getProjectCountForCurrentUser(false);
+            int size = DAO_OBJECT.getProjectCountForCurrentUser();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
@@ -276,7 +276,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             saveSupportingObjects();
-            int size = DAO_OBJECT.getProjectCountForCurrentUser(false);
+            int size = DAO_OBJECT.getProjectCountForCurrentUser();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
@@ -313,7 +313,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DUMMY_SOURCE.getCharacteristics().add(DUMMY_CHARACTERISTIC);
 
             saveSupportingObjects();
-            int size = DAO_OBJECT.getProjectCountForCurrentUser(false);
+            int size = DAO_OBJECT.getProjectCountForCurrentUser();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
@@ -356,7 +356,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DUMMY_SOURCE.getCharacteristics().add(DUMMY_CHARACTERISTIC);
 
             saveSupportingObjects();
-            int size = DAO_OBJECT.getProjectCountForCurrentUser(false);
+            int size = DAO_OBJECT.getProjectCountForCurrentUser();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
@@ -407,7 +407,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DUMMY_SAMPLE.getCharacteristics().add(DUMMY_CHARACTERISTIC);
 
             saveSupportingObjects();
-            int size = DAO_OBJECT.getProjectCountForCurrentUser(false);
+            int size = DAO_OBJECT.getProjectCountForCurrentUser();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
@@ -450,7 +450,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DUMMY_SAMPLE.getCharacteristics().add(DUMMY_CHARACTERISTIC);
 
             saveSupportingObjects();
-            int size = DAO_OBJECT.getProjectCountForCurrentUser(false);
+            int size = DAO_OBJECT.getProjectCountForCurrentUser();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 

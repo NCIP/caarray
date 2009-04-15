@@ -26,7 +26,7 @@
         <div class="boxpad2extend">
 			<p>Due to browser limitations, the combined size of the files you upload must be less than 2 GB. If you need to upload more data,
 			   please do so in multiple steps.</p>
-            <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
+            <c:if test="${!project.locked && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
                 <s:form action="project/files/upload" id="uploadForm" namespace="" enctype="multipart/form-data" method="post"  target="target_upload">
                     <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
                     <input type=hidden name="selectedFilesToUnpack" value="-1" />

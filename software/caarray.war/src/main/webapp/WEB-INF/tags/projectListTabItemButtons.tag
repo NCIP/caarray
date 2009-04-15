@@ -21,7 +21,7 @@
             </caarray:projectListTabActionLink>
             <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('projectForm', '${tabAnchor}'); return false;"/>
         </c:when>
-        <c:when test="${project.saveAllowed && caarrayfn:canWrite(item, caarrayfn:currentUser()) && caarrayfn:canWrite(project, caarrayfn:currentUser()) && (!project.importingData)}">
+        <c:when test="${!project.locked && caarrayfn:canWrite(item, caarrayfn:currentUser()) && caarrayfn:canWrite(project, caarrayfn:currentUser()) && (!project.importingData)}">
             <caarray:projectListTabActionLink entityName="${entityName}" action="edit" itemId="${item.id}" isSubtab="${isSubtab}">
                 <jsp:attribute name="linkRenderer">
                     <caarray:action actionClass="edit" text="Edit" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>

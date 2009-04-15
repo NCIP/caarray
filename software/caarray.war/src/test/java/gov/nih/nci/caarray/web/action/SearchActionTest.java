@@ -137,19 +137,19 @@ public class SearchActionTest extends AbstractCaarrayTest {
         this.searchAction.setSearchType(SearchAction.COMBINATION_SEARCH);
         this.searchAction.setCategoryCombo(SearchAction.SEARCH_EXPERIMENT_CATEGORY_ALL);
         String result = this.searchAction.basicSearch();
-        assertEquals(NUM_PROJECTS, searchAction.getTabs().get(SearchAction.EXPERIMENTS_TAB));
+        assertEquals(NUM_PROJECTS, searchAction.getTabs().get(SearchAction.EXPERIMENTS_TAB).intValue());
         assertEquals(Action.SUCCESS, result);
 
         this.searchAction.setSearchType(SearchAction.COMBINATION_SEARCH);
         searchAction.setCategoryCombo(SearchCategory.ORGANISM.name());
         result = this.searchAction.basicSearch();
-        assertEquals(NUM_PROJECTS_BY_ORGANISM, searchAction.getTabs().get(SearchAction.EXPERIMENTS_TAB));
+        assertEquals(NUM_PROJECTS_BY_ORGANISM, searchAction.getTabs().get(SearchAction.EXPERIMENTS_TAB).intValue());
         assertEquals(Action.SUCCESS, result);
 
         this.searchAction.setSearchType(SearchAction.COMBINATION_SEARCH);
         searchAction.setCategoryCombo(SearchSampleCategory.SAMPLE_ORGANISM.name());
         result = this.searchAction.basicSearch();
-        assertEquals(NUM_SAMPLES_BY_ORGANISM, searchAction.getTabs().get(SearchAction.SAMPLES_TAB));
+        assertEquals(NUM_SAMPLES_BY_ORGANISM, searchAction.getTabs().get(SearchAction.SAMPLES_TAB).intValue());
         assertEquals(Action.SUCCESS, result);
 
     }

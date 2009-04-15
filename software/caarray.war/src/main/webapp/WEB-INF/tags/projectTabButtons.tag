@@ -25,7 +25,7 @@
         <c:when test="${editMode && (!project.importingData)}">
             <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('projectForm', '${tabAnchor}'); return false;"/>
         </c:when>
-        <c:when test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser()) && (!project.importingData)}">
+        <c:when test="${!project.locked && caarrayfn:canWrite(project, caarrayfn:currentUser()) && (!project.importingData)}">
             <c:url value="/protected/ajax/project/tab/${tab}/load.action" var="actionUrl">
                 <c:param name="project.id" value="${project.id}" />
                 <c:param name="editMode" value="true" />
