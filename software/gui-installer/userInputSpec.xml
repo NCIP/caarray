@@ -544,9 +544,6 @@
         <field type="text" variable="upt.url">
             <spec txt="UPT URL " id="text.label" size="25" set=""/>
         </field>
-       <field type="text" variable="user.admin.email.address">
-            <spec txt="UPT Admin Email Address " id="text.label" size="25" set=""/>
-        </field>
     </panel>
 
 
@@ -744,8 +741,11 @@
         <field type="text" variable="upt.url">
             <spec txt="UPT URL " id="text.label" size="25" set=""/>
         </field>
-       <field type="text" variable="user.admin.email.address">
-            <spec txt="UPT Admin Email Address " id="text.label" size="25" set=""/>
+       <field type="text" variable="user.admin.email.address.from">
+            <spec txt="UPT Admin Email Address From:" id="text.label" size="25" set=""/>
+        </field>
+       <field type="text" variable="user.admin.email.address.to">
+            <spec txt="UPT Admin Email Address To:" id="text.label" size="25" set=""/>
         </field>
     </panel>
 
