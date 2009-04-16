@@ -97,35 +97,33 @@ import org.apache.commons.collections.Predicate;
  */
 public enum SecurityLevel implements ResourceBasedEnum {
     /** No access to project or any samples. */
-    NONE("SecurityLevel.none", false, false, true, false, false),
+    NONE("SecurityLevel.none",  false, true, false, false),
     /** Limited access to project and no access to samples. */
-    VISIBLE("SecurityLevel.visible", true, true, false, false, false),
+    VISIBLE("SecurityLevel.visible",  true, false, false, false),
     /** Read access to project and all samples. */
-    READ("SecurityLevel.read", false, true, true, true, false),
+    READ("SecurityLevel.read",  true, true, true, false),
     /** Read access to project and specified samples. */
-    READ_SELECTIVE("SecurityLevel.readSelective", false, true, true, true, false, SampleSecurityLevel.NONE,
+    READ_SELECTIVE("SecurityLevel.readSelective", true, true, true, false, SampleSecurityLevel.NONE,
             SampleSecurityLevel.READ),
     /** Write access to project and all samples. */
-    WRITE("SecurityLevel.write", false, false, true, true, true),
+    WRITE("SecurityLevel.write",  false, true, true, true),
     /** Write access to project. Read access and/or write access to specificed samples. */
-    READ_WRITE_SELECTIVE("SecurityLevel.readWriteSelective", false, false, true, true, true, SampleSecurityLevel.NONE,
+    READ_WRITE_SELECTIVE("SecurityLevel.readWriteSelective", false, true, true, true, SampleSecurityLevel.NONE,
             SampleSecurityLevel.READ, SampleSecurityLevel.READ_WRITE),
     /** No access to project or any samples - public profile version. */
-    NO_VISIBILITY("SecurityLevel.noVisibility", true, true, false, false, false);
+    NO_VISIBILITY("SecurityLevel.noVisibility", true, false, false, false);
 
     private final boolean availableToPublic;
     private final boolean availableToGroups;    
-    private final boolean availableInDraft;
     private final String resourceKey;
     private final boolean allowsRead;
     private final boolean allowsWrite;
     private final List<SampleSecurityLevel> sampleSecurityLevels = new ArrayList<SampleSecurityLevel>();
 
     @SuppressWarnings("PMD.ExcessiveParameterList")
-    private SecurityLevel(String resourceKey, boolean availableInDraft, boolean availableToPublic,
+    private SecurityLevel(String resourceKey, boolean availableToPublic,
             boolean availableToGroups, boolean allowsRead, boolean allowsWrite,
             SampleSecurityLevel... sampleSecurityLevels) {
-        this.availableInDraft = availableInDraft;
         this.availableToPublic = availableToPublic;
         this.availableToGroups = availableToGroups;
         this.allowsRead = allowsRead;
@@ -153,13 +151,6 @@ public enum SecurityLevel implements ResourceBasedEnum {
      */
     public boolean isAvailableToGroups() {
         return availableToGroups;
-    }
-
-    /**
-     * @return whether this security level is legal while experiment is in draft status
-     */
-    public boolean isAvailableInDraft() {
-        return availableInDraft;
     }
 
     /**
@@ -194,17 +185,6 @@ public enum SecurityLevel implements ResourceBasedEnum {
         return valuesSubset(new Predicate() {
             public boolean evaluate(Object o) {
                 return ((SecurityLevel) o).isAvailableToGroups();
-            }
-        });
-    }
-
-    /**
-     * @return the list of SecurityLevels that are available to the group access profile
-     */
-    public static List<SecurityLevel> draftLevels() {
-        return valuesSubset(new Predicate() {
-            public boolean evaluate(Object o) {
-                return ((SecurityLevel) o).isAvailableInDraft();
             }
         });
     }

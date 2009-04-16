@@ -26,7 +26,7 @@
                         <span id="profileForm_accessProfile_securityLevel"><fmt:message key="${accessProfile.securityLevel.resourceKey}"/></span>
                     </c:when>
                     <c:otherwise>
-                        <c:set var="secLevelSubset" value="${project.draft ? 'draftLevels' : (accessProfile.publicProfile ? 'publicLevels' : 'collaboratorGroupLevels')}"/>
+                        <c:set var="secLevelSubset" value="${accessProfile.publicProfile ? 'publicLevels' : 'collaboratorGroupLevels'}"/>
                         <s:select required="true" name="accessProfile.securityLevel" tabindex="1"
                             list="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@${secLevelSubset}()" listValue="%{getText(resourceKey)}"
                             onchange="PermissionUtils.changeExperimentAccess(this)"/>
