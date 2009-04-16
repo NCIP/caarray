@@ -290,7 +290,7 @@ public class RplaTabImporter {
 		originalExperiment	.getFactors()
 							.addAll(translatedExperiment.getFactors());
 
-		LOG.info("adding in mergeTranslatedData , number of factors=" + translatedExperiment.getFactors()
+		LOG.info("adding in mergeTranslatedData , number of factors=" + originalExperiment.getFactors()
 																							.size());
 
 		originalExperiment	.getHybridizations()
@@ -311,7 +311,7 @@ public class RplaTabImporter {
 		originalExperiment	.getSamples()
 							.addAll(translatedExperiment.getSamples());
 
-		LOG.info("adding in mergeTranslatedData , number of samples=" + translatedExperiment.getSamples()
+		LOG.info("adding in mergeTranslatedData , number of samples=" +original.Experiment.getSamples()
 																							.size());
 
 		originalExperiment	.getSources()
@@ -322,20 +322,15 @@ public class RplaTabImporter {
 		originalExperiment	.getRplArrays()
 							.addAll(translatedExperiment.getRplArrays());
 
-		LOG.info("rplaarray size =" + translatedExperiment	.getRplArrays()
+		LOG.info("rplaarray size =" + originalExperiment	.getRplArrays()
 															.size());
 
-		LOG.info("rplafeature size =" + translatedExperiment.getRplArrays()
+		LOG.info("rplafeature size =" + originalExperiment.getRplArrays()
 															.iterator()
 															.next()
 															.getRplaFeatures()
 															.size());
 
-//		LOG.info("rplareporter size =" + translatedExperiment	.getRplArrays()
-//																.iterator()
-//																.next()
-//																.getRplaReporters()
-//																.size());
 
 		originalExperiment	.getRplaHybridizations()
 							.addAll(translatedExperiment.getRplaHybridizations());
