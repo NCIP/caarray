@@ -299,7 +299,8 @@ public class Experiment extends AbstractCaArrayEntity {
 	}
 
 	public void setRplArrays ( Set<RplArray> rplArrays) {
-		rplArrays = rplArrays;
+		System.out.println("In Experiment.setRplArrays() and size= " + rplArrays.size());
+		_rplArrays = rplArrays;
 	}
 
 	// ---------------------------------------------------------------------------------------

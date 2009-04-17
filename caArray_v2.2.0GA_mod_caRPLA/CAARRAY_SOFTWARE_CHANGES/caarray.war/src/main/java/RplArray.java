@@ -132,4 +132,26 @@ public class RplArray extends AbstractCaArrayEntity {
 
 	// --------------------------------------------------------
 
+	
+	private Set<RplaSample>	_rplaSamples	= new HashSet<RplaSample>();
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public Set<RplaSample> getRplaSamples () {
+		return _rplaSamples;
+	}
+
+	public void setRplaSamples ( Set<RplaSample> _samples) {
+		this._features = _features;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
