@@ -11,10 +11,12 @@ import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.RplArraySortCriterion;
+import gov.nih.nci.caarray.domain.search.RplaHybridizationSortCriterion;
 import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.carpla.domain.rplahybridization.RplaHybridization;
 import gov.nih.nci.carpla.domain.rplarray.RplArray;
 import gov.nih.nci.carpla.domain.rplarray.RplaSample;
 
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -35,46 +38,51 @@ import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.search.FactorSortCriterion;
 
-public class ProjectRplArraysAction extends AbstractProjectListTabAction {
+public class ProjectRplaHybridizationsAction extends AbstractProjectListTabAction {
 	private static final long	serialVersionUID	= 1L;
 
-	// private RplaSample currentSample = new Sample();
-	// private List<Source> itemsToAssociate = new ArrayList<Source>();
-	// private List<Source> itemsToRemove = new ArrayList<Source>();
+	
 
-	/**
-	 * Default constructor.
-	 */
-	public ProjectRplArraysAction() {
-		super(	"rplarray",
-				new SortablePaginatedList<RplArray, RplArraySortCriterion>(	PAGE_SIZE,
-																			RplArraySortCriterion.NAME.name(),
-																			RplArraySortCriterion.class));
+	private RplaHybridization			currentRplaHybridization		= new RplaHybridization();
+
+	public ProjectRplaHybridizationsAction() {
+		super(	"rplahybridization",
+				new SortablePaginatedList<RplaHybridization, RplaHybridizationSortCriterion>(	PAGE_SIZE,
+																			RplaHybridizationSortCriterion.NAME.name(),
+																			RplaHybridizationSortCriterion.class));
 	}
 
 	protected void doCopyItem ()
 								throws ProposalWorkflowException,
 									InconsistentProjectStateException
 	{
-	// TODO Auto-generated method stub
 
+		throw new NotImplementedException("Copying of RplaHybridizations not supported");
 	}
 
 	@Override
-	protected Collection getCollection () {
-		System.out.println("In ProjectRplArraysAction getCollection()");
-		System.out.println("There are this many rplarrays:" + getProject()	.getExperiment()
-																			.getRplArrays()
+	protected Collection<RplaHybridization> getCollection () {
+		System.out.println("In ProjectRplaHybridization getCollection()");
+		System.out.println("There are this many rplahybs:" + getProject()	.getExperiment()
+																			.getRplaHybridizations()
 																			.size());
 
-		return getProject().getExperiment().getRplArrays();
+		return getProject().getExperiment().getRplaHybridizations();
 
 	}
 
 	@Override
 	protected PersistentObject getItem () {
-		// TODO Auto-generated method stub
-		return null;
+		return currentRplaHybridization;
+	}
+
+	@CustomValidator(type = "hibernate")
+	public RplaHybridization getCurrentRplaHybridization () {
+		return currentRplaHybridization ;
+	}
+
+	public void setCurrentRplaHybridization ( RplaHybridization rplaHybridization) {
+		this.currentRplaHybridization = rplaHybridization ;
 	}
 
 }
