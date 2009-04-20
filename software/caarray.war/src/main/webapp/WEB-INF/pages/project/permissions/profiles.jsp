@@ -66,20 +66,20 @@
                                         </p>
                                         <ul id="profile_legend">
                                             <li>
+                                                <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@NO_VISIBILITY.resourceKey"/></fmt:message></span>
+                                                - Applied by default to each experiment upon creation, this profile completely removes the experiment summary information from view.
+                                            </li>
+                                            <li>
                                                 <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@VISIBLE.resourceKey"/></fmt:message></span>
-                                                - applied by default to each experiment upon creation, this profile exposes summary information without access to annotation and array data.
+                                                - Exposes experiment summary information without access to annotation and array data.
                                              </li>
                                             <li>
                                                 <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@READ.resourceKey"/></fmt:message></span>
-                                                - grants read access to the experiment as a whole - providing a preview into its content
+                                                - Grants read access to the experiment as a whole, providing a preview into its content.
                                             </li>
                                             <li>
                                                 <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@READ_SELECTIVE.resourceKey"/></fmt:message></span>
-                                                - grants selective access to specific sample annotation and data
-                                            </li>
-                                            <li>
-                                                <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@NO_VISIBILITY.resourceKey"/></fmt:message></span>
-                                                - completely removes the experiment summary information from view
+                                                - Grants selective access to specific sample annotation and data.
                                             </li>
                                         </ul>
                                         <br/>
