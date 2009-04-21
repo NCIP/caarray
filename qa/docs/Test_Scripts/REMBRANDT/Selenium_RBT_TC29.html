@@ -1,0 +1,99 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Selenium_RBT_TC29</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Selenium_RBT_TC29</td></tr>
+</thead><tbody>
+<tr>
+	<td>click</td>
+	<td>link=Manage Lists</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Manually type List</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>typeSelector</td>
+	<td>label=Gene-LOCUS_LINK</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>typeListIds</td>
+	<td>10050<br />10051</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>listName</td>
+	<td>my_ll_list</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>uploadButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Advanced Search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document.comparitivegenomicForm.method</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>queryName</td>
+	<td>NAKQ100H</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>geneOptionGeneList</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>submittalButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Finalize Query']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>selectedQueries[0].queryName</td>
+	<td>label=NAKQ100H</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>validateButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>compoundView</td>
+	<td>label=Copy Number Data Per Sample View</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>runReportButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPopUp</td>
+	<td>_report56200794958</td>
+	<td>30000</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
