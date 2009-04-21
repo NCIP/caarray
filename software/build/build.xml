@@ -110,7 +110,7 @@
     <property name="asm.3.0.lib" value="${lib.dir}/caarray-asm_3.0" />
     <property name="project.lib" value="${lib.dir}/caarray-project" />
     <property name="bda-utils.dir" value="${basedir}/bda-utils" />
-    <property name="bda.version" value="0.10.1" />
+    <property name="bda.version" value="0.10.4" />
     <property name="bda.utils.build.file" value="${bda-utils.dir}/bda-build-utils-${bda.version}.xml"/>
     <property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
 
