@@ -893,6 +893,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         } else {
             addError("Referenced Factor Name " + column.getHeading().getQualifier() + " was not found in the IDF");
         }
+        currentTermSourceable = factorValue;
     }
 
     private AbstractSampleDataRelationshipNode getNodeToLinkToForArrayData(boolean derived) {
@@ -979,10 +980,11 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleTermSourceRef(String value) {
         TermSource termSource = getTermSource(value);
         if (termSource == null) {
-            addError("Term Source " + value + " is not defined in the IDF document");
+            addError("Term Source " + value + " is not defined in the IDF document.");
         }
         if (currentTermSourceable != null) {
             currentTermSourceable.setTermSource(termSource);
+            currentTermSourceable = null;
         }
     }
 

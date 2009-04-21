@@ -231,7 +231,7 @@ public enum SdrfColumnType {
     COMMENT (Comment.class, "Comment");
 
     private static final EnumSet<SdrfColumnType> TERM_SOURCEABLES = EnumSet.of(PROTOCOL_REF, CHARACTERISTICS, 
-            MATERIAL_TYPE, UNIT, LABEL, ARRAY_DESIGN_REF, PARAMETER_VALUE);
+            MATERIAL_TYPE, UNIT, LABEL, ARRAY_DESIGN_REF, PARAMETER_VALUE, FACTOR_VALUE);
 
     private final Class<?> nodeClass;
     private final String displayName;
