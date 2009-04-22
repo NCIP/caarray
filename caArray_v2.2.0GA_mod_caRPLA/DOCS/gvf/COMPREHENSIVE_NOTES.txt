@@ -1,3 +1,65 @@
+
+
+
+very large system, can be quite daunting.... 
+would be nice to have something simple to get started
+
+more up-todate web technology..looking at more and more files
+
+objectmodel pulls away from sql and rdbms
+takes getting used to
+prefer the well-ordered sql file
+with indexes and constraints all together
+
+in retrospect could look at generated sql and edit the order..
+understand that there are significant advantages to using hibernate...
+used to carefully designing schema ( ground truth) in a file or two
+well organized...
+
+with hibernate, need to look around at annotations all across your files
+
+when considering shcema changes migration, would never consider refactoring database
+through object model..sql is the way to go..checking things, moving data, correcting
+data, qc on data...much too tedious to do this through objects....so in the end i
+prefer a more db centric approach...yes, hibernate insulates you from 
+db, but....
+
+
+
+
+
+
+seems like there is a need for more decisions early, several layers also forces this
+need to make design decisions in stone, going back and forth between layers is 
+inefficient, easy to lose track
+
+--------------
+so..what kind of things do i want to see right away if considering developing/extending/modifying
+
+::
+Wehere are the changes
+show slides few examples of directory organization
+( e.g. domain, ejb, war levels)
+----------------
+How do I apply my changes cleanly while keeping track in a simple way.
+svn may be more sophisticated, but i think some simplicity is needed here
+esp. for those of us who aren't consummate web professionals.
+this is a slide..
+
+-------------
+consider slide for what kinds of chnages
+
+--------
+
+
+recommendations: provide a simplfified documented build file with easy to understand
+targets.
+
+if considering developing, at least get some help on doing the fastest builds for shorter turnaround time while
+developing and testing..many of these targets can be extremely time-consuming
+
+======================================
+======================================
 2009/03/23
 
 Experiment WILL HAVE ONLY one Assay type
