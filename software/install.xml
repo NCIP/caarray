@@ -51,7 +51,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             <pathelement location="${bda-utils.dir}/antunit-1.0.jar" />
         </classpath>
     </taskdef>
-    <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="bda-utils.classpath" />
     <taskdef name="for" classname="net.sf.antcontrib.logic.ForTask">
         <classpath>
             <pathelement location="${bda-utils.dir}/ant-contrib-1.0b3.jar"/>
@@ -257,35 +256,36 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             <equals arg1="${ldap.authentication.disabled}" arg2="false" />
             <then>
                 <copy file="${jboss-conf.dir.target}/security-config-ldap.xml" tofile="${temp.dir}/caarray.ear/META-INF/security-config.xml"/>
-
-                <xmlconfig in="${temp.dir}/caarray.ear/META-INF/security-config.xml" verbose="false">
-                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']" value="${ldap.host}" />
-                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']" value="${ldap.searchbase}" />
-                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']" value="${ldap.searchprefix}" />
-
-                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']" value="${database.url}" />
-                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']" value="${database.user}" />
-                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']" value="${database.password}" />
-                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']" value="${database.driver}" />
-                </xmlconfig>
+                <xmltask source="${temp.dir}/caarray.ear/META-INF/security-config.xml" dest="${temp.dir}/caarray.ear/META-INF/security-config.xml">
+                    <xmlcatalog refid="bda.xml.catalog"/>
+                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']/text()" withText="${ldap.host}"/>
+					<replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']/text()" withText="${ldap.searchbase}"/>
+                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']/text()" withText="${ldap.searchprefix}"/>
+                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${database.url}"/>
+                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${database.user}"/>
+                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${database.password}"/>
+                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${database.driver}"/>
+                </xmltask>
             </then>
             <else>
                 <copy file="${jboss-conf.dir.target}/security-config.xml" tofile="${temp.dir}/caarray.ear/META-INF/security-config.xml"/>
 
-                <xmlconfig in="${temp.dir}/caarray.ear/META-INF/security-config.xml" verbose="false">
-                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']" value="${database.url}" />
-                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']" value="${database.user}" />
-                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']" value="${database.password}" />
-                    <update path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']" value="${database.driver}" />
-                </xmlconfig>
+                <xmltask source="${temp.dir}/caarray.ear/META-INF/security-config.xml" dest="${temp.dir}/caarray.ear/META-INF/security-config.xml">
+                    <xmlcatalog refid="bda.xml.catalog"/>
+					<replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${database.url}"/>
+                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${database.user}"/>
+                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${database.password}"/>
+                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${database.driver}"/>
+                </xmltask>
             </else>
         </if>
 
         <!-- set the mergeDuplicateBiomaterialsMigrator.renameHybridizations value (default it to false as it is not set in GUI "fresh" install, upgrade installer sets the value so) -->
         <property name="mergeDuplicateBiomaterialsMigrator.renameHybridizations" value="true"/>
-        <xmlconfig in="${temp.dir}/caarray.war/WEB-INF/classes/db-migrations.xml" verbose="false">
-            <update path="//migrator-class/@renameHybridizations" value="${mergeDuplicateBiomaterialsMigrator.renameHybridizations}" />
-        </xmlconfig>
+        <xmltask source="${temp.dir}/caarray.war/WEB-INF/classes/db-migrations.xml" dest="${temp.dir}/caarray.war/WEB-INF/classes/db-migrations.xml">
+            <xmlcatalog refid="bda.xml.catalog"/>
+			<replace path="//migrator-class/@renameHybridizations" withText="${mergeDuplicateBiomaterialsMigrator.renameHybridizations}"/>
+        </xmltask>
 
         <!-- set the UptUrl value -->
         <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/web.xml" match="uptUrl&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="uptUrl&lt;/param-name&gt;&lt;param-value&gt;${upt.url}&lt;/param-value&gt;" byline="false"/>
@@ -428,13 +428,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     </target>
 
     <target name="-install:jboss:configure:update-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
-        <replaceregexp match="(org.jboss.Main) (?!--host=)" replace="org.jboss.Main --host=${grid.static.hostname} " byline="true">
-            <fileset dir="${jboss.home}/bin">
-                <include name="run.bat"/>
-                <include name="run.sh"/>
-            </fileset>
-        </replaceregexp>
-    </target>
+        <set-host-flag-in-start-jboss-scripts jboss.bin.dir="${jboss.home}/bin" host.flag.value="${jboss.server.hostname}"/>
+                </target>
 
     <!-- Wrapper target to deploy JBOSS container -->
     <target name="install:jboss" unless="exclude.jboss"
@@ -520,13 +515,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         -install:grid:configure:webXml
         "/>
 
-
     <target name="-install:grid:configure:update-shutdown">
         <jboss-update-shutdown jboss.home="${grid.home}" jboss.server.hostname="${grid.server.hostname}" jboss.server.jndi.port="${grid.server.jndi.port}" />
     </target>
 
     <target name="-install:grid:configure:secure-console" description="Configure JBoss ports using bindings files" unless="exclude.jboss">
-    <secure-jboss-console jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.web.password="${grid.web.password}"/>
+    <secure-jboss-console jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.web.user="${grid.web.user}" jboss.web.password="${grid.web.password}"/>
     </target>
 
     <target name="install:grid:deploy" description="Deploy Caarray2 application">
@@ -574,34 +568,35 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     </target>
 
     <target name="-install:grid:configure:serviceMetadataXml" description="Configure caArray's grid service serviceMetadata.xml.">
-        <xmlconfig in="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/etc/cagrid_CaArraySvc/serviceMetadata.xml" verbose="false">
+        <xmltask source="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/etc/cagrid_CaArraySvc/serviceMetadata.xml" dest="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/etc/cagrid_CaArraySvc/serviceMetadata.xml">
+			<xmlcatalog refid="bda.xml.catalog"/>
 
             <!-- set ResearchCenter element's attributes -->
-            <update path="//*[local-name()='ResearchCenter']/@displayName" value="${research.center.displayName}" />
-            <update path="//*[local-name()='ResearchCenter']/@shortName" value="${research.center.shortName}" />
+			<replace path="//*[local-name()='ResearchCenter']/@displayName" withText="${research.center.displayName}"/>
+			<replace path="//*[local-name()='ResearchCenter']/@shortName" withText="${research.center.shortName}"/>
 
             <!-- set ResearchCenter element's child address element's attributes -->
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@country" value="${research.center.address.country}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@locality" value="${research.center.address.locality}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@postalCode" value="${research.center.address.postalCode}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@stateProvince" value="${research.center.address.stateProvince}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@street1" value="${research.center.address.street1}" />
+			<replace path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@country" withText="${research.center.address.country}"/>
+			<replace path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@locality" withText="${research.center.address.locality}"/>
+			<replace path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@postalCode" withText="${research.center.address.postalCode}"/>
+			<replace path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@stateProvince" withText="${research.center.address.stateProvince}"/>
+			<replace path="//*[local-name()='ResearchCenter']/*[local-name()='Address']/@street1" withText="${research.center.address.street1}"/>
 
             <!-- set ResearchCenter element's child pointOfContactCollection elements' child PointOfContact element's attributes -->
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@affiliation" value="${point.of.contact.affiliation}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@email" value="${point.of.contact.email}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@firstName" value="${point.of.contact.firstName}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@lastName" value="${point.of.contact.lastName}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@phoneNumber" value="${point.of.contact.phoneNumber}" />
-            <update path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@role" value="${point.of.contact.role}" />
-
-        </xmlconfig>
+			<replace path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@affiliation" withText="${point.of.contact.affiliation}"/>
+			<replace path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@email" withText="${point.of.contact.email}"/>
+			<replace path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@firstName" withText="${point.of.contact.firstName}"/>
+			<replace path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@lastName" withText="${point.of.contact.lastName}"/>
+			<replace path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@phoneNumber" withText="${point.of.contact.phoneNumber}"/>
+			<replace path="//*[local-name()='ResearchCenter']/*[local-name()='pointOfContactCollection']/*[local-name()='PointOfContact']/@role" withText="${point.of.contact.role}"/>
+        </xmltask>
     </target>
 
     <target name="-install:grid:configure:webXml" description="Configure caArray's grid service web.xml.">
-        <xmlconfig in="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/web.xml" verbose="false">
-            <update path="/web-app/servlet/init-param/param-value[text()='80']" value="${grid.static.port}" />
-        </xmlconfig>
+        <xmltask source="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/web.xml" dest="${grid.home}/server/${jboss.server.name}/deploy/wsrf.war/WEB-INF/web.xml">
+            <xmlcatalog refid="bda.xml.catalog"/>
+            <replace path="/web-app/servlet/init-param/param-value[text()='80']/text()" withText="${grid.static.port}"/>
+        </xmltask>
     </target>
 
     <target name="-install:grid:configure:wsdl" description="Configure grid service based on properties">
@@ -641,4 +636,18 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </filterset>
         </copy>
     </target>
+
+    <macrodef name="set-host-flag-in-start-jboss-scripts">
+        <attribute name="jboss.bin.dir" />
+        <attribute name="host.flag.value" />
+        <sequential>
+            <replaceregexp match="(org.jboss.Main) (?!--host=)" replace="org.jboss.Main --host=@{host.flag.value} " byline="true">
+                <fileset dir="@{jboss.bin.dir}">
+                    <include name="run.bat"/>
+                    <include name="run.sh"/>
+                </fileset>
+            </replaceregexp>
+        </sequential>
+    </macrodef>
+
 </project>
