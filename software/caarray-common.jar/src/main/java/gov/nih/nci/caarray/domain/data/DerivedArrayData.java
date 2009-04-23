@@ -119,7 +119,6 @@ public class DerivedArrayData extends AbstractArrayData {
     )
     @ForeignKey(name = "derivedarraydata_hybridizations_hybridization_fk",
             inverseName = "derivedarraydata_hybridizations_derivedarraydata_fk")
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Hybridization> getHybridizations() {
         return hybridizations;
     }
