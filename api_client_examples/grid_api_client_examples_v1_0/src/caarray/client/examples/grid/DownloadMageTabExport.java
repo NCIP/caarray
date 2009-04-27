@@ -83,22 +83,21 @@
 package caarray.client.examples.grid;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.rmi.RemoteException;
+import java.util.Set;
 
 import org.apache.axis.types.URI.MalformedURIException;
-import org.apache.commons.io.IOUtils;
-import org.cagrid.transfer.context.client.TransferServiceContextClient;
-import org.cagrid.transfer.context.client.helper.TransferClientHelper;
-import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
 
 /**
- * A client downloading contents of a single file using the caArray Grid service API.
+ * A client exporting an experiment into MAGE-TAB and downloading the IDF, SDRF and references
+ * to data files using the caArray Grid service API.
  *
  * @author Rashmi Srinivasa
  */
@@ -124,19 +123,16 @@ public class DownloadMageTabExport {
             System.err.println("Could not find experiment with the requested title.");
             return;
         }
-        boolean compressIndividualFiles = false;
         long startTime = System.currentTimeMillis();
-        TransferServiceContextReference serviceContextRef = client.getMageTabZipTransfer(experimentRef, compressIndividualFiles);
-        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef.getEndpointReference());
-        InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
+        MageTabFileSet fileSet = client.getMageTabExport(experimentRef);
         long totalTime = System.currentTimeMillis() - startTime;
-        byte[] byteArray = IOUtils.toByteArray(stream);
+        byte[] idfContents = fileSet.getIdf().getContents();
+        byte[] sdrfContents = fileSet.getSdrf().getContents();
+        Set<DataFile> dataFiles = fileSet.getDataFiles();
+        int bytesRetrieved = idfContents.length + sdrfContents.length;
+        int numDataFileRefs = dataFiles == null || dataFiles.size() <= 0 ? 0 : dataFiles.size();
 
-        if (byteArray != null) {
-            System.out.println("Retrieved " + byteArray.length + " bytes in " + totalTime + " ms.");
-        } else {
-            System.out.println("Error: Retrieved null byte array.");
-        }
+        System.out.println("Retrieved " + bytesRetrieved + " bytes and " + numDataFileRefs + " data file references in " + totalTime + " ms.");
     }
 
     /**
@@ -152,8 +148,7 @@ public class DownloadMageTabExport {
             return null;
         }
 
-        // Assuming that only one experiment was found, pick the first result.
-        // This assumption will not always be true.
+        // Multiple experiments with the same name can exist. Here, we're picking the first result.
         Experiment experiment = experiments[0];
         CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
         return experimentRef;

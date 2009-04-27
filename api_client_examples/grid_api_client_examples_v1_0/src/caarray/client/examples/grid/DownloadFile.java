@@ -148,8 +148,7 @@ public class DownloadFile {
             return null;
         }
 
-        // Assuming that only one experiment was found, pick the first result.
-        // This assumption will not always be true.
+        // Multiple experiments with the same name can exist. Here, we're picking the first result.
         Experiment experiment = experiments[0];
         CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
         return experimentRef;

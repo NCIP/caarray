@@ -94,14 +94,25 @@ import gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.factor.Factor;
+import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
+import gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer;
+import gov.nih.nci.cagrid.wsenum.utils.EnumerationResponseHelper;
 
 import java.rmi.RemoteException;
+import java.util.NoSuchElementException;
+
+import javax.xml.soap.SOAPElement;
+
+import org.globus.ws.enumeration.ClientEnumIterator;
+import org.globus.ws.enumeration.IterationConstraints;
+import org.globus.wsrf.encoding.DeserializationException;
+import org.globus.wsrf.encoding.ObjectDeserializer;
 
 /**
  * A client looking up entities using the caArray Grid service API.
@@ -147,6 +158,7 @@ public class LookUpEntities {
         lookupEntitiesByReference();
         //lookupAnnotationCategories();
         //lookupAnnotationValues(category);
+        enumerateExperiments();
     }
 
     private void lookupArrayDataTypes() {
@@ -357,5 +369,31 @@ public class LookUpEntities {
             }
             System.out.println("Found " + organisms.length + " organisms in " + totalTime + " ms.");
         }
+    }
+
+    private void enumerateExperiments() throws RemoteException, DeserializationException {
+        ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
+        startTime = System.currentTimeMillis();
+        EnumerationResponseContainer expEnum = client.enumerateExperiments(experimentSearchCriteria);
+        ClientEnumIterator iter = EnumerationResponseHelper.createClientIterator(expEnum, CaArraySvc_v1_0Client.class
+                .getResourceAsStream("client-config.wsdd"));
+        IterationConstraints ic = new IterationConstraints(5, -1, null);
+        iter.setIterationConstraints(ic);
+        int numExperimentsFound = 0;
+        while (iter.hasNext()) {
+            try {
+                SOAPElement elem = (SOAPElement) iter.next();
+                if (elem != null) {
+                    Experiment experiment = (Experiment) ObjectDeserializer.toObject(elem, Experiment.class);
+                    System.out.print(experiment.getTitle() + "  ");
+                    numExperimentsFound ++;
+                }
+            } catch (NoSuchElementException e) {
+                break;
+            }
+        }
+        totalTime = System.currentTimeMillis() - startTime;
+        System.out.println("End of experiment enumeration.");
+        System.out.println("Found " + numExperimentsFound + " experiments in " + totalTime + " ms.");
     }
 }

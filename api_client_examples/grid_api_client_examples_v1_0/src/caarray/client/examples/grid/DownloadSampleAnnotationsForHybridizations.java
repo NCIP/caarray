@@ -109,7 +109,6 @@ import org.apache.axis.types.URI.MalformedURIException;
 public class DownloadSampleAnnotationsForHybridizations {
     private static CaArraySvc_v1_0Client client = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
-    private static final String QUANTITATION_TYPES_CSV_STRING = BaseProperties.AFFYMETRIX_CHP_QUANTITATION_TYPES;
 
     public static void main(String[] args) {
         DownloadSampleAnnotationsForHybridizations downloader = new DownloadSampleAnnotationsForHybridizations();
@@ -220,22 +219,5 @@ public class DownloadSampleAnnotationsForHybridizations {
         FileType chpFileType = fileTypes[0];
         CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference(chpFileType.getId());
         return chpFileTypeRef;
-    }
-
-    private Set<CaArrayEntityReference> selectQuantitationTypes() {
-        Set<CaArrayEntityReference> quantitationTypeRefs = new HashSet<CaArrayEntityReference>();
-        String[] quantitationTypeNames = QUANTITATION_TYPES_CSV_STRING.split(",");
-        for (String quantitationTypeName : quantitationTypeNames) {
-            QuantitationType exampleQuantitationType = new QuantitationType();
-            exampleQuantitationType.setName(quantitationTypeName);
-            QuantitationType[] quantitationTypes = client.searchByExample(exampleQuantitationType);
-            if (quantitationTypes == null || quantitationTypes.length <= 0) {
-                return null;
-            }
-            QuantitationType quantitationType = quantitationTypes[0];
-            CaArrayEntityReference quantitationTypeRef = new CaArrayEntityReference(quantitationType.getId());
-            quantitationTypeRefs.add(quantitationTypeRef);
-        }
-        return quantitationTypeRefs;
     }
 }
