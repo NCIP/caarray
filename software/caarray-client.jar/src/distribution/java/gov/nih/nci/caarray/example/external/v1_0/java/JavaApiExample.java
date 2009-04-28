@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.example.external.v1_0;
+package gov.nih.nci.caarray.example.external.v1_0.java;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.data.HybridizationData;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
@@ -265,7 +264,10 @@ public class JavaApiExample {
             FileSearchCriteria fileCriteria = new FileSearchCriteria();
             fileCriteria.setExperiment(new CaArrayEntityReference(
                     "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
-            fileCriteria.setCategories(EnumSet.of(FileTypeCategory.RAW));
+            fileCriteria.getHybridizations().add(new CaArrayEntityReference(
+                    "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1"));
+            fileCriteria.getHybridizations().add(new CaArrayEntityReference(
+                    "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:2"));
             List<DataFile> files = searchService.searchForFiles(fileCriteria, null);
             for (DataFile file : files) {
                 downloadAndPrintFile(file);
@@ -274,6 +276,12 @@ public class JavaApiExample {
 
             HybridizationSearchCriteria hsc = new HybridizationSearchCriteria();
             hsc.setExperiment(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
+            hsc.getBiomaterials().add(
+                    new CaArrayEntityReference(
+                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:1"));
+            hsc.getBiomaterials().add(
+                    new CaArrayEntityReference(
+                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:6"));
             List<Hybridization> hybs = searchService.searchForHybridizations(hsc, null);
             for (Hybridization hyb : hybs) {
                 System.out.println("hyb: " + hyb);

@@ -9,7 +9,7 @@
             <display:column titleKey="experiment.hybridizations.name" sortable="true" sortProperty="hybridization.name">
               <caarray:projectListTabActionLink linkContent="${row.hybridization.name}" entityName="Hybridization" action="view" itemId="${row.hybridization.id}" isSubtab="true"/>
             </display:column>
-            <display:column property="value" titleKey="experiment.hybridizations.factorValue" sortable="true"/>
+            <display:column property="displayValue" titleKey="experiment.hybridizations.factorValue" sortable="true"/>
         </display:table>
     </div>
 </caarray:tabPane>

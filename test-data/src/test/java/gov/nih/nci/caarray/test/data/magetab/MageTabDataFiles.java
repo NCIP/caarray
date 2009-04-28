@@ -432,4 +432,13 @@ public class MageTabDataFiles {
 
     public static final File UPDATE_BIOMATERIAL_CHAIN_NEW_DATA_FILES_SDRF = new File(MageTabDataFiles.class
             .getResource("/magetab/update_chain/update_chain_new_data_files.sdrf").getFile());
+    
+    public static final File EXTENDED_FACTOR_VALUES_DIRECTORY = new File(MageTabDataFiles.class
+            .getResource("/magetab/extended_factor_values").getFile());
+
+    public static final File EXTENDED_FACTOR_VALUES_IDF = new File(MageTabDataFiles.class
+            .getResource("/magetab/extended_factor_values/valid.idf").getFile());
+
+    public static final File EXTENDED_FACTOR_VALUES_SDRF = new File(MageTabDataFiles.class
+            .getResource("/magetab/extended_factor_values/valid1.sdrf").getFile());
 }

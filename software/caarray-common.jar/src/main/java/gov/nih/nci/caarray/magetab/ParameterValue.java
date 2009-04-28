@@ -93,6 +93,7 @@ public final class ParameterValue implements Serializable, Unitable {
 
     private Parameter parameter;
     private String value;
+    private OntologyTerm term;
     private OntologyTerm unit;
 
     /**
@@ -110,7 +111,7 @@ public final class ParameterValue implements Serializable, Unitable {
     }
 
     /**
-     * @return the unit
+     * @return the unit (optional)
      */
     public OntologyTerm getUnit() {
         return unit;
@@ -124,7 +125,8 @@ public final class ParameterValue implements Serializable, Unitable {
     }
 
     /**
-     * @return the value
+     * @return the explicit value of this parameter. this is used if no term source is specified for
+     * a parameter value. otherwise, the value will be contained in the term property
      */
     public String getValue() {
         return value;
@@ -135,6 +137,20 @@ public final class ParameterValue implements Serializable, Unitable {
      */
     public void setValue(String value) {
         this.value = value;
+    }
+
+    /**
+     * @return the term containing the value of this parameter value
+     */
+    public OntologyTerm getTerm() {
+        return term;
+    }
+
+    /**
+     * @param term the term to set
+     */
+    public void setTerm(OntologyTerm term) {
+        this.term = term;
     }
 
 }

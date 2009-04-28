@@ -89,7 +89,7 @@ import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.FactorValue;
+import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.search.HybridizationSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -315,7 +315,7 @@ public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnota
         // clean up upstream associations to the subgraph of objects
         getProject().getFiles().removeAll(getCurrentHybridization().getAllDataFiles());
         // clean up factor value associations
-        for (FactorValue fv : getCurrentHybridization().getFactorValues()) {
+        for (AbstractFactorValue fv : getCurrentHybridization().getFactorValues()) {
             fv.getFactor().getFactorValues().remove(fv);
         }
         return true;

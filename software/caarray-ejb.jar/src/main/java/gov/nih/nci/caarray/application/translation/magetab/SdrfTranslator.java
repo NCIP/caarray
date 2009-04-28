@@ -103,13 +103,19 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
-import gov.nih.nci.caarray.domain.project.FactorValue;
+import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
+import gov.nih.nci.caarray.domain.project.MeasurementFactorValue;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.TermBasedFactorValue;
+import gov.nih.nci.caarray.domain.project.UserDefinedFactorValue;
+import gov.nih.nci.caarray.domain.protocol.MeasurementParameterValue;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
-import gov.nih.nci.caarray.domain.protocol.ParameterValue;
+import gov.nih.nci.caarray.domain.protocol.AbstractParameterValue;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.protocol.ProtocolTypeAssociation;
+import gov.nih.nci.caarray.domain.protocol.TermBasedParameterValue;
+import gov.nih.nci.caarray.domain.protocol.UserDefinedParameterValue;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Extract;
@@ -118,10 +124,12 @@ import gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
+import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
 import gov.nih.nci.caarray.magetab.sdrf.Characteristic;
 import gov.nih.nci.caarray.magetab.sdrf.Normalization;
@@ -173,6 +181,7 @@ final class SdrfTranslator extends AbstractTranslator {
     private final VocabularyService vocabularyService;
     private final MultiKeyMap paramMap = new MultiKeyMap();
     private final Experiment experiment;
+    private final TermTranslator termTranslator;
 
     SdrfTranslator(MageTabDocumentSet documentSet, CaArrayFileSet fileSet, MageTabTranslationResult translationResult,
             CaArrayDaoFactory daoFactory, VocabularyService vocabularyService) {
@@ -185,6 +194,8 @@ final class SdrfTranslator extends AbstractTranslator {
         } else {
             this.experiment = null;
         }
+        
+        this.termTranslator = new TermTranslator(documentSet, translationResult, vocabularyService, daoFactory);        
     }
 
     @Override
@@ -258,11 +269,11 @@ final class SdrfTranslator extends AbstractTranslator {
             for (Characteristic sdrfCharacteristic : sdrfSample.getCharacteristics()) {
                 if (ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(
                         sdrfCharacteristic.getCategory())
-                        && sdrfCharacteristic.getTerm().getValue() != null
-                        && sdrfCharacteristic.getTerm().getValue().length() > 0) {
-                    boolean added = externalSampleIds.add(sdrfCharacteristic.getTerm().getValue());
+                        && sdrfCharacteristic.getValue() != null
+                        && sdrfCharacteristic.getValue().length() > 0) {
+                    boolean added = externalSampleIds.add(sdrfCharacteristic.getValue());
                     if (!added) {
-                        document.addErrorMessage("[ExternalSampleId] value '" + sdrfCharacteristic.getTerm().getValue()
+                        document.addErrorMessage("[ExternalSampleId] value '" + sdrfCharacteristic.getValue()
                                 + "' is referenced multiple times (ExternalSampleId must be unique). "
                                 + "Please correct and try again.");
                     }
@@ -439,7 +450,7 @@ final class SdrfTranslator extends AbstractTranslator {
                 hybridization = new Hybridization();
                 hybridization.setName(hybridizationName);
                 for (gov.nih.nci.caarray.magetab.sdrf.FactorValue sdrfFactorVal : sdrfHybridization.getFactorValues()) {
-                    FactorValue factorValue = translateFactor(sdrfFactorVal);
+                    AbstractFactorValue factorValue = translateFactorValue(sdrfFactorVal);
                     hybridization.getFactorValues().add(factorValue);
                     factorValue.setHybridization(hybridization);
                 }
@@ -456,10 +467,18 @@ final class SdrfTranslator extends AbstractTranslator {
         }
     }
 
-    private FactorValue translateFactor(gov.nih.nci.caarray.magetab.sdrf.FactorValue sdrfFactorVal) {
-        FactorValue factorValue = new FactorValue();
-        factorValue.setValue(sdrfFactorVal.getValue());
-        factorValue.setUnit(getTerm(sdrfFactorVal.getUnit()));
+    private AbstractFactorValue translateFactorValue(gov.nih.nci.caarray.magetab.sdrf.FactorValue sdrfFactorVal) {
+        AbstractFactorValue factorValue = null;
+        Term unit = getTerm(sdrfFactorVal.getUnit());
+        if (sdrfFactorVal.getTerm() != null) {
+            factorValue = new TermBasedFactorValue(getTerm(sdrfFactorVal.getTerm()), unit);
+        } else {
+            try {
+                factorValue = new MeasurementFactorValue(Float.valueOf(sdrfFactorVal.getValue()), unit);                
+            } catch (NumberFormatException e) {
+                factorValue = new UserDefinedFactorValue(sdrfFactorVal.getValue(), unit);
+            }
+        }
         Factor factor = getTranslationResult().getFactor(sdrfFactorVal.getFactor());
         factorValue.setFactor(factor);
         factor.getFactorValues().add(factorValue);
@@ -484,18 +503,18 @@ final class SdrfTranslator extends AbstractTranslator {
             AbstractCharacteristic characteristic = translateCharacteristic(sdrfCharacteristic);
             String category = characteristic.getCategory().getName();
             if (ExperimentOntologyCategory.ORGANISM_PART.getCategoryName().equals(category)) {
-                bioMaterial.setTissueSite(((TermBasedCharacteristic) characteristic).getTerm());
+                bioMaterial.setTissueSite(forceToTerm(characteristic));
             } else if (ExperimentOntologyCategory.CELL_TYPE.getCategoryName().equals(category)) {
-                bioMaterial.setCellType(((TermBasedCharacteristic) characteristic).getTerm());
+                bioMaterial.setCellType(forceToTerm(characteristic));
             } else if (ExperimentOntologyCategory.DISEASE_STATE.getCategoryName().equals(category)) {
-                bioMaterial.setDiseaseState(((TermBasedCharacteristic) characteristic).getTerm());
+                bioMaterial.setDiseaseState(forceToTerm(characteristic));
             } else if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equals(category)) {
-                Organism organism = getOrganism(((TermBasedCharacteristic) characteristic).getTerm());
+                Organism organism = getOrganism(forceToTerm(characteristic));
                 bioMaterial.setOrganism(organism);
             } else if (ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(category)) {
                 if (bioMaterial instanceof Sample) {
                     Sample s = (Sample) bioMaterial;
-                    s.setExternalSampleId(sdrfCharacteristic.getTerm().getValue());
+                    s.setExternalSampleId(sdrfCharacteristic.getValue());
                 }
             } else {
                 for (AbstractCharacteristic existingCharacteristic : bioMaterial.getCharacteristics()) {
@@ -508,6 +527,18 @@ final class SdrfTranslator extends AbstractTranslator {
                 bioMaterial.getCharacteristics().add(characteristic);
                 characteristic.setBioMaterial(bioMaterial);
             }
+        }
+    }
+    
+    private Term forceToTerm(AbstractCharacteristic characteristic) {
+        if (characteristic instanceof TermBasedCharacteristic) {
+            return ((TermBasedCharacteristic) characteristic).getTerm();
+        } else {
+            String value = characteristic.getDisplayValueWithoutUnit();
+            OntologyTerm fakeSdrfTerm = new OntologyTerm();
+            fakeSdrfTerm.setValue(value);
+            this.termTranslator.translateTerm(fakeSdrfTerm);
+            return getTerm(fakeSdrfTerm);
         }
     }
 
@@ -580,12 +611,21 @@ final class SdrfTranslator extends AbstractTranslator {
         protocolApplication.setProtocol(protocol);
         for (gov.nih.nci.caarray.magetab.ParameterValue mageTabValue
                 : mageTabProtocolApplication.getParameterValues()) {
-            ParameterValue value = new ParameterValue();
+            AbstractParameterValue value = null;
+            Term unit = getTerm(mageTabValue.getUnit());
+            if (mageTabValue.getTerm() != null) {
+                value = new TermBasedParameterValue(getTerm(mageTabValue.getTerm()), unit);
+            } else {
+                try {
+                    value = new MeasurementParameterValue(Float.valueOf(mageTabValue.getValue()), unit);                
+                } catch (NumberFormatException e) {
+                    value = new UserDefinedParameterValue(mageTabValue.getValue(), unit);
+                }
+            }
             if (mageTabValue.getParameter() != null) {
                 Parameter param = getOrCreateParameter(mageTabValue.getParameter().getName(), protocol);
                 value.setParameter(param);
             }
-            value.setValue(mageTabValue.getValue());
             value.setProtocolApplication(protocolApplication);
             protocolApplication.getValues().add(value);
         }
@@ -608,11 +648,16 @@ final class SdrfTranslator extends AbstractTranslator {
             Characteristic sdrfCharacteristic) {
         Category category = TermTranslator.getOrCreateCategory(this.vocabularyService, this.getTranslationResult(),
                 sdrfCharacteristic.getCategory());
-        if (sdrfCharacteristic.getUnit() != null) {
-            return new MeasurementCharacteristic(category, Float.valueOf(sdrfCharacteristic.getValue()),
-                    getTerm(sdrfCharacteristic.getUnit()));
+        
+        Term unit = getTerm(sdrfCharacteristic.getUnit());
+        if (sdrfCharacteristic.getTerm() != null) {
+            return new TermBasedCharacteristic(category, getTerm(sdrfCharacteristic.getTerm()), unit);
         } else {
-            return new TermBasedCharacteristic(category, getTerm(sdrfCharacteristic.getTerm()));
+            try {
+                return new MeasurementCharacteristic(category, Float.valueOf(sdrfCharacteristic.getValue()), unit);
+            } catch (NumberFormatException e) {
+                return new UserDefinedCharacteristic(category, sdrfCharacteristic.getValue(), unit);
+            }
         }
     }
 

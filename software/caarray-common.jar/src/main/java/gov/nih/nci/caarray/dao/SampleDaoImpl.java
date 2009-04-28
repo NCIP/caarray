@@ -102,7 +102,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Query;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
@@ -115,8 +114,6 @@ import com.fiveamsolutions.nci.commons.util.HibernateHelper;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
-
-    private static final Logger LOG = Logger.getLogger(SampleDaoImpl.class);
     private static final String UNCHECKED = "unchecked";
     private static final String FROM_KEYWORD = " FROM ";
     private static final String SELECT_DISTINCT = " SELECT DISTINCT ";
@@ -124,6 +121,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
     private static final String CATAGORY_SUB = "mycat";
     private static final String ORDER_BY = " ORDER BY ";
     private static final String LEFT_JOIN = " LEFT JOIN ";
+
     /**
      * {@inheritDoc}
      */
@@ -451,10 +449,4 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         }
         return sb.toString();
     }
-
-    @Override
-    Logger getLog() {
-        return LOG;
-    }
-
 }

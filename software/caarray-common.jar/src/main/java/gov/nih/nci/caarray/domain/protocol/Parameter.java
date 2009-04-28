@@ -116,7 +116,7 @@ public class Parameter extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
     private String name;
-    private ParameterValue defaultValue;
+    private AbstractParameterValue defaultValue;
     private Protocol protocol;
 
     /**
@@ -165,7 +165,7 @@ public class Parameter extends AbstractCaArrayEntity {
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "default_value_id")
     @ForeignKey(name = "parameter_defaultvalue_fk")
-    public ParameterValue getDefaultValue() {
+    public AbstractParameterValue getDefaultValue() {
         return this.defaultValue;
     }
 
@@ -174,7 +174,7 @@ public class Parameter extends AbstractCaArrayEntity {
      *
      * @param defaultValueVal the defaultValue
      */
-    public void setDefaultValue(final ParameterValue defaultValueVal) {
+    public void setDefaultValue(final AbstractParameterValue defaultValueVal) {
         this.defaultValue = defaultValueVal;
     }
 

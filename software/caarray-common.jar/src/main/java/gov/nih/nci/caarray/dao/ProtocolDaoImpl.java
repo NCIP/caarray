@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.MatchMode;
@@ -104,9 +103,7 @@ import org.hibernate.criterion.Restrictions;
  * @author Rashmi Srinivasa
  */
 class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolDao {
-
     private static final String NAME_FIELD = "name";
-    private static final Logger LOG = Logger.getLogger(ProtocolDaoImpl.class);
 
     /**
      * Returns the <code>Protocol</code> with the id given or null if none exists.
@@ -159,10 +156,5 @@ class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolDao {
         q.setString(NAME_FIELD, name);
         q.setEntity("protocol", protocol);
         return (Parameter) q.uniqueResult();
-    }
-
-    @Override
-    Logger getLog() {
-        return LOG;
     }
 }

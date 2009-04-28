@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.external.v1_0.sample;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
@@ -107,6 +108,7 @@ public class Biomaterial extends AbstractCaArrayEntity {
     private Organism organism;
     private Set<Characteristic> characteristics = new HashSet<Characteristic>();
     private BiomaterialType type;
+    private CaArrayEntityReference experiment;
 
     /**
      * @return the name
@@ -246,5 +248,19 @@ public class Biomaterial extends AbstractCaArrayEntity {
      */
     public void setType(BiomaterialType type) {
         this.type = type;
+    }
+    
+    /**
+     * @return the experiment
+     */
+    public CaArrayEntityReference getExperiment() {
+        return experiment;
+    }
+
+    /**
+     * @param experiment the experiment to set
+     */
+    public void setExperiment(CaArrayEntityReference experiment) {
+        this.experiment = experiment;
     }
 }

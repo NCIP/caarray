@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.protocol.ParameterValue;
+import gov.nih.nci.caarray.domain.protocol.AbstractParameterValue;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 
@@ -253,9 +253,9 @@ public abstract class AbstractExperimentDesignNode extends AbstractCaArrayEntity
                 if (currPa.getProtocol().equals(pa.getProtocol())) {
                     boolean allPvMatch = true;
 
-                    for (ParameterValue pv : pa.getValues()) {
+                    for (AbstractParameterValue pv : pa.getValues()) {
                         boolean foundPv = false;
-                        for (ParameterValue currPv : currPa.getValues()) {
+                        for (AbstractParameterValue currPv : currPa.getValues()) {
                             if (currPv.matches(pv)) {
                                 foundPv = true;
                                 break;

@@ -22,7 +22,7 @@
   <!-- ============================================================== -->
   <target name="defineExtendedClasspaths">
     <path id="base.extended.classpath">
-      <pathelement location="../../caarray-client.jar/target/caarray-client.jar"/>
+      <pathelement location="../../caarray-client.jar/target/caarray-client-legacy.jar"/>
       <pathelement location="../common/target/caarray-grid-common.jar"/>
       <pathelement location="${project.lib}/cacore32-client-*.jar" id="extra.jars.fileset"/>
         <fileset dir="${project.lib}" id="extra.jars.fileset">
@@ -48,7 +48,7 @@
     <path id="service.build.extended.classpath">
     </path>
     <path id="service.run.extended.classpath">
-      <pathelement location="../../caarray-client.jar/target/caarray-client.jar"/>
+      <pathelement location="../../caarray-client.jar/target/caarray-client-legacy.jar"/>
       <pathelement location="../common/target/caarray-grid-common.jar"/>
     </path>
     <path id="test.build.extended.classpath">
@@ -68,7 +68,7 @@
     <copy todir="${build.lib.dir}" flatten="true">
       <fileset refid="extra.jars.fileset"/>
     </copy>
-    <copy todir="${build.lib.dir}" file="../../caarray-client.jar/target/caarray-client.jar"/>
+    <copy todir="${build.lib.dir}" file="../../caarray-client.jar/target/caarray-client-legacy.jar"/>
     <copy todir="${build.lib.dir}" file="../common/target/caarray-grid-common.jar"/>
   </target>
 

@@ -198,5 +198,12 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
     public SampleDao getSampleDao() {
         return new SampleDaoImpl();
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public HybridizationDao getHybridizationDao() {
+        return new HybridizationDaoImpl();
+    }
 }
 

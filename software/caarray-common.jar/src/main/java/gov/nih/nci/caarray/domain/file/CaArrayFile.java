@@ -448,7 +448,6 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     @Transient
     public boolean isDeletable() {
-
         return (this.getFileStatus().isDeletable() && !this.isAssocToHyb());
     }
 

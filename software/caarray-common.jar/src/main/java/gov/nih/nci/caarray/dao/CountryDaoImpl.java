@@ -86,15 +86,11 @@ import gov.nih.nci.caarray.domain.country.Country;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 /**
  * @author John Hedden
  *
  */
 public class CountryDaoImpl extends AbstractCaArrayDaoImpl implements CountryDao {
-    private static final Logger LOG = Logger.getLogger(CountryDaoImpl.class);
-
     /**
      * {@inheritDoc}
      */
@@ -102,10 +98,5 @@ public class CountryDaoImpl extends AbstractCaArrayDaoImpl implements CountryDao
     public List<Country> getCountries() {
         String query = "from " + Country.class.getName() + " c order by c.name asc";
         return getCurrentSession().createQuery(query).setCacheable(true).list();
-    }
-
-    @Override
-    Logger getLog() {
-        return LOG;
     }
 }

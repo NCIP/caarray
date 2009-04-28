@@ -87,8 +87,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.contact.Person;
+import gov.nih.nci.caarray.domain.protocol.MeasurementParameterValue;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
-import gov.nih.nci.caarray.domain.protocol.ParameterValue;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -146,13 +146,18 @@ public class SourceTest {
         Protocol protocol = new Protocol();
         protocol.setName("protocol");
 
-        ParameterValue pv1 = new ParameterValue();
-        pv1.setParameter(parameter);
-        pv1.setValue("1");
+        Term cm = new Term();
+        cm.setValue("cm");
 
-        ParameterValue pv2 = new ParameterValue();
+        MeasurementParameterValue pv1 = new MeasurementParameterValue();
+        pv1.setParameter(parameter);
+        pv1.setValue(1f);
+        pv1.setUnit(cm);
+
+        MeasurementParameterValue pv2 = new MeasurementParameterValue();
         pv2.setParameter(parameter);
-        pv2.setValue("2");
+        pv2.setValue(2f);
+        pv2.setUnit(cm);
 
         ProtocolApplication pa1 = new ProtocolApplication();
         pa1.setProtocol(protocol);

@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Query;
 
 /**
@@ -96,7 +95,6 @@ import org.hibernate.Query;
  * @author Dan Kokotov
  */
 class OrganismDaoImpl extends AbstractCaArrayDaoImpl implements OrganismDao {
-    private static final Logger LOG = Logger.getLogger(OrganismDaoImpl.class);
     private static final String UNCHECKED = "unchecked";
 
     /**
@@ -109,15 +107,10 @@ class OrganismDaoImpl extends AbstractCaArrayDaoImpl implements OrganismDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(UNCHECKED)
     public List<Organism> getAllOrganisms() {
         String query = "from " + Organism.class.getName() + " o order by o.scientificName asc";
         return getCurrentSession().createQuery(query).list();
-    }
-
-    @Override
-    Logger getLog() {
-        return LOG;
     }
 
     /**

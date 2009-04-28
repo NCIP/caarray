@@ -96,6 +96,8 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -115,7 +117,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     private Image image;
     private AbstractArrayData arrayData;
     private String notes;
-    private Set<ParameterValue> values = new HashSet<ParameterValue>();
+    private Set<AbstractParameterValue> values = new HashSet<AbstractParameterValue>();
 
     /**
      * Default constructor.
@@ -133,8 +135,15 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
         this.image = other.image;
         this.arrayData = other.arrayData;
         this.notes = other.notes;
-        for (ParameterValue pv : other.values) {
-            ParameterValue newPv = new ParameterValue(pv);
+        for (AbstractParameterValue pv : other.values) {
+            AbstractParameterValue newPv = null;
+            if (pv instanceof AbstractParameterValue) {
+                newPv = new MeasurementParameterValue((MeasurementParameterValue) pv);
+            } else if (pv instanceof TermBasedParameterValue) {
+                newPv = new TermBasedParameterValue((TermBasedParameterValue) pv);
+            } else {
+                newPv = new UserDefinedParameterValue((UserDefinedParameterValue) pv);
+            }
             newPv.setProtocolApplication(this);
             values.add(newPv);
         }
@@ -188,7 +197,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      */
     @OneToMany(mappedBy = "protocolApplication", fetch = FetchType.LAZY)
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
-    public Set<ParameterValue> getValues() {
+    public Set<AbstractParameterValue> getValues() {
         return values;
     }
 
@@ -198,8 +207,23 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      * @param valuesVal the values
      */
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setValues(final Set<ParameterValue> valuesVal) {
+    private void setValues(final Set<AbstractParameterValue> valuesVal) {
         this.values = valuesVal;
+    }
+    
+    /**
+     * Return the parameter value for the parameter with given name in this protocol application. 
+     * If there is none, return null.
+     * @param parameterName name of parameter for which to find a value.
+     * @return the parameter value for parameter with given name or null if there is none.
+     */
+    public AbstractParameterValue getValue(final String parameterName) {
+        return (AbstractParameterValue) CollectionUtils.find(getValues(), new Predicate() {
+            public boolean evaluate(Object o) {
+                AbstractParameterValue fv = (AbstractParameterValue) o;
+                return parameterName.equals(fv.getParameter().getName());
+            }
+        });
     }
 
     /**

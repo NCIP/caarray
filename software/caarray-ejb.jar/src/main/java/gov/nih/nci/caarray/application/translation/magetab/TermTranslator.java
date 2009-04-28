@@ -123,7 +123,7 @@ final class TermTranslator extends AbstractTranslator {
         }
     }
 
-    private void translateTerm(OntologyTerm ontologyTerm) {
+    void translateTerm(OntologyTerm ontologyTerm) {
         TermSource source = getSource(ontologyTerm.getTermSource());
         Category category = getOrCreateCategory(ontologyTerm.getCategory());
         Term term = getOrCreateTerm(source, category, ontologyTerm.getValue());
@@ -150,6 +150,10 @@ final class TermTranslator extends AbstractTranslator {
 
     static Category getOrCreateCategory(VocabularyService vocabService, MageTabTranslationResult translationResult,
             String categoryName) {
+        if (categoryName == null) {
+            return null;
+        }
+        
         TermSource mo = vocabService.getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName(),
                 ExperimentOntology.MGED_ONTOLOGY.getVersion());
         TermSource userDef = vocabService.getSource(ExperimentOntology.CAARRAY.getOntologyName(),
@@ -187,7 +191,9 @@ final class TermTranslator extends AbstractTranslator {
             term.setValue(value);
             addTermToCache(value, source, term);
         }
-        term.getCategories().add(category);
+        if (category != null) {
+            term.getCategories().add(category);            
+        }
         return term;
     }
 

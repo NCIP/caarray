@@ -101,6 +101,7 @@ import gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
+import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -294,18 +295,21 @@ public class MageTabExporterBean implements MageTabExporter {
         addPredefinedCharacteristics(biomaterial, sdrfBiomaterial);
         for (AbstractCharacteristic characteristic : biomaterial.getCharacteristics()) {
             String category = characteristic.getCategory().getName();
-            if (characteristic.getClass() == TermBasedCharacteristic.class) {
+            Characteristic sdrfCharacteristic = new Characteristic();
+            if (characteristic instanceof TermBasedCharacteristic) {
                 Term characteristicTerm = ((TermBasedCharacteristic) characteristic).getTerm();
                 OntologyTerm sdrfTerm = getSdrfTerm(characteristicTerm);
-                Characteristic sdrfTermBasedCharacteristic = createSdrfTermBasedCharacteristic(category, sdrfTerm);
-                sdrfBiomaterial.getCharacteristics().add(sdrfTermBasedCharacteristic);
-            } else if (characteristic.getClass() == MeasurementCharacteristic.class) {
+                sdrfCharacteristic.setTerm(sdrfTerm);
+            } else if (characteristic instanceof MeasurementCharacteristic) {
                 float value = ((MeasurementCharacteristic) characteristic).getValue();
-                Term unit = ((MeasurementCharacteristic) characteristic).getUnit();
-                Characteristic sdrfMeasurementCharacteristic = createSdrfMeasurementCharacteristic(category, value,
-                        unit);
-                sdrfBiomaterial.getCharacteristics().add(sdrfMeasurementCharacteristic);
+                sdrfCharacteristic.setValue(Float.toString(value));
+            } else {
+                sdrfCharacteristic.setValue(((UserDefinedCharacteristic) characteristic).getValue());
             }
+            sdrfCharacteristic.setCategory(category);
+            OntologyTerm sdrfUnit = getSdrfTerm(characteristic.getUnit());
+            sdrfCharacteristic.setUnit(sdrfUnit);
+            sdrfBiomaterial.getCharacteristics().add(sdrfCharacteristic);
         }
 
         // TODO Organism and ProtocolApplications
@@ -345,16 +349,10 @@ public class MageTabExporterBean implements MageTabExporter {
         return sdrfCharacteristic;
     }
 
-    private Characteristic createSdrfMeasurementCharacteristic(String category, float value, Term unit) {
-        Characteristic sdrfCharacteristic = new Characteristic();
-        sdrfCharacteristic.setCategory(category);
-        sdrfCharacteristic.setValue(Float.toString(value));
-        OntologyTerm sdrfUnit = getSdrfTerm(unit);
-        sdrfCharacteristic.setUnit(sdrfUnit);
-        return sdrfCharacteristic;
-    }
-
     private OntologyTerm getSdrfTerm(Term term) {
+        if (term == null) {
+            return null;
+        }
         OntologyTerm sdrfTerm = termMap.get(term);
         if (sdrfTerm == null) {
             sdrfTerm = createSdrfTerm(term);

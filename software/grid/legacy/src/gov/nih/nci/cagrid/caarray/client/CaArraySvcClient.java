@@ -19,8 +19,15 @@ import gov.nih.nci.caarray.domain.data.ShortColumn;
 import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.UserDefinedFactorValue;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
+import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.cagrid.caarray.util.GridTransferResultHandler;
 import gov.nih.nci.cagrid.cqlquery.Attribute;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
@@ -43,6 +50,7 @@ import org.apache.axis.client.Stub;
 import org.apache.axis.message.addressing.EndpointReferenceType;
 import org.apache.axis.types.URI.MalformedURIException;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.time.StopWatch;
 import org.cagrid.transfer.context.client.TransferServiceContextClient;
 import org.cagrid.transfer.context.client.helper.TransferClientHelper;
@@ -106,18 +114,18 @@ public class CaArraySvcClient extends CaArraySvcClientBase {
                 Object target = new Object();
                 cqlQuery.setTarget(target);
 
-                target.setName(Experiment.class.getName());
-                Attribute a = new Attribute();
-                a.setName("id");
-                a.setValue("1");
-                a.setPredicate(Predicate.EQUAL_TO);
-                target.setAttribute(a);
+                target.setName(Source.class.getName());
+//                Attribute a = new Attribute();
+//                a.setName("id");
+//                a.setValue("1");
+//                a.setPredicate(Predicate.EQUAL_TO);
+//                target.setAttribute(a);
 
                 CQLQueryResults results = client.query(cqlQuery);
                 CQLQueryResultsIterator iter = new CQLQueryResultsIterator(results, CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
                 while (iter.hasNext()) {
-                    Experiment e = (Experiment) iter.next();
-                    System.out.println("Exp: " + e.getTitle() +"; assay types: " + e.getAssayTypes());
+                    AbstractBioMaterial c = (AbstractBioMaterial) iter.next();
+                    System.out.println("Characteristic: " + ToStringBuilder.reflectionToString(c));
                 }
                 sw.stop();
                 System.out.println("Time for simple data service retrieval: " + sw.toString());

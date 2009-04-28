@@ -95,7 +95,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
-import gov.nih.nci.caarray.domain.project.FactorValue;
+import gov.nih.nci.caarray.domain.project.MeasurementFactorValue;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.AbstractDownloadTest;
@@ -177,10 +177,10 @@ public class ProjectFactorsActionTest extends AbstractDownloadTest {
     public void testDelete() throws Exception {
         Factor f = new Factor();
         Hybridization h = new Hybridization();
-        FactorValue fv = new FactorValue();
+        MeasurementFactorValue fv = new MeasurementFactorValue();
         fv.setFactor(f);
         fv.setHybridization(h);
-        fv.setValue("Foo");
+        fv.setValue(3f);
         f.getFactorValues().add(fv);
         h.getFactorValues().add(fv);
         action.setCurrentFactor(f);

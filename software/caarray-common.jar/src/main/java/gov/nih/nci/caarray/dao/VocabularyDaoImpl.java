@@ -63,7 +63,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Order;
@@ -75,9 +74,7 @@ import org.hibernate.criterion.Restrictions;
  * @author John Pike
  */
 class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao {
-
     private static final String VALUE_COLUMN_NAME = "value";
-    private static final Logger LOG = Logger.getLogger(VocabularyDaoImpl.class);
     private static final String UNCHECKED = "unchecked";
     private static final String SELECT_DISTINCT = " SELECT DISTINCT ";
     private static final String KEYWORD_SUB = "keyword";
@@ -212,10 +209,4 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
 
         return q.list();
     }
-
-    @Override
-    Logger getLog() {
-        return LOG;
-    }
-
 }

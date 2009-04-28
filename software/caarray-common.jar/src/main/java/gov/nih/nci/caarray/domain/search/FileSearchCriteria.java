@@ -85,13 +85,13 @@ package gov.nih.nci.caarray.domain.search;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Simple bean to hold search criteria for an experiment.
+ * Simple bean to hold search criteria for files.
  * 
  * @author dkokotov
  */
@@ -102,20 +102,20 @@ public class FileSearchCriteria {
     private boolean includeRaw;
     private boolean includeDerived;
     private boolean includeSupplemental;
-    private Set<Biomaterial> biomaterials = new HashSet<Biomaterial>();
+    private Set<AbstractBioMaterial> biomaterials = new HashSet<AbstractBioMaterial>();
     private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
     
     /**
-     * @return the biomaterials
+     * @return the AbstractBioMaterials
      */
-    public Set<Biomaterial> getBiomaterials() {
+    public Set<AbstractBioMaterial> getBiomaterials() {
         return biomaterials;
     }
 
     /**
-     * @param biomaterials the biomaterials to set
+     * @param biomaterials the AbstractBioMaterials to set
      */
-    public void setBiomaterials(Set<Biomaterial> biomaterials) {
+    public void setBiomaterials(Set<AbstractBioMaterial> biomaterials) {
         this.biomaterials = biomaterials;
     }
 

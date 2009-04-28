@@ -91,9 +91,9 @@ import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
-import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -119,6 +119,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -150,7 +152,7 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
     private Set<DerivedArrayData> derivedDataCollection = new HashSet<DerivedArrayData>();
     private List<ProtocolApplication> protocolApplications = new ArrayList<ProtocolApplication>();
     private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
-    private Set<FactorValue> factorValues = new HashSet<FactorValue>();
+    private Set<AbstractFactorValue> factorValues = new HashSet<AbstractFactorValue>();
     private Experiment experiment;
     private Set<HybridizationData> hybridizationData = new HashSet<HybridizationData>();
 
@@ -289,8 +291,23 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
      */
     @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
-    public Set<FactorValue> getFactorValues() {
+    public Set<AbstractFactorValue> getFactorValues() {
         return this.factorValues;
+    }
+
+    /**
+     * Return the factor value for the factor with given name in this hybridization. 
+     * If there is none, return null.
+     * @param factorName name of factor for which to find a value.
+     * @return the factor value for factor with given name or null if there is none.
+     */
+    public AbstractFactorValue getFactorValue(final String factorName) {
+        return (AbstractFactorValue) CollectionUtils.find(getFactorValues(), new Predicate() {
+            public boolean evaluate(Object o) {
+                AbstractFactorValue fv = (AbstractFactorValue) o;
+                return factorName.equals(fv.getFactor().getName());
+            }
+        });
     }
 
     /**
@@ -300,7 +317,7 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
      *            the factorValues
      */
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setFactorValues(final Set<FactorValue> factorValuesVal) {
+    private void setFactorValues(final Set<AbstractFactorValue> factorValuesVal) {
         this.factorValues = factorValuesVal;
     }
 
@@ -547,7 +564,7 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
     }
 
     private void mergeFactorValues(Hybridization hyb) {
-        for (FactorValue fv : hyb.getFactorValues()) {
+        for (AbstractFactorValue fv : hyb.getFactorValues()) {
             fv.setHybridization(this);
         }
         this.getFactorValues().addAll(hyb.getFactorValues());

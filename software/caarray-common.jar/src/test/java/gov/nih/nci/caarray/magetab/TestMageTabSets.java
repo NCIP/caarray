@@ -314,6 +314,16 @@ public final class TestMageTabSets {
      * Parsed MAGE-TAB document set to use to add new data files to the biomaterial chain defined in UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET.
      */
     public static final MageTabDocumentSet UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_SET = getSetForReimport(UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_INPUT_SET);
+    
+    /**
+     * MAGE-TAB input set containing valid usage of Characteristics[ExternalSampleId] for Sample(s).
+     */
+    public static final MageTabFileSet EXTENDED_FACTOR_VALUES_INPUT_SET = getExtendedFactorValuesInputSet();
+
+    /**
+     * Document set parsed ...
+     */
+    public static final MageTabDocumentSet EXTENDED_FACTOR_VALUES_DATA_SET = getSet(EXTENDED_FACTOR_VALUES_INPUT_SET);
 
     private static MageTabDocumentSet getSet(MageTabFileSet inputSet) {
         return getSet(inputSet, false);
@@ -646,5 +656,13 @@ public final class TestMageTabSets {
             throw new IllegalArgumentException("Unrecognized document file " + mageTabDocument.getFile());
         }
         fileSet.add(caArrayFile);
+    }
+    
+    private static MageTabFileSet getExtendedFactorValuesInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.EXTENDED_FACTOR_VALUES_IDF);
+        fileSet.addSdrf(MageTabDataFiles.EXTENDED_FACTOR_VALUES_SDRF);
+        addCelFiles(fileSet, MageTabDataFiles.EXTENDED_FACTOR_VALUES_DIRECTORY);
+        return fileSet;
     }
 }

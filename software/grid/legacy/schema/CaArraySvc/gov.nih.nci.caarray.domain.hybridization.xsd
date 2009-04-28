@@ -33,7 +33,7 @@
                     <xs:element name="factorValues" minOccurs="0">
                         <xs:complexType>
                             <xs:choice minOccurs="0" maxOccurs="unbounded">
-                                <xs:element ref="gov.nih.nci.caarray.domain.project:FactorValue" />
+                                <xs:element ref="gov.nih.nci.caarray.domain.project:AbstractFactorValue" />
                             </xs:choice>
                         </xs:complexType>
                     </xs:element>

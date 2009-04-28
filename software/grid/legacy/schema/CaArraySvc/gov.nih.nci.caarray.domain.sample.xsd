@@ -25,10 +25,7 @@
     <xs:complexType name="MeasurementCharacteristic">
         <xs:complexContent>
             <xs:extension base="AbstractCharacteristic">
-                <xs:sequence>
-                    <xs:element name="unit" minOccurs="0" maxOccurs="1"
-                        type="gov.nih.nci.caarray.domain.vocabulary:Term" />
-                </xs:sequence>
+                <xs:sequence/>
                 <xs:attribute name="value" type="xs:float" />
             </xs:extension>
         </xs:complexContent>
@@ -100,6 +97,8 @@
                     <xs:element name="category" minOccurs="0" maxOccurs="1"
                         type="gov.nih.nci.caarray.domain.vocabulary:Category" />
                     <xs:element name="bioMaterial" minOccurs="0" maxOccurs="1" type="AbstractBioMaterial" />
+                    <xs:element name="unit" minOccurs="0" maxOccurs="1"
+                        type="gov.nih.nci.caarray.domain.vocabulary:Term" />
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -158,6 +157,15 @@
                     <xs:element name="term" minOccurs="0" maxOccurs="1"
                         type="gov.nih.nci.caarray.domain.vocabulary:Term" />
                 </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="UserDefinedCharacteristic" type="UserDefinedCharacteristic" />
+    <xs:complexType name="UserDefinedCharacteristic">
+        <xs:complexContent>
+            <xs:extension base="AbstractCharacteristic">
+                <xs:sequence/>
+                <xs:attribute name="value" type="xs:string" />
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

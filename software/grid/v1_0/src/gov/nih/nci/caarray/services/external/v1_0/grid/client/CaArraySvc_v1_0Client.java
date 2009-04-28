@@ -312,8 +312,12 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
 
                     // hybridization search test
                     HybridizationSearchCriteria hsc = new HybridizationSearchCriteria();
-                    hsc.setExperiment(new CaArrayEntityReference(
-                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
+                    hsc.getBiomaterials().add(
+                            new CaArrayEntityReference(
+                                    "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:3"));
+                    hsc.getBiomaterials().add(
+                            new CaArrayEntityReference(
+                                    "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:6"));
                     Hybridization[] hybs = client.searchForHybridizations(hsc);
                     System.out.println("Hyb search by creteria: ");
                     for (Hybridization hyb : hybs) {
@@ -338,7 +342,11 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
                     FileSearchCriteria fileCriteria = new FileSearchCriteria();
                     fileCriteria.setExperiment(new CaArrayEntityReference(
                             "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
-                    fileCriteria.setCategories(EnumSet.of(FileTypeCategory.RAW));                    
+                    fileCriteria
+                            .getBiomaterials()
+                            .add(
+                                    new CaArrayEntityReference(
+                                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:6"));
                     DataFile[] files = client.searchForFiles(fileCriteria);
                     for (DataFile file : files) {
                         System.out.println("File Metadata: " + file);                        

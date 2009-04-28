@@ -15,7 +15,7 @@
 
         <!-- @HIBERNATE_CONFIG_START@
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://@SERVERNAME@/@DBNAME@</property>
+        <property name="hibernate.connection.url">jdbc:mysql://@SERVERNAME@:@PORT@/@DBNAME@</property>
         <property name="hibernate.connection.username">@DBUSER@</property>
         <property name="hibernate.connection.password">@DBPASSWD@</property>
         <property name="hibernate.dialect">gov.nih.nci.caarray.util.CaarrayInnoDBDialect</property>

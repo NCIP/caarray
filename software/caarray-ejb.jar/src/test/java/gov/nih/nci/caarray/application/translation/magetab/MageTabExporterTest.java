@@ -498,7 +498,7 @@ public class MageTabExporterTest extends AbstractCaarrayTest {
             category.setSource(termSource);
             term.setSource(termSource);
         }
-        AbstractCharacteristic characteristic = new TermBasedCharacteristic(category, term);
+        AbstractCharacteristic characteristic = new TermBasedCharacteristic(category, term, null);
         characteristic.setBioMaterial(biomaterial);
         biomaterial.getCharacteristics().add(characteristic);
     }

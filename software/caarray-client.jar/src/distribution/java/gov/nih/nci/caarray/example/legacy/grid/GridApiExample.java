@@ -80,51 +80,35 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.example;
+package gov.nih.nci.caarray.example.legacy.grid;
 
-import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
-import gov.nih.nci.caarray.domain.data.BooleanColumn;
-import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
-import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.DoubleColumn;
-import gov.nih.nci.caarray.domain.data.FloatColumn;
-import gov.nih.nci.caarray.domain.data.HybridizationData;
-import gov.nih.nci.caarray.domain.data.IntegerColumn;
-import gov.nih.nci.caarray.domain.data.LongColumn;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.data.ShortColumn;
-import gov.nih.nci.caarray.domain.data.StringColumn;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.services.CaArrayServer;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.data.DataRetrievalService;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
-import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.cqlquery.Object;
-import gov.nih.nci.cagrid.cqlquery.Predicate;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
+import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
 
-import java.util.Arrays;
-import java.util.List;
+import java.rmi.RemoteException;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.time.StopWatch;
+import org.apache.axis.types.URI.MalformedURIException;
 
 /**
  * A simple class that connects to the remote Java API of a caArray server and retrieves and
  * prints a list of<code>QuantitationTypes</code>.
  */
 @SuppressWarnings("PMD")
-public class JavaApiExample {
+public class GridApiExample {
 
     private static final String DEFAULT_SERVER = "array.nci.nih.gov";
-    private static final int DEFAULT_JNDI_PORT = 8080;
+    private static final int DEFAULT_GRID_SERVICE_PORT = 80;
 
     private String hostname = DEFAULT_SERVER;
-    private int port = DEFAULT_JNDI_PORT;
+    private int port = DEFAULT_GRID_SERVICE_PORT;
+    private String url;
 
     public static void main(String[] args) {
-        JavaApiExample client = new JavaApiExample();
+        GridApiExample client = new GridApiExample();
         if (args.length == 2) {
             client.hostname = args[0];
             client.port = Integer.parseInt(args[1]);
@@ -132,7 +116,8 @@ public class JavaApiExample {
             System.err.println("Usage ApiClientTest [hostname port]");
             System.exit(1);
         }
-        System.out.println("Using values: " + client.hostname + ":" + client.port);
+        client.url = "http://" + client.hostname + ":" + client.port + "/wsrf/services/cagrid/CaArraySvc";
+        System.out.println("Using URL: " + client.url);
         client.runTest();
     }
 
@@ -140,98 +125,35 @@ public class JavaApiExample {
      * Downloads data using the caArray Remote Java API.
      */
     public void runTest() {
-        CaArrayServer server = new CaArrayServer(hostname, port);
+        CaArraySvcClient client;
         try {
-            server.connect();
-            System.out.println("Successfully connected to server");
-        } catch (ServerConnectionException e) {
-            System.out.println("Couldn't connect to server: likely JNDI problem");
-            e.printStackTrace(System.err);
-            System.exit(1);
-        }
-        try {
-            CaArraySearchService searchService = server.getSearchService();
-
-            QuantitationType searchType = new QuantitationType();
-            searchType.setTypeClass(Integer.class);
-            List<QuantitationType> types = searchService.search(searchType);
-            System.out.println(types);
-
-            
-            
-            DataRetrievalRequest drr = new DataRetrievalRequest();
-            for (long i = 1; i <= 6; i++) {
-                Hybridization h = new Hybridization();
-                h.setId(i);
-                drr.getHybridizations().add(h);
-            }
-            
+            client = new CaArraySvcClient(url);
             CQLQuery cqlQuery = new CQLQuery();
             Object target = new Object();
             cqlQuery.setTarget(target);
-            target.setName(QuantitationType.class.getName());
-            Attribute a = new Attribute();
-            a.setName("name");
-            a.setValue("CEL%");
-            a.setPredicate(Predicate.LIKE);
-            target.setAttribute(a);
-            List<QuantitationType> qts = (List<QuantitationType>) searchService.search(cqlQuery);
-            for (QuantitationType qt : qts) {
-                System.out.println("Adding qt: " + qt.getName());
-                drr.getQuantitationTypes().add(qt);
-            }
-
-            DataRetrievalService dataService = server.getDataRetrievalService();
-            StopWatch sw = new StopWatch();
-            sw.start();
-            DataSet ds = dataService.getDataSet(drr);
-            sw.stop();            
-            System.out.println("Data retrieval finished in " + sw.toString());
-            
-            System.out.println("Design element list: " + ds.getDesignElementList().getDesignElements());
-            System.out.println("Quantitation types: " + ds.getQuantitationTypes());
-            for (HybridizationData hdata : ds.getHybridizationDataList()) {
-                System.out.println("Data for hyb " + hdata.getHybridization().getName());
-                for (AbstractDataColumn column : hdata.getColumns()) {
-                    QuantitationType qType = column.getQuantitationType();
-                    Class<?> typeClass = qType.getTypeClass();
-                    // Retrieve the appropriate data depending on the type of the column.
-                    if (typeClass == String.class) {
-                        String[] values = ((StringColumn) column).getValues();
-                        System.out.println("Column values: " + Arrays.asList(values));
-                    } else if (typeClass == Float.class) {
-                        float[] values = ((FloatColumn) column).getValues();
-                        System.out.println("Column values: " + ArrayUtils.toString(values));
-                        System.out.println("Found float Column");
-                    } else if (typeClass == Short.class) {
-                        short[] values = ((ShortColumn) column).getValues();
-                        System.out.println("Column values: " + ArrayUtils.toString(values));
-                        System.out.println("Found short Column");
-                    } else if (typeClass == Boolean.class) {
-                        boolean[] values = ((BooleanColumn) column).getValues();
-                        System.out.println("Column values: " + ArrayUtils.toString(values));
-                        System.out.println("Found boolean Column");
-                    } else if (typeClass == Double.class) {
-                        double[] values = ((DoubleColumn) column).getValues();
-                        System.out.println("Column values: " + ArrayUtils.toString(values));
-                        System.out.println("Found double Column");
-                    } else if (typeClass == Integer.class) {
-                        int[] values = ((IntegerColumn) column).getValues();
-                        System.out.println("Column values: " + ArrayUtils.toString(values));
-                        System.out.println("Found integer Column");
-                    } else if (typeClass == Long.class) {
-                        long[] values = ((LongColumn) column).getValues();
-                        System.out.println("Column values: " + ArrayUtils.toString(values));
-                        System.out.println("Found long Column");
-                    } else {
-                        // Should never get here.
-                    }
-                }
-            }
-
-        } catch (Throwable t) {
-            System.out.println("Couldn't run query: likely RMI problem");
-            t.printStackTrace(System.err);
+//            target.setName(QuantitationType.class.getName());
+//            CQLQueryResults results = client.query(cqlQuery);
+//            CQLQueryResultsIterator iterator = new CQLQueryResultsIterator(results,
+//                    CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
+//            while (iterator.hasNext()) {
+//                QuantitationType type = (QuantitationType) iterator.next();
+//                System.out.println(type);
+//            }
+            target.setName(Experiment.class.getName());
+          CQLQueryResults results = client.query(cqlQuery);
+          CQLQueryResultsIterator iterator = new CQLQueryResultsIterator(results,
+                  CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
+          while (iterator.hasNext()) {
+              Experiment e = (Experiment) iterator.next();
+              System.out.println("Experiment: " + e.getPublicIdentifier());
+          }
+        } catch (MalformedURIException e) {
+            System.err.println("Received MalformedURIException");
+            e.printStackTrace(System.err);
+            System.exit(1);
+        } catch (RemoteException e) {
+            System.err.println("Received RemoteException");
+            e.printStackTrace(System.err);
             System.exit(1);
         }
     }

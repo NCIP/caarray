@@ -120,6 +120,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections.Closure;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -285,6 +287,22 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
         this.characteristics = characteristicsVal;
     }
     
+    /**
+     * Return the characteristic with given category name in this hybridization. If multiple characteristics
+     * have the same category name, return one at random.
+     * If there is none, return null.
+     * @param categoryName name of category for which to find a characteristic.
+     * @return the characteristic with given category name or null if there is none.
+     */
+    public AbstractCharacteristic getCharacteristic(final String categoryName) {
+        return (AbstractCharacteristic) CollectionUtils.find(getCharacteristics(), new Predicate() {
+            public boolean evaluate(Object o) {
+                AbstractCharacteristic c = (AbstractCharacteristic) o;
+                return categoryName.equals(c.getCategory().getName());
+            }
+        });
+    }
+
     /**
      * {@inheritDoc}
      */

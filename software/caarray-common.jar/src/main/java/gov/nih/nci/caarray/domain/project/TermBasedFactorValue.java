@@ -80,82 +80,77 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.example;
+package gov.nih.nci.caarray.domain.project;
 
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
-import gov.nih.nci.cagrid.cqlquery.CQLQuery;
-import gov.nih.nci.cagrid.cqlquery.Object;
-import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
-import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
+import gov.nih.nci.caarray.domain.TermBasedValue;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
-import java.rmi.RemoteException;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import org.apache.axis.types.URI.MalformedURIException;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.NotNull;
 
 /**
- * A simple class that connects to the remote Java API of a caArray server and retrieves and
- * prints a list of<code>QuantitationTypes</code>.
+ *
  */
-@SuppressWarnings("PMD")
-public class GridApiExample {
+@Entity
+@Table(name = "term_factor_value")
+@PrimaryKeyJoinColumn(name = "factor_value_id")
+public class TermBasedFactorValue extends AbstractFactorValue implements TermBasedValue {
+    private static final long serialVersionUID = 1L;
 
-    private static final String DEFAULT_SERVER = "array.nci.nih.gov";
-    private static final int DEFAULT_GRID_SERVICE_PORT = 80;
+    private Term term;
 
-    private String hostname = DEFAULT_SERVER;
-    private int port = DEFAULT_GRID_SERVICE_PORT;
-    private String url;
-
-    public static void main(String[] args) {
-        GridApiExample client = new GridApiExample();
-        if (args.length == 2) {
-            client.hostname = args[0];
-            client.port = Integer.parseInt(args[1]);
-        } else if (args.length != 0) {
-            System.err.println("Usage ApiClientTest [hostname port]");
-            System.exit(1);
-        }
-        client.url = "http://" + client.hostname + ":" + client.port + "/wsrf/services/cagrid/CaArraySvc";
-        System.out.println("Using URL: " + client.url);
-        client.runTest();
+    /**
+     * Hibernate-only constructor.
+     */
+    public TermBasedFactorValue() {
+        //empty
     }
 
     /**
-     * Downloads data using the caArray Remote Java API.
+     * Create a new factor value with given term and unit.
+     *
+     * @param term the term
+     * @param unit the unit
      */
-    public void runTest() {
-        CaArraySvcClient client;
-        try {
-            client = new CaArraySvcClient(url);
-            CQLQuery cqlQuery = new CQLQuery();
-            Object target = new Object();
-            cqlQuery.setTarget(target);
-//            target.setName(QuantitationType.class.getName());
-//            CQLQueryResults results = client.query(cqlQuery);
-//            CQLQueryResultsIterator iterator = new CQLQueryResultsIterator(results,
-//                    CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
-//            while (iterator.hasNext()) {
-//                QuantitationType type = (QuantitationType) iterator.next();
-//                System.out.println(type);
-//            }
-            target.setName(Experiment.class.getName());
-          CQLQueryResults results = client.query(cqlQuery);
-          CQLQueryResultsIterator iterator = new CQLQueryResultsIterator(results,
-                  CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
-          while (iterator.hasNext()) {
-              Experiment e = (Experiment) iterator.next();
-              System.out.println("Experiment: " + e.getPublicIdentifier());
-          }
-        } catch (MalformedURIException e) {
-            System.err.println("Received MalformedURIException");
-            e.printStackTrace(System.err);
-            System.exit(1);
-        } catch (RemoteException e) {
-            System.err.println("Received RemoteException");
-            e.printStackTrace(System.err);
-            System.exit(1);
-        }
+    public TermBasedFactorValue(Term term, Term unit) {
+        super(unit);
+        this.term = term;
     }
 
+    /**
+     * Gets the term.
+     *
+     * @return the term
+     */
+    @ManyToOne(optional = false)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "term_fv_term_fk")
+    @NotNull
+    public Term getTerm() {
+        return term;
+    }
+
+    /**
+     * Sets the term.
+     *
+     * @param termVal the term
+     */
+    public void setTerm(final Term termVal) {
+        this.term = termVal;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transient
+    public String getDisplayValueWithoutUnit() {
+        return this.term != null ? this.term.getValue() : null;
+    }
 }

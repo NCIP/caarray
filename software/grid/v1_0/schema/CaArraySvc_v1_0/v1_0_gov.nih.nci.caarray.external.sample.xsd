@@ -5,6 +5,7 @@
     xmlns:voc="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary"
     xmlns:val="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value"
     xmlns:exp="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"
+    xmlns:arr="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array"
     targetNamespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" elementFormDefault="qualified">
     <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
         schemaLocation="v1_0_gov.nih.nci.caarray.external.xsd" />
@@ -16,6 +17,8 @@
         schemaLocation="v1_0_gov.nih.nci.caarray.external.value.xsd" />
     <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"
         schemaLocation="v1_0_gov.nih.nci.caarray.external.experiment.xsd" />
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.array.xsd" />
 
     <xs:element name="Characteristic" type="sam:Characteristic" />
     <xs:complexType name="Characteristic">
@@ -53,6 +56,7 @@
                         </xs:complexType>
                     </xs:element>
                     <xs:element name="type" minOccurs="1" maxOccurs="1" type="sam:BiomaterialType" />
+                    <xs:element name="experiment" minOccurs="1" maxOccurs="1" type="car:CaArrayEntityReference" />
                 </xs:sequence>
                 <xs:attribute name="name" type="xs:string" />
                 <xs:attribute name="externalId" type="xs:string" />
@@ -72,6 +76,8 @@
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
+                    <xs:element name="arrayDesign" minOccurs="0" maxOccurs="1" type="arr:ArrayDesign" />
+                    <xs:element name="experiment" minOccurs="1" maxOccurs="1" type="car:CaArrayEntityReference" />
 				</xs:sequence>
                 <xs:attribute name="name" type="xs:string" />
             </xs:extension>

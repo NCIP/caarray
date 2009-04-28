@@ -96,7 +96,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -115,7 +114,7 @@ public class Factor extends AbstractCaArrayEntity {
     private String name;
     private String description;
     private Term type;
-    private Set<FactorValue> factorValues = new HashSet<FactorValue>();
+    private Set<AbstractFactorValue> factorValues = new HashSet<AbstractFactorValue>();
     private Experiment experiment;
 
     /**
@@ -182,7 +181,7 @@ public class Factor extends AbstractCaArrayEntity {
      */
     @OneToMany(mappedBy = "factor", fetch = FetchType.LAZY)
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
-    public Set<FactorValue> getFactorValues() {
+    public Set<AbstractFactorValue> getFactorValues() {
         return this.factorValues;
     }
 
@@ -192,7 +191,7 @@ public class Factor extends AbstractCaArrayEntity {
      * @param factorValuesVal the factorValues
      */
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setFactorValues(final Set<FactorValue> factorValuesVal) {
+    private void setFactorValues(final Set<AbstractFactorValue> factorValuesVal) {
         this.factorValues = factorValuesVal;
     }
 
@@ -213,13 +212,4 @@ public class Factor extends AbstractCaArrayEntity {
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
 }

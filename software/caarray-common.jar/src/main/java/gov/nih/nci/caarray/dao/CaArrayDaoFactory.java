@@ -178,4 +178,8 @@ public interface CaArrayDaoFactory {
      */
     SampleDao getSampleDao();
 
+    /**
+     * @return a <code>HybridizationDao</code>.
+     */
+    HybridizationDao getHybridizationDao();
 }

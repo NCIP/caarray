@@ -86,16 +86,20 @@ import gov.nih.nci.caarray.domain.BlobHolder;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Criterion;
@@ -108,13 +112,6 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
-    private static final Logger LOG = Logger.getLogger(FileDaoImpl.class);
-
-    @Override
-    Logger getLog() {
-        return LOG;
-    }
-
     @SuppressWarnings("unchecked")
     private List<Long> getBlobPartIdsForProject(long projectId) {
          List<Long> returnVal = new ArrayList<Long>();
@@ -202,12 +199,21 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings({"unchecked", "PMD.CyclomaticComplexity", "PMD.NPathComplexity" })
+    @SuppressWarnings({"unchecked", "PMD" })
     public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {
+        // degenerate case: if no category selected:        
+        if (!criteria.isIncludeDerived() && !criteria.isIncludeRaw() && !criteria.isIncludeSupplemental()) {
+            return Collections.emptyList();
+        }
+        
         Criteria c = HibernateUtil.getCurrentSession().createCriteria(CaArrayFile.class);
         c.add(Restrictions.eq("project", criteria.getExperiment().getProject()));            
         if (!criteria.getTypes().isEmpty()) {
-            c.add(Restrictions.in("type", criteria.getTypes()));
+            Set<String> typeNames = new HashSet<String>();
+            for (FileType ft : criteria.getTypes()) {
+                typeNames.add(ft.name());
+            }
+            c.add(Restrictions.in("type", typeNames));
         }
         if (criteria.getExtension() != null) {
             c.add(Restrictions.ilike("name", "%." + criteria.getExtension()));
@@ -229,6 +235,34 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
                     Restrictions.eq("status", FileStatus.SUPPLEMENTAL.name()));
         }
         c.add(typeCriterion);
+        
+        if (!criteria.getHybridizations().isEmpty()) {
+            Collection<Long> fileIds = new LinkedList<Long>();        
+            for (Hybridization h : criteria.getHybridizations()) {
+                for (CaArrayFile f : h.getAllDataFiles()) {
+                    fileIds.add(f.getId());
+                }
+            }
+            if (!fileIds.isEmpty()) {
+                c.add(Restrictions.in("id", fileIds));
+            } else {
+                return Collections.emptyList();                
+            }
+        }
+        if (!criteria.getBiomaterials().isEmpty()) {
+            Collection<Long> fileIds = new LinkedList<Long>();        
+            for (AbstractBioMaterial b : criteria.getBiomaterials()) {
+                for (CaArrayFile f : b.getAllDataFiles()) {
+                    fileIds.add(f.getId());
+                }
+            }
+            if (!fileIds.isEmpty()) {
+                c.add(Restrictions.in("id", fileIds));
+            } else {
+                return Collections.emptyList();                
+            }
+        }        
+        
         c.setFirstResult(params.getIndex());
         if (params.getPageSize() > 0) {
             c.setMaxResults(params.getPageSize());

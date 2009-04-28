@@ -83,8 +83,6 @@
 package gov.nih.nci.caarray.magetab.sdrf;
 
 import gov.nih.nci.caarray.magetab.OntologyTerm;
-import gov.nih.nci.caarray.magetab.TermSource;
-import gov.nih.nci.caarray.magetab.TermSourceable;
 import gov.nih.nci.caarray.magetab.Unitable;
 import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 
@@ -93,19 +91,21 @@ import java.io.Serializable;
 /**
  *
  */
-public class FactorValue implements Serializable, Unitable, TermSourceable {
+public class FactorValue implements Serializable, Unitable {
     private static final long serialVersionUID = 28728045635671179L;
+
     private String value;
     private ExperimentalFactor factor;
     private OntologyTerm unit;
-    private TermSource termSource;
+    private OntologyTerm term;
 
     void addToSdrfList(SdrfDocument document) {
         document.getAllFactorValues().add(this);
     }
 
     /**
-     * @return the value
+     * @return the explicit value of this factor value. this is used if no term source is specified for
+     * a factor value. otherwise, the value will be contained in the term property
      */
     public String getValue() {
         return value;
@@ -134,7 +134,7 @@ public class FactorValue implements Serializable, Unitable, TermSourceable {
 
     /**
      *
-     * @return OntologyTerm get the term
+     * @return the unit for this factor value (optional)
      */
     public OntologyTerm getUnit() {
         return unit;
@@ -142,24 +142,23 @@ public class FactorValue implements Serializable, Unitable, TermSourceable {
 
     /**
      *
-     * @param unit the OntologyTerm
+     * @param unit the unit
      */
     public void setUnit(OntologyTerm unit) {
         this.unit = unit;
     }
 
     /**
-     * @return TermSource get the term source
+     * @return the term value of this factor value
      */
-    public TermSource getTermSource() {
-        return termSource;
+    public OntologyTerm getTerm() {
+        return term;
     }
 
     /**
-     * @param termSource the TermSource
+     * @param term the term to set
      */
-    public void setTermSource(TermSource termSource) {
-        this.termSource = termSource;
+    public void setTerm(OntologyTerm term) {
+        this.term = term;
     }
-
 }

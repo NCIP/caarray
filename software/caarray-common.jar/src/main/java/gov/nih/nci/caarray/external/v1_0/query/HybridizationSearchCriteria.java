@@ -96,6 +96,8 @@ public class HybridizationSearchCriteria implements Serializable {
     
     private CaArrayEntityReference experiment;
     private Set<String> names = new HashSet<String>();
+    private Set<CaArrayEntityReference> biomaterials = new HashSet<CaArrayEntityReference>();
+    
     
     /**
      * @return the names
@@ -123,6 +125,20 @@ public class HybridizationSearchCriteria implements Serializable {
      */
     public void setExperiment(CaArrayEntityReference experiment) {
         this.experiment = experiment;
+    }
+
+    /**
+     * @return the biomaterials
+     */
+    public Set<CaArrayEntityReference> getBiomaterials() {
+        return biomaterials;
+    }
+
+    /**
+     * @param biomaterials the biomaterials to set
+     */
+    public void setBiomaterials(Set<CaArrayEntityReference> biomaterials) {
+        this.biomaterials = biomaterials;
     }
 
 }

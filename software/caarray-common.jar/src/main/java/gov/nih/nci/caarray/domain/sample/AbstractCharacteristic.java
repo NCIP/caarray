@@ -83,16 +83,16 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.AbstractUnitableValue;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
@@ -107,11 +107,12 @@ import org.hibernate.validator.NotNull;
 @Table(name = "characteristic")
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
+public abstract class AbstractCharacteristic extends AbstractUnitableValue {
     private static final long serialVersionUID = 1L;
 
     private AbstractBioMaterial bioMaterial;
     private Category category;
+    private Term unit;
 
     /**
      * Hibernate-only constructor.
@@ -126,6 +127,16 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
      */
     public AbstractCharacteristic(final Category category) {
         this.category = category;
+    }
+
+    /**
+     * Creates a new AbstractCharacteristic with given category and unit.
+     * @param category the category
+     * @param unit the unit
+     */
+    public AbstractCharacteristic(final Category category, final Term unit) {
+        this.category = category;
+        this.unit = unit;
     }
 
     /**
@@ -163,18 +174,31 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
     }
 
     /**
+     * Gets the unit.
+     *
+     * @return the unit
+     */
+    @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "characteristic_measurement_unit_fk")
+    public Term getUnit() {
+        return unit;
+    }
+
+    /**
+     * Sets the unit.
+     *
+     * @param unitVal the unit
+     */
+    public void setUnit(final Term unitVal) {
+        this.unit = unitVal;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
-
-    /**
-     * @return the value of this characteristic as a string displayable
-     * in the ui
-     */
-    @Transient
-    public abstract String getDisplayValue();
-
 }

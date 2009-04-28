@@ -87,23 +87,10 @@ import gov.nih.nci.security.authorization.domainobjects.Group;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 /**
  * Dao impl.
  */
 public class CollaboratorGroupDaoImpl extends AbstractCaArrayDaoImpl implements CollaboratorGroupDao {
-
-    private static final Logger LOG = Logger.getLogger(CollaboratorGroupDaoImpl.class);
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    Logger getLog() {
-        return LOG;
-    }
-
     /**
      * {@inheritDoc}
      */

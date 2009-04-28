@@ -83,6 +83,9 @@
 package gov.nih.nci.caarray.external.v1_0.factor;
 
 import gov.nih.nci.caarray.external.v1_0.value.AbstractValue;
+import gov.nih.nci.caarray.external.v1_0.value.MeasurementValue;
+import gov.nih.nci.caarray.external.v1_0.value.TermValue;
+import gov.nih.nci.caarray.external.v1_0.value.UserDefinedValue;
 
 import java.io.Serializable;
 
@@ -125,6 +128,33 @@ public class FactorValue implements Serializable {
      */
     public void setFactor(Factor factor) {
         this.factor = factor;
+    }
+    
+    /**
+     * @return a new FactorValue initialized with a blank measurement value;
+     */
+    public static FactorValue newMeasurementFactorValue() {
+        return newFactorValue(new MeasurementValue());
+    }
+
+    /**
+     * @return a new FactorValue initialized with a blank term value;
+     */
+    public static FactorValue newTermFactorValue() {
+        return newFactorValue(new TermValue());
+    }
+
+    /**
+     * @return a new FactorValue initialized with a blank user defined value;
+     */
+    public static FactorValue newUserDefinedFactorValue() {
+        return newFactorValue(new UserDefinedValue());
+    }
+    
+    private static FactorValue newFactorValue(AbstractValue initialValue) {
+        FactorValue fv = new FactorValue();
+        fv.setValue(initialValue);
+        return fv;
     }
 
     /**

@@ -84,7 +84,10 @@ package gov.nih.nci.caarray.services.external.v1_0;
 
 import gov.nih.nci.caarray.external.v1_0.value.MeasurementValue;
 import gov.nih.nci.caarray.external.v1_0.value.TermValue;
+import gov.nih.nci.caarray.external.v1_0.value.UserDefinedValue;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
+import gov.nih.nci.caarray.services.external.BeanMapperLookup;
+import net.sf.dozer.util.mapping.MapperIF;
 import net.sf.dozer.util.mapping.converters.CustomConverter;
 
 /**
@@ -100,21 +103,24 @@ public class FactorValueConverter implements CustomConverter {
      * {@inheritDoc}
      */
     public Object convert(Object dest, Object src, Class destClass, Class srcClass) {
-        String value = (String) src;
-        if (value == null) {
+        if (src == null) {
             return null;
-        }
-        try {
-            Float measurement = Float.valueOf(value);
+        } else if (src instanceof String) {
+            UserDefinedValue value = new UserDefinedValue();
+            value.setValue((String) src);
+            return value;
+        } else if (src instanceof Float) {
             MeasurementValue mval = new MeasurementValue();
-            mval.setMeasurement(measurement);
+            mval.setMeasurement((Float) src);
             return mval;
-        } catch (NumberFormatException e) {
+        } else if (src instanceof gov.nih.nci.caarray.domain.vocabulary.Term) {
             TermValue tval = new TermValue();
-            Term term = new Term();
-            term.setValue(value);
+            MapperIF mapper = BeanMapperLookup.getMapper(BeanMapperLookup.VERSION_1_0); 
+            Term term = (Term) mapper.map(src, Term.class);
             tval.setTerm(term);
             return tval;
+        } else {
+            return null;
         }
     }
 }

@@ -89,6 +89,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import gov.nih.nci.caarray.external.v1_0.value.AbstractValue;
 import gov.nih.nci.caarray.external.v1_0.value.MeasurementValue;
 import gov.nih.nci.caarray.external.v1_0.value.TermValue;
+import gov.nih.nci.caarray.external.v1_0.value.UserDefinedValue;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
@@ -130,6 +131,33 @@ public class Characteristic implements Serializable {
      */
     public void setValue(AbstractValue value) {
         this.value = value;
+    }
+
+    /**
+     * @return a new Characteristic initialized with a blank measurement value;
+     */
+    public static Characteristic newMeasurementCharacteristic() {
+        return newCharacteristic(new MeasurementValue());
+    }
+
+    /**
+     * @return a new Characteristic initialized with a blank term value;
+     */
+    public static Characteristic newTermCharacteristic() {
+        return newCharacteristic(new TermValue());
+    }
+
+    /**
+     * @return a new Characteristic initialized with a blank user defined value;
+     */
+    public static Characteristic newUserDefinedCharacteristic() {
+        return newCharacteristic(new UserDefinedValue());
+    }
+    
+    private static Characteristic newCharacteristic(AbstractValue initialValue) {
+        Characteristic fv = new Characteristic();
+        fv.setValue(initialValue);
+        return fv;
     }
 
     /**

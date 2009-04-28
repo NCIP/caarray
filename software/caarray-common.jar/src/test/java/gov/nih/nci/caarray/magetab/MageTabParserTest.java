@@ -87,6 +87,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
@@ -778,7 +779,6 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     private void checkTerms(MageTabDocumentSet documentSet) {
         for (OntologyTerm term : documentSet.getTerms()) {
-            assertNotNull("null category for term " + term.getValue(), term.getCategory());
             assertNotNull("null value for term", term.getValue());
         }
     }
@@ -805,7 +805,8 @@ public class MageTabParserTest extends AbstractCaarrayTest {
         assertEquals(expectedSampleName, s1.getName());
         assertEquals(1, s1.getCharacteristics().size());
         assertEquals(ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName(), s1.getCharacteristics().get(0).getCategory());
-        assertEquals(expectedTermValue, s1.getCharacteristics().get(0).getTerm().getValue());
+        assertEquals(expectedTermValue, s1.getCharacteristics().get(0).getValue());
+        assertEquals(null, s1.getCharacteristics().get(0).getTerm());
     }
 
     @Test
@@ -839,4 +840,126 @@ public class MageTabParserTest extends AbstractCaarrayTest {
             assertTrue(error.getMessage().contains("Term Source Ref is not preceded by valid data type"));
         }
     }
+    
+    /**
+     * Tests for the refactored factor value / parameter value / characteristic data model.
+     */
+    @Test
+    public void testExtendedFactorValues() throws Exception {
+        MageTabFileSet fileSet = TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET;
+        
+        try {
+            MageTabDocumentSet documentSet = parser.parse(fileSet, false);
+            System.out.println("Parse result for extended values: \n" + documentSet.getValidationResult());
+            assertNotNull(documentSet);
+
+            assertEquals(1, documentSet.getSdrfDocuments().size());
+            SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
+            assertEquals(3, sdrfDocument.getAllSamples().size());
+            verifyExtendedFactorValuesSampleChars(sdrfDocument.getAllSamples().get(0), "Sample A", "123", "5", "years",
+                    "tissue", "MO");
+            verifyExtendedFactorValuesSampleChars(sdrfDocument.getAllSamples().get(1), "Sample B", "234", "a lot",
+                    "months", "tissue", "MO");
+            verifyExtendedFactorValuesSampleChars(sdrfDocument.getAllSamples().get(2), "Sample C", "345", "2.2", "days",
+                    "unknown", null);
+            verifyExtendedFactorValuesSampleParams(sdrfDocument.getAllSamples().get(0), "Sample A", "foo", "planting", "MO",
+                    "4", "kg");
+            verifyExtendedFactorValuesSampleParams(sdrfDocument.getAllSamples().get(1), "Sample B", "baz", "planting",
+                    "MO", "4", "kg");
+            verifyExtendedFactorValuesSampleParams(sdrfDocument.getAllSamples().get(2), "Sample C", "foo", "nothing", null,
+                    "less", "mg");
+            assertEquals(3, sdrfDocument.getAllHybridizations().size());
+            verifyExtendedFactorValuesHyb(sdrfDocument.getAllHybridizations().get(0), "Hyb A", "123", "5", "years",
+                    "tissue", "MO");
+            verifyExtendedFactorValuesHyb(sdrfDocument.getAllHybridizations().get(1), "Hyb B", "234", "a lot", "months",
+                    "tissue", "MO");
+            verifyExtendedFactorValuesHyb(sdrfDocument.getAllHybridizations().get(2), "Hyb C", "345", "2.2", "days",
+                    "unknown", null);
+        } catch (InvalidDataException e) {
+            fail("Could not parse magetab: " + e.getValidationResult().toString());
+        }
+    }
+
+    private void verifyExtendedFactorValuesHyb(Hybridization hyb, String hybName, String fv1Value, String fv2Value,
+            String fv2Unit, String fv3Value, String fv3ts) {
+        assertEquals(hybName, hyb.getName());
+        assertEquals(3, hyb.getFactorValues().size());
+        assertEquals("ExternalSampleId", hyb.getFactorValues().get(0).getFactor().getName());
+        assertEquals(fv1Value, hyb.getFactorValues().get(0).getValue());
+        assertNull(hyb.getFactorValues().get(0).getTerm());
+        assertNull(hyb.getFactorValues().get(0).getUnit());
+        assertEquals("Age", hyb.getFactorValues().get(1).getFactor().getName());
+        assertEquals(fv2Value, hyb.getFactorValues().get(1).getValue());
+        assertNull(hyb.getFactorValues().get(1).getTerm());
+        assertEquals(fv2Unit, hyb.getFactorValues().get(1).getUnit().getValue());
+        assertEquals("MO", hyb.getFactorValues().get(1).getUnit().getTermSource().getName());
+        assertEquals("time", hyb.getFactorValues().get(1).getUnit().getCategory());
+        assertEquals("MaterialType", hyb.getFactorValues().get(2).getFactor().getName());
+        if (fv3ts != null) {
+            assertEquals(fv3ts, hyb.getFactorValues().get(2).getTerm().getTermSource().getName());            
+            assertEquals(fv3Value, hyb.getFactorValues().get(2).getTerm().getValue());
+            assertNull(hyb.getFactorValues().get(2).getValue());
+        } else {
+            assertEquals(fv3Value, hyb.getFactorValues().get(2).getValue());
+            assertNull(hyb.getFactorValues().get(2).getTerm());
+        }
+        assertNull(hyb.getFactorValues().get(2).getUnit());
+    }
+
+    private void verifyExtendedFactorValuesSampleChars(Sample sample, String sampleName, String c1Value,
+            String c2Value, String c2Unit, String c3Value, String c3ts) {
+        assertEquals(sampleName, sample.getName());
+        assertEquals(3, sample.getCharacteristics().size());
+        assertEquals("ExternalSampleId", sample.getCharacteristics().get(0).getCategory());
+        assertEquals(c1Value, sample.getCharacteristics().get(0).getValue());
+        assertNull(sample.getCharacteristics().get(0).getTerm());
+        assertNull(sample.getCharacteristics().get(0).getUnit());
+        assertEquals("Age", sample.getCharacteristics().get(1).getCategory());
+        assertEquals(c2Value, sample.getCharacteristics().get(1).getValue());
+        assertNull(sample.getCharacteristics().get(1).getTerm());
+        assertEquals(c2Unit, sample.getCharacteristics().get(1).getUnit().getValue());
+        assertEquals("MO", sample.getCharacteristics().get(1).getUnit().getTermSource().getName());
+        assertEquals("time", sample.getCharacteristics().get(1).getUnit().getCategory());
+        assertEquals("MaterialType", sample.getCharacteristics().get(2).getCategory());
+        if (c3ts != null) {
+            assertEquals(c3Value, sample.getCharacteristics().get(2).getTerm().getValue());
+            assertEquals(c3ts, sample.getCharacteristics().get(2).getTerm().getTermSource().getName());            
+            assertNull(sample.getCharacteristics().get(2).getValue());
+        } else {
+            assertEquals(c3Value, sample.getCharacteristics().get(2).getValue());
+            assertNull(sample.getCharacteristics().get(2).getTerm());
+        }
+        assertNull(sample.getCharacteristics().get(2).getUnit());
+
+    }
+
+    private void verifyExtendedFactorValuesSampleParams(Sample sample, String sampleName, String pv1Value, String pv2Value,
+            String pv2ts, String pv3Value, String pv3Unit) {
+        assertEquals(sampleName, sample.getName());
+        assertEquals(1, sample.getProtocolApplications().size());
+        ProtocolApplication pa = sample.getProtocolApplications().get(0);
+        assertEquals("Dan1", pa.getProtocol().getName());
+        assertEquals(3, pa.getParameterValues().size());
+        assertEquals("p1", pa.getParameterValues().get(0).getParameter().getName());
+        assertEquals(pv1Value, pa.getParameterValues().get(0).getValue());
+        assertNull(pa.getParameterValues().get(0).getTerm());
+        assertNull(pa.getParameterValues().get(0).getUnit());
+        assertEquals("p2", pa.getParameterValues().get(1).getParameter().getName());
+        if (pv2ts != null) {
+            assertEquals(pv2ts, pa.getParameterValues().get(1).getTerm().getTermSource().getName());            
+            assertEquals(pv2Value, pa.getParameterValues().get(1).getTerm().getValue());
+            assertNull(pa.getParameterValues().get(1).getValue());
+        } else {
+            assertEquals(pv2Value, pa.getParameterValues().get(1).getValue());
+            assertNull(pa.getParameterValues().get(1).getTerm());
+        }
+        assertNull(pa.getParameterValues().get(1).getUnit());
+        assertEquals("p3", pa.getParameterValues().get(2).getParameter().getName());
+        assertEquals(pv3Value, pa.getParameterValues().get(2).getValue());
+        assertNull(pa.getParameterValues().get(2).getTerm());
+        assertEquals(pv3Unit, pa.getParameterValues().get(2).getUnit().getValue());
+        assertEquals("MO", pa.getParameterValues().get(2).getUnit().getTermSource().getName());
+        assertEquals("weight", pa.getParameterValues().get(2).getUnit().getCategory());
+    }
+
 }

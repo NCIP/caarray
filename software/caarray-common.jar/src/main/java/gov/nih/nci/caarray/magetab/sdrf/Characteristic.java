@@ -114,7 +114,7 @@ public final class Characteristic implements Serializable, Unitable {
     }
 
     /**
-     * @return the unit of this characteristic (optional, for measurement characteristics only)
+     * @return the unit of this characteristic (optional)
      */
     public OntologyTerm getUnit() {
         return unit;
@@ -129,17 +129,24 @@ public final class Characteristic implements Serializable, Unitable {
 
     /**
      * @return the explicit value of this characteristic. this is used if no term source is specified for
-     * a characteristic, or if it has a unit. otherwise, the value will be contained in the term property
+     * a characteristic. otherwise, the value will be contained in the term property
      */
     public String getValue() {
         return value;
-    }
+    }    
 
     /**
      * @param value the value to set
      */
     public void setValue(String value) {
         this.value = value;
+    }
+    
+    /**
+     * @return either the direct value or the term value of this characteristic, whichever is present.
+     */
+    public String getTermOrDirectValue() {
+        return this.term == null ? this.value : this.term.getValue();
     }
 
     /**

@@ -89,16 +89,12 @@ import gov.nih.nci.caarray.domain.project.ExperimentContact;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.contact</code> package.
  *
  * @author Dan Kokotov
  */
 class ContactDaoImpl extends AbstractCaArrayDaoImpl implements ContactDao {
-    private static final Logger LOG = Logger.getLogger(ContactDaoImpl.class);
-
     /**
      * {@inheritDoc}
      */
@@ -106,11 +102,6 @@ class ContactDaoImpl extends AbstractCaArrayDaoImpl implements ContactDao {
     public List<Organization> getAllProviders() {
         return getCurrentSession().createQuery("FROM " + Organization.class.getName()
                 + " where provider = true order by name").list();
-    }
-
-    @Override
-    Logger getLog() {
-        return LOG;
     }
 
     /**

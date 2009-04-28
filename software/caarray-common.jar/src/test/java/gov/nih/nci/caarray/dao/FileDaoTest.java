@@ -85,11 +85,18 @@ package gov.nih.nci.caarray.dao;
 import static org.junit.Assert.assertEquals;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
 import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -131,8 +138,7 @@ public class FileDaoTest extends AbstractDaoTest {
     private static Term DUMMY_REPLICATE_TYPE = new Term();
     private static Term DUMMY_NORMALIZATION_TYPE = new Term();
     private static Term DUMMY_QUALITY_CTRL_TYPE = new Term();
-
-
+    
     private static final VocabularyDao VOCABULARY_DAO = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
 
     /**
@@ -251,8 +257,9 @@ public class FileDaoTest extends AbstractDaoTest {
 
         saveSupportingObjects();
         
+        
         CaArrayFile file1 = new CaArrayFile();
-        file1.setName("file1");
+        file1.setName("file1.idf");
         file1.setFileType(FileType.MAGE_TAB_IDF);
         file1.setFileStatus(FileStatus.UPLOADED);
         ByteArrayInputStream in1 = new ByteArrayInputStream("test idf".getBytes());
@@ -261,55 +268,218 @@ public class FileDaoTest extends AbstractDaoTest {
         DUMMY_PROJECT_1.getFiles().add(file1);
         DAO_OBJECT.save(file1);
 
+        Hybridization h1 = new Hybridization();
+        h1.setName("h1");        
+        DUMMY_EXPERIMENT_1.getHybridizations().add(h1);
+        h1.setExperiment(DUMMY_EXPERIMENT_1);
+        RawArrayData rawArrayData = new RawArrayData();
+        h1.addRawArrayData(rawArrayData);
+        rawArrayData.addHybridization(h1);
+        rawArrayData.setName("h1");
         CaArrayFile file2 = new CaArrayFile();
-        file2.setName("file2");
+        file2.setName("file2.cel");
         file2.setFileType(FileType.AFFYMETRIX_CEL);
         file2.setFileStatus(FileStatus.UPLOADED);
         in1 = new ByteArrayInputStream("test cel".getBytes());
         file2.writeContents(in1);
         file2.setProject(DUMMY_PROJECT_1);
+        rawArrayData.setDataFile(file2);
         DUMMY_PROJECT_1.getFiles().add(file2);
         DAO_OBJECT.save(file2);
-
+        DAO_OBJECT.save(rawArrayData);        
+        
+        Hybridization h2 = new Hybridization();
+        h2.setName("h2");        
+        DUMMY_EXPERIMENT_1.getHybridizations().add(h2);
+        h2.setExperiment(DUMMY_EXPERIMENT_1);
+        DerivedArrayData derivedArrayData = new DerivedArrayData();
+        h2.getDerivedDataCollection().add(derivedArrayData);
+        derivedArrayData.addHybridization(h2);        
         CaArrayFile file3 = new CaArrayFile();
-        file3.setName("file3");
+        file3.setName("file3.chp");
         file3.setFileType(FileType.AFFYMETRIX_CHP);
         file3.setFileStatus(FileStatus.UPLOADED);
         in1 = new ByteArrayInputStream("test chp".getBytes());
         file3.writeContents(in1);
         file3.setProject(DUMMY_PROJECT_1);
+        derivedArrayData.setDataFile(file3);
         DUMMY_PROJECT_1.getFiles().add(file3);
         DAO_OBJECT.save(file3);
+        DAO_OBJECT.save(derivedArrayData);
 
+        Source so1 = new Source();
+        so1.setName("source");
+        DUMMY_EXPERIMENT_1.getSources().add(so1);
+        Sample sa1 = new Sample();
+        sa1.setName("sample");
+        so1.getSamples().add(sa1);
+        sa1.getSources().add(so1);
+        DUMMY_EXPERIMENT_1.getSamples().add(sa1);
+        Extract ex1 = new Extract();
+        ex1.setName("extract1");
+        sa1.getExtracts().add(ex1);
+        ex1.getSamples().add(sa1);
+        DUMMY_EXPERIMENT_1.getExtracts().add(ex1);
+        Extract ex2 = new Extract();
+        ex2.setName("extract2");
+        DUMMY_EXPERIMENT_1.getExtracts().add(ex2);
+        LabeledExtract le1 = new LabeledExtract();
+        le1.setName("LE1");
+        ex1.getLabeledExtracts().add(le1);
+        le1.getExtracts().add(ex1);
+        ex2.getLabeledExtracts().add(le1);
+        le1.getExtracts().add(ex2);
+        le1.getHybridizations().add(h1);
+        h1.getLabeledExtracts().add(le1);
+        DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le1);
+        LabeledExtract le2 = new LabeledExtract();
+        le2.setName("LE2");        
+        ex2.getLabeledExtracts().add(le2);
+        le2.getExtracts().add(ex2);
+        le2.getHybridizations().add(h2);
+        h2.getLabeledExtracts().add(le2);
+        DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le2);
+        LabeledExtract le3 = new LabeledExtract();
+        le3.setName("LE3");        
+        le3.getHybridizations().add(h1);
+        h1.getLabeledExtracts().add(le3);
+        le3.getHybridizations().add(h2);
+        h2.getLabeledExtracts().add(le3);
+        DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le3);
+        
         CaArrayFile file4 = new CaArrayFile();
-        file4.setName("file4");
+        file4.setName("file4.cdf");
         file4.setFileType(FileType.AFFYMETRIX_CDF);
         file4.setFileStatus(FileStatus.UPLOADED);
         in1 = new ByteArrayInputStream("test ad".getBytes());
         file4.writeContents(in1);
         DAO_OBJECT.save(file4);
 
+        CaArrayFile file5 = new CaArrayFile();
+        file5.setName("file5.txt");
+        file5.setFileStatus(FileStatus.SUPPLEMENTAL);
+        ByteArrayInputStream in5 = new ByteArrayInputStream("blah blah".getBytes());
+        file5.writeContents(in5);
+        file5.setProject(DUMMY_PROJECT_1);
+        DUMMY_PROJECT_1.getFiles().add(file5);
+        DAO_OBJECT.save(file5);
+
+        Hybridization h3 = new Hybridization();
+        h3.setName("h3");        
+        DUMMY_EXPERIMENT_1.getHybridizations().add(h3);
+        h3.setExperiment(DUMMY_EXPERIMENT_1);
+        LabeledExtract le4 = new LabeledExtract();
+        le4.setName("LE4");        
+        le4.getHybridizations().add(h3);
+        h3.getLabeledExtracts().add(le4);
+        DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le4);
+
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
         Experiment e = CaArrayDaoFactory.INSTANCE.getSearchDao().retrieve(Experiment.class, DUMMY_EXPERIMENT_1.getId());
         
-        PageSortParams<CaArrayFile> params = new PageSortParams<CaArrayFile>(-1, 0, new AdHocSortCriterion<CaArrayFile>("name"), false);
-        FileSearchCriteria criteria = new FileSearchCriteria();
+        PageSortParams<CaArrayFile> params = new PageSortParams<CaArrayFile>(5, 0, new AdHocSortCriterion<CaArrayFile>("name"), false);
+        FileSearchCriteria criteria = new FileSearchCriteria();        
         criteria.setExperiment(e);
         criteria.setIncludeDerived(true);
         criteria.setIncludeRaw(true);
+        criteria.setIncludeSupplemental(false);
         
         List<CaArrayFile> files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(2, files.size());
-        assertEquals("file2", files.get(0).getName());
-        assertEquals("file3", files.get(1).getName());
+        assertEquals(file2.getName(), files.get(0).getName());
+        assertEquals(file3.getName(), files.get(1).getName());
 
+        criteria.setIncludeDerived(false);
         criteria.setIncludeRaw(false);
         files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(0, files.size());
+
+        criteria.setIncludeDerived(true);
+        files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
-        assertEquals("file3", files.get(0).getName());
-        
+        assertEquals(file3.getName(), files.get(0).getName());
+
+        criteria.setIncludeSupplemental(true);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(2, files.size());
+        assertEquals(file3.getName(), files.get(0).getName());
+        assertEquals(file5.getName(), files.get(1).getName());
+
+        criteria.getHybridizations().add(h1);
+        criteria.getHybridizations().add(h2);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(1, files.size());
+        assertEquals(file3.getName(), files.get(0).getName());        
+
+        criteria.setIncludeRaw(true);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(2, files.size());
+        assertEquals(file2.getName(), files.get(0).getName());
+        assertEquals(file3.getName(), files.get(1).getName());
+
+        criteria.getHybridizations().clear();
+        criteria.getHybridizations().add(h1);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(1, files.size());
+        assertEquals(file2.getName(), files.get(0).getName());                
+
+        criteria.getHybridizations().clear();
+        criteria.getHybridizations().add(h3);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(0, files.size());
+
+        criteria.getHybridizations().clear();
+        criteria.setExtension("CHP");
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(1, files.size());
+        assertEquals(file3.getName(), files.get(0).getName());                
+
+        criteria.setExtension(null);
+        criteria.getTypes().add(FileType.AFFYMETRIX_CEL);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(1, files.size());
+        assertEquals(file2.getName(), files.get(0).getName());                
+
+        criteria.getTypes().clear();
+        criteria.getBiomaterials().add(so1);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(1, files.size());
+        assertEquals(file2.getName(), files.get(0).getName());                
+
+        criteria.getBiomaterials().add(sa1);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(1, files.size());
+        assertEquals(file2.getName(), files.get(0).getName());
+
+        criteria.getBiomaterials().clear();
+        criteria.getBiomaterials().add(ex1);
+        criteria.getBiomaterials().add(ex2);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(2, files.size());
+        assertEquals(file2.getName(), files.get(0).getName());                
+        assertEquals(file3.getName(), files.get(1).getName());                
+
+        criteria.getBiomaterials().clear();
+        criteria.getBiomaterials().add(le3);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(2, files.size());
+        assertEquals(file2.getName(), files.get(0).getName());                
+        assertEquals(file3.getName(), files.get(1).getName());                
+
+        criteria.getBiomaterials().clear();
+        criteria.getBiomaterials().add(le4);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(0, files.size());
+
+        criteria.getBiomaterials().clear();
+        criteria.getBiomaterials().add(le3);
+        criteria.getHybridizations().add(h2);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(1, files.size());
+        assertEquals(file3.getName(), files.get(0).getName());                
+
         tx.commit();
     }
     

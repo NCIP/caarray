@@ -145,7 +145,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
             Query hqlquery = HibernateUtil.getCurrentSession().createQuery(s);
             return hqlquery.list();
         } catch (QueryProcessingException e) {
-            getLog().error("Unable to parse CQL query", e);
+            LOG.error("Unable to parse CQL query", e);
             throw new DAOException("Unable to parse CQL query", e);
         }
     }
@@ -320,10 +320,5 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
         query.setString("prefix", namePrefix + "%");
         return query.list();
-    }
-
-    @Override
-    Logger getLog() {
-        return LOG;
     }
 }

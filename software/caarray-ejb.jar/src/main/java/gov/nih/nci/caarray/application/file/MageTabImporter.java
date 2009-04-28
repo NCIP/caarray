@@ -95,7 +95,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Factor;
-import gov.nih.nci.caarray.domain.project.FactorValue;
+import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -340,7 +340,7 @@ class MageTabImporter {
             for (Factor originalFactor : originalFactors) {
                 if (originalFactor.getName().equals(translatedFactor.getName())) {
                     isNewFactor = false;
-                    for (FactorValue newValue : translatedFactor.getFactorValues()) {
+                    for (AbstractFactorValue newValue : translatedFactor.getFactorValues()) {
                         newValue.setFactor(originalFactor);
                     }
                     break;

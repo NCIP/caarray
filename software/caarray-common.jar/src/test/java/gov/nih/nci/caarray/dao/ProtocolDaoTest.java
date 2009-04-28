@@ -85,10 +85,11 @@ package gov.nih.nci.caarray.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.domain.protocol.MeasurementParameterValue;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
-import gov.nih.nci.caarray.domain.protocol.ParameterValue;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+import gov.nih.nci.caarray.domain.protocol.TermBasedParameterValue;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -110,9 +111,9 @@ import org.junit.Test;
 @SuppressWarnings("PMD")
 public class ProtocolDaoTest  extends AbstractDaoTest {
 
-    private static ParameterValue DUMMY_PARAMETER_VALUE_1 = new ParameterValue();
-    private static ParameterValue DUMMY_PARAMETER_VALUE_2 = new ParameterValue();
-    private static ParameterValue DUMMY_PARAMETER_VALUE_3 = new ParameterValue();
+    private static TermBasedParameterValue DUMMY_PARAMETER_VALUE_1 = new TermBasedParameterValue();
+    private static MeasurementParameterValue DUMMY_PARAMETER_VALUE_2 = new MeasurementParameterValue();
+    private static MeasurementParameterValue DUMMY_PARAMETER_VALUE_3 = new MeasurementParameterValue();
     private static TermSource DUMMY_TERM_SOURCE = new TermSource();
     private static Category DUMMY_CATEGORY = new Category();
     private static TermSource DUMMY_TERM_SOURCE_1 = new TermSource();
@@ -134,9 +135,9 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
     @Before
     public void setUpBeforeClass() {
         // Initialize all the dummy objects needed for the tests.
-        DUMMY_PARAMETER_VALUE_1 = new ParameterValue();
-        DUMMY_PARAMETER_VALUE_2 = new ParameterValue();
-        DUMMY_PARAMETER_VALUE_3 = new ParameterValue();
+        DUMMY_PARAMETER_VALUE_1 = new TermBasedParameterValue();
+        DUMMY_PARAMETER_VALUE_2 = new MeasurementParameterValue();
+        DUMMY_PARAMETER_VALUE_3 = new MeasurementParameterValue();
         DUMMY_TERM_SOURCE = new TermSource();
         DUMMY_CATEGORY = new Category();
         DUMMY_TERM_1 = new Term();
@@ -163,14 +164,13 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         //DUMMY_PARAMETER_1.setDefaultValue(DUMMY_PARAMETER_VALUE_3);
         DUMMY_PARAMETER_2.setName("DummyTestParameter2");
 
-        DUMMY_PARAMETER_VALUE_1.setUnit("DummyUnitForParameterValue1");
-        DUMMY_PARAMETER_VALUE_1.setValue("DummyValueForParameterValue1");
+        DUMMY_PARAMETER_VALUE_1.setTerm(DUMMY_TERM_1);
         DUMMY_PARAMETER_VALUE_1.setParameter(DUMMY_PARAMETER_1);
-        DUMMY_PARAMETER_VALUE_2.setUnit("DummyUnitForParameterValue2");
-        DUMMY_PARAMETER_VALUE_2.setValue("DummyValueForParameterValue2");
+        DUMMY_PARAMETER_VALUE_2.setUnit(DUMMY_TERM_2);
+        DUMMY_PARAMETER_VALUE_2.setValue(1.0f);
         DUMMY_PARAMETER_VALUE_2.setParameter(DUMMY_PARAMETER_2);
-        DUMMY_PARAMETER_VALUE_3.setUnit("DummyUnitForParameterValue3");
-        DUMMY_PARAMETER_VALUE_3.setValue("DummyValueForParameterValue3");
+        DUMMY_PARAMETER_VALUE_3.setUnit(DUMMY_TERM_2);
+        DUMMY_PARAMETER_VALUE_3.setValue(2.0f);
         DUMMY_PARAMETER_VALUE_3.setParameter(DUMMY_PARAMETER_1);
     }
 

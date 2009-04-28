@@ -53,7 +53,7 @@
                 <td>
                     <ul>
                     <c:forEach items="${currentProtocolApplication.values}" var="value">
-                        <li>${value.parameter.name} (${currentProtocolApplication.protocol.name}): ${value.value} </li>
+                        <li>${value.parameter.name} (${currentProtocolApplication.protocol.name}): ${value.displayValue} </li>
                     </c:forEach>
                     </ul>
                 </td>

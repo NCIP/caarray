@@ -80,120 +80,70 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package gov.nih.nci.caarray.domain.project;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.MeasurementValue;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import java.text.DecimalFormat;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.ForeignKey;
+import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
- * @author Rashmi Srinivasa
+ *
  */
 @Entity
-@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
-public class FactorValue extends AbstractCaArrayEntity {
-    private static final long serialVersionUID = 1234567890L;
+@Table(name = "measurement_factor_value")
+@PrimaryKeyJoinColumn(name = "factor_value_id")
+public class MeasurementFactorValue extends AbstractFactorValue implements MeasurementValue {
+    private static final long serialVersionUID = 1L;
 
-    private Factor factor;
-    private Term unit;
-    private String value;
-    private Hybridization hybridization;
+    private static final String NUMBER_FORMAT = "0.00";
 
+    private Float value;
+    
     /**
-     * Gets the factor.
-     *
-     * @return the factor
+     * Hibernate-only constructor.
      */
-    @ManyToOne
-    @ForeignKey(name = "factorvalue_factor_fk")
-    public Factor getFactor() {
-        return factor;
+    public MeasurementFactorValue() {
+        // empty
     }
 
     /**
-     * Sets the factor.
-     *
-     * @param factorVal the factor
+     * Create a new factor value with given fields.
+     * @param value the value 
+     * @param unit the unit for the value
      */
-    public void setFactor(final Factor factorVal) {
-        this.factor = factorVal;
+    public MeasurementFactorValue(Float value, Term unit) {
+        super(unit);
+        this.value = value;
     }
 
     /**
-     * Gets the unit.
-     *
-     * @return the unit
-     */
-    @ManyToOne
-    @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "factorvalue_unit_fk")
-    public Term getUnit() {
-        return unit;
-    }
-
-    /**
-     * Sets the unit.
-     *
-     * @param unitVal the unit
-     */
-    public void setUnit(final Term unitVal) {
-        this.unit = unitVal;
-    }
-
-    /**
-     * Gets the value.
-     *
      * @return the value
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getValue() {
+    public Float getValue() {
         return value;
     }
 
     /**
-     * Sets the value.
-     *
-     * @param valueString the value
+     * @param value the value to set
      */
-    public void setValue(final String valueString) {
-        this.value = valueString;
-    }
-
-    /**
-     * @return the hybridization
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "factorvalue_hybridizatation_fk")
-    public Hybridization getHybridization() {
-        return hybridization;
-    }
-
-    /**
-     * @param hybridization the hybridization to set
-     */
-    public void setHybridization(Hybridization hybridization) {
-        this.hybridization = hybridization;
+    public void setValue(Float value) {
+        this.value = value;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+    @Transient
+    public String getDisplayValueWithoutUnit() {
+        if (getValue() == null) {
+            return null;
+        }
+        return new DecimalFormat(NUMBER_FORMAT).format(this.value.doubleValue());
     }
 }

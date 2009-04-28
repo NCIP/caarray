@@ -48,6 +48,20 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="biomaterials">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="hybridizations">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
         </xs:sequence>
         <xs:attribute name="extension" type="xs:string" />
     </xs:complexType>
@@ -81,6 +95,13 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="biomaterials">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded" />
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>

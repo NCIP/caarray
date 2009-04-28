@@ -123,7 +123,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.list.SetUniqueList;
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
@@ -139,9 +138,6 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  */
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
-
-    private static final Logger LOG = Logger.getLogger(ArrayDaoImpl.class);
-
     /**
      * {@inheritDoc}
      */
@@ -303,11 +299,6 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         } else {
             throw new IllegalStateException("Duplicate registration of ArrayDataType " + descriptor);
         }
-    }
-
-    @Override
-    Logger getLog() {
-        return LOG;
     }
 
     /**

@@ -99,7 +99,7 @@ public class FileSearchCriteria implements Serializable {
     private String extension;
     private Set<CaArrayEntityReference> types = new HashSet<CaArrayEntityReference>();
     private Set<FileTypeCategory> categories = new HashSet<FileTypeCategory>();
-    private Set<CaArrayEntityReference> samples = new HashSet<CaArrayEntityReference>();
+    private Set<CaArrayEntityReference> biomaterials = new HashSet<CaArrayEntityReference>();
     private Set<CaArrayEntityReference> hybridizations = new HashSet<CaArrayEntityReference>();
     
     /**
@@ -159,17 +159,17 @@ public class FileSearchCriteria implements Serializable {
     }
 
     /**
-     * @return the samples
+     * @return the biomaterials
      */
-    public Set<CaArrayEntityReference> getSamples() {
-        return samples;
+    public Set<CaArrayEntityReference> getBiomaterials() {
+        return biomaterials;
     }
 
     /**
-     * @param samples the samples to set
+     * @param biomaterials the biomaterials to set
      */
-    public void setSamples(Set<CaArrayEntityReference> samples) {
-        this.samples = samples;
+    public void setBiomaterials(Set<CaArrayEntityReference> biomaterials) {
+        this.biomaterials = biomaterials;
     }
 
     /**

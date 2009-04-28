@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.domain.sample;
 
+import gov.nih.nci.caarray.domain.TermBasedValue;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
@@ -101,8 +102,7 @@ import org.hibernate.validator.NotNull;
 @Entity
 @Table(name = "characteristic_term")
 @PrimaryKeyJoinColumn(name = "characteristic_id")
-public class TermBasedCharacteristic extends AbstractCharacteristic {
-
+public class TermBasedCharacteristic extends AbstractCharacteristic implements TermBasedValue {
     private static final long serialVersionUID = 1L;
 
     private Term term;
@@ -115,13 +115,14 @@ public class TermBasedCharacteristic extends AbstractCharacteristic {
     }
 
     /**
-     * Create a new characteristic with given category and term.
+     * Create a new characteristic with given category, term and unit.
      *
      * @param category the category.
      * @param term the term
+     * @param unit the unit
      */
-    public TermBasedCharacteristic(Category category, Term term) {
-        super(category);
+    public TermBasedCharacteristic(Category category, Term term, Term unit) {
+        super(category, unit);
         this.term = term;
     }
 
@@ -150,10 +151,8 @@ public class TermBasedCharacteristic extends AbstractCharacteristic {
     /**
      * {@inheritDoc}
      */
-    @Override
     @Transient
-    public String getDisplayValue() {
+    public String getDisplayValueWithoutUnit() {
         return this.term != null ? this.term.getValue() : null;
     }
-
 }

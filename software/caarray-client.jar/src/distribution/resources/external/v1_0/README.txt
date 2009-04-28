@@ -2,8 +2,8 @@ Release Notes
 =============
 
   #Product:#	caArray Client
-  #Version:#	2.1.0
-  #Date:#       June 2008
+  #Version:#	2.3.0
+  #Date:#       June 2009
 
 Contents
 --------
@@ -31,7 +31,7 @@ Distribution Contents
 The caArray client distribution includes the following contents:
 
 / <root directory>
- caarray-client.jar	  Required for both the Java and grid APIs
+ caarray-client-external-v1_0.jar	  Required for both the Java and grid APIs
  build.xml            Runs the provided example clients of the Java and grid
                       APIs via ant (required). This build file may also be
                       used as a reference for required classpaths for grid
@@ -51,17 +51,15 @@ The caArray client distribution includes the following contents:
                       classes. This directory also contains the domainModel.xml
                       file for reference.
 
-/grid/lib             Contains JARs required at runtime for any caArray grid
-                      service clients written in Java. These JARs are required
-                      for grid access in addition to the jars in the /lib
-                      directory.
+/grid/lib             Contains all JARs required at runtime for any caArray grid
+                      service clients written in Java. 
 
 /grid/schema          Contains the XSDs that define the caArray grid service.
                       These may be imported into grid projects in Introduce in
                       order to include caArray data types and services.
 
-/lib                  Contains the JARs required at runtime for both Java API
-                      and grid service API clients.
+/lib                  Contains all JARs required at runtime for any caArray 
+                      Java API clients.
 
 
 Invoking Examples
@@ -78,6 +76,10 @@ which has the hostname array.nci.nih.gov. To run these examples against
 other caArray instances, you may invoke ant with the following properties:
 
 ant -Dhostname=<hostname> -Djndi.port=<JNDI port> -Dgrid.port=<grid service port>
+
+You may also create a file named "local.properties" in the root of the unpacked 
+distribution to define these properties. Any properties placed in this file will
+override the defaults.
 
 An existing installation of "ant" is required to run these examples as described
 above.

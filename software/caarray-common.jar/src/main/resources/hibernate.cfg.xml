@@ -15,7 +15,7 @@
 
         <!-- @HIBERNATE_CONFIG_START@
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://@SERVERNAME@/@DBNAME@</property>
+        <property name="hibernate.connection.url">jdbc:mysql://@SERVERNAME@:@PORT@/@DBNAME@</property>
         <property name="hibernate.connection.username">@DBUSER@</property>
         <property name="hibernate.connection.password">@DBPASSWD@</property>
         <property name="hibernate.dialect">gov.nih.nci.caarray.util.CaarrayInnoDBDialect</property>
@@ -63,18 +63,23 @@
         <mapping class="gov.nih.nci.caarray.domain.permissions.AccessProfile"/>
         <mapping class="gov.nih.nci.caarray.domain.project.AssayType"/>
         <mapping class="gov.nih.nci.caarray.domain.project.Factor"/>
-        <mapping class="gov.nih.nci.caarray.domain.project.FactorValue"/>
+        <mapping class="gov.nih.nci.caarray.domain.project.MeasurementFactorValue"/>
+        <mapping class="gov.nih.nci.caarray.domain.project.UserDefinedFactorValue"/>
+        <mapping class="gov.nih.nci.caarray.domain.project.TermBasedFactorValue"/>
         <mapping class="gov.nih.nci.caarray.domain.project.Experiment"/>
         <mapping class="gov.nih.nci.caarray.domain.project.ExperimentContact"/>
         <mapping class="gov.nih.nci.caarray.domain.project.Project"/>
         <mapping class="gov.nih.nci.caarray.domain.protocol.Parameter"/>
-        <mapping class="gov.nih.nci.caarray.domain.protocol.ParameterValue"/>
+        <mapping class="gov.nih.nci.caarray.domain.protocol.MeasurementParameterValue"/>
+        <mapping class="gov.nih.nci.caarray.domain.protocol.UserDefinedParameterValue"/>
+        <mapping class="gov.nih.nci.caarray.domain.protocol.TermBasedParameterValue"/>
         <mapping class="gov.nih.nci.caarray.domain.protocol.Protocol"/>
         <mapping class="gov.nih.nci.caarray.domain.protocol.ProtocolApplication"/>
         <mapping class="gov.nih.nci.caarray.domain.publication.Publication"/>
         <mapping class="gov.nih.nci.caarray.domain.sample.Extract"/>
         <mapping class="gov.nih.nci.caarray.domain.sample.LabeledExtract"/>
         <mapping class="gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic"/>
+        <mapping class="gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic"/>
         <mapping class="gov.nih.nci.caarray.domain.sample.Sample"/>
         <mapping class="gov.nih.nci.caarray.domain.sample.Source"/>
         <mapping class="gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic"/>

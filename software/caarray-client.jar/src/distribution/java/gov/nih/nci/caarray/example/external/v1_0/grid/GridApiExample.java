@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.example.external.v1_0;
+package gov.nih.nci.caarray.example.external.v1_0.grid;
 
 
 import gov.nih.nci.caarray.external.v1_0.data.FileType;

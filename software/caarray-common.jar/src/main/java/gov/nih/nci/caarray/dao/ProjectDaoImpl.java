@@ -114,7 +114,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -131,7 +130,6 @@ import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
-    private static final Logger LOG = Logger.getLogger(ProjectDaoImpl.class);
     private static final String UNCHECKED = "unchecked";
     private static final String EXP_ID_PARAM = "expId";
     private static final String SOURCES = "sources";
@@ -151,11 +149,6 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             ((Project) persistentObject).setLastUpdated(new Date());
         }
         super.save(persistentObject);
-    }
-
-    @Override
-    Logger getLog() {
-        return LOG;
     }
 
     /**
@@ -309,6 +302,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             queryParams.put("pi_role", ExperimentContact.PI_ROLE);            
             queryParams.put("pi_id", criteria.getPrincipalInvestigator().getId());            
         }
+        
         Query q = HibernateUtil.getCurrentSession().createQuery(
                 from.append(" ").append(where).append(" ").append(toHqlOrder(params)).toString());
         HibernateUtil.setQueryParams(queryParams, q);

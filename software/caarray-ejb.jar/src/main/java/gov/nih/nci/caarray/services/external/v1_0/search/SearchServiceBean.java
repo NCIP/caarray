@@ -420,6 +420,14 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
             intCriteria.getTypes().add(
                     getRequiredByLsid(typeRef.getId(), gov.nih.nci.caarray.domain.file.FileType.class));
         }
+        for (CaArrayEntityReference hybRef : criteria.getHybridizations()) {
+            intCriteria.getHybridizations().add(
+                    getRequiredByLsid(hybRef.getId(), gov.nih.nci.caarray.domain.hybridization.Hybridization.class));
+        }
+        for (CaArrayEntityReference hybRef : criteria.getBiomaterials()) {
+            intCriteria.getBiomaterials().add(
+                    getRequiredByLsid(hybRef.getId(), AbstractBioMaterial.class));
+        }
         return intCriteria;
     }
 
@@ -503,16 +511,31 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
      */
     public List<Hybridization> searchForHybridizations(HybridizationSearchCriteria criteria, PagingParams pagingParams)
             throws InvalidReferenceException {
-        gov.nih.nci.caarray.domain.project.Experiment e = getRequiredByLsid(criteria.getExperiment().getId(),
-                gov.nih.nci.caarray.domain.project.Experiment.class);
         List<Hybridization> externalHybs = new ArrayList<Hybridization>();
         PageSortParams<gov.nih.nci.caarray.domain.hybridization.Hybridization> actualParams = 
             toInternalParams(defaultIfNull(pagingParams), "name", false);
-        List<gov.nih.nci.caarray.domain.hybridization.Hybridization> hybs = getDataService().pageAndFilterCollection(
-                e.getHybridizations(), "name", new LinkedList<String>(criteria.getNames()), actualParams);
+        List<gov.nih.nci.caarray.domain.hybridization.Hybridization> hybs = getDaoFactory().getHybridizationDao()
+                .searchByCriteria(actualParams, toInternalCriteria(criteria));
         mapCollection(hybs, externalHybs, Hybridization.class);
         return externalHybs;
     }
+    
+    private gov.nih.nci.caarray.domain.search.HybridizationSearchCriteria toInternalCriteria(
+            HybridizationSearchCriteria criteria)
+            throws InvalidReferenceException {
+        gov.nih.nci.caarray.domain.search.HybridizationSearchCriteria intCriteria = 
+            new gov.nih.nci.caarray.domain.search.HybridizationSearchCriteria();
+        if (criteria.getExperiment() != null) {
+            intCriteria.setExperiment(getRequiredByLsid(criteria.getExperiment().getId(),
+                    gov.nih.nci.caarray.domain.project.Experiment.class));
+        }
+        for (CaArrayEntityReference hybRef : criteria.getBiomaterials()) {
+            intCriteria.getBiomaterials().add(getRequiredByLsid(hybRef.getId(), AbstractBioMaterial.class));
+        }
+        intCriteria.getNames().addAll(criteria.getNames());
+        return intCriteria;
+    }
+
 
     /**
      * {@inheritDoc}

@@ -83,6 +83,8 @@
 package gov.nih.nci.caarray.external.v1_0.sample;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.factor.FactorValue;
 
 import java.util.HashSet;
@@ -98,6 +100,8 @@ public class Hybridization extends AbstractCaArrayEntity {
     
     private String name;
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
+    private ArrayDesign arrayDesign;
+    private CaArrayEntityReference experiment;
 
     /**
      * @return the name
@@ -125,5 +129,33 @@ public class Hybridization extends AbstractCaArrayEntity {
      */
     public void setFactorValues(Set<FactorValue> factorValues) {
         this.factorValues = factorValues;
+    }
+
+    /**
+     * @return the arrayDesign
+     */
+    public ArrayDesign getArrayDesign() {
+        return arrayDesign;
+    }
+
+    /**
+     * @param arrayDesign the arrayDesign to set
+     */
+    public void setArrayDesign(ArrayDesign arrayDesign) {
+        this.arrayDesign = arrayDesign;
+    }
+
+    /**
+     * @return the experiment
+     */
+    public CaArrayEntityReference getExperiment() {
+        return experiment;
+    }
+
+    /**
+     * @param experiment the experiment to set
+     */
+    public void setExperiment(CaArrayEntityReference experiment) {
+        this.experiment = experiment;
     }
 }

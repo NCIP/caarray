@@ -91,7 +91,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
-import gov.nih.nci.caarray.domain.project.FactorValue;
+import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.search.FactorSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -194,7 +194,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     @Override
     public String delete() {
         // clean up factor value associations
-        for (FactorValue fv : getCurrentFactor().getFactorValues()) {
+        for (AbstractFactorValue fv : getCurrentFactor().getFactorValues()) {
             fv.getHybridization().getFactorValues().remove(fv);
         }
         return super.delete();

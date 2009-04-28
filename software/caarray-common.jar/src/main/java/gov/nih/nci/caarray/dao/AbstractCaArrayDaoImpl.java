@@ -112,10 +112,9 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  */
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
+    private static final Logger LOG = Logger.getLogger(AbstractCaArrayDaoImpl.class);
 
     private static final String UNABLE_TO_RETRIEVE_ENTITY_MESSAGE = "Unable to retrieve entity";
-
-    abstract Logger getLog();
 
     /**
      * Returns the current Hibernate Session.
@@ -133,7 +132,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         try {
             getCurrentSession().saveOrUpdate(persistentObject);
         } catch (HibernateException e) {
-            getLog().error("Unable to save entity", e);
+            LOG.error("Unable to save entity", e);
             throw new DAOException("Unable to save entity", e);
         }
     }
@@ -149,7 +148,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
                 getCurrentSession().saveOrUpdate(entity);
             }
         } catch (HibernateException he) {
-            getLog().error("Unable to save entity collection", he);
+            LOG.error("Unable to save entity collection", he);
             throw new DAOException("Unable to save entity collection", he);
         }
     }
@@ -161,7 +160,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         try {
             getCurrentSession().delete(persistentObject);
         } catch (HibernateException he) {
-            getLog().error("Unable to remove entity", he);
+            LOG.error("Unable to remove entity", he);
             throw new DAOException("Unable to remove entity", he);
         }
     }
@@ -221,7 +220,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             criteria.setFirstResult(firstResult);
             return criteria.list();
         } catch (HibernateException he) {
-            getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
+            LOG.error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
             throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
         }
 
@@ -251,7 +250,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             }
             hibernateReturnedEntities = criteria.list();
         } catch (HibernateException he) {
-            getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
+            LOG.error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
             throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
         }
 

@@ -111,8 +111,18 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
+import gov.nih.nci.caarray.domain.project.MeasurementFactorValue;
+import gov.nih.nci.caarray.domain.project.TermBasedFactorValue;
+import gov.nih.nci.caarray.domain.project.UserDefinedFactorValue;
+import gov.nih.nci.caarray.domain.protocol.MeasurementParameterValue;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+import gov.nih.nci.caarray.domain.protocol.TermBasedParameterValue;
+import gov.nih.nci.caarray.domain.protocol.UserDefinedParameterValue;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
+import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
@@ -239,7 +249,7 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         Collection<Term> matchingTerms = CollectionUtils.select(terms, new Predicate() {
             public boolean evaluate(Object o) {
                 Term t = (Term) o;
-                return t.getValue().equalsIgnoreCase("wild_type");
+                return t.getValue().equalsIgnoreCase("fresh_sample");
             }
         });
         assertTrue(matchingTerms.size() >= 1);
@@ -504,6 +514,125 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         assertEquals(String.format(prototypeTwoErrorString, "FOO2"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(4).getMessage());
         assertEquals(String.format(prototypeTwoErrorString, "FOO"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(5).getMessage());
         assertEquals("Duplicate term source name 'FOO'.", validationResult.getMessages(ValidationMessage.Type.ERROR).get(6).getMessage());
+    }
+    
+    @Test
+    public void testExtendedFactorValues() {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.EXTENDED_FACTOR_VALUES_DATA_SET);
+        CaArrayTranslationResult result = this.translator
+                .translate(TestMageTabSets.EXTENDED_FACTOR_VALUES_DATA_SET, fileSet);
+        Experiment experiment = result.getInvestigations().iterator().next();
+        assertEquals(3, experiment.getFactors().size());
+        assertEquals(3, experiment.getSamples().size());
+        assertEquals(3, experiment.getHybridizations().size());
+        verifyExtendedFactorValuesSampleChars(experiment.getSampleByName("Sample A"), "123", 5f, null, "years",
+                "tissue", "MO");
+        verifyExtendedFactorValuesSampleChars(experiment.getSampleByName("Sample B"), "234", null, "a lot", "months",
+                "tissue", "MO");
+        verifyExtendedFactorValuesSampleChars(experiment.getSampleByName("Sample C"), "345", 2.2f, null, "days",
+                "unknown", null);
+        verifyExtendedFactorValuesSampleParams(experiment.getSampleByName("Sample A"), "foo", 4f, null, "kg",
+                "planting", "MO");
+        verifyExtendedFactorValuesSampleParams(experiment.getSampleByName("Sample B"), "baz", 4f, null, "kg",
+                "planting", "MO");
+        verifyExtendedFactorValuesSampleParams(experiment.getSampleByName("Sample C"), "foo", null, "less", "mg",
+                "nothing", null);
+        verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb A"), 123, 5f, null, "years", "tissue",
+                "MO");
+        verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb B"), 234, null, "a lot", "months",
+                "tissue", "MO");
+        verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb C"), 345, 2.2f, null, "days", "unknown",
+                null);
+    }
+
+    private void verifyExtendedFactorValuesHyb(Hybridization hyb, float fv1Value, Float fv2Num,
+            String fv2String, String fv2Unit, String fv3Value, String fv3ts) {
+        assertEquals(3, hyb.getFactorValues().size());
+        MeasurementFactorValue fv1 = (MeasurementFactorValue) hyb.getFactorValue("ExternalSampleId");
+        assertNotNull(fv1);        
+        assertEquals(fv1Value, fv1.getValue());
+        assertNull(fv1.getUnit());
+        if (fv2Num != null) {
+            MeasurementFactorValue fv2 = (MeasurementFactorValue) hyb.getFactorValue("Age");            
+            assertEquals(fv2Num, fv2.getValue());
+            assertEquals(fv2Unit, fv2.getUnit().getValue());
+            assertEquals("MO", fv2.getUnit().getSource().getName());
+        } else {
+            UserDefinedFactorValue fv2 = (UserDefinedFactorValue) hyb.getFactorValue("Age");
+            assertEquals(fv2String, fv2.getValue());
+            assertEquals(fv2Unit, fv2.getUnit().getValue());
+            assertEquals("MO", fv2.getUnit().getSource().getName());
+        }
+        if (fv3ts != null) {
+            TermBasedFactorValue fv3 = (TermBasedFactorValue) hyb.getFactorValue("MaterialType");
+            assertEquals(fv3Value, fv3.getTerm().getValue());
+            assertEquals(fv3ts, fv3.getTerm().getSource().getName());
+            assertNull(fv3.getUnit());
+        } else {
+            UserDefinedFactorValue fv3 = (UserDefinedFactorValue) hyb.getFactorValue("MaterialType");
+            assertEquals(fv3Value, fv3.getValue());
+            assertNull(fv3.getUnit());
+        }
+    }
+
+    private void verifyExtendedFactorValuesSampleChars(Sample s, String c1Value, Float c2Num,
+            String c2String, String c2Unit, String c3Value, String c3ts) {
+        assertEquals(2, s.getCharacteristics().size());
+        assertEquals(c1Value, s.getExternalSampleId());
+        if (c2Num != null) {
+            MeasurementCharacteristic c2 = (MeasurementCharacteristic) s.getCharacteristic("Age");            
+            assertEquals(c2Num, c2.getValue());
+            assertEquals(c2Unit, c2.getUnit().getValue());
+            assertEquals("MO", c2.getUnit().getSource().getName());
+        } else {
+            UserDefinedCharacteristic c2 = (UserDefinedCharacteristic) s.getCharacteristic("Age");
+            assertEquals(c2String, c2.getValue());
+            assertEquals(c2Unit, c2.getUnit().getValue());
+            assertEquals("MO", c2.getUnit().getSource().getName());
+        }
+        if (c3ts != null) {            
+            TermBasedCharacteristic c3 = (TermBasedCharacteristic) s.getCharacteristic("MaterialType");
+            assertEquals(c3Value, c3.getTerm().getValue());
+            assertEquals(c3ts, c3.getTerm().getSource().getName());
+            assertNull(c3.getUnit());
+        } else {
+            UserDefinedCharacteristic c3 = (UserDefinedCharacteristic) s.getCharacteristic("MaterialType");
+            assertEquals(c3Value, c3.getValue());
+            assertNull(c3.getUnit());
+        }
+    }
+
+    private void verifyExtendedFactorValuesSampleParams(Sample s, String pv1Value, Float pv2Num,
+            String pv2String, String pv2Unit, String pv3Value, String pv3ts) {        
+        assertEquals(1, s.getProtocolApplications().size());
+        ProtocolApplication pa = s.getProtocolApplications().get(0);
+        assertEquals("Dan1", pa.getProtocol().getName());
+        assertEquals(3, pa.getValues().size());
+        UserDefinedParameterValue pv1 = (UserDefinedParameterValue) pa.getValue("p1");
+        assertNotNull(pv1);
+        assertEquals(pv1Value, pv1.getValue());
+        assertNull(pv1.getUnit());
+        if (pv2Num != null) {
+            MeasurementParameterValue pv2 = (MeasurementParameterValue) pa.getValue("p3");            
+            assertEquals(pv2Num, pv2.getValue());
+            assertEquals(pv2Unit, pv2.getUnit().getValue());
+            assertEquals("MO", pv2.getUnit().getSource().getName());
+        } else {
+            UserDefinedParameterValue pv2 = (UserDefinedParameterValue) pa.getValue("p3");
+            assertEquals(pv2String, pv2.getValue());
+            assertEquals(pv2Unit, pv2.getUnit().getValue());
+            assertEquals("MO", pv2.getUnit().getSource().getName());
+        }
+        if (pv3ts != null) {            
+            TermBasedParameterValue pv3 = (TermBasedParameterValue) pa.getValue("p2");
+            assertEquals(pv3Value, pv3.getTerm().getValue());
+            assertEquals(pv3ts, pv3.getTerm().getSource().getName());
+            assertNull(pv3.getUnit());
+        } else {
+            UserDefinedParameterValue pv3 = (UserDefinedParameterValue) pa.getValue("p2");
+            assertEquals(pv3Value, pv3.getValue());
+            assertNull(pv3.getUnit());
+        }
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
