@@ -1,63 +1,48 @@
-UNTIL 2.3 release use https://gforge.nci.nih.gov/frs/download.php/4676/caarray_client_2_1_0.zip
+This is a test of the distribution artifact, caarray_client_XXX.zip
 
 1. Check out the released tag to SVN.
-E.g.,  Check out CAARRAY_R2_1_0_ALPHA3 to F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3
+E.g.,  Check out CAARRAY_XXX to C:\NCICB_CVS\CAARRAY_XXX (where "XXX" stands for the actual tag name).
 
-2. You will need to create on the fly a file "caarray-client.zip"
+3. Run "ant dist" on C:\NCICB_SVN\CAARRAY_XXX\software
 
-	a. > cd F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\build
-	b. > ant build:caarray-client.zip
-	
-3. You now should have a file F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client.zip. For instance, for CAARRAY_R2_1_0_ALPHA3 it's 17,800 KB, and it has 359 files and folders. caarray-client.jar was 232 KB.
+4. We now have C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX.zip
 
-3.5 You can also use the "pre-built" client zip files that are included in the BDA_installer Hudson Builds (e.g., caarray_client_2_1_1.zip from http://cbvapp-c1007.nci.nih.gov:48080/hudson/job/caarray2-lsd-gui-installer/)
+5. This is the caArray Client, which will be supplied to the community, and which should allow them to connect to caArray instances.
+   
+6. Unzip caarray_client_XXX.zip, e.g., to directory C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX_zip
 
-4. Unzip the F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.zip, e.g., to a newly created directory \software\caarray-client.jar\target\caarray-client_zip
+7. There is documentation on how to use the client here: 
 
-5. There is documentation at E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip\README.txt
+   C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX_zip\README.txt
+
+7. cd C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX_zip
 
 6. At the coommand prompt, run one or more of the following ant targets:
 
-For local install, using the default ports of theBDA installer:
-> E:
-> cd F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client_zip
+For local install, e.g., using the default ports of the BDA installer:
 > ant -Dhostname=localhost -Djndi.port=31099 -Dgrid.port=18080
 
 For LSD-32:
-> E:
-> cd F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client_zip
 > ant -Dhostname=cbapp-s1003 -Djndi.port=31099 -Dgrid.port=18080
 
 For LSD-64:
-> E:
-> cd F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client_zip
 > ant -Dhostname=cbapp-s1002 -Djndi.port=31099 -Dgrid.port=18080
 
 For QA-WM:
-> E:
-> cd F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client_zip
 > ant -Dhostname=cbvapp-q1001.nci.nih.gov -Djndi.port=8080 -Dgrid.port=59580
 
 For QA-Standalone:
-> E:
-> cd F:\NCICB_CVS\CAARRAY_R2_1_0_ALPHA3\software\caarray-client.jar\target\caarray-client_zip
 > ant -Dhostname=cbapp-q1002.nci.nih.gov -Djndi.port=8080 -Dgrid.port=59580
 
 For STAGE, run 
-> E:
-> cd E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip
 > ant -Dhostname=cbapp-p1001.nci.nih.gov -Djndi.port=8080 -Dgrid.port=59580
 
 For PROD, run 
-> E:
-> cd E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip
 > ant -Dhostname=cbapp-s1001.nci.nih.gov -Djndi.port=8080 -Dgrid.port=59580
 
 7. The regression test should build 100% successfully:
 
-e.g., 
-
-E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\build>cd E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip
+e.g., here's an example:
 
 E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip>ant -p
 Buildfile: build.xml
