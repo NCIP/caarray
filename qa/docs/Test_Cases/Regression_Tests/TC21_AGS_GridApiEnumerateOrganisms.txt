@@ -1,4 +1,4 @@
-Regression test for the Analytical Grid API. Enumerate Experiments.
+Regression test for the Analytical Grid API. Enumerate Organisms.
 
 1. Check out latest caArray tag of interest (lets call it CAARRAY_XXX, where XXX is "R2_3_0_ALPHA3" etc) to C:\NCICB_SVN\CAARRAY_XXX, if it's not already checked out.
 
@@ -10,7 +10,7 @@ Regression test for the Analytical Grid API. Enumerate Experiments.
 
 3. If not already done, unzip the file C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX.zip to a folder named C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX_zip.
 
-4. Copy file "https://gforge.nci.nih.gov/svnroot/caarray2/trunk/qa/docs/Test_Cases/Regression_Tests/TC_20_Artifacts/GridApiEnumerateExperiments.java" to this directory:
+4. Copy file "https://gforge.nci.nih.gov/svnroot/caarray2/trunk/qa/docs/Test_Cases/Regression_Tests/TC_20_Artifacts/GridApiEnumerateOrganism.java" to this directory:
 
 C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX_zip\example\src\gov\nih\nci\caarray\example\external\v1_0\
 
