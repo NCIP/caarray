@@ -1,0 +1,5 @@
+Regression test for the Analytical Grid API. Enumerate Experiments.
+
+1. Check out latest caArray tag of interest (lets call it CAARRAY_XXX)to C:\NCICB_SVN\CAARRAY_XXX
+
+2.  
