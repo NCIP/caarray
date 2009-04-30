@@ -1,5 +1,13 @@
 Regression test for the Analytical Grid API. Enumerate Experiments.
 
-1. Check out latest caArray tag of interest (lets call it CAARRAY_XXX)to C:\NCICB_SVN\CAARRAY_XXX
+1. Check out latest caArray tag of interest (lets call it CAARRAY_XXX, where XXX is "R2_3_0_ALPHA3" etc) to C:\NCICB_SVN\CAARRAY_XXX, if it's not already checked out.
 
-2.  
+2. Look for file with a name simliar to this: C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX.zip
+   If it doesn't exist, create it by running the following from the command line:
+
+   >cd C:\NCICB_SVN\CAARRAY_XXX\software
+   >ant dist
+
+3. If not already done, unzip the file to a folder named C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX.zip
+
+4. 
