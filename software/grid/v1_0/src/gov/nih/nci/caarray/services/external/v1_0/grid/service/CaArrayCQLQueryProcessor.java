@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -123,7 +124,7 @@ public class CaArrayCQLQueryProcessor extends LazyCQLQueryProcessor {
      */
     protected List<?> queryCaArrayService(final CQLQuery cqlQuery) {
         LOG.debug("querying ....");
-        return caArrayServer.getSearchService().searchByCQL(cqlQuery, null);
+        throw new NotImplementedException("CQL query not supported at this time");
     }
 
     /**

@@ -80,104 +80,35 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.permissions;
+package gov.nih.nci.caarray.services;
 
-import gov.nih.nci.caarray.domain.permissions.AccessProfile;
-import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
-import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
-import gov.nih.nci.security.exceptions.CSTransactionException;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 
-import java.util.List;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.InvocationContext;
 
 /**
- * Interface to the PermissionsManagementService, provides for the creation and management
- * of authorization groups and the setting of permissions.
+ * Calls the TemporaryFileCache.closeFiles() method to make sure any temporary files used by an API call are 
+ * cleaned up.
+ * 
+ * @author dkokotov 
  */
-public interface PermissionsManagementService {
-
+public class TemporaryFileCleanupInterceptor {
     /**
-     * The default JNDI name to use to lookup <code>PermissionsManagementService</code>.
+     * Calls the TemporaryFileCache.closeFiles() method to make sure any temporary files used by an API call are cleaned
+     * up.
+     * 
+     * @param invContext the method context
+     * @return the method result
+     * @throws Exception if invoking the method throws an exception.
      */
-    String JNDI_NAME = "caarray/PermissionsManagementServiceBean/local";
-
-    /**
-     * Delete a collaborator group.
-     *
-     * @param group the group to delete
-     * @throws CSTransactionException on CSM error
-     */
-    void delete(CollaboratorGroup group) throws CSTransactionException;
-
-    /**
-     * @return all collaborator groups in the system
-     */
-    List<CollaboratorGroup> getCollaboratorGroups();
-
-    /**
-     * Create a new CollaboratorGroup.  The owner of the group will be the
-     * currently logged in user.  The group will have no members.
-     *
-     * @param name name of the collaborator group.
-     * @return the new group
-     * @throws CSTransactionException on CSM error
-     * @throws CSObjectNotFoundException on CSM error
-     */
-    CollaboratorGroup create(String name) throws CSTransactionException, CSObjectNotFoundException;
-
-    /**
-     * Adds users to the target group.
-     *
-     * @param targetGroup group to add members to
-     * @param users user ids to add (as strings)
-     * @throws CSTransactionException  on CSM error
-     * @throws CSObjectNotFoundException on CSM error
-     */
-    void addUsers(CollaboratorGroup targetGroup, List<String> users)
-    throws CSTransactionException, CSObjectNotFoundException;
-
-    /**
-     * Adds users to a CSM group.
-     * @param groupName name of CSM group to add members to
-     * @param usernames usernames to add
-     * @throws CSTransactionException on CSM error
-     * @throws CSObjectNotFoundException on CSM error
-     */
-    void addUsers(String groupName, String... usernames)
-    throws CSTransactionException, CSObjectNotFoundException;
-
-    /**
-     * Removes users from the target group.
-     *
-     * @param targetGroup group to remove members from
-     * @param users user ids to remove (as strings)
-     * @throws CSTransactionException  on CSM error
-     */
-    void removeUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException;
-
-    /**
-     * Renames a collaboration group.
-     *
-     * @param targetGroup group to rename
-     * @param groupName new name
-     * @throws CSTransactionException on CSM error
-     * @throws CSObjectNotFoundException on CSM error
-     */
-    void rename(CollaboratorGroup targetGroup, String groupName)
-    throws CSTransactionException, CSObjectNotFoundException;
-
-    /**
-     * Returns users matching the given example user.
-     *
-     * @param u example user (may be null)
-     * @return users in the system meeting the criteria
-     */
-    List<User> getUsers(User u);
-
-    /**
-     * Creates or updates an access profile.
-     *
-     * @param profile the profile to create or update
-     */
-    void saveAccessProfile(AccessProfile profile);
+    @AroundInvoke
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException") // method invocation wrapper requires throws Exception
+    public Object prepareReturnValue(InvocationContext invContext) throws Exception {
+        try {
+            return invContext.proceed();
+        } finally {
+            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();            
+        }
+    }
 }

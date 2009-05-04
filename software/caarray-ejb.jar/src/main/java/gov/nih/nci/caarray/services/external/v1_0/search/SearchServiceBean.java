@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.services.external.v1_0.search;
 
 import gov.nih.nci.caarray.domain.LSID;
-import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
@@ -99,24 +98,21 @@ import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
 import gov.nih.nci.caarray.domain.search.SourceJoinableSortCriterion;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
-import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
-import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
-import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
@@ -126,14 +122,9 @@ import gov.nih.nci.caarray.services.external.v1_0.BaseV1_0ExternalService;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.cagrid.cqlquery.Object;
-import gov.nih.nci.cagrid.cqlquery.QueryModifier;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -146,10 +137,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Logger;
-import org.hibernate.criterion.Order;
 import org.jboss.annotation.ejb.RemoteBinding;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
@@ -166,73 +153,8 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class SearchServiceBean extends BaseV1_0ExternalService implements SearchService {
-    private static final Logger LOG = Logger.getLogger(SearchServiceBean.class);
-    
     static final int TIMEOUT_SECONDS = 1800;
         
-    /**
-     * {@inheritDoc}
-     */
-    public List<ArrayDesign> getAllArrayDesigns(PagingParams pagingParams) {
-        List<ArrayDesign> externalDesigns = new ArrayList<ArrayDesign>();
-        try {
-            PagingParams actualParams = defaultIfNull(pagingParams);
-            List<gov.nih.nci.caarray.domain.array.ArrayDesign> designs = getDataService().retrieveAll(
-                    gov.nih.nci.caarray.domain.array.ArrayDesign.class, actualParams.getMaxResults(),
-                    actualParams.getFirstResult(), Order.asc("name"));
-            mapCollection(designs, externalDesigns, ArrayDesign.class);
-        } catch (IllegalAccessException e) {
-            LOG.error("Could not retrieve array designs", e);
-            throw new IllegalStateException("Could not retrieve array designs", e);
-        } catch (InstantiationException e) {
-            LOG.error("Could not retrieve array designs", e);
-            throw new IllegalStateException("Could not retrieve array designs", e);
-        }
-        return externalDesigns;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<ArrayDataType> getAllArrayDataTypes(PagingParams pagingParams) {
-        List<ArrayDataType> externalTypes = new ArrayList<ArrayDataType>();
-        try {
-            PagingParams actualParams = defaultIfNull(pagingParams);
-            List<gov.nih.nci.caarray.domain.data.ArrayDataType> types = getDataService().retrieveAll(
-                    gov.nih.nci.caarray.domain.data.ArrayDataType.class, actualParams.getMaxResults(),
-                    actualParams.getFirstResult(), Order.asc("name"));
-            mapCollection(types, externalTypes, ArrayDataType.class);
-        } catch (IllegalAccessException e) {
-            LOG.error("Could not retrieve array data types", e);
-            throw new IllegalStateException("Could not retrieve array data types", e);
-        } catch (InstantiationException e) {
-            LOG.error("Could not retrieve array data types", e);
-            throw new IllegalStateException("Could not retrieve array data types", e);
-        }
-        return externalTypes;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Organism> getAllOrganisms(PagingParams pagingParams) {
-        List<Organism> externalOrganisms = new ArrayList<Organism>();
-        try {
-            PagingParams actualParams = defaultIfNull(pagingParams);
-            List<edu.georgetown.pir.Organism> organisms = getDataService().retrieveAll(
-                    edu.georgetown.pir.Organism.class, actualParams.getMaxResults(), actualParams.getFirstResult(),
-                    Order.asc("scientificName"));
-            mapCollection(organisms, externalOrganisms, Organism.class);
-        } catch (IllegalAccessException e) {
-            LOG.error("Could not retrieve organisms", e);
-            throw new IllegalStateException("Could not retrieve organisms", e);
-        } catch (InstantiationException e) {
-            LOG.error("Could not retrieve organisms", e);
-            throw new IllegalStateException("Could not retrieve organisms", e);
-        }
-        return externalOrganisms;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -326,16 +248,6 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         return externalSamples;                
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<FileType> getAllFileTypes(PagingParams pagingParams) {
-        List<FileType> externalTypes = new ArrayList<FileType>();
-        mapCollection(Arrays.asList(gov.nih.nci.caarray.domain.file.FileType.values()), externalTypes, FileType.class);
-        return externalTypes;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -345,16 +257,6 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
                 .getAllPrincipalInvestigators();
         mapCollection(persons, externalPersons, Person.class);
         return externalPersons;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<ArrayProvider> getAllProviders(PagingParams pagingParams) {
-        List<ArrayProvider> externalProviders = new ArrayList<ArrayProvider>();
-        List<Organization> providers = getArrayDesignService().getAllProviders();
-        mapCollection(providers, externalProviders, ArrayProvider.class);
-        return externalProviders;
     }
 
     /**
@@ -437,73 +339,13 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
 
     /**
      * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    public java.util.List<?> searchByCQL(gov.nih.nci.cagrid.cqlquery.CQLQuery cqlQuery, PagingParams params) {
-        Object o = cqlQuery.getTarget();
-        QueryModifier qm = cqlQuery.getQueryModifier();
-        try {
-            Class<? extends AbstractCaArrayEntity> entityClass = (Class<? extends AbstractCaArrayEntity>) Class
-                    .forName(o.getName());
-            EntityHandler<? extends AbstractCaArrayEntity> resolver = getEntityHandlerRegistry().getResolver(
-                    entityClass);
-            if (qm != null && qm.isCountOnly()) {
-                int count = resolver.countQueryByCQL(o);
-                return Collections.singletonList(count);
-            } else {
-                List<? extends AbstractCaArrayEntity> results = resolver.queryByCQL(o, defaultIfNull(params));
-                if (qm != null) {
-                    if (!ArrayUtils.isEmpty(qm.getAttributeNames())) {                        
-                        return toAttributeResults(results, qm.getAttributeNames());
-                    } else if (qm.getDistinctAttribute() != null) {
-                        return toDistinctAttributeResults(results, qm.getDistinctAttribute());
-                    }
-                }
-                return results;
-            }
-        } catch (IllegalAccessException e) {
-            return Collections.emptyList();
-        } catch (ClassNotFoundException e) {
-            return Collections.emptyList();
-        } catch (NoSuchMethodException e) {
-            return Collections.emptyList();
-        } catch (InvocationTargetException e) {
-            return Collections.emptyList();
-        }
-    }
-    
-    private List<java.lang.Object[]> toAttributeResults(List<? extends AbstractCaArrayEntity> results,
-            String[] attrNames) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        List<java.lang.Object[]> attributeResults = new ArrayList<java.lang.Object[]>();
-        for (AbstractCaArrayEntity externalResult : results) {
-            java.lang.Object[] attributeResult = new java.lang.Object[attrNames.length];
-            for (int i = 0; i < attrNames.length; i++) {
-                attributeResult[i] = PropertyUtils.getProperty(externalResult, attrNames[i]);
-            }
-            attributeResults.add(attributeResult);
-        }
-        return attributeResults;
-    }
-    
-    private List<java.lang.Object> toDistinctAttributeResults(List<? extends AbstractCaArrayEntity> results,
-            String attrName) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        Set<java.lang.Object> attributeResults = new HashSet<java.lang.Object>();
-        for (AbstractCaArrayEntity externalResult : results) {
-            java.lang.Object attributeResult = PropertyUtils.getProperty(externalResult, attrName);
-            if (!attributeResults.contains(attributeResult)) {
-                attributeResults.add(attributeResult);                                
-            }
-        }
-        return new ArrayList<java.lang.Object>(attributeResults);                                
-    }
-
-    /**
-     * {@inheritDoc}
      */    
     @SuppressWarnings("unchecked")
-    public <T extends AbstractCaArrayEntity> List<T> searchByExample(T example, PagingParams pagingParams) {
+    public <T extends AbstractCaArrayEntity> SearchResult<T> searchByExample(ExampleSearchCriteria<T> criteria,
+            PagingParams pagingParams) {
+        T example = criteria.getExample();
         EntityHandler<T> resolver = getEntityHandlerRegistry().getResolver((Class<T>) example.getClass());
-        return resolver.queryByExample(example, defaultIfNull(pagingParams));
+        return new SearchResult<T>(resolver.queryByExample(criteria, defaultIfNull(pagingParams)));
     }
     
     /**

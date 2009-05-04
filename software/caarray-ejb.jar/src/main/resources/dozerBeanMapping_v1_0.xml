@@ -28,7 +28,7 @@
         </field>
     </mapping>  
     <mapping> 
-        <class-a>gov.nih.nci.caarray.domain.contact.Organization</class-a>
+        <class-a create-method="newArrayProvider">gov.nih.nci.caarray.domain.contact.Organization</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.array.ArrayProvider</class-b>   
         <field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.array.ArrayProvider">
             <a>id</a>

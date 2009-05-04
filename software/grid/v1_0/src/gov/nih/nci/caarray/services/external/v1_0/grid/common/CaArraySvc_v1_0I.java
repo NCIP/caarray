@@ -19,12 +19,6 @@ public interface CaArraySvc_v1_0I {
   public org.oasis.wsrf.properties.QueryResourcePropertiesResponse queryResourceProperties(org.oasis.wsrf.properties.QueryResourceProperties_Element params) throws RemoteException ;
 
   /**
-   * Retrieves all organisms in the system
-   *
-   */
-  public gov.nih.nci.caarray.external.v1_0.experiment.Organism[] getAllOrganisms() throws RemoteException ;
-
-  /**
    * Search for experiments matching given criteria
    *
    * @param criteria
@@ -36,12 +30,6 @@ public interface CaArraySvc_v1_0I {
    *
    */
   public gov.nih.nci.caarray.external.v1_0.experiment.Person[] getAllPrincipalInvestigators() throws RemoteException ;
-
-  /**
-   * Return list of all file types
-   *
-   */
-  public gov.nih.nci.caarray.external.v1_0.data.FileType[] getAllFileTypes() throws RemoteException ;
 
   /**
    * return entity with given reference
@@ -56,12 +44,6 @@ public interface CaArraySvc_v1_0I {
    * @param references
    */
   public gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity[] getByReferences(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference[] references) throws RemoteException ;
-
-  /**
-   * Implements enumeration of organisms
-   *
-   */
-  public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateOrganisms() throws RemoteException ;
 
   /**
    * Begin an enumeration of experiments matching given criteria
@@ -108,19 +90,6 @@ public interface CaArraySvc_v1_0I {
    * @param dataSetRequest
    */
   public gov.nih.nci.caarray.external.v1_0.data.DataSet getDataSet(gov.nih.nci.caarray.external.v1_0.query.DataSetRequest dataSetRequest) throws RemoteException ;
-
-  /**
-   * The standard caGrid Data Service query method.
-   *
-   * @param cqlQuery
-   *	The CQL query to be executed against the data source.
-   * @return The result of executing the CQL query against the data source.
-   * @throws QueryProcessingException
-   *	Thrown when an error occurs in processing a CQL query
-   * @throws MalformedQueryException
-   *	Thrown when a query is found to be improperly formed
-   */
-  public gov.nih.nci.cagrid.cqlresultset.CQLQueryResults query(gov.nih.nci.cagrid.cqlquery.CQLQuery cqlQuery) throws RemoteException, gov.nih.nci.cagrid.data.faults.QueryProcessingExceptionType, gov.nih.nci.cagrid.data.faults.MalformedQueryExceptionType ;
 
   /**
    * search for biomaterials matching criteria
@@ -174,17 +143,18 @@ public interface CaArraySvc_v1_0I {
   public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getMageTabZipTransfer(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef,boolean compressIndividually) throws RemoteException ;
 
   /**
-   * Retrieve all array data types in system
-   *
-   */
-  public gov.nih.nci.caarray.external.v1_0.data.ArrayDataType[] getAllArrayDataTypes() throws RemoteException ;
-
-  /**
    * Search for quantitation types matching criteria
    *
    * @param criteria
    */
   public gov.nih.nci.caarray.external.v1_0.data.QuantitationType[] searchForQuantitationTypes(gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria criteria) throws RemoteException ;
+
+  /**
+   * Search using an entity as example
+   *
+   * @param exampleSearchCriteria
+   */
+  public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchByExample(gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria exampleSearchCriteria) throws RemoteException ;
 
 }
 

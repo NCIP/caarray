@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.test.api.external.v1_0.grid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.external.v1_0.data.FileType;
+import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 
 import java.rmi.RemoteException;
 
@@ -97,11 +97,11 @@ import org.junit.Test;
  */
 public class SearchApiTest extends AbstractExternalGridApiTest {
     @Test
-    public void testGetAllFileTypes() {
+    public void testGetAllPrincipalInvestigators() {
         try {
-            logForSilverCompatibility(TEST_NAME, "Grid - Retrieving all file types");
-            FileType[] allFileTypes = gridClient.getAllFileTypes();
-            assertEquals(34, allFileTypes.length);
+            logForSilverCompatibility(TEST_NAME, "Grid - Retrieving all PIs");
+            Person[] allPIs = gridClient.getAllPrincipalInvestigators();
+            assertEquals(34, allPIs.length);
         } catch (RemoteException e) {
             StringBuilder trace = buildStackTrace(e);
             logForSilverCompatibility(TEST_OUTPUT, "Remote exception: " + e + "\nTrace: " + trace);

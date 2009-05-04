@@ -119,6 +119,10 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
     }
 
     public File getFile(CaArrayFile caArrayFile) {
+        return getFile(caArrayFile, true);
+    }
+    
+    public File getFile(CaArrayFile caArrayFile, boolean uncompressed) {
         if (this.nameToFile.containsKey(caArrayFile.getName())) {
             return this.nameToFile.get(caArrayFile.getName());
         }
@@ -190,7 +194,11 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
      * {@inheritDoc}
      */
     public void closeFile(CaArrayFile caarrayFile) {
-        // nothing to do
+        closeFile(caarrayFile, true);
+    }
+    
+    public void closeFile(CaArrayFile caarrayFile, boolean uncompressed) {
+        // nothing to do        
     }
 
     /**

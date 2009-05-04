@@ -102,6 +102,7 @@ import gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.factor.Factor;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
@@ -110,16 +111,12 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 import gov.nih.nci.caarray.services.external.AbstractExternalService;
 import gov.nih.nci.caarray.services.external.BeanMapperLookup;
-import gov.nih.nci.cagrid.cqlquery.Object;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.axis.utils.StringUtils;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -134,7 +131,6 @@ import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
 public class BaseV1_0ExternalService extends AbstractExternalService {
 // CHECKSTYLE:ON    
     
-    private static final String CQL_QUERY_ERROR = "Could not execute CQL Query";
     private static final String UNCHECKED = "unchecked";
     
     /**
@@ -146,38 +142,39 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      * Constructor.
      */
     public BaseV1_0ExternalService() {
-        entityHandlerRegistry
-                .addResolver(Organism.class, new PersistentObjectHandler<Organism>(edu.georgetown.pir.Organism.class));
-        entityHandlerRegistry.addResolver(DataFile.class, new PersistentObjectHandler<DataFile>(CaArrayFile.class));
+        entityHandlerRegistry.addResolver(Organism.class, new PersistentObjectHandler<Organism>(
+                edu.georgetown.pir.Organism.class, Order.asc("scientificName")));
+        entityHandlerRegistry.addResolver(DataFile.class, new PersistentObjectHandler<DataFile>(CaArrayFile.class,
+                Order.asc("name")));
         entityHandlerRegistry.addResolver(QuantitationType.class, new PersistentObjectHandler<QuantitationType>(
-                gov.nih.nci.caarray.domain.data.QuantitationType.class));
+                gov.nih.nci.caarray.domain.data.QuantitationType.class, Order.asc("name")));
         entityHandlerRegistry.addResolver(Experiment.class, new PersistentObjectHandler<Experiment>(
-                gov.nih.nci.caarray.domain.project.Experiment.class));
+                gov.nih.nci.caarray.domain.project.Experiment.class, Order.asc("publicIdentifier")));
         entityHandlerRegistry.addResolver(Person.class, new PersistentObjectHandler<Person>(
-                gov.nih.nci.caarray.domain.contact.Person.class));
+                gov.nih.nci.caarray.domain.contact.Person.class, Order.asc("lastName"), Order.asc("firstName")));
         entityHandlerRegistry.addResolver(Hybridization.class, new PersistentObjectHandler<Hybridization>(
-                gov.nih.nci.caarray.domain.hybridization.Hybridization.class));
+                gov.nih.nci.caarray.domain.hybridization.Hybridization.class, Order.asc("name")));
         entityHandlerRegistry.addResolver(Term.class, new PersistentObjectHandler<Term>(
-                gov.nih.nci.caarray.domain.vocabulary.Term.class));
+                gov.nih.nci.caarray.domain.vocabulary.Term.class, Order.asc("value")));
         entityHandlerRegistry.addResolver(Category.class, new PersistentObjectHandler<Category>(
-                gov.nih.nci.caarray.domain.vocabulary.Category.class));
+                gov.nih.nci.caarray.domain.vocabulary.Category.class, Order.asc("name")));
         entityHandlerRegistry.addResolver(TermSource.class, new PersistentObjectHandler<TermSource>(
-                gov.nih.nci.caarray.domain.vocabulary.TermSource.class));
+                gov.nih.nci.caarray.domain.vocabulary.TermSource.class, Order.asc("name")));
         entityHandlerRegistry.addResolver(Factor.class, new PersistentObjectHandler<Factor>(
-                gov.nih.nci.caarray.domain.project.Factor.class));
+                gov.nih.nci.caarray.domain.project.Factor.class, Order.asc("name")));
         entityHandlerRegistry.addResolver(ExperimentalContact.class, new PersistentObjectHandler<ExperimentalContact>(
                 ExperimentContact.class));
         entityHandlerRegistry.addResolver(ArrayDesign.class, new PersistentObjectHandler<ArrayDesign>(
-                gov.nih.nci.caarray.domain.array.ArrayDesign.class));
+                gov.nih.nci.caarray.domain.array.ArrayDesign.class, Order.asc("name")));
         entityHandlerRegistry.addResolver(Biomaterial.class, new PersistentObjectHandler<Biomaterial>(
-                AbstractBioMaterial.class));
+                AbstractBioMaterial.class, Order.asc("name")));
         entityHandlerRegistry.addResolver(ArrayDataType.class, new PersistentObjectHandler<ArrayDataType>(
-                gov.nih.nci.caarray.domain.data.ArrayDataType.class));
+                gov.nih.nci.caarray.domain.data.ArrayDataType.class, Order.asc("name")));
         entityHandlerRegistry.addResolver(gov.nih.nci.caarray.external.v1_0.data.FileType.class, new FileTypeHandler());
         entityHandlerRegistry.addResolver(AssayType.class, new PersistentObjectHandler<AssayType>(
-                gov.nih.nci.caarray.domain.project.AssayType.class));
+                gov.nih.nci.caarray.domain.project.AssayType.class, Order.asc("name")));
         entityHandlerRegistry.addResolver(ArrayProvider.class, new PersistentObjectHandler<ArrayProvider>(
-                Organization.class));
+                Organization.class, Order.asc("name")));
     }
     
     /**
@@ -245,6 +242,9 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
         Class<? extends AbstractCaArrayEntity> entityClass = 
             (Class<? extends AbstractCaArrayEntity>) getClassFromLsid(lsid);
         EntityHandler<? extends AbstractCaArrayEntity> resolver = entityHandlerRegistry.getResolver(entityClass); 
+        if (resolver == null) {
+            return null;
+        }
         String objectId = new LSID(lsid).getObjectId();
         return resolver.resolve(objectId);
     }
@@ -320,32 +320,13 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
         java.lang.Object resolve(String objectId);
         
         /**
-         * return a list of entities of this handler's type, that match the given example entity, subject to paging
+         * return a list of entities of this handler's type, that match the given example criteria, subject to paging
          * parameters.
-         * @param example the example entity
+         * @param criteria the example criteria
          * @param pagingParams the paging parameters
          * @return the matching entities, subject to paging parameters.
          */
-        List<T> queryByExample(T example, PagingParams pagingParams);
-
-        /**
-         * return a list o entities of this handler's type that match the given CQL target object, subject to paging
-         * parameters.
-         * @param queryTarget the CQL target object expressing constraints entities should satisfy. The type of this
-         * target object must match the type of this handler.
-         * @param pagingParams the paging parameters.
-         * @return the matching entities, subject to paging parameters.
-         */
-        List<T> queryByCQL(gov.nih.nci.cagrid.cqlquery.Object queryTarget, PagingParams pagingParams);
-        
-        /**
-         * return a count of entities of this handler's type that match the given CQL target object.
-         * @param queryTarget
-         * @param queryTarget the CQL target object expressing constraints entities should satisfy. The type of this
-         * target object must match the type of this handler.
-         * @return the count matching entities.
-         */
-        int countQueryByCQL(gov.nih.nci.cagrid.cqlquery.Object queryTarget);
+        List<T> queryByExample(ExampleSearchCriteria<T> criteria, PagingParams pagingParams);
     }    
 
     /**
@@ -363,7 +344,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
          * @param internalClass the class object for the internal type for this handler
          * @param orders the set of orders to use when doing queries.
          */
-        private PersistentObjectHandler(Class<? extends PersistentObject> internalClass, Order... orders) {
+        PersistentObjectHandler(Class<? extends PersistentObject> internalClass, Order... orders) {
             this.internalClass = internalClass;
             this.orders = orders;
         }
@@ -380,47 +361,24 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
          * {@inheritDoc}
          */
         @SuppressWarnings(UNCHECKED)
-        public List<T> queryByExample(T example, PagingParams pagingParams) {
-            PersistentObject internalExample = mapEntity(example, internalClass);        
-            List<PersistentObject> results = getDaoFactory().getSearchDao().queryEntityByExample(internalExample,
-                    MatchMode.EXACT, true, StringUtils.EMPTY_STRING_ARRAY, pagingParams.getMaxResults(),
-                    pagingParams.getFirstResult(), this.orders);
-            return mapCollection(results, (Class<T>) example.getClass());
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @SuppressWarnings(UNCHECKED)
-        public List<T> queryByCQL(Object queryTarget, PagingParams pagingParams) {
-            try {
-                Class<T> entityClass = (Class<T>) Class.forName(queryTarget.getName());
-                List<? extends PersistentObject> results = getDataService().retrieveAll(this.internalClass,
-                        pagingParams.getMaxResults(), pagingParams.getFirstResult(), orders);            
-                return mapCollection(results, entityClass);
-            } catch (ClassNotFoundException e) {
-                throw new IllegalArgumentException(CQL_QUERY_ERROR, e);
-            } catch (IllegalAccessException e) {
-                throw new IllegalArgumentException(CQL_QUERY_ERROR, e);
-            } catch (InstantiationException e) {
-                throw new IllegalArgumentException(CQL_QUERY_ERROR, e);
-            }            
+        public List<T> queryByExample(ExampleSearchCriteria<T> criteria, PagingParams pagingParams) {
+            List<? extends PersistentObject> results = getDaoFactory().getSearchDao().queryEntityByExample(
+                    toInternalCriteria(criteria), pagingParams.getMaxResults(), pagingParams.getFirstResult(),
+                    this.orders);
+            return mapCollection(results, (Class<T>) criteria.getExample().getClass());
         }
         
-        /**
-         * {@inheritDoc}
-         */
-        public int countQueryByCQL(Object queryTarget) {
-            try {
-                return getDataService().retrieveAll(this.internalClass).size();
-            } catch (IllegalAccessException e) {
-                throw new IllegalArgumentException(CQL_QUERY_ERROR, e);
-            } catch (InstantiationException e) {
-                throw new IllegalArgumentException(CQL_QUERY_ERROR, e);
-            }
-        }
+        private gov.nih.nci.caarray.domain.search.ExampleSearchCriteria<? extends PersistentObject> toInternalCriteria(
+                ExampleSearchCriteria<T> criteria) {
+            gov.nih.nci.caarray.domain.search.ExampleSearchCriteria<? extends PersistentObject> intCriteria = 
+                gov.nih.nci.caarray.domain.search.ExampleSearchCriteria
+                    .forEntity(mapEntity(criteria.getExample(), internalClass));
+            intCriteria.setMatchMode(getHibernateMatchMode(criteria.getMatchMode().name()));
+            intCriteria.setExcludeNulls(criteria.isExcludeNulls());
+            return intCriteria;
+        }        
     }
-
+    
     /**
      * EntityHandler for FileTypes.
      * @author dkokotov
@@ -442,33 +400,45 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
          * {@inheritDoc}
          */
         public List<gov.nih.nci.caarray.external.v1_0.data.FileType> queryByExample(
-                gov.nih.nci.caarray.external.v1_0.data.FileType example, PagingParams pagingParams) {
+                ExampleSearchCriteria<gov.nih.nci.caarray.external.v1_0.data.FileType> criteria,
+                PagingParams pagingParams) {
             List<gov.nih.nci.caarray.external.v1_0.data.FileType> results = 
                 new ArrayList<gov.nih.nci.caarray.external.v1_0.data.FileType>();
             for (FileType type : FileType.values()) {
-                boolean nameMatches = example.getName() == null || example.getName().equals(type.name());
-                if (nameMatches) {
+                boolean nameMatches = nameMatches(type, criteria);
+                boolean categoryMatches = categoryMatches(type, criteria);
+                if (nameMatches && categoryMatches) {
                     results.add(mapEntity(type, gov.nih.nci.caarray.external.v1_0.data.FileType.class));
                 }
             }
             return results;
         }
-
-        /**
-         * {@inheritDoc}
-         */
-        public List<gov.nih.nci.caarray.external.v1_0.data.FileType> queryByCQL(Object queryTarget,
-                PagingParams pagingParams) {
-            List<FileType> results = Arrays.asList(FileType.values()).subList(pagingParams.getFirstResult(),
-                    pagingParams.getFirstResult() + pagingParams.getMaxResults());
-            return mapCollection(results, gov.nih.nci.caarray.external.v1_0.data.FileType.class);
+        
+        private boolean nameMatches(FileType type,
+                ExampleSearchCriteria<gov.nih.nci.caarray.external.v1_0.data.FileType> criteria) {
+            if (criteria.getExample().getName() == null) {
+                // types never have null names
+                return criteria.isExcludeNulls();
+            }
+            return criteria.getMatchMode().matches(criteria.getExample().getName(), type.name());
         }
-
-        /**
-         * {@inheritDoc}
-         */
-        public int countQueryByCQL(Object queryTarget) {
-            return FileType.values().length;
+        
+        private boolean categoryMatches(FileType type,
+                ExampleSearchCriteria<gov.nih.nci.caarray.external.v1_0.data.FileType> criteria) {
+            if (criteria.getExample().getCategory() == null) {
+                // types never have null names
+                return criteria.isExcludeNulls();
+            }
+            switch (criteria.getExample().getCategory()) {
+            case RAW:
+                return type.isRawArrayData();
+            case DERIVED:
+                return type.isDerivedArrayData();
+            case SUPPLEMENTAL:
+                return false;
+            default:
+                throw new IllegalStateException("Invalid file type category: " + criteria.getExample().getCategory());
+            }
         }
     }
 }

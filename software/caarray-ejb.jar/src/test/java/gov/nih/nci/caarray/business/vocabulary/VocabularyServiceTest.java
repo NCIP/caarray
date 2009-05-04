@@ -64,6 +64,7 @@ import gov.nih.nci.caarray.dao.stub.OrganismDaoStub;
 import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
+import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -78,7 +79,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
@@ -365,10 +365,9 @@ public class VocabularyServiceTest extends AbstractCaarrayTest {
          */
         @Override
         @SuppressWarnings("unchecked")
-        public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, boolean excludeNulls,
-                String[] excludeProperties, Order... order) {
-            if (entityToMatch instanceof TermSource) {
-                TermSource termSource = (TermSource) entityToMatch;
+        public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, Order... order) {
+            if (criteria.getExample() instanceof TermSource) {
+                TermSource termSource = (TermSource) criteria.getExample();
                 if (SOURCE_NAME.equalsIgnoreCase(termSource.getName()) && SOURCE_VERSION.equalsIgnoreCase(termSource.getVersion())) {
                     List list = new ArrayList();
                     list.add(termSource);
@@ -376,7 +375,7 @@ public class VocabularyServiceTest extends AbstractCaarrayTest {
                 }
             }
 
-            return super.queryEntityByExample(entityToMatch, mode, excludeNulls, excludeProperties, order);
+            return super.queryEntityByExample(criteria, order);
         }
 
         /**

@@ -104,14 +104,14 @@
 
 	<target name="init:bootstrap:dependencies" description="This target allows build clients of ivy or bda-utils to initialize them here."/>
 
-    <property name="ivy.cache.dir" value="${basedir}/.ivy2-caarray-cache"/>
-    <property name="asm.2.2.1.lib" value="${lib.dir}/caarray-asm_2.2.1" />
-    <property name="asm.3.0.lib" value="${lib.dir}/caarray-asm_3.0" />
-    <property name="project.lib" value="${lib.dir}/caarray-project" />
-    <property name="bda-utils.dir" value="${basedir}/bda-utils" />
-    <property name="bda.version" value="0.10.4" />
-    <property name="bda.utils.build.file" value="${bda-utils.dir}/bda-build-utils-${bda.version}.xml"/>
-    <property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
+	<property name="ivy.cache.dir" value="${basedir}/.ivy2-caarray-cache"/>
+	<property name="asm.2.2.1.lib" value="${lib.dir}/caarray-asm_2.2.1" />
+	<property name="asm.3.0.lib" value="${lib.dir}/caarray-asm_3.0" />
+	<property name="project.lib" value="${lib.dir}/caarray-project" />
+	<property name="bda-utils.dir" value="${basedir}/bda-utils" />
+	<property name="bda.version" value="0.10.4" />
+	<property name="bda.utils.build.file" value="${bda-utils.dir}/bda-build-utils-${bda.version}.xml"/>
+	<property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
 
 	<ant antfile="caarray-ivy-build.xml" dir="${basedir}" inheritAll="true" inheritRefs="true" target="retrieve-bda-dependencies">
 		<property name="no.ivy" value="${no.ivy}"/>
@@ -174,6 +174,7 @@
 		<include name="caGrid-Transfer-common-1.2.jar" />
 		<include name="caGrid-Transfer-stubs-1.2.jar" />
 		<include name="caGrid-wsEnum-stubs-1.2.jar" />
+		<include name="caGrid-wsEnum-1.2.jar" />
 		<include name="commons-httpclient-3.0.jar" />
 	</fileset>
 
@@ -958,6 +959,13 @@
 		</path>
 		<property name="rmiio.jar" refid="rmiio.jar.fileset" />
 
+		<path id="wsdl4j.jar.path">
+			<fileset dir="${project.lib}" id="wsdl4j.jar.fileset">
+				<include name="wsdl4j-*.jar"/>
+			</fileset>
+		</path>
+		<property name="wsdl4j.jar" refid="wsdl4j.jar.fileset" />
+
 		<path id="jboss.dependencies.path">
 			<fileset id="jboss.dependencies.fileset" dir="${project.lib}">
 				<include name="${jboss-annotations-ejb3.jar}"/>
@@ -1169,24 +1177,72 @@
 			<fileset refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
 		</path>
 
-		<path id="caarray-client.dependencies.path">
-			<fileset dir="${project.lib}" id="caarray-client.dependencies.fileset">
-				<include name="${axis.jar}" />
-				<include name="${caGrid-cql.jar}"/>
+		<path id="caarray-client.common.dependencies.path">
+			<fileset dir="${project.lib}" id="caarray-client.common.dependencies.fileset">
 				<include name="${commons-collections.jar}" />
 				<include name="${commons-lang.jar}" />
 				<include name="${commons-io.jar}" />
 				<include name="${commons-logging.jar}" />
+				<include name="${log4j.jar}" />
+			</fileset>
+		</path>
+
+		<path id="caarray-client.common.java.dependencies.path">
+			<fileset refid="caarray-client.common.dependencies.fileset"/>
+			<fileset refid="jboss.dependencies.fileset"/>
+			<fileset dir="${project.lib}">
+				<include name="${jboss-ejb3x.jar}" />
+			</fileset>
+		</path>
+		<pathtofileset name="caarray-client.common.java.dependencies.fileset" pathrefid="caarray-client.common.java.dependencies.path" dir="${project.lib}"/>
+
+		<path id="caarray-client.common.grid.dependencies.path">
+			<fileset refid="caarray-client.common.dependencies.fileset"/>
+			<fileset refid="grid.dependencies.lib.fileset"/>
+			<fileset dir="${project.lib}">
+				<include name="${axis.jar}" />
+				<include name="${javaee.jar}"/>
+				<include name="${wsdl4j.jar}"/>
+			</fileset>
+		</path>
+		<pathtofileset name="caarray-client.common.grid.dependencies.fileset" pathrefid="caarray-client.common.grid.dependencies.path" dir="${project.lib}"/>
+
+		<path id="caarray-client.legacy.common.dependencies.path">
+			<fileset dir="${project.lib}">
+				<include name="${axis.jar}" />
+				<include name="${caGrid-cql.jar}" />
 				<include name="${csmapi.jar}" />
 				<include name="${ejb3-persistence.jar}" />
 				<include name="${hibernate.jar}" />
 				<include name="${hibernate-annotations.jar}" />
-				<include name="${log4j.jar}" />
 				<include name="${javassist.jar}" />
-				<include name="${jboss-ejb3x.jar}" />
 				<include name="${nci-commons-core.jar}" />
 			</fileset>
 		</path>
+		<pathtofileset name="caarray-client.legacy.common.dependencies.fileset" pathrefid="caarray-client.legacy.common.dependencies.path" dir="${project.lib}"/>
+
+		<path id="caarray-client.legacy.java.dependencies.path">
+			<fileset refid="caarray-client.common.java.dependencies.fileset"/>
+			<fileset refid="caarray-client.legacy.common.dependencies.fileset"/>
+		</path>
+		<pathtofileset name="caarray-client.legacy.java.dependencies.fileset" pathrefid="caarray-client.legacy.java.dependencies.path" dir="${project.lib}"/>
+
+		<path id="caarray-client.legacy.grid.dependencies.path">
+			<fileset refid="caarray-client.common.grid.dependencies.fileset"/>
+			<fileset refid="caarray-client.legacy.common.dependencies.fileset"/>
+		</path>
+		<pathtofileset name="caarray-client.legacy.grid.dependencies.fileset" pathrefid="caarray-client.legacy.grid.dependencies.path" dir="${project.lib}"/>
+
+		<path id="caarray-client.external.v1_0.java.dependencies.path">
+			<fileset refid="caarray-client.common.java.dependencies.fileset"/>
+			<fileset refid="external.api.dependencies.fileset"/>
+		</path>
+		<pathtofileset name="caarray-client.external.v1_0.java.dependencies.fileset" pathrefid="caarray-client.external.v1_0.java.dependencies.path" dir="${project.lib}"/>
+
+		<path id="caarray-client.external.v1_0.grid.dependencies.path">
+			<fileset refid="caarray-client.common.grid.dependencies.fileset"/>
+		</path>
+		<pathtofileset name="caarray-client.external.v1_0.grid.dependencies.fileset" pathrefid="caarray-client.external.v1_0.grid.dependencies.path" dir="${project.lib}"/>
 
 		<path id="grid.dependencies.lib.path">
 			<fileset dir="${project.lib}" id="grid.dependencies.lib.fileset">
@@ -1256,7 +1312,6 @@
 	<condition property="internal.grid.useGlobus" value="true">
 		<istrue value="${grid.useGlobus}"/>
 	</condition>
-
 
 	<!-- ******************************************************************* -->
 	<!-- ** CLEAN TARGETS                                                 ** -->
@@ -1532,7 +1587,9 @@
 					<attribute name="Implementation-Vendor" value="5AM Solutions" />
 				</section>
 			</manifest>
-			<fileset dir="${caarray-client.classes.dir}" />
+			<fileset dir="${caarray-client.classes.dir}">
+				<exclude name="**/services/external/**/*.class" />				
+			</fileset>
 			<fileset dir="${caarray-client.resources.dir}" />
 			<fileset dir="${caarray-common.classes.dir}">
 				<include name="**/domain/**" />
@@ -1546,7 +1603,7 @@
 			<fileset dir="${caarray-ejb.classes.dir}">
 				<include name="**/services/**/*Service.class" />
 				<include name="**/services/**/*Exception.class" />
-				<include name="**/services/external/**/*.class" />
+				<exclude name="**/services/external/**/*.class" />
 			</fileset>
 		</jar>
 	</target>
@@ -1567,12 +1624,13 @@
 						<attribute name="Implementation-Vendor" value="5AM Solutions" />
 					</section>
 				</manifest>
-				<fileset dir="${caarray-client.classes.dir}" />
+				<fileset dir="${caarray-client.classes.dir}">
+					<exclude name="**/services/CaArrayServer.class" />				
+				</fileset>
 				<fileset dir="${caarray-client.resources.dir}" />
 				<fileset dir="${caarray-common.classes.dir}">
 					<include name="**/external/@{version}/**" />
 					<include name="**/util/**" />
-					<include name="**/validation/**" />
 				</fileset>
 				<fileset dir="${caarray-ejb.classes.dir}">
 					<include name="**/services/external/@{version}/**/*Service.class" />
@@ -1596,13 +1654,12 @@
 		<zip destfile="${caarray-client.target.dir}/caarray-client-legacy.zip">
 			<fileset dir="${caarray-client.target.dir}" includes="caarray-client-legacy.jar" />
 			<fileset dir="${caarray-client.dir}/src/distribution/resources/legacy" />
-			<zipfileset prefix="lib/java" refid="caarray-client.dependencies.fileset" />
-			<zipfileset prefix="lib/java" refid="jboss.dependencies.fileset" />
-            <zipfileset prefix="docs/api" dir="${caarray-client.target.dir}" includes="docs/api/legacy/**" />
+			<zipfileset prefix="lib/java" refid="caarray-client.legacy.java.dependencies.fileset" />
+			<zipfileset prefix="docs/api" dir="${caarray-client.target.dir}" includes="docs/api/legacy/**" />
 			<zipfileset prefix="docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_client_model.eap" />
 			<zipfileset prefix="example/java/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/legacy/java/**/*.java"/>
 			<zipfileset prefix="example/grid/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/legacy/grid/**/*.java"/>
-			<zipfileset prefix="lib/grid" refid="grid.dependencies.lib.fileset" />
+			<zipfileset prefix="lib/grid" refid="caarray-client.legacy.grid.dependencies.fileset" />
 			<zipfileset prefix="lib/grid" refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
 			<zipfileset prefix="lib/grid" refid="grid.dependencies.caarray-grid-svc.legacy.build.fileset" />
 			<zipfileset prefix="lib/grid" file="${caarray-grid-svc.common.jar}" />
@@ -1617,14 +1674,12 @@
 			<zip destfile="${caarray-client.target.dir}/caarray-client-external-@{version}.zip">
 				<fileset dir="${caarray-client.target.dir}" includes="caarray-client-external-@{version}.jar" />
 				<fileset dir="${caarray-client.dir}/src/distribution/resources/external/@{version}" />
-				<zipfileset prefix="lib/java" refid="caarray-client.dependencies.fileset" />
-				<zipfileset prefix="lib/java" refid="external.api.dependencies.fileset" />
-				<zipfileset prefix="lib/java" refid="jboss.dependencies.fileset" />
+				<zipfileset prefix="lib/java" refid="caarray-client.external.@{version}.java.dependencies.fileset" />
 				<zipfileset prefix="docs/api" dir="${caarray-client.target.dir}" includes="docs/api/external/@{version}/**" />
 				<zipfileset prefix="docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_external_model.eap" />
 				<zipfileset prefix="example/java/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/external/@{version}/java/**/*.java"/>
 				<zipfileset prefix="example/grid/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/external/@{version}/grid/**/*.java"/>
-				<zipfileset prefix="lib/grid" refid="grid.dependencies.lib.fileset" />
+				<zipfileset prefix="lib/grid" refid="caarray-client.external.@{version}.grid.dependencies.fileset" />				
 				<zipfileset prefix="lib/grid" refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
 				<zipfileset prefix="lib/grid" refid="grid.dependencies.caarray-grid-svc.@{version}.build.fileset" />
 				<zipfileset prefix="lib/grid" file="${caarray-grid-svc.common.jar}" />

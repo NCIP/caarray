@@ -92,7 +92,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- *
+ * Represents an organization.
  */
 @Entity
 @DiscriminatorValue("O")
@@ -123,14 +123,16 @@ public class Organization extends AbstractContact {
     }
 
     /**
-     * @return the provider
+     * @return whether this organization represents an array provider.
      */
     public boolean isProvider() {
         return this.provider;
     }
 
     /**
-     * @param provider the provider to set
+     * Sets whether this organization represents an array provider.
+     * 
+     * @param provider whether this organization represents an array provider.
      */
     public void setProvider(boolean provider) {
         this.provider = provider;
@@ -169,5 +171,16 @@ public class Organization extends AbstractContact {
         return new HashCodeBuilder(1753948321, 1917926501).appendSuper(super.hashCode()).append(this.provider).append(
                 this.name).toHashCode();
         // CHECKSTYLE:ON
+    }
+
+    /**
+     * Create a new Organization instance that represents an array provider.
+     * 
+     * @return the new Organization instance 
+     */
+    public static Organization newArrayProvider() {
+        Organization o = new Organization();
+        o.setProvider(true);
+        return o;
     }
 }

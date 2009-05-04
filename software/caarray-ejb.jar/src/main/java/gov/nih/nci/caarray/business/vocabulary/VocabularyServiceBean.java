@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.OrganismDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -104,7 +105,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 
 /**
@@ -164,8 +164,9 @@ public class VocabularyServiceBean implements VocabularyService {
         TermSource querySource = new TermSource();
         querySource.setName(name);
         querySource.setVersion(version);
-        return CaArrayUtils.uniqueResult(getVocabularyDao().queryEntityByExample(querySource, MatchMode.EXACT, false,
-                new String[] {"url" }, Order.desc(VERSION_FIELD)));
+        return CaArrayUtils.uniqueResult(getVocabularyDao().queryEntityByExample(
+                ExampleSearchCriteria.forEntity(querySource).includeNulls().excludeProperties("url"),
+                Order.desc(VERSION_FIELD)));
     }
 
     /**
@@ -185,8 +186,9 @@ public class VocabularyServiceBean implements VocabularyService {
         TermSource querySource = new TermSource();
         querySource.setUrl(url);
         querySource.setVersion(version);
-        return CaArrayUtils.uniqueResult(getVocabularyDao().queryEntityByExample(querySource, MatchMode.EXACT, false,
-                new String[] {"name" }, Order.desc(VERSION_FIELD)));
+        return CaArrayUtils.uniqueResult(getVocabularyDao().queryEntityByExample(
+                ExampleSearchCriteria.forEntity(querySource).includeNulls().excludeProperties("name"),
+                Order.desc(VERSION_FIELD)));
     }
 
     /**
@@ -204,7 +206,7 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     public List<TermSource> getAllSources() {
-        return getVocabularyDao().queryEntityByExample(new TermSource(), Order.asc("name"));
+        return this.daoFactory.getSearchDao().retrieveAll(TermSource.class, Order.asc("name"));
     }
 
     /**

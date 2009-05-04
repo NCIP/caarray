@@ -83,14 +83,12 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.CaArrayDao;
+import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -99,34 +97,26 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * Base class for all dao stubs.
  */
 public class AbstractDaoStub implements CaArrayDao {
-
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch, Order... orders) {
+    public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, int maxResults,
+            int firstResult, Order... orders) {
         return new ArrayList<T>();
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T> List<T> queryEntityByExample(T entityToMatch, Order... order) {
-        return queryEntityByExample(entityToMatch, MatchMode.EXACT, order);
+    public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, Order... orders) {
+        return queryEntityByExample(criteria, 0, 0, orders);
     }
-
+    
     /**
      * {@inheritDoc}
      */
-    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, Order... order) {
-        return queryEntityByExample(entityToMatch, mode, true, ArrayUtils.EMPTY_STRING_ARRAY, order);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, boolean excludeNulls,
-            String[] excludeProperties, Order... order) {
-        return new ArrayList<T>();
+    public <T extends PersistentObject> List<T> queryEntityByExample(T entityToMatch, Order... orders) {
+        return queryEntityByExample(ExampleSearchCriteria.forEntity(entityToMatch), orders);
     }
 
     /**
@@ -176,10 +166,5 @@ public class AbstractDaoStub implements CaArrayDao {
      */
     public void evictObject(Object object) {
         // no-op
-    }
-
-    public <T> List<T> queryEntityByExample(T example, MatchMode matchMode, boolean excludeNulls,
-            String[] excludeProperties, int maxResults, int firstResult, Order... orders) {
-        return Collections.emptyList();
     }
 }

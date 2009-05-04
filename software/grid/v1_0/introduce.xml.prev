@@ -1,24 +1,5 @@
 <ns1:ServiceDescription introduceVersion="1.2" xmlns:ns1="gme://gov.nih.nci.cagrid/1/Introduce">
  <ns2:Namespaces xsi:type="ns2:NamespacesType" xmlns:ns2="gme://gov.nih.nci.cagrid.introduce/1/Namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ns2:Namespace location="./v1_0_gov.nih.nci.caarray.external.xsd" namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external" packageName="gov.nih.nci.caarray.external.v1_0" xsi:type="ns2:NamespaceType">
-   <ns2:SchemaElement className="AbstractCaArrayEntity" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="AbstractCaArrayEntity" xsi:type="ns2:SchemaElementType"/>
-   <ns2:SchemaElement className="CaArrayEntityReference" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="CaArrayEntityReference" xsi:type="ns2:SchemaElementType"/>
-  </ns2:Namespace>
-  <ns2:Namespace location="./v1_0_gov.nih.nci.caarray.external.vocabulary.xsd" namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary" packageName="gov.nih.nci.caarray.external.v1_0.vocabulary" xsi:type="ns2:NamespaceType">
-   <ns2:SchemaElement className="Category" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="Category" xsi:type="ns2:SchemaElementType"/>
-   <ns2:SchemaElement className="Term" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="Term" xsi:type="ns2:SchemaElementType"/>
-   <ns2:SchemaElement className="TermSource" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="TermSource" xsi:type="ns2:SchemaElementType"/>
-  </ns2:Namespace>
-  <ns2:Namespace location="./v1_0_gov.nih.nci.caarray.external.value.xsd" namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value" packageName="gov.nih.nci.caarray.external.v1_0.value" xsi:type="ns2:NamespaceType">
-   <ns2:SchemaElement className="AbstractValue" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="AbstractValue" xsi:type="ns2:SchemaElementType"/>
-   <ns2:SchemaElement className="MeasurementValue" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="MeasurementValue" xsi:type="ns2:SchemaElementType"/>
-   <ns2:SchemaElement className="TermValue" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="TermValue" xsi:type="ns2:SchemaElementType"/>
-   <ns2:SchemaElement className="UserDefinedValue" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="UserDefinedValue" xsi:type="ns2:SchemaElementType"/>
-  </ns2:Namespace>
-  <ns2:Namespace location="./v1_0_gov.nih.nci.caarray.external.factor.xsd" namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.factor" packageName="gov.nih.nci.caarray.external.v1_0.factor" xsi:type="ns2:NamespaceType">
-   <ns2:SchemaElement className="Factor" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="Factor" xsi:type="ns2:SchemaElementType"/>
-   <ns2:SchemaElement className="FactorValue" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="FactorValue" xsi:type="ns2:SchemaElementType"/>
-  </ns2:Namespace>
   <ns2:Namespace location="./v1_0_gov.nih.nci.caarray.external.data.xsd" namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" packageName="gov.nih.nci.caarray.external.v1_0.data" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="AbstractDataColumn" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="AbstractDataColumn" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="ArrayDataType" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="ArrayDataType" xsi:type="ns2:SchemaElementType"/>
@@ -46,16 +27,37 @@
    <ns2:SchemaElement className="Organism" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="Organism" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Person" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="Person" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
+  <ns2:Namespace location="./v1_0_gov.nih.nci.caarray.external.xsd" namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external" packageName="gov.nih.nci.caarray.external.v1_0" xsi:type="ns2:NamespaceType">
+   <ns2:SchemaElement className="AbstractCaArrayEntity" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="AbstractCaArrayEntity" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="CaArrayEntityReference" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="CaArrayEntityReference" xsi:type="ns2:SchemaElementType"/>
+  </ns2:Namespace>
+  <ns2:Namespace location="./v1_0_gov.nih.nci.caarray.external.value.xsd" namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value" packageName="gov.nih.nci.caarray.external.v1_0.value" xsi:type="ns2:NamespaceType">
+   <ns2:SchemaElement className="AbstractValue" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="AbstractValue" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="MeasurementValue" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="MeasurementValue" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="TermValue" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="TermValue" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="UserDefinedValue" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="UserDefinedValue" xsi:type="ns2:SchemaElementType"/>
+  </ns2:Namespace>
+  <ns2:Namespace location="./v1_0_gov.nih.nci.caarray.external.vocabulary.xsd" namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary" packageName="gov.nih.nci.caarray.external.v1_0.vocabulary" xsi:type="ns2:NamespaceType">
+   <ns2:SchemaElement className="Category" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="Category" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="Term" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="Term" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="TermSource" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="TermSource" xsi:type="ns2:SchemaElementType"/>
+  </ns2:Namespace>
   <ns2:Namespace location="./v1_0_gov.nih.nci.caarray.external.query.xsd" namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" packageName="gov.nih.nci.caarray.external.v1_0.query" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="BiomaterialKeywordSearchCriteria" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="BiomaterialKeywordSearchCriteria" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="BiomaterialSearchCriteria" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="BiomaterialSearchCriteria" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="DataSetRequest" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="DataSetRequest" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="ExampleSearchCriteria" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="ExampleSearchCriteria" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="ExperimentSearchCriteria" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="ExperimentSearchCriteria" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="FileDownloadRequest" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="FileDownloadRequest" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="FileSearchCriteria" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="FileSearchCriteria" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="HybridizationSearchCriteria" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="HybridizationSearchCriteria" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="KeywordSearchCriteria" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="KeywordSearchCriteria" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="QuantitationTypeSearchCriteria" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="QuantitationTypeSearchCriteria" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="SearchResult" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="SearchResult" xsi:type="ns2:SchemaElementType"/>
+  </ns2:Namespace>
+  <ns2:Namespace location="./v1_0_gov.nih.nci.caarray.external.factor.xsd" namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.factor" packageName="gov.nih.nci.caarray.external.v1_0.factor" xsi:type="ns2:NamespaceType">
+   <ns2:SchemaElement className="Factor" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="Factor" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="FactorValue" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="FactorValue" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace location="./v1_0_gov.nih.nci.caarray.external.sample.xsd" namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" packageName="gov.nih.nci.caarray.external.v1_0.sample" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="Biomaterial" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="Biomaterial" xsi:type="ns2:SchemaElementType"/>
@@ -224,172 +226,159 @@
      <ns4:ImportInformation namespace="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" packageName="gov.nih.nci.cagrid.introduce.security.stubs" portTypeName="ServiceSecurityPortType" wsdlFile="ServiceSecurity.wsdl"/>
      <ns4:ProviderInformation providerClass="gov.nih.nci.cagrid.introduce.security.service.globus.ServiceSecurityProviderImpl"/>
     </ns4:Method>
-    <ns4:Method description="Retrieves all organisms in the system" isImported="false" isProvided="false" name="getAllOrganisms" xsi:type="ns4:MethodType">
-     <ns4:Inputs/>
-     <ns4:Output qName="ns10:Organism" description="" isArray="true" xmlns:ns10="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"/>
-     <ns4:Exceptions/>
-    </ns4:Method>
     <ns4:Method description="Search for experiments matching given criteria" isImported="false" isProvided="false" name="searchForExperiments" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns11:ExperimentSearchCriteria" description="" isArray="false" name="criteria" xmlns:ns11="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+      <ns4:Input qName="ns10:ExperimentSearchCriteria" description="" isArray="false" name="criteria" xmlns:ns10="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns12:Experiment" description="" isArray="true" xmlns:ns12="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"/>
+     <ns4:Output qName="ns11:Experiment" description="" isArray="true" xmlns:ns11="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="return list of all persons who are principal investigators for some experiment" isImported="false" isProvided="false" name="getAllPrincipalInvestigators" xsi:type="ns4:MethodType">
      <ns4:Inputs/>
-     <ns4:Output qName="ns13:Person" description="" isArray="true" xmlns:ns13="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"/>
-     <ns4:Exceptions/>
-    </ns4:Method>
-    <ns4:Method description="Return list of all file types" isImported="false" isProvided="false" name="getAllFileTypes" xsi:type="ns4:MethodType">
-     <ns4:Inputs/>
-     <ns4:Output qName="ns14:FileType" description="" isArray="true" xmlns:ns14="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"/>
+     <ns4:Output qName="ns12:Person" description="" isArray="true" xmlns:ns12="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="return entity with given reference" isImported="false" isProvided="false" name="getByReference" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns15:CaArrayEntityReference" description="" isArray="false" name="reference" xmlns:ns15="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
+      <ns4:Input qName="ns13:CaArrayEntityReference" description="" isArray="false" name="reference" xmlns:ns13="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns16:AbstractCaArrayEntity" description="" isArray="false" xmlns:ns16="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
+     <ns4:Output qName="ns14:AbstractCaArrayEntity" description="" isArray="false" xmlns:ns14="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="get a list of entities for the given list of references" isImported="false" isProvided="false" name="getByReferences" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns17:CaArrayEntityReference" description="" isArray="true" name="references" xmlns:ns17="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
+      <ns4:Input qName="ns15:CaArrayEntityReference" description="" isArray="true" name="references" xmlns:ns15="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns18:AbstractCaArrayEntity" description="" isArray="true" xmlns:ns18="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
-     <ns4:Exceptions/>
-    </ns4:Method>
-    <ns4:Method description="Implements enumeration of organisms" isImported="false" isProvided="false" name="enumerateOrganisms" xsi:type="ns4:MethodType">
-     <ns4:Inputs/>
-     <ns4:Output qName="ns19:EnumerationResponseContainer" description="" isArray="false" xmlns:ns19="http://gov.nih.nci.cagrid.enumeration/EnumerationResponseContainer"/>
+     <ns4:Output qName="ns16:AbstractCaArrayEntity" description="" isArray="true" xmlns:ns16="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="Begin an enumeration of experiments matching given criteria" isImported="false" isProvided="false" name="enumerateExperiments" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns20:ExperimentSearchCriteria" description="" isArray="false" name="experimentSearchCriteria" xmlns:ns20="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+      <ns4:Input qName="ns17:ExperimentSearchCriteria" description="" isArray="false" name="experimentSearchCriteria" xmlns:ns17="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns21:EnumerationResponseContainer" description="" isArray="false" xmlns:ns21="http://gov.nih.nci.cagrid.enumeration/EnumerationResponseContainer"/>
+     <ns4:Output qName="ns18:EnumerationResponseContainer" description="" isArray="false" xmlns:ns18="http://gov.nih.nci.cagrid.enumeration/EnumerationResponseContainer"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="Returns a grid transfer reference which will retrieve the zip of all the files included in the download" isImported="false" isProvided="false" name="getFileContentsZipTransfer" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns22:FileDownloadRequest" description="" isArray="false" name="fileDownloadRequest" xmlns:ns22="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+      <ns4:Input qName="ns19:FileDownloadRequest" description="" isArray="false" name="fileDownloadRequest" xmlns:ns19="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
       <ns4:Input qName="xsd:boolean" description="" isArray="false" name="compressIndividually" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns23:TransferServiceContextReference" description="" isArray="false" xmlns:ns23="http://transfer.cagrid.org/TransferService/Context/types"/>
+     <ns4:Output qName="ns20:TransferServiceContextReference" description="" isArray="false" xmlns:ns20="http://transfer.cagrid.org/TransferService/Context/types"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="Returns an array of file content transfers for all files in the given request" isImported="false" isProvided="false" name="getFileContentsTransfers" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns24:FileDownloadRequest" description="" isArray="false" name="fileDownloadRequest" xmlns:ns24="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+      <ns4:Input qName="ns21:FileDownloadRequest" description="" isArray="false" name="fileDownloadRequest" xmlns:ns21="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
       <ns4:Input qName="xsd:boolean" description="" isArray="false" name="compress" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns25:TransferServiceContextReference" description="" isArray="true" xmlns:ns25="http://transfer.cagrid.org/TransferService/Context/types"/>
+     <ns4:Output qName="ns22:TransferServiceContextReference" description="" isArray="true" xmlns:ns22="http://transfer.cagrid.org/TransferService/Context/types"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="Returns an enumeration that will return transfer context service references for each file in the request" isImported="false" isProvided="false" name="enumerateFileContentTransfers" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns26:FileDownloadRequest" description="" isArray="false" name="fileDownloadRequest" xmlns:ns26="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+      <ns4:Input qName="ns23:FileDownloadRequest" description="" isArray="false" name="fileDownloadRequest" xmlns:ns23="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
       <ns4:Input qName="xsd:boolean" description="" isArray="false" name="compress" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns27:EnumerationResponseContainer" description="" isArray="false" xmlns:ns27="http://gov.nih.nci.cagrid.enumeration/EnumerationResponseContainer"/>
+     <ns4:Output qName="ns24:EnumerationResponseContainer" description="" isArray="false" xmlns:ns24="http://gov.nih.nci.cagrid.enumeration/EnumerationResponseContainer"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="Returns a grid transfer reference for retrieving the given reference" isImported="false" isProvided="false" name="getFileContentsTransfer" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns28:CaArrayEntityReference" description="" isArray="false" name="fileRef" xmlns:ns28="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
+      <ns4:Input qName="ns25:CaArrayEntityReference" description="" isArray="false" name="fileRef" xmlns:ns25="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
       <ns4:Input qName="xsd:boolean" description="" isArray="false" name="compress" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns29:TransferServiceContextReference" description="" isArray="false" xmlns:ns29="http://transfer.cagrid.org/TransferService/Context/types"/>
+     <ns4:Output qName="ns26:TransferServiceContextReference" description="" isArray="false" xmlns:ns26="http://transfer.cagrid.org/TransferService/Context/types"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="REtrieves a parsed data set" isImported="false" isProvided="false" name="getDataSet" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns30:DataSetRequest" description="" isArray="false" name="dataSetRequest" xmlns:ns30="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+      <ns4:Input qName="ns27:DataSetRequest" description="" isArray="false" name="dataSetRequest" xmlns:ns27="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns31:DataSet" description="" isArray="false" xmlns:ns31="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"/>
+     <ns4:Output qName="ns28:DataSet" description="" isArray="false" xmlns:ns28="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="The standard caGrid Data Service query method." isImported="true" isProvided="true" name="query" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns32:CQLQuery" description="The CQL query to be executed against the data source." isArray="false" name="cqlQuery" xmlns:ns32="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery"/>
+      <ns4:Input qName="ns29:CQLQuery" description="The CQL query to be executed against the data source." isArray="false" name="cqlQuery" xmlns:ns29="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns33:CQLQueryResultCollection" description="The result of executing the CQL query against the data source." isArray="false" xmlns:ns33="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet"/>
+     <ns4:Output qName="ns30:CQLQueryResultCollection" description="The result of executing the CQL query against the data source." isArray="false" xmlns:ns30="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet"/>
      <ns4:Exceptions>
-      <ns4:Exception description="Thrown when an error occurs in processing a CQL query" name="QueryProcessingException" qname="ns34:QueryProcessingException" xmlns:ns34="http://gov.nih.nci.cagrid.data/DataServiceExceptions"/>
-      <ns4:Exception description="Thrown when a query is found to be improperly formed" name="MalformedQueryException" qname="ns35:MalformedQueryException" xmlns:ns35="http://gov.nih.nci.cagrid.data/DataServiceExceptions"/>
+      <ns4:Exception description="Thrown when an error occurs in processing a CQL query" name="QueryProcessingException" qname="ns31:QueryProcessingException" xmlns:ns31="http://gov.nih.nci.cagrid.data/DataServiceExceptions"/>
+      <ns4:Exception description="Thrown when a query is found to be improperly formed" name="MalformedQueryException" qname="ns32:MalformedQueryException" xmlns:ns32="http://gov.nih.nci.cagrid.data/DataServiceExceptions"/>
      </ns4:Exceptions>
-     <ns4:ImportInformation inputMessage="ns36:QueryRequest" namespace="http://gov.nih.nci.cagrid.data/DataService" outputMessage="ns36:QueryResponse" packageName="gov.nih.nci.cagrid.data" portTypeName="DataServicePortType" wsdlFile="DataService.wsdl" xmlns:ns36="http://gov.nih.nci.cagrid.data/DataService"/>
+     <ns4:ImportInformation inputMessage="ns33:QueryRequest" namespace="http://gov.nih.nci.cagrid.data/DataService" outputMessage="ns33:QueryResponse" packageName="gov.nih.nci.cagrid.data" portTypeName="DataServicePortType" wsdlFile="DataService.wsdl" xmlns:ns33="http://gov.nih.nci.cagrid.data/DataService"/>
      <ns4:ProviderInformation providerClass="gov.nih.nci.cagrid.data.service.globus.DataServiceProviderImpl"/>
     </ns4:Method>
     <ns4:Method description="search for biomaterials matching criteria" isImported="false" isProvided="false" name="searchForBiomaterials" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns37:BiomaterialSearchCriteria" description="" isArray="false" name="criteria" xmlns:ns37="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+      <ns4:Input qName="ns34:BiomaterialSearchCriteria" description="" isArray="false" name="criteria" xmlns:ns34="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns38:Biomaterial" description="" isArray="true" xmlns:ns38="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"/>
+     <ns4:Output qName="ns35:Biomaterial" description="" isArray="true" xmlns:ns35="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="search for hybridizations matching criteria" isImported="false" isProvided="false" name="searchForHybridizations" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns39:HybridizationSearchCriteria" description="" isArray="false" name="criteria" xmlns:ns39="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+      <ns4:Input qName="ns36:HybridizationSearchCriteria" description="" isArray="false" name="criteria" xmlns:ns36="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns40:Hybridization" description="the list of hybridizations" isArray="true" xmlns:ns40="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"/>
+     <ns4:Output qName="ns37:Hybridization" description="the list of hybridizations" isArray="true" xmlns:ns37="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="Searches for experiments using a keyword search across fields" isImported="false" isProvided="false" name="searchForExperimentsByKeyword" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns41:KeywordSearchCriteria" description="" isArray="false" name="criteria" xmlns:ns41="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+      <ns4:Input qName="ns38:KeywordSearchCriteria" description="" isArray="false" name="criteria" xmlns:ns38="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns42:Experiment" description="" isArray="true" xmlns:ns42="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"/>
+     <ns4:Output qName="ns39:Experiment" description="" isArray="true" xmlns:ns39="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="Search for files matching given criteria" isImported="false" isProvided="false" name="searchForFiles" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns43:FileSearchCriteria" description="" isArray="false" name="fileSearchCriteria" xmlns:ns43="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+      <ns4:Input qName="ns40:FileSearchCriteria" description="" isArray="false" name="fileSearchCriteria" xmlns:ns40="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns44:DataFile" description="" isArray="true" xmlns:ns44="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"/>
+     <ns4:Output qName="ns41:DataFile" description="" isArray="true" xmlns:ns41="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="Search for biomaterials matching given keyword" isImported="false" isProvided="false" name="searchForBiomaterialsByKeyword" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns45:BiomaterialKeywordSearchCriteria" description="" isArray="false" name="criteria" xmlns:ns45="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+      <ns4:Input qName="ns42:BiomaterialKeywordSearchCriteria" description="" isArray="false" name="criteria" xmlns:ns42="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns46:Biomaterial" description="" isArray="true" xmlns:ns46="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"/>
+     <ns4:Output qName="ns43:Biomaterial" description="" isArray="true" xmlns:ns43="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="Returns an export of an experiment as a set of mage-tab IDF and SDRF, along with metadata for associated data files" isImported="false" isProvided="false" name="getMageTabExport" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns47:CaArrayEntityReference" description="" isArray="false" name="experimentRef" xmlns:ns47="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
+      <ns4:Input qName="ns44:CaArrayEntityReference" description="" isArray="false" name="experimentRef" xmlns:ns44="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns48:MageTabFileSet" description="" isArray="false" xmlns:ns48="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"/>
+     <ns4:Output qName="ns45:MageTabFileSet" description="" isArray="false" xmlns:ns45="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="returns a transfer reference for retrieving a zipped mage tab export of an experiment. The zip will include the idf and sdrf and all referenced data files" isImported="false" isProvided="false" name="getMageTabZipTransfer" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns49:CaArrayEntityReference" description="" isArray="false" name="experimentRef" xmlns:ns49="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
+      <ns4:Input qName="ns46:CaArrayEntityReference" description="" isArray="false" name="experimentRef" xmlns:ns46="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"/>
       <ns4:Input qName="xsd:boolean" description="" isArray="false" name="compressIndividually" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns50:TransferServiceContextReference" description="" isArray="false" xmlns:ns50="http://transfer.cagrid.org/TransferService/Context/types"/>
-     <ns4:Exceptions/>
-    </ns4:Method>
-    <ns4:Method description="Retrieve all array data types in system" isImported="false" isProvided="false" name="getAllArrayDataTypes" xsi:type="ns4:MethodType">
-     <ns4:Inputs/>
-     <ns4:Output qName="ns51:ArrayDataType" description="" isArray="true" xmlns:ns51="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"/>
+     <ns4:Output qName="ns47:TransferServiceContextReference" description="" isArray="false" xmlns:ns47="http://transfer.cagrid.org/TransferService/Context/types"/>
      <ns4:Exceptions/>
     </ns4:Method>
     <ns4:Method description="Search for quantitation types matching criteria" isImported="false" isProvided="false" name="searchForQuantitationTypes" xsi:type="ns4:MethodType">
      <ns4:Inputs>
-      <ns4:Input qName="ns52:QuantitationTypeSearchCriteria" description="" isArray="false" name="criteria" xmlns:ns52="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+      <ns4:Input qName="ns48:QuantitationTypeSearchCriteria" description="" isArray="false" name="criteria" xmlns:ns48="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
      </ns4:Inputs>
-     <ns4:Output qName="ns53:QuantitationType" description="" isArray="true" xmlns:ns53="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"/>
+     <ns4:Output qName="ns49:QuantitationType" description="" isArray="true" xmlns:ns49="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"/>
+     <ns4:Exceptions/>
+    </ns4:Method>
+    <ns4:Method description="Search using an entity as example" isImported="false" isProvided="false" name="searchByExample" xsi:type="ns4:MethodType">
+     <ns4:Inputs>
+      <ns4:Input qName="ns50:ExampleSearchCriteria" description="" isArray="false" name="exampleSearchCriteria" xmlns:ns50="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
+     </ns4:Inputs>
+     <ns4:Output qName="ns51:SearchResult" description="" isArray="false" xmlns:ns51="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"/>
      <ns4:Exceptions/>
     </ns4:Method>
    </ns4:Methods>
-   <ns54:ResourcePropertiesList xsi:type="ns54:ResourcePropertiesListType" xmlns:ns54="gme://gov.nih.nci.cagrid.introduce/1/Resources">
-    <ns54:ResourceProperty qName="ns55:ServiceMetadata" fileLocation="serviceMetadata.xml" populateFromFile="true" register="true" xsi:type="ns54:ResourcePropertyType" xmlns:ns55="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata"/>
-    <ns54:ResourceProperty qName="ns56:DomainModel" fileLocation="domainModel.xml" populateFromFile="false" register="true" xsi:type="ns54:ResourcePropertyType" xmlns:ns56="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice"/>
-   </ns54:ResourcePropertiesList>
+   <ns52:ResourcePropertiesList xsi:type="ns52:ResourcePropertiesListType" xmlns:ns52="gme://gov.nih.nci.cagrid.introduce/1/Resources">
+    <ns52:ResourceProperty qName="ns53:ServiceMetadata" fileLocation="serviceMetadata.xml" populateFromFile="true" register="true" xsi:type="ns52:ResourcePropertyType" xmlns:ns53="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata"/>
+    <ns52:ResourceProperty qName="ns54:DomainModel" fileLocation="domainModel.xml" populateFromFile="false" register="true" xsi:type="ns52:ResourcePropertyType" xmlns:ns54="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice"/>
+   </ns52:ResourcePropertiesList>
    <ns3:ResourceFrameworkOptions xsi:type="ns3:ResourceFrameworkOptions">
     <ns3:Main xsi:type="ns3:Main"/>
     <ns3:Singleton xsi:type="ns3:Singleton"/>
@@ -398,124 +387,124 @@
    </ns3:ResourceFrameworkOptions>
   </ns3:Service>
   <ns3:Service name="CaGridEnumeration" namespace="http://gov.nih.nci.cagrid.enumeration/CaGridEnumeration" packageName="gov.nih.nci.cagrid.enumeration" xsi:type="ns3:ServiceType">
-   <ns57:Methods xsi:type="ns57:MethodsType" xmlns:ns57="gme://gov.nih.nci.cagrid.introduce/1/Methods">
-    <ns57:Method isImported="true" isProvided="true" name="PullOp" xsi:type="ns57:MethodType">
-     <ns57:Inputs>
-      <ns57:Input qName="ns58:Pull" description="" isArray="false" name="pull" xmlns:ns58="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
-     </ns57:Inputs>
-     <ns57:Output qName="ns59:PullResponse" description="" isArray="false" xmlns:ns59="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
-     <ns57:ImportInformation fromIntroduce="false" inputMessage="ns60:PullMessage" namespace="http://schemas.xmlsoap.org/ws/2004/09/enumeration" outputMessage="ns60:PullResponseMessage" packageName="org.globus.ws.enumeration" portTypeName="DataSource" wsdlFile="enumeration.wsdl" xmlns:ns60="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
-     <ns57:ProviderInformation providerClass="org.globus.ws.enumeration.EnumProvider"/>
-    </ns57:Method>
-    <ns57:Method isImported="true" isProvided="true" name="RenewOp" xsi:type="ns57:MethodType">
-     <ns57:Inputs>
-      <ns57:Input qName="ns61:Renew" isArray="false" name="renew" xmlns:ns61="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
-     </ns57:Inputs>
-     <ns57:Output qName="ns62:RenewResponse" isArray="false" xmlns:ns62="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
-     <ns57:ImportInformation fromIntroduce="false" inputMessage="ns63:RenewMessage" namespace="http://schemas.xmlsoap.org/ws/2004/09/enumeration" outputMessage="ns63:RenewResponseMessage" packageName="org.globus.ws.enumeration" portTypeName="DataSource" wsdlFile="enumeration.wsdl" xmlns:ns63="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
-     <ns57:ProviderInformation providerClass="org.globus.ws.enumeration.EnumProvider"/>
-    </ns57:Method>
-    <ns57:Method isImported="true" isProvided="true" name="GetStatusOp" xsi:type="ns57:MethodType">
-     <ns57:Inputs>
-      <ns57:Input qName="ns64:GetStatus" isArray="false" name="status" xmlns:ns64="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
-     </ns57:Inputs>
-     <ns57:Output qName="ns65:GetStatusResponse" isArray="false" xmlns:ns65="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
-     <ns57:ImportInformation fromIntroduce="false" inputMessage="ns66:GetStatusMessage" namespace="http://schemas.xmlsoap.org/ws/2004/09/enumeration" outputMessage="ns66:GetStatusResponseMessage" packageName="org.globus.ws.enumeration" portTypeName="DataSource" wsdlFile="enumeration.wsdl" xmlns:ns66="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
-     <ns57:ProviderInformation providerClass="org.globus.ws.enumeration.EnumProvider"/>
-    </ns57:Method>
-    <ns57:Method isImported="true" isProvided="true" name="ReleaseOp" xsi:type="ns57:MethodType">
-     <ns57:Inputs>
-      <ns57:Input qName="ns67:Release" description="" isArray="false" name="release" xmlns:ns67="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
-     </ns57:Inputs>
-     <ns57:Output qName="void" description="" isArray="false"/>
-     <ns57:ImportInformation fromIntroduce="false" inputMessage="ns68:ReleaseMessage" namespace="http://schemas.xmlsoap.org/ws/2004/09/enumeration" outputMessage="ns68:ReleaseResponseMessage" packageName="org.globus.ws.enumeration" portTypeName="DataSource" wsdlFile="enumeration.wsdl" xmlns:ns68="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
-     <ns57:ProviderInformation providerClass="org.globus.ws.enumeration.EnumProvider"/>
-    </ns57:Method>
-    <ns57:Method isImported="true" isProvided="true" name="getServiceSecurityMetadata" xsi:type="ns57:MethodType">
-     <ns57:Output qName="ns69:ServiceSecurityMetadata" isArray="false" isClientHandle="false" xmlns:ns69="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security"/>
-     <ns70:MethodSecurity xsi:type="ns70:MethodSecurity" xmlns:ns70="gme://gov.nih.nci.cagrid.introduce/1/Security">
-      <ns70:SecuritySetting xsi:type="ns70:SecuritySetting">None</ns70:SecuritySetting>
-      <ns70:MethodAuthorization xsi:type="ns70:MethodAuthorization">
-       <ns70:NoAuthorization xsi:type="ns70:NoAuthorization"/>
-      </ns70:MethodAuthorization>
-     </ns70:MethodSecurity>
-     <ns57:ImportInformation namespace="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" packageName="gov.nih.nci.cagrid.introduce.security.stubs" portTypeName="ServiceSecurityPortType" wsdlFile="ServiceSecurity.wsdl"/>
-     <ns57:ProviderInformation providerClass="gov.nih.nci.cagrid.introduce.security.service.globus.ServiceSecurityProviderImpl"/>
-    </ns57:Method>
-   </ns57:Methods>
+   <ns55:Methods xsi:type="ns55:MethodsType" xmlns:ns55="gme://gov.nih.nci.cagrid.introduce/1/Methods">
+    <ns55:Method isImported="true" isProvided="true" name="PullOp" xsi:type="ns55:MethodType">
+     <ns55:Inputs>
+      <ns55:Input qName="ns56:Pull" description="" isArray="false" name="pull" xmlns:ns56="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+     </ns55:Inputs>
+     <ns55:Output qName="ns57:PullResponse" description="" isArray="false" xmlns:ns57="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+     <ns55:ImportInformation fromIntroduce="false" inputMessage="ns58:PullMessage" namespace="http://schemas.xmlsoap.org/ws/2004/09/enumeration" outputMessage="ns58:PullResponseMessage" packageName="org.globus.ws.enumeration" portTypeName="DataSource" wsdlFile="enumeration.wsdl" xmlns:ns58="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+     <ns55:ProviderInformation providerClass="org.globus.ws.enumeration.EnumProvider"/>
+    </ns55:Method>
+    <ns55:Method isImported="true" isProvided="true" name="RenewOp" xsi:type="ns55:MethodType">
+     <ns55:Inputs>
+      <ns55:Input qName="ns59:Renew" isArray="false" name="renew" xmlns:ns59="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+     </ns55:Inputs>
+     <ns55:Output qName="ns60:RenewResponse" isArray="false" xmlns:ns60="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+     <ns55:ImportInformation fromIntroduce="false" inputMessage="ns61:RenewMessage" namespace="http://schemas.xmlsoap.org/ws/2004/09/enumeration" outputMessage="ns61:RenewResponseMessage" packageName="org.globus.ws.enumeration" portTypeName="DataSource" wsdlFile="enumeration.wsdl" xmlns:ns61="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+     <ns55:ProviderInformation providerClass="org.globus.ws.enumeration.EnumProvider"/>
+    </ns55:Method>
+    <ns55:Method isImported="true" isProvided="true" name="GetStatusOp" xsi:type="ns55:MethodType">
+     <ns55:Inputs>
+      <ns55:Input qName="ns62:GetStatus" isArray="false" name="status" xmlns:ns62="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+     </ns55:Inputs>
+     <ns55:Output qName="ns63:GetStatusResponse" isArray="false" xmlns:ns63="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+     <ns55:ImportInformation fromIntroduce="false" inputMessage="ns64:GetStatusMessage" namespace="http://schemas.xmlsoap.org/ws/2004/09/enumeration" outputMessage="ns64:GetStatusResponseMessage" packageName="org.globus.ws.enumeration" portTypeName="DataSource" wsdlFile="enumeration.wsdl" xmlns:ns64="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+     <ns55:ProviderInformation providerClass="org.globus.ws.enumeration.EnumProvider"/>
+    </ns55:Method>
+    <ns55:Method isImported="true" isProvided="true" name="ReleaseOp" xsi:type="ns55:MethodType">
+     <ns55:Inputs>
+      <ns55:Input qName="ns65:Release" description="" isArray="false" name="release" xmlns:ns65="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+     </ns55:Inputs>
+     <ns55:Output qName="void" description="" isArray="false"/>
+     <ns55:ImportInformation fromIntroduce="false" inputMessage="ns66:ReleaseMessage" namespace="http://schemas.xmlsoap.org/ws/2004/09/enumeration" outputMessage="ns66:ReleaseResponseMessage" packageName="org.globus.ws.enumeration" portTypeName="DataSource" wsdlFile="enumeration.wsdl" xmlns:ns66="http://schemas.xmlsoap.org/ws/2004/09/enumeration"/>
+     <ns55:ProviderInformation providerClass="org.globus.ws.enumeration.EnumProvider"/>
+    </ns55:Method>
+    <ns55:Method isImported="true" isProvided="true" name="getServiceSecurityMetadata" xsi:type="ns55:MethodType">
+     <ns55:Output qName="ns67:ServiceSecurityMetadata" isArray="false" isClientHandle="false" xmlns:ns67="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security"/>
+     <ns68:MethodSecurity xsi:type="ns68:MethodSecurity" xmlns:ns68="gme://gov.nih.nci.cagrid.introduce/1/Security">
+      <ns68:SecuritySetting xsi:type="ns68:SecuritySetting">None</ns68:SecuritySetting>
+      <ns68:MethodAuthorization xsi:type="ns68:MethodAuthorization">
+       <ns68:NoAuthorization xsi:type="ns68:NoAuthorization"/>
+      </ns68:MethodAuthorization>
+     </ns68:MethodSecurity>
+     <ns55:ImportInformation namespace="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" packageName="gov.nih.nci.cagrid.introduce.security.stubs" portTypeName="ServiceSecurityPortType" wsdlFile="ServiceSecurity.wsdl"/>
+     <ns55:ProviderInformation providerClass="gov.nih.nci.cagrid.introduce.security.service.globus.ServiceSecurityProviderImpl"/>
+    </ns55:Method>
+   </ns55:Methods>
    <ns3:ResourceFrameworkOptions xsi:type="ns3:ResourceFrameworkOptions">
     <ns3:Custom xsi:type="ns3:Custom"/>
    </ns3:ResourceFrameworkOptions>
   </ns3:Service>
  </ns3:Services>
- <ns71:Extensions xsi:type="ns71:ExtensionsType" xmlns:ns71="gme://gov.nih.nci.cagrid.introduce/1/Extension" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ns71:Extension name="cagrid_metadata" version="1.2" xsi:type="ns71:ExtensionType"/>
-  <ns71:Extension name="cagrid_wsEnum" version="1.2" xsi:type="ns71:ExtensionType"/>
-  <ns71:Extension name="caGrid_Transfer" version="1.2" xsi:type="ns71:ExtensionType"/>
-  <ns71:Extension name="cagrid_wsEnum" version="1.2" xsi:type="ns71:ExtensionType"/>
-  <ns71:Extension name="caGrid_Transfer" version="1.2" xsi:type="ns71:ExtensionType"/>
-  <ns71:Extension name="data" version="1.2" xsi:type="ns71:ExtensionType">
-   <ns71:ExtensionData>
-    <ns72:Data xsi:type="ns72:Data" xmlns:ns72="http://CQL.caBIG/1/gov.nih.nci.cagrid.data.extension">
-         <ns72:AdditionalLibraries xsi:type="ns72:AdditionalLibraries">
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">jboss-ejb3-client-noversion.jar</ns72:JarName>
+ <ns69:Extensions xsi:type="ns69:ExtensionsType" xmlns:ns69="gme://gov.nih.nci.cagrid.introduce/1/Extension" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ns69:Extension name="cagrid_metadata" version="1.2" xsi:type="ns69:ExtensionType"/>
+  <ns69:Extension name="cagrid_wsEnum" version="1.2" xsi:type="ns69:ExtensionType"/>
+  <ns69:Extension name="caGrid_Transfer" version="1.2" xsi:type="ns69:ExtensionType"/>
+  <ns69:Extension name="cagrid_wsEnum" version="1.2" xsi:type="ns69:ExtensionType"/>
+  <ns69:Extension name="caGrid_Transfer" version="1.2" xsi:type="ns69:ExtensionType"/>
+  <ns69:Extension name="data" version="1.2" xsi:type="ns69:ExtensionType">
+   <ns69:ExtensionData>
+    <ns70:Data xsi:type="ns70:Data" xmlns:ns70="http://CQL.caBIG/1/gov.nih.nci.cagrid.data.extension">
+         <ns70:AdditionalLibraries xsi:type="ns70:AdditionalLibraries">
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">jboss-ejb3-client-noversion.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">jboss-ejb3x-4.0.5.GA.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">jboss-ejb3x-4.0.5.GA.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">caarray-grid-common.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">caarray-grid-common.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">CaArraySvc_v1_0-stubs.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">CaArraySvc_v1_0-stubs.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">commons-collections-3.2.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">commons-collections-3.2.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">commons-lang-2.4.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">commons-lang-2.4.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">rmiio-2.0.2.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">rmiio-2.0.2.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">log4j-1.2.13.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">log4j-1.2.13.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">jdom-1.0.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">jdom-1.0.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">commons-io-1.4.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">commons-io-1.4.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">CaArraySvc_v1_0-service.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">CaArraySvc_v1_0-service.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">commons-httpclient-3.0.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">commons-httpclient-3.0.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">castor-1.0.4.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">castor-1.0.4.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">jbossall-client-4.0.5.GA.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">jbossall-client-4.0.5.GA.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">jboss-aspect-client-1.5.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">jboss-aspect-client-1.5.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">jboss-aop-client-1.5.2.GA.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">jboss-aop-client-1.5.2.GA.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">caarray-client.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">caarray-client.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">commons-codec-1.3.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">commons-codec-1.3.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">CaArraySvc_v1_0-common.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">CaArraySvc_v1_0-common.jar</ns70:JarName>
 
-          <ns72:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">javacsv-1.0.jar</ns72:JarName>
+          <ns70:JarName xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">javacsv-1.0.jar</ns70:JarName>
 
-     </ns72:AdditionalLibraries>
+     </ns70:AdditionalLibraries>
 
-         <ns72:CadsrInformation noDomainModel="false" serviceUrl="http://cadsr.training.cagrid.org:8080/wsrf/services/cagrid/CaDSRService" useSuppliedModel="false" xsi:type="ns72:CadsrInformation"/>
+         <ns70:CadsrInformation noDomainModel="false" serviceUrl="http://cadsr.training.cagrid.org:8080/wsrf/services/cagrid/CaDSRService" useSuppliedModel="false" xsi:type="ns70:CadsrInformation"/>
 
-         <ns72:ServiceFeatures useBdt="false" useGridIdeitifiers="false" useWsEnumeration="true" xsi:type="ns72:ServiceFeatures"/>
+         <ns70:ServiceFeatures useBdt="false" useGridIdeitifiers="false" useWsEnumeration="true" xsi:type="ns70:ServiceFeatures"/>
 
-    </ns72:Data>
-   </ns71:ExtensionData>
-  </ns71:Extension>
- </ns71:Extensions>
- <ns72:ServiceProperties xmlns:ns72="gme://gov.nih.nci.cagrid.introduce/1/Property">
-  <ns72:Property description="" isFromETC="false" key="queryProcessorClass" value="gov.nih.nci.caarray.services.external.v1_0.grid.service.CaArrayCQLQueryProcessor"/>
-  <ns72:Property description="The location of the server-config.wsdd file" isFromETC="true" key="serverConfigLocation" value="server-config.wsdd"/>
-  <ns72:Property description="The name of the class to use for CQL query structure validation" isFromETC="false" key="dataService_cqlValidatorClass" value="gov.nih.nci.cagrid.data.cql.validation.ObjectWalkingCQLValidator"/>
-  <ns72:Property description="The name of the class to use for CQL validation against a domain model" isFromETC="false" key="dataService_domainModelValidatorClass" value="gov.nih.nci.cagrid.data.cql.validation.DomainModelValidator"/>
-  <ns72:Property description="A flag to indicate that CQL should be validated for structural correctness" isFromETC="false" key="dataService_validateCqlFlag" value="false"/>
-  <ns72:Property description="A flag to indicate that CQL should be validated for correctness against the domain model" isFromETC="false" key="dataService_validateDomainModelFlag" value="false"/>
-  <ns72:Property description="The name of the file containing the class name to QName mapping" isFromETC="true" key="dataService_classMappingsFilename" value="classToQname.xml"/>
-  <ns72:Property description="" isFromETC="false" key="dataService_enumIteratorType" value="CAGRID_CONCURRENT_COMPLETE"/>
- </ns72:ServiceProperties>
+    </ns70:Data>
+   </ns69:ExtensionData>
+  </ns69:Extension>
+ </ns69:Extensions>
+ <ns70:ServiceProperties xmlns:ns70="gme://gov.nih.nci.cagrid.introduce/1/Property">
+  <ns70:Property description="" isFromETC="false" key="queryProcessorClass" value="gov.nih.nci.caarray.services.external.v1_0.grid.service.CaArrayCQLQueryProcessor"/>
+  <ns70:Property description="The location of the server-config.wsdd file" isFromETC="true" key="serverConfigLocation" value="server-config.wsdd"/>
+  <ns70:Property description="The name of the class to use for CQL query structure validation" isFromETC="false" key="dataService_cqlValidatorClass" value="gov.nih.nci.cagrid.data.cql.validation.ObjectWalkingCQLValidator"/>
+  <ns70:Property description="The name of the class to use for CQL validation against a domain model" isFromETC="false" key="dataService_domainModelValidatorClass" value="gov.nih.nci.cagrid.data.cql.validation.DomainModelValidator"/>
+  <ns70:Property description="A flag to indicate that CQL should be validated for structural correctness" isFromETC="false" key="dataService_validateCqlFlag" value="false"/>
+  <ns70:Property description="A flag to indicate that CQL should be validated for correctness against the domain model" isFromETC="false" key="dataService_validateDomainModelFlag" value="false"/>
+  <ns70:Property description="The name of the file containing the class name to QName mapping" isFromETC="true" key="dataService_classMappingsFilename" value="classToQname.xml"/>
+  <ns70:Property description="" isFromETC="false" key="dataService_enumIteratorType" value="CAGRID_CONCURRENT_COMPLETE"/>
+ </ns70:ServiceProperties>
 </ns1:ServiceDescription>

@@ -1,10 +1,8 @@
 package gov.nih.nci.caarray.web.helper;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessUtils;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -13,8 +11,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,8 +18,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
+
 /**
- * Allows for both project and aray design downloads of files.
+ * Helper for actions that implement download of files.
+ * 
  * @author mshestopalov
  *
  */
@@ -66,27 +64,11 @@ public final class DownloadHelper {
             List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);
             Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
             OutputStream sos = response.getOutputStream();
-            ZipOutputStream zos = new ZipOutputStream(sos);
-            TemporaryFileCache tempCache = TemporaryFileCacheLocator.getTemporaryFileCache();
-            for (CaArrayFile caf : sortedFiles) {
-                File f = tempCache.getFile(caf);
-                fis = new FileInputStream(f);
-                ZipEntry ze = new ZipEntry(f.getName());
-                zos.putNextEntry(ze);
-                IOUtils.copy(fis, zos);
-                zos.closeEntry();
-                fis.close();
-                tempCache.closeFile(caf);
-                zos.flush();
-            }
-            zos.finish();
+            FileAccessUtils.downloadFiles(sortedFiles, false, sos);
         } catch (Exception e) {
             LOG.error("Error streaming download", e);
             IOUtils.closeQuietly(fis);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
-
-
-
 }

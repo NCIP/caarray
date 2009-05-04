@@ -129,7 +129,7 @@ import com.fiveamsolutions.nci.commons.util.NCICommonsUtils;
  * in this format.
  */
 @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.TooManyFields", "PMD.TooManyMethods", "PMD.ExcessiveClassLength",
-        "unchecked", "PMD.UnusedFormalParameter" })
+         "PMD.UnusedFormalParameter" })
 public final class SdrfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 1116542609494378874L;
@@ -1146,11 +1146,6 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         return new NodeKey(heading.getNodeClass(), value);
     }
     
-    // return the value of the current column
-    private String getCurrentValue() {
-        return this.currentLine.get(this.currentColumnNumber - 1);
-    }
-
     // return the value of the next column
     private String getNextValue() {
         // currentColumnNumber is 1-based

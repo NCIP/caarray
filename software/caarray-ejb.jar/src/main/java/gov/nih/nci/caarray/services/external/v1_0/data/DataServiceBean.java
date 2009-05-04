@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.services.external.v1_0.data;
 
+import gov.nih.nci.caarray.application.fileaccess.FileAccessUtils;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
@@ -94,6 +95,7 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
@@ -103,6 +105,7 @@ import gov.nih.nci.caarray.external.v1_0.data.DesignElement;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
+import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile;
@@ -111,15 +114,21 @@ import gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
+import gov.nih.nci.caarray.services.TemporaryFileCleanupInterceptor;
 import gov.nih.nci.caarray.services.external.v1_0.BaseV1_0ExternalService;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipOutputStream;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.Stateless;
@@ -147,7 +156,8 @@ import com.healthmarketscience.rmiio.RemoteOutputStreamClient;
 @RemoteBinding(jndiBinding = DataService.JNDI_NAME)
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 @TransactionTimeout(DataServiceBean.TIMEOUT_SECONDS)
-@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class })
+@Interceptors({ AuthorizationInterceptor.class, TemporaryFileCleanupInterceptor.class,
+        HibernateSessionInterceptor.class })
 @SuppressWarnings("PMD")
 public class DataServiceBean extends BaseV1_0ExternalService implements DataService {
     private static final Logger LOG = Logger.getLogger(DataServiceBean.class);
@@ -360,6 +370,25 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         }
         return fileMetadata;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void streamFileContentsZip(FileDownloadRequest downloadRequest, boolean compressIndividually,
+            RemoteOutputStream out) throws InvalidReferenceException, DataTransferException {
+        try {
+            OutputStream osWrap = RemoteOutputStreamClient.wrap(out);
+            List<CaArrayFile> files = new LinkedList<CaArrayFile>();
+            for (CaArrayEntityReference fileRef : downloadRequest.getFiles()) {
+                files.add(getRequiredByLsid(fileRef.getId(), CaArrayFile.class));
+            }
+            FileAccessUtils.downloadFiles(files, compressIndividually, osWrap);
+            osWrap.flush();
+        } catch (IOException e) {
+            LOG.warn("Could not write zip file contents to remote output stream", e);
+            throw new DataTransferException("Could not write zip file contents to remote output stream", e);
+        } 
+    }
 
     /**
      * {@inheritDoc}
@@ -368,23 +397,43 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
             DataTransferException {
         gov.nih.nci.caarray.domain.project.Experiment experiment = getRequiredByLsid(experimentRef.getId(),
                 gov.nih.nci.caarray.domain.project.Experiment.class);
-        File idfFile = null;
-        File sdrfFile = null;
-        TemporaryFileCache tempCache = TemporaryFileCacheLocator.getTemporaryFileCache();
+        MageTabDocumentSet docSet = null;
         try {
-            // Create temporary files to store the resulting MAGE-TAB.
-            String baseFileName = experiment.getPublicIdentifier();
-            String idfFileName = baseFileName + ".idf";
-            String sdrfFileName = baseFileName + ".sdrf";
-            idfFile = tempCache.createFile(idfFileName);
-            sdrfFile = tempCache.createFile(sdrfFileName);
+            MageTabFileSet mageTabSet = new MageTabFileSet();
 
-            // Translate the experiment and export to the temporary files.
-            MageTabExporter exporter = getMageTabExporter();
-            MageTabDocumentSet docSet = exporter.exportToMageTab(experiment, idfFile, sdrfFile);
-            SdrfDocument sdrfDoc = docSet.getSdrfDocuments().iterator().next();
+            docSet = exportToMageTab(experiment);
+            mageTabSet.setIdf(toDataFileContents(docSet.getIdfDocuments().iterator().next().getFile(),
+                    FileType.MAGE_TAB_IDF));
+            mageTabSet.setSdrf(toDataFileContents(docSet.getSdrfDocuments().iterator().next().getFile(),
+                    FileType.MAGE_TAB_SDRF));
 
-            List<String> fileNames = new ArrayList<String>();
+            List<CaArrayFile> dataFiles = getDataFilesReferencedByMageTab(docSet, experiment);
+            mapCollection(dataFiles, mageTabSet.getDataFiles(), DataFile.class);
+
+            return mageTabSet;
+        } catch (IOException e) {
+            LOG.error("Error exporting to MAGE-TAB", e);
+            throw new DataTransferException("Could not generate idf/sdrf: ", e);
+        } 
+    }
+    
+    private MageTabDocumentSet exportToMageTab(Experiment experiment) {
+        TemporaryFileCache tempCache = TemporaryFileCacheLocator.getTemporaryFileCache();
+
+        String baseFileName = experiment.getPublicIdentifier();
+        String idfFileName = baseFileName + ".idf";
+        String sdrfFileName = baseFileName + ".sdrf";
+        File idfFile = tempCache.createFile(idfFileName);
+        File sdrfFile = tempCache.createFile(sdrfFileName);
+
+        // Translate the experiment and export to the temporary files.
+        MageTabExporter exporter = getMageTabExporter();
+        return exporter.exportToMageTab(experiment, idfFile, sdrfFile);
+    }
+    
+    private List<CaArrayFile> getDataFilesReferencedByMageTab(MageTabDocumentSet mageTab, Experiment experiment) {
+        List<String> fileNames = new ArrayList<String>();
+        for (SdrfDocument sdrfDoc : mageTab.getSdrfDocuments()) {
             for (ArrayDataFile file : sdrfDoc.getAllArrayDataFiles()) {
                 fileNames.add(file.getName());
             }
@@ -397,31 +446,62 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
             for (DerivedArrayDataMatrixFile file : sdrfDoc.getAllDerivedArrayDataMatrixFiles()) {
                 fileNames.add(file.getName());
             }
-            List<CaArrayFile> dataFiles = getDataService().pageAndFilterCollection(experiment.getProject().getFiles(),
-                    "name", fileNames,
-                    new PageSortParams<CaArrayFile>(-1, 0, new AdHocSortCriterion<CaArrayFile>("name"), false));
-
-            MageTabFileSet mageTabSet = new MageTabFileSet();
-            mageTabSet.setIdf(toDataFileContents(idfFile, FileType.MAGE_TAB_IDF));
-            mageTabSet.setSdrf(toDataFileContents(sdrfFile, FileType.MAGE_TAB_SDRF));
-            mapCollection(dataFiles, mageTabSet.getDataFiles(), DataFile.class);
-
-            // Delete temporary files.
-            tempCache.delete(idfFile);
-            tempCache.delete(sdrfFile);
-
-            return mageTabSet;
-        } catch (IOException e) {
-            LOG.error("Error exporting to MAGE-TAB", e);
-            throw new DataTransferException("Could not generate idf/sdrf: ", e);
-        } finally {
-            if (idfFile != null) {
-                tempCache.delete(idfFile);
-            }
-            if (sdrfFile != null) {
-                tempCache.delete(sdrfFile);
-            }
         }
+        List<CaArrayFile> dataFiles = getDataService().pageAndFilterCollection(experiment.getProject().getFiles(),
+                "name", fileNames,
+                new PageSortParams<CaArrayFile>(-1, 0, new AdHocSortCriterion<CaArrayFile>("name"), false));
+        return dataFiles;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void streamMageTabZip(CaArrayEntityReference experimentRef, boolean compressIndividually,
+            RemoteOutputStream out) throws InvalidReferenceException, DataTransferException {
+        gov.nih.nci.caarray.domain.project.Experiment experiment = getRequiredByLsid(experimentRef.getId(),
+                gov.nih.nci.caarray.domain.project.Experiment.class);
+        MageTabDocumentSet docSet = null;
+        try {
+            OutputStream osWrap = RemoteOutputStreamClient.wrap(out);
+            ZipOutputStream zos = new ZipOutputStream(osWrap);
+
+            docSet = exportToMageTab(experiment);
+            File idf = docSet.getIdfDocuments().iterator().next().getFile();
+            String idfName = idf.getName();
+            if (compressIndividually) {
+                idf = compressWithGzip(idf);
+            }
+            FileAccessUtils.writeZipEntry(zos, idf, idfName, compressIndividually);
+            File sdrf = docSet.getSdrfDocuments().iterator().next().getFile();
+            String sdrfName = sdrf.getName();
+            if (compressIndividually) {
+                sdrf = compressWithGzip(sdrf);
+            }
+            FileAccessUtils.writeZipEntry(zos, sdrf, sdrfName, compressIndividually);
+            
+            List<CaArrayFile> dataFiles = getDataFilesReferencedByMageTab(docSet, experiment);
+            FileAccessUtils.addToZip(dataFiles, compressIndividually, zos);
+
+            zos.finish();
+            osWrap.flush();
+        } catch (IOException e) {
+            LOG.warn("Could not write zip file contents to remote output stream", e);
+            throw new DataTransferException("Could not write zip file contents to remote output stream", e);
+        } finally {
+            HibernateUtil.getCurrentSession().clear();
+        }
+    }
+    
+    private File compressWithGzip(File file) throws IOException {
+        TemporaryFileCache cache = TemporaryFileCacheLocator.getTemporaryFileCache();
+        File tempFile = cache.createFile("gzip_" + file.getName());
+        FileOutputStream fos = FileUtils.openOutputStream(tempFile);
+        FileInputStream fis = FileUtils.openInputStream(file);
+        GZIPOutputStream gos = new GZIPOutputStream(fos);
+        IOUtils.copy(fis, gos);
+        IOUtils.closeQuietly(gos);
+        IOUtils.closeQuietly(fos);
+        return tempFile;
     }
 
     private DataFileContents toDataFileContents(File mageTabFile, FileType fileType) throws IOException {

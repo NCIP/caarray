@@ -100,6 +100,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.criterion.MatchMode;
+
 import net.sf.dozer.util.mapping.MapperIF;
 
 
@@ -266,6 +268,21 @@ public abstract class AbstractExternalService {
         }
     }
 
+    /**
+     * Return the hibernate MatchMode constant with given name.
+     * @param matchMode the MatchMode constant to return
+     * @return the MatchMode constant.
+     */
+    protected MatchMode getHibernateMatchMode(String matchMode) {
+        try {
+            return (MatchMode) MatchMode.class.getField(matchMode).get(null);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException("Could not retrieve MatchMode constant: " + matchMode, e);
+        } catch (NoSuchFieldException e) {
+            throw new IllegalArgumentException("Invalid MatchMode constant: " + matchMode, e);
+        }
+    }
+ 
     /**
      * @return the daoFactory
      */

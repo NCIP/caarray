@@ -78,11 +78,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		
 	}
 					
-	public static void authorizeGetAllOrganisms() throws RemoteException {
-		
-		
-	}
-					
 	public static void authorizeSearchForExperiments() throws RemoteException {
 		
 		
@@ -93,22 +88,12 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		
 	}
 					
-	public static void authorizeGetAllFileTypes() throws RemoteException {
-		
-		
-	}
-					
 	public static void authorizeGetByReference() throws RemoteException {
 		
 		
 	}
 					
 	public static void authorizeGetByReferences() throws RemoteException {
-		
-		
-	}
-					
-	public static void authorizeEnumerateOrganisms() throws RemoteException {
 		
 		
 	}
@@ -139,11 +124,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 	}
 					
 	public static void authorizeGetDataSet() throws RemoteException {
-		
-		
-	}
-					
-	public static void authorizeQuery() throws RemoteException {
 		
 		
 	}
@@ -183,12 +163,12 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		
 	}
 					
-	public static void authorizeGetAllArrayDataTypes() throws RemoteException {
+	public static void authorizeSearchForQuantitationTypes() throws RemoteException {
 		
 		
 	}
 					
-	public static void authorizeSearchForQuantitationTypes() throws RemoteException {
+	public static void authorizeSearchByExample() throws RemoteException {
 		
 		
 	}
@@ -232,14 +212,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 				e.printStackTrace();
 				return false;
 			}
-		} else if(operation.getLocalPart().equals("getAllOrganisms")){
-			try{
-				authorizeGetAllOrganisms();
-				return true;
-			} catch (Exception e){
-				e.printStackTrace();
-				return false;
-			}
 		} else if(operation.getLocalPart().equals("searchForExperiments")){
 			try{
 				authorizeSearchForExperiments();
@@ -256,14 +228,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 				e.printStackTrace();
 				return false;
 			}
-		} else if(operation.getLocalPart().equals("getAllFileTypes")){
-			try{
-				authorizeGetAllFileTypes();
-				return true;
-			} catch (Exception e){
-				e.printStackTrace();
-				return false;
-			}
 		} else if(operation.getLocalPart().equals("getByReference")){
 			try{
 				authorizeGetByReference();
@@ -275,14 +239,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		} else if(operation.getLocalPart().equals("getByReferences")){
 			try{
 				authorizeGetByReferences();
-				return true;
-			} catch (Exception e){
-				e.printStackTrace();
-				return false;
-			}
-		} else if(operation.getLocalPart().equals("enumerateOrganisms")){
-			try{
-				authorizeEnumerateOrganisms();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();
@@ -331,14 +287,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		} else if(operation.getLocalPart().equals("getDataSet")){
 			try{
 				authorizeGetDataSet();
-				return true;
-			} catch (Exception e){
-				e.printStackTrace();
-				return false;
-			}
-		} else if(operation.getLocalPart().equals("query")){
-			try{
-				authorizeQuery();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();
@@ -400,17 +348,17 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 				e.printStackTrace();
 				return false;
 			}
-		} else if(operation.getLocalPart().equals("getAllArrayDataTypes")){
+		} else if(operation.getLocalPart().equals("searchForQuantitationTypes")){
 			try{
-				authorizeGetAllArrayDataTypes();
+				authorizeSearchForQuantitationTypes();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();
 				return false;
 			}
-		} else if(operation.getLocalPart().equals("searchForQuantitationTypes")){
+		} else if(operation.getLocalPart().equals("searchByExample")){
 			try{
-				authorizeSearchForQuantitationTypes();
+				authorizeSearchByExample();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();

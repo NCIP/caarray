@@ -95,9 +95,12 @@ import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.dao.GroupSearchCriteria;
+import gov.nih.nci.security.dao.UserSearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -110,8 +113,8 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.criterion.MatchMode;
 
 /**
  * Local implementation of interface.
@@ -293,14 +296,41 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      */
     public List<User> getUsers(User u) {
         LogUtil.logSubsystemEntry(LOG);
-        List<User> result =
-                new ArrayList<User>(getDaoFactory().getArrayDao().queryEntityByExample(u == null ? new User() : u,
-                        MatchMode.START));
-        // do not include the anonymous user
-        result.remove(SecurityUtils.getAnonymousUser());
-
+        List<User> resultUsers;
+        try {
+            resultUsers = SecurityUtils.getAuthorizationManager()
+                    .getObjects(new UserSearchCriteria(convertToLikeProperties(u)));
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("Could not create an example user", e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalStateException("Could not create an example user", e);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException("Could not create an example user", e);
+        }
         LogUtil.logSubsystemExit(LOG);
-        return result;
+        return resultUsers;
+    }
+        
+    private User convertToLikeProperties(User u) throws IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException {
+        User newUser = new User();        
+        if (u != null) {
+            PropertyUtils.copyProperties(newUser, u);
+            for (PropertyDescriptor pd : PropertyUtils.getPropertyDescriptors(newUser)) {
+                convertToLikeProperty(u, newUser, pd);
+            }            
+        }
+        return newUser;
+    }
+
+    private void convertToLikeProperty(User u, User newUser, PropertyDescriptor pd) throws IllegalAccessException,
+            InvocationTargetException, NoSuchMethodException {
+        if (pd.getPropertyType().equals(String.class)) {
+            String value = (String) PropertyUtils.getSimpleProperty(newUser, pd.getName());
+            if (value != null) {
+                PropertyUtils.setSimpleProperty(newUser, pd.getName(), value + "%");
+            }
+        }
     }
 
     /**

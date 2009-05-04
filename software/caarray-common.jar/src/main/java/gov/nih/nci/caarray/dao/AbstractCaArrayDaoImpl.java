@@ -82,24 +82,30 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
-import java.util.ArrayList;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.mapping.PersistentClass;
+import org.hibernate.mapping.Property;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
@@ -113,8 +119,6 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     private static final Logger LOG = Logger.getLogger(AbstractCaArrayDaoImpl.class);
-
-    private static final String UNABLE_TO_RETRIEVE_ENTITY_MESSAGE = "Unable to retrieve entity";
 
     /**
      * Returns the current Hibernate Session.
@@ -168,97 +172,53 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    public <T> List<T> queryEntityByExample(T entityToMatch, Order... order) {
-        return queryEntityByExample(entityToMatch, MatchMode.EXACT, order);
+    public <T extends PersistentObject> List<T> queryEntityByExample(T entityToMatch, Order... order) {
+        return queryEntityByExample(new ExampleSearchCriteria<T>(entityToMatch), order);
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, Order... order) {
-        return queryEntityByExample(entityToMatch, mode, true, ArrayUtils.EMPTY_STRING_ARRAY, order);
+    public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, 
+            Order... orders) {
+        return queryEntityByExample(criteria, 0, 0, orders);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, boolean excludeNulls,
-            String[] excludeProperties, Order... order) {
-        return queryEntityByExample(entityToMatch, mode, excludeNulls, excludeProperties, -1, 0, order);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, boolean excludeNulls, //NOPMD
-            String[] excludeProperties, int maxResults, int firstResult, Order... orders) {
-        if (entityToMatch == null) {
-            return new ArrayList<T>();
-        }
-
-        Session mySession = HibernateUtil.getCurrentSession();
-        try {
-            CaArrayUtils.blankStringPropsToNull(entityToMatch);
-            // Query database for list of entities matching the given entity's attributes.
-            Criteria criteria = mySession.createCriteria(entityToMatch.getClass())
-                                         .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-            Example example = Example.create(entityToMatch).enableLike(mode).ignoreCase();
-            if (!excludeNulls) {
-                example.excludeNone();
-            }
-            for (String property : excludeProperties) {
-                example.excludeProperty(property);
-            }
-            criteria.add(example);
-            for (Order curretOrder : orders) {
-                criteria.addOrder(curretOrder);
-            }
-            if (maxResults > 0) {
-                criteria.setMaxResults(maxResults);
-            }
-            criteria.setFirstResult(firstResult);
-            return criteria.list();
-        } catch (HibernateException he) {
-            LOG.error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
-            throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
-        }
-
-    };
     
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch, Order...orders) {
-        List<T> resultList = new ArrayList<T>();
-        List hibernateReturnedEntities = null;
-        if (entityToMatch == null) {
-            return resultList;
+    public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, int maxResults,
+            int firstResult, Order... orders) {
+        if (criteria.getExample() == null) {
+            return Collections.emptyList();
         }
 
-        Session mySession = HibernateUtil.getCurrentSession();
-        try {
-            // Create search-criteria with the given entity's attributes.
-            Criteria criteria = mySession.createCriteria(entityToMatch.getClass())
-                                         .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-            criteria.add(Example.create(entityToMatch));
-            // Add search-criteria with the given entity's associations.
-            SearchCriteriaUtil.addCriteriaForAssociations(entityToMatch, criteria);
-            for (Order curretOrder : orders) {
-              criteria.addOrder(curretOrder);
-            }
-            hibernateReturnedEntities = criteria.list();
-        } catch (HibernateException he) {
-            LOG.error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
-            throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
+        Criteria c = getCriteriaForExampleQuery(criteria);
+        for (Order order : orders) {
+            c.addOrder(order);
         }
-
-        if (hibernateReturnedEntities != null) {
-            resultList.addAll(hibernateReturnedEntities);
+        if (maxResults > 0) {
+            c.setMaxResults(maxResults);
         }
-        return resultList;
+        c.setFirstResult(firstResult);            
+        
+        return c.list();
     }
+    
+    private <T extends PersistentObject> Criteria getCriteriaForExampleQuery(ExampleSearchCriteria<T> criteria) {
+        T entityToMatch = criteria.getExample();
+        CaArrayUtils.blankStringPropsToNull(entityToMatch);
+        
+        Criteria c = HibernateUtil.getCurrentSession().createCriteria(entityToMatch.getClass()).setResultTransformer(
+                CriteriaSpecification.DISTINCT_ROOT_ENTITY);        
+        c.add(createExample(entityToMatch, criteria.getMatchMode(), criteria.isExcludeNulls(), criteria
+                .getExcludeProperties()));
+        new SearchCriteriaHelper<T>(c, criteria).addCriteriaForAssociations();            
+
+        return c;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -304,5 +264,128 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             orderField = alias + "." + orderField;
         }
         return params.isDesc() ? Order.desc(orderField) : Order.asc(orderField);
+    }
+    
+    static Example createExample(Object entity, MatchMode matchMode, boolean excludeNulls,
+            Collection<String> excludeProperties) {
+        Example example = Example.create(entity).enableLike(matchMode).ignoreCase();
+        if (!excludeNulls) {
+            example.excludeNone();
+        }
+        for (String property : excludeProperties) {
+            example.excludeProperty(property);
+        }
+        return example;
+    }
+
+    
+    /**
+     * Provides helper methods for search DAOs.
+     * 
+     * @author Rashmi Srinivasa
+     */
+    private final class SearchCriteriaHelper<T extends PersistentObject> {
+        private static final String UNABLE_TO_GET_ASSOCIATION_VAL = "Unable to get association value";
+
+        private final Criteria hibCriteria;
+        private final ExampleSearchCriteria<T> exampleCriteria;
+
+        /**
+         * @param criteria
+         * @param excludeNulls
+         * @param matchMode
+         */
+        public SearchCriteriaHelper(Criteria hibCriteria, ExampleSearchCriteria<T> exampleCriteria) {
+            this.hibCriteria = hibCriteria;
+            this.exampleCriteria = exampleCriteria;
+        }
+
+        /**
+         * Update the provided criteria object with values from the associated entites. Ignores collection properties
+         * (ie, one-to-many), but handles all other association types (ie, many-to-one, one-to-one, etc.)
+         * 
+         * @param entityToMatch the entity to match
+         */
+        @SuppressWarnings("unchecked")
+        public void addCriteriaForAssociations() {
+            try {
+                PersistentClass pclass = HibernateUtil.getConfiguration().getClassMapping(
+                        exampleCriteria.getExample().getClass().getName());
+                Iterator<Property> properties = pclass.getPropertyIterator();
+                while (properties.hasNext()) {
+                    Property prop = properties.next();
+                    if (prop.getType().isAssociationType()) {
+                        addCriterionForAssociation(prop);
+                    }
+                }
+            } catch (IllegalAccessException iae) {
+                LOG.error(UNABLE_TO_GET_ASSOCIATION_VAL, iae);
+                throw new DAOException(UNABLE_TO_GET_ASSOCIATION_VAL, iae);
+            } catch (InvocationTargetException ite) {
+                LOG.error(UNABLE_TO_GET_ASSOCIATION_VAL, ite);
+                throw new DAOException(UNABLE_TO_GET_ASSOCIATION_VAL, ite);
+            }
+        }
+
+        /**
+         * Add one search criterion based on the association to be matched.
+         * 
+         * @param entityToMatch the root entity being searched on.
+         * @param hibCriteria the root Criteria to add to.
+         * @param prop the association to be matched.
+         */
+        private void addCriterionForAssociation(Property prop) throws IllegalAccessException, 
+            InvocationTargetException {
+            Class<?> objClass = exampleCriteria.getExample().getClass();
+            String fieldName = prop.getName();
+            Method getterMethod = null;
+            String getterName = "get" + StringUtils.capitalize(fieldName);
+            while (objClass != null) {
+                try {
+                    LOG.debug("Checking class: " + objClass.getName() + " for method: " + getterName);
+                    getterMethod = objClass.getDeclaredMethod(getterName, (Class[]) null);
+                    break;
+                } catch (NoSuchMethodException nsme) {
+                    LOG.debug("Will check if it is a method in a superclass.");
+                }
+                objClass = objClass.getSuperclass();
+            }
+            if (getterMethod == null) {
+                LOG.error("No such method: " + getterName);
+            } else {
+                Object valueOfAssociation = getterMethod.invoke(exampleCriteria.getExample(), (Object[]) null);
+                addCriterion(fieldName, valueOfAssociation);
+            }
+        }
+
+        /**
+         * Add one search criterion based on the field name and the value to be matched.
+         * 
+         * @param hibCriteria the root Criteria to add to.
+         * @param fieldName the name of the field denoting the association.
+         * @param valueOfAssociation the value of the association that is to be matched.
+         */
+        private void addCriterion(String fieldName, Object valueOfAssociation) {
+            if (valueOfAssociation == null) {
+                return;
+            }
+            if (valueOfAssociation instanceof Collection) {
+                Collection<?> collValue = (Collection<?>) valueOfAssociation;
+                if (!collValue.isEmpty()) {
+                    Disjunction or = Restrictions.disjunction();
+                    for (Object value : collValue) {
+                        or.add(createExample(value));
+                    }
+                    hibCriteria.createCriteria(fieldName).add(or);
+                }
+            } else {
+                hibCriteria.createCriteria(fieldName).add(createExample(valueOfAssociation));
+            }                
+        }
+        
+        private Example createExample(Object value) {
+            return AbstractCaArrayDaoImpl.createExample(value, exampleCriteria.getMatchMode(), exampleCriteria
+                    .isExcludeNulls(), exampleCriteria.getExcludeProperties());                            
+        }
     }
 }

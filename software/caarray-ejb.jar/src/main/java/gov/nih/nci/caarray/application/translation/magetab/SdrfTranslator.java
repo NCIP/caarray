@@ -99,18 +99,18 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
-import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.project.MeasurementFactorValue;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.TermBasedFactorValue;
 import gov.nih.nci.caarray.domain.project.UserDefinedFactorValue;
+import gov.nih.nci.caarray.domain.protocol.AbstractParameterValue;
 import gov.nih.nci.caarray.domain.protocol.MeasurementParameterValue;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
-import gov.nih.nci.caarray.domain.protocol.AbstractParameterValue;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.protocol.ProtocolTypeAssociation;
@@ -304,7 +304,7 @@ final class SdrfTranslator extends AbstractTranslator {
             String arrayDesignName = sdrfArrayDesign.getName();
                 ArrayDesign arrayDesign = new ArrayDesign();
                 arrayDesign.setLsidForEntity(arrayDesignName);
-                if (getDaoFactory().getArrayDao().queryEntityAndAssociationsByExample(arrayDesign).isEmpty()) {
+                if (getDaoFactory().getArrayDao().queryEntityByExample(arrayDesign).isEmpty()) {
                     document.addErrorMessage("Your reference to '" + arrayDesignName + "' can not be resolved because "
                             + "an array design with that LSID is not in caArray.  Please import it and try again.");
                 }
@@ -684,7 +684,7 @@ final class SdrfTranslator extends AbstractTranslator {
     private ArrayDesign processArrayDesignRef(String arrayDesignName) {
         ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setLsidForEntity(arrayDesignName);
-        List<ArrayDesign> designs = getDaoFactory().getArrayDao().queryEntityAndAssociationsByExample(arrayDesign);
+        List<ArrayDesign> designs = getDaoFactory().getArrayDao().queryEntityByExample(arrayDesign);
         if (designs.isEmpty()) {
             return null;
         } else {

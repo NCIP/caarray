@@ -43,112 +43,12 @@ public class CaArraySvc_v1_0Configuration implements ServiceConfiguration {
 	}
 	
 	private String etcDirectoryPath;
-	
-	
-	private String queryProcessorClass;
-	
-	private String serverConfigLocation;
-	
-	private String dataService_cqlValidatorClass;
-	
-	private String dataService_domainModelValidatorClass;
-	
-	private String dataService_validateCqlFlag;
-	
-	private String dataService_validateDomainModelFlag;
-	
-	private String dataService_classMappingsFilename;
-	
-	private String dataService_enumIteratorType;
-	
-	
+		
 	public String getEtcDirectoryPath() {
 		return ContainerConfig.getBaseDirectory() + File.separator + etcDirectoryPath;
 	}
 	
 	public void setEtcDirectoryPath(String etcDirectoryPath) {
 		this.etcDirectoryPath = etcDirectoryPath;
-	}
-
-	
-	public String getQueryProcessorClass() {
-		return queryProcessorClass;
-	}
-	
-	
-	public void setQueryProcessorClass(String queryProcessorClass) {
-		this.queryProcessorClass = queryProcessorClass;
-	}
-
-	
-	public String getServerConfigLocation() {
-		return ContainerConfig.getBaseDirectory() + File.separator + serverConfigLocation;
-	}
-	
-	
-	public void setServerConfigLocation(String serverConfigLocation) {
-		this.serverConfigLocation = serverConfigLocation;
-	}
-
-	
-	public String getDataService_cqlValidatorClass() {
-		return dataService_cqlValidatorClass;
-	}
-	
-	
-	public void setDataService_cqlValidatorClass(String dataService_cqlValidatorClass) {
-		this.dataService_cqlValidatorClass = dataService_cqlValidatorClass;
-	}
-
-	
-	public String getDataService_domainModelValidatorClass() {
-		return dataService_domainModelValidatorClass;
-	}
-	
-	
-	public void setDataService_domainModelValidatorClass(String dataService_domainModelValidatorClass) {
-		this.dataService_domainModelValidatorClass = dataService_domainModelValidatorClass;
-	}
-
-	
-	public String getDataService_validateCqlFlag() {
-		return dataService_validateCqlFlag;
-	}
-	
-	
-	public void setDataService_validateCqlFlag(String dataService_validateCqlFlag) {
-		this.dataService_validateCqlFlag = dataService_validateCqlFlag;
-	}
-
-	
-	public String getDataService_validateDomainModelFlag() {
-		return dataService_validateDomainModelFlag;
-	}
-	
-	
-	public void setDataService_validateDomainModelFlag(String dataService_validateDomainModelFlag) {
-		this.dataService_validateDomainModelFlag = dataService_validateDomainModelFlag;
-	}
-
-	
-	public String getDataService_classMappingsFilename() {
-		return ContainerConfig.getBaseDirectory() + File.separator + dataService_classMappingsFilename;
-	}
-	
-	
-	public void setDataService_classMappingsFilename(String dataService_classMappingsFilename) {
-		this.dataService_classMappingsFilename = dataService_classMappingsFilename;
-	}
-
-	
-	public String getDataService_enumIteratorType() {
-		return dataService_enumIteratorType;
-	}
-	
-	
-	public void setDataService_enumIteratorType(String dataService_enumIteratorType) {
-		this.dataService_enumIteratorType = dataService_enumIteratorType;
-	}
-
-	
+	}	
 }

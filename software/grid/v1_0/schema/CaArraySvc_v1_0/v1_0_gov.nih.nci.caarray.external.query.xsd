@@ -158,6 +158,38 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <xs:element name="MatchMode" type="qry:MatchMode" />
+    <xs:simpleType name="MatchMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="EXACT"/>
+            <xs:enumeration value="START"/>
+            <xs:enumeration value="END"/>
+            <xs:enumeration value="ANYWHERE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="ExampleSearchCriteria" type="qry:ExampleSearchCriteria" />
+    <xs:complexType name="ExampleSearchCriteria">
+        <xs:sequence>
+            <xs:element name="example" type="car:AbstractCaArrayEntity" minOccurs="1" maxOccurs="1" />
+            <xs:element name="matchMode" type="qry:MatchMode" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="excludeNulls" type="xs:boolean" />
+    </xs:complexType>
+
+    <xs:element name="SearchResult" type="qry:SearchResult" />
+    <xs:complexType name="SearchResult">
+        <xs:sequence>
+            <xs:element name="results">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="car:AbstractCaArrayEntity" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
     <xs:element name="FileDownloadRequest" type="qry:FileDownloadRequest" />
     <xs:complexType name="FileDownloadRequest">
     	<xs:sequence>

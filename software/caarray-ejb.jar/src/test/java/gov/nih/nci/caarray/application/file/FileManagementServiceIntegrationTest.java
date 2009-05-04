@@ -107,6 +107,7 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -122,6 +123,7 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -203,8 +205,8 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         caarraySource.setVersion(ExperimentOntology.CAARRAY.getVersion());
 
         VocabularyDao vocabularyDao = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
-        if (CaArrayUtils.uniqueResult(vocabularyDao.queryEntityByExample(caarraySource,
-                MatchMode.EXACT, false, new String[] { "url" }, Order.desc("version"))) == null) {
+        if (CaArrayUtils.uniqueResult(vocabularyDao.queryEntityByExample(ExampleSearchCriteria.forEntity(caarraySource)
+                .includeNulls().excludeProperties("url"), Order.desc("version"))) == null) {
             HibernateUtil.getCurrentSession().save(caarraySource);
         }
 
@@ -212,8 +214,9 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         mgedOntology.setName(ExperimentOntology.MGED_ONTOLOGY.getOntologyName());
         mgedOntology.setVersion(ExperimentOntology.MGED_ONTOLOGY.getVersion());
 
-        TermSource savedMgedOntology = CaArrayUtils.uniqueResult(vocabularyDao.queryEntityByExample(mgedOntology, MatchMode.EXACT, false,
-                new String[] { "url" }, Order.desc("version")));
+        TermSource savedMgedOntology = CaArrayUtils.uniqueResult(vocabularyDao.queryEntityByExample(
+                ExampleSearchCriteria.forEntity(mgedOntology).includeNulls().excludeProperties("url"), Order
+                        .desc("version")));
         if (savedMgedOntology == null) {
             HibernateUtil.getCurrentSession().save(mgedOntology);
             savedMgedOntology = mgedOntology;

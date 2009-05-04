@@ -189,7 +189,7 @@ abstract class AbstractTranslator {
             Organization entityToMatch = new Organization();
             entityToMatch.setName(name);
 
-            List<Organization> matchingEntities = getProjectDao().queryEntityAndAssociationsByExample(entityToMatch);
+            List<Organization> matchingEntities = getProjectDao().queryEntityByExample(entityToMatch);
             if (matchingEntities.isEmpty()) {
                 importedOrganizations.put(name, entityToMatch);
                 org = entityToMatch;

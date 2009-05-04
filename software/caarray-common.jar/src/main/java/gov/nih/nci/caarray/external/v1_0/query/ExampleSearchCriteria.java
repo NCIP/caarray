@@ -80,49 +80,98 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external;
+package gov.nih.nci.caarray.external.v1_0.query;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 
-import net.sf.dozer.util.mapping.DozerBeanMapper;
-import net.sf.dozer.util.mapping.MapperIF;
+import java.io.Serializable;
 
 /**
- * Utility class maintaining a cache of dozer mappers for each API version.
+ * Criteria for searching by example.
  * 
  * @author dkokotov
+ * @param <T> class of the example entity
  */
-public final class BeanMapperLookup {
-    /**
-     * Version 1.0 of API.
-     */
-    public static final String VERSION_1_0 = "v1_0";
+public class ExampleSearchCriteria<T extends AbstractCaArrayEntity> implements Serializable {
+    private static final long serialVersionUID = 1L;
     
-    private static final Map<String, String> CONFIG_FILES = new HashMap<String, String>();
-    static {
-        CONFIG_FILES.put(VERSION_1_0, "dozerBeanMapping_v1_0.xml");
+    private T example;
+    private MatchMode matchMode = MatchMode.EXACT;
+    private boolean excludeNulls = true;
+    
+    /** 
+     * Empty constructor.
+     */
+    public ExampleSearchCriteria() {
+        // empty
+    }    
+
+    /** 
+     * @param example the example
+     */
+    public ExampleSearchCriteria(T example) {
+        this.example = example;
     }
 
-    private static final Map<String, DozerBeanMapper> MAPPERS = new HashMap<String, DozerBeanMapper>();
-
-    private BeanMapperLookup() {
-        // NOOP
-    }
-    
-    /**
-     * Return mapper for given API version.
-     * @param apiVersion api version to get mapper for
-     * @return the mapper
+    /** 
+     * @param example the example
+     * @param matchMode the match mode
      */
-    public static synchronized MapperIF getMapper(String apiVersion) {
-        DozerBeanMapper mapper = MAPPERS.get(apiVersion);
-        if (mapper == null) {
-            String configFile = CONFIG_FILES.get(apiVersion);
-            mapper = new DozerBeanMapper(Collections.singletonList(configFile));
-            MAPPERS.put(apiVersion, mapper);
-        }
-        return mapper;
+    public ExampleSearchCriteria(T example, MatchMode matchMode) {
+        this.example = example;
+        this.matchMode = matchMode;
+    }
+
+    /** 
+     * @param example the example
+     * @param matchMode the match mode
+     * @param excludeNulls whether to exclude null properties from being used in the search
+     */
+    public ExampleSearchCriteria(T example, MatchMode matchMode, boolean excludeNulls) {
+        this.example = example;
+        this.matchMode = matchMode;
+        this.excludeNulls = excludeNulls;
+    }
+
+    /**
+     * @return the example
+     */
+    public T getExample() {
+        return example;
+    }
+
+    /**
+     * @param example the example to set
+     */
+    public void setExample(T example) {
+        this.example = example;
+    }
+
+    /**
+     * @return the matchMode
+     */
+    public MatchMode getMatchMode() {
+        return matchMode;
+    }
+
+    /**
+     * @param matchMode the matchMode to set
+     */
+    public void setMatchMode(MatchMode matchMode) {
+        this.matchMode = matchMode;
+    }
+
+    /**
+     * @return the excludeNulls
+     */
+    public boolean isExcludeNulls() {
+        return excludeNulls;
+    }
+
+    /**
+     * @param excludeNulls the excludeNulls to set
+     */
+    public void setExcludeNulls(boolean excludeNulls) {
+        this.excludeNulls = excludeNulls;
     }
 }

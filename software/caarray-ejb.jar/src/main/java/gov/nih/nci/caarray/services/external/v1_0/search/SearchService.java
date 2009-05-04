@@ -84,28 +84,24 @@ package gov.nih.nci.caarray.services.external.v1_0.search;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
-import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
-import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
-import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
-import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.util.List;
 
@@ -123,46 +119,6 @@ public interface SearchService {
      * The JNDI name to look up this Remote EJB under.
      */
     String JNDI_NAME = "caarray/external/v1_0/SearchServiceBean";
-
-    /**
-     * Retrieve list of file types in caArray.
-     * 
-     * @param pagingParams paging parameters.
-     * @return the subset of the file types specified by the given paging params.
-     */
-    List<FileType> getAllFileTypes(PagingParams pagingParams);
-
-    /**
-     * Retrieve list of array data types types in caArray.
-     * 
-     * @param pagingParams paging parameters.
-     * @return the subset of the array data types specified by the given paging params.
-     */
-    List<ArrayDataType> getAllArrayDataTypes(PagingParams pagingParams);
-    
-    /**
-     * Retrieve list of providers in caArray.
-     * 
-     * @param pagingParams paging parameters.
-     * @return the subset of the file types specified by the given paging params.
-     */
-    List<ArrayProvider> getAllProviders(PagingParams pagingParams);
-
-    /**
-     * Retrieve list of array designs in caArray.
-     * 
-     * @param pagingParams paging parameters.
-     * @return the subset of the file types specified by the given paging params.
-     */
-    List<ArrayDesign> getAllArrayDesigns(PagingParams pagingParams);
-
-    /**
-     * Retrieve list of organisms in caArray.
-     * 
-     * @param pagingParams paging parameters.
-     * @return the subset of the file types specified by the given paging params.
-     */
-    List<Organism> getAllOrganisms(PagingParams pagingParams);
 
     /**
      * Retrieve list of PIs in caArray.
@@ -265,26 +221,14 @@ public interface SearchService {
      */
     List<QuantitationType> searchForQuantitationTypes(QuantitationTypeSearchCriteria criteria,
             PagingParams pagingParams) throws InvalidReferenceException;
-
-    /**
-     * Searches for entities based on the given CQL query. At present, only the classname of the target object is
-     * considered.
-     * 
-     * @param cqlQuery the CQL query.
-     * @param params paging parameters. these will be ignored if the "count only" modifier is specified for the query.
-     *            may be left as null to retrieve all results with default ordering.
-     * 
-     * @return the result for the provided query. May be the list of objects, list of attribute values, or the count,
-     *         depending upon the query modifiers.
-     */
-    List<?> searchByCQL(CQLQuery cqlQuery, PagingParams params);
-
+    
     /**
      * Do a query by example.
      * @param <T> type of the example entity
-     * @param example the example entity to query for
+     * @param criteria the example entity to query for
      * @param pagingParams paging params.
      * @return list of entities matching example, subject to paging params
      */
-    <T extends AbstractCaArrayEntity> List<T> searchByExample(T example, PagingParams pagingParams);
+    <T extends AbstractCaArrayEntity> SearchResult<T> searchByExample(ExampleSearchCriteria<T> criteria,
+            PagingParams pagingParams);
 }

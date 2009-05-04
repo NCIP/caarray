@@ -91,6 +91,7 @@ import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.LockMode;
@@ -208,7 +209,15 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
      * {@inheritDoc}
      */
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders) {
-        return null;
+        return Collections.emptyList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, int maxResults, int firstResult,
+            Order... orders) {
+        return Collections.emptyList();
     }
 
     public <T extends AbstractCaArrayEntity> T getEntityByLsid(Class<T> entityClass, LSID lsid) {

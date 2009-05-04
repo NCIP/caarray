@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
+import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 
 import javax.ejb.Remote;
@@ -136,16 +137,49 @@ public interface DataService {
      */
     DataFile streamFileContents(CaArrayEntityReference fileRef, boolean compressed, RemoteOutputStream out)
             throws InvalidReferenceException, DataTransferException;
-    
+
     /**
-     * Retrieves a set of files containg the mage tab IDF and SDRF for the experiment identified by the given reference.
-     * The IDF and SDRF are generated dynamically.
+     * Retrieves a Zip file with the file contents for the files identified by the given download request. The zip file
+     * is streamed back using the remote output stream provided in the out parameter.
+     * 
+     * @param downloadRequest the download request identifying the files to retrieve.
+     * @param compressIndividually if true, then the Zip will not use compression as a whole, but each file in the zip
+     *            will be compressed individually using GZip. If false, then the Zip file will use the standard Zip
+     *            compression.
+     * @param out the remote output stream (using the rmiio library) to which the Zip file contents will be written.
+     * @throws InvalidReferenceException if any of the file references in the download request is not a valid file
+     *             reference.
+     * @throws DataTransferException if there is an error streaming the data.
+     */
+    void streamFileContentsZip(FileDownloadRequest downloadRequest, boolean compressIndividually, 
+            RemoteOutputStream out) throws InvalidReferenceException, DataTransferException;
+
+    /**
+     * Retrieves a set of files containing the mage-tab IDF and SDRF for the experiment identified by the given
+     * reference. The IDF and SDRF are generated dynamically. The file set also contains references to the data files
+     * referenced by the mage-tab SDRF.
      * 
      * @param experimentRef reference identifying the experiment
-     * @return the set of IDF and SDRF files. 
+     * @return the set of IDF and SDRF files, and references to corresponding data files.
      * @throws InvalidReferenceException if the experimentRef is not a valid experiment reference.
      * @throws DataTransferException if there is an error generating the mage-tab file data
      */    
     MageTabFileSet exportMageTab(CaArrayEntityReference experimentRef) throws InvalidReferenceException,
             DataTransferException;
+
+    /**
+     * Retrieves a Zip of files containing the mage-tab IDF and SDRF for the experiment identified by the given
+     * reference. The IDF and SDRF are generated dynamically. The Zip also contains the data files referenced by the
+     * mage-tab SDRF. The zip file is streamed back using the remote output stream provided in the out parameter.
+     * 
+     * @param experimentRef reference identifying the experiment
+     * @param compressIndividually if true, then the Zip will not use compression as a whole, but each file in the zip
+     *            will be compressed individually using GZip. If false, then the Zip file will use the standard Zip
+     *            compression.
+     * @param out the remote output stream (using the rmiio library) to which the Zip file contents will be written.
+     * @throws InvalidReferenceException if the experimentRef is not a valid experiment reference.
+     * @throws DataTransferException if there is an error streaming the data.
+     */
+    void streamMageTabZip(CaArrayEntityReference experimentRef, boolean compressIndividually, RemoteOutputStream out)
+            throws InvalidReferenceException, DataTransferException;
 }

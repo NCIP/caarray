@@ -382,7 +382,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             examplePerson.setLastName(DUMMY_PERSON.getLastName());
             examplePerson.getAffiliations().add(DUMMY_ORGANIZATION);
             Person retrievedPerson = null;
-            List<Person> matchingPersons = DAO_OBJECT.queryEntityAndAssociationsByExample(examplePerson);
+            List<Person> matchingPersons = DAO_OBJECT.queryEntityByExample(examplePerson);
             assertNotNull(matchingPersons);
             assertTrue(matchingPersons.size() > 0);
             retrievedPerson = matchingPersons.get(0);

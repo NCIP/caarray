@@ -133,7 +133,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
             q.setLong("id", entityToMatch.getId());
             return q.list();
         }
-        return queryEntityAndAssociationsByExample(entityToMatch);
+        return queryEntityByExample(entityToMatch);
     }
 
     /**
@@ -226,12 +226,24 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings(UNCHECKED)
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders) {
+        return retrieveAll(entityClass, 0, 0, orders);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, int maxResults, int firstResult,
+            Order... orders) {
         Criteria crit = HibernateUtil.getCurrentSession().createCriteria(entityClass);
         for (Order o : orders) {
             crit.addOrder(o);
         }
+        if (maxResults > 0) {
+            crit.setMaxResults(maxResults);
+        }
+        crit.setFirstResult(firstResult);
         return crit.list();
     }
 

@@ -252,7 +252,7 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
     public void testGetUsers() {
         List<User> users = this.permissionsManagementService.getUsers(null);
         assertNotNull(users);
-        assertTrue(users.isEmpty());
+        assertEquals(9, users.size());
     }
 
     @SuppressWarnings("unchecked")

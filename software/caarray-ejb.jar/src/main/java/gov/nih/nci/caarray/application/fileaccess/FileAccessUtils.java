@@ -80,29 +80,109 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external.v1_0.grid.service;
+package gov.nih.nci.caarray.application.fileaccess;
 
-import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
-import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
-import java.rmi.RemoteException;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Collection;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
-import javax.xml.namespace.QName;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
+ * Utility class for working with files.
+ * 
  * @author dkokotov
- *
  */
-public class OrganismEnumIterator extends BaseEnumIterator<Organism> {
-
-    public OrganismEnumIterator() throws RemoteException {
-        super(new QName("gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment", "Organism"));
+public final class FileAccessUtils {
+    private FileAccessUtils() {
+        // empty - utility class
+    }
+    
+    /**
+     * Zips the selected files and writes the result to the given output stream.
+     * 
+     * @param files the files to put in the zip.
+     * @param out the output stream to write the zip to.
+     * @param compressIndividually if true, then each file will be added to the zip as a STORED entry, but 
+     *            but the file itself will be compressed using GZip. If false, then each file will be added to the
+     *            zip as a DEFLATED entry, but the file itself will be uncompressed.
+     * 
+     * @throws IOException if there is an error writing to the stream
+     */
+    public static void downloadFiles(Collection<CaArrayFile> files, boolean compressIndividually, OutputStream out)
+            throws IOException {
+        ZipOutputStream zos = new ZipOutputStream(out);
+        addToZip(files, compressIndividually, zos);
+        zos.finish();
+    }
+    
+    /**
+     * Adds the selected files the given zip output stream. This method will NOT call finish on the zip output stream
+     * at the end.
+     * 
+     * @param files the files to put in the zip.
+     * @param zos the zip output stream to add the files to. This stream must already be open.
+     * @param compressIndividually if true, then each file will be added to the zip as a STORED entry, but 
+     *            but the file itself will be compressed using GZip. If false, then each file will be added to the
+     *            zip as a DEFLATED entry, but the file itself will be uncompressed.
+     * 
+     * @throws IOException if there is an error writing to the stream
+     */
+    public static void addToZip(Collection<CaArrayFile> files, boolean compressIndividually, ZipOutputStream zos)
+            throws IOException {
+        TemporaryFileCache tempCache = TemporaryFileCacheLocator.getTemporaryFileCache();
+        for (CaArrayFile caf : files) {
+            File f = tempCache.getFile(caf, !compressIndividually);
+            writeZipEntry(zos, f, compressIndividually);
+            tempCache.closeFile(caf, !compressIndividually);
+        }
     }
 
-    @Override
-    protected List<Organism> getNextResults(PagingParams enumParams) {
-        return getCaArrayServer().getSearchService().getAllOrganisms(enumParams);
-        
+    /**
+     * Adds the given file to the given zip output stream, using the file's name as the zip entry name. This method will
+     * NOT call finish on the zip output stream at the end.
+     * 
+     * @param zos the zip output stream to add the file to. This stream must already be open.
+     * @param file the file to put in the zip.
+     * @param addAsStored if true, then the file will be added to the zip as a STORED entry (e.g. without applying
+     *            compression to it); if false, then the file will be added to the zip as a DEFLATED entry.
+     * @throws IOException if there is an error writing to the stream
+     */
+    public static void writeZipEntry(ZipOutputStream zos, File file, boolean addAsStored) throws IOException {
+        writeZipEntry(zos, file, file.getName(), addAsStored);
+    }
+
+    /**
+     * Adds the given file to the given zip output stream using the given name as the zip entry name. This method will
+     * NOT call finish on the zip output stream at the end.
+     * 
+     * @param zos the zip output stream to add the file to. This stream must already be open.
+     * @param file the file to put in the zip.
+     * @param name the name to use for this zip entry.
+     * @param addAsStored if true, then the file will be added to the zip as a STORED entry (e.g. without applying
+     *            compression to it); if false, then the file will be added to the zip as a DEFLATED entry.
+     * @throws IOException if there is an error writing to the stream
+     */
+    public static void writeZipEntry(ZipOutputStream zos, File file, String name, boolean addAsStored)
+            throws IOException {
+        ZipEntry ze = new ZipEntry(name);
+        ze.setMethod(addAsStored ? ZipEntry.STORED : ZipEntry.DEFLATED);
+        if (addAsStored) {
+            ze.setSize(file.length());
+            ze.setCrc(FileUtils.checksumCRC32(file));
+        }
+        zos.putNextEntry(ze);
+        InputStream is = FileUtils.openInputStream(file);
+        IOUtils.copy(is, zos);
+        zos.closeEntry();
+        zos.flush();
+        IOUtils.closeQuietly(is);
     }
 }

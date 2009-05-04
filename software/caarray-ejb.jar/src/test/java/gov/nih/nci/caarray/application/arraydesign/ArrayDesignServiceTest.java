@@ -851,7 +851,7 @@ public class ArrayDesignServiceTest extends AbstractCaarrayTest {
                 }
 
                 @Override
-                public <T> List<T> queryEntityByExample(T entityToMatch, Order... order) {
+                public <T extends PersistentObject> List<T> queryEntityByExample(T entityToMatch, Order... order) {
                     List<T> entities = new ArrayList<T>();
                     entities.add(entityToMatch);
                     return entities;

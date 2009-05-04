@@ -193,6 +193,19 @@ public interface SearchDao extends CaArrayDao {
     <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders);
 
     /**
+     * Method to get all the entities of a given type, subject to given paging constraints.
+     *
+     * @param <T> the type
+     * @param entityClass the class
+     * @param maxResults number of entities to retrieve. A negative or 0 value would indicate no limit.
+     * @param firstResult 0-based index of first entity to retrieve, given the ordering specified.
+     * @param orders the order by clauses
+     * @return the list of objects
+     */
+    <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, int maxResults, int firstResult,
+            Order... orders);
+
+    /**
      * Filters the given collection where the given property = the given value.
      *
      * @param <T> the class of objects to expect in return.

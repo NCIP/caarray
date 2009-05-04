@@ -403,7 +403,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
             Protocol exampleProtocol = setupDeepSearchExample();
             Protocol retrievedProtocol = null;
             List<Protocol> matchingProtocols =
-                DAO_OBJECT.queryEntityAndAssociationsByExample(exampleProtocol);
+                DAO_OBJECT.queryEntityByExample(exampleProtocol);
             assertEquals(2, matchingProtocols.size());
             retrievedProtocol = matchingProtocols.get(0);
             if (DUMMY_PROTOCOL_2.equals(retrievedProtocol)) {

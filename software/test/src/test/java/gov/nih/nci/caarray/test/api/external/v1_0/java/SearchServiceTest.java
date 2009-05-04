@@ -43,30 +43,6 @@ import org.junit.Test;
  */
 public class SearchServiceTest extends AbstractExternalJavaApiTest {
     @Test
-    public void testGetAllFileTypes() {
-        List<FileType> allFileTypes = caArrayServer.getSearchService().getAllFileTypes(null);
-        assertEquals(34, allFileTypes.size());
-    }
-
-    @Test
-    public void testGetAllProviders() {
-        List<ArrayProvider> allProviders = caArrayServer.getSearchService().getAllProviders(null);
-        assertEquals(8, allProviders.size());
-    }
-    
-    @Test
-    public void testGetAllArrayDesigns() {
-        List<ArrayDesign> allDesigns = caArrayServer.getSearchService().getAllArrayDesigns(null);
-        assertEquals(3, allDesigns.size());
-    }
-
-    @Test
-    public void testGetAllOrganisms() {
-        List<Organism> allOrgs = caArrayServer.getSearchService().getAllOrganisms(null);
-        assertEquals(33, allOrgs.size());
-    }
-    
-    @Test
     public void testGetAllPrincipalInvestigators() {
         List<Person> allPis = caArrayServer.getSearchService().getAllPrincipalInvestigators(null);
         assertEquals(10, allPis.size());

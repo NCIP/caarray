@@ -95,10 +95,8 @@ import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
-import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
@@ -123,6 +121,7 @@ import gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
+import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
@@ -636,12 +635,6 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
-
-        @Override
-        public VocabularyDao getVocabularyDao() {
-            return new LocalVocabularyDaoStub();
-        }
-
         /**
          * {@inheritDoc}
          */
@@ -652,18 +645,12 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
 
     }
 
-    private static class LocalVocabularyDaoStub extends VocabularyDaoStub {
-        @Override
-        public <T> List<T> queryEntityByExample(T entityToMatch, Order... order) {
-            return new ArrayList<T>();
-        }
-    }
-
     private static class LocalArrayDaoStub extends ArrayDaoStub {
         @SuppressWarnings("unchecked")
         @Override
-        public <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch,
+        public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria,
                 Order... orders) {
+            T entityToMatch = criteria.getExample();
             if (entityToMatch instanceof ArrayDesign) {
                 ArrayDesign arrayDesign = (ArrayDesign) entityToMatch;
                 if ("URN:LSID:Affymetrix.com:PhysicalArrayDesign:Test3".equals(arrayDesign.getLsid())) {
@@ -672,7 +659,7 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
                     return list;
                 }
             }
-            return super.queryEntityAndAssociationsByExample(entityToMatch, orders);
+            return super.queryEntityByExample(criteria, orders);
         }
     }
 }

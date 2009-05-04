@@ -82,10 +82,11 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
+
 import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -123,73 +124,39 @@ public interface CaArrayDao {
     void remove(PersistentObject persistentObject);
 
     /**
-     * Calls queryEntityByExample(entityToMatch, MatchMode.EXACT, order).
+     * Query by example using the given example entity, excluding zero or null properties, and using exact matching for
+     * string properties. Non-null single valued associations will be included in the query. 
      *
      * @param <T> entity type
      * @param entityToMatch get objects matching this entity
      * @param order list or order by clauses to add
-     * @return the List of objects, or an empty List.
+     * @return the List of objects matching the example, or an empty list if no matches.
      */
-    <T> List<T> queryEntityByExample(T entityToMatch, Order... order);
+    <T extends PersistentObject> List<T> queryEntityByExample(T entityToMatch, Order... order);
 
     /**
-     * Calls queryEntityByExample(entityToMatch, MatchMode.EXACT, true, new String[] { }, order).
+     * Query by example using the given criteria. Non-null single valued associations will be included in the query.
      *
      * @param <T> entity type
-     * @param mode string comparison mode
-     * @param entityToMatch get objects matching this entity
-     * @param order list or order by clauses to add
-     * @return the List of objects, or an empty List.
-     */
-    <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, Order... order);
-
-    /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
-     * or null if none exists.
-     *
-     * @param <T> entity type
-     * @param entityToMatch get objects matching this entity
-     * @param mode string comparison mode
-     * @param excludeNulls whether to exclude null properties from the query (ie not consider them at all, rather
-     * than including an is null check for them)
-     * @param excludeProperties a list of additional properties to exclude from the query.
-     * @param order list or order by clauses to add
-     * @return the List of objects, or an empty List.
-     */
-    <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, boolean excludeNulls, String[] excludeProperties,
-            Order... order);
-
-    /**
-     * Returns A subset of entities matching the given entity by example, starting with the given result number and 
-     * returning at most the given number of results.
-     *
-     * @param <T> entity type
-     * @param example get objects matching this entity. A by-example query is used to match the entity.
-     * @param matchMode string comparison mode for string fields
-     * @param excludeNulls whether to exclude null properties from the query (ie not consider them at all, rather
-     * than including an is null check for them)
-     * @param excludeProperties a list of additional properties to exclude from the query.
-     * @param maxResults maximum number of results to return. A negative or 0 value would indicate no limit.
-     * @param firstResult index of first result to return
+     * @param criteria the criteria for searching, which defines the example entity and search semantics.
      * @param orders list or order by clauses to add
-     * @return the List of objects, or an empty List. If maxResults was greater than 0, the list will have at most 
-     * maxResults elements, but may have less.
+     * @return the List of objects matching the example, or an empty list if no matches.
      */
-    <T> List<T> queryEntityByExample(T example, MatchMode matchMode, boolean excludeNulls, //NOPMD
-            String[] excludeProperties, int maxResults, int firstResult, Order... orders);
-
+    <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, Order... orders);
+    
     /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
-     * and its associations, or null if none exists.  This method ignores collection associations
-     * (ie, one-to-many), but handles non-collection associations such as many-to-one or
-     * one-to-one.
+     * Query by example using the given criteria, subject to the given paging constraints.
+     * Non-null single valued associations will be included in the query.
      *
      * @param <T> entity type
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
-     * @param order list or order by clauses to add
-     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
+     * @param criteria the criteria for searching, which defines the example entity and search semantics.
+     * @param maxResults number of entities to retrieve. A negative or 0 value would indicate no limit.
+     * @param firstResult 0-based index of first entity to retrieve, given the ordering specified.
+     * @param orders list or order by clauses to add
+     * @return the List of objects matching the example, or an empty list if no matches.
      */
-    <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch, Order... order);
+    <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, int maxResults,
+            int firstResult, Order... orders);
 
     /**
      * Flushes the current Hibernate <code>Session</code>.
@@ -214,5 +181,4 @@ public interface CaArrayDao {
      * @param object object to evict
      */
     void evictObject(Object object);
-
 }
