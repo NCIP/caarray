@@ -1474,6 +1474,8 @@
             <fileset dir="${caarray-client.dir}/src/distribution/resources" />
             <zipfileset prefix="lib" refid="caarray-client.dependencies.fileset" />
             <zipfileset dir="${caarray-client.target.dir}" includes="docs/**" />
+            <zipfileset prefix="docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_client_model.eap" />
+            <zipfileset prefix="example/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/*.java" />
             <zipfileset prefix="grid/etc" dir="${caarray-svc.dir}/src/gov/nih/nci/cagrid/caarray/client" includes="client-config.wsdd" />
             <zipfileset prefix="grid/etc" dir="${caarray-svc.dir}/etc" includes="domainModel.xml" />
             <zipfileset prefix="grid/lib" refid="grid.dependencies.lib.fileset" />
