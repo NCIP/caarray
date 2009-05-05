@@ -121,7 +121,7 @@ alter table term_parameter_value add index FKDE2BC7887518F0E3 (parameter_value_i
 alter table userdef_parameter_value add index FK6046E7767518F0E3 (parameter_value_id), add constraint FK6046E7767518F0E3 foreign key (parameter_value_id) references parameter_value (id);
 
 insert into term (value, source) select pv.unit, ts.id from parameter_value pv left join term t on pv.unit = t.value, term_source ts where t.id is null and pv.unit is not null and ts.name='caArray' and ts.version='2.0';
-update parameter_value pv, term t set pv.unit = t.id where pv.unit_text = t.value and pv.unit_text is not null group by pv.id;
+update parameter_value pv, term t set pv.unit = t.id where pv.unit_text = t.value and pv.unit_text is not null;
 insert into measurement_parameter_value (parameter_value_id, value) select id, value from parameter_value where unit is not null and value regexp '^[-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?$';
 insert into userdef_parameter_value (parameter_value_id, value) select id, value from parameter_value where unit is not null and value not regexp '^[-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?$';
 insert into term_parameter_value (parameter_value_id, term) select pv.id, t.id from parameter_value pv join term t on pv.value = t.value where pv.unit is null group by pv.id;
