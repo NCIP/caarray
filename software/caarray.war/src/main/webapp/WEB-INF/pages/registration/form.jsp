@@ -16,7 +16,7 @@
             <c:if test="${ldapInstall == 'true'}">
                 <s:radio
                     name="ldapAuthenticate" key="registrationRequest.ldap" list="#{true: 'Yes', false:'No'}" tabindex="1"
-                    onchange="$('acct_details')[$('regForm_ldapAuthenticatetrue').checked ? 'show' : 'hide']();"
+                    onclick="$('acct_details')[$('regForm_ldapAuthenticatetrue').checked ? 'show' : 'hide']();"
                 />
             </c:if>
 
