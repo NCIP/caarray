@@ -92,8 +92,7 @@ import java.util.List;
 //carpla
 //public final class Protocol implements Serializable, TermSourceable {
 public class Protocol implements Serializable, TermSourceable {
-	
-//carpla
+
 
 	
 	

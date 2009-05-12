@@ -94,7 +94,7 @@ import java.io.Serializable;
 //carpla
 //public final class Characteristic implements Serializable, Unitable {
 public class Characteristic implements Serializable, Unitable {
-//carpla
+
 	
 	
 	

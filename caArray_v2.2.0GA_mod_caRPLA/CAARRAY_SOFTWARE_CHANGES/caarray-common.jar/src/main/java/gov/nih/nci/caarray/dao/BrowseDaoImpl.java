@@ -158,7 +158,7 @@ public class BrowseDaoImpl implements BrowseDao {
     }
 
     //carpla_begin
-    public int antibodyCount() {
+	public int antibodyCount() {
         String queryStr = "SELECT COUNT(DISTINCT h) FROM " + Antibody.class.getName() + " h";
         Query q = HibernateUtil.getCurrentSession().createQuery(queryStr);
         return ((Number) q.uniqueResult()).intValue();

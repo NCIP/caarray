@@ -26,22 +26,14 @@ public enum ExperimentDesignNodeType {
     /**
      * The Hybridization node type.
      */
-    HYBRIDIZATION
-    
-    ,
+    HYBRIDIZATION,
+   
+    //carpla
     RPLASAMPLE ,
     
     RPLAHYBRIDIZATION;
     
-    
-    
-    
-    
-    
-    
-    
-    
-    ;
+   
     
     /**
      * @return the node type to the right of this node type in a hybridization channel or experiment design graph.

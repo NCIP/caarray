@@ -108,7 +108,7 @@ public enum BrowseCategory implements ResourceBasedEnum {
 						null,
 						"p.experiment.manufacturer"),
 
-	// carpla_begin_mod
+	
 	/**
 	 * Array designs.
 	 */
@@ -117,7 +117,7 @@ public enum BrowseCategory implements ResourceBasedEnum {
 						"p.experiment.arrayDesigns a",
 						"a");
 
-	//ANTIBODIES("browse.category.antibodies", null, "p");
+	// ANTIBODIES("browse.category.antibodies", null, "p");
 	// carpla_end_add
 
 	private final String	resourceKey;
