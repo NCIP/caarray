@@ -41,12 +41,11 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
 	public String load () {
 		String checkResult = checkProject();
 
-		System.out.println("in ProjectTabAction.load, checkResult is : " + checkResult);
+		
 		String assaytype = getProject().getExperiment().getAssayType();
 
 		if (assaytype != null) {
-			System.out.println("in ProjectTabAction.load,assaytype=" + getProject()	.getExperiment()
-																					.getAssayType());
+			//carpla
 			if (getProject().getExperiment().getAssayType().compareTo("rpla") == 0) {
 				return "RPLA_INPUT";
 			}

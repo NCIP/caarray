@@ -250,8 +250,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction
 		setFilesMatchingTypeAndStatus(getProject().getUnImportedFiles());
 		setFileTypeNamesAndStatuses(getProject().getUnImportedFiles());
 		setFileStatusCountMap(computeFileStatusCounts());
-		System.out.println("in ProjectFilesAction: prepListUnimportedPage() about to return:" + ACTION_UNIMPORTED);
-		System.out.println("in ProjectFilesAction: assay type is:" + getProject().getExperiment().getAssayType());
+		
 		
 		if ( getProject().getExperiment().getAssayType().compareTo("rpla") == 0 ){
 			return "listUnimported_RPLA";
