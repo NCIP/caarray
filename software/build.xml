@@ -158,7 +158,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 
     <target name="dist:caarray-client.zip">
         <delete file="${dist.dir}/${caarray.client-zip.zip.file}" />
-        <copy file="${basedir}/caarray-client.jar/target/caarray-client.zip" tofile="${dist.dir}/${caarray.client-zip.zip.file}"/>
+        <copy file="${basedir}/caarray-client.jar/target/caarray-client-external-v1_0.zip" tofile="${dist.dir}/${caarray.client-external-zip.zip.file}"/>
+        <copy file="${basedir}/caarray-client.jar/target/caarray-client-legacy.zip" tofile="${dist.dir}/${caarray.client-legacy-zip.zip.file}"/>
     </target>
 
     <target name="dist:gui-installer" description="Makes Gui-Installer distribution">
