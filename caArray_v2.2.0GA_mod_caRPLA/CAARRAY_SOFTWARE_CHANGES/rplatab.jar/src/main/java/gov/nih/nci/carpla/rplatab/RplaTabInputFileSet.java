@@ -23,8 +23,6 @@ public class RplaTabInputFileSet {
 
 	private Set<File>			_miscfiles		= new HashSet<File>();
 
-	// carplafix
-
 	public void addFile ( File file) throws RplaTabDatasetFileException {
 		String extension = FilenameUtils.getExtension(file.getName());
 		if (extension.toLowerCase().compareTo("rplaidf") == 0) {
@@ -77,14 +75,14 @@ public class RplaTabInputFileSet {
 	}
 
 	public void setSradfFile ( SradfFile sradffile)
-			throws RplaTabDatasetFileException
+													throws RplaTabDatasetFileException
 	{
 
 		_sradfFile = sradffile;
 	}
 
 	public void addAllFilesInDir ( String string)
-			throws RplaTabDatasetFileException
+													throws RplaTabDatasetFileException
 	{
 		File dir = new File(string);
 		File[] files = dir.listFiles();

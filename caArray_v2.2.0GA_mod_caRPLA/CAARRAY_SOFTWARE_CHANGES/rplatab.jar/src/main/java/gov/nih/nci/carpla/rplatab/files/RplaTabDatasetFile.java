@@ -1,9 +1,7 @@
 package gov.nih.nci.carpla.rplatab.files;
 
-
 import gov.nih.nci.carpla.rplatab.Sha1SumUtility;
 import gov.nih.nci.carpla.rplatab.RplaConstants.RplaDatasetFileType;
-
 
 import java.io.File;
 
@@ -33,17 +31,18 @@ public abstract class RplaTabDatasetFile {
 	public void setFile ( File file) throws RplaTabDatasetFileException {
 
 		if (file == null) {
-			throw new RplaTabDatasetFileException("file reference is null",file);
+			throw new RplaTabDatasetFileException(	"file reference is null",
+													file);
 		}
 
 		if (file.length() == 0) {
 
-			throw new RplaTabDatasetFileException("file is of zero size",file);
+			throw new RplaTabDatasetFileException("file is of zero size", file);
 		}
 
 		if (file.canRead() == false) {
 
-			throw new RplaTabDatasetFileException("cannot read file",file);
+			throw new RplaTabDatasetFileException("cannot read file", file);
 		}
 
 		this._file = file;

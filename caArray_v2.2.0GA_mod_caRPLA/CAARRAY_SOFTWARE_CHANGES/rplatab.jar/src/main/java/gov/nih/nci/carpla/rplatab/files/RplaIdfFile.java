@@ -5,13 +5,10 @@ import gov.nih.nci.carpla.rplatab.RplaConstants;
 
 import java.io.File;
 
-
-
 public class RplaIdfFile extends RplaTabDatasetFile {
 
 	public RplaIdfFile() {
 		setType(RplaConstants.RplaDatasetFileType.RplaIdf);
 	}
 
-	
 }

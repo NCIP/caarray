@@ -8,7 +8,8 @@ public interface RplaTabDocumentSetParser {
 
 	RplaTabDocumentSetParser	INSTANCE	= new RplaTabDocumentSetParserImplementation();
 
-	public RplaTabDocumentSet parse ( RplaTabInputFileSet rplaTabInputFileSet) throws InvalidDataException;
+	public RplaTabDocumentSet parse ( RplaTabInputFileSet rplaTabInputFileSet)
+																				throws InvalidDataException;
 
 	public ValidationResult validate ( RplaTabInputFileSet inputSet);
 

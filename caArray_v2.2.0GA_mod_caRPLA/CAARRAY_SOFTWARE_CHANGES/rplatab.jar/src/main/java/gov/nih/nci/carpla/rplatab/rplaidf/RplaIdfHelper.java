@@ -16,7 +16,7 @@ public class RplaIdfHelper {
 	}
 
 	public void addColumnString ( String rowHeader, String value) {
-		//System.out.println(rowHeader + "=" + value);
+		
 		Vector<String> strings = _map.get(rowHeader);
 		if (strings == null) {
 			strings = new Vector<String>();

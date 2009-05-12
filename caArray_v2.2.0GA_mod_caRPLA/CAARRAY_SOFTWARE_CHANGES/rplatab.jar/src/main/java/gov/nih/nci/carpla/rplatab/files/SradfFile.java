@@ -4,8 +4,6 @@ import gov.nih.nci.carpla.rplatab.RplaConstants;
 
 import java.io.File;
 
-
-
 public class SradfFile extends RplaTabDatasetFile {
 
 	public SradfFile() {
