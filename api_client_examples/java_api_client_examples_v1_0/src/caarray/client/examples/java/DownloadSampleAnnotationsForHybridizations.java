@@ -85,11 +85,12 @@ package caarray.client.examples.java;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
-import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
@@ -103,7 +104,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.axis.types.URI.MalformedURIException;
+import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
  * A client downloading sample annotations for hybridizations using the caArray Java API.
@@ -224,9 +225,12 @@ public class DownloadSampleAnnotationsForHybridizations {
     }
 
     private CaArrayEntityReference getChpFileType() {
+        ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CHP");
-        List<FileType> fileTypes = searchService.searchByExample(exampleFileType, null);
+        criteria.setExample(exampleFileType);
+        SearchResult<FileType> results = searchService.searchByExample(criteria, null);
+        List<FileType> fileTypes = results.getResults();
         FileType chpFileType = fileTypes.iterator().next();
         CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference(chpFileType.getId());
         return chpFileTypeRef;

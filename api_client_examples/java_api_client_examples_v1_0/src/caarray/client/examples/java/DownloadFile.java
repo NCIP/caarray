@@ -98,10 +98,9 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import org.apache.axis.types.URI.MalformedURIException;
-
 import com.healthmarketscience.rmiio.RemoteOutputStreamServer;
 import com.healthmarketscience.rmiio.SimpleRemoteOutputStream;
+import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
  * A client downloading contents of a single file using the caArray Java API.

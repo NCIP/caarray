@@ -86,7 +86,6 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
-import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
@@ -102,10 +101,9 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.axis.types.URI.MalformedURIException;
-
 import com.healthmarketscience.rmiio.RemoteOutputStreamServer;
 import com.healthmarketscience.rmiio.SimpleRemoteOutputStream;
+import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
  * A client downloading the array design file associated with a hybridization using the caArray Java API.
@@ -136,7 +134,6 @@ public class DownloadArrayDesignForHybridization {
     }
 
     private void download() throws RemoteException, MalformedURIException, IOException, Exception {
-        DataSetRequest dataSetRequest = new DataSetRequest();
         // Select an experiment of interest.
         CaArrayEntityReference experimentRef = selectExperiment();
         if (experimentRef == null) {

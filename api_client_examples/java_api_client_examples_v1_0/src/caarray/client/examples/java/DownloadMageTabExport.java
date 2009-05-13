@@ -97,7 +97,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.axis.types.URI.MalformedURIException;
+import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
  * A client exporting an experiment into MAGE-TAB and downloading the IDF, SDRF and references

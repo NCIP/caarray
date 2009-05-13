@@ -87,9 +87,11 @@ import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
@@ -101,10 +103,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.axis.types.URI.MalformedURIException;
-
 import com.healthmarketscience.rmiio.RemoteOutputStreamServer;
 import com.healthmarketscience.rmiio.SimpleRemoteOutputStream;
+import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
  * A client downloading a zip of files from an experiment using the caArray Java API.
@@ -204,9 +205,12 @@ public class DownloadFileZipFromExperiment {
     }
 
     private CaArrayEntityReference getCelFileType() {
+        ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CEL");
-        List<FileType> fileTypes = searchService.searchByExample(exampleFileType, null);
+        criteria.setExample(exampleFileType);
+        SearchResult<FileType> results = searchService.searchByExample(criteria, null);
+        List<FileType> fileTypes = results.getResults();
         FileType celFileType = fileTypes.iterator().next();
         CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference(celFileType.getId());
         return celFileTypeRef;
@@ -224,7 +228,7 @@ public class DownloadFileZipFromExperiment {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         outStream = new SimpleRemoteOutputStream(byteArrayOutputStream);
         long startTime = System.currentTimeMillis();
-        dataService.streamFileContents(downloadRequest, compressEachIndividualFile, outStream);
+        dataService.streamFileContentsZip(downloadRequest, compressEachIndividualFile, outStream);
         long totalTime = System.currentTimeMillis() - startTime;
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         if (byteArray != null) {

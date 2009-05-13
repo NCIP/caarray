@@ -5,9 +5,9 @@ Clients to test the caArray Java API v1.0:
    You must set the right server.hostname and server.jndi.port.
 2. All jar dependencies including the caArray client jar should be in the lib/directory.
    They are downloadable from Gforge under the caArray 2 project under the "Files" tab.
-   Look for caarray-client-v1_0.zip and extract the following from it:
-   * caarray-client.jar
-   * lib/
+   Look for caarray-client-external-v1_0.zip and extract the following from it:
+   * caarray-client-external-v1_0.jar
+   * lib/java/
 3. ant targets:
    * TO BUILD:
      clean

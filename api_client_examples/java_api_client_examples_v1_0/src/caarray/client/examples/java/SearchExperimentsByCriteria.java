@@ -83,10 +83,15 @@
 package caarray.client.examples.java;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
+import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.query.AnnotationCriterion;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
@@ -128,35 +133,46 @@ public class SearchExperimentsByCriteria {
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
 
         // Select array provider. (See LookUpEntities example client to see how to get list of all array providers.)
-        // ArrayProvider exampleProvider = new ArrayProvider();
-        // exampleProvider.setName(PROVIDER_NAME);
-        // ArrayProvider[] providers = searchService.searchByExample(exampleProvider);
-        // if (providers.length <= 0) {
-        // System.err.println("Could not find array provider called " + PROVIDER_NAME);
-        // return;
-        // }
-        // experimentSearchCriteria.setArrayProvider(providers[0]);
+        ExampleSearchCriteria<ArrayProvider> providerCriteria = new ExampleSearchCriteria<ArrayProvider>();
+        ArrayProvider exampleProvider = new ArrayProvider();
+        exampleProvider.setName(PROVIDER_NAME);
+        providerCriteria.setExample(exampleProvider);
+        SearchResult<ArrayProvider> providerResults = searchService.searchByExample(providerCriteria, null);
+        List<ArrayProvider> arrayProviders = providerResults.getResults();
+        if (arrayProviders == null || arrayProviders.size() <= 0) {
+            System.err.println("Could not find array provider called " + PROVIDER_NAME);
+            return;
+        }
+        CaArrayEntityReference providerRef = new CaArrayEntityReference(arrayProviders.get(0).getId());
+        experimentSearchCriteria.setArrayProvider(providerRef);
 
         // Select organism. (See LookUpEntities example client to see how to get list of all organisms.)
-        // Organism exampleOrganism = new Organism();
-        // exampleOrganism.setCommonName(ORGANISM_NAME);
-        // Organism[] organisms = searchService.searchByExample(exampleOrganism);
-        // if (organisms.length <= 0) {
-        // System.err.println("Could not find organism with common name = " + ORGANISM_NAME);
-        // return;
-        // }
-        // CaArrayEntityReference organismRef = new CaArrayEntityReference(organisms[0].getId());
-        // experimentSearchCriteria.setOrganism(organismRef);
+        ExampleSearchCriteria<Organism> organismCriteria = new ExampleSearchCriteria<Organism>();
+        Organism exampleOrganism = new Organism();
+        exampleOrganism.setCommonName(ORGANISM_NAME);
+        organismCriteria.setExample(exampleOrganism);
+        SearchResult<Organism> organismResults = searchService.searchByExample(organismCriteria, null);
+        List<Organism> organisms = organismResults.getResults();
+        if (organisms == null || organisms.size() <= 0) {
+            System.err.println("Could not find organism with common name = " + ORGANISM_NAME);
+            return;
+        }
+        CaArrayEntityReference organismRef = new CaArrayEntityReference(organisms.get(0).getId());
+        experimentSearchCriteria.setOrganism(organismRef);
 
         // Select assay type. (See LookUpEntities example client to see how to get list of all assay types.)
-        // AssayType exampleAssayType = new AssayType();
-        // exampleAssayType.setName(ASSAY_TYPE);
-        // AssayType[] assayTypes = searchService.searchByExample(exampleAssayType);
-        // if (assayTypes.length <= 0) {
-        // System.err.println("Could not find assay type " + ASSAY_TYPE);
-        // return;
-        // }
-        // experimentSearchCriteria.setAssayType(assayTypes[0]);
+        ExampleSearchCriteria<AssayType> assayTypeCriteria = new ExampleSearchCriteria<AssayType>();
+        AssayType exampleAssayType = new AssayType();
+        exampleAssayType.setName(ASSAY_TYPE);
+        assayTypeCriteria.setExample(exampleAssayType);
+        SearchResult<AssayType> assayTypeResults = searchService.searchByExample(assayTypeCriteria, null);
+        List<AssayType> assayTypes = assayTypeResults.getResults();
+        if (assayTypes == null || assayTypes.size() <= 0) {
+            System.err.println("Could not find assay type " + ASSAY_TYPE);
+            return;
+        }
+        CaArrayEntityReference assayTypeRef = new CaArrayEntityReference(assayTypes.get(0).getId());
+        experimentSearchCriteria.setAssayType(assayTypeRef);
 
         // Select principal investigator.
         // Typically, the client application will search for all principal investigators, display the list of

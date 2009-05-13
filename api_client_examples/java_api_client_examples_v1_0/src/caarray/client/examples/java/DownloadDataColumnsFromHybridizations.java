@@ -100,9 +100,11 @@ import gov.nih.nci.caarray.external.v1_0.data.ShortColumn;
 import gov.nih.nci.caarray.external.v1_0.data.StringColumn;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
@@ -116,7 +118,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.axis.types.URI.MalformedURIException;
+import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
  * A client downloading data columns from hybridizations using the caArray Java API.
@@ -246,21 +248,27 @@ public class DownloadDataColumnsFromHybridizations {
     }
 
     private CaArrayEntityReference getChpFileType() {
+        ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CHP");
-        List<FileType> fileTypes = searchService.searchByExample(exampleFileType, null);
+        criteria.setExample(exampleFileType);
+        SearchResult<FileType> results = searchService.searchByExample(criteria, null);
+        List<FileType> fileTypes = results.getResults();
         FileType chpFileType = fileTypes.iterator().next();
         CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference(chpFileType.getId());
         return chpFileTypeRef;
     }
 
     private Set<CaArrayEntityReference> selectQuantitationTypes() {
+        ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
         Set<CaArrayEntityReference> quantitationTypeRefs = new HashSet<CaArrayEntityReference>();
         String[] quantitationTypeNames = QUANTITATION_TYPES_CSV_STRING.split(",");
         for (String quantitationTypeName : quantitationTypeNames) {
             QuantitationType exampleQuantitationType = new QuantitationType();
             exampleQuantitationType.setName(quantitationTypeName);
-            List<QuantitationType> quantitationTypes = searchService.searchByExample(exampleQuantitationType, null);
+            criteria.setExample(exampleQuantitationType);
+            SearchResult<QuantitationType> results = searchService.searchByExample(criteria, null);
+            List<QuantitationType> quantitationTypes = results.getResults();
             if (quantitationTypes == null || quantitationTypes.size() <= 0) {
                 return null;
             }
