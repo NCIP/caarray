@@ -227,6 +227,19 @@
         </java>
     </target>
 
+    <target name="download_magetab_export_with_data" depends="build">
+        <java classname="caarray.client.examples.grid.DownloadMageTabExportWithDataFiles">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
+            <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
+        </java>
+    </target>
+
     <!-- ******************************************************************* -->
     <!-- ** DOWNLOAD ARRAY DESIGN FILES                                   ** -->
     <!-- ******************************************************************* -->

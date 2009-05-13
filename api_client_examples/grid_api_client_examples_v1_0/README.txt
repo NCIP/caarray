@@ -5,10 +5,9 @@ Java clients to test the caArray GRID API v1.0:
    You must set the right grid.server.hostname and grid.server.http.port.
 2. All jar dependencies including the caArray client jar should be in the lib/directory.
    They are downloadable from Gforge under the caArray 2 project under the "Files" tab.
-   Look for caarray-client-v1_0.zip and extract the following from it:
-   * caarray-client.jar
-   * lib/
-   * grid/
+   Look for caarray-client-external-v1_0.zip and extract the following from it:
+   * caarray-client-external-v1_0.jar
+   * lib/grid/
 3. ant targets:
    * TO BUILD:
      clean
@@ -27,6 +26,7 @@ Java clients to test the caArray GRID API v1.0:
      download_sample_annotations
      lookup_entities
      download_magetab_export
+     download_magetab_export_with_data
      download_array_design
 
 NOTE: The output of the tests depends on certain data being available

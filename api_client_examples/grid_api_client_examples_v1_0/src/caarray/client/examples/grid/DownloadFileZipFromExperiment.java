@@ -87,9 +87,11 @@ import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
 import java.io.IOException;
@@ -195,10 +197,13 @@ public class DownloadFileZipFromExperiment {
     }
 
     private CaArrayEntityReference getCelFileType() {
+        ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CEL");
-        FileType[] fileTypes = client.searchByExample(exampleFileType);
-        FileType celFileType = fileTypes[0];
+        criteria.setExample(exampleFileType);
+        SearchResult<FileType> results = client.searchByExample(criteria, null);
+        List<FileType> fileTypes = results.getResults();
+        FileType celFileType = fileTypes.iterator().next();
         CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference(celFileType.getId());
         return celFileTypeRef;
     }

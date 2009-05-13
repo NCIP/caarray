@@ -86,7 +86,6 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
-import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
@@ -126,7 +125,6 @@ public class DownloadArrayDesignForHybridization {
     }
 
     private void download() throws RemoteException, MalformedURIException, IOException, Exception {
-        DataSetRequest dataSetRequest = new DataSetRequest();
         // Select an experiment of interest.
         CaArrayEntityReference experimentRef = selectExperiment();
         if (experimentRef == null) {

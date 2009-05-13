@@ -85,6 +85,8 @@ package caarray.client.examples.grid;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
+import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
@@ -94,7 +96,9 @@ import gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.factor.Factor;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
@@ -105,6 +109,7 @@ import gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContaine
 import gov.nih.nci.cagrid.wsenum.utils.EnumerationResponseHelper;
 
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.xml.soap.SOAPElement;
@@ -138,9 +143,11 @@ public class LookUpEntities {
         }
     }
 
-    private void lookup() throws RemoteException {
+    private void lookup() throws RemoteException, DeserializationException {
         lookupArrayDataTypes();
         lookupArrayDesigns();
+        lookupArrayProviders();
+        lookupAssayTypes();
         lookupBiomaterials();
         lookupCategories();
         lookupFiles();
@@ -149,6 +156,7 @@ public class LookUpEntities {
         lookupFactors();
         lookupFileTypes();
         lookupHybridizations();
+        lookupOrganisms();
         lookupPersons();
         lookupQuantitationTypes();
         lookupTerms();
@@ -162,11 +170,14 @@ public class LookUpEntities {
     }
 
     private void lookupArrayDataTypes() {
+        ExampleSearchCriteria<ArrayDataType> criteria = new ExampleSearchCriteria<ArrayDataType>();
         ArrayDataType exampleArrayDataType = new ArrayDataType();
+        criteria.setExample(exampleArrayDataType);
         startTime = System.currentTimeMillis();
-        ArrayDataType[] arrayDataTypes = client.searchByExample(exampleArrayDataType);
+        SearchResult<ArrayDataType> results = client.searchByExample(criteria, null);
+        List<ArrayDataType> arrayDataTypes = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + arrayDataTypes.length + " array data types in " + totalTime + " ms.");
+        System.out.println("Found " + arrayDataTypes.size() + " array data types in " + totalTime + " ms.");
         for (ArrayDataType arrayDataType : arrayDataTypes) {
             System.out.print(arrayDataType.getName() + "  ");
         }
@@ -174,23 +185,59 @@ public class LookUpEntities {
     }
 
     private void lookupArrayDesigns() {
+        ExampleSearchCriteria<ArrayDesign> criteria = new ExampleSearchCriteria<ArrayDesign>();
         ArrayDesign exampleDesign = new ArrayDesign();
+        criteria.setExample(exampleDesign);
         startTime = System.currentTimeMillis();
-        ArrayDesign[] arrayDesigns = client.searchByExample(exampleDesign);
+        SearchResult<ArrayDesign> results = client.searchByExample(criteria, null);
+        List<ArrayDesign> arrayDesigns = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + arrayDesigns.length + " array designs in " + totalTime + " ms.");
+        System.out.println("Found " + arrayDesigns.size() + " array designs in " + totalTime + " ms.");
         for (ArrayDesign arrayDesign : arrayDesigns) {
             System.out.print(arrayDesign.getName() + "  ");
         }
         System.out.println("End of array design lookup.");
     }
 
-    private void lookupBiomaterials() {
-        Biomaterial exampleBiomaterial = new Biomaterial();
+    private void lookupArrayProviders() {
+        ExampleSearchCriteria<ArrayProvider> criteria = new ExampleSearchCriteria<ArrayProvider>();
+        ArrayProvider exampleProvider = new ArrayProvider();
+        criteria.setExample(exampleProvider);
         startTime = System.currentTimeMillis();
-        Biomaterial[] biomaterials = client.searchByExample(exampleBiomaterial);
+        SearchResult<ArrayProvider> results = client.searchByExample(criteria, null);
+        List<ArrayProvider> arrayProviders = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + biomaterials.length + " biomaterials in " + totalTime + " ms.");
+        System.out.println("Found " + arrayProviders.size() + " array providers in " + totalTime + " ms.");
+        for (ArrayProvider arrayProvider : arrayProviders) {
+            System.out.print(arrayProvider.getName() + "  ");
+        }
+        System.out.println("End of array provider lookup.");
+    }
+
+    private void lookupAssayTypes() {
+        ExampleSearchCriteria<AssayType> criteria = new ExampleSearchCriteria<AssayType>();
+        AssayType exampleAssayType = new AssayType();
+        criteria.setExample(exampleAssayType);
+        startTime = System.currentTimeMillis();
+        SearchResult<AssayType> results = client.searchByExample(criteria, null);
+        List<AssayType> assayTypes = results.getResults();
+        totalTime = System.currentTimeMillis() - startTime;
+        System.out.println("Found " + assayTypes.size() + " assay types in " + totalTime + " ms.");
+        for (AssayType assayType : assayTypes) {
+            System.out.print(assayType.getName() + "  ");
+        }
+        System.out.println("End of assay type lookup.");
+    }
+
+    private void lookupBiomaterials() {
+        ExampleSearchCriteria<Biomaterial> criteria = new ExampleSearchCriteria<Biomaterial>();
+        Biomaterial exampleBiomaterial = new Biomaterial();
+        criteria.setExample(exampleBiomaterial);
+        startTime = System.currentTimeMillis();
+        SearchResult<Biomaterial> results = client.searchByExample(criteria, null);
+        List<Biomaterial> biomaterials = results.getResults();
+        totalTime = System.currentTimeMillis() - startTime;
+        System.out.println("Found " + biomaterials.size() + " biomaterials in " + totalTime + " ms.");
         for (Biomaterial biomaterial : biomaterials) {
             System.out.print(biomaterial.getName() + "  ");
         }
@@ -198,11 +245,14 @@ public class LookUpEntities {
     }
 
     private void lookupCategories() {
+        ExampleSearchCriteria<Category> criteria = new ExampleSearchCriteria<Category>();
         Category exampleCategory = new Category();
+        criteria.setExample(exampleCategory);
         startTime = System.currentTimeMillis();
-        Category[] categories = client.searchByExample(exampleCategory);
+        SearchResult<Category> results = client.searchByExample(criteria, null);
+        List<Category> categories = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + categories.length + " categories in " + totalTime + " ms.");
+        System.out.println("Found " + categories.size() + " categories in " + totalTime + " ms.");
         for (Category category : categories) {
             System.out.print(category.getName() + "  ");
         }
@@ -210,11 +260,14 @@ public class LookUpEntities {
     }
 
     private void lookupFiles() {
+        ExampleSearchCriteria<DataFile> criteria = new ExampleSearchCriteria<DataFile>();
         DataFile exampleFile = new DataFile();
+        criteria.setExample(exampleFile);
         startTime = System.currentTimeMillis();
-        DataFile[] files = client.searchByExample(exampleFile);
+        SearchResult<DataFile> results = client.searchByExample(criteria, null);
+        List<DataFile> files = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + files.length + " files in " + totalTime + " ms.");
+        System.out.println("Found " + files.size() + " files in " + totalTime + " ms.");
         for (DataFile file : files) {
             System.out.print(file.getName() + "  ");
         }
@@ -222,11 +275,14 @@ public class LookUpEntities {
     }
 
     private void lookupExperiments() {
+        ExampleSearchCriteria<Experiment> criteria = new ExampleSearchCriteria<Experiment>();
         Experiment exampleExperiment = new Experiment();
+        criteria.setExample(exampleExperiment);
         startTime = System.currentTimeMillis();
-        Experiment[] experiments = client.searchByExample(exampleExperiment);
+        SearchResult<Experiment> results = client.searchByExample(criteria, null);
+        List<Experiment> experiments = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + experiments.length + " experiments in " + totalTime + " ms.");
+        System.out.println("Found " + experiments.size() + " experiments in " + totalTime + " ms.");
         for (Experiment experiment : experiments) {
             System.out.print(experiment.getTitle() + "  ");
         }
@@ -234,11 +290,14 @@ public class LookUpEntities {
     }
 
     private void lookupExperimentalContacts() {
+        ExampleSearchCriteria<ExperimentalContact> criteria = new ExampleSearchCriteria<ExperimentalContact>();
         ExperimentalContact exampleContact = new ExperimentalContact();
+        criteria.setExample(exampleContact);
         startTime = System.currentTimeMillis();
-        ExperimentalContact[] contacts = client.searchByExample(exampleContact);
+        SearchResult<ExperimentalContact> results = client.searchByExample(criteria, null);
+        List<ExperimentalContact> contacts = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + contacts.length + " experimental contacts in " + totalTime + " ms.");
+        System.out.println("Found " + contacts.size() + " experimental contacts in " + totalTime + " ms.");
         for (ExperimentalContact contact : contacts) {
             System.out.print(contact.getPerson().getLastName() + "  ");
         }
@@ -246,11 +305,14 @@ public class LookUpEntities {
     }
 
     private void lookupFactors() {
+        ExampleSearchCriteria<Factor> criteria = new ExampleSearchCriteria<Factor>();
         Factor exampleFactor = new Factor();
+        criteria.setExample(exampleFactor);
         startTime = System.currentTimeMillis();
-        Factor[] factors = client.searchByExample(exampleFactor);
+        SearchResult<Factor> results = client.searchByExample(criteria, null);
+        List<Factor> factors = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + factors.length + " factors in " + totalTime + " ms.");
+        System.out.println("Found " + factors.size() + " factors in " + totalTime + " ms.");
         for (Factor factor : factors) {
             System.out.print(factor.getName() + "  ");
         }
@@ -258,11 +320,14 @@ public class LookUpEntities {
     }
 
     private void lookupFileTypes() {
+        ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
+        criteria.setExample(exampleFileType);
         startTime = System.currentTimeMillis();
-        FileType[] fileTypes = client.searchByExample(exampleFileType);
+        SearchResult<FileType> results = client.searchByExample(criteria, null);
+        List<FileType> fileTypes = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + fileTypes.length + " file types in " + totalTime + " ms.");
+        System.out.println("Found " + fileTypes.size() + " file types in " + totalTime + " ms.");
         for (FileType fileType : fileTypes) {
             System.out.print(fileType.getName() + "  ");
         }
@@ -270,23 +335,44 @@ public class LookUpEntities {
     }
 
     private void lookupHybridizations() {
+        ExampleSearchCriteria<Hybridization> criteria = new ExampleSearchCriteria<Hybridization>();
         Hybridization exampleHybridization = new Hybridization();
+        criteria.setExample(exampleHybridization);
         startTime = System.currentTimeMillis();
-        Hybridization[] hybridizations = client.searchByExample(exampleHybridization);
+        SearchResult<Hybridization> results = client.searchByExample(criteria, null);
+        List<Hybridization> hybridizations = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + hybridizations.length + " hybridizations in " + totalTime + " ms.");
+        System.out.println("Found " + hybridizations.size() + " hybridizations in " + totalTime + " ms.");
         for (Hybridization hybridization : hybridizations) {
             System.out.print(hybridization.getName() + "  ");
         }
         System.out.println("End of hybridization lookup.");
     }
 
-    private void lookupPersons() {
-        Person examplePerson = new Person();
+    private void lookupOrganisms() {
+        ExampleSearchCriteria<Organism> criteria = new ExampleSearchCriteria<Organism>();
+        Organism exampleOrganism = new Organism();
+        criteria.setExample(exampleOrganism);
         startTime = System.currentTimeMillis();
-        Person[] persons = client.searchByExample(examplePerson);
+        SearchResult<Organism> results = client.searchByExample(criteria, null);
+        List<Organism> organisms = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + persons.length + " persons in " + totalTime + " ms.");
+        System.out.println("Found " + organisms.size() + " organisms in " + totalTime + " ms.");
+        for (Organism organism : organisms) {
+            System.out.print(organism.getScientificName() + "  ");
+        }
+        System.out.println("End of organism lookup.");
+    }
+
+    private void lookupPersons() {
+        ExampleSearchCriteria<Person> criteria = new ExampleSearchCriteria<Person>();
+        Person examplePerson = new Person();
+        criteria.setExample(examplePerson);
+        startTime = System.currentTimeMillis();
+        SearchResult<Person> results = client.searchByExample(criteria, null);
+        List<Person> persons = results.getResults();
+        totalTime = System.currentTimeMillis() - startTime;
+        System.out.println("Found " + persons.size() + " persons in " + totalTime + " ms.");
         for (Person person : persons) {
             System.out.print(person.getLastName() + "  ");
         }
@@ -294,11 +380,14 @@ public class LookUpEntities {
     }
 
     private void lookupQuantitationTypes() {
+        ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
         QuantitationType exampleQuantitationType = new QuantitationType();
+        criteria.setExample(exampleQuantitationType);
         startTime = System.currentTimeMillis();
-        QuantitationType[] qtypes = client.searchByExample(exampleQuantitationType);
+        SearchResult<QuantitationType> results = client.searchByExample(criteria, null);
+        List<QuantitationType> qtypes = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + qtypes.length + " quantitation types in " + totalTime + " ms.");
+        System.out.println("Found " + qtypes.size() + " quantitation types in " + totalTime + " ms.");
         for (QuantitationType qtype : qtypes) {
             System.out.print(qtype.getName() + "  ");
         }
@@ -306,11 +395,14 @@ public class LookUpEntities {
     }
 
     private void lookupTerms() {
+        ExampleSearchCriteria<Term> criteria = new ExampleSearchCriteria<Term>();
         Term exampleTerm = new Term();
+        criteria.setExample(exampleTerm);
         startTime = System.currentTimeMillis();
-        Term[] terms = client.searchByExample(exampleTerm);
+        SearchResult<Term> results = client.searchByExample(criteria, null);
+        List<Term> terms = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + terms.length + " terms in " + totalTime + " ms.");
+        System.out.println("Found " + terms.size() + " terms in " + totalTime + " ms.");
         for (Term term : terms) {
             System.out.print(term.getValue() + "  ");
         }
@@ -318,11 +410,14 @@ public class LookUpEntities {
     }
 
     private void lookupTermSources() {
+        ExampleSearchCriteria<TermSource> criteria = new ExampleSearchCriteria<TermSource>();
         TermSource exampleTermSource = new TermSource();
+        criteria.setExample(exampleTermSource);
         startTime = System.currentTimeMillis();
-        TermSource[] termSources = client.searchByExample(exampleTermSource);
+        SearchResult<TermSource> results = client.searchByExample(criteria, null);
+        List<TermSource> termSources = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + termSources.length + " term sources in " + totalTime + " ms.");
+        System.out.println("Found " + termSources.size() + " term sources in " + totalTime + " ms.");
         for (TermSource termSource : termSources) {
             System.out.print(termSource.getName() + "  ");
         }

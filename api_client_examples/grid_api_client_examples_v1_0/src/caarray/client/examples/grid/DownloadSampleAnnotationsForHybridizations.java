@@ -87,9 +87,11 @@ import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
@@ -97,6 +99,7 @@ import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Cli
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.axis.types.URI.MalformedURIException;
@@ -213,10 +216,13 @@ public class DownloadSampleAnnotationsForHybridizations {
     }
 
     private CaArrayEntityReference getChpFileType() {
+        ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CHP");
-        FileType[] fileTypes = client.searchByExample(exampleFileType);
-        FileType chpFileType = fileTypes[0];
+        criteria.setExample(exampleFileType);
+        SearchResult<FileType> results = client.searchByExample(criteria, null);
+        List<FileType> fileTypes = results.getResults();
+        FileType chpFileType = fileTypes.iterator().next();
         CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference(chpFileType.getId());
         return chpFileTypeRef;
     }

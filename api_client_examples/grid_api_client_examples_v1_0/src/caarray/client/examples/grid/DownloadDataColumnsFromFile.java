@@ -100,8 +100,10 @@ import gov.nih.nci.caarray.external.v1_0.data.ShortColumn;
 import gov.nih.nci.caarray.external.v1_0.data.StringColumn;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
 import java.io.IOException;
@@ -234,28 +236,31 @@ public class DownloadDataColumnsFromFile {
     }
 
     private CaArrayEntityReference getChpFileType() {
+        ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CHP");
-        FileType[] fileTypes = client.searchByExample(exampleFileType);
-        FileType chpFileType = fileTypes[0];
+        criteria.setExample(exampleFileType);
+        SearchResult<FileType> results = client.searchByExample(criteria, null);
+        List<FileType> fileTypes = results.getResults();
+        FileType chpFileType = fileTypes.iterator().next();
         CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference(chpFileType.getId());
         return chpFileTypeRef;
     }
 
-    /**
-     * Select the quantitation types (data columns) of interest.
-     */
     private Set<CaArrayEntityReference> selectQuantitationTypes() {
+        ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
         Set<CaArrayEntityReference> quantitationTypeRefs = new HashSet<CaArrayEntityReference>();
         String[] quantitationTypeNames = QUANTITATION_TYPES_CSV_STRING.split(",");
         for (String quantitationTypeName : quantitationTypeNames) {
             QuantitationType exampleQuantitationType = new QuantitationType();
             exampleQuantitationType.setName(quantitationTypeName);
-            QuantitationType[] quantitationTypes = client.searchByExample(exampleQuantitationType);
-            if (quantitationTypes == null || quantitationTypes.length <= 0) {
+            criteria.setExample(exampleQuantitationType);
+            SearchResult<QuantitationType> results = client.searchByExample(criteria, null);
+            List<QuantitationType> quantitationTypes = results.getResults();
+            if (quantitationTypes == null || quantitationTypes.size() <= 0) {
                 return null;
             }
-            QuantitationType quantitationType = quantitationTypes[0];
+            QuantitationType quantitationType = quantitationTypes.iterator().next();
             CaArrayEntityReference quantitationTypeRef = new CaArrayEntityReference(quantitationType.getId());
             quantitationTypeRefs.add(quantitationTypeRef);
         }

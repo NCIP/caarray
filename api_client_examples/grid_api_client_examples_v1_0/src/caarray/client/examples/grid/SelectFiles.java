@@ -88,8 +88,10 @@ import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
@@ -259,10 +261,13 @@ public class SelectFiles {
     }
 
     private CaArrayEntityReference getCelFileType() {
+        ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CEL");
-        FileType[] fileTypes = client.searchByExample(exampleFileType);
-        FileType celFileType = fileTypes[0];
+        criteria.setExample(exampleFileType);
+        SearchResult<FileType> results = client.searchByExample(criteria, null);
+        List<FileType> fileTypes = results.getResults();
+        FileType celFileType = fileTypes.iterator().next();
         CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference(celFileType.getId());
         return celFileTypeRef;
     }
@@ -298,7 +303,7 @@ public class SelectFiles {
     private List<CaArrayEntityReference> selectRawFilesFromSamples(CaArrayEntityReference experimentRef, Set<CaArrayEntityReference> sampleRefs) throws RemoteException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
-        fileSearchCriteria.setSamples(sampleRefs);
+        fileSearchCriteria.setBiomaterials(sampleRefs);
         fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
 
         DataFile[] files = client.searchForFiles(fileSearchCriteria);
