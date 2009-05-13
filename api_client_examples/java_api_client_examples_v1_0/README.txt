@@ -26,6 +26,7 @@ Clients to test the caArray Java API v1.0:
      download_sample_annotations
      lookup_entities
      download_magetab_export
+     download_magetab_export_with_data
      download_array_design
 
 NOTE: The output of the tests depends on certain data being available
