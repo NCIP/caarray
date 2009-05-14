@@ -85,7 +85,7 @@ package caarray.client.examples.java;
 public final class BaseProperties {
     // Connection properties
     public static final String SERVER_HOSTNAME_KEY = "server.hostname";
-    public static final String SERVER_JNDI_PORT_KEY = "server.jndip.port";
+    public static final String SERVER_JNDI_PORT_KEY = "server.jndi.port";
 
     public static final String SERVER_HOSTNAME_DEFAULT = "array-dev.nci.nih.gov";
     public static final String SERVER_JNDI_PORT_DEFAULT = "8080";
@@ -113,10 +113,7 @@ public final class BaseProperties {
     public static final String ILLUMINA_QUANTITATION_TYPES = "AVG_Signal,BEAD_STDEV,Avg_NBEADS,Detection";
 
     // Data File names
-    public static final String CHP_DATA_FILE_NAME = "ApiTestAffymetrixData.CHP";
     public static final String CEL_DATA_FILE_NAME = "ApiTestAffymetrixData.CEL";
-    public static final String GPR_DATA_FILE_NAME = "ApiTestGenepixData.CHP";
-    public static final String ILLUMINA_DATA_FILE_NAME = "ApiTestIlluminaData.csv";
 
     // Getters for Connection properties
     public static String getServerHostname() {
