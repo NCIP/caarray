@@ -113,10 +113,7 @@ public final class BaseProperties {
     public static final String ILLUMINA_QUANTITATION_TYPES = "AVG_Signal,BEAD_STDEV,Avg_NBEADS,Detection";
 
     // Data File names
-    public static final String CHP_DATA_FILE_NAME = "ApiTestAffymetrixData.CHP";
     public static final String CEL_DATA_FILE_NAME = "ApiTestAffymetrixData.CEL";
-    public static final String GPR_DATA_FILE_NAME = "ApiTestGenepixData.CHP";
-    public static final String ILLUMINA_DATA_FILE_NAME = "ApiTestIlluminaData.csv";
 
     // Getters for Connection properties
     public static String getGridServerHostname() {

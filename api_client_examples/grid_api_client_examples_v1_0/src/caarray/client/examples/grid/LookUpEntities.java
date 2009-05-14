@@ -98,6 +98,8 @@ import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.factor.Factor;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
+import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
@@ -162,11 +164,14 @@ public class LookUpEntities {
         lookupTerms();
         lookupTermSources();
         lookupPrincipalInvestigators();
+        // lookupAnnotationCategories();
+        // lookupAnnotationValues(category);
+        enumerateExperiments();
+
         lookupEntityByReference();
         lookupEntitiesByReference();
-        //lookupAnnotationCategories();
-        //lookupAnnotationValues(category);
-        enumerateExperiments();
+        lookupPersonsByMatchMode();
+        lookupExperimentsPageByPage();
     }
 
     private void lookupArrayDataTypes() {
@@ -490,5 +495,91 @@ public class LookUpEntities {
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("End of experiment enumeration.");
         System.out.println("Found " + numExperimentsFound + " experiments in " + totalTime + " ms.");
+    }
+
+    private void lookupPersonsByMatchMode() {
+        ExampleSearchCriteria<Person> criteria = new ExampleSearchCriteria<Person>();
+        Person examplePerson = new Person();
+        // MatchMode = START
+        examplePerson.setLastName("Gan");
+        criteria.setExample(examplePerson);
+        criteria.setMatchMode(MatchMode.START);
+        startTime = System.currentTimeMillis();
+        SearchResult<Person> results = client.searchByExample(criteria, null);
+        List<Person> persons = results.getResults();
+        totalTime = System.currentTimeMillis() - startTime;
+        System.out.println("Found " + persons.size() + " persons with last name starting with Gan in " + totalTime + " ms.");
+        for (Person person : persons) {
+            System.out.print(person.getLastName() + "  ");
+        }
+        System.out.println();
+
+        // MatchMode = END
+        examplePerson.setLastName("ing");
+        criteria.setMatchMode(MatchMode.END);
+        startTime = System.currentTimeMillis();
+        results = client.searchByExample(criteria, null);
+        persons = results.getResults();
+        totalTime = System.currentTimeMillis() - startTime;
+        System.out.println("Found " + persons.size() + " persons with last name ending in ing in " + totalTime + " ms.");
+        for (Person person : persons) {
+            System.out.print(person.getLastName() + "  ");
+        }
+        System.out.println();
+
+        // MatchMode = EXACT
+        examplePerson.setLastName("Gandhi");
+        criteria.setMatchMode(MatchMode.EXACT);
+        startTime = System.currentTimeMillis();
+        results = client.searchByExample(criteria, null);
+        persons = results.getResults();
+        totalTime = System.currentTimeMillis() - startTime;
+        System.out.println("Found " + persons.size() + " persons with last name Gandhi in " + totalTime + " ms.");
+        for (Person person : persons) {
+            System.out.print(person.getLastName() + "  ");
+        }
+        System.out.println();
+
+        // MatchMode = ANYWHERE
+        examplePerson.setLastName("n");
+        criteria.setMatchMode(MatchMode.ANYWHERE);
+        startTime = System.currentTimeMillis();
+        results = client.searchByExample(criteria, null);
+        persons = results.getResults();
+        totalTime = System.currentTimeMillis() - startTime;
+        System.out.println("Found " + persons.size() + " persons with last name containing n in " + totalTime + " ms.");
+        for (Person person : persons) {
+            System.out.print(person.getLastName() + "  ");
+        }
+        System.out.println("End of person lookup.");
+    }
+
+    private void lookupExperimentsPageByPage() {
+        ExampleSearchCriteria<Experiment> criteria = new ExampleSearchCriteria<Experiment>();
+        Experiment exampleExperiment = new Experiment();
+        criteria.setExample(exampleExperiment);
+        // Get the first (up to) 10 experiments.
+        PagingParams pagingParams = new PagingParams(10, 0);
+        startTime = System.currentTimeMillis();
+        SearchResult<Experiment> results = client.searchByExample(criteria, pagingParams);
+        List<Experiment> experiments = results.getResults();
+        totalTime = System.currentTimeMillis() - startTime;
+        System.out.println("Found the first (up to) 10 experiments in " + totalTime + " ms.");
+        for (Experiment experiment : experiments) {
+            System.out.print(experiment.getTitle() + "  ");
+        }
+        System.out.println();
+
+        // Get the next (up to) 10 experiments.
+        pagingParams = new PagingParams(10, 10);
+        startTime = System.currentTimeMillis();
+        results = client.searchByExample(criteria, pagingParams);
+        experiments = results.getResults();
+        totalTime = System.currentTimeMillis() - startTime;
+        System.out.println("Found the next (up to) 10 experiments in " + totalTime + " ms.");
+        for (Experiment experiment : experiments) {
+            System.out.print(experiment.getTitle() + "  ");
+        }
+        System.out.println("End of experiment lookup.");
     }
 }
