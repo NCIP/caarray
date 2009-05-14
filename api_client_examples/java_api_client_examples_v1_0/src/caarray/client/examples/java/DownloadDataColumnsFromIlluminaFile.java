@@ -177,7 +177,7 @@ public class DownloadDataColumnsFromIlluminaFile {
             return;
         }
 
-        // Ordered list of row headers (probe sets)
+        // Ordered list of row headers (probes)
         List<DesignElement> probes = dataSet.getDesignElements();
         printProbes(probes);
         // Ordered list of column headers (quantitation types like Signal, Log Ratio etc.)
@@ -191,7 +191,7 @@ public class DownloadDataColumnsFromIlluminaFile {
             System.out.println("Column = " + quantitationType.getName() + "; Data type = "
                     + quantitationType.getDataType());
             AbstractDataColumn dataColumn = (AbstractDataColumn) columnIterator.next();
-            // Ordered list of values in the column (values are in the same order as row headers/probe sets)
+            // Ordered list of values in the column (values are in the same order as row headers/probes)
             printColumnValues(quantitationType, dataColumn);
         }
     }
