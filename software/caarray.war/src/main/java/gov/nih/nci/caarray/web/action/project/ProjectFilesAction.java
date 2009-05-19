@@ -321,6 +321,17 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     /**
+     * Method to get the list of files while leaving checkboxes checked.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
+    public String listUnimportedWithoutClearingCheckboxes() {
+        this.clearCheckboxes = false;
+        return prepListUnimportedPage();
+    }
+
+    /**
      * Method to get the list of files.
      *
      * @return the string matching the result to follow
@@ -561,6 +572,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         for (String msg : errors.getMessages()) {
             ActionHelper.saveMessage(msg);
         }
+        this.clearCheckboxes = false;
         return prepListUnimportedPage();
     }
 
@@ -597,24 +609,44 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             selectedFiles.add(idfFile);
             // find files ref'ing sdrf file.
             List<String> filenames = getFileManagementService().findIdfRefFileNames(idfFile, getProject());
-            if (!filenames.isEmpty()) {
+            if (!filenames.isEmpty() && validateReferencedFilesPresent(filenames)) {
                 findFilesByName(filenames);
-            }
-        }
+                boolean addErrorMessage = false;
+                for (CaArrayFile caf : selectedFiles) {
+                    if (!selectedFileIds.contains(caf.getId())) {
+                        selectedFileIds.add(caf.getId());
+                    }
+                    if (caf.getValidationResult() != null && !caf.getValidationResult().isValid()) {
+                        addErrorMessage = true;
+                    }
+                }
 
-        boolean addErrorMessage = false;
-        for (CaArrayFile caf : selectedFiles) {
-            if (!selectedFileIds.contains(caf.getId())) {
-                selectedFileIds.add(caf.getId());
-            }
-            if (caf.getValidationResult() != null && !caf.getValidationResult().isValid()) {
-                addErrorMessage = true;
+                if (addErrorMessage) {
+                    ActionHelper.saveMessage(getText("project.selectRefFile.error.validation"));
+                }
             }
         }
+    }
 
-        if (addErrorMessage) {
-            ActionHelper.saveMessage(getText("project.selectRefFile.error.validation"));
+    private boolean validateReferencedFilesPresent(final List<String> referencedFileNames) {
+        boolean noFilesAreMissing = true;
+        Set<String> fileNames = getSetOfCaArrayFileNames();
+        for (String referencedFileName : referencedFileNames) {
+            if (!fileNames.contains(referencedFileName)) {
+                noFilesAreMissing = false;
+                ActionHelper.saveMessage(getText("project.selectRefFile.error.validation.missingFile",
+                    new String[] {"'" + referencedFileName + "'"}));
+            }
         }
+        return noFilesAreMissing;
+    }
+
+    private Set<String> getSetOfCaArrayFileNames() {
+        Set<String> fileNames = new HashSet<String>();
+        for (CaArrayFile caArrayFile : getProject().getFiles()) {
+            fileNames.add(caArrayFile.getName());
+        }
+        return fileNames;
     }
 
     private void findFilesByName(List<String> thesefiles) {
@@ -699,6 +731,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             }
             refreshProject();
         }
+        this.clearCheckboxes = false;
         return prepListUnimportedPage();
     }
 

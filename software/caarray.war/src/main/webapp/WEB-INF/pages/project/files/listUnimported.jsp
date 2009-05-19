@@ -89,6 +89,19 @@
     return TabUtils.submitTabFormToUrl('selectFilesForm', findRefUrl, 'tabboxlevel2wrapper');
   }
 
+  passOnSelectedFiles = function(findRefUrl) {
+    var checkboxes = $('selectFilesForm').selectedFileIds || {};
+    var params = new Object();
+    params['selectedFileIds'] = new Array();
+    for (i = 0; i < checkboxes.length; ++i) {
+      if (checkboxes[i].checked) {
+        params['selectedFileIds'].push(checkboxes[i].value);
+      }        
+    }
+    TabUtils.showSubmittingText();
+    Caarray.submitAjaxForm('selectFilesForm', 'tabboxlevel2wrapper', { url: findRefUrl, extraArgs: params});
+  }
+
     unimportedFilterCallBack = function() {
         TabUtils.hideLoadingText();
     }
@@ -429,8 +442,8 @@
                 <c:url value="/protected/ajax/project/files/addSupplementalFiles.action" var="supplementalUrl"/>
                 <caarray:linkButton actionClass="import" text="Add Supplemental Files" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${supplementalUrl}', 'tabboxlevel2wrapper');" />
             </c:if>
-            <c:url value="/protected/ajax/project/files/listUnimported.action" var="unimportedUrl"/>
-            <caarray:linkButton actionClass="import" text="Refresh Status" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${unimportedUrl}', 'tabboxlevel2wrapper');" />
+            <c:url value="/protected/ajax/project/files/listUnimportedWithoutClearingCheckboxes.action" var="unimportedUrl"/>
+            <caarray:linkButton actionClass="import" text="Refresh Status" onclick="passOnSelectedFiles('${unimportedUrl}');" />
         </caarray:actions>
     </c:if>
 </caarray:tabPane>
