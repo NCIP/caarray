@@ -87,13 +87,14 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import java.io.File;
 
 /**
- * Provides a per-thread cache of uncompressed file data from CaArrayFiles in temporary files on the filesystem. Also
- * provides a facility for creating arbitrary temporary files for other purposes - this should be used in 
- * preference to File.createTemporaryFile.
+ * Manages a cache of uncompressed file data from CaArrayFiles in temporary files on the filesystem. Also provides a
+ * facility for creating arbitrary temporary files for other purposes - this should be used in preference to
+ * File.createTemporaryFile.
  * 
- * Each thread of execution should take care to call TemporaryFileCache.getInstance().closeFiles() prior to
- * termination to ensure timely reclamation of the temporary files. In the web tier this is probably best accomplished
- * with a Filter; other threads should take appropriate measures.
+ * The typical lifecycle of a cache would be per request or API method call; however, other lifecycles are possible. In
+ * all cases, at the end of the lifecycle the client code should take care to call
+ * TemporaryFileCache.getInstance().closeFiles() to ensure timely reclamation of the temporary files. In the web tier
+ * this is probably best accomplished with a Filter; other threads should take appropriate measures.
  * 
  * @author dkokotov
  */
@@ -131,13 +132,13 @@ public interface TemporaryFileCache {
     File createFile(String fileName);
 
     /**
-     * Closes all temporary files opened or created in the current session and deletes the temporary directory used to
+     * Closes all temporary files opened or created by this cache and deletes the temporary directory used to
      * store them. This method should always be called at the conclusion of a session of working with file data.
      */
     void closeFiles();
 
     /**
-     * Closes the file corresponding to the given logical file opened in the current session for uncompressed data. Note
+     * Closes the file corresponding to the given logical file opened by this cache for uncompressed data. Note
      * that at the end of the session of working with file data, you should still call closeFiles() to perform final
      * cleanup even if all files had been previously closed via calls to this method. 
      * 
@@ -146,7 +147,7 @@ public interface TemporaryFileCache {
     void closeFile(CaArrayFile caarrayFile);
 
     /**
-     * Closes the file corresponding to the given logical file opened in the current session for given type of data
+     * Closes the file corresponding to the given logical file opened by this cache for given type of data
      * access. Note that at the end of the session of working with file data, you should still call closeFiles() to
      * perform final cleanup even if all files had been previously closed via calls to this method.
      * 
@@ -157,7 +158,7 @@ public interface TemporaryFileCache {
     void closeFile(CaArrayFile caarrayFile, boolean uncompressed);
 
     /**
-     * Deletes the temporary file.
+     * Deletes the temporary file created by this cache (by calling createFile()).
      *
      * @param file the temporary <code>File</code> to delete.
      */

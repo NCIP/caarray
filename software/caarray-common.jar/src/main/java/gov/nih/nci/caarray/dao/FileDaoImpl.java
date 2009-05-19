@@ -86,8 +86,7 @@ import gov.nih.nci.caarray.domain.BlobHolder;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -236,23 +235,10 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         }
         c.add(typeCriterion);
         
-        if (!criteria.getHybridizations().isEmpty()) {
+        if (!criteria.getExperimentNodes().isEmpty()) {
             Collection<Long> fileIds = new LinkedList<Long>();        
-            for (Hybridization h : criteria.getHybridizations()) {
-                for (CaArrayFile f : h.getAllDataFiles()) {
-                    fileIds.add(f.getId());
-                }
-            }
-            if (!fileIds.isEmpty()) {
-                c.add(Restrictions.in("id", fileIds));
-            } else {
-                return Collections.emptyList();                
-            }
-        }
-        if (!criteria.getBiomaterials().isEmpty()) {
-            Collection<Long> fileIds = new LinkedList<Long>();        
-            for (AbstractBioMaterial b : criteria.getBiomaterials()) {
-                for (CaArrayFile f : b.getAllDataFiles()) {
+            for (AbstractExperimentDesignNode node : criteria.getExperimentNodes()) {
+                for (CaArrayFile f : node.getAllDataFiles()) {
                     fileIds.add(f.getId());
                 }
             }

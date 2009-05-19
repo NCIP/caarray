@@ -683,8 +683,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     public <T extends AbstractBioMaterial>List<T>  searchByCategory(PageSortParams<T> params, String keyword,
-            BiomaterialSearchCategory... categories) {
-        return getSampleDao().searchByCategory(params, keyword, categories);
+            Class<T> biomaterialClass, BiomaterialSearchCategory... categories) {
+        return getSampleDao().searchByCategory(params, keyword, biomaterialClass, categories);
     }
 
     /**
@@ -721,8 +721,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public int searchCount(String keyword, BiomaterialSearchCategory... categories) {
-        return getSampleDao().searchCount(keyword, categories);
+    public int searchCount(String keyword, Class<? extends AbstractBioMaterial> biomaterialClass,
+            BiomaterialSearchCategory... categories) {
+        return getSampleDao().searchCount(keyword, biomaterialClass, categories);
     }
     
     /**

@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
+import gov.nih.nci.caarray.domain.search.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 
@@ -107,9 +108,11 @@ public interface SampleDao extends CaArrayDao {
      * Gets the count of search results matching the given keyword.
      * @param keyword keyword to search for
      * @param categories categories to search
+     * @param biomaterialClass the AbstractBioMaterial subclass whose instances to search
      * @return number of results
      */
-    int searchCount(String keyword, BiomaterialSearchCategory... categories);
+    int searchCount(String keyword, Class<? extends AbstractBioMaterial> biomaterialClass,
+            BiomaterialSearchCategory... categories);
 
     /**
      * Performs a query for all samples which contain a characteristic and category supplied.
@@ -148,11 +151,12 @@ public interface SampleDao extends CaArrayDao {
      * @param <T> child of AbstractBioMaterial
      * @param params paging and sorting parameters
      * @param keyword text to search for
+     * @param biomaterialClass the AbstractBioMaterial subclass whose instances to search
      * @param categories Indicates which categories to search. Passing null will search all categories.
      * @return a list of matching experiments
      */
-    <T extends AbstractBioMaterial>List<T>  searchByCategory(PageSortParams<T> params, String keyword,
-            BiomaterialSearchCategory... categories);
+    <T extends AbstractBioMaterial> List<T> searchByCategory(PageSortParams<T> params, String keyword,
+            Class<T> biomaterialClass, BiomaterialSearchCategory... categories);
 
     /**
      * Performs a query for all sources which contain a characteristic and category supplied.
@@ -170,5 +174,16 @@ public interface SampleDao extends CaArrayDao {
      * @return int count
      */
     int countSourcesByCharacteristicCategory(Category c, String keyword);
-
+    
+    /**
+     * Performs a query for biomaterials based on given criteria.
+     * 
+     * @param params paging and sorting parameters
+     * @param criteria the criteria for the search
+     * @param biomaterialType the class of biomaterials to search for
+     * @param <T> the type of biomaterials to search for
+     * @return a list of matching biomaterials of the given type.
+     */
+    <T extends AbstractBioMaterial> List<T> searchByCriteria(PageSortParams<T> params,
+            BiomaterialSearchCriteria criteria, Class<T> biomaterialType);
 }

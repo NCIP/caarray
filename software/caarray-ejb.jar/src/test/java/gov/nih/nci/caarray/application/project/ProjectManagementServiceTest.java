@@ -607,7 +607,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
 
     @Test
     public void testSearchByCategory() {
-        assertEquals(0, this.projectManagementService.searchByCategory(null, "test",
+        assertEquals(0, this.projectManagementService.searchByCategory(null, "test", Sample.class,
             SearchSampleCategory.values()).size());
 
     }
@@ -634,7 +634,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
 
     @Test
     public void testSearchCount() {
-        assertEquals(0, this.projectManagementService.searchCount("test", SearchSampleCategory.values()));
+        assertEquals(0, this.projectManagementService.searchCount("test", Sample.class, SearchSampleCategory.values()));
     }
 
 

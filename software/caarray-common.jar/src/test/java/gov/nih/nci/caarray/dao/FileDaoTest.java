@@ -407,8 +407,8 @@ public class FileDaoTest extends AbstractDaoTest {
         assertEquals(file3.getName(), files.get(0).getName());
         assertEquals(file5.getName(), files.get(1).getName());
 
-        criteria.getHybridizations().add(h1);
-        criteria.getHybridizations().add(h2);
+        criteria.getExperimentNodes().add(h1);
+        criteria.getExperimentNodes().add(h2);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
         assertEquals(file3.getName(), files.get(0).getName());        
@@ -419,18 +419,18 @@ public class FileDaoTest extends AbstractDaoTest {
         assertEquals(file2.getName(), files.get(0).getName());
         assertEquals(file3.getName(), files.get(1).getName());
 
-        criteria.getHybridizations().clear();
-        criteria.getHybridizations().add(h1);
+        criteria.getExperimentNodes().clear();
+        criteria.getExperimentNodes().add(h1);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
         assertEquals(file2.getName(), files.get(0).getName());                
 
-        criteria.getHybridizations().clear();
-        criteria.getHybridizations().add(h3);
+        criteria.getExperimentNodes().clear();
+        criteria.getExperimentNodes().add(h3);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(0, files.size());
 
-        criteria.getHybridizations().clear();
+        criteria.getExperimentNodes().clear();
         criteria.setExtension("CHP");
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
@@ -443,42 +443,43 @@ public class FileDaoTest extends AbstractDaoTest {
         assertEquals(file2.getName(), files.get(0).getName());                
 
         criteria.getTypes().clear();
-        criteria.getBiomaterials().add(so1);
+        criteria.getExperimentNodes().add(so1);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
         assertEquals(file2.getName(), files.get(0).getName());                
 
-        criteria.getBiomaterials().add(sa1);
+        criteria.getExperimentNodes().add(sa1);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
         assertEquals(file2.getName(), files.get(0).getName());
 
-        criteria.getBiomaterials().clear();
-        criteria.getBiomaterials().add(ex1);
-        criteria.getBiomaterials().add(ex2);
+        criteria.getExperimentNodes().clear();
+        criteria.getExperimentNodes().add(ex1);
+        criteria.getExperimentNodes().add(ex2);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(2, files.size());
         assertEquals(file2.getName(), files.get(0).getName());                
         assertEquals(file3.getName(), files.get(1).getName());                
 
-        criteria.getBiomaterials().clear();
-        criteria.getBiomaterials().add(le3);
+        criteria.getExperimentNodes().clear();
+        criteria.getExperimentNodes().add(le3);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(2, files.size());
         assertEquals(file2.getName(), files.get(0).getName());                
         assertEquals(file3.getName(), files.get(1).getName());                
 
-        criteria.getBiomaterials().clear();
-        criteria.getBiomaterials().add(le4);
+        criteria.getExperimentNodes().clear();
+        criteria.getExperimentNodes().add(le4);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(0, files.size());
 
-        criteria.getBiomaterials().clear();
-        criteria.getBiomaterials().add(le3);
-        criteria.getHybridizations().add(h2);
+        criteria.getExperimentNodes().clear();
+        criteria.getExperimentNodes().add(le3);
+        criteria.getExperimentNodes().add(h2);
         files = DAO_OBJECT.searchFiles(params, criteria);
-        assertEquals(1, files.size());
-        assertEquals(file3.getName(), files.get(0).getName());                
+        assertEquals(2, files.size());
+        assertEquals(file2.getName(), files.get(0).getName());                
+        assertEquals(file3.getName(), files.get(1).getName());                
 
         tx.commit();
     }

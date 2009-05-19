@@ -328,6 +328,15 @@
     </field>
   </class>  
   
+  <class name="gov.nih.nci.caarray.external.v1_0.query.AnnotationCriterion">
+    <map-to xml="AnnotationCriterion" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" />
+    <field name="value" type="string">
+      <bind-xml name="value" node="attribute" />
+    </field>
+    <field name="category" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference">
+      <bind-xml name="qry:category" node="element" />
+    </field>
+  </class>
   <class name="gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria">
     <map-to xml="ExperimentSearchCriteria" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" />
     <field name="title" type="string">
@@ -348,6 +357,9 @@
     <field name="assayType" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference">
       <bind-xml name="qry:assayType" node="element" />
     </field>
+    <field name="annotationCriterions" type="gov.nih.nci.caarray.external.v1_0.query.AnnotationCriterion" collection="collection">
+      <bind-xml name="AnnotationCriterion" location="annotationCriterions" node="element" />
+    </field>
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria">
     <map-to xml="FileSearchCriteria" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" />
@@ -363,11 +375,8 @@
     <field name="categories" type="string" collection="collection" handler="gov.nih.nci.caarray.services.external.v1_0.grid.common.FileTypeCategoryFieldHandler">
       <bind-xml name="FileTypeCategory" location="categories" node="element" />
     </field>
-    <field name="biomaterials" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" collection="collection">
-      <bind-xml name="CaArrayEntityReference" location="biomaterials" node="element" />
-    </field>
-    <field name="hybridizations" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" collection="collection">
-      <bind-xml name="CaArrayEntityReference" location="hybridizations" node="element" />
+    <field name="experimentGraphNodes" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" collection="collection">
+      <bind-xml name="CaArrayEntityReference" location="experimentGraphNodes" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria">
@@ -378,8 +387,14 @@
     <field name="names" type="string" collection="collection">
       <bind-xml name="name" location="names" node="element" />
     </field>
+    <field name="externalIds" type="string" collection="collection">
+      <bind-xml name="externalId" location="externalIds" node="element" />
+    </field>
     <field name="types" type="string" collection="collection" handler="gov.nih.nci.caarray.services.external.v1_0.grid.common.BiomaterialTypeFieldHandler">
       <bind-xml name="BiomaterialType" location="types" node="element" />
+    </field>
+    <field name="annotationCriterions" type="gov.nih.nci.caarray.external.v1_0.query.AnnotationCriterion" collection="collection">
+      <bind-xml name="AnnotationCriterion" location="annotationCriterions" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria">
@@ -441,6 +456,12 @@
     <field name="results" type="gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity" collection="collection">
       <bind-xml name="AbstractCaArrayEntity" location="results" node="element" />
     </field>
+    <field name="maxAllowedResults" type="integer">
+      <bind-xml name="maxAllowedResults" node="attribute" />
+    </field>
+    <field name="firstResultIndex" type="integer">
+      <bind-xml name="firstResultIndex" node="attribute" />
+    </field>
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest">
     <map-to xml="FileDownloadRequest" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" />
@@ -458,6 +479,15 @@
     </field>
     <field name="dataFiles" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" collection="collection">
       <bind-xml name="CaArrayEntityReference" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" location="dataFiles" node="element" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest">
+    <map-to xml="AnnotationSetRequest" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" />
+    <field name="experimentGraphNodes" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" collection="collection">
+      <bind-xml name="CaArrayEntityReference" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" location="experimentGraphNodes" node="element" />
+    </field>
+    <field name="categories" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" collection="collection">
+      <bind-xml name="CaArrayEntityReference" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" location="categories" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.factor.Factor" extends="gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity">
@@ -481,45 +511,45 @@
       <bind-xml name="fac:value" node="element" />
     </field>
   </class>  
-  <class name="gov.nih.nci.caarray.external.v1_0.sample.Hybridization" extends="gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity">
-    <map-to xml="Hybridization" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" />
+  <class name="gov.nih.nci.caarray.external.v1_0.sample.AbstractExperimentGraphNode" extends="gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity">
+    <map-to xml="AbstractExperimentGraphNode" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>    
+    <field name="experiment" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference">
+      <bind-xml name="sam:experiment" node="element" />
+    </field>
+  </class>  
+  <class name="gov.nih.nci.caarray.external.v1_0.sample.Hybridization" extends="gov.nih.nci.caarray.external.v1_0.sample.AbstractExperimentGraphNode">
+    <map-to xml="Hybridization" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" />
     <field name="factorValues" type="gov.nih.nci.caarray.external.v1_0.factor.FactorValue" collection="collection">
       <bind-xml name="FactorValue" type="gov.nih.nci.caarray.external.v1_0.factor.FactorValue" location="factorValues" node="element" />
     </field>
     <field name="arrayDesign" type="gov.nih.nci.caarray.external.v1_0.array.ArrayDesign">
       <bind-xml name="sam:arrayDesign" node="element" />
     </field>
-    <field name="experiment" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference">
-      <bind-xml name="sam:experiment" node="element" />
-    </field>
   </class>  
   <class name="gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType" verify-constructable="false">
     <map-to xml="BiomaterialType" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" />
   </class>  
-  <class name="gov.nih.nci.caarray.external.v1_0.sample.Biomaterial" extends="gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity">
+  <class name="gov.nih.nci.caarray.external.v1_0.sample.Biomaterial" extends="gov.nih.nci.caarray.external.v1_0.sample.AbstractExperimentGraphNode">
     <map-to xml="Biomaterial" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" />
-    <field name="name" type="string">
-      <bind-xml name="name" node="attribute" />
-    </field>    
     <field name="description" type="string">
       <bind-xml name="description" node="attribute" />
     </field>    
     <field name="externalId" type="string">
       <bind-xml name="externalId" node="attribute" />
     </field>    
-    <field name="diseaseState" type="gov.nih.nci.caarray.external.v1_0.vocabulary.Term">
+    <field name="diseaseState" type="gov.nih.nci.caarray.external.v1_0.value.TermValue">
       <bind-xml name="sam:diseaseState" node="element" />
     </field>
-    <field name="tissueSite" type="gov.nih.nci.caarray.external.v1_0.vocabulary.Term">
+    <field name="tissueSite" type="gov.nih.nci.caarray.external.v1_0.value.TermValue">
       <bind-xml name="sam:tissueSite" node="element" />
     </field>
-    <field name="materialType" type="gov.nih.nci.caarray.external.v1_0.vocabulary.Term">
+    <field name="materialType" type="gov.nih.nci.caarray.external.v1_0.value.TermValue">
       <bind-xml name="sam:materialType" node="element" />
     </field>
-    <field name="cellType" type="gov.nih.nci.caarray.external.v1_0.vocabulary.Term">
+    <field name="cellType" type="gov.nih.nci.caarray.external.v1_0.value.TermValue">
       <bind-xml name="sam:cellType" node="element" />
     </field>
     <field name="organism" type="gov.nih.nci.caarray.external.v1_0.experiment.Organism">
@@ -531,9 +561,6 @@
     <field name="type" type="string" handler="gov.nih.nci.caarray.services.external.v1_0.grid.common.BiomaterialTypeFieldHandler">
       <bind-xml name="sam:type" node="element" />
     </field>    
-    <field name="experiment" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference">
-      <bind-xml name="sam:experiment" node="element" />
-    </field>
   </class>  
   <class name="gov.nih.nci.caarray.external.v1_0.sample.Characteristic">
     <map-to xml="Characteristic" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" />
@@ -542,6 +569,33 @@
     </field>
     <field name="value" type="gov.nih.nci.caarray.external.v1_0.value.AbstractValue">
       <bind-xml name="sam:value" node="element" />
+    </field>
+  </class>  
+  <class name="gov.nih.nci.caarray.external.v1_0.sample.AnnotationValueSet">
+    <map-to xml="AnnotationValueSet" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" />
+    <field name="category" type="gov.nih.nci.caarray.external.v1_0.vocabulary.Category">
+      <bind-xml name="sam:category" node="element" />
+    </field>
+    <field name="values" type="gov.nih.nci.caarray.external.v1_0.value.AbstractValue" collection="collection">
+      <bind-xml name="AbstractValue" location="values" node="element" />
+    </field>
+  </class>  
+  <class name="gov.nih.nci.caarray.external.v1_0.sample.AnnotationColumn">
+    <map-to xml="AnnotationColumn" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" />
+    <field name="node" type="gov.nih.nci.caarray.external.v1_0.sample.AbstractExperimentGraphNode">
+      <bind-xml name="sam:node" node="element" />
+    </field>
+    <field name="valueSets" type="gov.nih.nci.caarray.external.v1_0.sample.AnnotationValueSet" collection="collection">
+      <bind-xml name="AnnotationValueSet" location="valueSets" node="element" />
+    </field>
+  </class>  
+  <class name="gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet">
+    <map-to xml="AnnotationSet" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" />
+    <field name="categories" type="gov.nih.nci.caarray.external.v1_0.vocabulary.Category" collection="collection">
+      <bind-xml name="Category" location="categories" node="element" />
+    </field>
+    <field name="columns" type="gov.nih.nci.caarray.external.v1_0.sample.AnnotationColumn" collection="collection">
+      <bind-xml name="AnnotationColumn" location="columns" node="element" />
     </field>
   </class>  
   <class name="gov.nih.nci.caarray.external.v1_0.value.AbstractValue">

@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.AttributeMutator;
 import gov.nih.nci.caarray.security.AttributePolicy;
@@ -98,6 +99,7 @@ import gov.nih.nci.caarray.security.SecurityPolicy;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -120,8 +122,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections.Closure;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -130,6 +130,9 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
 
 /**
  *
@@ -288,19 +291,43 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
     }
     
     /**
-     * Return the characteristic with given category name in this hybridization. If multiple characteristics
+     * Return the characteristic with given category name in this biomaterial. If multiple characteristics
      * have the same category name, return one at random.
      * If there is none, return null.
      * @param categoryName name of category for which to find a characteristic.
      * @return the characteristic with given category name or null if there is none.
      */
     public AbstractCharacteristic getCharacteristic(final String categoryName) {
-        return (AbstractCharacteristic) CollectionUtils.find(getCharacteristics(), new Predicate() {
-            public boolean evaluate(Object o) {
-                AbstractCharacteristic c = (AbstractCharacteristic) o;
-                return categoryName.equals(c.getCategory().getName());
+        return Iterators.find(getCharacteristics().iterator(), new Predicate<AbstractCharacteristic>() {
+            public boolean apply(AbstractCharacteristic input) {
+                return categoryName.equals(input.getCategory().getName());
             }
         });
+    }
+
+    /**
+     * Return the characteristics with given category in this biomaterial. 
+     * @param category category
+     * @return the characteristics with given category.
+     */
+    public Set<AbstractCharacteristic> getCharacteristics(final Category category) {
+        Set<AbstractCharacteristic> chars = new HashSet<AbstractCharacteristic>();
+        Iterators.addAll(chars, Iterators.filter(characteristics.iterator(), new Predicate<AbstractCharacteristic>() {
+            public boolean apply(AbstractCharacteristic input) {
+                return category.equals(input.getCategory());
+            }
+        }));
+        for (Term t : Arrays.asList(this.diseaseState, this.cellType, this.materialType,
+                this.tissueSite)) {
+            if (t != null && t.getCategories().contains(category)) {
+                TermBasedCharacteristic c = new TermBasedCharacteristic();
+                c.setBioMaterial(this);
+                c.setCategory(category);
+                c.setTerm(t);
+                chars.add(c);
+            }
+        }
+        return chars;
     }
 
     /**
@@ -316,8 +343,6 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
         }
         return Collections.emptySet();
     }
-
-
 
     /**
      * {@inheritDoc}
@@ -391,13 +416,14 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
     }
 
     /**
-     * @return all the data files related to this biomaterial. This is the set of files
+     * {@inheritDoc}
+     * The data files related to this biomaterial is the set of files
      * that is related to at least one hybridization that is related to this biomaterial
      * (@see getRelatedHybs()).
      */
     @Transient
-    public Collection<CaArrayFile> getAllDataFiles() {
-        Collection<CaArrayFile> files = new HashSet<CaArrayFile>();
+    public Set<CaArrayFile> getAllDataFiles() {
+        Set<CaArrayFile> files = new HashSet<CaArrayFile>();
         Collection<Hybridization> hybridizations = getRelatedHybridizations();
         if (hybridizations != null && !hybridizations.isEmpty()) {
             for (Hybridization h : hybridizations) {

@@ -97,6 +97,8 @@ public class BiomaterialSearchCriteria implements Serializable {
     
     private CaArrayEntityReference experiment;
     private Set<String> names = new HashSet<String>();
+    private Set<String> externalIds = new HashSet<String>();
+    private Set<AnnotationCriterion> annotationCriterions = new HashSet<AnnotationCriterion>();
     private Set<BiomaterialType> types = new HashSet<BiomaterialType>();
     
     /**
@@ -141,4 +143,31 @@ public class BiomaterialSearchCriteria implements Serializable {
         this.experiment = experiment;
     }
 
+    /**
+     * @return the externalIds
+     */
+    public Set<String> getExternalIds() {
+        return externalIds;
+    }
+
+    /**
+     * @param externalIds the externalIds to set
+     */
+    public void setExternalIds(Set<String> externalIds) {
+        this.externalIds = externalIds;
+    }
+
+    /**
+     * @return the annotationCriterions
+     */
+    public Set<AnnotationCriterion> getAnnotationCriterions() {
+        return annotationCriterions;
+    }
+
+    /**
+     * @param annotationCriterions the annotationCriterions to set
+     */
+    public void setAnnotationCriterions(Set<AnnotationCriterion> annotationCriterions) {
+        this.annotationCriterions = annotationCriterions;
+    }
 }

@@ -105,7 +105,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
- * Default implementation of TemporaryFileCache.
+ * Default implementation of TemporaryFileCache. Stores file data in temporary directory. 
+ * 
  * @author dkokotov
  */
 public final class TemporaryFileCacheImpl implements TemporaryFileCache {
@@ -227,8 +228,10 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
      */
     public void closeFiles() {
         if (this.sessionWorkingDirectory == null) {
+            LOG.debug("closeFiles called for a temp file cache that has already been closed");
             return;
         }
+        LOG.debug("Cleaning up files for temp file cache in directory " + sessionWorkingDirectory.getAbsolutePath());
 
         Set<CaArrayFile> filesToClose = new HashSet<CaArrayFile>(this.uncompressedOpenFiles.keySet());
         filesToClose.addAll(this.compressedOpenFiles.keySet());

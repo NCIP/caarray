@@ -101,6 +101,11 @@ import org.apache.commons.io.IOUtils;
  * @author dkokotov
  */
 public final class FileAccessUtils {
+    /**
+     * Suffix to add to file names when they contain the gzipped contents of another file.
+     */
+    public static final String GZIP_FILE_SUFFIX = ".gz";
+    
     private FileAccessUtils() {
         // empty - utility class
     }
@@ -140,7 +145,8 @@ public final class FileAccessUtils {
         TemporaryFileCache tempCache = TemporaryFileCacheLocator.getTemporaryFileCache();
         for (CaArrayFile caf : files) {
             File f = tempCache.getFile(caf, !compressIndividually);
-            writeZipEntry(zos, f, compressIndividually);
+            String fileName = compressIndividually ? f.getName() + GZIP_FILE_SUFFIX : f.getName(); 
+            writeZipEntry(zos, f, fileName, compressIndividually);
             tempCache.closeFile(caf, !compressIndividually);
         }
     }

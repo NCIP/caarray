@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.business.vocabulary;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -252,12 +253,15 @@ public interface VocabularyService {
     Term findTermInAllTermSourceVersions(TermSource termSource, String value);
 
     /**
-     * Performs a query for characteristic categories.
-     *
-     * @param keyword text to search for
-     * @return a list of matching categores
+     * Searches for categories of characteristics in the system whose names match the given keyword.
+     * 
+     * @param keyword if not null, then categories whose names start with this string are included in the results.
+     * @param characteristicClass only return categories of characteristics of this type
+     * @param <T> the characteristic type
+     * @return a list of matching categories
      */
-    List<Category> searchForCharacteristicCategory(String keyword);
+    <T extends AbstractCharacteristic> List<Category> searchForCharacteristicCategory(Class<T> characteristicClass,
+            String keyword);
 
     /**
      * Performs a query for organism names.

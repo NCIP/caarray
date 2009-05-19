@@ -123,7 +123,7 @@ public final class CaArrayServer extends AbstractCaArrayServer {
      */
     @Override
     protected void executeServiceForCredentialCheck() {
-        getSearchService().getAllPrincipalInvestigators(null);        
+        getSearchService().getAllPrincipalInvestigators();        
     }
 
     /**

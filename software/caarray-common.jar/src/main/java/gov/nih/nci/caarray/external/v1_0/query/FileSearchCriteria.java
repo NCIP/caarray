@@ -99,8 +99,7 @@ public class FileSearchCriteria implements Serializable {
     private String extension;
     private Set<CaArrayEntityReference> types = new HashSet<CaArrayEntityReference>();
     private Set<FileTypeCategory> categories = new HashSet<FileTypeCategory>();
-    private Set<CaArrayEntityReference> biomaterials = new HashSet<CaArrayEntityReference>();
-    private Set<CaArrayEntityReference> hybridizations = new HashSet<CaArrayEntityReference>();
+    private Set<CaArrayEntityReference> experimentGraphNodes = new HashSet<CaArrayEntityReference>();
     
     /**
      * @return the experiment
@@ -161,28 +160,14 @@ public class FileSearchCriteria implements Serializable {
     /**
      * @return the biomaterials
      */
-    public Set<CaArrayEntityReference> getBiomaterials() {
-        return biomaterials;
+    public Set<CaArrayEntityReference> getExperimentGraphNodes() {
+        return experimentGraphNodes;
     }
 
     /**
      * @param biomaterials the biomaterials to set
      */
-    public void setBiomaterials(Set<CaArrayEntityReference> biomaterials) {
-        this.biomaterials = biomaterials;
-    }
-
-    /**
-     * @return the hybridizations
-     */
-    public Set<CaArrayEntityReference> getHybridizations() {
-        return hybridizations;
-    }
-
-    /**
-     * @param hybridizations the hybridizations to set
-     */
-    public void setHybridizations(Set<CaArrayEntityReference> hybridizations) {
-        this.hybridizations = hybridizations;
+    public void setExperimentGraphNodes(Set<CaArrayEntityReference> biomaterials) {
+        this.experimentGraphNodes = biomaterials;
     }
 }

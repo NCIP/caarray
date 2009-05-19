@@ -44,7 +44,7 @@ import org.junit.Test;
 public class SearchServiceTest extends AbstractExternalJavaApiTest {
     @Test
     public void testGetAllPrincipalInvestigators() {
-        List<Person> allPis = caArrayServer.getSearchService().getAllPrincipalInvestigators(null);
+        List<Person> allPis = caArrayServer.getSearchService().getAllPrincipalInvestigators();
         assertEquals(10, allPis.size());
     }
 
@@ -122,12 +122,12 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     public void testSearchExperimentsByKeyword() {
         KeywordSearchCriteria crit = new KeywordSearchCriteria();
         crit.setKeyword("Affymetrix");
-        List<Experiment> experiments = caArrayServer.getSearchService().searchForExperimentsByKeyword(crit, null);
+        List<Experiment> experiments = caArrayServer.getSearchService().searchForExperimentsByKeyword(crit, null).getResults();
         assertEquals(2, experiments.size());
         assertEquals("dsfdsf", experiments.get(0).getTitle());
         
         crit.setKeyword("ffsdf");
-        experiments = caArrayServer.getSearchService().searchForExperimentsByKeyword(crit, null);
+        experiments = caArrayServer.getSearchService().searchForExperimentsByKeyword(crit, null).getResults();
         assertEquals(1, experiments.size());
         assertEquals("ffsdf", experiments.get(0).getTitle());
     }
@@ -137,7 +137,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         ExperimentSearchCriteria crit = new ExperimentSearchCriteria();
         crit.setTitle("dsfdsf");
         try {
-            List<Experiment> experiments = caArrayServer.getSearchService().searchForExperiments(crit, null);
+            List<Experiment> experiments = caArrayServer.getSearchService().searchForExperiments(crit, null).getResults();
             assertEquals(2, experiments.size());
             assertEquals("dsfdsf", experiments.get(0).getTitle());
         } catch (InvalidReferenceException e) {
@@ -148,7 +148,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         crit = new ExperimentSearchCriteria();
         crit.setPublicIdentifier("admin-00001");
         try {
-            List<Experiment> experiments = caArrayServer.getSearchService().searchForExperiments(crit, null);
+            List<Experiment> experiments = caArrayServer.getSearchService().searchForExperiments(crit, null).getResults();
             assertEquals(3, experiments.size());
             assertEquals("dsfdsf", experiments.get(0).getTitle());
         } catch (InvalidReferenceException e) {
@@ -161,7 +161,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
                 "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5"));
         crit.setPublicIdentifier("admin-00001");
         try {
-            List<Experiment> experiments = caArrayServer.getSearchService().searchForExperiments(crit, null);
+            List<Experiment> experiments = caArrayServer.getSearchService().searchForExperiments(crit, null).getResults();
             assertEquals(1, experiments.size());
             assertEquals("fdsfds", experiments.get(0).getTitle());
         } catch (InvalidReferenceException e) {
@@ -174,7 +174,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     public void testSearchBiomaterialsByKeyword() {
         BiomaterialKeywordSearchCriteria crit = new BiomaterialKeywordSearchCriteria();
         crit.setKeyword("MDR");
-        List<Biomaterial> bms = caArrayServer.getSearchService().searchForBiomaterialsByKeyword(crit, null);
+        List<Biomaterial> bms = caArrayServer.getSearchService().searchForBiomaterialsByKeyword(crit, null).getResults();
         assertEquals(2, bms.size());
         assertEquals("TK6MDR1 replicate 1", bms.get(0).getName());
         assertEquals(BiomaterialType.SAMPLE, bms.get(0).getType());
@@ -187,7 +187,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         BiomaterialSearchCriteria crit = new BiomaterialSearchCriteria();
         crit.setExperiment(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
         crit.setTypes(EnumSet.of(BiomaterialType.SOURCE, BiomaterialType.SAMPLE));
-        List<Biomaterial> bms = caArrayServer.getSearchService().searchForBiomaterials(crit, null);        
+        List<Biomaterial> bms = caArrayServer.getSearchService().searchForBiomaterials(crit, null).getResults();        
         assertEquals(12, bms.size());
     }
     
@@ -195,7 +195,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     public void testSearchForHybridizations() throws InvalidReferenceException {
         HybridizationSearchCriteria crit = new HybridizationSearchCriteria();
         crit.setExperiment(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
-        List<Hybridization> hybs = caArrayServer.getSearchService().searchForHybridizations(crit, null);
+        List<Hybridization> hybs = caArrayServer.getSearchService().searchForHybridizations(crit, null).getResults();
         assertEquals(6, hybs.size());
     }
 
@@ -204,7 +204,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
         crit.setHybridization(new CaArrayEntityReference(
                 "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1"));
-        List<QuantitationType> types = caArrayServer.getSearchService().searchForQuantitationTypes(crit, null);
+        List<QuantitationType> types = caArrayServer.getSearchService().searchForQuantitationTypes(crit);
         assertEquals(7, types.size());
         assertEquals("CELIntensity", types.get(0).getName());
         assertEquals(DataType.FLOAT, types.get(0).getDataType());
@@ -216,7 +216,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         crit.setExperiment(new CaArrayEntityReference(
                 "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
         crit.setCategories(EnumSet.of(FileTypeCategory.RAW));
-        List<DataFile> files = caArrayServer.getSearchService().searchForFiles(crit, null);
+        List<DataFile> files = caArrayServer.getSearchService().searchForFiles(crit, null).getResults();
         assertEquals(12, files.size());
         assertEquals("H_TK6 MDR1 replicate 1.CEL", files.get(0).getName());        
     }

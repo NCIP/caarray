@@ -95,7 +95,7 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
         System.out.println("Running the Grid Service Client");
         try {
             if (!(args.length < 2)) {
-                if (args[0].equals("-url")) {
+                if (args[0].equals("-url")) {                    
                     CaArraySvc_v1_0Client client = new CaArraySvc_v1_0Client(args[1]);
 
                     StopWatch sw = new StopWatch();
@@ -230,53 +230,6 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
                     sw.stop();
                     System.out.println("Time: " + sw.toString());
 
-                    // enumeration of uncompressed refs
-                    System.out.println("Retrieving files using enumeration of uncompressed transfer refs");
-                    sw.reset();
-                    sw.start();
-                    EnumerationResponseContainer transferEnum = client.enumerateFileContentTransfers(fileReq, false);
-                    ClientEnumIterator transferIter = EnumerationResponseHelper.createClientIterator(transferEnum,
-                            CaArraySvc_v1_0Client.class.getResourceAsStream("client-config.wsdd"));
-                    transferIter.setIterationConstraints(new IterationConstraints(1, -1, null));
-                    while (transferIter.hasNext()) {
-                        try {
-                            SOAPElement elem = (SOAPElement) transferIter.next();
-                            if (elem != null) {
-                                TransferServiceContextReference tref = (TransferServiceContextReference) ObjectDeserializer
-                                        .toObject(elem, TransferServiceContextReference.class);
-                                logAndSaveFile(tref, false);
-                            }
-                        } catch (NoSuchElementException e) {
-                            break;
-                        }
-                    }
-                    sw.stop();
-                    System.out.println("Time: " + sw.toString());
-
-                    // enumeration of compressed refs
-                    System.out.println("Retrieving files using enumeration of compressed transfer refs");
-                    sw.reset();
-                    sw.start();
-                    transferEnum = client.enumerateFileContentTransfers(fileReq, true);
-                    transferIter = EnumerationResponseHelper.createClientIterator(transferEnum,
-                            CaArraySvc_v1_0Client.class.getResourceAsStream("client-config.wsdd"));
-                    transferIter.setIterationConstraints(new IterationConstraints(1, -1, null));
-                    while (transferIter.hasNext()) {
-                        try {
-                            SOAPElement elem = (SOAPElement) transferIter.next();
-                            if (elem != null) {
-                                TransferServiceContextReference tref = (TransferServiceContextReference) ObjectDeserializer
-                                        .toObject(elem, TransferServiceContextReference.class);
-                                logAndSaveFile(tref, true);
-                            }
-                        } catch (NoSuchElementException e) {
-                            break;
-                        }
-                    }
-                    sw.stop();
-                    System.out.println("Time: " + sw.toString());
-
-                    
                     DataSetRequest dataRequest = new DataSetRequest();
 
                     // hybridization search test
@@ -312,7 +265,7 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
                     fileCriteria.setExperiment(new CaArrayEntityReference(
                             "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
                     fileCriteria
-                            .getBiomaterials()
+                            .getExperimentGraphNodes()
                             .add(
                                     new CaArrayEntityReference(
                                             "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:6"));
@@ -560,19 +513,6 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     }
   }
 
-  public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateFileContentTransfers(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compress) throws RemoteException {
-    synchronized(portTypeMutex){
-      configureStubSecurity((Stub)portType,"enumerateFileContentTransfers");
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFileContentTransfersRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFileContentTransfersRequest();
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFileContentTransfersRequestFileDownloadRequest fileDownloadRequestContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFileContentTransfersRequestFileDownloadRequest();
-    fileDownloadRequestContainer.setFileDownloadRequest(fileDownloadRequest);
-    params.setFileDownloadRequest(fileDownloadRequestContainer);
-    params.setCompress(compress);
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFileContentTransfersResponse boxedResult = portType.enumerateFileContentTransfers(params);
-    return boxedResult.getEnumerationResponseContainer();
-    }
-  }
-
   public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getFileContentsTransfer(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference fileRef,boolean compress) throws RemoteException {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"getFileContentsTransfer");
@@ -704,6 +644,43 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     params.setExampleSearchCriteria(exampleSearchCriteriaContainer);
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleResponse boxedResult = portType.searchByExample(params);
     return boxedResult.getSearchResult();
+    }
+  }
+
+  public gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet getAnnotationSet(gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest request) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"getAnnotationSet");
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAnnotationSetRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAnnotationSetRequest();
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAnnotationSetRequestRequest requestContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAnnotationSetRequestRequest();
+    requestContainer.setAnnotationSetRequest(request);
+    params.setRequest(requestContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAnnotationSetResponse boxedResult = portType.getAnnotationSet(params);
+    return boxedResult.getAnnotationSet();
+    }
+  }
+
+  public gov.nih.nci.caarray.external.v1_0.vocabulary.Term[] getTermsForCategory(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference categoryRef,java.lang.String valuePrefix) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"getTermsForCategory");
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetTermsForCategoryRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetTermsForCategoryRequest();
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetTermsForCategoryRequestCategoryRef categoryRefContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetTermsForCategoryRequestCategoryRef();
+    categoryRefContainer.setCaArrayEntityReference(categoryRef);
+    params.setCategoryRef(categoryRefContainer);
+    params.setValuePrefix(valuePrefix);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetTermsForCategoryResponse boxedResult = portType.getTermsForCategory(params);
+    return boxedResult.getTerm();
+    }
+  }
+
+  public gov.nih.nci.caarray.external.v1_0.vocabulary.Category[] getAllCharacteristicCategories(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"getAllCharacteristicCategories");
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllCharacteristicCategoriesRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllCharacteristicCategoriesRequest();
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllCharacteristicCategoriesRequestExperimentRef experimentRefContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllCharacteristicCategoriesRequestExperimentRef();
+    experimentRefContainer.setCaArrayEntityReference(experimentRef);
+    params.setExperimentRef(experimentRefContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllCharacteristicCategoriesResponse boxedResult = portType.getAllCharacteristicCategories(params);
+    return boxedResult.getCategory();
     }
   }
 

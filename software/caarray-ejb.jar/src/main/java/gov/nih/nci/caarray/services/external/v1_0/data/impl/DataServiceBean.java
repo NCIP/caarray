@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external.v1_0.data;
+package gov.nih.nci.caarray.services.external.v1_0.data.impl;
 
 import gov.nih.nci.caarray.application.fileaccess.FileAccessUtils;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
@@ -115,15 +115,18 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.services.TemporaryFileCleanupInterceptor;
-import gov.nih.nci.caarray.services.external.v1_0.BaseV1_0ExternalService;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
+import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
+import gov.nih.nci.caarray.services.external.v1_0.data.InconsistentDataSetsException;
+import gov.nih.nci.caarray.services.external.v1_0.impl.BaseV1_0ExternalService;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -144,8 +147,10 @@ import org.jboss.annotation.ejb.RemoteBinding;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
-import com.healthmarketscience.rmiio.RemoteOutputStream;
-import com.healthmarketscience.rmiio.RemoteOutputStreamClient;
+import com.healthmarketscience.rmiio.RemoteInputStream;
+import com.healthmarketscience.rmiio.RemoteInputStreamMonitor;
+import com.healthmarketscience.rmiio.RemoteInputStreamServer;
+import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
 
 /**
  * @author dkokotov
@@ -352,42 +357,72 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     /**
      * {@inheritDoc}
      */
-    public DataFile streamFileContents(CaArrayEntityReference fileRef, boolean compress, RemoteOutputStream out)
+    public RemoteInputStream streamFileContents(CaArrayEntityReference fileRef, boolean compressed)
             throws InvalidReferenceException, DataTransferException {
-        CaArrayFile file = getRequiredByLsid(fileRef.getId(), CaArrayFile.class);
-        DataFile fileMetadata = new DataFile();
-        fileMetadata.setCompressedSize(file.getCompressedSize());
-        fileMetadata.setUncompressedSize(file.getUncompressedSize());
-        fileMetadata.setName(file.getName());
-        fileMetadata.setId(file.getLsid());
+        CaArrayFile caarrayFile = getRequiredByLsid(fileRef.getId(), CaArrayFile.class);
+        RemoteInputStreamServer istream = null;
+        TemporaryFileCache tempFileCache = TemporaryFileCacheLocator.newTemporaryFileCache();
         try {
-            OutputStream osWrap = RemoteOutputStreamClient.wrap(out);
-            IOUtils.copy(compress ? file.readCompressedContents() : file.readContents(), osWrap);
-            osWrap.flush();
-        } catch (IOException e) {
-            LOG.warn("Could not write file contents to remote output stream", e);
-            throw new DataTransferException("Could not write file contents to remote output stream", e);
+            File file = tempFileCache.getFile(caarrayFile, !compressed);
+            
+            istream = new SimpleRemoteInputStream(new BufferedInputStream(new FileInputStream(file)),
+                    new CacheClosingMonitor(tempFileCache));
+            RemoteInputStream result = istream.export();
+            // after all the hard work, discard the local reference (we are passing
+            // responsibility to the client)
+            istream = null;
+            
+            return result;
+        } catch (Exception e) {
+            LOG.warn("Could not create input stream for file contents", e);
+            throw new DataTransferException("Could not create input stream for file contents");
+        } finally {
+            // we will only close the stream here if the server fails before
+            // returning an exported stream
+            if (istream != null) {
+                istream.close();
+                tempFileCache.closeFiles();
+            }
         }
-        return fileMetadata;
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public void streamFileContentsZip(FileDownloadRequest downloadRequest, boolean compressIndividually,
-            RemoteOutputStream out) throws InvalidReferenceException, DataTransferException {
+    public RemoteInputStream streamFileContentsZip(FileDownloadRequest downloadRequest, boolean compressIndividually)
+            throws InvalidReferenceException, DataTransferException {
+        TemporaryFileCache tempFileCache = TemporaryFileCacheLocator.newTemporaryFileCache();
+        RemoteInputStreamServer istream = null;
         try {
-            OutputStream osWrap = RemoteOutputStreamClient.wrap(out);
+            File zipFile = tempFileCache.createFile("contents.zip");
+            FileOutputStream fos = FileUtils.openOutputStream(zipFile);
+
             List<CaArrayFile> files = new LinkedList<CaArrayFile>();
             for (CaArrayEntityReference fileRef : downloadRequest.getFiles()) {
                 files.add(getRequiredByLsid(fileRef.getId(), CaArrayFile.class));
             }
-            FileAccessUtils.downloadFiles(files, compressIndividually, osWrap);
-            osWrap.flush();
-        } catch (IOException e) {
-            LOG.warn("Could not write zip file contents to remote output stream", e);
-            throw new DataTransferException("Could not write zip file contents to remote output stream", e);
-        } 
+            FileAccessUtils.downloadFiles(files, compressIndividually, fos);
+            fos.close();
+
+            istream = new SimpleRemoteInputStream(new BufferedInputStream(new FileInputStream(zipFile)),
+                    new CacheClosingMonitor(tempFileCache));
+            RemoteInputStream result = istream.export();
+            // after all the hard work, discard the local reference (we are passing
+            // responsibility to the client)
+            istream = null;
+
+            return result;
+        } catch (Exception e) {
+            LOG.warn("Could not create input stream for file contents", e);
+            throw new DataTransferException("Could not create input stream for file contents");
+        } finally {
+            // we will only close the stream here if the server fails before
+            // returning an exported stream
+            if (istream != null) {
+                istream.close();
+                tempFileCache.closeFiles();
+            }
+        }
     }
 
     /**
@@ -456,43 +491,60 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     /**
      * {@inheritDoc}
      */
-    public void streamMageTabZip(CaArrayEntityReference experimentRef, boolean compressIndividually,
-            RemoteOutputStream out) throws InvalidReferenceException, DataTransferException {
+    public RemoteInputStream streamMageTabZip(CaArrayEntityReference experimentRef, boolean compressIndividually)
+            throws InvalidReferenceException, DataTransferException {
         gov.nih.nci.caarray.domain.project.Experiment experiment = getRequiredByLsid(experimentRef.getId(),
-                gov.nih.nci.caarray.domain.project.Experiment.class);
-        MageTabDocumentSet docSet = null;
+                gov.nih.nci.caarray.domain.project.Experiment.class);            
+        
+        final TemporaryFileCache tempFileCache = TemporaryFileCacheLocator.newTemporaryFileCache();
+        RemoteInputStreamServer istream = null;
         try {
-            OutputStream osWrap = RemoteOutputStreamClient.wrap(out);
-            ZipOutputStream zos = new ZipOutputStream(osWrap);
+            File zipFile = tempFileCache.createFile("magetab_contents.zip");
+            FileOutputStream fos = FileUtils.openOutputStream(zipFile);
+            ZipOutputStream zos = new ZipOutputStream(fos);
 
-            docSet = exportToMageTab(experiment);
-            File idf = docSet.getIdfDocuments().iterator().next().getFile();
-            String idfName = idf.getName();
-            if (compressIndividually) {
-                idf = compressWithGzip(idf);
-            }
-            FileAccessUtils.writeZipEntry(zos, idf, idfName, compressIndividually);
-            File sdrf = docSet.getSdrfDocuments().iterator().next().getFile();
-            String sdrfName = sdrf.getName();
-            if (compressIndividually) {
-                sdrf = compressWithGzip(sdrf);
-            }
-            FileAccessUtils.writeZipEntry(zos, sdrf, sdrfName, compressIndividually);
+            MageTabDocumentSet docSet = exportToMageTab(experiment);
+            addMageTabFileToZip(zos, docSet.getIdfDocuments().iterator().next().getFile(), compressIndividually);
+            addMageTabFileToZip(zos, docSet.getSdrfDocuments().iterator().next().getFile(), compressIndividually);
             
             List<CaArrayFile> dataFiles = getDataFilesReferencedByMageTab(docSet, experiment);
             FileAccessUtils.addToZip(dataFiles, compressIndividually, zos);
 
             zos.finish();
-            osWrap.flush();
-        } catch (IOException e) {
-            LOG.warn("Could not write zip file contents to remote output stream", e);
-            throw new DataTransferException("Could not write zip file contents to remote output stream", e);
+            zos.close();
+
+            istream = new SimpleRemoteInputStream(new BufferedInputStream(new FileInputStream(zipFile)),
+                    new CacheClosingMonitor(tempFileCache));
+            RemoteInputStream result = istream.export();
+            // after all the hard work, discard the local reference (we are passing
+            // responsibility to the client)
+            istream = null;
+            
+            return result;
+        } catch (Exception e) {
+            LOG.warn("Could not create input stream for file contents", e);
+            throw new DataTransferException("Could not create input stream for file contents");
         } finally {
             HibernateUtil.getCurrentSession().clear();
+            // we will only close the stream here if the server fails before
+            // returning an exported stream
+            if (istream != null) {
+                istream.close();
+            }
         }
     }
     
-    private File compressWithGzip(File file) throws IOException {
+    private static void addMageTabFileToZip(ZipOutputStream zos, File file, boolean compressIndividually)
+            throws IOException {
+        String name = file.getName();
+        if (compressIndividually) {
+            file = compressWithGzip(file);
+            name = name + FileAccessUtils.GZIP_FILE_SUFFIX;
+        }
+        FileAccessUtils.writeZipEntry(zos, file, name, compressIndividually);
+    }
+    
+    private static File compressWithGzip(File file) throws IOException {
         TemporaryFileCache cache = TemporaryFileCacheLocator.getTemporaryFileCache();
         File tempFile = cache.createFile("gzip_" + file.getName());
         FileOutputStream fos = FileUtils.openOutputStream(tempFile);
@@ -515,5 +567,23 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         metadata.setFileType(mapEntity(fileType, gov.nih.nci.caarray.external.v1_0.data.FileType.class));
         dfc.setFileMetadata(metadata);
         return dfc;
+    }
+    
+    /**
+     * Remote Stream Monitor that closes the temporary file cache associated with the files, ensuring they
+     * are deleted.
+     * 
+     * @author dkokotov
+     */
+    private static class CacheClosingMonitor extends RemoteInputStreamMonitor {
+        private TemporaryFileCache cache;
+        
+        public CacheClosingMonitor(TemporaryFileCache cache) {
+            this.cache = cache;
+        }
+        
+        public void closed(RemoteInputStreamServer stream, boolean clean) {
+            cache.closeFiles();            
+        }
     }
 }

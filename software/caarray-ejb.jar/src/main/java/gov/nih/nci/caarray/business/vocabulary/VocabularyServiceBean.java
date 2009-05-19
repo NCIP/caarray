@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.OrganismDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -265,8 +266,9 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
-    public List<Category> searchForCharacteristicCategory(String keyword) {
-        return getVocabularyDao().searchForCharacteristicCategory(keyword);
+    public <T extends AbstractCharacteristic> List<Category> searchForCharacteristicCategory(
+            Class<T> characteristicClass, String keyword) {
+        return getVocabularyDao().searchForCharacteristicCategory(null, characteristicClass, keyword);
     }
 
     /**

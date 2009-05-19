@@ -83,9 +83,8 @@
 package gov.nih.nci.caarray.domain.search;
 
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -102,21 +101,20 @@ public class FileSearchCriteria {
     private boolean includeRaw;
     private boolean includeDerived;
     private boolean includeSupplemental;
-    private Set<AbstractBioMaterial> biomaterials = new HashSet<AbstractBioMaterial>();
-    private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
+    private Set<AbstractExperimentDesignNode> experimentNodes = new HashSet<AbstractExperimentDesignNode>();
     
     /**
-     * @return the AbstractBioMaterials
+     * @return the experiment nodes
      */
-    public Set<AbstractBioMaterial> getBiomaterials() {
-        return biomaterials;
+    public Set<AbstractExperimentDesignNode> getExperimentNodes() {
+        return experimentNodes;
     }
 
     /**
-     * @param biomaterials the AbstractBioMaterials to set
+     * @param nodes the nodes to set
      */
-    public void setBiomaterials(Set<AbstractBioMaterial> biomaterials) {
-        this.biomaterials = biomaterials;
+    public void setExperimentNodes(Set<AbstractExperimentDesignNode> nodes) {
+        this.experimentNodes = nodes;
     }
 
     /**
@@ -201,19 +199,5 @@ public class FileSearchCriteria {
      */
     public void setIncludeDerived(boolean includeDerived) {
         this.includeDerived = includeDerived;
-    }
-
-    /**
-     * @return the hybridizations
-     */
-    public Set<Hybridization> getHybridizations() {
-        return hybridizations;
-    }
-
-    /**
-     * @param hybridizations the hybridizations to set
-     */
-    public void setHybridizations(Set<Hybridization> hybridizations) {
-        this.hybridizations = hybridizations;
     }
 }

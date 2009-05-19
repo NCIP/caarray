@@ -86,7 +86,7 @@
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.project.MeasurementFactorValue</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.factor.FactorValue</class-b>   
-    	<field custom-converter="gov.nih.nci.caarray.services.external.v1_0.FactorValueConverter">
+    	<field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.FactorValueConverter">
       		<a>value</a>
      	 	<b>value</b>
     	</field>
@@ -98,7 +98,7 @@
     <mapping> 
         <class-a>gov.nih.nci.caarray.domain.project.UserDefinedFactorValue</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.factor.FactorValue</class-b>   
-        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.FactorValueConverter">
+        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.FactorValueConverter">
             <a>value</a>
             <b>value</b>
         </field>
@@ -110,7 +110,7 @@
     <mapping> 
         <class-a>gov.nih.nci.caarray.domain.project.TermBasedFactorValue</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.factor.FactorValue</class-b>   
-        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.FactorValueConverter">
+        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.FactorValueConverter">
             <a>term</a>
             <b>value</b>
         </field>
@@ -328,6 +328,22 @@
             <a>nodeType</a>
             <b>type</b>
         </field>
+        <field>
+            <a>diseaseState</a>
+            <b>diseaseState.term</b>
+        </field>
+        <field>
+            <a>tissueSite</a>
+            <b>tissueSite.term</b>
+        </field>
+        <field>
+            <a>materialType</a>
+            <b>materialType.term</b>
+        </field>
+        <field>
+            <a>cellType</a>
+            <b>cellType.term</b>
+        </field>
   	</mapping>
     <mapping> 
         <class-a>gov.nih.nci.caarray.domain.sample.Sample</class-a>
@@ -339,6 +355,22 @@
         <field>
             <a>nodeType</a>
             <b>type</b>
+        </field>
+        <field>
+            <a>diseaseState</a>
+            <b>diseaseState.term</b>
+        </field>
+        <field>
+            <a>tissueSite</a>
+            <b>tissueSite.term</b>
+        </field>
+        <field>
+            <a>materialType</a>
+            <b>materialType.term</b>
+        </field>
+        <field>
+            <a>cellType</a>
+            <b>cellType.term</b>
         </field>
     </mapping>
     <mapping> 
@@ -352,6 +384,22 @@
             <a>nodeType</a>
             <b>type</b>
         </field>
+        <field>
+            <a>diseaseState</a>
+            <b>diseaseState.term</b>
+        </field>
+        <field>
+            <a>tissueSite</a>
+            <b>tissueSite.term</b>
+        </field>
+        <field>
+            <a>materialType</a>
+            <b>materialType.term</b>
+        </field>
+        <field>
+            <a>cellType</a>
+            <b>cellType.term</b>
+        </field>
     </mapping>
     <mapping> 
         <class-a>gov.nih.nci.caarray.domain.sample.LabeledExtract</class-a>
@@ -364,11 +412,27 @@
             <a>nodeType</a>
             <b>type</b>
         </field>
+        <field>
+            <a>diseaseState</a>
+            <b>diseaseState.term</b>
+        </field>
+        <field>
+            <a>tissueSite</a>
+            <b>tissueSite.term</b>
+        </field>
+        <field>
+            <a>materialType</a>
+            <b>materialType.term</b>
+        </field>
+        <field>
+            <a>cellType</a>
+            <b>cellType.term</b>
+        </field>
     </mapping>
     <mapping> 
         <class-a>gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.sample.Characteristic</class-b>   
-        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.FactorValueConverter">
+        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.FactorValueConverter">
             <a>term</a>
             <b>value</b>
         </field>
@@ -380,7 +444,7 @@
     <mapping> 
         <class-a>gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.sample.Characteristic</class-b>   
-        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.FactorValueConverter">
+        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.FactorValueConverter">
             <a>value</a>
             <b>value</b>
         </field>
@@ -392,7 +456,7 @@
     <mapping> 
         <class-a>gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.sample.Characteristic</class-b>   
-        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.FactorValueConverter">
+        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.FactorValueConverter">
             <a>value</a>
             <b>value</b>
         </field>

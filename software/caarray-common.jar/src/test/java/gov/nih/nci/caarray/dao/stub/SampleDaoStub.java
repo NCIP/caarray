@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
+import gov.nih.nci.caarray.domain.search.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 
@@ -101,7 +102,6 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  *
  */
 public class SampleDaoStub extends AbstractDaoStub implements SampleDao {
-
     /**
      * {@inheritDoc}
      */
@@ -122,14 +122,15 @@ public class SampleDaoStub extends AbstractDaoStub implements SampleDao {
      * {@inheritDoc}
      */
     public <T extends AbstractBioMaterial> List<T> searchByCategory(PageSortParams<T> params, String keyword,
-            BiomaterialSearchCategory... categories) {
-        return Collections.EMPTY_LIST;
+            Class<T> biomaterialClass, BiomaterialSearchCategory... categories) {
+        return Collections.emptyList();
     }
 
     /**
      * {@inheritDoc}
      */
-    public int searchCount(String keyword, BiomaterialSearchCategory... categories) {
+    public int searchCount(String keyword, Class<? extends AbstractBioMaterial> biomaterialClass,
+            BiomaterialSearchCategory... categories) {
         // TODO Auto-generated method stub
         return 0;
     }
@@ -138,38 +139,42 @@ public class SampleDaoStub extends AbstractDaoStub implements SampleDao {
      * {@inheritDoc}
      */
     public List<Sample> searchSamplesByCharacteristicCategory(Category c, String keyword) {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     /**
      * {@inheritDoc}
      */
     public List<Source> searchSourcesByCharacteristicCategory(Category c, String keyword) {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     /**
      * {@inheritDoc}
      */
     public List<Organism> searchForOrganismNames(String keyword) {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     /**
      * {@inheritDoc}
      */
     public List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c) {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     public List<Sample> searchSamplesByCharacteristicCategory(
             PageSortParams<Sample> params, Category c, String keyword) {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     public List<Source> searchSourcesByCharacteristicCategory(
             PageSortParams<Source> params, Category c, String keyword) {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
+    public <T extends AbstractBioMaterial> List<T> searchByCriteria(PageSortParams<T> params,
+            BiomaterialSearchCriteria criteria, Class<T> biomaterialType) {
+        return Collections.emptyList();
+    }
 }

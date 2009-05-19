@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.web.action;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 
@@ -184,7 +185,7 @@ public class HomeAction {
         browseItems.add(new BrowseItems("browse.report.users", bs.userCount()));
         
         VocabularyService voc = CaArrayActionHelper.getVocabularyService();
-        this.categories = voc.searchForCharacteristicCategory("");
+        this.categories = voc.searchForCharacteristicCategory(TermBasedCharacteristic.class, null);
         this.organisms = voc.getOrganisms();
 
         return Action.INPUT;

@@ -80,46 +80,46 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external.v1_0.grid.service;
+package gov.nih.nci.caarray.external.v1_0.sample;
 
+import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
-import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
-
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
-import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
 
 /**
  * @author dkokotov
- * 
+ *
  */
-public class FileTransferEnumIterator extends BaseEnumIterator<TransferServiceContextReference> {
-    private List<CaArrayEntityReference> leftToDownload;
-    private boolean compress;
+public abstract class AbstractExperimentGraphNode extends AbstractCaArrayEntity {
+    private static final long serialVersionUID = 1L;
 
-    public FileTransferEnumIterator(FileDownloadRequest fileDownloadRequest, boolean compress) throws RemoteException {
-        super(new QName("http://transfer.cagrid.org/TransferService/Context/types", "TransferServiceContextReference"));
-        this.leftToDownload = new ArrayList<CaArrayEntityReference>(fileDownloadRequest.getFiles());
-        this.compress = compress;
+    private String name;
+    private CaArrayEntityReference experiment;
+    
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
     }
 
-    @Override
-    protected List<TransferServiceContextReference> getNextResults(PagingParams enumParams) throws IOException {
-        int i = 0;
-        List<TransferServiceContextReference> transferRefs = new ArrayList<TransferServiceContextReference>();
-        for (Iterator<CaArrayEntityReference> fileRefIt = leftToDownload.iterator(); fileRefIt.hasNext()
-                && i < enumParams.getMaxResults(); i++) {
-            CaArrayEntityReference fileRef = fileRefIt.next();
-            fileRefIt.remove();            
-            transferRefs.add(CaArraySvc_v1_0Impl.stageFileContentsWithRmiStream(getCaArrayServer(), fileRef, compress));
-        }
-        return transferRefs;
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return the experiment
+     */
+    public CaArrayEntityReference getExperiment() {
+        return experiment;
+    }
+
+    /**
+     * @param experiment the experiment to set
+     */
+    public void setExperiment(CaArrayEntityReference experiment) {
+        this.experiment = experiment;
     }
 }

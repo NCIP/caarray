@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
+import gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
@@ -98,8 +99,11 @@ import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
 
@@ -121,13 +125,35 @@ public interface SearchService {
     String JNDI_NAME = "caarray/external/v1_0/SearchServiceBean";
 
     /**
-     * Retrieve list of PIs in caArray.
+     * Retrieve list of Principal Inestigators in the system.
      * 
-     * @param pagingParams paging parameters.
-     * @return the subset of the file types specified by the given paging params.
+     * @return the list of Person entities that are principal investigators on at least one experiment in the system.
      */
-    List<Person> getAllPrincipalInvestigators(PagingParams pagingParams);
-    
+    List<Person> getAllPrincipalInvestigators();
+
+    /**
+     * Retrieve the list of all categories of characteristics, either in the entire system, or for given experiment.
+     * 
+     * @param experimentRef if not null, then only categories of characteristics of biomaterials in the
+     * given experiment are returned, otherwise categories of all characteristivcs in the system are returned.
+     * @return the list of Category entities as described above.
+     * @throws InvalidReferenceException if there is no experiment with given reference
+     */
+    List<Category> getAllCharacteristicCategories(CaArrayEntityReference experimentRef)
+            throws InvalidReferenceException;
+
+    /**
+     * Retrieve the list of all terms belonging to given category in the system.
+     * 
+     * @param categoryRef reference identifying the category
+     * @param valuePrefix if not null, only include terms whose value starts with given prefix, using case insensitive
+     *            matching
+     * @return the terms in the given category
+     * @throws InvalidReferenceException if there is no category with given reference
+     */
+    List<Term> getTermsForCategory(CaArrayEntityReference categoryRef, String valuePrefix)
+            throws InvalidReferenceException;
+
     /**
      * Search for biomaterials satisfying the given search criteria.
      * 
@@ -136,7 +162,7 @@ public interface SearchService {
      * @return the subset of the biomaterials matching the given criteria, subject to the paging params.
      * @throws InvalidReferenceException if there is no experiment with given reference
      */
-    List<Biomaterial> searchForBiomaterials(BiomaterialSearchCriteria criteria, PagingParams pagingParams)
+    SearchResult<Biomaterial> searchForBiomaterials(BiomaterialSearchCriteria criteria, PagingParams pagingParams)
             throws InvalidReferenceException;
 
     /**
@@ -147,7 +173,7 @@ public interface SearchService {
      * @return the subset of the hybridizations matching the given criteria, subject to the paging params.
      * @throws InvalidReferenceException if there is no experiment with given reference
      */
-    List<Hybridization> searchForHybridizations(HybridizationSearchCriteria criteria, PagingParams pagingParams)
+    SearchResult<Hybridization> searchForHybridizations(HybridizationSearchCriteria criteria, PagingParams pagingParams)
             throws InvalidReferenceException;
 
     /**
@@ -178,7 +204,7 @@ public interface SearchService {
      * @return the list of experiments matching criteria, subject to the paging specifications.
      * @throws InvalidReferenceException if the search criteria includes any invalid references.
      */
-    List<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, PagingParams pagingParams)
+    SearchResult<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, PagingParams pagingParams)
             throws InvalidReferenceException;
 
     /**
@@ -188,7 +214,7 @@ public interface SearchService {
      * @param pagingParams paging params.
      * @return the list of experiments matching criteria, subject to the paging specifications.
      */
-    List<Experiment> searchForExperimentsByKeyword(KeywordSearchCriteria criteria, PagingParams pagingParams);
+    SearchResult<Experiment> searchForExperimentsByKeyword(KeywordSearchCriteria criteria, PagingParams pagingParams);
 
     /**
      * Returns a list of data files satisfying the given search criteria.
@@ -198,7 +224,7 @@ public interface SearchService {
      * @return the list of files matching criteria, subject to the paging specifications.
      * @throws InvalidReferenceException if the search criteria includes any invalid references.
      */
-    List<DataFile> searchForFiles(FileSearchCriteria criteria, PagingParams pagingParams)
+    SearchResult<DataFile> searchForFiles(FileSearchCriteria criteria, PagingParams pagingParams)
             throws InvalidReferenceException;
     
     /**
@@ -208,19 +234,18 @@ public interface SearchService {
      * @param pagingParams paging params.
      * @return the list of biomaterials matching the criteria, subject to the paging specifications.
      */
-    List<Biomaterial> searchForBiomaterialsByKeyword(BiomaterialKeywordSearchCriteria criteria,
+    SearchResult<Biomaterial> searchForBiomaterialsByKeyword(BiomaterialKeywordSearchCriteria criteria,
             PagingParams pagingParams);
 
     /**
      * Returns a list of quantitation types satisfying the given search criteria.
      * 
      * @param criteria the search criteria.
-     * @param pagingParams paging params.
-     * @return the list of quantitation types matching criteria, subject to the paging specifications.
+     * @return the list of quantitation types matching criteria.
      * @throws InvalidReferenceException if the search criteria includes any invalid references.
      */
-    List<QuantitationType> searchForQuantitationTypes(QuantitationTypeSearchCriteria criteria,
-            PagingParams pagingParams) throws InvalidReferenceException;
+    List<QuantitationType> searchForQuantitationTypes(QuantitationTypeSearchCriteria criteria)
+            throws InvalidReferenceException;
     
     /**
      * Do a query by example.
@@ -231,4 +256,13 @@ public interface SearchService {
      */
     <T extends AbstractCaArrayEntity> SearchResult<T> searchByExample(ExampleSearchCriteria<T> criteria,
             PagingParams pagingParams);
+    
+    /**
+     * Returns an annotation set matching the given request.
+     * 
+     * @param request the annotation set request
+     * @return the annotation set.
+     * @throws InvalidReferenceException if there are any invalid references in the request
+     */
+    AnnotationSet getAnnotationSet(AnnotationSetRequest request) throws InvalidReferenceException;
 }

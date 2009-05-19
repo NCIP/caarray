@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external.v1_0;
+package gov.nih.nci.caarray.services.external.v1_0.impl;
 
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -88,6 +88,10 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
@@ -105,14 +109,19 @@ import gov.nih.nci.caarray.external.v1_0.factor.Factor;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 import gov.nih.nci.caarray.services.external.AbstractExternalService;
 import gov.nih.nci.caarray.services.external.BeanMapperLookup;
+import gov.nih.nci.caarray.services.external.v1_0.IncorrectEntityTypeException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -166,8 +175,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
                 ExperimentContact.class));
         entityHandlerRegistry.addResolver(ArrayDesign.class, new PersistentObjectHandler<ArrayDesign>(
                 gov.nih.nci.caarray.domain.array.ArrayDesign.class, Order.asc("name")));
-        entityHandlerRegistry.addResolver(Biomaterial.class, new PersistentObjectHandler<Biomaterial>(
-                AbstractBioMaterial.class, Order.asc("name")));
+        entityHandlerRegistry.addResolver(Biomaterial.class, new BiomaterialHandler());
         entityHandlerRegistry.addResolver(ArrayDataType.class, new PersistentObjectHandler<ArrayDataType>(
                 gov.nih.nci.caarray.domain.data.ArrayDataType.class, Order.asc("name")));
         entityHandlerRegistry.addResolver(gov.nih.nci.caarray.external.v1_0.data.FileType.class, new FileTypeHandler());
@@ -176,6 +184,19 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
         entityHandlerRegistry.addResolver(ArrayProvider.class, new PersistentObjectHandler<ArrayProvider>(
                 Organization.class, Order.asc("name")));
     }
+    
+    /**
+     * Map of BiomaterialType to the corresponding AbstractBiomaterial subclass in the internal model.
+     */
+    protected static final Map<BiomaterialType, Class<? extends AbstractBioMaterial>> BIOMATERIAL_TYPE_TO_CLASS_MAP = 
+        new HashMap<BiomaterialType, Class<? extends AbstractBioMaterial>>(); 
+    static {
+        BIOMATERIAL_TYPE_TO_CLASS_MAP.put(BiomaterialType.SOURCE, Source.class);
+        BIOMATERIAL_TYPE_TO_CLASS_MAP.put(BiomaterialType.SAMPLE, Sample.class);
+        BIOMATERIAL_TYPE_TO_CLASS_MAP.put(BiomaterialType.EXTRACT, Extract.class);
+        BIOMATERIAL_TYPE_TO_CLASS_MAP.put(BiomaterialType.LABELED_EXTRACT, LabeledExtract.class);
+    }
+
     
     /**
      * convert given external paging params instance into internal paging params.
@@ -268,6 +289,54 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
             throw new IncorrectEntityTypeException(e, new CaArrayEntityReference(lsid));            
         }
     }
+
+    /**
+     * Retrieve the entity for given reference expected to have given type.
+     * 
+     * @param <T> the entity type
+     * @param reference the reference to the entity to retrieve
+     * @param type the class for the entity type
+     * @return the entity, or null if the reference is null
+     * @throws InvalidReferenceException if no entity exists for given reference or the entity is not of the expected
+     *             type.
+     */
+    protected <T> T getByReference(CaArrayEntityReference reference, Class<T> type) throws InvalidReferenceException {
+        return reference == null ? null : getRequiredByLsid(reference.getId(), type);
+    }
+        
+    /**
+     * Convert the given list of references to the underlying internal entities pointed to by those references.
+     * 
+     * @param <T> the expected entity type for each reference
+     * @param refs the list of references.
+     * @param entities the collection in which to store the referenced internal entities.
+     * @param type the class for the entity type
+     * @return the entities collection (same instance as passed in the <b>entities</b> parameter)
+     * @throws InvalidReferenceException if for any reference, no entity exists or is not of the expected type.
+     */
+    protected <T> Collection<T> mapRequiredReferencesToEntities(Collection<CaArrayEntityReference> refs,
+            Collection<T> entities, Class<T> type) throws InvalidReferenceException {
+        for (CaArrayEntityReference ref : refs) {
+            entities.add(getRequiredByLsid(ref.getId(), type));
+        }
+        return entities;
+    }
+
+    /**
+     * Convert the given list of references to the underlying internal entities pointed to by those references.
+     * 
+     * @param <T> the expected entity type for each reference
+     * @param refs the list of references.
+     * @param type the class for the entity type
+     * @return the list of referenced internal entities.
+     * @throws InvalidReferenceException if for any reference, no entity exists or is not of the expected type.
+     */
+    protected <T> List<T> mapRequiredReferencesToEntities(Collection<CaArrayEntityReference> refs, Class<T> type)
+            throws InvalidReferenceException {
+        List<T> entities = new ArrayList<T>();
+        mapRequiredReferencesToEntities(refs, entities, type);
+        return entities;
+    }
             
     /**
      * @return the entityHandlerRegistry
@@ -336,7 +405,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      *
      * @param <T> the external entity type for this handler
      */
-    private final class PersistentObjectHandler<T extends AbstractCaArrayEntity> implements EntityHandler<T> {
+    private class PersistentObjectHandler<T extends AbstractCaArrayEntity> implements EntityHandler<T> {
         private final Class<? extends PersistentObject> internalClass;
         private final Order[] orders;
                 
@@ -372,13 +441,38 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
                 ExampleSearchCriteria<T> criteria) {
             gov.nih.nci.caarray.domain.search.ExampleSearchCriteria<? extends PersistentObject> intCriteria = 
                 gov.nih.nci.caarray.domain.search.ExampleSearchCriteria
-                    .forEntity(mapEntity(criteria.getExample(), internalClass));
+                    .forEntity(toInternalExample(criteria.getExample()));
             intCriteria.setMatchMode(getHibernateMatchMode(criteria.getMatchMode().name()));
             intCriteria.setExcludeNulls(criteria.isExcludeNulls());
             return intCriteria;
-        }        
+        }
+        
+        protected PersistentObject toInternalExample(T example) {
+            return mapEntity(example, internalClass);
+        }
     }
-    
+
+    /**
+     * EntityHandler that for external entities that map to internal types extending from AbstractBiomaterial.
+     * 
+     * @author dkokotov
+     */
+    private final class BiomaterialHandler extends PersistentObjectHandler<Biomaterial> implements
+            EntityHandler<Biomaterial> {
+        /**
+         * @param internalClass the class object for the internal type for this handler
+         * @param orders the set of orders to use when doing queries.
+         */
+        BiomaterialHandler() {
+            super(AbstractBioMaterial.class, Order.asc("name"));
+        }
+
+        @Override
+        protected PersistentObject toInternalExample(Biomaterial bm) {
+            return mapEntity(bm, BIOMATERIAL_TYPE_TO_CLASS_MAP.get(bm.getType()));
+        }
+    }
+
     /**
      * EntityHandler for FileTypes.
      * @author dkokotov

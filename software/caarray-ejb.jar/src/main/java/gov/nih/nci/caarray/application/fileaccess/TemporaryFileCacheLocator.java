@@ -83,7 +83,20 @@
 package gov.nih.nci.caarray.application.fileaccess;
 
 /**
- * Provides access to the per-thread cache of uncompressed file data from CaArrayFiles.
+ * Service locator class responsible for creating TemporaryFileCache instances. Clients should obtain
+ * TemporaryFileCaches from this class by calling either getTemporaryFileCache() or newTemporaryFileCache(), depending
+ * on desired cache lifecycle.
+ * 
+ * This class maintains a per-thread registry of TemporaryFileCache instances. When needing a TemporaryFileCache whose
+ * lifecycle is tied to a request or API method call, clients should obtain it from this class by calling
+ * getTemporaryFileCache(), ensuring that the same instance will be returned throughout servicing a single request,
+ * avoiding having to recache the file multiple times. Such instances are also monitored by Servlet Filters and EJB
+ * interceptors, ensuring that resources are cleaned up once the request or API method call is finished.
+ * 
+ * If a TemporaryFileCache with a different lifecycle is required, it should be obtained by calling
+ * newTemporaryFileCache(). In this case, the client is responsible for ensuring that the cache's resources are cleaned
+ * up as promptly as possible once it's finished using it.
+ * 
  * @author dkokotov
  */
 public final class TemporaryFileCacheLocator {
@@ -112,6 +125,13 @@ public final class TemporaryFileCacheLocator {
             CACHE.set(cache);
         }
         return cache;
+    }
+
+    /**
+     * @return a new instance of TemporaryFileCache not tied to the current thread.
+     */
+    public static TemporaryFileCache newTemporaryFileCache() {
+        return tempFileCacheFactory.createTempFileCache();
     }
 
     /**

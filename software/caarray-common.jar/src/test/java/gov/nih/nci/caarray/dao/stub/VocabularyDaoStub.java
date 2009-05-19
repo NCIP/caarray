@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.dao.stub;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -150,7 +152,8 @@ public class VocabularyDaoStub extends AbstractDaoStub implements VocabularyDao 
     /* (non-Javadoc)
      * @see gov.nih.nci.caarray.dao.SampleDao#searchForCharacteristicCategory(java.lang.String)
      */
-    public List<Category> searchForCharacteristicCategory(String keyword) {
-        return Collections.EMPTY_LIST;
+    public List<Category> searchForCharacteristicCategory(Experiment e,
+            Class<? extends AbstractCharacteristic> characteristicClass, String keyword) {
+        return Collections.emptyList();
     }
 }

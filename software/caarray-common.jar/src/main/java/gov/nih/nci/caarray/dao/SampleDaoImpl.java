@@ -83,26 +83,32 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
+import gov.nih.nci.caarray.domain.search.AnnotationCriterion;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
+import gov.nih.nci.caarray.domain.search.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.domain.search.JoinableSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
-import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.fiveamsolutions.nci.commons.util.HibernateHelper;
@@ -126,9 +132,9 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
      * {@inheritDoc}
      */
     @SuppressWarnings(UNCHECKED)
-    public <T extends AbstractBioMaterial>List<T>  searchByCategory(PageSortParams<T> params, String keyword,
-            BiomaterialSearchCategory... categories) {
-        Query q = getSearchQuery(false, params, keyword, categories);
+    public <T extends AbstractBioMaterial> List<T> searchByCategory(PageSortParams<T> params, String keyword,
+            Class<T> biomaterialClass, BiomaterialSearchCategory... categories) {
+        Query q = getSearchQuery(false, params, keyword, biomaterialClass, categories);
         q.setFirstResult(params.getIndex());
         if (params.getPageSize() > 0) {
             q.setMaxResults(params.getPageSize());
@@ -343,13 +349,14 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
     /**
      * {@inheritDoc}
      */
-    public int searchCount(String keyword, BiomaterialSearchCategory... categories) {
-        Query q = getSearchQuery(true, null, keyword, categories);
+    public int searchCount(String keyword, Class<? extends AbstractBioMaterial> biomaterialClass,
+            BiomaterialSearchCategory... categories) {
+        Query q = getSearchQuery(true, null, keyword, biomaterialClass, categories);
         return ((Number) q.uniqueResult()).intValue();
     }
 
     private Query getSearchQuery(boolean count, PageSortParams<? extends AbstractBioMaterial> params, String keyword,
-            BiomaterialSearchCategory... categories) {
+            Class<? extends AbstractBioMaterial> biomaterialSubclass, BiomaterialSearchCategory... categories) {
         JoinableSortCriterion<? extends AbstractBioMaterial> sortCrit =
             params != null ? (JoinableSortCriterion<? extends AbstractBioMaterial>) params.getSortCriterion() : null;
         StringBuffer sb = new StringBuffer();
@@ -359,7 +366,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
             sb.append(SELECT_DISTINCT + "s");
         }
 
-        sb.append(generateSearchClause(count, sortCrit, categories));
+        sb.append(generateSearchClause(count, sortCrit, biomaterialSubclass, categories));
 
         if (!count && sortCrit != null) {
             sb.append(ORDER_BY).append(getOrderByField(sortCrit));
@@ -372,23 +379,78 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         return q;
     }
 
-    private String generateSearchClause(boolean count, JoinableSortCriterion<? extends AbstractBioMaterial> sortCrit,
-            BiomaterialSearchCategory... categories) {
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings({"unchecked", "PMD" })
+    public <T extends AbstractBioMaterial> List<T> searchByCriteria(PageSortParams<T> params,
+            BiomaterialSearchCriteria criteria, Class<T> biomaterialType) {
+        Criteria c = HibernateUtil.getCurrentSession().createCriteria(biomaterialType);
 
-        StringBuffer sb = new StringBuffer();
-        sb.append(FROM_KEYWORD);
-        if (categories[0] instanceof SearchSourceCategory) {
-            sb.append(Source.class.getName());
-        } else if (categories[0] instanceof SearchSampleCategory) {
-            sb.append(Sample.class.getName());
+        if (criteria.getExperiment() != null) {
+            c.add(Restrictions.eq("experiment", criteria.getExperiment()));
+        }
+                
+        if (!criteria.getNames().isEmpty()) {
+            c.add(Restrictions.in("name", criteria.getNames()));
         }
 
-        sb.append(" s");
-        sb.append(getJoinClause(count, sortCrit, categories));
+        if (!criteria.getExternalIds().isEmpty() && Sample.class.equals(biomaterialType)) {
+            c.add(Restrictions.in("externalSampleId", criteria.getExternalIds()));
+        }
+        
+        if (!criteria.getAnnotationCriterions().isEmpty()) {
+            Set<String> diseaseStates = new HashSet<String>();
+            Set<String> tissueSites = new HashSet<String>();
+            Set<String> cellTypes = new HashSet<String>();
+            Set<String> materialTypes = new HashSet<String>();
+            for (AnnotationCriterion ac : criteria.getAnnotationCriterions()) {
+                if (ac.getCategory().getName().equals(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName())) {
+                    diseaseStates.add(ac.getValue());
+                } else if (ac.getCategory().getName().equals(ExperimentOntologyCategory.CELL_TYPE.getCategoryName())) {
+                    cellTypes.add(ac.getValue());
+                } else if (ac.getCategory().getName()
+                        .equals(ExperimentOntologyCategory.MATERIAL_TYPE.getCategoryName())) {
+                    materialTypes.add(ac.getValue());
+                } else if (ac.getCategory().getName().equals(
+                        ExperimentOntologyCategory.TISSUE_ANATOMIC_SITE.getCategoryName())) {
+                    tissueSites.add(ac.getValue());
+                }
+            }
+              
+            if (!diseaseStates.isEmpty() || !tissueSites.isEmpty() || !cellTypes.isEmpty() 
+                    || !materialTypes.isEmpty()) {
+                Disjunction or = Restrictions.disjunction();
+                addAnnotationCriterionValues(c, or, diseaseStates, "diseaseState", "ds");
+                addAnnotationCriterionValues(c, or, tissueSites, "tissueSite", "ts");
+                addAnnotationCriterionValues(c, or, materialTypes, "materialType", "mt");
+                addAnnotationCriterionValues(c, or, cellTypes, "cellType", "ct");
+                c.add(or);
+            }
+        }
+        
+        c.setFirstResult(params.getIndex());
+        if (params.getPageSize() > 0) {
+            c.setMaxResults(params.getPageSize());
+        }
+        c.addOrder(toOrder(params));
+        return c.list();
+    }
+    
+    private void addAnnotationCriterionValues(Criteria c, Disjunction or, Set<String> values, String assocPath,
+            String alias) {
+        if (!values.isEmpty()) {
+            c.createAlias(assocPath, alias);
+            or.add(Restrictions.in(alias + ".value", values));
+        }        
+    }
 
-        sb.append(getWhereClause(categories));
+    private String generateSearchClause(boolean count, JoinableSortCriterion<? extends AbstractBioMaterial> sortCrit,
+            Class<? extends AbstractBioMaterial> biomaterialSubclass, BiomaterialSearchCategory... categories) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(FROM_KEYWORD).append(biomaterialSubclass.getName()).append(" s").append(
+                getJoinClause(count, sortCrit, categories)).append(getWhereClause(categories));
         return sb.toString();
-
     }
 
     private static String getJoinClause(boolean count, JoinableSortCriterion<? extends AbstractBioMaterial> sortCrit,

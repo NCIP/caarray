@@ -87,12 +87,14 @@ import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.AnnotationCriterion;
 import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -103,6 +105,7 @@ import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,6 +113,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -122,6 +126,7 @@ import org.hibernate.criterion.Restrictions;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
+import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
@@ -268,9 +273,10 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings({UNCHECKED, "PMD.NPathComplexity" })
+    @SuppressWarnings({UNCHECKED, "PMD" })
     public List<Experiment> searchByCriteria(PageSortParams<Experiment> params, ExperimentSearchCriteria criteria) {
-        StringBuilder from = new StringBuilder("SELECT e FROM ").append(Experiment.class.getName()).append(" e");
+        StringBuilder from = new StringBuilder("SELECT distinct e FROM ").append(Experiment.class.getName()).append(
+                " e");
         StringBuilder where = new StringBuilder("WHERE (1=1)");
         Map<String, Object> queryParams = new HashMap<String, Object>();
         if (criteria.getTitle() != null) {
@@ -302,6 +308,38 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             queryParams.put("pi_role", ExperimentContact.PI_ROLE);            
             queryParams.put("pi_id", criteria.getPrincipalInvestigator().getId());            
         }
+        if (!criteria.getAnnotationCriterions().isEmpty()) {
+            List<String> diseaseStates = new LinkedList<String>();
+            List<String> tissueSites = new LinkedList<String>();
+            List<String> cellTypes = new LinkedList<String>();
+            List<String> materialTypes = new LinkedList<String>();
+            for (AnnotationCriterion ac : criteria.getAnnotationCriterions()) {
+                if (ac.getCategory().getName().equals(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName())) {
+                    diseaseStates.add(ac.getValue());
+                } else if (ac.getCategory().getName().equals(ExperimentOntologyCategory.CELL_TYPE.getCategoryName())) {
+                    cellTypes.add(ac.getValue());
+                } else if (ac.getCategory().getName()
+                        .equals(ExperimentOntologyCategory.MATERIAL_TYPE.getCategoryName())) {
+                    materialTypes.add(ac.getValue());
+                } else if (ac.getCategory().getName().equals(
+                        ExperimentOntologyCategory.TISSUE_ANATOMIC_SITE.getCategoryName())) {
+                    tissueSites.add(ac.getValue());
+                }
+            }
+              
+            if (!diseaseStates.isEmpty() || !tissueSites.isEmpty() || !cellTypes.isEmpty() 
+                    || !materialTypes.isEmpty()) {
+                from.append(" LEFT JOIN e.sources so LEFT JOIN e.samples sa ");
+                where.append(" AND ( (0=1) ");
+                Map<String, List<? extends Serializable>> blocks = new HashMap<String, List<? extends Serializable>>();
+                addAnnotationCriterionValues(where, from, diseaseStates, "diseaseState", "ds", blocks);
+                addAnnotationCriterionValues(where, from, tissueSites, "tissueSite", "ts", blocks);
+                addAnnotationCriterionValues(where, from, materialTypes, "materialType", "mt", blocks);
+                addAnnotationCriterionValues(where, from, cellTypes, "cellType", "ct", blocks);
+                where.append(" )");
+                queryParams.putAll(blocks);
+            }
+        }
         
         Query q = HibernateUtil.getCurrentSession().createQuery(
                 from.append(" ").append(where).append(" ").append(toHqlOrder(params)).toString());
@@ -311,6 +349,20 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             q.setMaxResults(params.getPageSize());
         }
         return q.list();
+    }
+    
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    private void addAnnotationCriterionValues(StringBuilder where, StringBuilder from, List<String> values,
+            String assocPath, String alias, Map<String, List<? extends Serializable>> blocks) {
+        if (!values.isEmpty()) {
+            String sourceAlias = alias + "_so";
+            String sampleAlias = alias + "_sa";
+            
+            from.append(" LEFT JOIN so.").append(assocPath).append(" ").append(sourceAlias).append(" LEFT JOIN sa.")
+                    .append(assocPath).append(" ").append(sampleAlias);
+            where.append(" OR ").append(HibernateHelper.buildInClause(values, sourceAlias + ".value", blocks));
+            where.append(" OR ").append(HibernateHelper.buildInClause(values, sampleAlias + ".value", blocks));
+        }
     }
 
     private static String getJoinClause(SearchCategory... categories) {

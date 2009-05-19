@@ -80,96 +80,46 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external.v1_0.grid.service;
+package gov.nih.nci.caarray.services.external.v1_0.impl;
 
-import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
-
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPElement;
-
-import org.globus.ws.enumeration.EnumIterator;
-import org.globus.ws.enumeration.IterationConstraints;
-import org.globus.ws.enumeration.IterationResult;
-import org.globus.ws.enumeration.TimeoutException;
-import org.globus.wsrf.encoding.ObjectSerializer;
+import gov.nih.nci.caarray.external.v1_0.value.MeasurementValue;
+import gov.nih.nci.caarray.external.v1_0.value.TermValue;
+import gov.nih.nci.caarray.external.v1_0.value.UserDefinedValue;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
+import gov.nih.nci.caarray.services.external.BeanMapperLookup;
+import net.sf.dozer.util.mapping.MapperIF;
+import net.sf.dozer.util.mapping.converters.CustomConverter;
 
 /**
+ * Dozer converter for factor value. 
+ * 
  * @author dkokotov
  *
  */
-public abstract class BaseEnumIterator<T> implements EnumIterator {
-    private int lastResultIndex = 0;
-    private final CaArrayServer caArrayServer;
-    private QName qname;
-
-    public BaseEnumIterator(QName objectQname) throws RemoteException {
-        this.qname = objectQname;
-        try {
-            String jndiUrl = CaArraySvc_v1_0Impl.getJndiUrl();
-            if (jndiUrl == null) {
-                throw new RemoteException("Could not connect to server: invalid JNDI configuration");
-            }
-            this.caArrayServer = new CaArrayServer(jndiUrl);
-            caArrayServer.connect();
-        } catch (ServerConnectionException e) {
-            throw new RemoteException("Could not connect to server", e);
-        }
-    }
-    
+public class FactorValueConverter implements CustomConverter {
     /**
      * {@inheritDoc}
      */
-    public IterationResult next(IterationConstraints ic) throws TimeoutException, NoSuchElementException {
-        if (this.lastResultIndex < 0) {
-            throw new NoSuchElementException("Enumeration has been released");
+    @SuppressWarnings("unchecked")
+    public Object convert(Object dest, Object src, Class destClass, Class srcClass) {
+        if (src == null) {
+            return null;
+        } else if (src instanceof String) {
+            UserDefinedValue value = new UserDefinedValue();
+            value.setValue((String) src);
+            return value;
+        } else if (src instanceof Float) {
+            MeasurementValue mval = new MeasurementValue();
+            mval.setMeasurement((Float) src);
+            return mval;
+        } else if (src instanceof gov.nih.nci.caarray.domain.vocabulary.Term) {
+            TermValue tval = new TermValue();
+            MapperIF mapper = BeanMapperLookup.getMapper(BeanMapperLookup.VERSION_1_0); 
+            Term term = (Term) mapper.map(src, Term.class);
+            tval.setTerm(term);
+            return tval;
+        } else {
+            return null;
         }
-        
-        // temporary list to hold SOAPElements
-        List<SOAPElement> soapElements = new ArrayList<SOAPElement>(ic.getMaxElements());
-        
-        // start building results
-        try {
-            List<T> nextResults = getNextResults(new PagingParams(ic.getMaxElements(), lastResultIndex));
-            lastResultIndex += nextResults.size();
-            for (T result : nextResults) {
-                SOAPElement element = ObjectSerializer.toSOAPElement(result, this.qname);
-                soapElements.add(element);
-            }
-            return wrapUpElements(soapElements, nextResults.size() < ic.getMaxElements());
-        } catch (Exception ex) {
-            release();
-            NoSuchElementException nse = new NoSuchElementException("Error generating elements " + ex.getMessage());
-            nse.setStackTrace(ex.getStackTrace());
-            throw nse;
-        }
-    }
-    
-    protected abstract List<T> getNextResults(PagingParams enumParams) throws Exception;
-    
-    protected IterationResult wrapUpElements(List<SOAPElement> soapElements, boolean end) {
-        SOAPElement[] elements = new SOAPElement[soapElements.size()];
-        soapElements.toArray(elements);
-        return new IterationResult(elements, end);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void release() {
-        this.lastResultIndex = -1;
-    }
-
-    /**
-     * @return the caArrayServer
-     */
-    protected CaArrayServer getCaArrayServer() {
-        return caArrayServer;
     }
 }

@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.services.external.v1_0.data;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
@@ -92,7 +91,7 @@ import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 
 import javax.ejb.Remote;
 
-import com.healthmarketscience.rmiio.RemoteOutputStream;
+import com.healthmarketscience.rmiio.RemoteInputStream;
 
 /**
  * Remote service for retrieving file and parsed data. Used by the grid service, and can also be used directly by 
@@ -124,36 +123,35 @@ public interface DataService {
             IllegalArgumentException;
         
     /**
-     * Retrieves the file metadata and contents for the file identified by the given reference. The file
-     * contents are streamed back using the remote output stream provided in the out parameter.
+     * Returns a RemoteInputStream through which the client can retrieve the data for the file identified
+     * by the given reference. The client must take care to ensure the RemoteInputStream is closed 
+     * when the contents is read, even when exceptions occur.
      * 
      * @param fileRef the reference identifying the file to retrieve.
      * @param compressed whether the contents of the file should be compressed using GZip.
-     * @param out the remote output stream (using the rmiio library) to which the file contents will
-     * be written.
-     * @return a DataFile instance containing the file metadata for the retrieved file. 
+     * @return the remote input stream (using the rmiio library) from which the file contents can be read.
      * @throws InvalidReferenceException if the fileRef is not a valid file reference.
      * @throws DataTransferException if there is an error streaming the data.
      */
-    DataFile streamFileContents(CaArrayEntityReference fileRef, boolean compressed, RemoteOutputStream out)
+    RemoteInputStream streamFileContents(CaArrayEntityReference fileRef, boolean compressed)
             throws InvalidReferenceException, DataTransferException;
 
     /**
      * Retrieves a Zip file with the file contents for the files identified by the given download request. The zip file
-     * is streamed back using the remote output stream provided in the out parameter.
+     * can be streamed back using the returned RemoteInputStream.
      * 
      * @param downloadRequest the download request identifying the files to retrieve.
-     * @param compressIndividually if true, then the Zip will not use compression as a whole, but each file in the zip
-     *            will be compressed individually using GZip. If false, then the Zip file will use the standard Zip
-     *            compression.
-     * @param out the remote output stream (using the rmiio library) to which the Zip file contents will be written.
+     * @param compressIndividually if true, then each file in the Zip will be compressed using GZip, and will then be
+     *            added to the Zip using the STORED method. If false, then each file will be added to the zip as-is
+     *            using the DEFLATED method
+     * @return the remote input stream (using the rmiio library) via which the Zip file contents can be read
      * @throws InvalidReferenceException if any of the file references in the download request is not a valid file
      *             reference.
      * @throws DataTransferException if there is an error streaming the data.
      */
-    void streamFileContentsZip(FileDownloadRequest downloadRequest, boolean compressIndividually, 
-            RemoteOutputStream out) throws InvalidReferenceException, DataTransferException;
-
+    RemoteInputStream streamFileContentsZip(FileDownloadRequest downloadRequest, boolean compressIndividually)
+            throws InvalidReferenceException, DataTransferException;
+    
     /**
      * Retrieves a set of files containing the mage-tab IDF and SDRF for the experiment identified by the given
      * reference. The IDF and SDRF are generated dynamically. The file set also contains references to the data files
@@ -170,16 +168,17 @@ public interface DataService {
     /**
      * Retrieves a Zip of files containing the mage-tab IDF and SDRF for the experiment identified by the given
      * reference. The IDF and SDRF are generated dynamically. The Zip also contains the data files referenced by the
-     * mage-tab SDRF. The zip file is streamed back using the remote output stream provided in the out parameter.
+     * mage-tab SDRF. The zip file
+     * can be streamed back using the returned RemoteInputStream
      * 
      * @param experimentRef reference identifying the experiment
-     * @param compressIndividually if true, then the Zip will not use compression as a whole, but each file in the zip
-     *            will be compressed individually using GZip. If false, then the Zip file will use the standard Zip
-     *            compression.
-     * @param out the remote output stream (using the rmiio library) to which the Zip file contents will be written.
+     * @param compressIndividually if true, then each file in the Zip will be compressed using GZip, and will then be
+     *            added to the Zip using the STORED method. If false, then each file will be added to the zip as-is
+     *            using the DEFLATED method
+     * @return the remote input stream (using the rmiio library) via which the Zip file contents can be read
      * @throws InvalidReferenceException if the experimentRef is not a valid experiment reference.
      * @throws DataTransferException if there is an error streaming the data.
      */
-    void streamMageTabZip(CaArrayEntityReference experimentRef, boolean compressIndividually, RemoteOutputStream out)
+    RemoteInputStream streamMageTabZip(CaArrayEntityReference experimentRef, boolean compressIndividually)
             throws InvalidReferenceException, DataTransferException;
 }

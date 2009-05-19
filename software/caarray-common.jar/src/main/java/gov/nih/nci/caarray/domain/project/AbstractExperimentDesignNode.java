@@ -83,9 +83,12 @@
 package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.protocol.AbstractParameterValue;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -280,4 +283,35 @@ public abstract class AbstractExperimentDesignNode extends AbstractCaArrayEntity
         }
     }
 
+    /**
+     * Return the characteristics with given category in this biomaterial. 
+     * @param category category
+     * @return the characteristics with given category.
+     */
+    public Set<AbstractCharacteristic> getCharacteristicsRecursively(final Category category) {
+        Set<AbstractCharacteristic> chars = new HashSet<AbstractCharacteristic>(getCharacteristics(category));
+        
+        if (chars.isEmpty()) {
+            for (AbstractExperimentDesignNode predecessor : getDirectPredecessors()) {
+                chars.addAll(predecessor.getCharacteristicsRecursively(category));
+            }
+        }
+        
+        return chars;
+    }
+    
+    /**
+     * Return the characteristics with given category in this biomaterial. 
+     * @param category category
+     * @return the characteristics with given category.
+     */
+    public Set<AbstractCharacteristic> getCharacteristics(final Category category) {
+        return Collections.emptySet();
+    }
+
+    /**
+     * @return all the data files related to this node.
+     */
+    @Transient
+    public abstract Set<CaArrayFile> getAllDataFiles();
 }

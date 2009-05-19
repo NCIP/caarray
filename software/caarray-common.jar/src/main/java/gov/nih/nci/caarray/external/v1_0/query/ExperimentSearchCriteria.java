@@ -101,7 +101,7 @@ public class ExperimentSearchCriteria implements Serializable {
     private CaArrayEntityReference arrayProvider;
     private CaArrayEntityReference assayType;
     private CaArrayEntityReference principalInvestigator;
-    private Set<AnnotationCriterion> annotations = new HashSet<AnnotationCriterion>();
+    private Set<AnnotationCriterion> annotationCriterions = new HashSet<AnnotationCriterion>();
 
     /**
      * @return the title
@@ -176,15 +176,15 @@ public class ExperimentSearchCriteria implements Serializable {
     /**
      * @return the annotations
      */
-    public Set<AnnotationCriterion> getAnnotations() {
-        return annotations;
+    public Set<AnnotationCriterion> getAnnotationCriterions() {
+        return annotationCriterions;
     }
 
     /**
      * @param annotations the annotations to set
      */
-    public void setAnnotations(Set<AnnotationCriterion> annotations) {
-        this.annotations = annotations;
+    public void setAnnotationCriterions(Set<AnnotationCriterion> annotations) {
+        this.annotationCriterions = annotations;
     }
 
     /**

@@ -397,31 +397,45 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      * {@inheritDoc}
      */
     public <T extends AbstractBioMaterial> List<T> searchByCategory(PageSortParams<T> params, String keyword,
-            BiomaterialSearchCategory... categories) {
+            Class<T> biomaterialClass, BiomaterialSearchCategory... categories) {
 
-        if (categories[0] instanceof SearchSampleCategory) {
+        if (Sample.class.equals(biomaterialClass)) {
             List<T> returnVal = new ArrayList<T>();
             returnVal.add((T)new Sample());
             returnVal.add((T)new Sample());
             returnVal.add((T)new Sample());
             returnVal.add((T)new Sample());
             return returnVal;
-        } else if (categories[0] instanceof SearchSourceCategory) {
+        } else if (Source.class.equals(biomaterialClass)) {
             List<T> returnVal = new ArrayList<T>();
             returnVal.add((T)new Source());
             returnVal.add((T)new Source());
             returnVal.add((T)new Source());
             returnVal.add((T)new Source());
+            return returnVal;
+        } else if (Source.class.equals(biomaterialClass)) {
+            List<T> returnVal = new ArrayList<T>();
+            returnVal.add((T)new Extract());
+            returnVal.add((T)new Extract());
+            returnVal.add((T)new Extract());
+            returnVal.add((T)new Extract());
+            return returnVal;
+        } else if (Source.class.equals(biomaterialClass)) {
+            List<T> returnVal = new ArrayList<T>();
+            returnVal.add((T)new LabeledExtract());
+            returnVal.add((T)new LabeledExtract());
+            returnVal.add((T)new LabeledExtract());
+            returnVal.add((T)new LabeledExtract());
             return returnVal;
         }
-
         return null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public int searchCount(String keyword, BiomaterialSearchCategory... categories) {
+    public int searchCount(String keyword, Class<? extends AbstractBioMaterial> biomaterialClass,
+            BiomaterialSearchCategory... categories) {
         return 4;
     }
 

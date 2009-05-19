@@ -98,6 +98,8 @@ public class SearchResult<T extends AbstractCaArrayEntity> implements Serializab
     private static final long serialVersionUID = 1L;
     
     private final List<T> results = new ArrayList<T>();
+    private int maxAllowedResults;
+    private int firstResultIndex = 0;
 
     /**
      * No-op constructor (for tooling).
@@ -107,11 +109,14 @@ public class SearchResult<T extends AbstractCaArrayEntity> implements Serializab
     }
 
     /**
-     * Create a new SearchResult with given results.
+     * Create a new SearchResult with given results and max # of results.
      * @param results the list of results.
+     * @param maxAllowedResults the maximum number of results that the service will return for
+     * the original search in a single API invocation.
      */
-    public SearchResult(List<T> results) {
+    public SearchResult(List<T> results, int maxAllowedResults) {
         this.results.addAll(results);
+        this.maxAllowedResults = maxAllowedResults;
     }
 
     /**
@@ -119,5 +124,42 @@ public class SearchResult<T extends AbstractCaArrayEntity> implements Serializab
      */
     public List<T> getResults() {
         return results;
+    }
+
+    /**
+     * @return the maxAllowedResults
+     */
+    public int getMaxAllowedResults() {
+        return maxAllowedResults;
+    }
+
+    /**
+     * @param maxAllowedResults the maxAllowedResults to set
+     */
+    public void setMaxAllowedResults(int maxAllowedResults) {
+        this.maxAllowedResults = maxAllowedResults;
     }    
+    
+    /**
+     * @return the firstResultIndex
+     */
+    public int getFirstResultIndex() {
+        return firstResultIndex;
+    }
+
+    /**
+     * @param firstResultIndex the firstResultIndex to set
+     */
+    public void setFirstResultIndex(int firstResultIndex) {
+        this.firstResultIndex = firstResultIndex;
+    }
+
+    /**
+     * @return true if this represents a full result, meaning that the results returned are all of the results
+     * requested; false if the actual number of results was greater than the maximum number of results the
+     * service can return, and therefore this result is a subset of the available results.
+     */
+    public boolean isFullResult() {
+        return this.maxAllowedResults < 0 || this.results.size() < this.maxAllowedResults;
+    }
 }

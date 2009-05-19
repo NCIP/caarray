@@ -253,6 +253,8 @@
         <dependency conf="project" name="dozer" org="dozer" rev="4.4.1"/>
 
         <dependency conf="project" name="rmiio" org="com.healthmarketscience" rev="2.0.2"/>
+
+        <dependency conf="project" name="google-collections" org="google" rev="1.0-rc1"/>
     </dependencies>
 
 </ivy-module>

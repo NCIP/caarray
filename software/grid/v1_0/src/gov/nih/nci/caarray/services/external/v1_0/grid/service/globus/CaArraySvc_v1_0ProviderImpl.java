@@ -68,12 +68,6 @@ public class CaArraySvc_v1_0ProviderImpl{
     return boxedResult;
   }
 
-    public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFileContentTransfersResponse enumerateFileContentTransfers(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFileContentTransfersRequest params) throws RemoteException {
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFileContentTransfersResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFileContentTransfersResponse();
-    boxedResult.setEnumerationResponseContainer(impl.enumerateFileContentTransfers(params.getFileDownloadRequest().getFileDownloadRequest(),params.isCompress()));
-    return boxedResult;
-  }
-
     public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransferResponse getFileContentsTransfer(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransferRequest params) throws RemoteException {
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransferResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransferResponse();
     boxedResult.setTransferServiceContextReference(impl.getFileContentsTransfer(params.getFileRef().getCaArrayEntityReference(),params.isCompress()));
@@ -137,6 +131,24 @@ public class CaArraySvc_v1_0ProviderImpl{
     public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleResponse searchByExample(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleRequest params) throws RemoteException {
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleResponse();
     boxedResult.setSearchResult(impl.searchByExample(params.getExampleSearchCriteria().getExampleSearchCriteria()));
+    return boxedResult;
+  }
+
+    public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAnnotationSetResponse getAnnotationSet(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAnnotationSetRequest params) throws RemoteException {
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAnnotationSetResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAnnotationSetResponse();
+    boxedResult.setAnnotationSet(impl.getAnnotationSet(params.getRequest().getAnnotationSetRequest()));
+    return boxedResult;
+  }
+
+    public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetTermsForCategoryResponse getTermsForCategory(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetTermsForCategoryRequest params) throws RemoteException {
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetTermsForCategoryResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetTermsForCategoryResponse();
+    boxedResult.setTerm(impl.getTermsForCategory(params.getCategoryRef().getCaArrayEntityReference(),params.getValuePrefix()));
+    return boxedResult;
+  }
+
+    public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllCharacteristicCategoriesResponse getAllCharacteristicCategories(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllCharacteristicCategoriesRequest params) throws RemoteException {
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllCharacteristicCategoriesResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllCharacteristicCategoriesResponse();
+    boxedResult.setCategory(impl.getAllCharacteristicCategories(params.getExperimentRef().getCaArrayEntityReference()));
     return boxedResult;
   }
 

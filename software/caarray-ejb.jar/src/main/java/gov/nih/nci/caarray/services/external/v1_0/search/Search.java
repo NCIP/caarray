@@ -80,47 +80,83 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external.v1_0;
+package gov.nih.nci.caarray.services.external.v1_0.search;
 
-import gov.nih.nci.caarray.external.v1_0.value.MeasurementValue;
-import gov.nih.nci.caarray.external.v1_0.value.TermValue;
-import gov.nih.nci.caarray.external.v1_0.value.UserDefinedValue;
-import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
-import gov.nih.nci.caarray.services.external.BeanMapperLookup;
-import net.sf.dozer.util.mapping.MapperIF;
-import net.sf.dozer.util.mapping.converters.CustomConverter;
+import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchUtils.WrapperExeption;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.base.Function;
 
 /**
- * Converter for factor value. For now try converting to number; if successful, return a MeasurementValue, otherwise
- * return a TermValue from the caarray term source.
+ * Represents a particular API search - somewhat equivalent to a Hibernate Criteria or Query. Exposes generic
+ * methods for listing or iterating over the results of the search.
  * 
+ * @param <T> the type of the result entity
  * @author dkokotov
- *
  */
-@SuppressWarnings("unchecked")
-public class FactorValueConverter implements CustomConverter {
+public class Search<T extends AbstractCaArrayEntity> {
+    private final Function<PagingParams, SearchResult<T>> searchFunction;
+    
     /**
-     * {@inheritDoc}
+     * @param searchFunction a function that accepts a PagingParams and performs the search.
      */
-    public Object convert(Object dest, Object src, Class destClass, Class srcClass) {
-        if (src == null) {
-            return null;
-        } else if (src instanceof String) {
-            UserDefinedValue value = new UserDefinedValue();
-            value.setValue((String) src);
-            return value;
-        } else if (src instanceof Float) {
-            MeasurementValue mval = new MeasurementValue();
-            mval.setMeasurement((Float) src);
-            return mval;
-        } else if (src instanceof gov.nih.nci.caarray.domain.vocabulary.Term) {
-            TermValue tval = new TermValue();
-            MapperIF mapper = BeanMapperLookup.getMapper(BeanMapperLookup.VERSION_1_0); 
-            Term term = (Term) mapper.map(src, Term.class);
-            tval.setTerm(term);
-            return tval;
-        } else {
-            return null;
+    public Search(Function<PagingParams, SearchResult<T>> searchFunction) {
+        this.searchFunction = searchFunction;
+    }
+    
+    /**
+     * Retrieve all results for this search. 
+     * @return the full list of results for this search.
+     * @throws InvalidReferenceException if any references in the criteria are invalid
+     */
+    public List<T> list() throws InvalidReferenceException {
+        return getAllSearchResults();
+    }   
+
+    /**
+     * Get an iterator over all results for this search. 
+     * @return an iterator over the full list of results for this search.
+     */
+    public SearchResultIterator<T> iterate() {
+        return new SearchResultIterator<T>(searchFunction);
+    }   
+
+    /**
+     * Get an iterator over all results for this search, starting at given index. 
+     * @param startIndex the index (0-based) of the result to start with.
+     * @return an iterator over the results, starting with the result at the given index.
+     */
+    public SearchResultIterator<T> iterate(int startIndex) {
+        return new SearchResultIterator<T>(searchFunction, startIndex);
+    }   
+    
+    private List<T> getAllSearchResults() throws InvalidReferenceException {
+        List<T> allResults = new ArrayList<T>();
+        try {
+            SearchResult<T> oneResult = searchFunction.apply(null);
+            allResults.addAll(oneResult.getResults());
+            
+            if (oneResult.isFullResult()) {
+                return allResults;
+            } 
+
+            PagingParams pagingParams = 
+                new PagingParams(oneResult.getResults().size(), oneResult.getMaxAllowedResults());
+            while (oneResult.getResults().size() == pagingParams.getMaxResults()) {
+                oneResult = searchFunction.apply(pagingParams);
+                allResults.addAll(oneResult.getResults());
+                pagingParams.setFirstResult(oneResult.getFirstResultIndex() + oneResult.getResults().size());
+            }
+        } catch (WrapperExeption e) {
+            throw (InvalidReferenceException) e.getCause();
         }
+        
+        return allResults;
     }
 }

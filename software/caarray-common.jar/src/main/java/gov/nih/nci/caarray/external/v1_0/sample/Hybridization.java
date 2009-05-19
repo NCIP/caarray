@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.external.v1_0.sample;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.factor.FactorValue;
 
@@ -95,27 +93,11 @@ import java.util.Set;
  * 
  * @author dkokotov
  */
-public class Hybridization extends AbstractCaArrayEntity {
+public class Hybridization extends AbstractExperimentGraphNode {
     private static final long serialVersionUID = 1L;
     
-    private String name;
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
     private ArrayDesign arrayDesign;
-    private CaArrayEntityReference experiment;
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
 
     /**
      * @return the factorValues
@@ -143,19 +125,5 @@ public class Hybridization extends AbstractCaArrayEntity {
      */
     public void setArrayDesign(ArrayDesign arrayDesign) {
         this.arrayDesign = arrayDesign;
-    }
-
-    /**
-     * @return the experiment
-     */
-    public CaArrayEntityReference getExperiment() {
-        return experiment;
-    }
-
-    /**
-     * @param experiment the experiment to set
-     */
-    public void setExperiment(CaArrayEntityReference experiment) {
-        this.experiment = experiment;
     }
 }

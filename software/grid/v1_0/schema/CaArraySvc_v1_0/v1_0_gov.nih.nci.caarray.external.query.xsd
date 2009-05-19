@@ -17,6 +17,14 @@
     <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"
         schemaLocation="v1_0_gov.nih.nci.caarray.external.sample.xsd" />
 
+    <xs:element name="AnnotationCriterion" type="qry:AnnotationCriterion" />
+    <xs:complexType name="AnnotationCriterion">
+        <xs:sequence>
+            <xs:element name="category" type="car:CaArrayEntityReference" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="value" type="xs:string" />
+    </xs:complexType>
+
     <xs:element name="ExperimentSearchCriteria" type="qry:ExperimentSearchCriteria" />
     <xs:complexType name="ExperimentSearchCriteria">
         <xs:sequence>
@@ -25,6 +33,13 @@
                 maxOccurs="1" />
             <xs:element name="arrayProvider" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
             <xs:element name="assayType" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
+            <xs:element name="annotationCriterions">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="qry:AnnotationCriterion" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
         </xs:sequence>
         <xs:attribute name="title" type="xs:string" />
         <xs:attribute name="publicIdentifier" type="xs:string" />
@@ -48,14 +63,7 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="biomaterials">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element ref="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded" />
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="hybridizations">
+            <xs:element name="experimentGraphNodes">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element ref="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded" />
@@ -77,10 +85,24 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="externalIds">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="externalId" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="types">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element ref="sam:BiomaterialType" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="annotationCriterions">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="qry:AnnotationCriterion" minOccurs="0" maxOccurs="unbounded" />
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -228,5 +250,25 @@
 	  			</xs:complexType>
 			</xs:element>
       	</xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="AnnotationSetRequest" type="qry:AnnotationSetRequest" />
+    <xs:complexType name="AnnotationSetRequest">
+        <xs:sequence>
+            <xs:element name="experimentGraphNodes">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="car:CaArrayEntityReference" minOccurs="1" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="categories">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
     </xs:complexType>
 </xs:schema>

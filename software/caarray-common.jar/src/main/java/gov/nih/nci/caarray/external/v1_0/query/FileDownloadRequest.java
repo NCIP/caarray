@@ -88,6 +88,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * @author dkokotov
  *
@@ -111,5 +113,10 @@ public class FileDownloadRequest implements Serializable {
         this.files = files;
     }
 
-    
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }    
 }

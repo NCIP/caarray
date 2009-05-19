@@ -69,14 +69,6 @@ public interface CaArraySvc_v1_0I {
   public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference[] getFileContentsTransfers(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compress) throws RemoteException ;
 
   /**
-   * Returns an enumeration that will return transfer context service references for each file in the request
-   *
-   * @param fileDownloadRequest
-   * @param compress
-   */
-  public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateFileContentTransfers(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compress) throws RemoteException ;
-
-  /**
    * Returns a grid transfer reference for retrieving the given reference
    *
    * @param fileRef
@@ -155,6 +147,12 @@ public interface CaArraySvc_v1_0I {
    * @param exampleSearchCriteria
    */
   public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchByExample(gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria exampleSearchCriteria) throws RemoteException ;
+
+  public gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet getAnnotationSet(gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest request) throws RemoteException ;
+
+  public gov.nih.nci.caarray.external.v1_0.vocabulary.Term[] getTermsForCategory(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference categoryRef,java.lang.String valuePrefix) throws RemoteException ;
+
+  public gov.nih.nci.caarray.external.v1_0.vocabulary.Category[] getAllCharacteristicCategories(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef) throws RemoteException ;
 
 }
 

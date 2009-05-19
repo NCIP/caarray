@@ -113,11 +113,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		
 	}
 					
-	public static void authorizeEnumerateFileContentTransfers() throws RemoteException {
-		
-		
-	}
-					
 	public static void authorizeGetFileContentsTransfer() throws RemoteException {
 		
 		
@@ -169,6 +164,21 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 	}
 					
 	public static void authorizeSearchByExample() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeGetAnnotationSet() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeGetTermsForCategory() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeGetAllCharacteristicCategories() throws RemoteException {
 		
 		
 	}
@@ -268,14 +278,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 				e.printStackTrace();
 				return false;
 			}
-		} else if(operation.getLocalPart().equals("enumerateFileContentTransfers")){
-			try{
-				authorizeEnumerateFileContentTransfers();
-				return true;
-			} catch (Exception e){
-				e.printStackTrace();
-				return false;
-			}
 		} else if(operation.getLocalPart().equals("getFileContentsTransfer")){
 			try{
 				authorizeGetFileContentsTransfer();
@@ -359,6 +361,30 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		} else if(operation.getLocalPart().equals("searchByExample")){
 			try{
 				authorizeSearchByExample();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("getAnnotationSet")){
+			try{
+				authorizeGetAnnotationSet();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("getTermsForCategory")){
+			try{
+				authorizeGetTermsForCategory();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("getAllCharacteristicCategories")){
+			try{
+				authorizeGetAllCharacteristicCategories();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();

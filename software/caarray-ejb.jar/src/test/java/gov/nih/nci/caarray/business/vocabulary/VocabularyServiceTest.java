@@ -64,6 +64,7 @@ import gov.nih.nci.caarray.dao.stub.OrganismDaoStub;
 import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
+import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -250,7 +251,8 @@ public class VocabularyServiceTest extends AbstractCaarrayTest {
 
     @Test
     public void testSearchForCharacteristic() {
-        assertEquals(Collections.EMPTY_LIST, vocabularyService.searchForCharacteristicCategory("test"));
+        assertEquals(Collections.EMPTY_LIST, vocabularyService.searchForCharacteristicCategory(
+                TermBasedCharacteristic.class, null));
     }
 
 

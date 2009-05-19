@@ -86,7 +86,9 @@ import gov.nih.nci.caarray.security.SecurityInterceptor;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHelper;
 
+import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -267,4 +269,30 @@ public final class HibernateUtil {
         }
     }
 
+    /**
+     * Break up a list of items into separate in clauses, to avoid limits imposed by databases or by Hibernate bug
+     * http://opensource.atlassian.com/projects/hibernate/browse/HHH-2166.
+     * @param items list of items to include in the in clause
+     * @param columnName name of column to match against the list
+     * @param blocks empty Map of HQL param name to param list of values to be set in the HQL query - it will be
+     *               populated by the method
+     * @return full HQL "in" clause, of the form: " columnName in (:block1) or ... or columnName in (:blockN)"
+     */
+    public static String buildInClause(List<? extends Serializable> items, String columnName,
+            Map<String, List<? extends Serializable>> blocks) {
+        StringBuffer inClause = new StringBuffer();
+        int startIndex = blocks.size();
+        for (int i = 0; i < items.size(); i += HibernateHelper.MAX_IN_CLAUSE_LENGTH) {
+            List<? extends Serializable> block = items.subList(i, Math.min(items.size(), i
+                    + HibernateHelper.MAX_IN_CLAUSE_LENGTH));
+            int paramNameIndex = startIndex + (i / HibernateHelper.MAX_IN_CLAUSE_LENGTH);
+            String paramName = "block" + paramNameIndex;
+            if (inClause.length() > 0) {
+                inClause.append(" or");
+            }
+            inClause.append(" " + columnName + " in (:" + paramName + ")");
+            blocks.put(paramName, block);
+        }
+        return inClause.toString();
+    }
 }

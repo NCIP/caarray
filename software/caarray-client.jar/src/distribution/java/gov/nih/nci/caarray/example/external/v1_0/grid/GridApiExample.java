@@ -93,6 +93,8 @@ import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
+import gov.nih.nci.caarray.external.v1_0.query.AnnotationCriterion;
+import gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
@@ -104,10 +106,15 @@ import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
+import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
+import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridDataApiUtils;
 import gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer;
 import gov.nih.nci.cagrid.wsenum.utils.EnumerationResponseHelper;
 
@@ -120,8 +127,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import javax.xml.soap.SOAPElement;
 
@@ -149,13 +154,17 @@ public class GridApiExample {
     private static final String TEST_FILE_TYPE_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AGILENT_CSV";
     private static final String TEST_ORGANISM_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:1";
     private static final String TEST_EXPERIMENT_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1";
-    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:89";
-    private static final String TEST_HYB2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:93";
-    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:230";
-    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:246";
-    private static final String TEST_DATAFILE1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:16";
-    private static final String TEST_DATAFILE2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:17";
-    private static final String TEST_DATAFILE3_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:18";
+    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1";
+//    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:230";
+//    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:246";
+    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:1";
+    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:2";
+//    private static final String TEST_DATAFILE1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:16";
+//    private static final String TEST_DATAFILE2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:17";
+//    private static final String TEST_DATAFILE3_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:18";
+    private static final String TEST_DATAFILE1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:2";
+    private static final String TEST_DATAFILE2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:3";
+    private static final String TEST_DATAFILE3_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:4";
  
     private String hostname = DEFAULT_SERVER;
     private int port = DEFAULT_GRID_SERVICE_PORT;
@@ -182,7 +191,7 @@ public class GridApiExample {
         CaArraySvc_v1_0Client client;
         try {
             client = new CaArraySvc_v1_0Client(url);
-            
+            DataApiUtils dataUtils = new GridDataApiUtils(client);
 
             StopWatch sw = new StopWatch();
             
@@ -192,10 +201,24 @@ public class GridApiExample {
                     new ExampleSearchCriteria<Organism>(exampleOrg, MatchMode.ANYWHERE)).getResults();
             System.out.println("Mus orgs: " + mouseOrgs);
 
+            Category[] categories = client.getAllCharacteristicCategories(null);
+            System.out.println("All Characteristic Categories: " + Arrays.asList(categories));            
+            categories = client.getAllCharacteristicCategories(new CaArrayEntityReference(TEST_EXPERIMENT_ID));
+            System.out.println("Experiment Characteristic Categories: " + Arrays.asList(categories));
+            
+            Category exampleCat = new Category();
+            exampleCat.setName("DiseaseState");
+            List<Category> dsCats = client.searchByExample(new ExampleSearchCriteria<Category>(exampleCat))
+                    .getResults();
+            System.out.println("OrganismPart category matches: " + dsCats);
+            Term[] terms = client.getTermsForCategory(dsCats.get(0).getReference(), null);
+            System.out.println("OrganismPart terms: " + Arrays.asList(terms));
+
             // enumerateExperiments test
             ExperimentSearchCriteria experimentCrit = new ExperimentSearchCriteria();
             experimentCrit.setAssayType(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.array.AssayType:2"));            
             experimentCrit.setArrayProvider(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.array.ArrayProvider:1"));            
+            experimentCrit.getAnnotationCriterions().add(new AnnotationCriterion(dsCats.get(0).getReference(), "Glioblastoma Multiforme"));
             System.out.println("Experiment Criteria Enum Search");
 
             EnumerationResponseContainer expEnum = client.enumerateExperiments(experimentCrit);
@@ -219,13 +242,13 @@ public class GridApiExample {
             KeywordSearchCriteria experimentKeywordCrit = new KeywordSearchCriteria();
             experimentKeywordCrit.setKeyword("MDR");
             Experiment[] keywordExps = client.searchForExperimentsByKeyword(experimentKeywordCrit);
-            System.out.println("Experiments by keyword criteria: " + Arrays.asList(keywordExps));
+            //System.out.println("Experiments by keyword criteria: " + Arrays.asList(keywordExps));
 
             // biomaterial keyword search test
             BiomaterialKeywordSearchCriteria sampleKeywordCrit = new BiomaterialKeywordSearchCriteria();
             sampleKeywordCrit.setKeyword("MDR");
             Biomaterial[] keywordSamples = client.searchForBiomaterialsByKeyword(sampleKeywordCrit);
-            System.out.println("Samples by keyword criteria: " + Arrays.asList(keywordSamples));
+            //System.out.println("Samples by keyword criteria: " + Arrays.asList(keywordSamples));
 
             // ------------------ FILE DATA RETRIEVAL TESTS
             FileDownloadRequest fileReq = new FileDownloadRequest();
@@ -242,57 +265,17 @@ public class GridApiExample {
             // single ref, uncompressed
             System.out.println("Retrieving one file using uncompressed transfer ref");
             sw.start();
-            TransferServiceContextReference transferRef = client.getFileContentsTransfer(fileRef1, false);
-            if (transferRef != null) {
-                logAndSaveFile(transferRef, false);
-            }
+            File tempFile = dataUtils.downloadFileContentsToTempFile(fileRef1, false);
             sw.stop();
-            System.out.println("Time: " + sw.toString());
+            System.out.println("Downloaded file " + fileRef1 + "to " + tempFile.getName() + ", Time: " + sw.toString());
 
             // zip, compression in ZIP
             System.out.println("Retrieving files using ZIP of files, compressing overall zip");
             sw.reset();
             sw.start();
-            TransferServiceContextReference zipRef = client.getFileContentsZipTransfer(fileReq, false);
-            if (zipRef != null) {
-                TransferServiceContextClient zipTransferClient = new TransferServiceContextClient(zipRef
-                        .getEndpointReference());
-                // use the TransferClientHelper to get an InputStream to the data
-                ZipInputStream zis = new ZipInputStream(TransferClientHelper.getData(zipTransferClient
-                        .getDataTransferDescriptor()));
-                ZipEntry entry = zis.getNextEntry();
-                while (entry != null && zis.available() > 0) {
-                    System.out.println("Contents of file " + entry.getName() + ", size " + entry.getSize());
-                    saveFile(zis, entry.getName(), false, false);
-                    entry = zis.getNextEntry();
-                }
-                zis.close();
-            }
-            sw.stop();
-            System.out.println("Time: " + sw.toString());
-
-            // zip, compression in individual files
-            System.out.println("Retrieving files using ZIP of files, individual files");
-            sw.reset();
-            sw.start();
-            zipRef = client.getFileContentsZipTransfer(fileReq, true);
-            if (zipRef != null) {
-                TransferServiceContextClient zipTransferClient = new TransferServiceContextClient(zipRef
-                        .getEndpointReference());
-                // use the TransferClientHelper to get an InputStream to the data
-                ZipInputStream zis = new ZipInputStream(TransferClientHelper.getData(zipTransferClient
-                        .getDataTransferDescriptor()));
-                ZipEntry entry = zis.getNextEntry();
-                while (entry != null && zis.available() > 0) {
-                    System.out.println("Contents of file " + entry.getName() + ", size " + entry.getSize());
-                    GZIPInputStream gzis = new GZIPInputStream(zis);
-                    saveFile(gzis, entry.getName(), false, false);
-                    entry = zis.getNextEntry();
-                }
-                zis.close();
-            }
-            sw.stop();
-            System.out.println("Time: " + sw.toString());
+            File tempDir = dataUtils.downloadAndExtractFileContentsZipToTempDir(fileReq);
+            System.out.println("Downloaded ZIP for " + fileReq + " to directory " + tempDir.getName() + ", Time: "
+                    + sw.toString());
 
             // array of references, uncompressed
             System.out.println("Retrieving files using array of uncompressed transfer refs");
@@ -316,53 +299,6 @@ public class GridApiExample {
             sw.stop();
             System.out.println("Time: " + sw.toString());
 
-            // enumeration of uncompressed refs
-            System.out.println("Retrieving files using enumeration of uncompressed transfer refs");
-            sw.reset();
-            sw.start();
-            EnumerationResponseContainer transferEnum = client.enumerateFileContentTransfers(fileReq, false);
-            ClientEnumIterator transferIter = EnumerationResponseHelper.createClientIterator(transferEnum,
-                    CaArraySvc_v1_0Client.class.getResourceAsStream("client-config.wsdd"));
-            transferIter.setIterationConstraints(new IterationConstraints(1, -1, null));
-            while (transferIter.hasNext()) {
-                try {
-                    SOAPElement elem = (SOAPElement) transferIter.next();
-                    if (elem != null) {
-                        TransferServiceContextReference tref = (TransferServiceContextReference) ObjectDeserializer
-                                .toObject(elem, TransferServiceContextReference.class);
-                        logAndSaveFile(tref, false);
-                    }
-                } catch (NoSuchElementException e) {
-                    break;
-                }
-            }
-            sw.stop();
-            System.out.println("Time: " + sw.toString());
-
-            // enumeration of compressed refs
-            System.out.println("Retrieving files using enumeration of compressed transfer refs");
-            sw.reset();
-            sw.start();
-            transferEnum = client.enumerateFileContentTransfers(fileReq, true);
-            transferIter = EnumerationResponseHelper.createClientIterator(transferEnum,
-                    CaArraySvc_v1_0Client.class.getResourceAsStream("client-config.wsdd"));
-            transferIter.setIterationConstraints(new IterationConstraints(1, -1, null));
-            while (transferIter.hasNext()) {
-                try {
-                    SOAPElement elem = (SOAPElement) transferIter.next();
-                    if (elem != null) {
-                        TransferServiceContextReference tref = (TransferServiceContextReference) ObjectDeserializer
-                                .toObject(elem, TransferServiceContextReference.class);
-                        logAndSaveFile(tref, true);
-                    }
-                } catch (NoSuchElementException e) {
-                    break;
-                }
-            }
-            sw.stop();
-            System.out.println("Time: " + sw.toString());
-
-            
             DataSetRequest dataRequest = new DataSetRequest();
 
             // hybridization search test
@@ -385,6 +321,7 @@ public class GridApiExample {
             bsc.setExperiment(new CaArrayEntityReference(
                     TEST_EXPERIMENT_ID));
             bsc.setTypes(EnumSet.of(BiomaterialType.SOURCE, BiomaterialType.SAMPLE));
+            bsc.getAnnotationCriterions().add(new AnnotationCriterion(dsCats.get(0).getReference(), "Glioblastoma Multiforme"));
             System.out.println("Biomaterial search by creteria: ");
             Biomaterial[] bms = client.searchForBiomaterials(bsc);
             for (Biomaterial bm : bms) {
@@ -395,7 +332,7 @@ public class GridApiExample {
             FileSearchCriteria fileCriteria = new FileSearchCriteria();
             fileCriteria.setExperiment(new CaArrayEntityReference(
                     TEST_EXPERIMENT_ID));
-            fileCriteria.getBiomaterials().add(new CaArrayEntityReference(TEST_BIOMATERIAL2_ID));
+            fileCriteria.getExperimentGraphNodes().add(new CaArrayEntityReference(TEST_BIOMATERIAL2_ID));
             DataFile[] files = client.searchForFiles(fileCriteria);
             for (DataFile file : files) {
                 System.out.println("File Metadata: " + file);                        
@@ -457,46 +394,22 @@ public class GridApiExample {
             // mage tab transfer test, individual compression
             sw.reset();
             sw.start();
-            TransferServiceContextReference mageTabRef = client.getMageTabZipTransfer(new CaArrayEntityReference(
-                    TEST_EXPERIMENT_ID), true);
+            tempDir = dataUtils.downloadAndExtractMageTabZipToTempDir(new CaArrayEntityReference(TEST_EXPERIMENT_ID));
             sw.stop();
-            System.out.println("Time: " + sw.toString());
-            if (mageTabRef != null) {
-                TransferServiceContextClient zipTransferClient = new TransferServiceContextClient(mageTabRef
-                        .getEndpointReference());
-                // use the TransferClientHelper to get an InputStream to the data
-                ZipInputStream zis = new ZipInputStream(TransferClientHelper.getData(zipTransferClient
-                        .getDataTransferDescriptor()));
-                ZipEntry entry = zis.getNextEntry();
-                while (entry != null && zis.available() > 0) {
-                    System.out.println("Contents of file " + entry.getName() + ", size " + entry.getSize());
-                    saveFile(zis, entry.getName(), true, false);
-                    entry = zis.getNextEntry();
-                }
-                zis.close();
-            }
+            System.out.println("Downloaded magetab zip for experiment " + TEST_EXPERIMENT_ID + " to directory "
+                    + tempDir.getName() + ", Time: " + sw.toString());
             
-            // mage tab transfer test, zip compression
+            AnnotationSetRequest asr = new AnnotationSetRequest();
+            asr.getExperimentGraphNodes().add(new CaArrayEntityReference(TEST_HYB1_ID));
+            asr.getExperimentGraphNodes().add(new CaArrayEntityReference(TEST_BIOMATERIAL2_ID));
+            asr.getCategories().add(dsCats.get(0).getReference());
             sw.reset();
             sw.start();
-            mageTabRef = client.getMageTabZipTransfer(new CaArrayEntityReference(
-                    TEST_EXPERIMENT_ID), false);
+            AnnotationSet as = client.getAnnotationSet(asr);
             sw.stop();
-            System.out.println("Time: " + sw.toString());
-            if (mageTabRef != null) {
-                TransferServiceContextClient zipTransferClient = new TransferServiceContextClient(mageTabRef
-                        .getEndpointReference());
-                // use the TransferClientHelper to get an InputStream to the data
-                ZipInputStream zis = new ZipInputStream(TransferClientHelper.getData(zipTransferClient
-                        .getDataTransferDescriptor()));
-                ZipEntry entry = zis.getNextEntry();
-                while (entry != null && zis.available() > 0) {
-                    System.out.println("Contents of file " + entry.getName() + ", size " + entry.getSize());
-                    saveFile(zis, entry.getName(), false, false);
-                    entry = zis.getNextEntry();
-                }
-                zis.close();
-            }                    
+            System.out.println("Annotation Set retrieval, time: " + sw.toString());
+            System.out.println("AS categories: " + as.getCategories());
+            System.out.println("AS columns: " + as.getColumns());
         } catch (Exception e) {
             System.err.println("Received Exception " + e);
             e.printStackTrace(System.err);
@@ -508,9 +421,8 @@ public class GridApiExample {
             throws Exception {
         TransferServiceContextClient tclient = new TransferServiceContextClient(transferRef.getEndpointReference());
         DataTransferDescriptor dtd = tclient.getDataTransferDescriptor();
-        System.out.println("Contents of file " + dtd.getDataDescriptor().getName() + ", size "
-                + FileUtils.byteCountToDisplaySize((Long) dtd.getDataDescriptor().getMetadata()));
-        saveFile(TransferClientHelper.getData(dtd), dtd.getDataDescriptor().getName(), compressed, true);
+        System.out.println("Contents of file");
+        saveFile(TransferClientHelper.getData(dtd), "file", compressed, true);
     }
 
     private static void saveFile(InputStream fileData, String name, boolean compressed, boolean close)

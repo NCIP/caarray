@@ -83,6 +83,8 @@
 package gov.nih.nci.caarray.dao;
 
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -163,10 +165,14 @@ public interface VocabularyDao extends CaArrayDao {
     Term findTermInAllTermSourceVersions(TermSource termSource, String value);
 
     /**
-     * Performs a query for abstract characteristic categories by text prefix matching for the given keyword.
+     * Searches for categories of characteristics in the system whose names match the given keyword.
      *
-     * @param keyword text to search for
-     * @return a list of matching experiments
+     * @param experiment if not null, restrict the search to characteristics of biomaterials in the given 
+     * experiment
+     * @param characteristicClass only return categories of characteristics of this type
+     * @param keyword if not null, then categories whose names start with this string are included in the results.
+     * @return a list of matching categories
      */
-    List<Category> searchForCharacteristicCategory(String keyword);
+    List<Category> searchForCharacteristicCategory(Experiment experiment,
+            Class<? extends AbstractCharacteristic> characteristicClass, String keyword);
 }

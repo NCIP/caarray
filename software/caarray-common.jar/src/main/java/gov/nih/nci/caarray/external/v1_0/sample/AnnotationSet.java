@@ -80,32 +80,58 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external.v1_0.grid.service;
+package gov.nih.nci.caarray.external.v1_0.sample;
 
-import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
-import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 
-import java.rmi.RemoteException;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.namespace.QName;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
+ * 
  * @author dkokotov
- *
  */
-public class ExperimentCriteriaEnumIterator extends BaseEnumIterator<Experiment> {
-    private ExperimentSearchCriteria criteria;
-    
-    public ExperimentCriteriaEnumIterator(ExperimentSearchCriteria criteria) throws RemoteException {
-        super(new QName("gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment", "Experiment"));
-        this.criteria = criteria;
+public class AnnotationSet implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private List<Category> categories = new ArrayList<Category>();
+    private List<AnnotationColumn> columns = new ArrayList<AnnotationColumn>();
+
+    /**
+     * @return the categories
+     */
+    public List<Category> getCategories() {
+        return categories;
     }
 
-    @Override
-    protected List<Experiment> getNextResults(PagingParams enumParams) throws InvalidReferenceException {
-        return getCaArrayServer().getSearchService().searchForExperiments(criteria, enumParams);        
+    /**
+     * @param categories the categories to set
+     */
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+    }
+
+    /**
+     * @return the columns
+     */
+    public List<AnnotationColumn> getColumns() {
+        return columns;
+    }
+
+    /**
+     * @param columns the columns to set
+     */
+    public void setColumns(List<AnnotationColumn> columns) {
+        this.columns = columns;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

@@ -13,9 +13,11 @@ import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
+import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.data.InconsistentDataSetsException;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -36,7 +38,7 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
 
         HybridizationSearchCriteria hsc = new HybridizationSearchCriteria();
         hsc.setExperiment(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
-        List<Hybridization> hybs = caArrayServer.getSearchService().searchForHybridizations(hsc, null);
+        List<Hybridization> hybs = caArrayServer.getSearchService().searchForHybridizations(hsc, null).getResults();
         for (Hybridization hyb : hybs) {
             System.out.println("hyb: " + hyb);
             dataRequest.getHybridizations().add(new CaArrayEntityReference(hyb.getId()));
@@ -71,16 +73,15 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
         RemoteOutputStreamServer ostream = null;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
-            ostream = new SimpleRemoteOutputStream(bos);
-            DataFile df = caArrayServer.getDataService().streamFileContents(fileRef, false, ostream.export());
-            assertEquals("H_TK6 MDR1 replicate 2.CEL", df.getName());
-            assertEquals(162483, df.getUncompressedSize());
-            byte[] data = bos.toByteArray();
-            assertEquals(df.getUncompressedSize(), data.length);
+            byte[] data = new JavaDataApiUtils(caArrayServer.getDataService()).getFileContents(fileRef,false);
+            assertEquals(162483, data.length);
         } catch (InvalidReferenceException e) {
             e.printStackTrace();
             fail("Unexpected exception: " + e);
         } catch (DataTransferException e) {
+            e.printStackTrace();
+            fail("Unexpected exception: " + e);
+        } catch (IOException e) {
             e.printStackTrace();
             fail("Unexpected exception: " + e);
         } finally {

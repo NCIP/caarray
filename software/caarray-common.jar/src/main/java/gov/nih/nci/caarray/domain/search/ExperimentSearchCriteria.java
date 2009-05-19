@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.domain.search;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
@@ -99,6 +102,7 @@ public class ExperimentSearchCriteria {
     private Organization arrayProvider;
     private AssayType assayType;
     private Person principalInvestigator;
+    private Set<AnnotationCriterion> annotationCriterions = new HashSet<AnnotationCriterion>();
 
     /**
      * @return the title
@@ -182,5 +186,20 @@ public class ExperimentSearchCriteria {
      */
     public void setPublicIdentifier(String publicIdentifier) {
         this.publicIdentifier = publicIdentifier;
+    }
+    
+
+    /**
+     * @return the annotationCriterions
+     */
+    public Set<AnnotationCriterion> getAnnotationCriterions() {
+        return annotationCriterions;
+    }
+
+    /**
+     * @param annotationCriterions the annotationCriterions to set
+     */
+    public void setAnnotationCriterions(Set<AnnotationCriterion> annotationCriterions) {
+        this.annotationCriterions = annotationCriterions;
     }
 }

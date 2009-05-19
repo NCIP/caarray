@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="qa/docs/Test_Scripts"/>
 	<classpathentry kind="src" path="software/gui-installer/target/custom"/>
 	<classpathentry kind="src" path="software/grid/legacy/build/stubs-CaArraySvc/src"/>
 	<classpathentry kind="src" path="software/caarray-client.jar/src/distribution/java"/>
@@ -70,8 +69,6 @@
 	<classpathentry kind="lib" path="software/grid/legacy/lib/mobius_gme_client-1.1.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/mobius_mako_client-1.1.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/mobius_tools-1.1.jar"/>
-	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-stubs-1.2.jar"/>
 	<classpathentry kind="lib" path="software/gui-installer/target/izpack-4.0.1/lib/ant.jar"/>
 	<classpathentry kind="lib" path="software/gui-installer/target/izpack-4.0.1/lib/ant-1.7.0.jar"/>
 	<classpathentry kind="lib" path="software/gui-installer/target/izpack-4.0.1/lib/ant-launcher-1.7.0.jar"/>
@@ -90,5 +87,7 @@
 	<classpathentry kind="lib" path="software/gui-installer/target/izpack-4.0.1/lib/substance.jar"/>
 	<classpathentry kind="lib" path="software/gui-installer/target/izpack-4.0.1/lib/uninstaller.jar"/>
 	<classpathentry kind="lib" path="software/gui-installer/target/izpack-4.0.1/lib/uninstaller-ext.jar"/>
+	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-1.2.jar"/>
+	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-stubs-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

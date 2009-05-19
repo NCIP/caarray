@@ -82,10 +82,8 @@
  */
 package gov.nih.nci.caarray.external.v1_0.sample;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
-import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
+import gov.nih.nci.caarray.external.v1_0.value.TermValue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -95,34 +93,18 @@ import java.util.Set;
  * 
  * @author dkokotov
  */
-public class Biomaterial extends AbstractCaArrayEntity {
+public class Biomaterial extends AbstractExperimentGraphNode {
     private static final long serialVersionUID = 1L;
 
-    private String name;
     private String description;
     private String externalId;
-    private Term diseaseState;
-    private Term tissueSite;
-    private Term materialType;
-    private Term cellType;
+    private TermValue diseaseState;
+    private TermValue tissueSite;
+    private TermValue materialType;
+    private TermValue cellType;
     private Organism organism;
     private Set<Characteristic> characteristics = new HashSet<Characteristic>();
     private BiomaterialType type;
-    private CaArrayEntityReference experiment;
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
 
     /**
      * @return the externalId
@@ -155,56 +137,56 @@ public class Biomaterial extends AbstractCaArrayEntity {
     /**
      * @return the diseaseState
      */
-    public Term getDiseaseState() {
+    public TermValue getDiseaseState() {
         return diseaseState;
     }
 
     /**
      * @param diseaseState the diseaseState to set
      */
-    public void setDiseaseState(Term diseaseState) {
+    public void setDiseaseState(TermValue diseaseState) {
         this.diseaseState = diseaseState;
     }
 
     /**
      * @return the tissueSite
      */
-    public Term getTissueSite() {
+    public TermValue getTissueSite() {
         return tissueSite;
     }
 
     /**
      * @param tissueSite the tissueSite to set
      */
-    public void setTissueSite(Term tissueSite) {
+    public void setTissueSite(TermValue tissueSite) {
         this.tissueSite = tissueSite;
     }
 
     /**
      * @return the materialType
      */
-    public Term getMaterialType() {
+    public TermValue getMaterialType() {
         return materialType;
     }
 
     /**
      * @param materialType the materialType to set
      */
-    public void setMaterialType(Term materialType) {
+    public void setMaterialType(TermValue materialType) {
         this.materialType = materialType;
     }
 
     /**
      * @return the cellType
      */
-    public Term getCellType() {
+    public TermValue getCellType() {
         return cellType;
     }
 
     /**
      * @param cellType the cellType to set
      */
-    public void setCellType(Term cellType) {
+    public void setCellType(TermValue cellType) {
         this.cellType = cellType;
     }
 
@@ -248,19 +230,5 @@ public class Biomaterial extends AbstractCaArrayEntity {
      */
     public void setType(BiomaterialType type) {
         this.type = type;
-    }
-    
-    /**
-     * @return the experiment
-     */
-    public CaArrayEntityReference getExperiment() {
-        return experiment;
-    }
-
-    /**
-     * @param experiment the experiment to set
-     */
-    public void setExperiment(CaArrayEntityReference experiment) {
-        this.experiment = experiment;
     }
 }

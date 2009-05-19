@@ -43,12 +43,16 @@ public class CaArraySvc_v1_0Configuration implements ServiceConfiguration {
 	}
 	
 	private String etcDirectoryPath;
-		
+	
+	
+	
 	public String getEtcDirectoryPath() {
 		return ContainerConfig.getBaseDirectory() + File.separator + etcDirectoryPath;
 	}
 	
 	public void setEtcDirectoryPath(String etcDirectoryPath) {
 		this.etcDirectoryPath = etcDirectoryPath;
-	}	
+	}
+
+	
 }

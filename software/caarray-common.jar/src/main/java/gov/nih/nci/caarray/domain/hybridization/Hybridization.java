@@ -459,7 +459,7 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
     }
 
     /**
-     * @return all the data files related to this hybridization (raw or derived)
+     * {@inheritDoc}
      */
     @Transient
     public Set<CaArrayFile> getAllDataFiles() {
@@ -540,7 +540,7 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
     protected void doAddDirectSuccessor(AbstractExperimentDesignNode successor) {
         throw new IllegalArgumentException("Should never be called as sources don't have predecessors");
     }
-
+    
     /**
      * {@inheritDoc}
      */

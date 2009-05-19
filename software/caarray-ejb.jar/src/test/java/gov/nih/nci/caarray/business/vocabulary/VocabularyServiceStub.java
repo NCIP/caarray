@@ -85,11 +85,13 @@ package gov.nih.nci.caarray.business.vocabulary;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -252,9 +254,10 @@ public class VocabularyServiceStub implements VocabularyService {
     /**
      * {@inheritDoc}
      */
-    public List<Category> searchForCharacteristicCategory(String keyword) {
-        return new ArrayList<Category>();
-    }
+    public <T extends AbstractCharacteristic> List<Category> searchForCharacteristicCategory(
+            Class<T> characteristicClass, String keyword) {
+        return Collections.emptyList();
+    }    
 
     /**
      * {@inheritDoc}

@@ -27,7 +27,19 @@
             <xs:element name="value" minOccurs="0" maxOccurs="1" type="val:AbstractValue" />                
         </xs:sequence>
     </xs:complexType>
-    
+
+    <xs:element name="AbstractExperimentGraphNode" type="sam:AbstractExperimentGraphNode" />
+    <xs:complexType name="AbstractExperimentGraphNode">
+        <xs:complexContent>
+            <xs:extension base="car:AbstractCaArrayEntity">
+                <xs:sequence>
+                    <xs:element name="experiment" minOccurs="1" maxOccurs="1" type="car:CaArrayEntityReference" />
+                </xs:sequence>
+                <xs:attribute name="name" type="xs:string" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+        
     <xs:element name="BiomaterialType" type="sam:BiomaterialType" />
     <xs:simpleType name="BiomaterialType">
         <xs:restriction base="xs:string">
@@ -41,12 +53,12 @@
     <xs:element name="Biomaterial" type="sam:Biomaterial" />
     <xs:complexType name="Biomaterial">
         <xs:complexContent>
-            <xs:extension base="car:AbstractCaArrayEntity">
+            <xs:extension base="sam:AbstractExperimentGraphNode">
                 <xs:sequence>
-                    <xs:element name="diseaseType" minOccurs="0" maxOccurs="1" type="voc:Term" />                
-                    <xs:element name="tissueSite" minOccurs="0" maxOccurs="1" type="voc:Term" />                
-                    <xs:element name="materialType" minOccurs="0" maxOccurs="1" type="voc:Term" />                
-                    <xs:element name="cellType" minOccurs="0" maxOccurs="1" type="voc:Term" />
+                    <xs:element name="diseaseType" minOccurs="0" maxOccurs="1" type="val:TermValue" />
+                    <xs:element name="tissueSite" minOccurs="0" maxOccurs="1" type="val:TermValue" />
+                    <xs:element name="materialType" minOccurs="0" maxOccurs="1" type="val:TermValue" />
+                    <xs:element name="cellType" minOccurs="0" maxOccurs="1" type="val:TermValue" />
                     <xs:element name="organism" minOccurs="0" maxOccurs="1" type="exp:Organism" />
                     <xs:element name="characteristics">
                         <xs:complexType>
@@ -56,9 +68,7 @@
                         </xs:complexType>
                     </xs:element>
                     <xs:element name="type" minOccurs="1" maxOccurs="1" type="sam:BiomaterialType" />
-                    <xs:element name="experiment" minOccurs="1" maxOccurs="1" type="car:CaArrayEntityReference" />
                 </xs:sequence>
-                <xs:attribute name="name" type="xs:string" />
                 <xs:attribute name="externalId" type="xs:string" />
             </xs:extension>
         </xs:complexContent>
@@ -67,7 +77,7 @@
     <xs:element name="Hybridization" type="sam:Hybridization" />
     <xs:complexType name="Hybridization">
         <xs:complexContent>
-            <xs:extension base="car:AbstractCaArrayEntity">
+            <xs:extension base="sam:AbstractExperimentGraphNode">
 				<xs:sequence>
 					<xs:element name="factorValues">
 						<xs:complexType>
@@ -77,10 +87,57 @@
 						</xs:complexType>
 					</xs:element>
                     <xs:element name="arrayDesign" minOccurs="0" maxOccurs="1" type="arr:ArrayDesign" />
-                    <xs:element name="experiment" minOccurs="1" maxOccurs="1" type="car:CaArrayEntityReference" />
 				</xs:sequence>
-                <xs:attribute name="name" type="xs:string" />
             </xs:extension>
         </xs:complexContent>
-    </xs:complexType>    
+    </xs:complexType>
+    
+    <xs:element name="AnnotationValueSet" type="sam:AnnotationValueSet" />
+    <xs:complexType name="AnnotationValueSet">
+        <xs:sequence>
+            <xs:element name="category" minOccurs="0" maxOccurs="1" type="voc:Category" />
+            <xs:element name="values">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" maxOccurs="unbounded" ref="val:AbstractValue" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>   
+    
+    <xs:element name="AnnotationColumn" type="sam:AnnotationColumn" />
+    <xs:complexType name="AnnotationColumn">
+        <xs:sequence>
+            <xs:element name="node" minOccurs="1" maxOccurs="1" type="sam:AbstractExperimentGraphNode" />
+            <xs:element name="valueSets">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" maxOccurs="unbounded" ref="sam:AnnotationValueSet" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>       
+    
+    <xs:element name="AnnotationSet" type="sam:AnnotationSet" />
+    <xs:complexType name="AnnotationSet">
+        <xs:sequence>
+            <xs:element name="categories">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" maxOccurs="unbounded" ref="voc:Category" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="columns">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" maxOccurs="unbounded" ref="val:AbstractValue" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>   
+    
  </xs:schema>

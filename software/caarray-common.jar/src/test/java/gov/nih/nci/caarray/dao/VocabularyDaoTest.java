@@ -88,6 +88,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -564,13 +565,19 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         try {
 
             tx = HibernateUtil.beginTransaction();
+            Source s = new Source();
+            s.setName("Test Source");
+            s.getCharacteristics().add(DUMMY_CHARACTERISTIC);
+            DUMMY_CHARACTERISTIC.setBioMaterial(s);
             DAO_OBJECT.save(DUMMY_CHARACTERISTIC);
             DAO_OBJECT.save(DUMMY_CATEGORY_1);
+            DAO_OBJECT.save(s);
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
 
-            List<Category> all_chars = DAO_OBJECT.searchForCharacteristicCategory(null);
+            List<Category> all_chars = DAO_OBJECT.searchForCharacteristicCategory(null, TermBasedCharacteristic.class,
+                    null);
 
             assertEquals(1 , all_chars.size());
 

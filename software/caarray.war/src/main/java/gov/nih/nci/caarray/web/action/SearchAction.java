@@ -473,7 +473,7 @@ public class SearchAction extends ActionSupport {
                 .equals(SEARCH_SAMPLE_CATEGORY_ALL)) ? SearchSampleCategory.values()
                 : new SearchSampleCategory[] {SearchSampleCategory.valueOf(categorySample) };
 
-        int sampleCount = pms.searchCount(keyword, categories);
+        int sampleCount = pms.searchCount(keyword, Sample.class, categories);
         tabs.put(SAMPLES_TAB, sampleCount);
         setResultSampleCount(sampleCount);
 
@@ -481,7 +481,7 @@ public class SearchAction extends ActionSupport {
             SearchSourceCategory[] scategories = (categorySample
                     .equals(SEARCH_SAMPLE_CATEGORY_ALL)) ? SearchSourceCategory.values()
                 : new SearchSourceCategory[] {SearchSourceCategory.valueOf(categorySample) };
-            int sourceCount = pms.searchCount(keyword, scategories);
+            int sourceCount = pms.searchCount(keyword, Source.class, scategories);
             tabs.put(SOURCES_TAB, sourceCount);
             setResultSourceCount(sourceCount);
         } catch (IllegalArgumentException eie) {
@@ -591,7 +591,8 @@ public class SearchAction extends ActionSupport {
                 SearchSampleCategory[] categories = (categorySample
                         .equals(SEARCH_SAMPLE_CATEGORY_ALL)) ? SearchSampleCategory.values()
                         : new SearchSampleCategory[] {SearchSampleCategory.valueOf(categorySample) };
-                bioMats = pms.searchByCategory(this.sampleResults.getPageSortParams(), keyword, categories);
+                bioMats = pms.searchByCategory(this.sampleResults.getPageSortParams(), keyword, Sample.class,
+                        categories);
             }
             sampleResults.setFullListSize(this.resultSampleCount);
             sampleResults.setList(bioMats);
@@ -617,7 +618,8 @@ public class SearchAction extends ActionSupport {
                 SearchSourceCategory[] scategories = (categorySample
                         .equals(SEARCH_SAMPLE_CATEGORY_ALL)) ? SearchSourceCategory.values()
                         : new SearchSourceCategory[] {SearchSourceCategory.valueOf(categorySample) };
-                sources = pms.searchByCategory(this.sourceResults.getPageSortParams(), keyword, scategories);
+                sources = pms.searchByCategory(this.sourceResults.getPageSortParams(), keyword, Source.class,
+                        scategories);
             }
             sourceResults.setFullListSize(this.resultSourceCount);
             sourceResults.setList(sources);

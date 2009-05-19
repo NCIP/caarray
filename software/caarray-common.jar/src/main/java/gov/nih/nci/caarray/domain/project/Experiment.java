@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.publication.Publication;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -983,6 +984,20 @@ public class Experiment extends AbstractCaArrayEntity {
         return (Hybridization) CollectionUtils.find(getHybridizations(), new ExperimentDesignNodeNamePredicate(
                 hybridizationName));
      }
+
+    /**
+     * @return all the biomaterials for this experiment, e.g. the union of sources, samples, extracts and labeled
+     *         extracts
+     */
+    @Transient
+    public Set<AbstractBioMaterial> getAllBiomaterials() {
+        Set<AbstractBioMaterial> bms = new HashSet<AbstractBioMaterial>();
+        bms.addAll(this.sources);
+        bms.addAll(this.samples);
+        bms.addAll(this.extracts);
+        bms.addAll(this.labeledExtracts);
+        return bms;
+    }
 
     /**
      * Predicate to match biomaterial/hybridization names.

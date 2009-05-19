@@ -424,12 +424,12 @@ public interface ProjectManagementService {
      * @param <T> subclass of AbstractBioMaterial, must be either Sample or Source
      * @param params paging and sorting parameters
      * @param keyword text to search for
+     * @param biomaterialClass the AbstractBioMaterial subclass whose instances to search
      * @param categories Indicates which categories to search. Passing null will search all categories.
      * @return a list of matching biomaterials
      */
     <T extends AbstractBioMaterial>List<T>  searchByCategory(PageSortParams<T> params, String keyword,
-            BiomaterialSearchCategory... categories);
-
+            Class<T> biomaterialClass, BiomaterialSearchCategory... categories);
 
     /**
      * Performs a query for all samples which contain a characteristic and category supplied.
@@ -480,10 +480,12 @@ public interface ProjectManagementService {
      * Gets the count of search results matching the given keyword.
      *
      * @param keyword keyword to search for
+     * @param biomaterialClass the AbstractBioMaterial subclass whose instances to search
      * @param categories categories to search
      * @return number of results
      */
-    int searchCount(String keyword, BiomaterialSearchCategory... categories);
+    int searchCount(String keyword, Class<? extends AbstractBioMaterial> biomaterialClass,
+            BiomaterialSearchCategory... categories);
 
     /**
      * @return all principal investigators in the system, e.g. all persons that are a contact with the 

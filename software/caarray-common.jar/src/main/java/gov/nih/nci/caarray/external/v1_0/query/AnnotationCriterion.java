@@ -82,13 +82,39 @@
  */
 package gov.nih.nci.caarray.external.v1_0.query;
 
+import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+
+import java.io.Serializable;
+
 /**
- * @author dkokotov
+ * An AnnotationCriterion specifies a criterion that matches Characteristics having
+ * the referenced category and given value.
  * 
+ * @author dkokotov
  */
-public class AnnotationCriterion {
+public class AnnotationCriterion implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private String value;
-    private String category;
+    private CaArrayEntityReference category;
+
+    /**
+     * No-arg constructor.
+     */
+    public AnnotationCriterion() {
+        // empty
+    }
+
+    /**
+     * Constructor for AnnotationCriterion with given category and value.
+     * 
+     * @param category the reference to the category
+     * @param value the value to match against
+     */
+    public AnnotationCriterion(CaArrayEntityReference category, String value) {
+        this.category = category;
+        this.value = value;
+    }
 
     /**
      * @return the value
@@ -107,14 +133,14 @@ public class AnnotationCriterion {
     /**
      * @return the category
      */
-    public String getCategory() {
+    public CaArrayEntityReference getCategory() {
         return category;
     }
 
     /**
      * @param category the category to set
      */
-    public void setCategory(String category) {
+    public void setCategory(CaArrayEntityReference category) {
         this.category = category;
     }
 

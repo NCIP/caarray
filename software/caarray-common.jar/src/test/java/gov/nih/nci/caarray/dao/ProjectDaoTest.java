@@ -102,15 +102,18 @@ import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
+import gov.nih.nci.caarray.domain.search.AnnotationCriterion;
 import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityPolicy;
 import gov.nih.nci.caarray.security.SecurityUtils;
@@ -953,6 +956,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     @Test
     public void testSearchByCriteria() {
         Transaction tx = HibernateUtil.beginTransaction();
+        DUMMY_SAMPLE.setDiseaseState(DUMMY_NORMALIZATION_TYPE);
         saveSupportingObjects();
         DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
         DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
@@ -995,6 +999,15 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         assertEquals(2, experiments.size());
         assertEquals(DUMMY_EXPERIMENT_3, experiments.get(0));
         assertEquals(DUMMY_EXPERIMENT_1, experiments.get(1));
+
+        // test annotation criteria
+        crit = new ExperimentSearchCriteria();
+        Category ds = new Category();
+        ds.setName(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName());
+        crit.getAnnotationCriterions().add(new AnnotationCriterion(ds, DUMMY_NORMALIZATION_TYPE.getValue()));
+        experiments = DAO_OBJECT.searchByCriteria(psp, crit);
+        assertEquals(1, experiments.size());
+        assertEquals(DUMMY_EXPERIMENT_1, experiments.get(0));
 
         tx.commit();
     }
