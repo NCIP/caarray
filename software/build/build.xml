@@ -86,6 +86,7 @@
 	<property name="caarraydb.sql.test.dir" value="${caarraydb.dir}/src/test/sql" />
 	<property name="caarraydb.sql.dir" value="${caarraydb.target.dir}/sql" />
 
+	<property name="cagrid.version" value="1.2" />
 	<property name="caarray-grid-svc.base.dir" value="${basedir}/grid" />
 	<property name="caarray-grid-svc.versions.external" value="v1_0" />
 	<property name="caarray-grid-svc.versions" value="legacy,${caarray-grid-svc.versions.external}" />
@@ -161,20 +162,20 @@
 		<include name="CaArraySvc_v1_0-stubs.jar" />
 	</fileset>
 	<fileset dir="${caarray-grid-svc.base.dir}/v1_0/lib" id="grid.dependencies.caarray-grid-svc.lib.fileset">
-		<include name="caGrid-data-stubs-1.2.jar" />
-		<include name="caGrid-data-utils-1.2.jar" />
-		<include name="caGrid-core-1.2.jar" />
-		<include name="caGrid-core-resources-1.2.jar" />
-		<include name="caGrid-metadata-common-1.2.jar" />
-		<include name="caGrid-metadata-security-1.2.jar" />
-		<include name="caGrid-ServiceSecurityProvider-client-1.2.jar" />
-		<include name="caGrid-ServiceSecurityProvider-common-1.2.jar" />
-		<include name="caGrid-ServiceSecurityProvider-stubs-1.2.jar" />
-		<include name="caGrid-Transfer-client-1.2.jar" />
-		<include name="caGrid-Transfer-common-1.2.jar" />
-		<include name="caGrid-Transfer-stubs-1.2.jar" />
-		<include name="caGrid-wsEnum-stubs-1.2.jar" />
-		<include name="caGrid-wsEnum-1.2.jar" />
+		<include name="caGrid-data-stubs-${cagrid.version}.jar" />
+		<include name="caGrid-data-utils-${cagrid.version}.jar" />
+		<include name="caGrid-core-${cagrid.version}.jar" />
+		<include name="caGrid-core-resources-${cagrid.version}.jar" />
+		<include name="caGrid-metadata-common-${cagrid.version}.jar" />
+		<include name="caGrid-metadata-security-${cagrid.version}.jar" />
+		<include name="caGrid-ServiceSecurityProvider-client-${cagrid.version}.jar" />
+		<include name="caGrid-ServiceSecurityProvider-common-${cagrid.version}.jar" />
+		<include name="caGrid-ServiceSecurityProvider-stubs-${cagrid.version}.jar" />
+		<include name="caGrid-Transfer-client-${cagrid.version}.jar" />
+		<include name="caGrid-Transfer-common-${cagrid.version}.jar" />
+		<include name="caGrid-Transfer-stubs-${cagrid.version}.jar" />
+		<include name="caGrid-wsEnum-stubs-${cagrid.version}.jar" />
+		<include name="caGrid-wsEnum-${cagrid.version}.jar" />
 		<include name="commons-httpclient-3.0.jar" />
 	</fileset>
 
@@ -966,6 +967,14 @@
 		</path>
 		<property name="wsdl4j.jar" refid="wsdl4j.jar.fileset" />
 
+		<path id="google-collections.jar.path">
+			<fileset dir="${project.lib}" id="google-collections.jar.fileset">
+				<include name="google-collections-*.jar"/>
+			</fileset>
+		</path>
+		<property name="google-collections.jar" refid="google-collections.jar.fileset" />
+
+
 		<path id="jboss.dependencies.path">
 			<fileset id="jboss.dependencies.fileset" dir="${project.lib}">
 				<include name="${jboss-annotations-ejb3.jar}"/>
@@ -1008,6 +1017,7 @@
 			<fileset id="common.compile.partial.dependencies.fileset" dir="${project.lib}">
 				<include name="${commons-beanutils.jar}"/>
 				<include name="${commons-collections.jar}"/>
+				<include name="${google-collections.jar}"/>
 				<include name="${commons-logging.jar}"/>
 				<include name="${commons-io.jar}"/>
 				<include name="${json-lib.jar}"/>
@@ -1022,6 +1032,7 @@
 		<path id="external.api.dependencies.path">
 			<fileset refid="dozer.jar.fileset"/>
 			<fileset refid="rmiio.jar.fileset"/>
+			<fileset refid="google-collections.jar.fileset"/>
 		</path>
 		<pathtofileset name="external.api.dependencies.fileset" pathrefid="external.api.dependencies.path" dir="${project.lib}"/>
 
@@ -1633,8 +1644,8 @@
 					<include name="**/util/**" />
 				</fileset>
 				<fileset dir="${caarray-ejb.classes.dir}">
-					<include name="**/services/external/@{version}/**/*Service.class" />
-					<include name="**/services/external/@{version}/**/*Exception.class" />
+					<include name="**/services/external/@{version}/**/*.class" />
+					<exclude name="**/services/external/@{version}/**/impl/*.class" />
 				</fileset>
 			</jar>
 		</sequential>
