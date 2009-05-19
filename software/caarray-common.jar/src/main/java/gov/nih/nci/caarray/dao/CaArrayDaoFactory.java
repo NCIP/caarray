@@ -182,4 +182,11 @@ public interface CaArrayDaoFactory {
      * @return a <code>HybridizationDao</code>.
      */
     HybridizationDao getHybridizationDao();
+
+    /**
+     * @return a <code>AuditLogDao</code>.
+     * @see AuditLogDao
+     * @see AuditLogDaoImpl
+     */
+    AuditLogDao getAuditLogDao();
 }

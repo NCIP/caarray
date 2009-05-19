@@ -548,8 +548,7 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
             String fv2String, String fv2Unit, String fv3Value, String fv3ts) {
         assertEquals(3, hyb.getFactorValues().size());
         MeasurementFactorValue fv1 = (MeasurementFactorValue) hyb.getFactorValue("ExternalSampleId");
-        assertNotNull(fv1);        
-        assertEquals(fv1Value, fv1.getValue());
+        assertEquals(fv1Value, fv1.getValue().floatValue());
         assertNull(fv1.getUnit());
         if (fv2Num != null) {
             MeasurementFactorValue fv2 = (MeasurementFactorValue) hyb.getFactorValue("Age");            

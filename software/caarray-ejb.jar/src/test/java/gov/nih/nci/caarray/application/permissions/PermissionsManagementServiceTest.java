@@ -110,6 +110,7 @@ import org.apache.commons.collections.Predicate;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Projections;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -124,6 +125,7 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
     private PermissionsManagementService permissionsManagementService;
     private final GenericDataServiceStub genericDataServiceStub = new GenericDataServiceStub();
     private final DaoFactoryStub daoFactoryStub = new DaoFactoryStub();
+    private Transaction tx;
 
     @Before
     public void setup() {
@@ -132,6 +134,15 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
         bean.setDaoFactory(this.daoFactoryStub);
 
         this.permissionsManagementService = bean;
+
+        tx = HibernateUtil.beginTransaction();
+    }
+
+    @SuppressWarnings("unchecked")
+    @After
+    public void after() {
+        HibernateUtil.getCurrentSession().createQuery("delete FROM " + Group.class.getName() + " g where g.groupName like '" + TEST + "%'").executeUpdate();
+        tx.commit();
     }
 
     @Test
@@ -181,7 +192,7 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
         toAdd.add("4");
         this.permissionsManagementService.addUsers(created, toAdd);
         // gymnastics here due to auth manager being it's own session
-        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+//        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
         Group g =  (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
         User u1 = (User) HibernateUtil.getCurrentSession().load(User.class, anonId);
         User u2 = (User) HibernateUtil.getCurrentSession().load(User.class, 3L);
@@ -190,6 +201,7 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
         assertFalse(u1.getGroups().contains(g));
         assertTrue(u2.getGroups().contains(g));
         assertTrue(u2.getGroups().contains(g));
+
         tx.commit();
 
         List<String> toRemove = new ArrayList<String>();
@@ -197,6 +209,7 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
         this.permissionsManagementService.removeUsers(created, toRemove);
         // go the other way or remove - make sure groups are set correctly
         tx = HibernateUtil.getCurrentSession().beginTransaction();
+
         HibernateUtil.getCurrentSession().refresh(u1);
         HibernateUtil.getCurrentSession().refresh(u2);
         HibernateUtil.getCurrentSession().refresh(u3);
@@ -204,24 +217,23 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
         assertFalse(u1.getGroups().contains(g));
         assertFalse(u2.getGroups().contains(g));
         assertTrue(u3.getGroups().contains(g));
-        tx.commit();
     }
 
     @Test
     public void testRename() throws CSTransactionException, CSObjectNotFoundException {
         CollaboratorGroup created = this.permissionsManagementService.create(TEST);
-        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+//        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
         this.permissionsManagementService.rename(created, "test2");
         Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
         assertEquals("test2", g.getGroupName());
-        tx.commit();
+//        tx.commit();
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testAddUsersToCollaboratorGroup() throws CSTransactionException, CSObjectNotFoundException {
         CollaboratorGroup created = this.permissionsManagementService.create(TEST);
-        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+//        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
         this.permissionsManagementService.addUsers(created, Arrays.asList("3", "2", "1"));
         Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
         assertEquals(2, g.getUsers().size());
@@ -229,12 +241,12 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
             assertTrue("caarrayuser".equals(u.getLoginName()) || "caarrayadmin".equals(u.getLoginName()));
         }
         assertEquals(TEST, g.getGroupName());
-        tx.commit();
+//        tx.commit();
     }
 
     @Test
     public void testAddUsersToAnonymousGroup() throws CSTransactionException, CSObjectNotFoundException {
-        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+//        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
         Predicate anonUserExists = new Predicate() {
             public boolean evaluate(Object o) {
                 return ((User) o).getLoginName().equals(SecurityUtils.ANONYMOUS_USERNAME);
@@ -245,28 +257,15 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
          this.permissionsManagementService.addUsers(SecurityUtils.ANONYMOUS_GROUP, "biostatistician");
          HibernateUtil.getCurrentSession().refresh(g);
          assertTrue(CollectionUtils.exists(g.getUsers(), anonUserExists));
-         tx.commit();
+//         tx.commit();
     }
 
     @Test
     public void testGetUsers() {
+        Number count = (Number) HibernateUtil.getCurrentSession().createCriteria(User.class).setProjection(Projections.rowCount()).uniqueResult();
         List<User> users = this.permissionsManagementService.getUsers(null);
         assertNotNull(users);
-        assertEquals(9, users.size());
+        assertEquals(count.intValue(), users.size());
     }
 
-    @SuppressWarnings("unchecked")
-    @After
-    public void after() {
-        HibernateUtil.enableFilters(false);
-        Session s = HibernateUtil.getCurrentSession();
-        Transaction tx = s.beginTransaction();
-        Iterator<Group> it = s.createQuery("FROM " + Group.class.getName() + " g where g.groupName like '" + TEST + "%'")
-                              .list()
-                              .iterator();
-        if (it.hasNext()) {
-            s.delete(it.next());
-        }
-        tx.commit();
-    }
 }

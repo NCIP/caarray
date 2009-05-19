@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caarray-app
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or
+ * This caarray-app Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-app Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common-jar Software and any
+ * and prepare derivative works of the caarray-app Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-app Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,87 +80,30 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.search;
 
-import gov.nih.nci.caarray.domain.sample.Sample;
+package gov.nih.nci.caarray.dao;
+
+import com.fiveamsolutions.nci.commons.audit.AuditLogRecord;
+import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import gov.nih.nci.caarray.domain.search.AuditLogSearchCriteria;
+import java.util.List;
 
 /**
- * Enum of possible sort criterions for samples.
- * @author dkokotov
+ *
+ * @author gax
  */
-public enum SampleJoinableSortCriterion implements JoinableSortCriterion<Sample> {
-    /**
-     * name.
-     */
-    NAME("this.name"),
+public interface AuditLogDao {
 
     /**
-     * Experiment title.
+     * @param criteria criteria
+     * @param sort sort
+     * @return matching log records.
      */
-    TITLE("e.title", "this.experiment e"),
-
+    List<AuditLogRecord> getRecords(AuditLogSearchCriteria criteria, PageSortParams<AuditLogRecord> sort);
     /**
-     * Organism.
+     * @param criteria criteria
+     * @return row count.
      */
-    ORGANISM("coalesce(so.scientificName, eo.scientificName)",
-            "this.organism so", "this.experiment e", "this.experiment.organism eo"),
+    int getRecordsCount(AuditLogSearchCriteria criteria);
 
-    /**
-     * tissuesite.
-     */
-    TISSUESITE("sts.value", "this.tissueSite sts"),
-
-    /**
-     * material type.
-     */
-    MATERIALTYPE("sms.value", "this.materialType sms"),
-
-    /**
-     * cell type.
-     */
-    CELLTYPE("scs.value", "this.cellType scs"),
-
-    /**
-     * diseasestate.
-     */
-    DISEASESTATE("sds.value", "this.diseaseState sds"),
-
-    /**
-     * description.
-     */
-    DESCRIPTION("this.description");
-
-    private final String orderField;
-    private final String[] joins;
-
-
-    private SampleJoinableSortCriterion(String orderField, String... joins) {
-        this.orderField = orderField;
-        this.joins = joins;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("PMD.MethodReturnsInternalArray")
-    public String[] getJoins() {
-        return joins;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getOrderField() {
-        return this.orderField;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getLeftJoinField() {
-        // this is to support nci-commons-code 1.0.24, but this aspect of the
-        // search is not yet used in caaaray or it is implemented diffrently.
-        // https://jira.5amsolutions.com/browse/NCIC-60
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }

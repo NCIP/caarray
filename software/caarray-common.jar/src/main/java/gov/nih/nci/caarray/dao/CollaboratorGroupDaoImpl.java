@@ -97,6 +97,6 @@ public class CollaboratorGroupDaoImpl extends AbstractCaArrayDaoImpl implements 
     @SuppressWarnings("unchecked")
     public List<CollaboratorGroup> getAll() {
         return getCurrentSession().createQuery("SELECT cg FROM " + CollaboratorGroup.class.getName() + " cg, "
-                + Group.class.getName() + " g" +  " WHERE cg.groupId = g.groupId order by g.groupName").list();
+                + Group.class.getName() + " g  WHERE cg.groupId = g.groupId order by g.groupName").list();
     }
 }

@@ -305,6 +305,14 @@
             <result name="projectEdit">/WEB-INF/pages/vocabulary/reloadProject.jsp</result>
         </action>
 
+        <action name="audit/*" class="gov.nih.nci.caarray.web.action.audit.AuditAction" method="{1}">
+            <result name="success">/WEB-INF/pages/audit/{1}.jsp</result>
+            <result name="input">/WEB-INF/pages/audit/{1}.jsp</result>
+        </action>
+        <action name="ajax/audit/*" class="gov.nih.nci.caarray.web.action.audit.AuditAction" method="{1}">
+            <result name="success">/WEB-INF/pages/audit/{1}.jsp</result>
+        </action>
+
     </package>
 
     <package name="registration" namespace="/registration" extends="default">

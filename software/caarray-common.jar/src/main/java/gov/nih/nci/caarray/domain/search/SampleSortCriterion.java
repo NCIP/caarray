@@ -144,4 +144,13 @@ public enum SampleSortCriterion implements SortCriterion<Sample> {
         return this.orderField;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public String getLeftJoinField() {
+        // this is to support nci-commons-code 1.0.24, but this aspect of the
+        // search is not yet used in caaaray or it is implemented diffrently.
+        // https://jira.5amsolutions.com/browse/NCIC-60
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

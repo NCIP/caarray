@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.action;
 
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.audit.AuditLogService;
 import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.application.country.CountryService;
 import gov.nih.nci.caarray.application.file.FileManagementService;
@@ -282,5 +283,14 @@ public final class CaArrayActionHelper {
      */
     public static Set<Term> getTermsFromCategory(ExperimentOntologyCategory category) {
       return getVocabularyService().getTerms(getCategory(category));
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
+     * via static import
+     * @return the service
+     */
+    public static AuditLogService getAuditLogService() {
+        return (AuditLogService) ServiceLocatorFactory.getLocator().lookup(AuditLogService.JNDI_NAME);
     }
 }

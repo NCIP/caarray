@@ -14,6 +14,7 @@
                 <li class="liheader">User Management</li>
                 <c:if test="${isSystemAdministrator}">
                   <li><a href="<c:out value='${initParam["uptUrl"]}'/>" target="_blank">Manage Users</a></li>
+                  <li><a href="<c:url value="/protected/audit/logs.action" />">Security Audit</a></li>
                 </c:if>
                 <li><a href="<c:url value="/protected/collaborators/listGroups.action" />">Manage Collaboration Groups</a></li>
 

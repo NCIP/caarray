@@ -82,11 +82,7 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import com.fiveamsolutions.nci.commons.util.UsernameHolder;
-import gov.nih.nci.caarray.security.PermissionDeniedException;
-import gov.nih.nci.caarray.security.SecurityUtils;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.AbstractCaarrayIntegrationTest;
 import gov.nih.nci.caarray.application.GenericDataService;
@@ -271,9 +267,10 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayInte
             this.projectManagementService.saveProject(DUMMY_PROJECT_1);
             t.commit();
 
-            DUMMY_PROJECT_1.setLocked(false);
-
             t = HibernateUtil.beginTransaction();
+            DUMMY_PROJECT_1 = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+            DUMMY_PROJECT_1.setLocked(false);
+            HibernateUtil.getCurrentSession().refresh(DUMMY_PROJECT_1);
             this.projectManagementService.saveProject(DUMMY_PROJECT_1);
             t.commit();
 

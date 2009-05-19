@@ -128,4 +128,13 @@ public enum ProjectSortCriterion implements SortCriterion<Project> {
     public String getOrderField() {
         return this.orderField;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getLeftJoinField() {
+        // this is to support nci-commons-code 1.0.24, but this aspect of the
+        // search is not yet used in caaaray or it is implemented diffrently.
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

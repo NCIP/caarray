@@ -424,6 +424,7 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
     @SuppressWarnings("PMD")
     private void importFiles(Project project, Set<File> files, MageTabDocumentSet documentSet) throws Exception {
         Transaction tx = HibernateUtil.beginTransaction();
+        project = (Project) HibernateUtil.getCurrentSession().load(Project.class, project.getId());
         CaArrayFileSet fileSet = uploadFiles(project, files, documentSet);
         tx.commit();
 
@@ -438,6 +439,7 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
     @SuppressWarnings("PMD")
     private void uploadAndValidateFiles(Project project, Map<File, FileType> files) throws Exception {
         Transaction tx = HibernateUtil.beginTransaction();
+        project = (Project) HibernateUtil.getCurrentSession().load(Project.class, project.getId());
         CaArrayFileSet fileSet = uploadFiles(project, files);
         tx.commit();
 

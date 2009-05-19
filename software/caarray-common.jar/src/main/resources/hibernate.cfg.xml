@@ -100,6 +100,9 @@
         <mapping class="gov.nih.nci.cabio.domain.ExpressionArrayReporter"/>
         <mapping class="gov.nih.nci.cabio.domain.SNPArrayReporter"/>
         <mapping class="gov.nih.nci.cabio.domain.TranscriptArrayReporter"/>
+        
+        <mapping class="com.fiveamsolutions.nci.commons.audit.AuditLogRecord"/>
+        <mapping class="com.fiveamsolutions.nci.commons.audit.AuditLogDetail"/>
 
         <!-- configure the security post-load listener -->
         <event type="post-load">

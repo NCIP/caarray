@@ -92,6 +92,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
 
 /**
  * Utility class used to generate and retrieve the singleton <code>DesignElementList</code> to be used for all parsed
@@ -124,7 +125,8 @@ public final class AffymetrixChpPgfClfDesignElementListUtility extends AbstractA
     }
 
     void createDesignElementListEntries(DesignElementList designElementList) throws AffymetrixArrayDesignReadException {
-        PageSortParams<LogicalProbe> batch = new PageSortParams<LogicalProbe>(BATCH_SIZE, 0, null, false);
+        PageSortParams<LogicalProbe> batch = new PageSortParams<LogicalProbe>(BATCH_SIZE, 0,
+                (SortCriterion<LogicalProbe>) null, false);
         LOG.info("Retrieving " + BATCH_SIZE + " probe names starting with #" + batch.getIndex());
         List<Long> orderedProbeSetIds = getArrayDao().getLogicalProbeIds(getDesign(), batch);
         while (!orderedProbeSetIds.isEmpty()) {

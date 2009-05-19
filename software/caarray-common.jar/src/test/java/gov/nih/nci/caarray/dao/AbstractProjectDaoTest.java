@@ -204,6 +204,7 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         DUMMY_SOURCE.getSamples().add(DUMMY_SAMPLE);
         DUMMY_SAMPLE.getExtracts().add(DUMMY_EXTRACT);
         DUMMY_EXTRACT.getLabeledExtracts().add(DUMMY_LABELED_EXTRACT);
+        DUMMY_LABELED_EXTRACT.getExtracts().add(DUMMY_EXTRACT);
     }
 
     protected static void setExperimentSummary() {

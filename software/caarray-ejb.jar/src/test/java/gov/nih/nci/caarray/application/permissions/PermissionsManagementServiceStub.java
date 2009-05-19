@@ -235,4 +235,13 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     public AccessProfile getSavedProfile() {
         return savedProfile;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public CollaboratorGroup getCollaboratorGroup(long id) {
+        CollaboratorGroup g = new CollaboratorGroup();
+        g.setId(id);
+        return g;
+    }
 }

@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.AuditLogDao;
 import gov.nih.nci.caarray.dao.BrowseDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.CollaboratorGroupDao;
@@ -201,5 +202,12 @@ public class DaoFactoryStub implements CaArrayDaoFactory {
     public HybridizationDao getHybridizationDao() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public AuditLogDao getAuditLogDao() {
+        return new AuditLogStub();
     }
 }

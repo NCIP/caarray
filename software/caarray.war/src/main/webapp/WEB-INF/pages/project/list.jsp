@@ -85,6 +85,13 @@
                 <a href="${deleteProjectUrl}" onclick="return confirmDelete();"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
             </c:if>
         </display:column>
-
+        <c:if test="${isSystemAdministrator}">
+            <display:column title="Audit" class="centered" headerClass="centered">
+                <c:url value="/protected/audit/listProject.action" var="auditUrl">
+                    <c:param name="project.id" value="${row.id}" />
+                </c:url>
+                <a href="${auditUrl}">Audit</a>
+            </display:column>
+        </c:if>
     </display:table>
 </ajax:displayTag>

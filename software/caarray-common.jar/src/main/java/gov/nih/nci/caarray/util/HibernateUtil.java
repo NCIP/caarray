@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.util;
 
+import com.fiveamsolutions.nci.commons.audit.AuditLogInterceptor;
+import com.fiveamsolutions.nci.commons.util.CompositeInterceptor;
 import gov.nih.nci.caarray.security.SecurityInterceptor;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHelper;
@@ -109,8 +111,14 @@ import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 @SuppressWarnings("unchecked")
 public final class HibernateUtil {
 
+    private static final AuditLogInterceptor AUDIT_LOG_INTERCEPTOR = new AuditLogInterceptor();
+    private static final CaArrayAuditLogProcessor AUDIT_LOG_PROCESSOR = new CaArrayAuditLogProcessor();
     private static final HibernateHelper HIBERNATE_HELPER = new HibernateHelper(SecurityUtils.getAuthorizationManager(),
-            new NamingStrategy(), new SecurityInterceptor());
+            new NamingStrategy(), new CompositeInterceptor(new SecurityInterceptor(), AUDIT_LOG_INTERCEPTOR));
+    static {
+        AUDIT_LOG_INTERCEPTOR.setHibernateHelper(HIBERNATE_HELPER);
+        AUDIT_LOG_INTERCEPTOR.setProcessor(AUDIT_LOG_PROCESSOR);
+    }
 
     private static boolean filtersEnabled = true;
 
@@ -126,6 +134,14 @@ public final class HibernateUtil {
      */
     public static HibernateHelper getHibernateHelper() {
         return HIBERNATE_HELPER;
+    }
+
+    /**
+     * Get the audit log processor.
+     * @return AUDIT_LOG_PROCESSOR.
+     */
+    public static CaArrayAuditLogProcessor getAuditLogProcessor() {
+        return AUDIT_LOG_PROCESSOR;
     }
 
     /**

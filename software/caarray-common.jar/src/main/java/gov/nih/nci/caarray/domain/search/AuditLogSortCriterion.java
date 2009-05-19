@@ -80,71 +80,30 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package gov.nih.nci.caarray.domain.search;
 
-import gov.nih.nci.caarray.domain.sample.Sample;
+import com.fiveamsolutions.nci.commons.audit.AuditLogRecord;
+import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
 
 /**
- * Enum of possible sort criterions for samples.
- * @author dkokotov
+ *
+ * @author gax
  */
-public enum SampleJoinableSortCriterion implements JoinableSortCriterion<Sample> {
+public enum AuditLogSortCriterion implements SortCriterion<AuditLogRecord> {
     /**
-     * name.
+     * sort my username.
      */
-    NAME("this.name"),
-
+    USERNAME("username"),
     /**
-     * Experiment title.
+     * sort by event date.
      */
-    TITLE("e.title", "this.experiment e"),
-
-    /**
-     * Organism.
-     */
-    ORGANISM("coalesce(so.scientificName, eo.scientificName)",
-            "this.organism so", "this.experiment e", "this.experiment.organism eo"),
-
-    /**
-     * tissuesite.
-     */
-    TISSUESITE("sts.value", "this.tissueSite sts"),
-
-    /**
-     * material type.
-     */
-    MATERIALTYPE("sms.value", "this.materialType sms"),
-
-    /**
-     * cell type.
-     */
-    CELLTYPE("scs.value", "this.cellType scs"),
-
-    /**
-     * diseasestate.
-     */
-    DISEASESTATE("sds.value", "this.diseaseState sds"),
-
-    /**
-     * description.
-     */
-    DESCRIPTION("this.description");
-
+    DATE("createdDate");
+    
     private final String orderField;
-    private final String[] joins;
-
-
-    private SampleJoinableSortCriterion(String orderField, String... joins) {
+    
+    private AuditLogSortCriterion(String orderField) {
         this.orderField = orderField;
-        this.joins = joins;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("PMD.MethodReturnsInternalArray")
-    public String[] getJoins() {
-        return joins;
     }
 
     /**
@@ -160,7 +119,8 @@ public enum SampleJoinableSortCriterion implements JoinableSortCriterion<Sample>
     public String getLeftJoinField() {
         // this is to support nci-commons-code 1.0.24, but this aspect of the
         // search is not yet used in caaaray or it is implemented diffrently.
-        // https://jira.5amsolutions.com/browse/NCIC-60
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+
 }
