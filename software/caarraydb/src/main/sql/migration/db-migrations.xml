@@ -67,4 +67,8 @@
         <sql-script>migrate-2.3.0.alpha2-to-2.3.0.rc1.sql</sql-script>
         <migrator-class>gov.nih.nci.caarray.web.upgrade.CsmFilterMigrator</migrator-class>
     </migration>
+    <migration fromVersion="2.3.0.rc1" toVersion="2.3.0.alpha5">
+        <sql-script>migrate-2.3.0.rc1-to-2.3.0.alpha5.sql</sql-script>
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.CsmFilterMigrator</migrator-class>
+    </migration>
 </migrations>
