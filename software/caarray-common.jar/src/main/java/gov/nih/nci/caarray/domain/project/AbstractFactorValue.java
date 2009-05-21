@@ -97,7 +97,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 
 /**
@@ -153,7 +152,6 @@ public abstract class AbstractFactorValue extends AbstractUnitableValue {
      * @return the hybridization
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "factorvalue_hybridizatation_fk")
     public Hybridization getHybridization() {
         return hybridization;

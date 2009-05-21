@@ -80,44 +80,84 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.upgrade;
 
-import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+package gov.nih.nci.caarray.web.action;
 
-import javax.transaction.UserTransaction;
-
-import org.apache.log4j.Logger;
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
+import com.opensymphony.xwork2.ActionSupport;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
+import gov.nih.nci.caarray.application.permissions.PermissionsManagementServiceStub;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import java.util.Arrays;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 /**
- * If the CSM filters have been updated by a previous migration step, this Migrator reinitializes the filters to make
- * sure the changes take effect without restarting the application.
  *
- * @author Steve Lustbader
+ * @author gax
  */
-public final class CsmFilterMigrator extends AbstractMigrator implements Migrator {
-    private static final Logger LOG = Logger.getLogger(CsmFilterMigrator.class);
+public class OwnershipActionTest extends AbstractCaarrayTest {
 
-    /**
-     * {@inheritDoc}
-     */
-    public void migrate() throws MigrationStepFailedException {
-        LOG.info("Reinitializing CSM filters");
-        UserTransaction transaction =
-            ((UserTransaction) ServiceLocatorFactory.getLocator().lookup("java:comp/UserTransaction"));
-        try {
-            transaction.commit();
-            HibernateUtil.unbindAndCleanupSession();
-            HibernateUtil.reinitializeCsmFilters();
-            SecurityUtils.setPrivilegedMode(true);
-            HibernateUtil.setFiltersEnabled(false);
-            HibernateUtil.openAndBindSession();
-            transaction.setTransactionTimeout(UpgradeManager.TIMEOUT_SECONDS);
-            transaction.begin();
-        } catch (Exception e) {
-            throw new MigrationStepFailedException("Could not manage transaction when updating CSM filters", e);
-        }
+    @Before
+    public void setUp() throws Exception {
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, new ProjectManagementServiceStub());
+        locatorStub.addLookup(PermissionsManagementService.JNDI_NAME, new PermissionsManagementServiceStub());
+    }
+
+    @Test
+    public void assets() {
+        OwnershipAction action  = new OwnershipAction();
+
+        String ret = action.assets();
+        assertEquals("listOwners", ret);
+
+        User owner = new User();
+        owner.setUserId(1L);
+        action.setOwner(owner);
+        ret = action.assets();
+        assertEquals(OwnershipAction.SUCCESS, ret);
+        assertNotNull(action.getGroups());
+        assertNotNull(action.getProjects());
+    }
+
+    @Test
+    public void newOwner() {
+        OwnershipAction action  = new OwnershipAction();
+        String ret = action.newOwner();
+        assertEquals("assets", ret);
+
+
+        action.setGroupIds(Arrays.asList(1L, 2L, 3L));
+        action.setProjectIds(Arrays.asList(1L, 2L, 3L));
+        User owner = new User();
+        owner.setUserId(1L);
+        action.setTargetUser(owner);
+
+        ret = action.newOwner();
+        assertEquals(ActionSupport.SUCCESS, ret);
+    }
+
+    @Test
+    public void reassign() throws CSException, CSObjectNotFoundException {
+        OwnershipAction action  = new OwnershipAction();
+        String ret = action.reassign();
+        assertEquals("newOwner", ret);
+
+        ActionHelper.getMessages().clear();
+        action.setOwnerId(1L);
+        action.setGroupIds(Arrays.asList(1L, 2L, 3L));
+        action.setProjectIds(Arrays.asList(1L, 2L, 3L));
+        ret = action.reassign();
+        assertEquals("listOwners", ret);
+        assertEquals(6, ActionHelper.getMessages().size());
     }
 
 }

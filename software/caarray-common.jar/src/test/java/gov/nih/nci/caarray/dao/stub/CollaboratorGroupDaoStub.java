@@ -96,6 +96,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 public class CollaboratorGroupDaoStub extends AbstractDaoStub implements CollaboratorGroupDao {
 
     private static int numGetAllCalls = 0;
+    private static int numGetAllForUserCalls = 0;
     private static PersistentObject savedObject;
 
     /**
@@ -120,9 +121,29 @@ public class CollaboratorGroupDaoStub extends AbstractDaoStub implements Collabo
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public List<CollaboratorGroup> getAllForCurrentUser() {
+        ++numGetAllForUserCalls;
+        return Collections.emptyList();
+    }
+
+    public int getNumGetAllForUserCalls() {
+        return numGetAllForUserCalls;
+    }
+
+    /**
      * @return the savedObject
      */
     public PersistentObject getSavedObject() {
         return savedObject;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<CollaboratorGroup> getAllForUser(long userId) {
+        return Collections.emptyList();
+    }
+
 }

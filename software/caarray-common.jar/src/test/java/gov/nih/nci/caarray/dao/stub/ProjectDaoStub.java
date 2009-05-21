@@ -94,6 +94,7 @@ import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
+import gov.nih.nci.security.authorization.domainobjects.User;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -121,6 +122,14 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
      */
     @SuppressWarnings("unchecked")
     public List<Project> getProjectsForCurrentUser(PageSortParams<Project> pageSortParams) {
+        return Collections.EMPTY_LIST;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<Project> getProjectsForOwner(User user) {
         return Collections.EMPTY_LIST;
     }
 

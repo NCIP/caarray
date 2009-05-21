@@ -18,8 +18,8 @@
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags.js"/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_controls.js"/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_parser.js"/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/ext-prototype-adapter.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/ext-all-debug.js'/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/ext-prototype-adapter.js'/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/ext-all-debug.js'/>"></script>
         <script type="text/javascript" language="javascript">
         // for help script
            var contextPath = "<%=request.getContextPath()%>";

@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
+import gov.nih.nci.security.authorization.domainobjects.User;
 import java.util.List;
 import java.util.Set;
 
@@ -120,6 +121,14 @@ public interface ProjectDao extends CaArrayDao {
      * @return public or non-public projects directly related to the current user, as described above
      */
     List<Project> getProjectsForCurrentUser(PageSortParams<Project> pageSortParams);
+
+    /**
+     * Gets all projects belonging to the given user.
+     * @param user owner.
+     * @return all projects owned by the given user.
+     */
+    List<Project> getProjectsForOwner(User user);
+
 
     /**
      * Gets the count of projects belonging to the current user. The count of all projects

@@ -99,7 +99,7 @@ public abstract class AbstractCaarrayIntegrationTest extends AbstractCaarrayTest
     @Before
     public void baseIntegrationSetUp() {
         UsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.setFiltersEnabled(false);
         HibernateUtil.openAndBindSession();
     }
 

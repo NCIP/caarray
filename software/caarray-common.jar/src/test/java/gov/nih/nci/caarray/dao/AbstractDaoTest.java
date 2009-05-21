@@ -99,7 +99,7 @@ public abstract class AbstractDaoTest extends AbstractCaarrayTest {
     @Before
     public void abstractSetup() {
         UsernameHolder.setUser(STANDARD_USER);
-        HibernateUtil.enableFilters(true);
+        HibernateUtil.setFiltersEnabled(true);
         HibernateUtil.openAndBindSession();
    }
 

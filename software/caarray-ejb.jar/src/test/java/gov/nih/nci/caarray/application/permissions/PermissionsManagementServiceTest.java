@@ -85,14 +85,19 @@ package gov.nih.nci.caarray.application.permissions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
+import gov.nih.nci.caarray.dao.CollaboratorGroupDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.CollaboratorGroupDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
@@ -101,19 +106,22 @@ import gov.nih.nci.security.exceptions.CSTransactionException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.hibernate.Hibernate;
-import org.hibernate.Session;
+import org.hibernate.LockMode;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Projections;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Test cases for service.
@@ -124,7 +132,7 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
     private static final String TEST = "test";
     private PermissionsManagementService permissionsManagementService;
     private final GenericDataServiceStub genericDataServiceStub = new GenericDataServiceStub();
-    private final DaoFactoryStub daoFactoryStub = new DaoFactoryStub();
+    private final DaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private Transaction tx;
 
     @Before
@@ -170,6 +178,14 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
     }
 
     @Test
+    public void testGetAllForCurrentUser() {
+        CollaboratorGroupDaoStub stub = (CollaboratorGroupDaoStub) this.daoFactoryStub.getCollaboratorGroupDao();
+        int count = stub.getNumGetAllForUserCalls();
+        this.permissionsManagementService.getCollaboratorGroupsForCurrentUser();
+        assertEquals(count + 1, stub.getNumGetAllForUserCalls());
+    }
+
+    @Test
     public void testCreate() throws CSException {
         CollaboratorGroup created = this.permissionsManagementService.create(TEST);
         CollaboratorGroupDaoStub stub = (CollaboratorGroupDaoStub) this.daoFactoryStub.getCollaboratorGroupDao();
@@ -194,13 +210,13 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
         // gymnastics here due to auth manager being it's own session
 //        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
         Group g =  (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
-        User u1 = (User) HibernateUtil.getCurrentSession().load(User.class, anonId);
-        User u2 = (User) HibernateUtil.getCurrentSession().load(User.class, 3L);
-        User u3 = (User) HibernateUtil.getCurrentSession().load(User.class, 4L);
-        Hibernate.initialize(u1.getGroups());
-        assertFalse(u1.getGroups().contains(g));
-        assertTrue(u2.getGroups().contains(g));
-        assertTrue(u2.getGroups().contains(g));
+        User anonUser = (User) HibernateUtil.getCurrentSession().load(User.class, anonId);
+        User user3 = (User) HibernateUtil.getCurrentSession().load(User.class, 3L);
+        User user4 = (User) HibernateUtil.getCurrentSession().load(User.class, 4L);
+        Hibernate.initialize(anonUser.getGroups());
+        assertFalse(anonUser.getGroups().contains(g));
+        assertTrue(user3.getGroups().contains(g));
+        assertTrue(user3.getGroups().contains(g));
 
         tx.commit();
 
@@ -210,13 +226,13 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
         // go the other way or remove - make sure groups are set correctly
         tx = HibernateUtil.getCurrentSession().beginTransaction();
 
-        HibernateUtil.getCurrentSession().refresh(u1);
-        HibernateUtil.getCurrentSession().refresh(u2);
-        HibernateUtil.getCurrentSession().refresh(u3);
+        HibernateUtil.getCurrentSession().refresh(anonUser);
+        HibernateUtil.getCurrentSession().refresh(user3);
+        HibernateUtil.getCurrentSession().refresh(user4);
         HibernateUtil.getCurrentSession().refresh(g);
-        assertFalse(u1.getGroups().contains(g));
-        assertFalse(u2.getGroups().contains(g));
-        assertTrue(u3.getGroups().contains(g));
+        assertFalse(anonUser.getGroups().contains(g));
+        assertFalse(user3.getGroups().contains(g));
+        assertTrue(user4.getGroups().contains(g));
     }
 
     @Test
@@ -266,6 +282,89 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
         List<User> users = this.permissionsManagementService.getUsers(null);
         assertNotNull(users);
         assertEquals(count.intValue(), users.size());
+    }
+
+    @Test
+    public void testGetCollaboratorGroupsForOwner() throws Exception {
+        User u = UsernameHolder.getCsmUser();
+        List<CollaboratorGroup> l = this.permissionsManagementService.getCollaboratorGroupsForOwner(u.getUserId().longValue());
+        assertSame(Collections.EMPTY_LIST, l);
+    }
+
+    private static class LocalDaoFactoryStub extends DaoFactoryStub {
+
+        LocalCollaboratorGroupDaoStub collaboratorGroupDao = new LocalCollaboratorGroupDaoStub();
+
+        @Override
+        public CollaboratorGroupDao getCollaboratorGroupDao() {
+            return this.collaboratorGroupDao;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public SearchDao getSearchDao() {
+            return new LocalSearchDaoStub(this.collaboratorGroupDao);
+        }
+    }
+
+    private static class LocalCollaboratorGroupDaoStub extends CollaboratorGroupDaoStub {
+
+        final HashMap<Long, PersistentObject> savedObjects = new HashMap<Long, PersistentObject>();
+        PersistentObject lastSaved;
+        PersistentObject lastDeleted;
+        private Long nextId = 1L;
+
+        @SuppressWarnings("deprecation")
+        @Override
+        public void save(PersistentObject caArrayObject) {
+            if (caArrayObject instanceof CollaboratorGroup) {
+                ((CollaboratorGroup) caArrayObject).setId(nextId++);
+            }
+            super.save(caArrayObject);
+            this.lastSaved = caArrayObject;
+            this.savedObjects.put(caArrayObject.getId(), caArrayObject);
+        }
+
+        @Override
+        public void remove(PersistentObject caArrayEntity) {
+            this.lastDeleted = caArrayEntity;
+            this.savedObjects.remove(caArrayEntity.getId());
+        }
+
+        public PersistentObject getLastDeleted() {
+            return this.lastDeleted;
+        }
+
+    }
+
+    private static class LocalSearchDaoStub extends SearchDaoStub {
+        private final LocalCollaboratorGroupDaoStub collaboratorGroupDao;
+
+        public LocalSearchDaoStub(LocalCollaboratorGroupDaoStub projectDao) {
+            this.collaboratorGroupDao = projectDao;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
+            return (T) this.collaboratorGroupDao.savedObjects.get(entityId);
+
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode) {
+            return (T) this.collaboratorGroupDao.savedObjects.get(entityId);
+        }
+
     }
 
 }

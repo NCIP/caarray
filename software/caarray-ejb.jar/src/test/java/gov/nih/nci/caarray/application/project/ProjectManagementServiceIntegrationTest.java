@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.application.project;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.AbstractCaarrayIntegrationTest;
@@ -102,12 +104,16 @@ import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Date;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -217,8 +223,8 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayInte
         DUMMY_EXPERIMENT_1.getExperimentContacts().add(DUMMY_EXPERIMENT_CONTACT);
     }
 
-    private static ProjectManagementService createProjectManagementService(final FileAccessServiceStub fileAccessServiceStub,
-            GenericDataService genericDataServiceStub) {
+    private static ProjectManagementService createProjectManagementService(
+            final FileAccessServiceStub fileAccessServiceStub, GenericDataService genericDataServiceStub) {
         ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
@@ -230,7 +236,8 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayInte
         ds.setPassword(config.getProperty("hibernate.connection.password"));
         locatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
 
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
+        TemporaryFileCacheLocator
+                .setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
         TemporaryFileCacheLocator.resetTemporaryFileCache();
 
         return bean;
@@ -291,5 +298,47 @@ public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayInte
         }
     }
 
+    @Test
+    public void testChangeProjectOwner() throws Exception {
+        UsernameHolder.setUser(STANDARD_USER);
+        Transaction tx = HibernateUtil.beginTransaction();
+        this.projectManagementService.saveProject(DUMMY_PROJECT_1);
+        tx.commit();
+        
+        tx = HibernateUtil.beginTransaction();
+        assertNotNull(DUMMY_PROJECT_1.getId());
+        Set<User> owners = DUMMY_PROJECT_1.getOwners();
+        assertEquals(1, owners.size());
+        assertEquals(STANDARD_USER, owners.iterator().next().getLoginName());
+        tx.commit();
+        
+        tx = HibernateUtil.beginTransaction();
+        this.projectManagementService.changeOwner(DUMMY_PROJECT_1.getId(), "caarrayuser");
+        tx.commit();
+        
+        tx = HibernateUtil.beginTransaction();
+        HibernateUtil.getCurrentSession().clear();
+        UsernameHolder.setUser("caarrayuser");
+        Project retrieved = this.projectManagementService.getProject(DUMMY_PROJECT_1.getId());
+        assertNotNull(retrieved);
+        assertNotNull(retrieved.getExperiment());
+        assertEquals(DUMMY_PROJECT_1.getExperiment().getTitle(), retrieved.getExperiment().getTitle());
+        owners = retrieved.getOwners();
+        assertEquals(1, owners.size());
+        assertEquals("caarrayuser", owners.iterator().next().getLoginName());
+        tx.commit();
+    }    
     
+    @Test(expected = PermissionDeniedException.class)
+    public void testDeleteUnownedProject() throws Exception {
+        UsernameHolder.setUser("caarrayuser");
+        Transaction tx = HibernateUtil.beginTransaction();
+        this.projectManagementService.saveProject(DUMMY_PROJECT_1);
+        tx.commit();
+        
+        UsernameHolder.setUser(STANDARD_USER);
+        tx = HibernateUtil.beginTransaction();
+        this.projectManagementService.deleteProject(DUMMY_PROJECT_1);
+        tx.commit();
+    }
 }

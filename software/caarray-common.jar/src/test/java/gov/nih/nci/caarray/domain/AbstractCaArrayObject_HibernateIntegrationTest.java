@@ -100,7 +100,7 @@ public abstract class AbstractCaArrayObject_HibernateIntegrationTest extends Abs
 
     @Before
     public void setUp() {
-        HibernateUtil.enableFilters(true);
+        HibernateUtil.setFiltersEnabled(true);
     }
 
     @After

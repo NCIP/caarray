@@ -309,11 +309,16 @@ class MageTabImporter {
         originalExperiment.getReplicateTypes().addAll(translatedExperiment.getReplicateTypes());
         mergeExperimentContacts(originalExperiment, translatedExperiment);
 
-        originalExperiment.getSources().addAll(translatedExperiment.getSources());
-        originalExperiment.getSamples().addAll(translatedExperiment.getSamples());
-        originalExperiment.getExtracts().addAll(translatedExperiment.getExtracts());
-        originalExperiment.getLabeledExtracts().addAll(translatedExperiment.getLabeledExtracts());
         originalExperiment.getHybridizations().addAll(translatedExperiment.getHybridizations());
+        getCaArrayDao().save(originalExperiment.getHybridizations());
+        originalExperiment.getLabeledExtracts().addAll(translatedExperiment.getLabeledExtracts());
+        getCaArrayDao().save(originalExperiment.getLabeledExtracts());
+        originalExperiment.getExtracts().addAll(translatedExperiment.getExtracts());
+        getCaArrayDao().save(originalExperiment.getExtracts());
+        originalExperiment.getSamples().addAll(translatedExperiment.getSamples());
+        getCaArrayDao().save(originalExperiment.getSamples());
+        originalExperiment.getSources().addAll(translatedExperiment.getSources());
+        getCaArrayDao().save(originalExperiment.getSources());
     }
 
     private void mergeExperimentContacts(Experiment originalExperiment, Experiment translatedExperiment) {

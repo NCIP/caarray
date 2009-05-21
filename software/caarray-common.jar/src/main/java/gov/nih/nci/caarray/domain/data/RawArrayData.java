@@ -133,7 +133,6 @@ public class RawArrayData extends AbstractArrayData {
     )
     @ForeignKey(name = "rawarraydata_hybridizations_hybridization_fk",
             inverseName = "rawarraydata_hybridizations_rawarraydata_fk")
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Hybridization> getHybridizations() {
         return hybridizations;
     }

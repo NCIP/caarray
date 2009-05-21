@@ -82,7 +82,11 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.security.authorization.domainobjects.Group;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -105,16 +109,14 @@ public final class HibernateIntegrationTestCleanUpUtility {
 
     private static final Logger LOG = Logger.getLogger(HibernateIntegrationTestCleanUpUtility.class);
     private static List<Class<?>> classesToRemove;
+    private static final String SELF_GROUP_PATTERN = "'" + SecurityUtils.SELF_GROUP_PREFIX + "%'";
 
-    private static final Class<?>[] CSM_CLASSES = {gov.nih.nci.security.authorization.domainobjects.Application.class,
+    private static final Class<?>[] CSM_CLASSES_NOT_TO_REMOVE = {gov.nih.nci.security.authorization.domainobjects.Application.class,
         gov.nih.nci.security.authorization.domainobjects.Group.class,
         gov.nih.nci.security.authorization.domainobjects.Privilege.class,
         gov.nih.nci.security.authorization.domainobjects.ProtectionElement.class,
-        gov.nih.nci.security.authorization.domainobjects.ProtectionGroup.class,
         gov.nih.nci.security.authorization.domainobjects.Role.class,
         gov.nih.nci.security.authorization.domainobjects.User.class,
-        gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup.class,
-        gov.nih.nci.security.authorization.domainobjects.UserProtectionElement.class,
         gov.nih.nci.security.authorization.domainobjects.FilterClause.class };
 
     private HibernateIntegrationTestCleanUpUtility() {
@@ -142,11 +144,31 @@ public final class HibernateIntegrationTestCleanUpUtility {
                 boolean removed = doCleanUp(c);
                 done &= !removed;
             }
+            done &= !doCleanUpProtectionElements();
+            done &= !doCleanUpGroups();
+            done &= !doCleanUpUsers();
         }
         return done;
     }
 
     private static boolean doCleanUp(Class<?> c) {
+        return doCleanUp("DELETE FROM " + c.getName());
+    }
+    
+    private static boolean doCleanUpGroups() {
+        return doCleanUp("DELETE FROM " + Group.class.getName() + " where id > 8 and not (groupName like "
+                + SELF_GROUP_PATTERN + ")");
+    }
+
+    private static boolean doCleanUpProtectionElements() {
+        return doCleanUp("DELETE FROM " + ProtectionElement.class.getName() + " where id > 2");
+    }
+
+    private static boolean doCleanUpUsers() {
+        return doCleanUp("DELETE FROM " + User.class.getName() + " where id > 9");
+    }
+
+    private static boolean doCleanUp(String deleteSql) {
         Transaction tx = null;
         boolean removed = false;
         Session s = null;
@@ -155,7 +177,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
             s.setFlushMode(FlushMode.MANUAL);
             tx = s.beginTransaction();
             disableForeignKeyChecks(s);
-            int deletedObjs = s.createQuery("DELETE FROM " + c.getName()).executeUpdate();
+            int deletedObjs = s.createQuery(deleteSql).executeUpdate();
             if (deletedObjs > 0) {
                 removed = true;
             }
@@ -179,7 +201,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
         classesToRemove = new LinkedList<Class<?>>();
         for (ClassMetadata classMetadata : classMetadataMap.values()) {
             Class<?> persistentClass = classMetadata.getMappedClass(EntityMode.POJO);
-            if (!ArrayUtils.contains(CSM_CLASSES, persistentClass)) {
+            if (!ArrayUtils.contains(CSM_CLASSES_NOT_TO_REMOVE, persistentClass)) {
                 classesToRemove.add(persistentClass);
             }
         }

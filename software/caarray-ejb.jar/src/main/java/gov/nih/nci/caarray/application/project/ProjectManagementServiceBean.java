@@ -120,6 +120,9 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import gov.nih.nci.security.AuthorizationManager;
+import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.exceptions.CSException;
 
 import java.io.File;
 import java.io.InputStream;
@@ -431,6 +434,16 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    public List<Project> getProjectsForOwner(User user) {
+        LogUtil.logSubsystemEntry(LOG, user);
+        List<Project> result = getProjectDao().getProjectsForOwner(user);
+        LogUtil.logSubsystemExit(LOG);
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Project setUseTcgaPolicy(long projectId, boolean useTcgaPolicy) {
         LogUtil.logSubsystemEntry(LOG, projectId);
@@ -717,7 +730,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return getSampleDao().countSourcesByCharacteristicCategory(c, keyword);
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -740,6 +752,17 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return getFileDao().searchFiles(params, criteria);
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void changeOwner(Long projectId, String newOwner) throws CSException {
+        Project project = getDaoFactory().getSearchDao().retrieve(Project.class, projectId);
+        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
+        User newOwnerUser = am.getUser(newOwner);
+        SecurityUtils.changeOwner(project, newOwnerUser);
+    }
+
     private SearchDao getSearchDao() {
         return this.daoFactory.getSearchDao();
     }

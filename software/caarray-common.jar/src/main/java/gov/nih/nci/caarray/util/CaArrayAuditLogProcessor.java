@@ -82,10 +82,6 @@
  */
 package gov.nih.nci.caarray.util;
 
-import com.fiveamsolutions.nci.commons.audit.AuditLogDetail;
-import com.fiveamsolutions.nci.commons.audit.AuditLogRecord;
-import com.fiveamsolutions.nci.commons.audit.AuditType;
-import com.fiveamsolutions.nci.commons.audit.DefaultProcessor;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
@@ -93,12 +89,19 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+
+import com.fiveamsolutions.nci.commons.audit.AuditLogDetail;
+import com.fiveamsolutions.nci.commons.audit.AuditLogRecord;
+import com.fiveamsolutions.nci.commons.audit.AuditType;
+import com.fiveamsolutions.nci.commons.audit.DefaultProcessor;
 
 /**
  *
@@ -107,7 +110,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class CaArrayAuditLogProcessor extends DefaultProcessor {
     
-    private static final Class[] AUDITED_CLASSES = {
+    private static final Class<?>[] AUDITED_CLASSES = {
         Project.class,
         AccessProfile.class,
         CollaboratorGroup.class,
@@ -143,7 +146,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         }
     }
 
-    @SuppressWarnings("PMD.ExcessiveParameterList")
+    @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
     private void logAccessProfile(AuditLogRecord record, AccessProfile entity, String property, String columnName,
             Object oldVal, Object newVal) {
         if ("securityLevelInternal".equals(property)) {
@@ -176,7 +179,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         }
     }
 
-    @SuppressWarnings("PMD.ExcessiveParameterList")
+    @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
     private void logGroup(AuditLogRecord record, Group entity, String property, String columnName,
             Object oldVal, Object newVal) {
         if ("groupName".equals(property)) {

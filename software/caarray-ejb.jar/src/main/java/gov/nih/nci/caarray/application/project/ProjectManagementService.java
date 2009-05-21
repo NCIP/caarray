@@ -102,6 +102,8 @@ import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.exceptions.CSException;
 
 import java.io.File;
 import java.io.InputStream;
@@ -228,6 +230,14 @@ public interface ProjectManagementService {
      * @return all projects directly related to the current user, as described above
      */
     List<Project> getMyProjects(PageSortParams<Project> pageSortParams);
+
+    /**
+     * Gets a the projects belonging to the given user.
+     * 
+     * @param user owner of the desired projects.
+     * @return all projects directly related to the givenuser.
+     */
+    List<Project> getProjectsForOwner(User user);
 
     /**
      * Gets the count of projects belonging to the current user. The count of all projects
@@ -428,7 +438,7 @@ public interface ProjectManagementService {
      * @param categories Indicates which categories to search. Passing null will search all categories.
      * @return a list of matching biomaterials
      */
-    <T extends AbstractBioMaterial>List<T>  searchByCategory(PageSortParams<T> params, String keyword,
+    <T extends AbstractBioMaterial>List<T> searchByCategory(PageSortParams<T> params, String keyword,
             Class<T> biomaterialClass, BiomaterialSearchCategory... categories);
 
     /**
@@ -492,6 +502,15 @@ public interface ProjectManagementService {
      * principal investigator role for some experiment
      */
     List<Person> getAllPrincipalInvestigators();
+
+    /**
+     * Changes the owner of a project.
+     *
+     * @param projectId ID of project to change owner of
+     * @param newOwner username of new owner
+     * @throws CSException on CSM error
+     */
+    void changeOwner(Long projectId, String newOwner) throws CSException;
 
     /**
      * Performs a query for files by the given criteria.

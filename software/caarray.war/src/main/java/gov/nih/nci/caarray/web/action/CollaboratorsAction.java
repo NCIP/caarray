@@ -119,6 +119,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
                 fieldName = "groupName", maxLength = "254", message = "", key = "struts.validator.stringLength"
         )
 )
+@SuppressWarnings("PMD.TooManyMethods")
 public class CollaboratorsAction extends ActionSupport {
 
     private static final long serialVersionUID = 1L;
@@ -136,7 +137,7 @@ public class CollaboratorsAction extends ActionSupport {
      */
     @SkipValidation
     public String listGroups() {
-        this.groups = getPermissionsManagementService().getCollaboratorGroups();
+        this.groups = getPermissionsManagementService().getCollaboratorGroupsForCurrentUser();
         return "list";
     }
 
@@ -236,6 +237,19 @@ public class CollaboratorsAction extends ActionSupport {
             ActionHelper.saveMessage(getText("collaboration.group.removed", new String[] {s}));
         }
         return Action.INPUT;
+    }
+
+    /**
+     * Changes the owner of the collaboration group.
+     * @return listGroups
+     * @throws CSException on CSM error
+     */
+    @SkipValidation
+    public String changeOwner()  throws CSException {
+        getPermissionsManagementService().changeOwner(getTargetGroup().getId(), getUsers().get(0));
+        String grpName = getTargetGroup().getGroup().getGroupName();
+        ActionHelper.saveMessage(getText("collaboration.group.record.ownerChanged", new String[] {grpName}));
+        return listGroups();
     }
 
     /**

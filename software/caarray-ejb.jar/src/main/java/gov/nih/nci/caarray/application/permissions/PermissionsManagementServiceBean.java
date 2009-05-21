@@ -96,6 +96,7 @@ import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.dao.UserSearchCriteria;
+import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
@@ -179,6 +180,17 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+    public List<CollaboratorGroup> getCollaboratorGroupsForCurrentUser() {
+        LogUtil.logSubsystemEntry(LOG);
+        List<CollaboratorGroup> result = getDaoFactory().getCollaboratorGroupDao().getAllForCurrentUser();
+        LogUtil.logSubsystemExit(LOG);
+        return result;
+    }
+
+    /**
      * @return the daoFactory
      */
     public CaArrayDaoFactory getDaoFactory() {
@@ -238,8 +250,8 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
-    public void addUsers(CollaboratorGroup targetGroup, List<String> users)
-    throws CSTransactionException, CSObjectNotFoundException {
+    public void addUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException,
+            CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, users);
         String groupId = targetGroup.getGroup().getGroupId().toString();
         addUsersToGroup(groupId, users, false);
@@ -247,7 +259,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     }
 
     private void addUsersToGroup(String groupId, List<String> users, boolean allowAnonymousUser)
-        throws CSTransactionException, CSObjectNotFoundException {
+            throws CSTransactionException, CSObjectNotFoundException {
         // This is a hack.  We should simply call am.assignUserToGroup, but that method appears to be buggy.
         AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         Set<User> curUsers = am.getUsers(groupId);
@@ -257,9 +269,9 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
             newUsers.add(u.getUserId().toString());
         }
         if (!allowAnonymousUser) {
-            newUsers.remove(SecurityUtils.getAnonymousUser().getUserId().toString());           
+            newUsers.remove(SecurityUtils.getAnonymousUser().getUserId().toString());
         }
- 
+
         String[] userIds = newUsers.toArray(new String[] {});
         am.assignUsersToGroup(groupId, userIds);
     }
@@ -280,8 +292,8 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
-    public void rename(CollaboratorGroup targetGroup, String groupName)
-    throws CSTransactionException, CSObjectNotFoundException {
+    public void rename(CollaboratorGroup targetGroup, String groupName) throws CSTransactionException,
+            CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, groupName);
         AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         Group g = am.getGroupById(targetGroup.getGroup().getGroupId().toString());
@@ -341,5 +353,33 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         LogUtil.logSubsystemEntry(LOG, profile);
         getDaoFactory().getCollaboratorGroupDao().save(profile);
         LogUtil.logSubsystemExit(LOG);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void changeOwner(Long targetGroupId, String username) throws CSException {
+        LogUtil.logSubsystemEntry(LOG, targetGroupId, username);
+        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
+        CollaboratorGroup cg = getDaoFactory().getSearchDao().retrieve(CollaboratorGroup.class, targetGroupId);
+        User newOwner = am.getUser(username);
+        cg.setOwner(newOwner);
+
+        SecurityUtils.changeOwner(cg, newOwner);
+
+        getDaoFactory().getCollaboratorGroupDao().save(cg);
+        LogUtil.logSubsystemExit(LOG);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<CollaboratorGroup> getCollaboratorGroupsForOwner(long userId) {
+        LogUtil.logSubsystemEntry(LOG, userId);
+        List<CollaboratorGroup> result = getDaoFactory().getCollaboratorGroupDao().getAllForUser(userId);
+        LogUtil.logSubsystemExit(LOG);
+        return result;
+
     }
 }

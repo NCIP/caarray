@@ -53,7 +53,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     private Integer sampleResultsCount = null;
     private String actionButton;
     private SampleSecurityLevel securityChoices;
-
+    
     /**
      * {@inheritDoc}
      */

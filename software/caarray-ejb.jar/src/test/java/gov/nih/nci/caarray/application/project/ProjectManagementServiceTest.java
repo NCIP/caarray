@@ -158,7 +158,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
 
     @Before
     public void setUpService() {
-        UsernameHolder.setUser("caarrayadmin");
+        UsernameHolder.setUser(STANDARD_USER);
         ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
         projectManagementServiceBean.setDaoFactory(this.daoFactoryStub);
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
@@ -173,7 +173,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         projectManagementServiceBean.setSessionContext(this.sessionContextStub);
         this.projectManagementService = projectManagementServiceBean;
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectManagementService);
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.setFiltersEnabled(false);
         transaction = HibernateUtil.beginTransaction();
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessService));
         TemporaryFileCacheLocator.resetTemporaryFileCache();
@@ -192,6 +192,13 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
                 this.projectManagementService.getMyProjects(new PageSortParams<Project>(10000, 1,
                         ProjectSortCriterion.PUBLIC_ID, false));
         assertNotNull(projects);
+    }
+
+    @Test
+    public void testGetProjectsForOwner() {
+        User u = UsernameHolder.getCsmUser();
+        List<Project> projects = this.projectManagementService.getProjectsForOwner(u);
+        assertSame(Collections.EMPTY_LIST, projects);
     }
 
     @Test
@@ -279,7 +286,6 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
 
     }
-
 
     @Test
     public void testUnpackFiles() throws Exception {
@@ -419,43 +425,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         this.projectManagementService.copySource(project, 1L);
     }
 
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testDeleteProject() throws Exception {
-        Project project = new Project();
-        project.setId(1L);
-        this.projectManagementService.saveProject(project);
-        assertEquals(project, this.daoFactoryStub.projectDao.lastSaved);
-
-        Project retrieved = this.projectManagementService.getProject(1L);
-        assertEquals(project, retrieved);
-
-        this.projectManagementService.deleteProject(project);
-        retrieved = this.projectManagementService.getProject(1L);
-        assertNull(retrieved.getExperiment().getTitle());
-    }
-
-    @Test(expected = ProposalWorkflowException.class)
-    @SuppressWarnings("deprecation")
-    public void testDeleteLockedProject() throws Exception {
-        Project project = new Project();
-        project.setId(1L);
-        project.setLocked(true);
-        this.projectManagementService.saveProject(project);
-        this.projectManagementService.deleteProject(project);
-    }
-
-    @Test(expected = PermissionDeniedException.class)
-    @SuppressWarnings("deprecation")
-    public void testDeleteUnownedProject() throws Exception {
-        Project project = new Project();
-        project.setId(1L);
-        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
-        this.projectManagementService.saveProject(project);
-        this.projectManagementService.deleteProject(project);
-    }
-
-    /**
+   /**
      * Test method for {@link ProjectManagementService#copyFactor(Project, long)}.
      */
     @Test
@@ -537,7 +507,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
     @Test
     public void testSetUseTcgaPolicy() throws Exception {
         Project project = this.projectManagementService.getProject(123L);
-        UsernameHolder.setUser("caarrayadmin");
+        UsernameHolder.setUser(STANDARD_USER);
         createProtectionGroup(project);
         assertFalse(project.isUseTcgaPolicy());
         this.projectManagementService.setUseTcgaPolicy(123L, true);
@@ -545,7 +515,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         assertTrue(project.isUseTcgaPolicy());
     }
 
-    @Test  (expected = IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     @SuppressWarnings("unchecked")
     public void testGetSampleByExternalIdReturnsNonUniqueResult() throws Exception {
         ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;
@@ -566,6 +536,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
 
         assertNull(this.projectManagementService.getSampleByExternalId(project, "def"));
     }
+
     @Test
     public void testGetSampleByExternalIdReturnsNull() throws Exception {
         ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;
@@ -583,6 +554,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
 
         assertNull(this.projectManagementService.getSampleByExternalId(project, "abc"));
     }
+
     @Test
     public void testGetSampleByExternalId() throws Exception {
         ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;

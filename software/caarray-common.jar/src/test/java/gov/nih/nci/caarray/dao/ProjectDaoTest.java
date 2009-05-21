@@ -1052,6 +1052,21 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     }
 
     @Test
+    public void testGetProjectsForOwner() {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        DAO_OBJECT.save(DUMMY_PROJECT_1);
+        DAO_OBJECT.save(DUMMY_PROJECT_2);
+        DAO_OBJECT.save(DUMMY_PROJECT_3);
+        tx.commit();
+        tx = HibernateUtil.beginTransaction();
+        User u = UsernameHolder.getCsmUser();
+        List<Project> projects = DAO_OBJECT.getProjectsForOwner(u);
+        assertEquals(3, projects.size());
+        tx.commit();
+    }
+
+    @Test
     public void testGetTermsForExperiment() {
         Transaction tx = null;
         try {

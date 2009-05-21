@@ -97,12 +97,15 @@ import java.util.List;
 public class PermissionsManagementServiceStub implements PermissionsManagementService {
 
     private CollaboratorGroup currentGroup;
+    private Long currentGroupId;
     private boolean getCalled = false;
+    private boolean getForUserCalled = false;
     private String name = null;
     private List<String> addedUsers;
     private List<String> removedUsers;
     private boolean getUsersCalled = false;
     private AccessProfile savedProfile;
+    private boolean changeOwnerCalled = false;
 
     /**
      * @return the getUsersCalled
@@ -127,10 +130,25 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     }
 
     /**
-     * @return the deletedGroup
+     * {@inheritDoc}
+     */
+    public List<CollaboratorGroup> getCollaboratorGroupsForCurrentUser() {
+        getForUserCalled = true;
+        return Collections.emptyList();
+    }
+
+    /**
+     * @return the currentGroup
      */
     public CollaboratorGroup getCurrentGroup() {
         return currentGroup;
+    }
+
+    /**
+     * @return the currentGroupId
+     */
+    public Long getCurrentGroupId() {
+        return currentGroupId;
     }
 
     /**
@@ -141,16 +159,25 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     }
 
     /**
+     * @return the getForUserCalled
+     */
+    public boolean isGetForUserCalled() {
+        return getForUserCalled;
+    }
+
+    /**
      * resets stub state.
      */
     public void reset() {
         currentGroup = null;
         getCalled = false;
+        getForUserCalled = false;
         name = null;
         addedUsers = null;
         removedUsers = null;
         getUsersCalled = false;
         savedProfile = null;
+        changeOwnerCalled = false;
     }
 
     /**
@@ -239,9 +266,19 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
-    public CollaboratorGroup getCollaboratorGroup(long id) {
-        CollaboratorGroup g = new CollaboratorGroup();
-        g.setId(id);
-        return g;
+    public void changeOwner(Long targetGroupId, String username) throws CSTransactionException {
+        changeOwnerCalled = true;
+        currentGroupId = targetGroupId;
     }
+
+    /**
+     * @return the changeOwnerCalled
+     */
+    public boolean isChangeOwnerCalled() {
+        return changeOwnerCalled;
+    }
+    public List<CollaboratorGroup> getCollaboratorGroupsForOwner(long userId) {
+        return Collections.emptyList();
+    }
+
 }

@@ -105,7 +105,9 @@ import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.security.exceptions.CSException;
 
+import gov.nih.nci.security.authorization.domainobjects.User;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -171,6 +173,13 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      * {@inheritDoc}
      */
     public List<Project> getMyProjects(PageSortParams<Project> pageSortParams) {
+        return Collections.EMPTY_LIST;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Project> getProjectsForOwner(User user) {
         return Collections.EMPTY_LIST;
     }
 
@@ -460,7 +469,12 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     public List<Source> searchSourcesByCharacteristicCategory(
             PageSortParams<Source> params, Category c, String keyword) {
         return Collections.EMPTY_LIST;
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void changeOwner(Long projectId, String newOwner) throws CSException {
     }
 
     public List<Person> getAllPrincipalInvestigators() {

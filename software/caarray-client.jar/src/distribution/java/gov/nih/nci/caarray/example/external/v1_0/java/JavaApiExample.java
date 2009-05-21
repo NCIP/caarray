@@ -156,14 +156,14 @@ public class JavaApiExample {
     private static final String TEST_FILE_TYPE_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AGILENT_CSV";
     private static final String TEST_ORGANISM_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:1";
     private static final String TEST_EXPERIMENT_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1";
-//    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:89";
-//    private static final String TEST_HYB2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:93";
-//    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:230";
-//    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:246";
-    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1";
-    private static final String TEST_HYB2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:2";
-    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:1";
-    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:2";
+    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:89";
+    private static final String TEST_HYB2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:93";
+    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:230";
+    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:246";
+//    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1";
+//    private static final String TEST_HYB2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:2";
+//    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:1";
+//    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:2";
 
     public static void main(String[] args) {
         JavaApiExample client = new JavaApiExample();

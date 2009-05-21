@@ -176,6 +176,25 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
+    public List<Project> getProjectsForOwner(User user) {
+        final String q = "SELECT DISTINCT p FROM " + Project.class.getName()
+                + " p left join fetch p.experiment e where p.id in"
+                + "(select pe.value from " + ProtectionElement.class.getName()
+                        + " pe where pe.objectId = :objectId and pe.attribute = :attribute and "
+                        + " pe.application = :application and :user in elements(pe.owners)) ";
+
+        Query query = getCurrentSession().createQuery(q);
+        query.setString("objectId", Project.class.getName());
+        query.setString("attribute", "id");
+        query.setEntity("application", SecurityUtils.getApplication());
+        query.setEntity("user", user);
+
+        return query.list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public int getProjectCountForCurrentUser() {
         Query q = getProjectsForUserQuery(true, null);
         return ((Number) q.uniqueResult()).intValue();

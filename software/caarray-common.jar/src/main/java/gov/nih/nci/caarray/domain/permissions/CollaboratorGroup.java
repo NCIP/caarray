@@ -135,7 +135,7 @@ public class CollaboratorGroup implements PersistentObject, Protectable {
             throw new IllegalArgumentException("Group and owner must be non-null");
         }
         setGroup(group);
-        setOwner(owner);
+        this.owner = owner;
     }
 
     /**
@@ -185,7 +185,10 @@ public class CollaboratorGroup implements PersistentObject, Protectable {
         return owner;
     }
 
-    private void setOwner(User owner) {
+    /**
+     * @param owner owner to set
+     */
+    public void setOwner(User owner) {
         this.owner = owner;
     }
 
