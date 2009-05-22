@@ -208,7 +208,7 @@ public class DownloadDataColumnsFromIlluminaFile {
         // ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         // experimentSearchCriteria.setPublicIdentifier(EXPERIMENT_PUBLIC_IDENTIFIER);
 
-        List<Experiment> experiments = searchService.searchForExperiments(experimentSearchCriteria, null);
+        List<Experiment> experiments = (searchService.searchForExperiments(experimentSearchCriteria, null)).getResults();
         if (experiments == null || experiments.size() <= 0) {
             return null;
         }
@@ -216,8 +216,7 @@ public class DownloadDataColumnsFromIlluminaFile {
         // Assuming that only one experiment was found, pick the first result.
         // This will always be true for a search by public identifier, but may not be true for a search by title.
         Experiment experiment = experiments.iterator().next();
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
-        return experimentRef;
+        return experiment.getReference();
     }
 
     /**
@@ -228,7 +227,7 @@ public class DownloadDataColumnsFromIlluminaFile {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
 
-        List<DataFile> files = searchService.searchForFiles(fileSearchCriteria, null);
+        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
         if (files == null || files.size() <= 0) {
             return null;
         }
@@ -236,8 +235,7 @@ public class DownloadDataColumnsFromIlluminaFile {
         // The client application will typically let the user choose one out of the many files,
         // but we will just pick the first result here.
         DataFile file = files.iterator().next();
-        CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
-        return fileRef;
+        return file.getReference();
     }
 
     /**
@@ -257,8 +255,7 @@ public class DownloadDataColumnsFromIlluminaFile {
                 return null;
             }
             QuantitationType quantitationType = quantitationTypes.iterator().next();
-            CaArrayEntityReference quantitationTypeRef = new CaArrayEntityReference(quantitationType.getId());
-            quantitationTypeRefs.add(quantitationTypeRef);
+            quantitationTypeRefs.add(quantitationType.getReference());
         }
         return quantitationTypeRefs;
     }

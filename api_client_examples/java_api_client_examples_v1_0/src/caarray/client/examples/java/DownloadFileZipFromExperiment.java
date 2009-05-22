@@ -94,7 +94,9 @@ import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
+import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.ByteArrayOutputStream;
@@ -103,8 +105,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.healthmarketscience.rmiio.RemoteOutputStreamServer;
-import com.healthmarketscience.rmiio.SimpleRemoteOutputStream;
 import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
@@ -115,6 +115,7 @@ import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 public class DownloadFileZipFromExperiment {
     private static SearchService searchService = null;
     private static DataService dataService = null;
+    private DataApiUtils dataServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
 
     public static void main(String[] args) {
@@ -159,7 +160,7 @@ public class DownloadFileZipFromExperiment {
         // ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         // experimentSearchCriteria.setPublicIdentifier(EXPERIMENT_PUBLIC_IDENTIFIER);
 
-        List<Experiment> experiments = searchService.searchForExperiments(experimentSearchCriteria, null);
+        List<Experiment> experiments = (searchService.searchForExperiments(experimentSearchCriteria, null)).getResults();
         if (experiments == null || experiments.size() <= 0) {
             return null;
         }
@@ -167,8 +168,7 @@ public class DownloadFileZipFromExperiment {
         // Assuming that only one experiment was found, pick the first result.
         // This will always be true for a search by public identifier, but may not be true for a search by title.
         Experiment experiment = experiments.iterator().next();
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
-        return experimentRef;
+        return experiment.getReference();
     }
 
     /**
@@ -190,7 +190,7 @@ public class DownloadFileZipFromExperiment {
         // fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
         // fileSearchCriteria.setExtension(".CHP");
 
-        List<DataFile> files = searchService.searchForFiles(fileSearchCriteria, null);
+        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
         if (files.size() <= 0) {
             return null;
         }
@@ -198,8 +198,7 @@ public class DownloadFileZipFromExperiment {
         // Return references to the files.
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
         for (DataFile file : files) {
-            CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
-            fileRefs.add(fileRef);
+            fileRefs.add(file.getReference());
         }
         return fileRefs;
     }
@@ -212,8 +211,7 @@ public class DownloadFileZipFromExperiment {
         SearchResult<FileType> results = searchService.searchByExample(criteria, null);
         List<FileType> fileTypes = results.getResults();
         FileType celFileType = fileTypes.iterator().next();
-        CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference(celFileType.getId());
-        return celFileTypeRef;
+        return celFileType.getReference();
     }
 
     /**
@@ -221,16 +219,15 @@ public class DownloadFileZipFromExperiment {
      */
     private void downloadZipOfFiles(List<CaArrayEntityReference> fileRefs) throws RemoteException,
             MalformedURIException, IOException, Exception {
+        dataServiceHelper = new JavaDataApiUtils(dataService);
         FileDownloadRequest downloadRequest = new FileDownloadRequest();
         downloadRequest.setFiles(fileRefs);
         boolean compressEachIndividualFile = false;
-        RemoteOutputStreamServer outStream = null;
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        outStream = new SimpleRemoteOutputStream(byteArrayOutputStream);
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         long startTime = System.currentTimeMillis();
-        dataService.streamFileContentsZip(downloadRequest, compressEachIndividualFile, outStream);
+        dataServiceHelper.copyFileContentsZipToOutputStream(downloadRequest, compressEachIndividualFile, outStream);
         long totalTime = System.currentTimeMillis() - startTime;
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        byte[] byteArray = outStream.toByteArray();
         if (byteArray != null) {
             System.out.println("Retrieved " + byteArray.length + " bytes in " + totalTime + " ms.");
         } else {

@@ -82,7 +82,6 @@
  */
 package caarray.client.examples.java;
 
-import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
@@ -123,7 +122,7 @@ public class SearchExperimentsByKeyword {
         KeywordSearchCriteria criteria = new KeywordSearchCriteria();
         criteria.setKeyword(KEYPHRASE);
         long startTime = System.currentTimeMillis();
-        List<Experiment> experiments = searchService.searchForExperimentsByKeyword(criteria, null);
+        List<Experiment> experiments = (searchService.searchForExperimentsByKeyword(criteria, null)).getResults();
         long totalTime = System.currentTimeMillis() - startTime;
         if (experiments == null || experiments.size() <= 0) {
             System.err.println("No experiments found.");
@@ -144,11 +143,10 @@ public class SearchExperimentsByKeyword {
         System.out.print(experiment.getOrganism().getScientificName() + "\t");
 
         // Retrieve and print number of samples.
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
         BiomaterialSearchCriteria criteria = new BiomaterialSearchCriteria();
-        criteria.setExperiment(experimentRef);
+        criteria.setExperiment(experiment.getReference());
         criteria.getTypes().add(BiomaterialType.SAMPLE);
-        List<Biomaterial> biomaterials = searchService.searchForBiomaterials(criteria, null);
+        List<Biomaterial> biomaterials = (searchService.searchForBiomaterials(criteria, null)).getResults();
         int numSamples = biomaterials == null ? 0 : biomaterials.size();
         System.out.print(numSamples + "\t");
 

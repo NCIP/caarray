@@ -185,7 +185,7 @@ public class SelectFiles {
         // ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         // experimentSearchCriteria.setPublicIdentifier(EXPERIMENT_PUBLIC_IDENTIFIER);
 
-        List<Experiment> experiments = searchService.searchForExperiments(experimentSearchCriteria, null);
+        List<Experiment> experiments = (searchService.searchForExperiments(experimentSearchCriteria, null)).getResults();
         if (experiments.size() <= 0) {
             return null;
         }
@@ -193,8 +193,7 @@ public class SelectFiles {
         // Assuming that only one experiment was found, pick the first result.
         // This will always be true for a search by public identifier, but may not be true for a search by title.
         Experiment experiment = experiments.iterator().next();
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
-        return experimentRef;
+        return experiment.getReference();
     }
 
     /**
@@ -207,14 +206,13 @@ public class SelectFiles {
         criteria.getNames().add(SAMPLE_NAME_01);
         criteria.getNames().add(SAMPLE_NAME_02);
         criteria.getTypes().add(BiomaterialType.SAMPLE);
-        List<Biomaterial> samples = searchService.searchForBiomaterials(criteria, null);
+        List<Biomaterial> samples = (searchService.searchForBiomaterials(criteria, null)).getResults();
         if (samples == null || samples.size() <= 0) {
             return null;
         }
         Set<CaArrayEntityReference> sampleRefs = new HashSet<CaArrayEntityReference>();
         for (Biomaterial sample : samples) {
-            CaArrayEntityReference sampleRef = new CaArrayEntityReference(sample.getId());
-            sampleRefs.add(sampleRef);
+            sampleRefs.add(sample.getReference());
         }
         return sampleRefs;
     }
@@ -228,7 +226,7 @@ public class SelectFiles {
         fileSearchCriteria.setExperiment(experimentRef);
         fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
 
-        List<DataFile> files = searchService.searchForFiles(fileSearchCriteria, null);
+        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
         if (files.size() <= 0) {
             return null;
         }
@@ -236,9 +234,8 @@ public class SelectFiles {
         // Return references to the files.
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
         for (DataFile file : files) {
-            CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
             System.out.print(file.getName() + "  ");
-            fileRefs.add(fileRef);
+            fileRefs.add(file.getReference());
         }
         return fileRefs;
     }
@@ -254,7 +251,7 @@ public class SelectFiles {
         CaArrayEntityReference celFileTypeRef = getCelFileType();
         fileSearchCriteria.getTypes().add(celFileTypeRef);
 
-        List<DataFile> files = searchService.searchForFiles(fileSearchCriteria, null);
+        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
         if (files.size() <= 0) {
             return null;
         }
@@ -262,9 +259,8 @@ public class SelectFiles {
         // Return references to the files.
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
         for (DataFile file : files) {
-            CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
             System.out.print(file.getName() + "  ");
-            fileRefs.add(fileRef);
+            fileRefs.add(file.getReference());
         }
         return fileRefs;
     }
@@ -277,8 +273,7 @@ public class SelectFiles {
         SearchResult<FileType> results = searchService.searchByExample(criteria, null);
         List<FileType> fileTypes = results.getResults();
         FileType celFileType = fileTypes.iterator().next();
-        CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference(celFileType.getId());
-        return celFileTypeRef;
+        return celFileType.getReference();
     }
 
     /**
@@ -292,7 +287,7 @@ public class SelectFiles {
         fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
         fileSearchCriteria.setExtension(".CHP");
 
-        List<DataFile> files = searchService.searchForFiles(fileSearchCriteria, null);
+        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
         if (files.size() <= 0) {
             return null;
         }
@@ -300,9 +295,8 @@ public class SelectFiles {
         // Return references to the files.
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
         for (DataFile file : files) {
-            CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
             System.out.print(file.getName() + "  ");
-            fileRefs.add(fileRef);
+            fileRefs.add(file.getReference());
         }
         return fileRefs;
     }
@@ -314,10 +308,10 @@ public class SelectFiles {
             Set<CaArrayEntityReference> sampleRefs) throws RemoteException, InvalidReferenceException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
-        fileSearchCriteria.setBiomaterials(sampleRefs);
+        fileSearchCriteria.setExperimentGraphNodes(sampleRefs);
         fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
 
-        List<DataFile> files = searchService.searchForFiles(fileSearchCriteria, null);
+        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
         if (files.size() <= 0) {
             return null;
         }
@@ -325,9 +319,8 @@ public class SelectFiles {
         // Return references to the files.
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
         for (DataFile file : files) {
-            CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
             System.out.print(file.getName() + "  ");
-            fileRefs.add(fileRef);
+            fileRefs.add(file.getReference());
         }
         return fileRefs;
     }

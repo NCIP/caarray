@@ -152,14 +152,13 @@ public class DownloadMageTabExport {
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
 
-        List<Experiment> experiments = searchService.searchForExperiments(experimentSearchCriteria, null);
+        List<Experiment> experiments = (searchService.searchForExperiments(experimentSearchCriteria, null)).getResults();
         if (experiments == null || experiments.size() <= 0) {
             return null;
         }
 
         // Multiple experiments with the same name can exist. Here, we're picking the first result.
         Experiment experiment = experiments.iterator().next();
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
-        return experimentRef;
+        return experiment.getReference();
     }
 }

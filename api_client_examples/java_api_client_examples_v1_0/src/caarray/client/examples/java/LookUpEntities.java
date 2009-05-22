@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.factor.Factor;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
 import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
@@ -106,6 +107,7 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
@@ -123,6 +125,7 @@ public class LookUpEntities {
     private static SearchService searchService = null;
     private static long startTime;
     private static long totalTime;
+    private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
 
     public static void main(String[] args) {
         LookUpEntities entityFinder = new LookUpEntities();
@@ -139,7 +142,7 @@ public class LookUpEntities {
         }
     }
 
-    private void lookup() throws RemoteException, NoEntityMatchingReferenceException {
+    private void lookup() throws RemoteException, NoEntityMatchingReferenceException, InvalidReferenceException {
         lookupArrayDataTypes();
         lookupArrayDesigns();
         lookupArrayProviders();
@@ -158,8 +161,8 @@ public class LookUpEntities {
         lookupTerms();
         lookupTermSources();
         lookupPrincipalInvestigators();
-        // lookupAnnotationCategories();
-        // lookupAnnotationValues(category);
+        lookupCharacteristicCategories();
+        lookupTermsInCategory();
 
         lookupEntityByReference();
         lookupEntitiesByReference();
@@ -424,7 +427,7 @@ public class LookUpEntities {
 
     private void lookupPrincipalInvestigators() throws RemoteException {
         startTime = System.currentTimeMillis();
-        List<Person> investigators = searchService.getAllPrincipalInvestigators(null);
+        List<Person> investigators = searchService.getAllPrincipalInvestigators();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + investigators.size() + " principal investigators in " + totalTime + " ms.");
         for (Person investigator : investigators) {
@@ -433,9 +436,33 @@ public class LookUpEntities {
         System.out.println("End of principal investigator lookup.");
     }
 
+    private void lookupCharacteristicCategories() throws RemoteException, InvalidReferenceException {
+        CaArrayEntityReference experimentRef = searchForExperiment();
+        startTime = System.currentTimeMillis();
+        List<Category> categories = searchService.getAllCharacteristicCategories(experimentRef);
+        totalTime = System.currentTimeMillis() - startTime;
+        System.out.println("Found " + categories.size() + " characteristic categories in " + totalTime + " ms.");
+        for (Category category : categories) {
+            System.out.print(category.getName() + "  ");
+        }
+        System.out.println("End of characteristic categories lookup.");
+    }
+
+    private void lookupTermsInCategory() throws RemoteException, InvalidReferenceException {
+        CaArrayEntityReference categoryRef = getCategoryReference();
+        startTime = System.currentTimeMillis();
+        List<Term> terms = searchService.getTermsForCategory(categoryRef, null);
+        totalTime = System.currentTimeMillis() - startTime;
+        System.out.println("Found " + terms.size() + " terms in the given category in " + totalTime + " ms.");
+        for (Term term : terms) {
+            System.out.print(term.getValue() + "  ");
+        }
+        System.out.println("End of terms in category lookup.");
+    }
+
     private void lookupEntityByReference() throws RemoteException, NoEntityMatchingReferenceException {
         CaArrayEntityReference organismRef = new CaArrayEntityReference(
-                "URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5");
+        "URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5");
         startTime = System.currentTimeMillis();
         Organism organism = (Organism) searchService.getByReference(organismRef);
         totalTime = System.currentTimeMillis() - startTime;
@@ -449,9 +476,9 @@ public class LookUpEntities {
     private void lookupEntitiesByReference() throws RemoteException, NoEntityMatchingReferenceException {
         List<CaArrayEntityReference> organismRefs = new ArrayList<CaArrayEntityReference>();
         organismRefs
-                .add(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5"));
+        .add(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5"));
         organismRefs
-                .add(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:3"));
+        .add(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:3"));
         startTime = System.currentTimeMillis();
         List<AbstractCaArrayEntity> organisms = searchService.getByReferences(organismRefs);
         totalTime = System.currentTimeMillis() - startTime;
@@ -477,7 +504,8 @@ public class LookUpEntities {
         SearchResult<Person> results = searchService.searchByExample(criteria, null);
         List<Person> persons = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + persons.size() + " persons with last name starting with Gan in " + totalTime + " ms.");
+        System.out.println("Found " + persons.size() + " persons with last name starting with Gan in " + totalTime
+                + " ms.");
         for (Person person : persons) {
             System.out.print(person.getLastName() + "  ");
         }
@@ -490,7 +518,8 @@ public class LookUpEntities {
         results = searchService.searchByExample(criteria, null);
         persons = results.getResults();
         totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + persons.size() + " persons with last name ending in ing in " + totalTime + " ms.");
+        System.out
+        .println("Found " + persons.size() + " persons with last name ending in ing in " + totalTime + " ms.");
         for (Person person : persons) {
             System.out.print(person.getLastName() + "  ");
         }
@@ -550,5 +579,36 @@ public class LookUpEntities {
             System.out.print(experiment.getTitle() + "  ");
         }
         System.out.println("End of experiment lookup.");
+    }
+
+    /**
+     * Search for an experiment based on its title.
+     */
+    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidReferenceException {
+        // Search for experiment with the given title.
+        ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
+        experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
+
+        List<Experiment> experiments = (searchService.searchForExperiments(experimentSearchCriteria, null))
+        .getResults();
+        if (experiments == null || experiments.size() <= 0) {
+            return null;
+        }
+
+        // Multiple experiments with the same name can exist. Here, we're picking the first result.
+        Experiment experiment = experiments.iterator().next();
+        return experiment.getReference();
+    }
+
+    private CaArrayEntityReference getCategoryReference() {
+        String TISSUE_SITE_CATEGORY = "OrganismPart";
+        ExampleSearchCriteria<Category> criteria = new ExampleSearchCriteria<Category>();
+        Category exampleCategory = new Category();
+        exampleCategory.setName(TISSUE_SITE_CATEGORY);
+        criteria.setExample(exampleCategory);
+        SearchResult<Category> results = searchService.searchByExample(criteria, null);
+        List<Category> categories = results.getResults();
+        CaArrayEntityReference categoryRef = categories.get(0).getReference();
+        return categoryRef;
     }
 }

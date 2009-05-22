@@ -194,7 +194,7 @@ public class DownloadDataColumnsFromHybridizations {
         // ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         // experimentSearchCriteria.setPublicIdentifier(EXPERIMENT_PUBLIC_IDENTIFIER);
 
-        List<Experiment> experiments = searchService.searchForExperiments(experimentSearchCriteria, null);
+        List<Experiment> experiments = (searchService.searchForExperiments(experimentSearchCriteria, null)).getResults();
         if (experiments == null || experiments.size() <= 0) {
             return null;
         }
@@ -202,8 +202,7 @@ public class DownloadDataColumnsFromHybridizations {
         // Assuming that only one experiment was found, pick the first result.
         // This will always be true for a search by public identifier, but may not be true for a search by title.
         Experiment experiment = experiments.iterator().next();
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
-        return experimentRef;
+        return experiment.getReference();
     }
 
     /**
@@ -213,7 +212,7 @@ public class DownloadDataColumnsFromHybridizations {
             throws RemoteException, InvalidReferenceException {
         HybridizationSearchCriteria searchCriteria = new HybridizationSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
-        List<Hybridization> hybridizations = searchService.searchForHybridizations(searchCriteria, null);
+        List<Hybridization> hybridizations = (searchService.searchForHybridizations(searchCriteria, null)).getResults();
         if (hybridizations == null || hybridizations.size() <= 0) {
             return null;
         }
@@ -221,8 +220,7 @@ public class DownloadDataColumnsFromHybridizations {
         // Get references to the hybridizations.
         Set<CaArrayEntityReference> hybridizationRefs = new HashSet<CaArrayEntityReference>();
         for (Hybridization hybridization : hybridizations) {
-            CaArrayEntityReference hybridizationRef = new CaArrayEntityReference(hybridization.getId());
-            hybridizationRefs.add(hybridizationRef);
+            hybridizationRefs.add(hybridization.getReference());
         }
 
         // Check if the hybridizations have CHP files associated with them.
@@ -237,9 +235,9 @@ public class DownloadDataColumnsFromHybridizations {
             InvalidReferenceException {
         FileSearchCriteria searchCriteria = new FileSearchCriteria();
         CaArrayEntityReference chpFileTypeRef = getChpFileType();
-        searchCriteria.setHybridizations(hybridizationRefs);
+        searchCriteria.setExperimentGraphNodes(hybridizationRefs);
         searchCriteria.getTypes().add(chpFileTypeRef);
-        List<DataFile> dataFiles = searchService.searchForFiles(searchCriteria, null);
+        List<DataFile> dataFiles = (searchService.searchForFiles(searchCriteria, null)).getResults();
         if (dataFiles == null || dataFiles.size() == 0) {
             return false;
         } else {
@@ -255,8 +253,7 @@ public class DownloadDataColumnsFromHybridizations {
         SearchResult<FileType> results = searchService.searchByExample(criteria, null);
         List<FileType> fileTypes = results.getResults();
         FileType chpFileType = fileTypes.iterator().next();
-        CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference(chpFileType.getId());
-        return chpFileTypeRef;
+        return chpFileType.getReference();
     }
 
     private Set<CaArrayEntityReference> selectQuantitationTypes() {
@@ -273,8 +270,7 @@ public class DownloadDataColumnsFromHybridizations {
                 return null;
             }
             QuantitationType quantitationType = quantitationTypes.iterator().next();
-            CaArrayEntityReference quantitationTypeRef = new CaArrayEntityReference(quantitationType.getId());
-            quantitationTypeRefs.add(quantitationTypeRef);
+            quantitationTypeRefs.add(quantitationType.getReference());
         }
         return quantitationTypeRefs;
     }

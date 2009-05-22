@@ -89,8 +89,10 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
+import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.ByteArrayOutputStream;
@@ -98,8 +100,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import com.healthmarketscience.rmiio.RemoteOutputStreamServer;
-import com.healthmarketscience.rmiio.SimpleRemoteOutputStream;
 import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
@@ -110,6 +110,7 @@ import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 public class DownloadFile {
     private static SearchService searchService = null;
     private static DataService dataService = null;
+    private DataApiUtils dataServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
     private static final String DATA_FILE_NAME = BaseProperties.CEL_DATA_FILE_NAME;
 
@@ -152,7 +153,7 @@ public class DownloadFile {
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
 
-        List<Experiment> experiments = searchService.searchForExperiments(experimentSearchCriteria, null);
+        List<Experiment> experiments = (searchService.searchForExperiments(experimentSearchCriteria, null)).getResults();
         if (experiments == null || experiments.size() <= 0) {
             return null;
         }
@@ -160,8 +161,7 @@ public class DownloadFile {
         // Assuming that only one experiment was found, pick the first result.
         // This assumption will not always be true.
         Experiment experiment = experiments.iterator().next();
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
-        return experimentRef;
+        return experiment.getReference();
     }
 
     /**
@@ -172,29 +172,27 @@ public class DownloadFile {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
 
-        List<DataFile> files = searchService.searchForFiles(fileSearchCriteria, null);
+        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
         if (files == null || files.size() <= 0) {
             return null;
         }
 
         for (DataFile file : files) {
             if (DATA_FILE_NAME.equals(file.getName())) {
-                CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
-                return fileRef;
+                return file.getReference();
             }
         }
         return null;
     }
 
-    private void downloadContents(CaArrayEntityReference fileRef) throws RemoteException, DataTransferException, InvalidReferenceException {
+    private void downloadContents(CaArrayEntityReference fileRef) throws RemoteException, DataTransferException, InvalidReferenceException, IOException {
+        dataServiceHelper = new JavaDataApiUtils(dataService);
         boolean compressFile = false;
-        RemoteOutputStreamServer outStream = null;
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        outStream = new SimpleRemoteOutputStream(byteArrayOutputStream);
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         long startTime = System.currentTimeMillis();
-        dataService.streamFileContents(fileRef, compressFile, outStream);
+        dataServiceHelper.copyFileContentsToOutputStream(fileRef, compressFile, outStream);
         long totalTime = System.currentTimeMillis() - startTime;
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        byte[] byteArray = outStream.toByteArray();
 
         if (byteArray != null) {
             System.out.println("Retrieved " + byteArray.length + " bytes in " + totalTime + " ms.");

@@ -91,7 +91,7 @@ import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.query.AnnotationCriterion;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
@@ -137,13 +137,12 @@ public class SearchExperimentsByCriteria {
         ArrayProvider exampleProvider = new ArrayProvider();
         exampleProvider.setName(PROVIDER_NAME);
         providerCriteria.setExample(exampleProvider);
-        SearchResult<ArrayProvider> providerResults = searchService.searchByExample(providerCriteria, null);
-        List<ArrayProvider> arrayProviders = providerResults.getResults();
+        List<ArrayProvider> arrayProviders = searchService.searchByExample(providerCriteria, null).getResults();
         if (arrayProviders == null || arrayProviders.size() <= 0) {
             System.err.println("Could not find array provider called " + PROVIDER_NAME);
             return;
         }
-        CaArrayEntityReference providerRef = new CaArrayEntityReference(arrayProviders.get(0).getId());
+        CaArrayEntityReference providerRef = arrayProviders.get(0).getReference();
         experimentSearchCriteria.setArrayProvider(providerRef);
 
         // Select organism. (See LookUpEntities example client to see how to get list of all organisms.)
@@ -151,13 +150,12 @@ public class SearchExperimentsByCriteria {
         Organism exampleOrganism = new Organism();
         exampleOrganism.setCommonName(ORGANISM_NAME);
         organismCriteria.setExample(exampleOrganism);
-        SearchResult<Organism> organismResults = searchService.searchByExample(organismCriteria, null);
-        List<Organism> organisms = organismResults.getResults();
+        List<Organism> organisms = searchService.searchByExample(organismCriteria, null).getResults();
         if (organisms == null || organisms.size() <= 0) {
             System.err.println("Could not find organism with common name = " + ORGANISM_NAME);
             return;
         }
-        CaArrayEntityReference organismRef = new CaArrayEntityReference(organisms.get(0).getId());
+        CaArrayEntityReference organismRef = organisms.get(0).getReference();
         experimentSearchCriteria.setOrganism(organismRef);
 
         // Select assay type. (See LookUpEntities example client to see how to get list of all assay types.)
@@ -165,24 +163,21 @@ public class SearchExperimentsByCriteria {
         AssayType exampleAssayType = new AssayType();
         exampleAssayType.setName(ASSAY_TYPE);
         assayTypeCriteria.setExample(exampleAssayType);
-        SearchResult<AssayType> assayTypeResults = searchService.searchByExample(assayTypeCriteria, null);
-        List<AssayType> assayTypes = assayTypeResults.getResults();
+        List<AssayType> assayTypes = searchService.searchByExample(assayTypeCriteria, null).getResults();
         if (assayTypes == null || assayTypes.size() <= 0) {
             System.err.println("Could not find assay type " + ASSAY_TYPE);
             return;
         }
-        CaArrayEntityReference assayTypeRef = new CaArrayEntityReference(assayTypes.get(0).getId());
+        CaArrayEntityReference assayTypeRef = assayTypes.get(0).getReference();
         experimentSearchCriteria.setAssayType(assayTypeRef);
 
         // Select principal investigator.
         // Typically, the client application will search for all principal investigators, display the list of
         // PIs to the user and let the user pick one. But in this sample code, we are picking one.
-        List<Person> investigators = searchService.getAllPrincipalInvestigators(null);
-        CaArrayEntityReference investigatorRef = null;
+        List<Person> investigators = searchService.getAllPrincipalInvestigators();
         for (Person investigator : investigators) {
             if (PI_NAME.equalsIgnoreCase(investigator.getLastName())) {
-                investigatorRef = new CaArrayEntityReference(investigator.getId());
-                experimentSearchCriteria.setPrincipalInvestigator(investigatorRef);
+                experimentSearchCriteria.setPrincipalInvestigator(investigator.getReference());
                 break;
             }
         }
@@ -193,17 +188,28 @@ public class SearchExperimentsByCriteria {
         // we are picking one ("Brain").
         AnnotationCriterion tissueSite = new AnnotationCriterion();
         tissueSite.setValue(TISSUE_SITE_VALUE);
-        tissueSite.setCategory(TISSUE_SITE_CATEGORY);
-        experimentSearchCriteria.getAnnotations().add(tissueSite);
+        CaArrayEntityReference categoryRef = getCategoryReference(TISSUE_SITE_CATEGORY);
+        tissueSite.setCategory(categoryRef);
+        experimentSearchCriteria.getAnnotationCriterions().add(tissueSite);
 
         // Search for experiments that satisfy all of the above criteria.
         long startTime = System.currentTimeMillis();
-        List<Experiment> experiments = searchService.searchForExperiments(experimentSearchCriteria, null);
+        List<Experiment> experiments = (searchService.searchForExperiments(experimentSearchCriteria, null)).getResults();
         long totalTime = System.currentTimeMillis() - startTime;
         if (experiments == null || experiments.size() <= 0) {
             System.out.println("No experiments found matching the requested criteria.");
         } else {
             System.out.println("Retrieved " + experiments.size() + " experiments in " + totalTime + " ms.");
         }
+    }
+
+    private CaArrayEntityReference getCategoryReference(String categoryName) {
+        ExampleSearchCriteria<Category> criteria = new ExampleSearchCriteria<Category>();
+        Category exampleCategory = new Category();
+        exampleCategory.setName(categoryName);
+        criteria.setExample(exampleCategory);
+        List<Category> categories = searchService.searchByExample(criteria, null).getResults();
+        CaArrayEntityReference categoryRef = categories.get(0).getReference();
+        return categoryRef;
     }
 }
