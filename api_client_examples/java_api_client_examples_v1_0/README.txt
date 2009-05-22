@@ -23,6 +23,8 @@ Clients to test the caArray Java API v1.0:
      download_multiple_files
      download_data_columns_from_file
      download_data_columns_from_hyb
+     download_data_columns_from_illumina_file
+     download_data_columns_from_genepix_file
      download_sample_annotations
      lookup_entities
      download_magetab_export
@@ -35,4 +37,4 @@ following public experiment being present:
    Name: Affymetrix Experiment for API Testing
    Array design: Test3.cdf
    Data files: test3_data.zip
-The data/ directory contains these files if you need them.
+The data/ directory contains these (and other) files if you need them.
