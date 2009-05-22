@@ -179,6 +179,32 @@
         </java>
     </target>
 
+    <target name="download_data_columns_from_illumina_file" depends="build">
+        <java classname="caarray.client.examples.java.DownloadDataColumnsFromIlluminaFile">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+        </java>
+    </target>
+
+    <target name="download_data_columns_from_genepix_file" depends="build">
+        <java classname="caarray.client.examples.java.DownloadDataColumnsFromGenepixFile">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+        </java>
+    </target>
+
     <!-- ******************************************************************* -->
     <!-- ** DOWNLOAD SAMPLE ANNOTATIONS                                   ** -->
     <!-- ******************************************************************* -->
