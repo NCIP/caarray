@@ -168,9 +168,9 @@ final class IdfTranslator extends AbstractTranslator {
                 termSourceNamesSet.add(termSourceName);
             }
             if (termSourceKeysByUrlSet.contains(urlTermSourceKey)) { // cannot have same URL *and* version
-                idfDocument.addErrorMessage("Duplicate term source version '"
-                    + termSourceVersion + "' and URL '" + termSourceUrl
-                    + "' for term source named '" + termSourceName + "'.");
+                idfDocument.addErrorMessage("Redundant term source named '" + termSourceName
+                    + "'. Term sources cannot have the same URL unless they have different "
+                    + "versions, even if their names are different.");
             } else {
                 termSourceKeysByUrlSet.add(urlTermSourceKey);
             }

@@ -500,18 +500,16 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         ValidationResult validationResult = this.translator.validate(TestMageTabSets.INVALID_DUPLICATE_TERM_SOURCES_DATA_SET, caArrayFileSet);
         assertFalse(validationResult.getMessages().isEmpty());
         assertEquals(7, validationResult.getMessages(ValidationMessage.Type.ERROR).size());
-        String prototypeOneErrorString =
-            "Duplicate term source version '*unversioned*' "
-            + "and URL 'http://ncicb.nci.nih.gov/' for term source named '%s'.";
-        String prototypeTwoErrorString =
-            "Duplicate term source version '*unversioned*' "
-            + "and URL 'http://foo2.com/' for term source named '%s'.";
-        assertEquals(String.format(prototypeOneErrorString, "LM_3"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(0).getMessage());
-        assertEquals(String.format(prototypeOneErrorString, "LM_2"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(1).getMessage());
-        assertEquals(String.format(prototypeOneErrorString, "LM_1"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(2).getMessage());
-        assertEquals(String.format(prototypeOneErrorString, "LM"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(3).getMessage());
-        assertEquals(String.format(prototypeTwoErrorString, "FOO2"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(4).getMessage());
-        assertEquals(String.format(prototypeTwoErrorString, "FOO"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(5).getMessage());
+        String prototypeString =
+            "Redundant term source named '%s'. Term sources cannot have "
+            + "the same URL unless they have different versions, even if "
+            + "their names are different.";
+        assertEquals(String.format(prototypeString, "LM_3"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(0).getMessage());
+        assertEquals(String.format(prototypeString, "LM_2"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(1).getMessage());
+        assertEquals(String.format(prototypeString, "LM_1"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(2).getMessage());
+        assertEquals(String.format(prototypeString, "LM"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(3).getMessage());
+        assertEquals(String.format(prototypeString, "FOO2"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(4).getMessage());
+        assertEquals(String.format(prototypeString, "FOO"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(5).getMessage());
         assertEquals("Duplicate term source name 'FOO'.", validationResult.getMessages(ValidationMessage.Type.ERROR).get(6).getMessage());
     }
     
