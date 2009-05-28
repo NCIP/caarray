@@ -227,7 +227,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      * {@inheritDoc}
      */
     public void addUsers(String groupName, String... usernames)
-    throws CSTransactionException, CSObjectNotFoundException {
+            throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, groupName, usernames);
         AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         Group group = SecurityUtils.findGroupByName(groupName);
@@ -368,6 +368,5 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         List<CollaboratorGroup> result = getDaoFactory().getCollaboratorGroupDao().getAllForUser(userId);
         LogUtil.logSubsystemExit(LOG);
         return result;
-
     }
 }

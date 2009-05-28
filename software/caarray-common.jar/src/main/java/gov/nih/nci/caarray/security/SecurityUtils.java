@@ -875,6 +875,13 @@ public final class SecurityUtils {
     }
 
     /**
+     * create a group.
+     * This method is a partial replacement for
+     * {@link AuthorizationManager#createGroup(gov.nih.nci.security.authorization.domainobjects.Group)}
+     * to ensure that groups are loaded using the caArray (audited) Hibernate session.
+     * It does not perform some of the validations that caArray already does.
+     * Does not demarcate transactions; should be called from a service layer.
+     *
      * @param group the CSM group to creat.
      * @throws CSTransactionException if a hibernate exception occures.
      */
@@ -890,6 +897,12 @@ public final class SecurityUtils {
     }
 
     /**
+     * add a multiple users from a group.
+     * This method is a partial replacement for
+     * {@link AuthorizationManager#assignUsersToGroup(java.lang.String, java.lang.String[])}
+     * to ensure that groups are loaded using the caArray (audited) Hibernate session.
+     * Does not demarcate transactions; should be called from a service layer.
+     *
      * @param groupId  the CSM group Id to add the users to.
      * @param userIds the CSM user Ids to add to the group.
      * @throws CSTransactionException if a hibernate exception occures.
@@ -912,6 +925,12 @@ public final class SecurityUtils {
     }
 
     /**
+     * remove a user from a group.
+     * This method is a partial replacement for
+     * {@link AuthorizationManager#removeUserFromGroup(java.lang.String, java.lang.String)}
+     * to ensure that groups are loaded using the caArray (audited) Hibernate session.
+     * Does not demarcate transactions; should be called from a service layer.
+     *
      * @param groupId  the CSM group Id to add the users to.
      * @param userId Id of the CSM user to remove to the group.
      * @throws CSTransactionException if a hibernate exception occures.
@@ -931,6 +950,11 @@ public final class SecurityUtils {
     }
 
     /**
+     * delete the group identified by it's Id.
+     * This method is a partial replacement for
+     * {@link AuthorizationManager#removeGroup(java.lang.String)}
+     * to ensure that groups are loaded using the caArray (audited) Hibernate session.
+     *
      * @param groupId the CSM group Id to delete.
      * @throws CSTransactionException if a hibernate exception occures.
      */
@@ -945,6 +969,12 @@ public final class SecurityUtils {
     }
 
     /**
+     * get all users belonging in the group identified by it's Id.
+     * This method is a partial replacement for
+     * {@link AuthorizationManager#getUsers(java.lang.String)}
+     * to ensure that groups are loaded using the caArray (audited) Hibernate session.
+     * Does not demarcate transactions; should be called from a service layer.
+     *
      * @param groupId CSM group id.
      * @return list of members.
      * @throws CSTransactionException if a hibernate exception occures.
@@ -964,6 +994,12 @@ public final class SecurityUtils {
     }
 
     /**
+     * find a group my it's name in this the caArray application context.
+     * This method is a partial replacement for
+     * {@link AuthorizationManager#getObjects(gov.nih.nci.security.dao.SearchCriteria)}
+     * to ensure that groups are loaded using the caArray (audited) Hibernate session.
+     * Does not demarcate transactions; should be called from a service layer.
+     * 
      * @param g group name
      * @return a group in this app that has the given name.
      * @throws CSTransactionException if a hibernate exception occures.
