@@ -439,9 +439,10 @@ grid.index.url=http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexSe
             <fileset dir="${caarray.ear.target.dir}" includes="**/*.ear" />
         </copy>
 
-        <copy todir="${caarray.dist.dir}/grid" overwrite="true">
+        <copy todir="${caarray.dist.dir}/grid" overwrite="true"
+  flatten="true">
             <fileset dir="${caarray.grid.dir}">
-                <include name="cagrid_CaArraySvc*.zip"/>
+                <include name="**/cagrid_CaArraySvc*.zip"/>
             </fileset>
         </copy>
         <copy todir="${caarray.dist.dir}/grid" file="${caarray.src.dir}/build/resources/deploy/jboss-globus-serverinstance-config.zip" />
@@ -506,9 +507,10 @@ grid.index.url=http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexSe
             <fileset dir="${caarray.ear.target.dir}" includes="**/*.ear" />
         </copy>
 
-        <copy todir="${caarray.dist.dir}/grid" overwrite="true">
+        <copy todir="${caarray.dist.dir}/grid" overwrite="true"
+   flatten="true">
             <fileset dir="${caarray.grid.dir}">
-                <include name="cagrid_CaArraySvc*.zip"/>
+                <include name="**/cagrid_CaArraySvc*.zip"/>
             </fileset>
         </copy>
         <copy todir="${caarray.dist.dir}/grid" file="${caarray.src.dir}/build/resources/deploy/jboss-globus-serverinstance-config.zip" />
