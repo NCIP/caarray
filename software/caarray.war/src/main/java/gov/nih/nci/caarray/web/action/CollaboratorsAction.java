@@ -128,8 +128,7 @@ public class CollaboratorsAction extends ActionSupport {
     private CollaboratorGroup targetGroup;
     private String groupName;
     private User targetUser = new User();
-    /** We keep these values (the ids) as Strings because the CSM API uses Strings. */
-    private List<String> users;
+    private List<Long> users;
     private List<User> allUsers;
 
     /**
@@ -201,7 +200,7 @@ public class CollaboratorsAction extends ActionSupport {
             getPermissionsManagementService().addUsers(getTargetGroup(), getUsers());
             String s = "Users";
             if (getUsers().size() == 1) {
-                User u = SecurityUtils.getAuthorizationManager().getUserById(getUsers().get(0));
+                User u = SecurityUtils.getAuthorizationManager().getUserById(getUsers().get(0).toString());
                 s = u.getFirstName() + " " + u.getLastName() + " (" + u.getLoginName() + ")";
             }
             ActionHelper.saveMessage(getText("collaboration.group.added", new String[] {s}));
@@ -231,25 +230,12 @@ public class CollaboratorsAction extends ActionSupport {
             getPermissionsManagementService().removeUsers(getTargetGroup(), getUsers());
             String s = "Users";
             if (getUsers().size() == 1) {
-                User u = SecurityUtils.getAuthorizationManager().getUserById(getUsers().get(0));
+                User u = SecurityUtils.getAuthorizationManager().getUserById(getUsers().get(0).toString());
                 s = u.getFirstName() + " " + u.getLastName() + " (" + u.getLoginName() + ")";
             }
             ActionHelper.saveMessage(getText("collaboration.group.removed", new String[] {s}));
         }
         return Action.INPUT;
-    }
-
-    /**
-     * Changes the owner of the collaboration group.
-     * @return listGroups
-     * @throws CSException on CSM error
-     */
-    @SkipValidation
-    public String changeOwner()  throws CSException {
-        getPermissionsManagementService().changeOwner(getTargetGroup().getId(), getUsers().get(0));
-        String grpName = getTargetGroup().getGroup().getGroupName();
-        ActionHelper.saveMessage(getText("collaboration.group.record.ownerChanged", new String[] {grpName}));
-        return listGroups();
     }
 
     /**
@@ -338,14 +324,14 @@ public class CollaboratorsAction extends ActionSupport {
     /**
      * @return the users
      */
-    public List<String> getUsers() {
+    public List<Long> getUsers() {
         return users;
     }
 
     /**
      * @param users the users to set
      */
-    public void setUsers(List<String> users) {
+    public void setUsers(List<Long> users) {
         this.users = users;
     }
 

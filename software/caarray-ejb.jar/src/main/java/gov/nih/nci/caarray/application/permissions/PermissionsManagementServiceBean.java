@@ -94,7 +94,6 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.dao.UserSearchCriteria;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
@@ -143,13 +142,12 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
                                   UsernameHolder.getUser(), group.getGroup().getGroupName()));
         }
 
-        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         for (AccessProfile ap : group.getAccessProfiles()) {
             ap.getProject().removeGroupProfile(group);
             getGenericDataService().delete(ap);
         }
         getGenericDataService().delete(group);
-        am.removeGroup(group.getGroup().getGroupId().toString());
+        SecurityUtils.removeGroup(group.getGroup().getGroupId());
 
         LogUtil.logSubsystemExit(LOG);
     }
@@ -209,12 +207,11 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      */
     public CollaboratorGroup create(String name) throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, name);
-        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
+        
         Group group = new Group();
         group.setGroupName(name);
         group.setGroupDesc("Collaborator Group");
-        group.setApplication(SecurityUtils.getApplication());
-        am.createGroup(group);
+        SecurityUtils.createGroup(group);
 
         User user = UsernameHolder.getCsmUser();
 
@@ -233,58 +230,50 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, groupName, usernames);
         AuthorizationManager am = SecurityUtils.getAuthorizationManager();
-        Group group = new Group();
+        Group group = SecurityUtils.findGroupByName(groupName);
         group.setGroupName(groupName);
-        GroupSearchCriteria gsc = new GroupSearchCriteria(group);
-        List<Group> groupList = am.getObjects(gsc);
-        String groupId = groupList.get(0).getGroupId().toString();
-        List<String> users = new ArrayList<String>();
+        List<Long> users = new ArrayList<Long>();
         for (String username : usernames) {
-            String userId = am.getUser(username).getUserId().toString();
-            users.add(userId);
+            users.add(am.getUser(username).getUserId());
         }
-        addUsersToGroup(groupId, users, SecurityUtils.ANONYMOUS_GROUP.equals(groupName));
+        addUsersToGroup(group.getGroupId(), users, SecurityUtils.ANONYMOUS_GROUP.equals(groupName));
         LogUtil.logSubsystemExit(LOG);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void addUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException,
-            CSObjectNotFoundException {
+    public void addUsers(CollaboratorGroup targetGroup, List<Long> users)
+            throws CSObjectNotFoundException, CSTransactionException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, users);
-        String groupId = targetGroup.getGroup().getGroupId().toString();
+        Long groupId = targetGroup.getGroup().getGroupId();
         addUsersToGroup(groupId, users, false);
         LogUtil.logSubsystemExit(LOG);
     }
 
-    private void addUsersToGroup(String groupId, List<String> users, boolean allowAnonymousUser)
-            throws CSTransactionException, CSObjectNotFoundException {
-        // This is a hack.  We should simply call am.assignUserToGroup, but that method appears to be buggy.
-        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
-        Set<User> curUsers = am.getUsers(groupId);
-        Set<String> newUsers = new HashSet<String>(curUsers.size() + users.size());
+    private void addUsersToGroup(Long groupId, List<Long> users, boolean allowAnonymousUser)
+            throws CSObjectNotFoundException, CSTransactionException {
+        Set<User> curUsers = SecurityUtils.getUsers(groupId);
+        Set<Long> newUsers = new HashSet<Long>(curUsers.size() + users.size());
         newUsers.addAll(users);
         for (User u : curUsers) {
-            newUsers.add(u.getUserId().toString());
+            newUsers.add(u.getUserId());
         }
         if (!allowAnonymousUser) {
-            newUsers.remove(SecurityUtils.getAnonymousUser().getUserId().toString());
+            newUsers.remove(SecurityUtils.getAnonymousUser().getUserId());           
         }
 
-        String[] userIds = newUsers.toArray(new String[] {});
-        am.assignUsersToGroup(groupId, userIds);
+        SecurityUtils.assignUsersToGroup(groupId, newUsers);
     }
 
 
     /**
      * {@inheritDoc}
      */
-    public void removeUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException {
-        LogUtil.logSubsystemEntry(LOG, targetGroup, users);
-        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
-        for (String u : users) {
-            am.removeUserFromGroup(targetGroup.getGroup().getGroupId().toString(), u);
+    public void removeUsers(CollaboratorGroup targetGroup, List<Long> userIds) throws CSTransactionException {
+        LogUtil.logSubsystemEntry(LOG, targetGroup, userIds);
+        for (Long u : userIds) {
+            SecurityUtils.removeUserFromGroup(targetGroup.getGroup().getGroupId(), u);
         }
         LogUtil.logSubsystemExit(LOG);
     }
@@ -295,11 +284,10 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     public void rename(CollaboratorGroup targetGroup, String groupName) throws CSTransactionException,
             CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, groupName);
-        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
-        Group g = am.getGroupById(targetGroup.getGroup().getGroupId().toString());
+        
+        Group g = targetGroup.getGroup();
         g.setGroupName(groupName);
-        am.modifyGroup(g);
-        HibernateUtil.getCurrentSession().refresh(targetGroup.getGroup());
+        HibernateUtil.getCurrentSession().update(g);
         LogUtil.logSubsystemExit(LOG);
     }
 

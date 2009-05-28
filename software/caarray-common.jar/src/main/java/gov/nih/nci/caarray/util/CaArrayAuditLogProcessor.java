@@ -149,7 +149,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
     @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
     private void logAccessProfile(AuditLogRecord record, AccessProfile entity, String property, String columnName,
             Object oldVal, Object newVal) {
-        if ("securityLevelInternal".equals(property)) {
+        if ("securityLevelInternal".equals(property) && !entity.isHostProfile()) {
             AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
             super.processDetail(detail, oldVal, newVal);
             String type = entity.isPublicProfile() ? "Public" : "Group";
@@ -172,7 +172,8 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
             super.processDetail(detail, oldVal, newVal);
             String newS = Boolean.TRUE.equals(newVal) ? "Locked" : "Unlocked";
-            detail.setMessage("Project " + entity.getExperiment().getTitle() + " " + newS);
+            detail.setMessage("Project " + entity.getExperiment().getTitle() + " " + newS
+                    + (record.getType() == AuditType.INSERT ?  " when created" : ""));
             record.getDetails().add(detail);
         } else {
             LOG.debug("ignoring property " + record.getEntityName() + "." + property);
@@ -187,7 +188,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             if (record.getType() == AuditType.INSERT) {
                 AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
                 super.processDetail(detail, oldVal, newVal);
-                detail.setMessage("Group " + newVal + "created");
+                detail.setMessage("Group " + newVal + " created");
                 record.getDetails().add(detail);
                 if (entity.getUsers() != null) {
                     for (Object u : entity.getUsers()) {

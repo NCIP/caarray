@@ -1,6 +1,8 @@
 package gov.nih.nci.caarray.util;
 
+import org.hibernate.criterion.Order;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.dao.AbstractDaoTest;
 import gov.nih.nci.caarray.dao.AbstractProjectDaoTest;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
@@ -18,6 +20,9 @@ import org.hibernate.Transaction;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.audit.AuditLogDetail;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.PropertyProjection;
 
 /**
  *
@@ -42,12 +47,15 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
         g1.setApplication(SecurityUtils.getApplication());
         g1.setUpdateDate(new Date());
         g1.setUsers(new HashSet<User>());
-        g1.getUsers().add(u1);        
+        g1.getUsers().add(u1);
+        
     }
 
     @Test
     public void testProcessDetailGroupCreate() {
         Transaction tx = HibernateUtil.beginTransaction();
+        HibernateUtil.getCurrentSession().createQuery("delete from " + AuditLogDetail.class.getName()).executeUpdate();
+
         
         setupUsersAndGroups();
     
@@ -57,8 +65,13 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
         tx.commit();
         
         tx = HibernateUtil.beginTransaction();
-        List<AuditLogDetail> l = HibernateUtil.getCurrentSession().createCriteria(AuditLogDetail.class).list();
+        Criteria c = HibernateUtil.getCurrentSession().createCriteria(AuditLogDetail.class)
+                .setProjection(Projections.property("message"));
+
+        List<String> l = c.list();
         assertEquals(2L, l.size());
+        assertTrue(l.contains("Group group1 created"));
+        assertTrue(l.contains("User user1 added to group group1"));
         tx.commit();
 
     
@@ -69,11 +82,11 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
         Transaction tx = HibernateUtil.beginTransaction();        
         ProjectTestHelper helper = new ProjectTestHelper(){};
         helper.setup();
-        helper.saveStuff();
+        ProjectTestHelper.saveStuff();
         HibernateUtil.getCurrentSession().flush();
         List<AuditLogDetail> l = HibernateUtil.getCurrentSession().createCriteria(AuditLogDetail.class).list();
-        Project p = helper.getDummyProject();
-        p.getPublicProfile().getSampleSecurityLevels().put(helper.getDummySample(), SampleSecurityLevel.READ);
+        Project p = ProjectTestHelper.getDummyProject();
+        p.getPublicProfile().getSampleSecurityLevels().put(ProjectTestHelper.getDummySample(), SampleSecurityLevel.READ);
         HibernateUtil.getCurrentSession().saveOrUpdate(p);
         HibernateUtil.getCurrentSession().flush();
 

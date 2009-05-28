@@ -149,6 +149,12 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
     @SuppressWarnings("unchecked")
     @After
     public void after() {
+        try {
+            tx.commit();
+        } catch (Exception e) {
+            tx.rollback();
+        }
+        tx = HibernateUtil.beginTransaction();
         HibernateUtil.getCurrentSession().createQuery("delete FROM " + Group.class.getName() + " g where g.groupName like '" + TEST + "%'").executeUpdate();
         tx.commit();
     }
@@ -201,14 +207,14 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
     @Test
     public void testAddAndRemoveUsers() throws CSTransactionException, CSObjectNotFoundException {
         CollaboratorGroup created = this.permissionsManagementService.create(TEST);
-        List<String> toAdd = new ArrayList<String>();
+        List<Long> toAdd = new ArrayList<Long>();
         Long anonId = SecurityUtils.getAnonymousUser().getUserId();
-        toAdd.add(anonId.toString());
-        toAdd.add("3");
-        toAdd.add("4");
+        toAdd.add(anonId);
+        toAdd.add(3L);
+        toAdd.add(4L);
         this.permissionsManagementService.addUsers(created, toAdd);
-        // gymnastics here due to auth manager being it's own session
-//        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        HibernateUtil.getCurrentSession().flush();
+        
         Group g =  (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
         User anonUser = (User) HibernateUtil.getCurrentSession().load(User.class, anonId);
         User user3 = (User) HibernateUtil.getCurrentSession().load(User.class, 3L);
@@ -216,15 +222,13 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
         Hibernate.initialize(anonUser.getGroups());
         assertFalse(anonUser.getGroups().contains(g));
         assertTrue(user3.getGroups().contains(g));
-        assertTrue(user3.getGroups().contains(g));
+        assertTrue(user4.getGroups().contains(g));
 
-        tx.commit();
 
-        List<String> toRemove = new ArrayList<String>();
-        toRemove.add("3");
+        List<Long> toRemove = new ArrayList<Long>();
+        toRemove.add(3L);
         this.permissionsManagementService.removeUsers(created, toRemove);
-        // go the other way or remove - make sure groups are set correctly
-        tx = HibernateUtil.getCurrentSession().beginTransaction();
+        HibernateUtil.getCurrentSession().flush();
 
         HibernateUtil.getCurrentSession().refresh(anonUser);
         HibernateUtil.getCurrentSession().refresh(user3);
@@ -250,7 +254,7 @@ public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
     public void testAddUsersToCollaboratorGroup() throws CSTransactionException, CSObjectNotFoundException {
         CollaboratorGroup created = this.permissionsManagementService.create(TEST);
 //        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
-        this.permissionsManagementService.addUsers(created, Arrays.asList("3", "2", "1"));
+        this.permissionsManagementService.addUsers(created, Arrays.asList(3L, 2L, 1L));
         Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
         assertEquals(2, g.getUsers().size());
         for (User u : (Set<User>) g.getUsers()) {

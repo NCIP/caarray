@@ -140,7 +140,7 @@ public interface PermissionsManagementService {
      * @throws CSTransactionException  on CSM error
      * @throws CSObjectNotFoundException on CSM error
      */
-    void addUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException,
+    void addUsers(CollaboratorGroup targetGroup, List<Long> users) throws CSTransactionException,
             CSObjectNotFoundException;
 
     /**
@@ -156,10 +156,10 @@ public interface PermissionsManagementService {
      * Removes users from the target group.
      *
      * @param targetGroup group to remove members from
-     * @param users user ids to remove (as strings)
+     * @param userIds user ids to remove (as strings)
      * @throws CSTransactionException  on CSM error
      */
-    void removeUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException;
+    void removeUsers(CollaboratorGroup targetGroup, List<Long> userIds) throws CSTransactionException;
 
     /**
      * Renames a collaboration group.

@@ -145,6 +145,14 @@ public final class HibernateUtil {
     }
 
     /**
+     * Get the audit logger interceptor.
+     * @return AUDIT_LOG_INTERCEPTOR.
+     */
+    public static AuditLogInterceptor getAuditLogInterceptor() {
+        return AUDIT_LOG_INTERCEPTOR;
+    }
+
+    /**
      * Returns the Hibernate configuration.
      *
      * @return a Hibernate configuration.

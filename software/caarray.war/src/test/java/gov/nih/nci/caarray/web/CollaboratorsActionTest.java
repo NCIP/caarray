@@ -147,21 +147,7 @@ public class CollaboratorsActionTest extends AbstractCaarrayTest {
         assertEquals(cg, pstub.getCurrentGroup());
     }
 
-    @Test
-    public void testChangeOwner() throws Exception {
-        User owner = new User();
-        Group group = new Group();
-        CollaboratorGroup cg = new CollaboratorGroup(group, owner);
-        cg.setId(1L);
-        action.setTargetGroup(cg);
-        action.setUsers(new ArrayList<String>());
-        action.getUsers().add("newOwner");
-        action.changeOwner();
-        assertTrue(pstub.isChangeOwnerCalled());
-        assertTrue(pstub.isGetForUserCalled());
-        assertEquals(1L, pstub.getCurrentGroupId());
-    }
-
+    
     @Test
     public void testName() throws CSException {
         action.setGroupName("test");
@@ -186,14 +172,14 @@ public class CollaboratorsActionTest extends AbstractCaarrayTest {
         Group group = new Group();
         group.setUsers(Collections.emptySet());
         CollaboratorGroup cg = new CollaboratorGroup(group, owner);
-        List<String> toAdd = new ArrayList<String>();
-        toAdd.add("1");
+        List<Long> toAdd = new ArrayList<Long>();
+        toAdd.add(1L);
 
         action.setTargetGroup(cg);
         action.setUsers(toAdd);
         action.addUsers();
 
-        List<String> stubAdd = pstub.getAddedUsers();
+        List<Long> stubAdd = pstub.getAddedUsers();
         CollaboratorGroup stubGroup = pstub.getCurrentGroup();
         assertEquals(toAdd.size(), stubAdd.size());
         assertEquals(cg, stubGroup);
@@ -204,14 +190,14 @@ public class CollaboratorsActionTest extends AbstractCaarrayTest {
         User owner = new User();
         Group group = new Group();
         CollaboratorGroup cg = new CollaboratorGroup(group, owner);
-        List<String> toAdd = new ArrayList<String>();
-        toAdd.add("1");
+        List<Long> toAdd = new ArrayList<Long>();
+        toAdd.add(1L);
 
         action.setTargetGroup(cg);
         action.setUsers(toAdd);
         action.removeUsers();
 
-        List<String> stubRemove = pstub.getRemovedUsers();
+        List<Long> stubRemove = pstub.getRemovedUsers();
         CollaboratorGroup stubGroup = pstub.getCurrentGroup();
         assertEquals(toAdd.size(), stubRemove.size());
         assertEquals(cg, stubGroup);

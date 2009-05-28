@@ -101,8 +101,8 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     private boolean getCalled = false;
     private boolean getForUserCalled = false;
     private String name = null;
-    private List<String> addedUsers;
-    private List<String> removedUsers;
+    private List<Long> addedUsers;
+    private List<Long> removedUsers;
     private boolean getUsersCalled = false;
     private AccessProfile savedProfile;
     private boolean changeOwnerCalled = false;
@@ -198,7 +198,7 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
-    public void addUsers(CollaboratorGroup targetGroup, List<String> users) {
+    public void addUsers(CollaboratorGroup targetGroup, List<Long> users) {
         addedUsers = users;
         currentGroup = targetGroup;
     }
@@ -214,7 +214,7 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
-    public void removeUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException {
+    public void removeUsers(CollaboratorGroup targetGroup, List<Long> users) throws CSTransactionException {
         removedUsers = users;
         currentGroup = targetGroup;
     }
@@ -222,14 +222,14 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     /**
      * @return uses added via addUsers
      */
-    public List<String> getAddedUsers() {
+    public List<Long> getAddedUsers() {
         return addedUsers;
     }
 
     /**
      * @return users removed via removeusers
      */
-    public List<String> getRemovedUsers() {
+    public List<Long> getRemovedUsers() {
         return removedUsers;
     }
 

@@ -123,6 +123,7 @@ import java.util.Set;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.core.io.Resource;
@@ -131,6 +132,8 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.util.HibernateHelper;
+import org.hibernate.HibernateException;
+import org.hibernate.criterion.Restrictions;
 
 /**
  * Utility class containing methods for synchronizing our security data model with CSM, as well as a facade for querying
@@ -869,5 +872,111 @@ public final class SecurityUtils {
      */
     public static void setPrivilegedMode(boolean privilegedMode) {
         PRIVILEGED_MODE.set(privilegedMode);
+    }
+
+    /**
+     * @param group the CSM group to creat.
+     * @throws CSTransactionException if a hibernate exception occures.
+     */
+    public static void createGroup(Group group) throws CSTransactionException {
+        try {
+            group.setUpdateDate(new Date());
+            group.setApplication(getApplication());
+            Session s = HibernateUtil.getCurrentSession();
+            s.save(group);
+        } catch (HibernateException e) {
+            throw new CSTransactionException(e);
+        }
+    }
+
+    /**
+     * @param groupId  the CSM group Id to add the users to.
+     * @param userIds the CSM user Ids to add to the group.
+     * @throws CSTransactionException if a hibernate exception occures.
+     */
+    public static void assignUsersToGroup(Long groupId, Set<Long> userIds) throws CSTransactionException {
+        try {
+            Session s = HibernateUtil.getCurrentSession();
+            Group group = (Group) s.load(Group.class, groupId);
+            if (group.getUsers() == null) {
+                group.setUsers(new HashSet(userIds.size()));
+            }
+            for (Long uId : userIds) {
+                User u = (User) s.load(User.class, uId);
+                group.getUsers().add(u);
+            }
+            s.update(group);
+        } catch (HibernateException e) {
+            throw new CSTransactionException(e);
+        }
+    }
+
+    /**
+     * @param groupId  the CSM group Id to add the users to.
+     * @param userId Id of the CSM user to remove to the group.
+     * @throws CSTransactionException if a hibernate exception occures.
+     */
+    public static void removeUserFromGroup(Long groupId, Long userId) throws CSTransactionException {
+        try {
+            Session s = HibernateUtil.getCurrentSession();
+            Group group = (Group) s.load(Group.class, groupId);
+            User user = (User) s.load(User.class, userId);
+            user.getGroups().remove(group);
+            group.getUsers().remove(user);
+            s.update(user);
+            s.update(group);
+        } catch (HibernateException e) {
+            throw new CSTransactionException(e);
+        }
+    }
+
+    /**
+     * @param groupId the CSM group Id to delete.
+     * @throws CSTransactionException if a hibernate exception occures.
+     */
+    public static void removeGroup(Long groupId) throws CSTransactionException {
+        try {
+            Session s = HibernateUtil.getCurrentSession();
+            Group group = (Group) s.load(Group.class, groupId);
+            s.delete(group);
+        } catch (HibernateException e) {
+            throw new CSTransactionException(e);
+        }
+    }
+
+    /**
+     * @param groupId CSM group id.
+     * @return list of members.
+     * @throws CSTransactionException if a hibernate exception occures.
+     */
+    public static Set<User> getUsers(Long groupId) throws CSTransactionException {
+        try {
+            Session s = HibernateUtil.getCurrentSession();
+            Group group = (Group) s.load(Group.class, groupId);
+            Set<User> us = group.getUsers();
+            if (us == null) {
+                us = Collections.EMPTY_SET;
+            }
+            return us;
+        } catch (HibernateException e) {
+            throw new CSTransactionException(e);
+        }
+    }
+
+    /**
+     * @param g group name
+     * @return a group in this app that has the given name.
+     * @throws CSTransactionException if a hibernate exception occures.
+     */
+    public static Group findGroupByName(String g) throws CSTransactionException {
+        try {
+            Session s = HibernateUtil.getCurrentSession();
+            Criteria c = s.createCriteria(Group.class);
+            c.add(Restrictions.eq("groupName", g));
+            c.add(Restrictions.eq("application", getApplication()));
+            return (Group) c.uniqueResult();
+        } catch (HibernateException e) {
+            throw new CSTransactionException(e);
+        }
     }
 }
