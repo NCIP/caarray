@@ -104,9 +104,7 @@ import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
-import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
 import java.io.IOException;
@@ -194,8 +192,7 @@ public class DownloadDataColumnsFromHybridizations {
         // Assuming that only one experiment was found, pick the first result.
         // This will always be true for a search by public identifier, but may not be true for a search by title.
         Experiment experiment = experiments[0];
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
-        return experimentRef;
+        return experiment.getReference();
     }
 
     /**
@@ -212,8 +209,7 @@ public class DownloadDataColumnsFromHybridizations {
         // Get references to the hybridizations.
         Set<CaArrayEntityReference> hybridizationRefs = new HashSet<CaArrayEntityReference>();
         for (Hybridization hybridization : hybridizations) {
-            CaArrayEntityReference hybridizationRef = new CaArrayEntityReference(hybridization.getId());
-            hybridizationRefs.add(hybridizationRef);
+            hybridizationRefs.add(hybridization.getReference());
         }
 
         // Check if the hybridizations have CHP files associated with them.
@@ -227,7 +223,7 @@ public class DownloadDataColumnsFromHybridizations {
     private boolean haveChpFiles(Set<CaArrayEntityReference> hybridizationRefs) throws RemoteException {
         FileSearchCriteria searchCriteria = new FileSearchCriteria();
         CaArrayEntityReference chpFileTypeRef = getChpFileType();
-        searchCriteria.setHybridizations(hybridizationRefs);
+        searchCriteria.setExperimentGraphNodes(hybridizationRefs);
         searchCriteria.getTypes().add(chpFileTypeRef);
         DataFile[] dataFiles = client.searchForFiles(searchCriteria);
         if (dataFiles == null || dataFiles.length == 0) {
@@ -237,19 +233,17 @@ public class DownloadDataColumnsFromHybridizations {
         }
     }
 
-    private CaArrayEntityReference getChpFileType() {
+    private CaArrayEntityReference getChpFileType() throws RemoteException {
         ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CHP");
         criteria.setExample(exampleFileType);
-        SearchResult<FileType> results = client.searchByExample(criteria, null);
-        List<FileType> fileTypes = results.getResults();
+        List<FileType> fileTypes = (client.searchByExample(criteria)).getResults();
         FileType chpFileType = fileTypes.iterator().next();
-        CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference(chpFileType.getId());
-        return chpFileTypeRef;
+        return chpFileType.getReference();
     }
 
-    private Set<CaArrayEntityReference> selectQuantitationTypes() {
+    private Set<CaArrayEntityReference> selectQuantitationTypes() throws RemoteException {
         ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
         Set<CaArrayEntityReference> quantitationTypeRefs = new HashSet<CaArrayEntityReference>();
         String[] quantitationTypeNames = QUANTITATION_TYPES_CSV_STRING.split(",");
@@ -257,14 +251,12 @@ public class DownloadDataColumnsFromHybridizations {
             QuantitationType exampleQuantitationType = new QuantitationType();
             exampleQuantitationType.setName(quantitationTypeName);
             criteria.setExample(exampleQuantitationType);
-            SearchResult<QuantitationType> results = client.searchByExample(criteria, null);
-            List<QuantitationType> quantitationTypes = results.getResults();
+            List<QuantitationType> quantitationTypes = (client.searchByExample(criteria)).getResults();
             if (quantitationTypes == null || quantitationTypes.size() <= 0) {
                 return null;
             }
             QuantitationType quantitationType = quantitationTypes.iterator().next();
-            CaArrayEntityReference quantitationTypeRef = new CaArrayEntityReference(quantitationType.getId());
-            quantitationTypeRefs.add(quantitationTypeRef);
+            quantitationTypeRefs.add(quantitationType.getReference());
         }
         return quantitationTypeRefs;
     }

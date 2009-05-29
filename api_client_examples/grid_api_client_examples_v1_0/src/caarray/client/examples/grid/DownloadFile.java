@@ -150,8 +150,7 @@ public class DownloadFile {
 
         // Multiple experiments with the same name can exist. Here, we're picking the first result.
         Experiment experiment = experiments[0];
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
-        return experimentRef;
+        return experiment.getReference();
     }
 
     /**
@@ -168,8 +167,7 @@ public class DownloadFile {
 
         for (DataFile file : files) {
             if (DATA_FILE_NAME.equals(file.getName())) {
-                CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
-                return fileRef;
+                return file.getReference();
             }
         }
         return null;

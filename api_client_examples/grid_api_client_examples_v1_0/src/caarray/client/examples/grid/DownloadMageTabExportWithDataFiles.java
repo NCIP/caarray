@@ -155,7 +155,6 @@ public class DownloadMageTabExportWithDataFiles {
 
         // Multiple experiments with the same name can exist. Here, we're picking the first result.
         Experiment experiment = experiments[0];
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
-        return experimentRef;
+        return experiment.getReference();
     }
 }

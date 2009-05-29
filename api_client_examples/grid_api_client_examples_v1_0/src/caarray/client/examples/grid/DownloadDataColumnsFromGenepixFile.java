@@ -103,7 +103,6 @@ import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
 import java.io.IOException;
@@ -209,8 +208,7 @@ public class DownloadDataColumnsFromGenepixFile {
         // Assuming that only one experiment was found, pick the first result.
         // This will always be true for a search by public identifier, but may not be true for a search by title.
         Experiment experiment = experiments[0];
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
-        return experimentRef;
+        return experiment.getReference();
     }
 
     /**
@@ -231,23 +229,20 @@ public class DownloadDataColumnsFromGenepixFile {
         // The client application will typically let the user choose one out of the many files,
         // but we will just pick the first result here.
         DataFile file = files[0];
-        CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
-        return fileRef;
+        return file.getReference();
     }
 
-    private CaArrayEntityReference getGprFileType() {
+    private CaArrayEntityReference getGprFileType() throws RemoteException {
         ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("GENEPIX_GPR");
         criteria.setExample(exampleFileType);
-        SearchResult<FileType> results = client.searchByExample(criteria, null);
-        List<FileType> fileTypes = results.getResults();
+        List<FileType> fileTypes = (client.searchByExample(criteria)).getResults();
         FileType gprFileType = fileTypes.iterator().next();
-        CaArrayEntityReference gprFileTypeRef = new CaArrayEntityReference(gprFileType.getId());
-        return gprFileTypeRef;
+        return gprFileType.getReference();
     }
 
-    private Set<CaArrayEntityReference> selectQuantitationTypes() {
+    private Set<CaArrayEntityReference> selectQuantitationTypes() throws RemoteException {
         ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
         Set<CaArrayEntityReference> quantitationTypeRefs = new HashSet<CaArrayEntityReference>();
         String[] quantitationTypeNames = QUANTITATION_TYPES_CSV_STRING.split(",");
@@ -255,14 +250,12 @@ public class DownloadDataColumnsFromGenepixFile {
             QuantitationType exampleQuantitationType = new QuantitationType();
             exampleQuantitationType.setName(quantitationTypeName);
             criteria.setExample(exampleQuantitationType);
-            SearchResult<QuantitationType> results = client.searchByExample(criteria, null);
-            List<QuantitationType> quantitationTypes = results.getResults();
+            List<QuantitationType> quantitationTypes = (client.searchByExample(criteria)).getResults();
             if (quantitationTypes == null || quantitationTypes.size() <= 0) {
                 return null;
             }
             QuantitationType quantitationType = quantitationTypes.iterator().next();
-            CaArrayEntityReference quantitationTypeRef = new CaArrayEntityReference(quantitationType.getId());
-            quantitationTypeRefs.add(quantitationTypeRef);
+            quantitationTypeRefs.add(quantitationType.getReference());
         }
         return quantitationTypeRefs;
     }

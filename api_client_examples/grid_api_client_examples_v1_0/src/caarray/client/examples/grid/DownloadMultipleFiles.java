@@ -91,28 +91,19 @@ import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
-import gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer;
-import gov.nih.nci.cagrid.wsenum.utils.EnumerationResponseHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-
-import javax.xml.soap.SOAPElement;
 
 import org.apache.axis.types.URI.MalformedURIException;
 import org.apache.commons.io.IOUtils;
 import org.cagrid.transfer.context.client.TransferServiceContextClient;
 import org.cagrid.transfer.context.client.helper.TransferClientHelper;
 import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
-import org.globus.ws.enumeration.ClientEnumIterator;
-import org.globus.ws.enumeration.IterationConstraints;
-import org.globus.wsrf.encoding.ObjectDeserializer;
 
 /**
  * A client downloading multiple files from an experiment using the caArray Grid service API.
@@ -127,7 +118,7 @@ public class DownloadMultipleFiles {
         DownloadMultipleFiles downloader = new DownloadMultipleFiles();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
-            System.out.println("Downloading file zip from " + EXPERIMENT_TITLE + "...");
+            System.out.println("Downloading multiple files from " + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
             System.out.println("Error while downloading files.");
@@ -147,8 +138,6 @@ public class DownloadMultipleFiles {
             return;
         }
         downloadFiles(fileRefs);
-        // Alternatively, enumerate over the file references and download them.
-        enumerateAndDownloadFiles(fileRefs);
     }
 
     /**
@@ -171,8 +160,7 @@ public class DownloadMultipleFiles {
         // Assuming that only one experiment was found, pick the first result.
         // This will always be true for a search by public identifier, but may not be true for a search by title.
         Experiment experiment = experiments[0];
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
-        return experimentRef;
+        return experiment.getReference();
     }
 
     /**
@@ -200,22 +188,19 @@ public class DownloadMultipleFiles {
         // Return references to the files.
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
         for (DataFile file : files) {
-            CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
-            fileRefs.add(fileRef);
+            fileRefs.add(file.getReference());
         }
         return fileRefs;
     }
 
-    private CaArrayEntityReference getCelFileType() {
+    private CaArrayEntityReference getCelFileType() throws RemoteException {
         ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CEL");
         criteria.setExample(exampleFileType);
-        SearchResult<FileType> results = client.searchByExample(criteria, null);
-        List<FileType> fileTypes = results.getResults();
+        List<FileType> fileTypes = (client.searchByExample(criteria)).getResults();
         FileType celFileType = fileTypes.iterator().next();
-        CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference(celFileType.getId());
-        return celFileTypeRef;
+        return celFileType.getReference();
     }
 
     /**
@@ -242,48 +227,6 @@ public class DownloadMultipleFiles {
                 System.out.println("Retrieved " + byteArray.length + " bytes.");
             } else {
                 System.err.println("Error: Retrieved null byte array.");
-            }
-        }
-        long totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Total time to retrieve all files = " + totalTime + " ms.");
-    }
-
-    /**
-     * Download the given files.
-     * If you expect a large number of files and want to enumerate over them, use this method instead of the previous one.
-     */
-    private void enumerateAndDownloadFiles(List<CaArrayEntityReference> fileRefs) throws RemoteException, MalformedURIException,
-            IOException, Exception {
-        FileDownloadRequest downloadRequest = new FileDownloadRequest();
-        downloadRequest.setFiles(fileRefs);
-        boolean compressEachIndividualFile = false;
-        long startTime = System.currentTimeMillis();
-        EnumerationResponseContainer transferEnum = client.enumerateFileContentTransfers(downloadRequest, compressEachIndividualFile);
-        ClientEnumIterator transferIter = EnumerationResponseHelper.createClientIterator(transferEnum,
-                CaArraySvc_v1_0Client.class.getResourceAsStream("client-config.wsdd"));
-        transferIter.setIterationConstraints(new IterationConstraints(1, -1, null));
-        if (!transferIter.hasNext()) {
-            System.err.println("Error: No file references returned.");
-            return;
-        }
-        while (transferIter.hasNext()) {
-            try {
-                SOAPElement elem = (SOAPElement) transferIter.next();
-                if (elem != null) {
-                    TransferServiceContextReference serviceContextRef = (TransferServiceContextReference) ObjectDeserializer
-                            .toObject(elem, TransferServiceContextReference.class);
-                    TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef
-                            .getEndpointReference());
-                    InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
-                    byte[] byteArray = IOUtils.toByteArray(stream);
-                    if (byteArray != null) {
-                        System.out.println("Retrieved " + byteArray.length + " bytes.");
-                    } else {
-                        System.err.println("Error: Retrieved null byte array.");
-                    }
-                }
-            } catch (NoSuchElementException e) {
-                break;
             }
         }
         long totalTime = System.currentTimeMillis() - startTime;

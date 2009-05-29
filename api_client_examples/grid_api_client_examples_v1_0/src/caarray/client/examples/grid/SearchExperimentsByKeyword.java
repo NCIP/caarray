@@ -82,7 +82,6 @@
  */
 package caarray.client.examples.grid;
 
-import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
@@ -138,9 +137,8 @@ public class SearchExperimentsByKeyword {
         System.out.print(experiment.getOrganism().getScientificName() + "\t");
 
         // Retrieve and print number of samples.
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
         BiomaterialSearchCriteria criteria = new BiomaterialSearchCriteria();
-        criteria.setExperiment(experimentRef);
+        criteria.setExperiment(experiment.getReference());
         criteria.getTypes().add(BiomaterialType.SAMPLE);
         Biomaterial[] biomaterials = client.searchForBiomaterials(criteria);
         int numSamples = biomaterials == null ? 0 : biomaterials.length;

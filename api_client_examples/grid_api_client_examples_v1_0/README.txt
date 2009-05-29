@@ -23,6 +23,8 @@ Java clients to test the caArray GRID API v1.0:
      download_multiple_files
      download_data_columns_from_file
      download_data_columns_from_hyb
+     download_data_columns_from_illumina_file
+     download_data_columns_from_genepix_file
      download_sample_annotations
      lookup_entities
      download_magetab_export

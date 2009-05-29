@@ -116,7 +116,8 @@ public class DownloadArrayDesignForHybridization {
         DownloadArrayDesignForHybridization downloader = new DownloadArrayDesignForHybridization();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
-            System.out.println("Downloading array design file for hybridization " + HYBRIDIZATION_NAME + " in " + EXPERIMENT_TITLE + "...");
+            System.out.println("Downloading array design file for hybridization " + HYBRIDIZATION_NAME + " in "
+                    + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
             System.out.println("Error while downloading array design file.");
@@ -139,19 +140,18 @@ public class DownloadArrayDesignForHybridization {
             return;
         }
 
-    // Get array design associated with the hybridization.
-    ArrayDesign arrayDesign = hybridization.getArrayDesign();
-    if (arrayDesign == null) {
+        // Get array design associated with the hybridization.
+        ArrayDesign arrayDesign = hybridization.getArrayDesign();
+        if (arrayDesign == null) {
             System.err.println("No array design associated with the hybridization.");
             return;
         }
-    Set<DataFile> arrayDesignFiles = arrayDesign.getFiles();
+        Set<DataFile> arrayDesignFiles = arrayDesign.getFiles();
 
-    for (DataFile arrayDesignFile : arrayDesignFiles) {
-        System.out.println("Downloading array design file " + arrayDesignFile.getName());
-        CaArrayEntityReference fileRef = new CaArrayEntityReference(arrayDesignFile.getId());
-        downloadContents(fileRef);
-    }
+        for (DataFile arrayDesignFile : arrayDesignFiles) {
+            System.out.println("Downloading array design file " + arrayDesignFile.getName());
+            downloadContents(arrayDesignFile.getReference());
+        }
     }
 
     /**
@@ -174,8 +174,7 @@ public class DownloadArrayDesignForHybridization {
         // Assuming that only one experiment was found, pick the first result.
         // This will always be true for a search by public identifier, but may not be true for a search by title.
         Experiment experiment = experiments[0];
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
-        return experimentRef;
+        return experiment.getReference();
     }
 
     /**
@@ -184,7 +183,7 @@ public class DownloadArrayDesignForHybridization {
     private Hybridization selectHybridization(CaArrayEntityReference experimentRef) throws RemoteException {
         HybridizationSearchCriteria searchCriteria = new HybridizationSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
-    searchCriteria.getNames().add(HYBRIDIZATION_NAME);
+        searchCriteria.getNames().add(HYBRIDIZATION_NAME);
         Hybridization[] hybridizations = client.searchForHybridizations(searchCriteria);
         if (hybridizations == null || hybridizations.length <= 0) {
             return null;
@@ -193,11 +192,13 @@ public class DownloadArrayDesignForHybridization {
         return hybridizations[0];
     }
 
-    private void downloadContents(CaArrayEntityReference fileRef) throws RemoteException, MalformedURIException, IOException, Exception {
+    private void downloadContents(CaArrayEntityReference fileRef) throws RemoteException, MalformedURIException,
+            IOException, Exception {
         boolean compressFile = false;
         long startTime = System.currentTimeMillis();
         TransferServiceContextReference serviceContextRef = client.getFileContentsTransfer(fileRef, compressFile);
-        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef.getEndpointReference());
+        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef
+                .getEndpointReference());
         InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
         long totalTime = System.currentTimeMillis() - startTime;
         byte[] byteArray = IOUtils.toByteArray(stream);

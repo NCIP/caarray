@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
 import java.io.IOException;
@@ -161,8 +160,7 @@ public class DownloadFileZipFromExperiment {
         // Assuming that only one experiment was found, pick the first result.
         // This will always be true for a search by public identifier, but may not be true for a search by title.
         Experiment experiment = experiments[0];
-        CaArrayEntityReference experimentRef = new CaArrayEntityReference(experiment.getId());
-        return experimentRef;
+        return experiment.getReference();
     }
 
     /**
@@ -190,22 +188,19 @@ public class DownloadFileZipFromExperiment {
         // Return references to the files.
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
         for (DataFile file : files) {
-            CaArrayEntityReference fileRef = new CaArrayEntityReference(file.getId());
-            fileRefs.add(fileRef);
+            fileRefs.add(file.getReference());
         }
         return fileRefs;
     }
 
-    private CaArrayEntityReference getCelFileType() {
+    private CaArrayEntityReference getCelFileType() throws RemoteException {
         ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CEL");
         criteria.setExample(exampleFileType);
-        SearchResult<FileType> results = client.searchByExample(criteria, null);
-        List<FileType> fileTypes = results.getResults();
+        List<FileType> fileTypes = (client.searchByExample(criteria)).getResults();
         FileType celFileType = fileTypes.iterator().next();
-        CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference(celFileType.getId());
-        return celFileTypeRef;
+        return celFileType.getReference();
     }
 
     /**

@@ -134,10 +134,10 @@ public class SearchBiomaterialsByKeyword {
         // Print basic biomaterial attributes.
         System.out.print(biomaterial.getName() + "\t");
         System.out.print(biomaterial.getType() + "\t");
-        Term term = biomaterial.getTissueSite();
+        Term term = biomaterial.getTissueSite() == null ? null : biomaterial.getTissueSite().getTerm();
         String termVal = term == null ? null : term.getValue();
         System.out.print(termVal + "\t");
-        term = biomaterial.getDiseaseState();
+        term = biomaterial.getDiseaseState() == null ? null : biomaterial.getDiseaseState().getTerm();
         termVal = term == null ? null : term.getValue();
         System.out.println(termVal);
     }
