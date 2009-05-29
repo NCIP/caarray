@@ -85,6 +85,7 @@ package caarray.client.examples.java;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
@@ -138,9 +139,11 @@ public class SearchBiomaterialsByKeyword {
         // Print basic biomaterial attributes.
         System.out.print(biomaterial.getName() + "\t");
         System.out.print(biomaterial.getType() + "\t");
-        String termVal = (biomaterial.getTissueSite() == null) ? null : biomaterial.getTissueSite().getTerm().getValue();
+        Term term = biomaterial.getTissueSite() == null ? null : biomaterial.getTissueSite().getTerm();
+        String termVal = term == null ? null : term.getValue();
         System.out.print(termVal + "\t");
-        termVal = (biomaterial.getDiseaseState() == null) ? null : biomaterial.getDiseaseState().getTerm().getValue();
+        term = biomaterial.getDiseaseState() == null ? null : biomaterial.getDiseaseState().getTerm();
+        termVal = term == null ? null : term.getValue();
         System.out.println(termVal);
     }
 }

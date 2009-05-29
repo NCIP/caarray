@@ -111,7 +111,7 @@ public class SearchExperimentsByCriteria {
     private static final String TISSUE_SITE_CATEGORY = "OrganismPart";
     private static final String TISSUE_SITE_VALUE = "Brain";
     private static final String PI_NAME = "Golub";
-    private static final String ASSAY_TYPE = "geneExpression";
+    private static final String ASSAY_TYPE = "Gene Expression";
 
     public static void main(String[] args) {
         SearchExperimentsByCriteria seeker = new SearchExperimentsByCriteria();
@@ -194,7 +194,8 @@ public class SearchExperimentsByCriteria {
 
         // Search for experiments that satisfy all of the above criteria.
         long startTime = System.currentTimeMillis();
-        List<Experiment> experiments = (searchService.searchForExperiments(experimentSearchCriteria, null)).getResults();
+        List<Experiment> experiments = (searchService.searchForExperiments(experimentSearchCriteria, null))
+                .getResults();
         long totalTime = System.currentTimeMillis() - startTime;
         if (experiments == null || experiments.size() <= 0) {
             System.out.println("No experiments found matching the requested criteria.");
