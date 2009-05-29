@@ -133,7 +133,7 @@ public class SearchExperimentsByKeyword {
         // Print basic experiment attributes.
         System.out.print(experiment.getPublicIdentifier() + "\t");
         System.out.print(experiment.getTitle() + "\t");
-        // System.out.print(experiment.getAssayType().getName() + "\t");
+        System.out.print(experiment.getAssayTypes().iterator().next().getName() + "\t");
         System.out.print(experiment.getOrganism().getScientificName() + "\t");
 
         // Retrieve and print number of samples.
