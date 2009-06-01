@@ -20,7 +20,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
                 <s:textfield required="true" key="project.experiment.title" size="80" tabindex="1" maxlength="254"/>
             </c:if>
             <s:textarea key="project.experiment.description" cols="80" rows="5" tabindex="2"/>
-            <s:textfield theme="readonly" label="Status" value="%{project.locked ? 'Locked' : 'Unlocked'}"/>
+            <s:textfield theme="readonly" label="Status" value="%{project.locked ? 'Locked' : 'In Progress'}"/>
             <s:textfield theme="readonly" name="project.experiment.publicIdentifier" label="Experiment Identifier"/>
             <c:if test="${!empty project.id}">
                 <caarray:outputUrl var="permalinkUrl">

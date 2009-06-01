@@ -58,7 +58,7 @@
         <display:column sortProperty="STATUS" title="Status" sortable="true">
             <c:choose>
                 <c:when test="${row.locked}">Locked</c:when>
-                <c:otherwise>Unlocked</c:otherwise>
+                <c:otherwise>In Progress</c:otherwise>
             </c:choose>
         </display:column>
         <display:column title="Permissions" class="centered" headerClass="centered">

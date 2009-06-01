@@ -1,5 +1,6 @@
 package gov.nih.nci.caarray.web.action.project;
 
+import java.util.Collections;
 import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.security.SecurityUtils;
@@ -8,7 +9,6 @@ import gov.nih.nci.caarray.util.UsernameHolder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.apache.struts2.views.util.UrlHelper;
@@ -129,22 +129,15 @@ public class ProjectAction extends AbstractBaseProjectAction {
      */
     public String changeWorkflowStatus() {
         try {
-            boolean oldStatus = getProject().islocked();
             getProjectManagementService().changeProjectLockStatus(getProject().getId(), workflowStatus);
-            List<String> args = new ArrayList<String>();
-            args.add(StringUtils.abbreviate(getProject().getExperiment().getTitle(), TRUNCATED_TITLE_WIDTH));
-            args.add(workflowStatus ? "Locked" : "Unlocked");
-            if (oldStatus) {
-                args.add(getText("project.workflowStatusUpdated.retractPublic"));
-            } else {
-                args.add("");
-            }
-            ActionHelper.saveMessage(getText("project.workflowStatusUpdated", args));
+            String msgKey = "project.workflowStatusUpdated." + (getProject().islocked() ? "locked" : "unlocked");
+            List<String> arg = Collections.singletonList(getProject().getExperiment().getTitle());
+            ActionHelper.saveMessage(getText(msgKey, arg));
             return WORKSPACE_RESULT;
         } catch (ProposalWorkflowException e) {
             List<String> args = new ArrayList<String>();
             args.add(getProject().getExperiment().getTitle());
-            args.add(workflowStatus ? "Locked" : "Unlocked");
+            args.add(workflowStatus ? "Locked" : "In Progress");
             ActionHelper.saveMessage(getText("project.workflowProblem", args));
             return INPUT;
         }

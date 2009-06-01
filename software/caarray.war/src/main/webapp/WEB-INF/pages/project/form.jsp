@@ -30,12 +30,12 @@
   }
 
   submitWorkflowForm = function() {
-    var confirmMsg = "Are you sure you want to change the project's status?";
+    var confirmMsg = "Are you sure you want to lock this experiment from edits?";
     <c:if test="${project.locked}">
-        confirmMsg += " This action will place the experiment in the \"Unlocked\" state, allowing you to edit it again.";
+        confirmMsg = "Are you sure you want to unlock this experiment and make it editable?";
     </c:if>
     if (TabUtils.hasFormChanges()) {
-        confirmMsg = "There are unsaved changed in your form that will be lost. Are you sure you want to proceed to change the project's status to \"Locked\"?";
+        confirmMsg = "There are unsaved changed in your form that will be lost. Are you sure you want to proceed to lock the project from edits?";
     }
     if (confirm(confirmMsg)) {
         $('workflowForm').submit();
@@ -56,11 +56,11 @@
             <c:choose>
                 <c:when test="${!project.locked}">
                     <c:set var="newWorkflowStatus" value="true"/>
-                    <c:set var="buttonTitle" value="Lock Experiment Proposal"/>
+                    <c:set var="buttonTitle" value="Lock Experiment from Edits"/>
                 </c:when>
                 <c:otherwise>
                     <c:set var="newWorkflowStatus" value="false"/>
-                    <c:set var="buttonTitle" value="UnLock Experiment Proposal"/>
+                    <c:set var="buttonTitle" value="Unlock Experiment"/>
                 </c:otherwise>
             </c:choose>
             <c:if test="${!empty newWorkflowStatus}">
