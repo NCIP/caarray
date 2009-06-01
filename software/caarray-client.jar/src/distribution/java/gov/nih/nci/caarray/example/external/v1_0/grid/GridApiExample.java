@@ -115,6 +115,8 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridDataApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer;
 import gov.nih.nci.cagrid.wsenum.utils.EnumerationResponseHelper;
 
@@ -154,18 +156,18 @@ public class GridApiExample {
     private static final String TEST_FILE_TYPE_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AGILENT_CSV";
     private static final String TEST_ORGANISM_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:1";
     private static final String TEST_EXPERIMENT_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1";
-//    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1";
-    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:89";
-    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:230";
-    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:246";
-//    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:1";
-//    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:2";
-    private static final String TEST_DATAFILE1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:16";
-    private static final String TEST_DATAFILE2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:17";
-    private static final String TEST_DATAFILE3_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:18";
-//    private static final String TEST_DATAFILE1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:2";
-//    private static final String TEST_DATAFILE2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:3";
-//    private static final String TEST_DATAFILE3_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:4";
+    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1";
+//    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:89";
+//    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:230";
+//    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:246";
+    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:1";
+    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:2";
+//    private static final String TEST_DATAFILE1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:16";
+//    private static final String TEST_DATAFILE2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:17";
+//    private static final String TEST_DATAFILE3_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:18";
+    private static final String TEST_DATAFILE1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:2";
+    private static final String TEST_DATAFILE2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:3";
+    private static final String TEST_DATAFILE3_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:4";
  
     private String hostname = DEFAULT_SERVER;
     private int port = DEFAULT_GRID_SERVICE_PORT;
@@ -193,63 +195,63 @@ public class GridApiExample {
         try {
             client = new CaArraySvc_v1_0Client(url);
             DataApiUtils dataUtils = new GridDataApiUtils(client);
+            SearchApiUtils searchUtils = new GridSearchApiUtils(client);
 
             StopWatch sw = new StopWatch();
             
-//            Organism exampleOrg = new Organism();
-//            exampleOrg.setCommonName("house");
-//            List<Organism> mouseOrgs = client.searchByExample(
-//                    new ExampleSearchCriteria<Organism>(exampleOrg, MatchMode.ANYWHERE)).getResults();
-//            System.out.println("Mus orgs: " + mouseOrgs);
-//
-//            Category[] categories = client.getAllCharacteristicCategories(null);
-//            System.out.println("All Characteristic Categories: " + Arrays.asList(categories));            
-//            categories = client.getAllCharacteristicCategories(new CaArrayEntityReference(TEST_EXPERIMENT_ID));
-//            System.out.println("Experiment Characteristic Categories: " + Arrays.asList(categories));
-//            
+            Organism exampleOrg = new Organism();
+            exampleOrg.setCommonName("house");
+            List<Organism> mouseOrgs = searchUtils.byExample(
+                    new ExampleSearchCriteria<Organism>(exampleOrg, MatchMode.ANYWHERE)).list();
+            System.out.println("Mus orgs: " + mouseOrgs);
+
+            Category[] categories = client.getAllCharacteristicCategories(null);
+            System.out.println("All Characteristic Categories: " + Arrays.asList(categories));            
+            categories = client.getAllCharacteristicCategories(new CaArrayEntityReference(TEST_EXPERIMENT_ID));
+            System.out.println("Experiment Characteristic Categories: " + Arrays.asList(categories));
+            
             Category exampleCat = new Category();
             exampleCat.setName("DiseaseState");
-            List<Category> dsCats = client.searchByExample(new ExampleSearchCriteria<Category>(exampleCat))
-                    .getResults();
+            List<Category> dsCats = searchUtils.byExample(new ExampleSearchCriteria<Category>(exampleCat)).list();
             System.out.println("DiseaseState category matches: " + dsCats);
-//            Term[] terms = client.getTermsForCategory(dsCats.get(0).getReference(), null);
-//            System.out.println("OrganismPart terms: " + Arrays.asList(terms));
-//
-//            // enumerateExperiments test
-//            ExperimentSearchCriteria experimentCrit = new ExperimentSearchCriteria();
-//            experimentCrit.setAssayType(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.array.AssayType:2"));            
-//            experimentCrit.setArrayProvider(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.array.ArrayProvider:1"));            
-//            experimentCrit.getAnnotationCriterions().add(new AnnotationCriterion(dsCats.get(0).getReference(), "Glioblastoma Multiforme"));
-//            System.out.println("Experiment Criteria Enum Search");
-//
-//            EnumerationResponseContainer expEnum = client.enumerateExperiments(experimentCrit);
-//            ClientEnumIterator iter = EnumerationResponseHelper.createClientIterator(expEnum, CaArraySvc_v1_0Client.class
-//                    .getResourceAsStream("client-config.wsdd"));
-//            IterationConstraints ic = new IterationConstraints(5, -1, null);
-//            iter.setIterationConstraints(ic);
-//            while (iter.hasNext()) {
-//                try {
-//                    SOAPElement elem = (SOAPElement) iter.next();
-//                    if (elem != null) {
-//                        java.lang.Object o = ObjectDeserializer.toObject(elem, Experiment.class);
-//                        System.out.println("Next experiment: " + o);
-//                    }
-//                } catch (NoSuchElementException e) {
-//                    break;
-//                }
-//            }
+            Term[] terms = client.getTermsForCategory(dsCats.get(0).getReference(), null);
+            System.out.println("OrganismPart terms: " + Arrays.asList(terms));
+
+            // enumerateExperiments test
+            ExperimentSearchCriteria experimentCrit = new ExperimentSearchCriteria();
+            experimentCrit.setAssayType(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.array.AssayType:2"));            
+            experimentCrit.setArrayProvider(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.array.ArrayProvider:1"));            
+            experimentCrit.getAnnotationCriterions().add(new AnnotationCriterion(dsCats.get(0).getReference(), "Glioblastoma Multiforme"));
+            System.out.println("Experiment Criteria Enum Search");
+
+            EnumerationResponseContainer expEnum = client.enumerateExperiments(experimentCrit);
+            ClientEnumIterator iter = EnumerationResponseHelper.createClientIterator(expEnum, CaArraySvc_v1_0Client.class
+                    .getResourceAsStream("client-config.wsdd"));
+            IterationConstraints ic = new IterationConstraints(5, -1, null);
+            iter.setIterationConstraints(ic);
+            while (iter.hasNext()) {
+                try {
+                    SOAPElement elem = (SOAPElement) iter.next();
+                    if (elem != null) {
+                        java.lang.Object o = ObjectDeserializer.toObject(elem, Experiment.class);
+                        System.out.println("Next experiment: " + o);
+                    }
+                } catch (NoSuchElementException e) {
+                    break;
+                }
+            }
 
             // experiment keyword search test
             KeywordSearchCriteria experimentKeywordCrit = new KeywordSearchCriteria();
             experimentKeywordCrit.setKeyword("MDR");
-            Experiment[] keywordExps = client.searchForExperimentsByKeyword(experimentKeywordCrit);
-            System.out.println("Experiments by keyword criteria: " + Arrays.asList(keywordExps));
+            List<Experiment> keywordExps = searchUtils.experimentsByKeyword(experimentKeywordCrit).list();
+            System.out.println("Experiments by keyword criteria: " + keywordExps);
 
             // biomaterial keyword search test
             BiomaterialKeywordSearchCriteria sampleKeywordCrit = new BiomaterialKeywordSearchCriteria();
             sampleKeywordCrit.setKeyword("MDR");
-            Biomaterial[] keywordSamples = client.searchForBiomaterialsByKeyword(sampleKeywordCrit);
-            System.out.println("Samples by keyword criteria: " + Arrays.asList(keywordSamples));
+            List<Biomaterial> keywordSamples = searchUtils.biomaterialsByKeyword(sampleKeywordCrit).list();
+            System.out.println("Samples by keyword criteria: " + keywordSamples);
 
             // ------------------ FILE DATA RETRIEVAL TESTS
             FileDownloadRequest fileReq = new FileDownloadRequest();
@@ -310,7 +312,7 @@ public class GridApiExample {
             hsc.getBiomaterials().add(
                     new CaArrayEntityReference(
                             TEST_BIOMATERIAL2_ID));
-            Hybridization[] hybs = client.searchForHybridizations(hsc);
+            List<Hybridization> hybs = searchUtils.hybridizationsByCriteria(hsc).list();
             System.out.println("Hyb search by creteria: ");
             for (Hybridization hyb : hybs) {
                 System.out.println("hyb: " + hyb);
@@ -319,12 +321,10 @@ public class GridApiExample {
 
             // biomaterial search test
             BiomaterialSearchCriteria bsc = new BiomaterialSearchCriteria();
-//            bsc.setExperiment(new CaArrayEntityReference(
-//                    TEST_EXPERIMENT_ID));
             bsc.setTypes(EnumSet.of(BiomaterialType.SOURCE, BiomaterialType.SAMPLE));
             bsc.getAnnotationCriterions().add(new AnnotationCriterion(dsCats.get(0).getReference(), "lung cancer"));
             System.out.println("Biomaterial search by creteria: ");
-            Biomaterial[] bms = client.searchForBiomaterials(bsc);
+            List<Biomaterial> bms = searchUtils.biomaterialsByCriteria(bsc).list();
             for (Biomaterial bm : bms) {
                 System.out.println("BM: " + bm);
             }
@@ -334,11 +334,11 @@ public class GridApiExample {
             fileCriteria.setExperiment(new CaArrayEntityReference(
                     TEST_EXPERIMENT_ID));
             fileCriteria.getExperimentGraphNodes().add(new CaArrayEntityReference(TEST_BIOMATERIAL2_ID));
-            DataFile[] files = client.searchForFiles(fileCriteria);
+            List<DataFile> files = searchUtils.filesByCriteria(fileCriteria).list();
             for (DataFile file : files) {
                 System.out.println("File Metadata: " + file);                        
             }
-            dataRequest.getDataFiles().add(files[0].getReference());
+            dataRequest.getDataFiles().add(files.get(0).getReference());
 
             for (int i = 16; i <= 22; i++) {
                 CaArrayEntityReference qRef = new CaArrayEntityReference(
@@ -352,7 +352,7 @@ public class GridApiExample {
             QuantitationTypeSearchCriteria qtCriteria = new QuantitationTypeSearchCriteria();
             qtCriteria.getFileTypeCategories().add(FileTypeCategory.RAW);
             qtCriteria.getFileTypeCategories().add(FileTypeCategory.DERIVED);
-            qtCriteria.setHybridization(hybs[0].getReference());
+            qtCriteria.setHybridization(hybs.get(0).getReference());
             QuantitationType[] quantitationTypes = client.searchForQuantitationTypes(qtCriteria);
             System.out.println("Quantitation Types from search");
             for (QuantitationType qt : quantitationTypes) {

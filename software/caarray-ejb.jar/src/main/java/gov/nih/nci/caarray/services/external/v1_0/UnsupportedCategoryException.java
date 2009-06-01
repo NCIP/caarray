@@ -85,19 +85,29 @@ package gov.nih.nci.caarray.services.external.v1_0;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 
 /**
- * Exception thrown to indicate that there was no entity matching a passed in 
- * CaArrayEntityReference.
+ * Exception thrown to indicate that a category used in an 
+ * AnnotationCriterion is not currently supported. 
  * 
  * @author dkokotov
  */
-public class NoEntityMatchingReferenceException extends InvalidReferenceException {
+public class UnsupportedCategoryException extends ApiException {
     private static final long serialVersionUID = 1L;
+    
+    private final CaArrayEntityReference category;
     
     /**
      * Constructor for no cause.
-     * @param reference the problematic reference
+     * @param category the reference to the category that is not supported
      */
-    public NoEntityMatchingReferenceException(CaArrayEntityReference reference) {
-        super(reference);
+    public UnsupportedCategoryException(CaArrayEntityReference category) {
+        super();
+        this.category = category;
+    }
+
+    /**
+     * @return the category that is not supported
+     */
+    public CaArrayEntityReference getCategory() {
+        return category;
     }
 }

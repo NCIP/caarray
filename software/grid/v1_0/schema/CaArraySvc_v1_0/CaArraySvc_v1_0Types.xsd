@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing" xmlns:tns="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/types" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wsrbf="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.xsd" targetNamespace="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/types" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing" xmlns:tns="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/types" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wsrbf="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.xsd" xmlns:car="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external" targetNamespace="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/types" elementFormDefault="qualified" attributeFormDefault="unqualified">
   <import namespace="http://schemas.xmlsoap.org/ws/2004/03/addressing" schemaLocation="../ws/addressing/WS-Addressing.xsd" />
   <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.xsd" schemaLocation="../wsrf/faults/WS-BaseFaults.xsd" />
+  <import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external" schemaLocation="v1_0_gov.nih.nci.caarray.external.xsd" />
   <element name="CaArraySvc_v1_0Reference">
     <complexType>
       <sequence>
@@ -9,13 +10,48 @@
       </sequence>
     </complexType>
   </element>
-  <element name="FileSizeTooBigException" type="tns:FileSizeTooBigException" />
-  <complexType name="FileSizeTooBigException">
+  <element name="InconsistentDataSetsFault" type="tns:InconsistentDataSetsFault" />
+  <complexType name="InconsistentDataSetsFault">
+    <complexContent>
+      <extension base="wsrbf:BaseFaultType" />
+    </complexContent>
+  </complexType>
+  <element name="UnsupportedCategoryFault" type="tns:UnsupportedCategoryFault" />
+  <complexType name="UnsupportedCategoryFault">
     <complexContent>
       <extension base="wsrbf:BaseFaultType">
-		<xs:attribute name="actualSize" type="xs:long" />
-		<xs:attribute name="maxAllowedSize" type="xs:long" />      
+        <xs:sequence>
+          <element minOccurs="1" maxOccurs="1" ref="car:CaArrayEntityReference" />
+        </xs:sequence>
       </extension>
+    </complexContent>
+  </complexType>
+  <element name="InvalidReferenceFault" type="tns:InvalidReferenceFault" />
+  <complexType name="InvalidReferenceFault">
+    <complexContent>
+      <extension base="wsrbf:BaseFaultType">
+        <xs:sequence>
+          <element minOccurs="1" maxOccurs="1" ref="car:CaArrayEntityReference" />
+        </xs:sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="IncorrectEntityTypeFault" type="tns:IncorrectEntityTypeFault" />
+  <complexType name="IncorrectEntityTypeFault">
+    <complexContent>
+      <extension base="tns:InvalidReferenceFault" />
+    </complexContent>
+  </complexType>
+  <element name="NoEntityMatchingReferenceFault" type="tns:NoEntityMatchingReferenceFault" />
+  <complexType name="NoEntityMatchingReferenceFault">
+    <complexContent>
+      <extension base="tns:InvalidReferenceFault" />
+    </complexContent>
+  </complexType>
+  <element name="DataStagingFault" type="tns:DataStagingFault" />
+  <complexType name="DataStagingFault">
+    <complexContent>
+      <extension base="wsrbf:BaseFaultType" />
     </complexContent>
   </complexType>
 </schema>

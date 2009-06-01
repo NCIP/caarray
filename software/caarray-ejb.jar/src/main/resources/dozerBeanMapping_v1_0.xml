@@ -146,6 +146,10 @@
     <mapping> 
         <class-a>edu.georgetown.pir.Organism</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.experiment.Organism</class-b>
+        <field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.experiment.Organism">
+            <a>id</a>
+            <b>id</b>
+        </field>
         <field type="one-way">
             <a>scientificName</a>
             <b>value</b>

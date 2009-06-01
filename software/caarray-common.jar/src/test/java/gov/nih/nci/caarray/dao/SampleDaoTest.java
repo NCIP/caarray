@@ -517,7 +517,11 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             List<Extract> extResults = DAO_SAMPLE_OBJECT.searchByCriteria(extractParams, bsc, Extract.class);
             assertEquals(1, extResults.size());
             assertEquals(DUMMY_EXTRACT.getName(), extResults.get(0).getName());
-            
+
+            bsc.getExternalIds().add("123");
+            extResults = DAO_SAMPLE_OBJECT.searchByCriteria(extractParams, bsc, Extract.class);
+            assertEquals(0, extResults.size());
+
             bsc.getNames().clear();
             bsc.getExternalIds().add(DUMMY_SAMPLE.getExternalSampleId());
             List<Sample> results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc, Sample.class);

@@ -83,80 +83,149 @@
 package gov.nih.nci.caarray.services.external.v1_0.search;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils.WrapperExeption;
-
-import java.util.ArrayList;
-import java.util.List;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 
 import com.google.common.base.Function;
 
 /**
- * Represents a particular API search - somewhat equivalent to a Hibernate Criteria or Query. Exposes generic
- * methods for listing or iterating over the results of the search.
+ * Utility class that allows for easier return of all results or iteration of results from a search service.
  * 
- * @param <T> the type of the result entity
  * @author dkokotov
  */
-public class Search<T extends AbstractCaArrayEntity> {
-    private final Function<LimitOffset, SearchResult<T>> searchFunction;
-    
-    /**
-     * @param searchFunction a function that accepts a PagingParams and performs the search.
-     */
-    public Search(Function<LimitOffset, SearchResult<T>> searchFunction) {
-        this.searchFunction = searchFunction;
-    }
-    
-    /**
-     * Retrieve all results for this search. 
-     * @return the full list of results for this search.
-     * @throws InvalidReferenceException if any references in the criteria are invalid
-     */
-    public List<T> list() throws InvalidReferenceException {
-        return getAllSearchResults();
-    }   
-
-    /**
-     * Get an iterator over all results for this search. 
-     * @return an iterator over the full list of results for this search.
-     */
-    public SearchResultIterator<T> iterate() {
-        return new SearchResultIterator<T>(searchFunction);
-    }   
-
-    /**
-     * Get an iterator over all results for this search, starting at given index. 
-     * @param startIndex the index (0-based) of the result to start with.
-     * @return an iterator over the results, starting with the result at the given index.
-     */
-    public SearchResultIterator<T> iterate(int startIndex) {
-        return new SearchResultIterator<T>(searchFunction, startIndex);
-    }   
-    
-    private List<T> getAllSearchResults() throws InvalidReferenceException {
-        List<T> allResults = new ArrayList<T>();
-        try {
-            SearchResult<T> oneResult = searchFunction.apply(null);
-            allResults.addAll(oneResult.getResults());
-            
-            if (oneResult.isFullResult()) {
-                return allResults;
-            } 
-
-            LimitOffset pagingParams = 
-                new LimitOffset(oneResult.getResults().size(), oneResult.getMaxAllowedResults());
-            while (oneResult.getResults().size() == pagingParams.getLimit()) {
-                oneResult = searchFunction.apply(pagingParams);
-                allResults.addAll(oneResult.getResults());
-                pagingParams.setOffset(oneResult.getFirstResultOffset() + oneResult.getResults().size());
-            }
-        } catch (WrapperExeption e) {
-            throw (InvalidReferenceException) e.getCause();
-        }
+public class JavaSearchApiUtils extends AbstractSearchApiUtils implements SearchApiUtils {
+    private final SearchService searchService;
         
-        return allResults;
+    /**
+     * Constructor.
+     * 
+     * @param searchService the SearchService EJB to use to do the API calls.
+     */
+    public JavaSearchApiUtils(SearchService searchService) {
+        this.searchService = searchService;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Function<LimitOffset, SearchResult<Experiment>> getSearchExperimentsByCriteriaFunction(
+            final ExperimentSearchCriteria criteria) {
+        return new Function<LimitOffset, SearchResult<Experiment>>() {
+            public SearchResult<Experiment> apply(LimitOffset from) {
+                try {
+                    return searchService.searchForExperiments(criteria, from);
+                } catch (InvalidReferenceException e) {
+                    throw new WrapperExeption(e);
+                } catch (UnsupportedCategoryException e) {
+                    throw new WrapperExeption(e);
+                }
+            }
+        };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Function<LimitOffset, SearchResult<Experiment>> getSearchExperimentsByKeywordFunction(
+            final KeywordSearchCriteria criteria) {
+        return new Function<LimitOffset, SearchResult<Experiment>>() {
+            public SearchResult<Experiment> apply(LimitOffset from) {
+                return searchService.searchForExperimentsByKeyword(criteria, from);
+            }
+        };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Function<LimitOffset, SearchResult<Biomaterial>> getSearchBiomaterialsByCriteriaFunction(
+            final BiomaterialSearchCriteria criteria) {
+        return new Function<LimitOffset, SearchResult<Biomaterial>>() {
+            public SearchResult<Biomaterial> apply(LimitOffset from) {
+                try {
+                    return searchService.searchForBiomaterials(criteria, from);
+                } catch (InvalidReferenceException e) {
+                    throw new WrapperExeption(e);
+                } catch (UnsupportedCategoryException e) {
+                    throw new WrapperExeption(e);
+                }
+            }
+        };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Function<LimitOffset, SearchResult<Biomaterial>> getSearchBiomaterialsByKeywordFunction(
+            final BiomaterialKeywordSearchCriteria criteria) {
+        return new Function<LimitOffset, SearchResult<Biomaterial>>() {
+            public SearchResult<Biomaterial> apply(LimitOffset from) {
+                return searchService.searchForBiomaterialsByKeyword(criteria, from);
+            }
+        };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Function<LimitOffset, SearchResult<DataFile>> getSearchFilesFunction(
+            final FileSearchCriteria criteria) {
+        return new Function<LimitOffset, SearchResult<DataFile>>() {
+            public SearchResult<DataFile> apply(LimitOffset from) {
+                try {
+                    return searchService.searchForFiles(criteria, from);
+                } catch (InvalidReferenceException e) {
+                    throw new WrapperExeption(e);
+                }
+            }
+        };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Function<LimitOffset, SearchResult<Hybridization>> getSearchHybridizationsFunction(
+            final HybridizationSearchCriteria criteria) {
+        return new Function<LimitOffset, SearchResult<Hybridization>>() {
+            public SearchResult<Hybridization> apply(LimitOffset from) {
+                try {
+                    return searchService.searchForHybridizations(criteria, from);
+                } catch (InvalidReferenceException e) {
+                    throw new WrapperExeption(e);
+                }
+            }
+        };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected <T extends AbstractCaArrayEntity> Function<LimitOffset, SearchResult<T>> getSearchByExampleFunction(
+            final ExampleSearchCriteria<T> criteria) {
+        return new Function<LimitOffset, SearchResult<T>>() {
+            public SearchResult<T> apply(LimitOffset from) {
+                return searchService.searchByExample(criteria, from);
+            }
+        };
     }
 }

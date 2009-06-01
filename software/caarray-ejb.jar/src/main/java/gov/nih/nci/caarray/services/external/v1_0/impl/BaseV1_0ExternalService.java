@@ -107,7 +107,7 @@ import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.factor.Factor;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
+import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
@@ -122,9 +122,11 @@ import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceExcep
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hibernate.criterion.Order;
 
@@ -207,11 +209,11 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      * @param desc whether the sort should be in descending order
      * @return the internal params
      */
-    protected <T> com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> toInternalParams(PagingParams params,
+    protected <T> com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> toInternalParams(LimitOffset params,
             SortCriterion<T> sortCriterion, boolean desc) {
         com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> internalParams = 
             new com.fiveamsolutions.nci.commons.data.search.PageSortParams<T>(
-                params.getMaxResults(), params.getFirstResult(), sortCriterion, desc);
+                params.getLimit(), params.getOffset(), sortCriterion, desc);
         return internalParams;
     }
 
@@ -224,7 +226,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      * @param desc whether the sort should be in descending order
      * @return the internal params
      */
-    protected <T> com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> toInternalParams(PagingParams params,
+    protected <T> com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> toInternalParams(LimitOffset params,
             String sortField, boolean desc) {
         SortCriterion<T> sortCriterion = new AdHocSortCriterion<T>(sortField);
         return toInternalParams(params, sortCriterion, desc);
@@ -241,7 +243,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      * @param targetClass the class of the element entity of the list being sorted paged.
      * @return the internal params
      */
-    protected <T> com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> toInternalParams(PagingParams params,
+    protected <T> com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> toInternalParams(LimitOffset params,
             String sortField, boolean desc, Class<T> targetClass) {
         SortCriterion<T> sortCriterion = new AdHocSortCriterion<T>(sortField);
         return toInternalParams(params, sortCriterion, desc);
@@ -286,7 +288,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
         try {
             return type.cast(o);                    
         } catch (ClassCastException e) {
-            throw new IncorrectEntityTypeException(e, new CaArrayEntityReference(lsid));            
+            throw new IncorrectEntityTypeException(new CaArrayEntityReference(lsid)); // NOPMD 
         }
     }
 
@@ -395,7 +397,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
          * @param pagingParams the paging parameters
          * @return the matching entities, subject to paging parameters.
          */
-        List<T> queryByExample(ExampleSearchCriteria<T> criteria, PagingParams pagingParams);
+        List<T> queryByExample(ExampleSearchCriteria<T> criteria, LimitOffset pagingParams);
     }    
 
     /**
@@ -430,15 +432,15 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
          * {@inheritDoc}
          */
         @SuppressWarnings(UNCHECKED)
-        public List<T> queryByExample(ExampleSearchCriteria<T> criteria, PagingParams pagingParams) {
+        public List<T> queryByExample(ExampleSearchCriteria<T> criteria, LimitOffset pagingParams) {
             List<? extends PersistentObject> results = getDaoFactory().getSearchDao().queryEntityByExample(
-                    toInternalCriteria(criteria), pagingParams.getMaxResults(), pagingParams.getFirstResult(),
+                    toInternalCriteria(criteria), pagingParams.getLimit(), pagingParams.getOffset(),
                     this.orders);
             return mapCollection(results, (Class<T>) criteria.getExample().getClass());
         }
         
-        private gov.nih.nci.caarray.domain.search.ExampleSearchCriteria<? extends PersistentObject> toInternalCriteria(
-                ExampleSearchCriteria<T> criteria) {
+        protected gov.nih.nci.caarray.domain.search.ExampleSearchCriteria<? extends PersistentObject> 
+        toInternalCriteria(ExampleSearchCriteria<T> criteria) {
             gov.nih.nci.caarray.domain.search.ExampleSearchCriteria<? extends PersistentObject> intCriteria = 
                 gov.nih.nci.caarray.domain.search.ExampleSearchCriteria
                     .forEntity(toInternalExample(criteria.getExample()));
@@ -449,6 +451,10 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
         
         protected PersistentObject toInternalExample(T example) {
             return mapEntity(example, internalClass);
+        }
+        
+        protected Order[] getOrders() {
+            return this.orders;
         }
     }
 
@@ -467,6 +473,24 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
             super(AbstractBioMaterial.class, Order.asc("name"));
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings(UNCHECKED)
+        public List<Biomaterial> queryByExample(ExampleSearchCriteria<Biomaterial> criteria, 
+                LimitOffset pagingParams) {
+            List<AbstractBioMaterial> results = new ArrayList<AbstractBioMaterial>();
+            Set<BiomaterialType> bmTypes = criteria.getExample().getType() == null ? EnumSet
+                    .allOf(BiomaterialType.class) : EnumSet.of(criteria.getExample().getType());
+            for (BiomaterialType bmType : bmTypes) {
+                criteria.getExample().setType(bmType);
+                results.addAll((List<AbstractBioMaterial>) getDaoFactory().getSearchDao().queryEntityByExample(
+                        toInternalCriteria(criteria), pagingParams.getLimit(), pagingParams.getOffset(),
+                        getOrders()));
+            }
+            return mapCollection(results, Biomaterial.class);
+        }
+        
         @Override
         protected PersistentObject toInternalExample(Biomaterial bm) {
             return mapEntity(bm, BIOMATERIAL_TYPE_TO_CLASS_MAP.get(bm.getType()));
@@ -484,7 +508,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
          */
         public java.lang.Object resolve(String objectId) {
             try {
-                return mapEntity(FileType.valueOf(objectId), gov.nih.nci.caarray.external.v1_0.data.FileType.class);
+                return FileType.valueOf(objectId);
             } catch (IllegalArgumentException e) {
                 return null;
             }
@@ -495,7 +519,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
          */
         public List<gov.nih.nci.caarray.external.v1_0.data.FileType> queryByExample(
                 ExampleSearchCriteria<gov.nih.nci.caarray.external.v1_0.data.FileType> criteria,
-                PagingParams pagingParams) {
+                LimitOffset pagingParams) {
             List<gov.nih.nci.caarray.external.v1_0.data.FileType> results = 
                 new ArrayList<gov.nih.nci.caarray.external.v1_0.data.FileType>();
             for (FileType type : FileType.values()) {

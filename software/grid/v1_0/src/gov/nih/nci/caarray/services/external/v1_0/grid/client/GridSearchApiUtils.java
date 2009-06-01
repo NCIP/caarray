@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external.v1_0.search;
+package gov.nih.nci.caarray.services.external.v1_0.grid.client;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
@@ -92,11 +92,16 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
+import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidReferenceFault;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.UnsupportedCategoryFault;
+import gov.nih.nci.caarray.services.external.v1_0.search.AbstractSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
+
+import java.rmi.RemoteException;
 
 import com.google.common.base.Function;
 
@@ -105,174 +110,151 @@ import com.google.common.base.Function;
  * 
  * @author dkokotov
  */
-public class SearchUtils {
-    private final SearchService searchService;
+public class GridSearchApiUtils extends AbstractSearchApiUtils implements SearchApiUtils {
+    private final CaArraySvc_v1_0Client client;
+
+    /**
+     * @param client the CaArraySvc_v1_0 client proxy to use for API calls
+     */
+    public GridSearchApiUtils(CaArraySvc_v1_0Client client) {
+        this.client = client;
+    }
         
     /**
-     * Constructor.
-     * 
-     * @param searchService the SearchService EJB to use to do the API calls.
+     * {@inheritDoc}
      */
-    public SearchUtils(SearchService searchService) {
-        this.searchService = searchService;
-    }
-
-    /**
-     * Returns a Search instance encapsulating a search for experiments by criteria. 
-     * @param criteria the search criteria.
-     * @return the Search instance.
-     */
-    public Search<Experiment> experimentsByCriteria(ExperimentSearchCriteria criteria) {
-        return new Search<Experiment>(getSearchExperimentsByCategoryFunction(criteria));
-    }   
-
-    /**
-     * Returns a Search instance encapsulating a search for experiments by keyword. 
-     * @param criteria the search criteria.
-     * @return the Search instance.
-     */
-    public Search<Experiment> experimentsByKeyword(KeywordSearchCriteria criteria) {
-        return new Search<Experiment>(getSearchExperimentsByKeywordFunction(criteria));
-    }   
-
-    /**
-     * Returns a Search instance encapsulating a search for biomaterials by criteria. 
-     * @param criteria the search criteria.
-     * @return the Search instance.
-     */
-    public Search<Biomaterial> biomaterialsByCriteria(BiomaterialSearchCriteria criteria) {
-        return new Search<Biomaterial>(getSearchBiomaterialsByCategoryFunction(criteria));
-    }   
-
-    /**
-     * Returns a Search instance encapsulating a search for experiments by keyword. 
-     * @param criteria the search criteria.
-     * @return the Search instance.
-     */
-    public Search<Biomaterial> biomaterialsByKeyword(BiomaterialKeywordSearchCriteria criteria) {
-        return new Search<Biomaterial>(getSearchBiomaterialsByKeywordFunction(criteria));
-    }   
-
-    /**
-     * Returns a Search instance encapsulating a search for files by criteria. 
-     * @param criteria the search criteria.
-     * @return the Search instance.
-     */
-    public Search<DataFile> filesByCriteria(FileSearchCriteria criteria) {
-        return new Search<DataFile>(getSearchFilesFunction(criteria));
-    }   
-    
-    /**
-     * Returns a Search instance encapsulating a search for hybridizations by criteria. 
-     * @param criteria the search criteria.
-     * @return the Search instance.
-     */
-    public Search<Hybridization> hybridizationsByCriteria(HybridizationSearchCriteria criteria) {
-        return new Search<Hybridization>(getSearchHybridizationsFunction(criteria));
-    }   
-
-    /**
-     * Returns a Search instance encapsulating a search by example. 
-     * @param criteria the search criteria.
-     * @param <T> the type of the example entity.
-     * @return the Search instance.
-     */
-    public <T extends AbstractCaArrayEntity> Search<T> byExample(ExampleSearchCriteria<T> criteria) {
-        return new Search<T>(getSearchByExampleFunction(criteria));
-    }   
-
-    private Function<PagingParams, SearchResult<Experiment>> getSearchExperimentsByCategoryFunction(
+    @Override
+    @SuppressWarnings("unchecked")
+    protected Function<LimitOffset, SearchResult<Experiment>> getSearchExperimentsByCriteriaFunction(
             final ExperimentSearchCriteria criteria) {
-        return new Function<PagingParams, SearchResult<Experiment>>() {
-            public SearchResult<Experiment> apply(PagingParams from) {
+        return new Function<LimitOffset, SearchResult<Experiment>>() {
+            public SearchResult<Experiment> apply(LimitOffset from) {
                 try {
-                    return searchService.searchForExperiments(criteria, from);
-                } catch (InvalidReferenceException e) {
+                    return client.searchForExperiments(criteria, from);
+                } catch (InvalidReferenceFault e) {
+                    throw new WrapperExeption(e);
+                } catch (UnsupportedCategoryFault e) {
+                    throw new WrapperExeption(e);
+                } catch (RemoteException e) {
                     throw new WrapperExeption(e);
                 }
-            }
-        };
-    }
-
-    private Function<PagingParams, SearchResult<Experiment>> getSearchExperimentsByKeywordFunction(
-            final KeywordSearchCriteria criteria) {
-        return new Function<PagingParams, SearchResult<Experiment>>() {
-            public SearchResult<Experiment> apply(PagingParams from) {
-                return searchService.searchForExperimentsByKeyword(criteria, from);
-            }
-        };
-    }
-
-    private Function<PagingParams, SearchResult<Biomaterial>> getSearchBiomaterialsByCategoryFunction(
-            final BiomaterialSearchCriteria criteria) {
-        return new Function<PagingParams, SearchResult<Biomaterial>>() {
-            public SearchResult<Biomaterial> apply(PagingParams from) {
-                try {
-                    return searchService.searchForBiomaterials(criteria, from);
-                } catch (InvalidReferenceException e) {
-                    throw new WrapperExeption(e);
-                }
-            }
-        };
-    }
-
-    private Function<PagingParams, SearchResult<Biomaterial>> getSearchBiomaterialsByKeywordFunction(
-            final BiomaterialKeywordSearchCriteria criteria) {
-        return new Function<PagingParams, SearchResult<Biomaterial>>() {
-            public SearchResult<Biomaterial> apply(PagingParams from) {
-                return searchService.searchForBiomaterialsByKeyword(criteria, from);
-            }
-        };
-    }
-
-    private Function<PagingParams, SearchResult<DataFile>> getSearchFilesFunction(
-            final FileSearchCriteria criteria) {
-        return new Function<PagingParams, SearchResult<DataFile>>() {
-            public SearchResult<DataFile> apply(PagingParams from) {
-                try {
-                    return searchService.searchForFiles(criteria, from);
-                } catch (InvalidReferenceException e) {
-                    throw new WrapperExeption(e);
-                }
-            }
-        };
-    }
-
-    private Function<PagingParams, SearchResult<Hybridization>> getSearchHybridizationsFunction(
-            final HybridizationSearchCriteria criteria) {
-        return new Function<PagingParams, SearchResult<Hybridization>>() {
-            public SearchResult<Hybridization> apply(PagingParams from) {
-                try {
-                    return searchService.searchForHybridizations(criteria, from);
-                } catch (InvalidReferenceException e) {
-                    throw new WrapperExeption(e);
-                }
-            }
-        };
-    }
-
-    private <T extends AbstractCaArrayEntity> Function<PagingParams, SearchResult<T>> getSearchByExampleFunction(
-            final ExampleSearchCriteria<T> criteria) {
-        return new Function<PagingParams, SearchResult<T>>() {
-            public SearchResult<T> apply(PagingParams from) {
-                return searchService.searchByExample(criteria, from);
             }
         };
     }
 
     /**
-     * Wrapper exception.
-     * 
-     * @author dkokotov
+     * {@inheritDoc}
      */
-    public static final class WrapperExeption extends RuntimeException {
-        private static final long serialVersionUID = 1L;
+    @Override
+    @SuppressWarnings("unchecked")
+    protected Function<LimitOffset, SearchResult<Experiment>> getSearchExperimentsByKeywordFunction(
+            final KeywordSearchCriteria criteria) {
+        return new Function<LimitOffset, SearchResult<Experiment>>() {
+            public SearchResult<Experiment> apply(LimitOffset from) {
+                try {
+                    return client.searchForExperimentsByKeyword(criteria, from);
+                } catch (RemoteException e) {
+                    throw new WrapperExeption(e);
+                }
+            }
+        };
+    }
 
-        /**
-         * @param t the wrapped exception
-         */
-        public WrapperExeption(Throwable t) {
-            super(t);
-        }        
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    protected Function<LimitOffset, SearchResult<Biomaterial>> getSearchBiomaterialsByCriteriaFunction(
+            final BiomaterialSearchCriteria criteria) {
+        return new Function<LimitOffset, SearchResult<Biomaterial>>() {
+            public SearchResult<Biomaterial> apply(LimitOffset from) {
+                try {
+                    return client.searchForBiomaterials(criteria, from);
+                } catch (InvalidReferenceFault e) {
+                    throw new WrapperExeption(e);
+                } catch (UnsupportedCategoryFault e) {
+                    throw new WrapperExeption(e);
+                } catch (RemoteException e) {
+                    throw new WrapperExeption(e);
+                }
+            }
+        };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    protected Function<LimitOffset, SearchResult<Biomaterial>> getSearchBiomaterialsByKeywordFunction(
+            final BiomaterialKeywordSearchCriteria criteria) {
+        return new Function<LimitOffset, SearchResult<Biomaterial>>() {
+            public SearchResult<Biomaterial> apply(LimitOffset from) {
+                try {
+                    return client.searchForBiomaterialsByKeyword(criteria, from);                    
+                } catch (RemoteException e) {
+                    throw new WrapperExeption(e);
+                }
+            }
+        };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    protected Function<LimitOffset, SearchResult<DataFile>> getSearchFilesFunction(
+            final FileSearchCriteria criteria) {
+        return new Function<LimitOffset, SearchResult<DataFile>>() {
+            public SearchResult<DataFile> apply(LimitOffset from) {
+                try {
+                    return client.searchForFiles(criteria, from);
+                } catch (InvalidReferenceFault e) {
+                    throw new WrapperExeption(e);
+                } catch (RemoteException e) {
+                    throw new WrapperExeption(e);
+                }
+            }
+        };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    protected Function<LimitOffset, SearchResult<Hybridization>> getSearchHybridizationsFunction(
+            final HybridizationSearchCriteria criteria) {
+        return new Function<LimitOffset, SearchResult<Hybridization>>() {
+            public SearchResult<Hybridization> apply(LimitOffset from) {
+                try {
+                    return client.searchForHybridizations(criteria, from);
+                } catch (InvalidReferenceFault e) {
+                    throw new WrapperExeption(e);
+                } catch (RemoteException e) {
+                    throw new WrapperExeption(e);
+                }
+            }
+        };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    protected <T extends AbstractCaArrayEntity> Function<LimitOffset, SearchResult<T>> getSearchByExampleFunction(
+            final ExampleSearchCriteria<T> criteria) {
+        return new Function<LimitOffset, SearchResult<T>>() {
+            public SearchResult<T> apply(LimitOffset from) {
+                try {
+                    return client.searchByExample(criteria, from);                    
+                } catch (RemoteException e) {
+                    throw new WrapperExeption(e);
+                }
+            }
+        };
     }
 }

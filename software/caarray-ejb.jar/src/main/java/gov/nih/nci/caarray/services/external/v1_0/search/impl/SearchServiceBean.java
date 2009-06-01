@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
@@ -109,7 +110,7 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
+import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.AnnotationColumn;
@@ -126,11 +127,13 @@ import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.impl.BaseV1_0ExternalService;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -160,18 +163,17 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 public class SearchServiceBean extends BaseV1_0ExternalService implements SearchService {
     static final int TIMEOUT_SECONDS = 1800;
 
-    static final int MAX_EXPERIMENT_RESULTS = -1;
-    static final int MAX_BIOMATERIAL_RESULTS = -1;
-    static final int MAX_HYBRIDIZATION_RESULTS = -1;
-    static final int MAX_FILE_RESULTS = -1;        
-    static final int MAX_QUANTITATION_TYPE_RESULTS = -1;
-    static final int MAX_EXAMPLE_RESULTS = -1;
+    static final int MAX_EXPERIMENT_RESULTS = 50;
+    static final int MAX_BIOMATERIAL_RESULTS = 200;
+    static final int MAX_HYBRIDIZATION_RESULTS = 200;
+    static final int MAX_FILE_RESULTS = 200;        
+    static final int MAX_EXAMPLE_RESULTS = 100;
     
     /**
      * {@inheritDoc}
      */
-    public SearchResult<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, PagingParams pagingParams)
-            throws InvalidReferenceException {
+    public SearchResult<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, LimitOffset pagingParams)
+            throws InvalidReferenceException, UnsupportedCategoryException {
         List<Experiment> externalExperiments = new ArrayList<Experiment>();
         com.fiveamsolutions.nci.commons.data.search.PageSortParams<gov.nih.nci.caarray.domain.project.Experiment> 
             actualParams = toInternalParams(defaultIfNull(pagingParams, MAX_EXPERIMENT_RESULTS), "title", false);
@@ -181,11 +183,11 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         applySecurityPolicies(experiments);
         mapCollection(experiments, externalExperiments, Experiment.class);
         HibernateUtil.getCurrentSession().clear();
-        return new SearchResult<Experiment>(externalExperiments, MAX_EXPERIMENT_RESULTS);
+        return new SearchResult<Experiment>(externalExperiments, MAX_EXPERIMENT_RESULTS, actualParams.getIndex());
     }
 
     private gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria toInternalCriteria(
-            ExperimentSearchCriteria criteria) throws InvalidReferenceException {
+            ExperimentSearchCriteria criteria) throws InvalidReferenceException, UnsupportedCategoryException {
         gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria intCriteria = 
             new gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria();
         intCriteria.setTitle(criteria.getTitle());
@@ -207,7 +209,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
      * {@inheritDoc}
      */
     public SearchResult<Experiment> searchForExperimentsByKeyword(KeywordSearchCriteria criteria,
-            PagingParams pagingParams) {
+            LimitOffset pagingParams) {
         List<Experiment> externalExperiments = new ArrayList<Experiment>();
         com.fiveamsolutions.nci.commons.data.search.PageSortParams<gov.nih.nci.caarray.domain.project.Project> 
             actualParams = toInternalParams(defaultIfNull(pagingParams, MAX_EXPERIMENT_RESULTS), 
@@ -221,29 +223,29 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
             externalExperiments.add(mapEntity(exp, Experiment.class));
         }
         HibernateUtil.getCurrentSession().clear();
-        return new SearchResult<Experiment>(externalExperiments, MAX_EXPERIMENT_RESULTS);
+        return new SearchResult<Experiment>(externalExperiments, MAX_EXPERIMENT_RESULTS, actualParams.getIndex());
     }
     
     /**
      * {@inheritDoc}
      */
     public SearchResult<Biomaterial> searchForBiomaterialsByKeyword(BiomaterialKeywordSearchCriteria criteria,
-            PagingParams pagingParams) {
+            LimitOffset pagingParams) {
         Set<BiomaterialType> types = criteria.getTypes();
         if (types.isEmpty()) {
             types = EnumSet.allOf(BiomaterialType.class);
         }        
-        PagingParams actualParams = defaultIfNull(pagingParams, MAX_BIOMATERIAL_RESULTS);
+        LimitOffset actualParams = defaultIfNull(pagingParams, MAX_BIOMATERIAL_RESULTS);
 
         List<Biomaterial> externalBms = new ArrayList<Biomaterial>();        
         for (BiomaterialType bmType : types) {
             searchOneBiomaterialTypeByKeyword(actualParams, criteria.getKeyword(), BIOMATERIAL_TYPE_TO_CLASS_MAP
                     .get(bmType), externalBms);            
         }
-        return new SearchResult<Biomaterial>(externalBms, MAX_BIOMATERIAL_RESULTS);
+        return new SearchResult<Biomaterial>(externalBms, MAX_BIOMATERIAL_RESULTS, actualParams.getOffset());
     }
     
-    private <T extends AbstractBioMaterial> void searchOneBiomaterialTypeByKeyword(PagingParams pagingParams,
+    private <T extends AbstractBioMaterial> void searchOneBiomaterialTypeByKeyword(LimitOffset pagingParams,
             String keyword, Class<T> biomaterialClass, List<Biomaterial> externalBms) {
         com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> 
         bmParams = toInternalParams(pagingParams, new AdHocSortCriterion<T>("this.name"), false);
@@ -323,7 +325,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     /**
      * {@inheritDoc}
      */
-    public SearchResult<DataFile> searchForFiles(FileSearchCriteria criteria, PagingParams pagingParams)
+    public SearchResult<DataFile> searchForFiles(FileSearchCriteria criteria, LimitOffset pagingParams)
             throws InvalidReferenceException {
         List<DataFile> externalFiles = new ArrayList<DataFile>();
         com.fiveamsolutions.nci.commons.data.search.PageSortParams<CaArrayFile> actualParams = 
@@ -332,7 +334,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         List<CaArrayFile> files = getProjectManagementService().searchFiles(actualParams, internalCriteria);
         mapCollection(files, externalFiles, DataFile.class);
         HibernateUtil.getCurrentSession().clear();
-        return new SearchResult<DataFile>(externalFiles, MAX_FILE_RESULTS);
+        return new SearchResult<DataFile>(externalFiles, MAX_FILE_RESULTS, actualParams.getIndex());
     };
 
     private gov.nih.nci.caarray.domain.search.FileSearchCriteria toInternalCriteria(FileSearchCriteria criteria)
@@ -356,9 +358,9 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         return intCriteria;
     }
 
-    private PagingParams defaultIfNull(PagingParams params, int maxServiceResults) {
-        int firstResult = params != null ? params.getFirstResult() : 0;
-        int maxResults = params != null ? params.getMaxResults() : -1;
+    private LimitOffset defaultIfNull(LimitOffset params, int maxServiceResults) {
+        int firstResult = params != null ? params.getOffset() : 0;
+        int maxResults = params != null ? params.getLimit() : -1;
         
         // if either of the two numbers is < 0 (meaning no limit), then taking the max will give us the more 
         // restrictive limit, otherwise taking the min will
@@ -367,7 +369,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         } else {
             maxResults = Math.min(maxServiceResults, maxResults);
         }
-        return new PagingParams(maxResults, firstResult);
+        return new LimitOffset(maxResults, firstResult);
     }
 
     /**
@@ -375,18 +377,19 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
      */    
     @SuppressWarnings("unchecked")
     public <T extends AbstractCaArrayEntity> SearchResult<T> searchByExample(ExampleSearchCriteria<T> criteria,
-            PagingParams pagingParams) {
+            LimitOffset pagingParams) {
         T example = criteria.getExample();
+        LimitOffset actualParams = defaultIfNull(pagingParams, MAX_EXAMPLE_RESULTS);
         EntityHandler<T> resolver = getEntityHandlerRegistry().getResolver((Class<T>) example.getClass());
-        List<T> results = resolver.queryByExample(criteria, defaultIfNull(pagingParams, MAX_EXAMPLE_RESULTS));
-        return new SearchResult<T>(results, MAX_EXAMPLE_RESULTS);
+        List<T> results = resolver.queryByExample(criteria, actualParams);
+        return new SearchResult<T>(results, MAX_EXAMPLE_RESULTS, actualParams.getOffset());
     }
     
     /**
      * {@inheritDoc}
      */
     public SearchResult<Hybridization> searchForHybridizations(HybridizationSearchCriteria criteria,
-            PagingParams pagingParams)
+            LimitOffset pagingParams)
             throws InvalidReferenceException {
         List<Hybridization> externalHybs = new ArrayList<Hybridization>();
         PageSortParams<gov.nih.nci.caarray.domain.hybridization.Hybridization> actualParams = 
@@ -395,7 +398,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
                 .searchByCriteria(actualParams, toInternalCriteria(criteria));
         applySecurityPolicies(hybs);
         mapCollection(hybs, externalHybs, Hybridization.class);
-        return new SearchResult<Hybridization>(externalHybs, MAX_HYBRIDIZATION_RESULTS);
+        return new SearchResult<Hybridization>(externalHybs, MAX_HYBRIDIZATION_RESULTS, actualParams.getIndex());
     }
     
     private gov.nih.nci.caarray.domain.search.HybridizationSearchCriteria toInternalCriteria(
@@ -415,7 +418,8 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
      * {@inheritDoc}
      */
     public SearchResult<Biomaterial> searchForBiomaterials(BiomaterialSearchCriteria criteria, 
-            PagingParams pagingParams) throws InvalidReferenceException {
+            LimitOffset pagingParams) throws InvalidReferenceException, UnsupportedCategoryException {
+        LimitOffset actualParams = defaultIfNull(pagingParams, MAX_BIOMATERIAL_RESULTS);
         List<Biomaterial> externalSamples = new ArrayList<Biomaterial>();
         Set<BiomaterialType> types = criteria.getTypes();
         if (types.isEmpty()) {
@@ -425,16 +429,15 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         
         for (BiomaterialType type : types) {
             List<? extends AbstractBioMaterial> bms = searchOneBiomaterialType(intCriteria,
-                    pagingParams, BIOMATERIAL_TYPE_TO_CLASS_MAP.get(type));
+                    actualParams, BIOMATERIAL_TYPE_TO_CLASS_MAP.get(type));
             mapCollection(bms, externalSamples, Biomaterial.class);                                   
         }
 
-        return new SearchResult<Biomaterial>(externalSamples, MAX_BIOMATERIAL_RESULTS);
+        return new SearchResult<Biomaterial>(externalSamples, MAX_BIOMATERIAL_RESULTS, actualParams.getOffset());
     }
     
     private gov.nih.nci.caarray.domain.search.BiomaterialSearchCriteria toInternalCriteria(
-            BiomaterialSearchCriteria criteria)
-            throws InvalidReferenceException {
+            BiomaterialSearchCriteria criteria) throws InvalidReferenceException, UnsupportedCategoryException {
         gov.nih.nci.caarray.domain.search.BiomaterialSearchCriteria intCriteria = 
             new gov.nih.nci.caarray.domain.search.BiomaterialSearchCriteria();
         intCriteria.setExperiment(getByReference(criteria.getExperiment(),
@@ -448,22 +451,30 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     }
     
     private gov.nih.nci.caarray.domain.search.AnnotationCriterion toInternalCriterion(AnnotationCriterion ac)
-            throws InvalidReferenceException {
+            throws InvalidReferenceException, UnsupportedCategoryException {
         gov.nih.nci.caarray.domain.search.AnnotationCriterion internalCrit = 
             new gov.nih.nci.caarray.domain.search.AnnotationCriterion();
         internalCrit
                 .setCategory(getByReference(ac.getCategory(), gov.nih.nci.caarray.domain.vocabulary.Category.class));
+        if (!isSupportedCategory(internalCrit.getCategory())) {
+            throw new UnsupportedCategoryException(ac.getCategory());
+        }
         internalCrit.setValue(ac.getValue());
         return internalCrit;
     }
+    
+    private boolean isSupportedCategory(gov.nih.nci.caarray.domain.vocabulary.Category category) {
+        return Arrays.asList(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName(),
+                ExperimentOntologyCategory.CELL_TYPE.getCategoryName(),
+                ExperimentOntologyCategory.MATERIAL_TYPE.getCategoryName(),
+                ExperimentOntologyCategory.ORGANISM_PART.getCategoryName()).contains(category.getName());
+    }
 
     private <T extends AbstractBioMaterial> List<T> searchOneBiomaterialType(
-            gov.nih.nci.caarray.domain.search.BiomaterialSearchCriteria intCriteria, PagingParams pagingParams,
+            gov.nih.nci.caarray.domain.search.BiomaterialSearchCriteria intCriteria, LimitOffset pagingParams,
             Class<T> biomaterialClass) {
-        return getDaoFactory().getSampleDao()
-                .searchByCriteria(
-                        toInternalParams(defaultIfNull(pagingParams, MAX_BIOMATERIAL_RESULTS), "name", false,
-                                biomaterialClass), intCriteria, biomaterialClass);
+        return getDaoFactory().getSampleDao().searchByCriteria(
+                toInternalParams(pagingParams, "name", false, biomaterialClass), intCriteria, biomaterialClass);
     }
 
     /**

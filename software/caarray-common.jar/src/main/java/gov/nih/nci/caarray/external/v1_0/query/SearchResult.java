@@ -99,7 +99,7 @@ public class SearchResult<T extends AbstractCaArrayEntity> implements Serializab
     
     private final List<T> results = new ArrayList<T>();
     private int maxAllowedResults;
-    private int firstResultIndex = 0;
+    private int firstResultOffset;
 
     /**
      * No-op constructor (for tooling).
@@ -110,13 +110,17 @@ public class SearchResult<T extends AbstractCaArrayEntity> implements Serializab
 
     /**
      * Create a new SearchResult with given results and max # of results.
+     * 
      * @param results the list of results.
-     * @param maxAllowedResults the maximum number of results that the service will return for
-     * the original search in a single API invocation.
+     * @param maxAllowedResults the maximum number of results that the service will return for the original search in a
+     *            single API invocation.
+     * @param firstResultOffset the offset (0-based) of the first result in this SearchResult relative to the overall
+     *            result set of the original query.
      */
-    public SearchResult(List<T> results, int maxAllowedResults) {
+    public SearchResult(List<T> results, int maxAllowedResults, int firstResultOffset) {
         this.results.addAll(results);
         this.maxAllowedResults = maxAllowedResults;
+        this.firstResultOffset = firstResultOffset;
     }
 
     /**
@@ -141,17 +145,19 @@ public class SearchResult<T extends AbstractCaArrayEntity> implements Serializab
     }    
     
     /**
-     * @return the firstResultIndex
+     * @return the offset (0-based) of the first result in this SearchResult relative to the overall
+     *            result set of the original query.
      */
-    public int getFirstResultIndex() {
-        return firstResultIndex;
+    public int getFirstResultOffset() {
+        return firstResultOffset;
     }
 
     /**
-     * @param firstResultIndex the firstResultIndex to set
+     * @param firstResultOffset the offset (0-based) of the first result in this SearchResult relative to the overall
+     *            result set of the original query.
      */
-    public void setFirstResultIndex(int firstResultIndex) {
-        this.firstResultIndex = firstResultIndex;
+    public void setFirstResultOffset(int firstResultOffset) {
+        this.firstResultOffset = firstResultOffset;
     }
 
     /**

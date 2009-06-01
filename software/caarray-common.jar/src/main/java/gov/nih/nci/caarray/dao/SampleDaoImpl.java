@@ -98,6 +98,7 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -395,8 +396,14 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
             c.add(Restrictions.in("name", criteria.getNames()));
         }
 
-        if (!criteria.getExternalIds().isEmpty() && Sample.class.equals(biomaterialType)) {
-            c.add(Restrictions.in("externalSampleId", criteria.getExternalIds()));
+        if (!criteria.getExternalIds().isEmpty()) {
+            if (Sample.class.equals(biomaterialType)) {
+                c.add(Restrictions.in("externalSampleId", criteria.getExternalIds()));                
+            } else {
+                // other biomaterial subclasses currently don't have external ids, so the query
+                // cannot have any matches
+                return Collections.emptyList();
+            }
         }
         
         if (!criteria.getAnnotationCriterions().isEmpty()) {
@@ -413,7 +420,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
                         .equals(ExperimentOntologyCategory.MATERIAL_TYPE.getCategoryName())) {
                     materialTypes.add(ac.getValue());
                 } else if (ac.getCategory().getName().equals(
-                        ExperimentOntologyCategory.TISSUE_ANATOMIC_SITE.getCategoryName())) {
+                        ExperimentOntologyCategory.ORGANISM_PART.getCategoryName())) {
                     tissueSites.add(ac.getValue());
                 }
             }

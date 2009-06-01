@@ -4,27 +4,19 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.data.HybridizationData;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
-import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
-import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
-import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
-import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
-import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
-import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
-import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
+import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.grid.common.CaArraySvc_v1_0I;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidReferenceFault;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer;
 import gov.nih.nci.cagrid.wsenum.utils.EnumerationResponseHelper;
 
@@ -33,8 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
-import java.util.Arrays;
-import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.zip.GZIPInputStream;
@@ -97,24 +88,50 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
             if (!(args.length < 2)) {
                 if (args[0].equals("-url")) {                    
                     CaArraySvc_v1_0Client client = new CaArraySvc_v1_0Client(args[1]);
-
+                    SearchApiUtils searchUtils = new GridSearchApiUtils(client);
+                    
                     StopWatch sw = new StopWatch();
                     
-                    Organism exampleOrg = new Organism();
-                    exampleOrg.setCommonName("house");
-                    List<Organism> mouseOrgs = client.searchByExample(
-                            new ExampleSearchCriteria<Organism>(exampleOrg, MatchMode.ANYWHERE)).getResults();
-                    System.out.println("Mus orgs: " + mouseOrgs);
+                    DataSetRequest dataRequest = new DataSetRequest();
+ 
+                    // get all experiments via SearchApiUtils
+                    System.out.println("Experiments via SearchApiUtils list");
+                    List<Experiment> exps = searchUtils.experimentsByCriteria(new ExperimentSearchCriteria()).list(); 
+                    for (Experiment e : exps) {
+                        System.out.println("Experiment: " + e);
+                    }
 
-                    // enumerateExperiments test
-                    ExperimentSearchCriteria experimentCrit = new ExperimentSearchCriteria();
-                    experimentCrit.setAssayType(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.array.AssayType:2"));            
-                    experimentCrit.setArrayProvider(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.array.ArrayProvider:1"));            
-                    System.out.println("Experiment Criteria Enum Search");
-
-                    EnumerationResponseContainer expEnum = client.enumerateExperiments(experimentCrit);
-                    ClientEnumIterator iter = EnumerationResponseHelper.createClientIterator(expEnum, CaArraySvc_v1_0Client.class
-                            .getResourceAsStream("client-config.wsdd"));
+                    System.out.println("Experiments via SearchApiUtils iteration");
+                    Iterator<Experiment> expIt = searchUtils.experimentsByCriteria(new ExperimentSearchCriteria()).iterate();                     
+                    while (expIt.hasNext()) {                        
+                        System.out.println("Experiment: " + expIt.next());
+                    }
+                    
+                    // get all experiments via limit-offset
+                    System.out.println("Experiments via limit offset");
+                    LimitOffset lo = new LimitOffset(-1, 0); 
+                    SearchResult<Experiment> expResult = client.searchForExperiments(new ExperimentSearchCriteria(), lo);
+                    for (Experiment e : expResult.getResults()) {
+                        System.out.println("Experiment: " + e);
+                    }
+                    if (!expResult.isFullResult()) {
+                        System.out.println("Additional experiments available");
+                        lo.setOffset(expResult.getResults().size());
+                        lo.setLimit(expResult.getMaxAllowedResults());
+                        do {
+                            expResult = client.searchForExperiments(new ExperimentSearchCriteria(), lo);
+                            for (Experiment e : expResult.getResults()) {
+                                System.out.println("Experiment: " + e);
+                            }
+                            lo.setOffset(lo.getOffset() + lo.getLimit());
+                        } while (!expResult.isFullResult());                        
+                    }
+                    
+                    // get all experiments via enumeration
+                    System.out.println("Experiments via enumeration");
+                    EnumerationResponseContainer expEnum = client.enumerateExperiments(new ExperimentSearchCriteria());
+                    ClientEnumIterator iter = EnumerationResponseHelper.createClientIterator(expEnum,
+                            CaArraySvc_v1_0Client.class.getResourceAsStream("client-config.wsdd"));
                     IterationConstraints ic = new IterationConstraints(5, -1, null);
                     iter.setIterationConstraints(ic);
                     while (iter.hasNext()) {
@@ -128,171 +145,83 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
                             break;
                         }
                     }
-
-                    // experiment keyword search test
-                    KeywordSearchCriteria experimentKeywordCrit = new KeywordSearchCriteria();
-                    experimentKeywordCrit.setKeyword("MDR");
-                    Experiment[] keywordExps = client.searchForExperimentsByKeyword(experimentKeywordCrit);
-                    System.out.println("Experiments by keyword criteria: " + Arrays.asList(keywordExps));
-
-                    // biomaterial keyword search test
-                    BiomaterialKeywordSearchCriteria sampleKeywordCrit = new BiomaterialKeywordSearchCriteria();
-                    sampleKeywordCrit.setKeyword("MDR");
-                    Biomaterial[] keywordSamples = client.searchForBiomaterialsByKeyword(sampleKeywordCrit);
-                    System.out.println("Samples by keyword criteria: " + Arrays.asList(keywordSamples));
-
-                    // ------------------ FILE DATA RETRIEVAL TESTS
-                    FileDownloadRequest fileReq = new FileDownloadRequest();
-                    CaArrayEntityReference fileRef1 = new CaArrayEntityReference(
-                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:1");
-                    CaArrayEntityReference fileRef2 = new CaArrayEntityReference(
-                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:2");
-                    CaArrayEntityReference fileRef3 = new CaArrayEntityReference(
-                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:6");
-                    fileReq.getFiles().add(fileRef1);
-                    fileReq.getFiles().add(fileRef2);
-                    fileReq.getFiles().add(fileRef3);
-
-                    // single ref, uncompressed
-                    System.out.println("Retrieving one file using uncompressed transfer ref");
-                    sw.start();
-                    TransferServiceContextReference transferRef = client.getFileContentsTransfer(fileRef1, false);
-                    if (transferRef != null) {
-                        logAndSaveFile(transferRef, false);
-                    }
-                    sw.stop();
-                    System.out.println("Time: " + sw.toString());
-
-                    // zip, compression in ZIP
-                    System.out.println("Retrieving files using ZIP of files, compressing overall zip");
-                    sw.reset();
-                    sw.start();
-                    TransferServiceContextReference zipRef = client.getFileContentsZipTransfer(fileReq, false);
-                    if (zipRef != null) {
-                        TransferServiceContextClient zipTransferClient = new TransferServiceContextClient(zipRef
-                                .getEndpointReference());
-                        // use the TransferClientHelper to get an InputStream to the data
-                        ZipInputStream zis = new ZipInputStream(TransferClientHelper.getData(zipTransferClient
-                                .getDataTransferDescriptor()));
-                        ZipEntry entry = zis.getNextEntry();
-                        while (entry != null && zis.available() > 0) {
-                            System.out.println("Contents of file " + entry.getName() + ", size " + entry.getSize());
-                            saveFile(zis, entry.getName(), false, false);
-                            entry = zis.getNextEntry();
-                        }
-                        zis.close();
-                    }
-                    sw.stop();
-                    System.out.println("Time: " + sw.toString());
-
-                    // zip, compression in individual files
-                    System.out.println("Retrieving files using ZIP of files, individual files");
-                    sw.reset();
-                    sw.start();
-                    zipRef = client.getFileContentsZipTransfer(fileReq, true);
-                    if (zipRef != null) {
-                        TransferServiceContextClient zipTransferClient = new TransferServiceContextClient(zipRef
-                                .getEndpointReference());
-                        // use the TransferClientHelper to get an InputStream to the data
-                        ZipInputStream zis = new ZipInputStream(TransferClientHelper.getData(zipTransferClient
-                                .getDataTransferDescriptor()));
-                        ZipEntry entry = zis.getNextEntry();
-                        while (entry != null && zis.available() > 0) {
-                            System.out.println("Contents of file " + entry.getName() + ", size " + entry.getSize());
-                            GZIPInputStream gzis = new GZIPInputStream(zis);
-                            saveFile(gzis, entry.getName(), false, false);
-                            entry = zis.getNextEntry();
-                        }
-                        zis.close();
-                    }
-                    sw.stop();
-                    System.out.println("Time: " + sw.toString());
-
-                    // array of references, uncompressed
-                    System.out.println("Retrieving files using array of uncompressed transfer refs");
-                    sw.reset();
-                    sw.start();
-                    TransferServiceContextReference[] transferRefs = client.getFileContentsTransfers(fileReq, false);
-                    for (TransferServiceContextReference tref : transferRefs) {
-                        logAndSaveFile(tref, false);
-                    }
-                    sw.stop();
-                    System.out.println("Time: " + sw.toString());
-
-                    // array of references, compressed
-                    System.out.println("Retrieving files using array of compressed transfer refs");
-                    sw.reset();
-                    sw.start();
-                    transferRefs = client.getFileContentsTransfers(fileReq, true);
-                    for (TransferServiceContextReference tref : transferRefs) {
-                        logAndSaveFile(tref, true);
-                    }
-                    sw.stop();
-                    System.out.println("Time: " + sw.toString());
-
-                    DataSetRequest dataRequest = new DataSetRequest();
-
-                    // hybridization search test
-                    HybridizationSearchCriteria hsc = new HybridizationSearchCriteria();
-                    hsc.getBiomaterials().add(
-                            new CaArrayEntityReference(
-                                    "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:3"));
-                    hsc.getBiomaterials().add(
-                            new CaArrayEntityReference(
-                                    "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:6"));
-                    Hybridization[] hybs = client.searchForHybridizations(hsc);
-                    System.out.println("Hyb search by creteria: ");
-                    for (Hybridization hyb : hybs) {
-                        System.out.println("hyb: " + hyb);
-                        // dataRequest.getHybridizations().add(hyb.getReference());
-                    }
-
-                    // biomaterial search test
-                    BiomaterialSearchCriteria bsc = new BiomaterialSearchCriteria();
-                    bsc.setExperiment(new CaArrayEntityReference(
-                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
-                    bsc.setTypes(EnumSet.of(BiomaterialType.SOURCE, BiomaterialType.SAMPLE));
-                    bsc.getNames().add("TK6MDR1 replicate 2");
-                    bsc.getNames().add("TK6MDR1 replicate 2");
-                    System.out.println("Biomaterial search by creteria: ");
-                    Biomaterial[] bms = client.searchForBiomaterials(bsc);
-                    for (Biomaterial bm : bms) {
-                        System.out.println("BM: " + bm);
-                    }
-
-                    // file search test
-                    FileSearchCriteria fileCriteria = new FileSearchCriteria();
-                    fileCriteria.setExperiment(new CaArrayEntityReference(
-                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
-                    fileCriteria
-                            .getExperimentGraphNodes()
-                            .add(
-                                    new CaArrayEntityReference(
-                                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:6"));
-                    DataFile[] files = client.searchForFiles(fileCriteria);
-                    for (DataFile file : files) {
-                        System.out.println("File Metadata: " + file);                        
-                    }
-                    dataRequest.getDataFiles().add(files[0].getReference());
-
-                    for (int i = 16; i <= 22; i++) {
-                        CaArrayEntityReference qRef = new CaArrayEntityReference(
-                                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:"
-                                        + i);
-                        if (i <= 18) {
-                            dataRequest.getQuantitationTypes().add(qRef);                            
-                        }
+                    
+                    // get all experiments using example search
+                    System.out.println("Experiments via example search");
+                    SearchResult<Experiment> exampleResult = client.searchByExample(new ExampleSearchCriteria<Experiment>(
+                            new Experiment()), new LimitOffset(-1, 0));
+                    for (Experiment e : exampleResult.getResults()) {
+                        System.out.println("Experiment: " + e);
                     }
                     
-                    QuantitationTypeSearchCriteria qtCriteria = new QuantitationTypeSearchCriteria();
-                    qtCriteria.getFileTypeCategories().add(FileTypeCategory.RAW);
-                    qtCriteria.setHybridization(hybs[0].getReference());                    
-                    QuantitationType[] quantitationTypes = client.searchForQuantitationTypes(qtCriteria);
-                    System.out.println("Quantitation Types from search");
-                    for (QuantitationType qt : quantitationTypes) {
-                        System.out.println("QT: " + qt);
-                        //dataRequest.getQuantitationTypes().add(qt.getReference());
-                    }            
+                    // get all experiments using example enumeration
+                    System.out.println("Experiments via example enumeration");
+                    EnumerationResponseContainer exampleEnum = client.enumerateByExample(new ExampleSearchCriteria<Experiment>(new Experiment()));
+                    iter = EnumerationResponseHelper.createClientIterator(exampleEnum,
+                            CaArraySvc_v1_0Client.class.getResourceAsStream("client-config.wsdd"));
+                    ic = new IterationConstraints(5, -1, null);
+                    iter.setIterationConstraints(ic);
+                    while (iter.hasNext()) {
+                        try {
+                            SOAPElement elem = (SOAPElement) iter.next();
+                            if (elem != null) {
+                                java.lang.Object o = ObjectDeserializer.toObject(elem, Experiment.class);
+                                System.out.println("Next experiment: " + o);
+                            }
+                        } catch (NoSuchElementException e) {
+                            System.out.println("No more exp examples by enumeration: ");
+                            break;
+                        }
+                    }
+
+//                    // hybridization search test
+//                    HybridizationSearchCriteria hsc = new HybridizationSearchCriteria();
+//                    hsc.getBiomaterials().add(
+//                            new CaArrayEntityReference(
+//                                    "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:3"));
+//                    hsc.getBiomaterials().add(
+//                            new CaArrayEntityReference(
+//                                    "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:6"));
+//                    Hybridization[] hybs = client.searchForHybridizations(hsc);
+//                    System.out.println("Hyb search by creteria: ");
+//                    for (Hybridization hyb : hybs) {
+//                        System.out.println("hyb: " + hyb);
+//                        // dataRequest.getHybridizations().add(hyb.getReference());
+//                    }
+
+//                    // file search test
+//                    FileSearchCriteria fileCriteria = new FileSearchCriteria();
+//                    fileCriteria.setExperiment(new CaArrayEntityReference(
+//                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
+//                    fileCriteria
+//                            .getExperimentGraphNodes()
+//                            .add(
+//                                    new CaArrayEntityReference(
+//                                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:6"));
+//                    DataFile[] files = client.searchForFiles(fileCriteria);
+//                    for (DataFile file : files) {
+//                        System.out.println("File Metadata: " + file);                        
+//                    }
+//                    dataRequest.getDataFiles().add(files[0].getReference());
+//
+//                    for (int i = 500; i <= 503; i++) {
+//                        CaArrayEntityReference qRef = new CaArrayEntityReference(
+//                                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:"
+//                                        + i);
+//                        if (i <= 600) {
+//                            dataRequest.getQuantitationTypes().add(qRef);                            
+//                        }
+//                    }
+                    
+//                    QuantitationTypeSearchCriteria qtCriteria = new QuantitationTypeSearchCriteria();
+//                    qtCriteria.getFileTypeCategories().add(FileTypeCategory.RAW);
+//                    qtCriteria.setHybridization(hybs[0].getReference());                    
+//                    QuantitationType[] quantitationTypes = client.searchForQuantitationTypes(qtCriteria);
+//                    System.out.println("Quantitation Types from search");
+//                    for (QuantitationType qt : quantitationTypes) {
+//                        System.out.println("QT: " + qt);
+//                        //dataRequest.getQuantitationTypes().add(qt.getReference());
+//                    }            
 
                     // parsed data retrieval test
                     sw.reset();
@@ -378,6 +307,18 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
                 usage();
                 System.exit(1);
             }
+        } catch (NoEntityMatchingReferenceFault e) {
+            System.out.println("No entity for reference: " + e.getCaArrayEntityReference());
+            e.printStackTrace();
+            System.exit(1);            
+        } catch (IncorrectEntityTypeFault e) {
+            System.out.println("Referenced entity is of incorrect type: " + e.getCaArrayEntityReference());
+            e.printStackTrace();
+            System.exit(1);            
+        } catch (InvalidReferenceFault e) {
+            System.out.println("Generic Invalid reference fault, reference: " + e.getCaArrayEntityReference());
+            e.printStackTrace();
+            System.exit(1);            
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -430,15 +371,18 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     }
   }
 
-  public gov.nih.nci.caarray.external.v1_0.experiment.Experiment[] searchForExperiments(gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria criteria) throws RemoteException {
+  public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchForExperiments(gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria criteria,gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.UnsupportedCategoryFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"searchForExperiments");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsRequest();
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsRequestCriteria criteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsRequestCriteria();
     criteriaContainer.setExperimentSearchCriteria(criteria);
     params.setCriteria(criteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsRequestLimitOffset limitOffsetContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsRequestLimitOffset();
+    limitOffsetContainer.setLimitOffset(limitOffset);
+    params.setLimitOffset(limitOffsetContainer);
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsResponse boxedResult = portType.searchForExperiments(params);
-    return boxedResult.getExperiment();
+    return boxedResult.getSearchResult();
     }
   }
 
@@ -487,7 +431,7 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     }
   }
 
-  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getFileContentsZipTransfer(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compressIndividually) throws RemoteException {
+  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getFileContentsZipTransfer(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compressIndividually) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"getFileContentsZipTransfer");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsZipTransferRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsZipTransferRequest();
@@ -500,7 +444,7 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     }
   }
 
-  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference[] getFileContentsTransfers(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compress) throws RemoteException {
+  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference[] getFileContentsTransfers(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compress) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"getFileContentsTransfers");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransfersRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransfersRequest();
@@ -513,7 +457,7 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     }
   }
 
-  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getFileContentsTransfer(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference fileRef,boolean compress) throws RemoteException {
+  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getFileContentsTransfer(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference fileRef,boolean compress) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"getFileContentsTransfer");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransferRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransferRequest();
@@ -526,7 +470,7 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     }
   }
 
-  public gov.nih.nci.caarray.external.v1_0.data.DataSet getDataSet(gov.nih.nci.caarray.external.v1_0.query.DataSetRequest dataSetRequest) throws RemoteException {
+  public gov.nih.nci.caarray.external.v1_0.data.DataSet getDataSet(gov.nih.nci.caarray.external.v1_0.query.DataSetRequest dataSetRequest) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InconsistentDataSetsFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"getDataSet");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetDataSetRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetDataSetRequest();
@@ -538,67 +482,82 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     }
   }
 
-  public gov.nih.nci.caarray.external.v1_0.sample.Biomaterial[] searchForBiomaterials(gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria criteria) throws RemoteException {
+  public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchForBiomaterials(gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria criteria,gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.UnsupportedCategoryFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"searchForBiomaterials");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsRequest();
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsRequestCriteria criteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsRequestCriteria();
     criteriaContainer.setBiomaterialSearchCriteria(criteria);
     params.setCriteria(criteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsRequestLimitOffset limitOffsetContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsRequestLimitOffset();
+    limitOffsetContainer.setLimitOffset(limitOffset);
+    params.setLimitOffset(limitOffsetContainer);
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsResponse boxedResult = portType.searchForBiomaterials(params);
-    return boxedResult.getBiomaterial();
+    return boxedResult.getSearchResult();
     }
   }
 
-  public gov.nih.nci.caarray.external.v1_0.sample.Hybridization[] searchForHybridizations(gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria criteria) throws RemoteException {
+  public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchForHybridizations(gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria criteria,gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"searchForHybridizations");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForHybridizationsRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForHybridizationsRequest();
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForHybridizationsRequestCriteria criteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForHybridizationsRequestCriteria();
     criteriaContainer.setHybridizationSearchCriteria(criteria);
     params.setCriteria(criteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForHybridizationsRequestLimitOffset limitOffsetContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForHybridizationsRequestLimitOffset();
+    limitOffsetContainer.setLimitOffset(limitOffset);
+    params.setLimitOffset(limitOffsetContainer);
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForHybridizationsResponse boxedResult = portType.searchForHybridizations(params);
-    return boxedResult.getHybridization();
+    return boxedResult.getSearchResult();
     }
   }
 
-  public gov.nih.nci.caarray.external.v1_0.experiment.Experiment[] searchForExperimentsByKeyword(gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria criteria) throws RemoteException {
+  public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchForExperimentsByKeyword(gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria criteria,gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"searchForExperimentsByKeyword");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsByKeywordRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsByKeywordRequest();
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsByKeywordRequestCriteria criteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsByKeywordRequestCriteria();
     criteriaContainer.setKeywordSearchCriteria(criteria);
     params.setCriteria(criteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsByKeywordRequestLimitOffset limitOffsetContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsByKeywordRequestLimitOffset();
+    limitOffsetContainer.setLimitOffset(limitOffset);
+    params.setLimitOffset(limitOffsetContainer);
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForExperimentsByKeywordResponse boxedResult = portType.searchForExperimentsByKeyword(params);
-    return boxedResult.getExperiment();
+    return boxedResult.getSearchResult();
     }
   }
 
-  public gov.nih.nci.caarray.external.v1_0.data.DataFile[] searchForFiles(gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria fileSearchCriteria) throws RemoteException {
+  public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchForFiles(gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria criteria,gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"searchForFiles");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForFilesRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForFilesRequest();
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForFilesRequestFileSearchCriteria fileSearchCriteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForFilesRequestFileSearchCriteria();
-    fileSearchCriteriaContainer.setFileSearchCriteria(fileSearchCriteria);
-    params.setFileSearchCriteria(fileSearchCriteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForFilesRequestCriteria criteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForFilesRequestCriteria();
+    criteriaContainer.setFileSearchCriteria(criteria);
+    params.setCriteria(criteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForFilesRequestLimitOffset limitOffsetContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForFilesRequestLimitOffset();
+    limitOffsetContainer.setLimitOffset(limitOffset);
+    params.setLimitOffset(limitOffsetContainer);
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForFilesResponse boxedResult = portType.searchForFiles(params);
-    return boxedResult.getDataFile();
+    return boxedResult.getSearchResult();
     }
   }
 
-  public gov.nih.nci.caarray.external.v1_0.sample.Biomaterial[] searchForBiomaterialsByKeyword(gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria criteria) throws RemoteException {
+  public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchForBiomaterialsByKeyword(gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria criteria,gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"searchForBiomaterialsByKeyword");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsByKeywordRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsByKeywordRequest();
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsByKeywordRequestCriteria criteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsByKeywordRequestCriteria();
     criteriaContainer.setBiomaterialKeywordSearchCriteria(criteria);
     params.setCriteria(criteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsByKeywordRequestLimitOffset limitOffsetContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsByKeywordRequestLimitOffset();
+    limitOffsetContainer.setLimitOffset(limitOffset);
+    params.setLimitOffset(limitOffsetContainer);
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForBiomaterialsByKeywordResponse boxedResult = portType.searchForBiomaterialsByKeyword(params);
-    return boxedResult.getBiomaterial();
+    return boxedResult.getSearchResult();
     }
   }
 
-  public gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet getMageTabExport(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef) throws RemoteException {
+  public gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet getMageTabExport(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"getMageTabExport");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabExportRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabExportRequest();
@@ -610,7 +569,7 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     }
   }
 
-  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getMageTabZipTransfer(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef,boolean compressIndividually) throws RemoteException {
+  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getMageTabZipTransfer(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef,boolean compressIndividually) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"getMageTabZipTransfer");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferRequest();
@@ -623,7 +582,7 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     }
   }
 
-  public gov.nih.nci.caarray.external.v1_0.data.QuantitationType[] searchForQuantitationTypes(gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria criteria) throws RemoteException {
+  public gov.nih.nci.caarray.external.v1_0.data.QuantitationType[] searchForQuantitationTypes(gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria criteria) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"searchForQuantitationTypes");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForQuantitationTypesRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchForQuantitationTypesRequest();
@@ -635,19 +594,22 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     }
   }
 
-  public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchByExample(gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria exampleSearchCriteria) throws RemoteException {
+  public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchByExample(gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria criteria,gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"searchByExample");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleRequest();
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleRequestExampleSearchCriteria exampleSearchCriteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleRequestExampleSearchCriteria();
-    exampleSearchCriteriaContainer.setExampleSearchCriteria(exampleSearchCriteria);
-    params.setExampleSearchCriteria(exampleSearchCriteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleRequestCriteria criteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleRequestCriteria();
+    criteriaContainer.setExampleSearchCriteria(criteria);
+    params.setCriteria(criteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleRequestLimitOffset limitOffsetContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleRequestLimitOffset();
+    limitOffsetContainer.setLimitOffset(limitOffset);
+    params.setLimitOffset(limitOffsetContainer);
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.SearchByExampleResponse boxedResult = portType.searchByExample(params);
     return boxedResult.getSearchResult();
     }
   }
 
-  public gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet getAnnotationSet(gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest request) throws RemoteException {
+  public gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet getAnnotationSet(gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest request) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"getAnnotationSet");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAnnotationSetRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAnnotationSetRequest();
@@ -659,7 +621,7 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     }
   }
 
-  public gov.nih.nci.caarray.external.v1_0.vocabulary.Term[] getTermsForCategory(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference categoryRef,java.lang.String valuePrefix) throws RemoteException {
+  public gov.nih.nci.caarray.external.v1_0.vocabulary.Term[] getTermsForCategory(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference categoryRef,java.lang.String valuePrefix) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"getTermsForCategory");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetTermsForCategoryRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetTermsForCategoryRequest();
@@ -672,7 +634,7 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     }
   }
 
-  public gov.nih.nci.caarray.external.v1_0.vocabulary.Category[] getAllCharacteristicCategories(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef) throws RemoteException {
+  public gov.nih.nci.caarray.external.v1_0.vocabulary.Category[] getAllCharacteristicCategories(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"getAllCharacteristicCategories");
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllCharacteristicCategoriesRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllCharacteristicCategoriesRequest();
@@ -681,6 +643,78 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     params.setExperimentRef(experimentRefContainer);
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetAllCharacteristicCategoriesResponse boxedResult = portType.getAllCharacteristicCategories(params);
     return boxedResult.getCategory();
+    }
+  }
+
+  public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateExperimentsByKeyword(gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria criteria) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"enumerateExperimentsByKeyword");
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateExperimentsByKeywordRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateExperimentsByKeywordRequest();
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateExperimentsByKeywordRequestCriteria criteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateExperimentsByKeywordRequestCriteria();
+    criteriaContainer.setKeywordSearchCriteria(criteria);
+    params.setCriteria(criteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateExperimentsByKeywordResponse boxedResult = portType.enumerateExperimentsByKeyword(params);
+    return boxedResult.getEnumerationResponseContainer();
+    }
+  }
+
+  public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateBiomaterials(gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria criteria) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"enumerateBiomaterials");
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateBiomaterialsRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateBiomaterialsRequest();
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateBiomaterialsRequestCriteria criteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateBiomaterialsRequestCriteria();
+    criteriaContainer.setBiomaterialSearchCriteria(criteria);
+    params.setCriteria(criteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateBiomaterialsResponse boxedResult = portType.enumerateBiomaterials(params);
+    return boxedResult.getEnumerationResponseContainer();
+    }
+  }
+
+  public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateBiomaterialsByKeyword(gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria criteria) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"enumerateBiomaterialsByKeyword");
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateBiomaterialsByKeywordRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateBiomaterialsByKeywordRequest();
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateBiomaterialsByKeywordRequestCriteria criteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateBiomaterialsByKeywordRequestCriteria();
+    criteriaContainer.setBiomaterialKeywordSearchCriteria(criteria);
+    params.setCriteria(criteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateBiomaterialsByKeywordResponse boxedResult = portType.enumerateBiomaterialsByKeyword(params);
+    return boxedResult.getEnumerationResponseContainer();
+    }
+  }
+
+  public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateHybridizations(gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria criteria) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"enumerateHybridizations");
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateHybridizationsRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateHybridizationsRequest();
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateHybridizationsRequestCriteria criteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateHybridizationsRequestCriteria();
+    criteriaContainer.setHybridizationSearchCriteria(criteria);
+    params.setCriteria(criteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateHybridizationsResponse boxedResult = portType.enumerateHybridizations(params);
+    return boxedResult.getEnumerationResponseContainer();
+    }
+  }
+
+  public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateFiles(gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria criteria) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"enumerateFiles");
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFilesRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFilesRequest();
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFilesRequestCriteria criteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFilesRequestCriteria();
+    criteriaContainer.setFileSearchCriteria(criteria);
+    params.setCriteria(criteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateFilesResponse boxedResult = portType.enumerateFiles(params);
+    return boxedResult.getEnumerationResponseContainer();
+    }
+  }
+
+  public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateByExample(gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria criteria) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"enumerateByExample");
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateByExampleRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateByExampleRequest();
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateByExampleRequestCriteria criteriaContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateByExampleRequestCriteria();
+    criteriaContainer.setExampleSearchCriteria(criteria);
+    params.setCriteria(criteriaContainer);
+    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateByExampleResponse boxedResult = portType.enumerateByExample(params);
+    return boxedResult.getEnumerationResponseContainer();
     }
   }
 

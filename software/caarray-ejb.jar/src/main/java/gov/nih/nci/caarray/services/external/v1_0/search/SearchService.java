@@ -96,7 +96,7 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
+import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet;
@@ -106,6 +106,7 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 
 import java.util.List;
 
@@ -161,9 +162,11 @@ public interface SearchService {
      * @param pagingParams paging parameters
      * @return the subset of the biomaterials matching the given criteria, subject to the paging params.
      * @throws InvalidReferenceException if there is no experiment with given reference
+     * @throws UnsupportedCategoryException if the search criteria includes an annotation criterion with a category
+     *             other that disease state, cell type, material type, tissue site.
      */
-    SearchResult<Biomaterial> searchForBiomaterials(BiomaterialSearchCriteria criteria, PagingParams pagingParams)
-            throws InvalidReferenceException;
+    SearchResult<Biomaterial> searchForBiomaterials(BiomaterialSearchCriteria criteria, LimitOffset pagingParams)
+            throws InvalidReferenceException, UnsupportedCategoryException;
 
     /**
      * Search for hybridizations satisfying the given search criteria.
@@ -173,7 +176,7 @@ public interface SearchService {
      * @return the subset of the hybridizations matching the given criteria, subject to the paging params.
      * @throws InvalidReferenceException if there is no experiment with given reference
      */
-    SearchResult<Hybridization> searchForHybridizations(HybridizationSearchCriteria criteria, PagingParams pagingParams)
+    SearchResult<Hybridization> searchForHybridizations(HybridizationSearchCriteria criteria, LimitOffset pagingParams)
             throws InvalidReferenceException;
 
     /**
@@ -203,9 +206,11 @@ public interface SearchService {
      * @param pagingParams paging params.
      * @return the list of experiments matching criteria, subject to the paging specifications.
      * @throws InvalidReferenceException if the search criteria includes any invalid references.
+     * @throws UnsupportedCategoryException if the search criteria includes an annotation criterion with a category
+     *             other that disease state, cell type, material type, tissue site.
      */
-    SearchResult<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, PagingParams pagingParams)
-            throws InvalidReferenceException;
+    SearchResult<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, LimitOffset pagingParams)
+            throws InvalidReferenceException, UnsupportedCategoryException;
 
     /**
      * Returns a list of experiments matching the given keyword.
@@ -214,7 +219,7 @@ public interface SearchService {
      * @param pagingParams paging params.
      * @return the list of experiments matching criteria, subject to the paging specifications.
      */
-    SearchResult<Experiment> searchForExperimentsByKeyword(KeywordSearchCriteria criteria, PagingParams pagingParams);
+    SearchResult<Experiment> searchForExperimentsByKeyword(KeywordSearchCriteria criteria, LimitOffset pagingParams);
 
     /**
      * Returns a list of data files satisfying the given search criteria.
@@ -224,7 +229,7 @@ public interface SearchService {
      * @return the list of files matching criteria, subject to the paging specifications.
      * @throws InvalidReferenceException if the search criteria includes any invalid references.
      */
-    SearchResult<DataFile> searchForFiles(FileSearchCriteria criteria, PagingParams pagingParams)
+    SearchResult<DataFile> searchForFiles(FileSearchCriteria criteria, LimitOffset pagingParams)
             throws InvalidReferenceException;
     
     /**
@@ -235,7 +240,7 @@ public interface SearchService {
      * @return the list of biomaterials matching the criteria, subject to the paging specifications.
      */
     SearchResult<Biomaterial> searchForBiomaterialsByKeyword(BiomaterialKeywordSearchCriteria criteria,
-            PagingParams pagingParams);
+            LimitOffset pagingParams);
 
     /**
      * Returns a list of quantitation types satisfying the given search criteria.
@@ -255,7 +260,7 @@ public interface SearchService {
      * @return list of entities matching example, subject to paging params
      */
     <T extends AbstractCaArrayEntity> SearchResult<T> searchByExample(ExampleSearchCriteria<T> criteria,
-            PagingParams pagingParams);
+            LimitOffset pagingParams);
     
     /**
      * Returns an annotation set matching the given request.

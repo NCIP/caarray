@@ -1230,6 +1230,7 @@
                 <include name="${axis.jar}" />
                 <include name="${javaee.jar}"/>
                 <include name="${wsdl4j.jar}"/>
+		<include name="${google-collections.jar}"/>
             </fileset>
         </path>
         <pathtofileset name="caarray-client.common.grid.dependencies.fileset" pathrefid="caarray-client.common.grid.dependencies.path" dir="${project.lib}"/>

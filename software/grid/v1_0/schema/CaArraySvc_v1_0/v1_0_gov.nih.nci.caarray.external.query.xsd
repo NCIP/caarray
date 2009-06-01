@@ -17,6 +17,13 @@
     <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"
         schemaLocation="v1_0_gov.nih.nci.caarray.external.sample.xsd" />
 
+    <xs:element name="LimitOffset" type="qry:LimitOffset" />
+    <xs:complexType name="LimitOffset">
+        <xs:sequence/>
+        <xs:attribute name="limit" type="xs:int"/>            
+        <xs:attribute name="offset" type="xs:int"/>
+    </xs:complexType>        
+
     <xs:element name="AnnotationCriterion" type="qry:AnnotationCriterion" />
     <xs:complexType name="AnnotationCriterion">
         <xs:sequence>
@@ -208,8 +215,10 @@
                         <xs:element ref="car:AbstractCaArrayEntity" minOccurs="0" maxOccurs="unbounded" />
                     </xs:sequence>
                 </xs:complexType>
-            </xs:element>
+            </xs:element>            
         </xs:sequence>
+        <xs:attribute name="maxAllowedResults" type="xs:int"/>            
+        <xs:attribute name="firstResultOffset" type="xs:int"/>
     </xs:complexType>
     
     <xs:element name="FileDownloadRequest" type="qry:FileDownloadRequest" />

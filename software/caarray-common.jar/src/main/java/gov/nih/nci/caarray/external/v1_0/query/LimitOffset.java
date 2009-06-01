@@ -80,24 +80,64 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external.v1_0;
+package gov.nih.nci.caarray.external.v1_0.query;
 
-import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import java.io.Serializable;
 
 /**
- * Exception thrown to indicate that there was no entity matching a passed in 
- * CaArrayEntityReference.
+ * Bean for specifying paging and sorting constraints for a query.
  * 
  * @author dkokotov
  */
-public class NoEntityMatchingReferenceException extends InvalidReferenceException {
+public class LimitOffset implements Serializable {
     private static final long serialVersionUID = 1L;
     
+    private int limit;
+    private int offset;
+
     /**
-     * Constructor for no cause.
-     * @param reference the problematic reference
+     * Constructor.
+     * 
+     * @param limit the maximum number of results to return. A negative number indicates no limit. 
+     * @param offset the index (0-based) of the first result to return.  
      */
-    public NoEntityMatchingReferenceException(CaArrayEntityReference reference) {
-        super(reference);
+    public LimitOffset(int limit, int offset) {
+        this.limit = limit;
+        this.offset = offset;
+    }
+    
+    /**
+     * Empty constructor, for serialization.
+     */
+    public LimitOffset() {
+        // noop
+    }
+
+    /**
+     * @return the maximum number of results to return. A negative number indicates no limit.
+     */
+    public int getLimit() {
+        return limit;
+    }
+
+    /**
+     * @param limit the maximum number of results to return. A negative number indicates no limit. 
+     */
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    /**
+     * @return the index (0-based) of the first result to return.
+     */
+    public int getOffset() {
+        return offset;
+    }
+
+    /**
+     * @param offset the index (0-based) of the first result to return.
+     */
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 }

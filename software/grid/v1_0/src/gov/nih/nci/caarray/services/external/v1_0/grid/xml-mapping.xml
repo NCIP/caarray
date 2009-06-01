@@ -328,6 +328,15 @@
     </field>
   </class>  
   
+  <class name="gov.nih.nci.caarray.external.v1_0.query.LimitOffset">
+    <map-to xml="LimitOffset" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" />
+    <field name="limit" type="integer">
+      <bind-xml name="limit" node="attribute" />
+    </field>
+    <field name="offset" type="integer">
+      <bind-xml name="offset" node="attribute" />
+    </field>
+  </class>
   <class name="gov.nih.nci.caarray.external.v1_0.query.AnnotationCriterion">
     <map-to xml="AnnotationCriterion" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" />
     <field name="value" type="string">
@@ -459,8 +468,8 @@
     <field name="maxAllowedResults" type="integer">
       <bind-xml name="maxAllowedResults" node="attribute" />
     </field>
-    <field name="firstResultIndex" type="integer">
-      <bind-xml name="firstResultIndex" node="attribute" />
+    <field name="firstResultOffset" type="integer">
+      <bind-xml name="firstResultOffset" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest">

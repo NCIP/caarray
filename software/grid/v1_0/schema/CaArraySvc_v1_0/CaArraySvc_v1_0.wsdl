@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0" xmlns:wsrp="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.xsd" xmlns:wsrlw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceLifetime-1.2-draft-01.wsdl" xmlns:wsdlpp="http://www.globus.org/namespaces/2004/10/WSDLPreprocessor" xmlns:gtwsdl1="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ServiceGroup-1.2-draft-01.wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing" xmlns:wsntw="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.wsdl" xmlns:wsrbfw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" xmlns:wsrpw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns0="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns1="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" xmlns:ns16="http://transfer.cagrid.org/Transfer" xmlns:ns13="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:ns11="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" xmlns:ns14="http://gov.nih.nci.cagrid.enumeration/EnumerationResponseContainer" xmlns:ns3="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value" xmlns:ns5="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.factor" xmlns:ns12="http://schemas.xmlsoap.org/ws/2004/09/enumeration" xmlns:ns10="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" xmlns:ns6="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" xmlns:ns1="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment" xmlns:ns4="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary" xmlns:ns15="http://transfer.cagrid.org/TransferService/Context/types" xmlns:ns8="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" xmlns:ns9="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/types" xmlns:ns17="http://gov.nih.nci.cagrid.enumeration/CaGridEnumeration/types" xmlns:ns2="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external" xmlns:ns7="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array" xmlns:ns0="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" name="CaArraySvc_v1_0" targetNamespace="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0">
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0" xmlns:wsrp="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.xsd" xmlns:wsrlw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceLifetime-1.2-draft-01.wsdl" xmlns:wsdlpp="http://www.globus.org/namespaces/2004/10/WSDLPreprocessor" xmlns:gtwsdl1="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ServiceGroup-1.2-draft-01.wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing" xmlns:wsntw="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.wsdl" xmlns:wsrbfw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" xmlns:wsrpw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns0="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns1="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" xmlns:ns17="http://transfer.cagrid.org/Transfer" xmlns:ns14="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:ns12="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" xmlns:ns15="http://gov.nih.nci.cagrid.enumeration/EnumerationResponseContainer" xmlns:ns3="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value" xmlns:ns6="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.factor" xmlns:ns13="http://schemas.xmlsoap.org/ws/2004/09/enumeration" xmlns:ns11="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" xmlns:ns7="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" xmlns:ns1="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment" xmlns:ns4="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary" xmlns:ns16="http://transfer.cagrid.org/TransferService/Context/types" xmlns:ns5="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" xmlns:ns10="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/types" xmlns:ns18="http://gov.nih.nci.cagrid.enumeration/CaGridEnumeration/types" xmlns:ns2="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external" xmlns:ns8="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array" xmlns:ns0="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" name="CaArraySvc_v1_0" targetNamespace="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0">
   <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" location="../wsrf/properties/WS-ResourceProperties.wsdl" />
   <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" location="../wsrf/faults/WS-BaseFaults.wsdl" />
   <import namespace="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.wsdl" location="../wsrf/notification/WS-BaseN.wsdl" />
@@ -37,7 +37,14 @@
             <element name="criteria">
               <complexType>
                 <sequence>
-                  <element ref="ns8:ExperimentSearchCriteria" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:ExperimentSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="limitOffset">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:LimitOffset" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -47,7 +54,7 @@
       <element name="SearchForExperimentsResponse">
         <complexType>
           <sequence>
-            <element ref="ns1:Experiment" minOccurs="1" maxOccurs="unbounded" />
+            <element ref="ns5:SearchResult" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -109,7 +116,7 @@
             <element name="experimentSearchCriteria">
               <complexType>
                 <sequence>
-                  <element ref="ns8:ExperimentSearchCriteria" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:ExperimentSearchCriteria" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -119,7 +126,7 @@
       <element name="EnumerateExperimentsResponse">
         <complexType>
           <sequence>
-            <element ref="ns14:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+            <element ref="ns15:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -129,7 +136,7 @@
             <element name="fileDownloadRequest">
               <complexType>
                 <sequence>
-                  <element ref="ns8:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -140,7 +147,7 @@
       <element name="GetFileContentsZipTransferResponse">
         <complexType>
           <sequence>
-            <element ref="ns15:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
+            <element ref="ns16:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -150,7 +157,7 @@
             <element name="fileDownloadRequest">
               <complexType>
                 <sequence>
-                  <element ref="ns8:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:FileDownloadRequest" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -161,7 +168,7 @@
       <element name="GetFileContentsTransfersResponse">
         <complexType>
           <sequence>
-            <element ref="ns15:TransferServiceContextReference" minOccurs="1" maxOccurs="unbounded" />
+            <element ref="ns16:TransferServiceContextReference" minOccurs="1" maxOccurs="unbounded" />
           </sequence>
         </complexType>
       </element>
@@ -182,7 +189,7 @@
       <element name="GetFileContentsTransferResponse">
         <complexType>
           <sequence>
-            <element ref="ns15:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
+            <element ref="ns16:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -192,7 +199,7 @@
             <element name="dataSetRequest">
               <complexType>
                 <sequence>
-                  <element ref="ns8:DataSetRequest" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:DataSetRequest" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -212,7 +219,14 @@
             <element name="criteria">
               <complexType>
                 <sequence>
-                  <element ref="ns8:BiomaterialSearchCriteria" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:BiomaterialSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="limitOffset">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:LimitOffset" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -222,7 +236,7 @@
       <element name="SearchForBiomaterialsResponse">
         <complexType>
           <sequence>
-            <element ref="ns6:Biomaterial" minOccurs="1" maxOccurs="unbounded" />
+            <element ref="ns5:SearchResult" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -232,7 +246,14 @@
             <element name="criteria">
               <complexType>
                 <sequence>
-                  <element ref="ns8:HybridizationSearchCriteria" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:HybridizationSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="limitOffset">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:LimitOffset" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -242,7 +263,7 @@
       <element name="SearchForHybridizationsResponse">
         <complexType>
           <sequence>
-            <element ref="ns6:Hybridization" minOccurs="1" maxOccurs="unbounded" />
+            <element ref="ns5:SearchResult" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -252,7 +273,14 @@
             <element name="criteria">
               <complexType>
                 <sequence>
-                  <element ref="ns8:KeywordSearchCriteria" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:KeywordSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="limitOffset">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:LimitOffset" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -262,17 +290,24 @@
       <element name="SearchForExperimentsByKeywordResponse">
         <complexType>
           <sequence>
-            <element ref="ns1:Experiment" minOccurs="1" maxOccurs="unbounded" />
+            <element ref="ns5:SearchResult" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
       <element name="SearchForFilesRequest">
         <complexType>
           <sequence>
-            <element name="fileSearchCriteria">
+            <element name="criteria">
               <complexType>
                 <sequence>
-                  <element ref="ns8:FileSearchCriteria" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:FileSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="limitOffset">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:LimitOffset" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -282,7 +317,7 @@
       <element name="SearchForFilesResponse">
         <complexType>
           <sequence>
-            <element ref="ns0:DataFile" minOccurs="1" maxOccurs="unbounded" />
+            <element ref="ns5:SearchResult" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -292,7 +327,14 @@
             <element name="criteria">
               <complexType>
                 <sequence>
-                  <element ref="ns8:BiomaterialKeywordSearchCriteria" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:BiomaterialKeywordSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="limitOffset">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:LimitOffset" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -302,7 +344,7 @@
       <element name="SearchForBiomaterialsByKeywordResponse">
         <complexType>
           <sequence>
-            <element ref="ns6:Biomaterial" minOccurs="1" maxOccurs="unbounded" />
+            <element ref="ns5:SearchResult" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -343,7 +385,7 @@
       <element name="GetMageTabZipTransferResponse">
         <complexType>
           <sequence>
-            <element ref="ns15:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
+            <element ref="ns16:TransferServiceContextReference" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -353,7 +395,7 @@
             <element name="criteria">
               <complexType>
                 <sequence>
-                  <element ref="ns8:QuantitationTypeSearchCriteria" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:QuantitationTypeSearchCriteria" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -370,10 +412,17 @@
       <element name="SearchByExampleRequest">
         <complexType>
           <sequence>
-            <element name="exampleSearchCriteria">
+            <element name="criteria">
               <complexType>
                 <sequence>
-                  <element ref="ns8:ExampleSearchCriteria" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:ExampleSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+            <element name="limitOffset">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:LimitOffset" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -383,7 +432,7 @@
       <element name="SearchByExampleResponse">
         <complexType>
           <sequence>
-            <element ref="ns8:SearchResult" minOccurs="1" maxOccurs="1" />
+            <element ref="ns5:SearchResult" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -393,7 +442,7 @@
             <element name="request">
               <complexType>
                 <sequence>
-                  <element ref="ns8:AnnotationSetRequest" minOccurs="1" maxOccurs="1" />
+                  <element ref="ns5:AnnotationSetRequest" minOccurs="1" maxOccurs="1" />
                 </sequence>
               </complexType>
             </element>
@@ -403,7 +452,7 @@
       <element name="GetAnnotationSetResponse">
         <complexType>
           <sequence>
-            <element ref="ns6:AnnotationSet" minOccurs="1" maxOccurs="1" />
+            <element ref="ns7:AnnotationSet" minOccurs="1" maxOccurs="1" />
           </sequence>
         </complexType>
       </element>
@@ -448,10 +497,130 @@
           </sequence>
         </complexType>
       </element>
+      <element name="EnumerateExperimentsByKeywordRequest">
+        <complexType>
+          <sequence>
+            <element name="criteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:KeywordSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateExperimentsByKeywordResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns15:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateBiomaterialsRequest">
+        <complexType>
+          <sequence>
+            <element name="criteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:BiomaterialSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateBiomaterialsResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns15:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateBiomaterialsByKeywordRequest">
+        <complexType>
+          <sequence>
+            <element name="criteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:BiomaterialKeywordSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateBiomaterialsByKeywordResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns15:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateHybridizationsRequest">
+        <complexType>
+          <sequence>
+            <element name="criteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:HybridizationSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateHybridizationsResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns15:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateFilesRequest">
+        <complexType>
+          <sequence>
+            <element name="criteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:FileSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateFilesResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns15:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateByExampleRequest">
+        <complexType>
+          <sequence>
+            <element name="criteria">
+              <complexType>
+                <sequence>
+                  <element ref="ns5:ExampleSearchCriteria" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="EnumerateByExampleResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns15:EnumerationResponseContainer" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
       <element name="CaArraySvc_v1_0ResourceProperties">
         <complexType>
           <sequence>
-            <element ref="ns11:ServiceMetadata" />
+            <element ref="ns12:ServiceMetadata" />
           </sequence>
         </complexType>
       </element>
@@ -584,6 +753,57 @@
   <message name="GetAllCharacteristicCategoriesResponse">
     <part name="parameters" element="tns:GetAllCharacteristicCategoriesResponse" />
   </message>
+  <message name="EnumerateExperimentsByKeywordRequest">
+    <part name="parameters" element="tns:EnumerateExperimentsByKeywordRequest" />
+  </message>
+  <message name="EnumerateExperimentsByKeywordResponse">
+    <part name="parameters" element="tns:EnumerateExperimentsByKeywordResponse" />
+  </message>
+  <message name="EnumerateBiomaterialsRequest">
+    <part name="parameters" element="tns:EnumerateBiomaterialsRequest" />
+  </message>
+  <message name="EnumerateBiomaterialsResponse">
+    <part name="parameters" element="tns:EnumerateBiomaterialsResponse" />
+  </message>
+  <message name="EnumerateBiomaterialsByKeywordRequest">
+    <part name="parameters" element="tns:EnumerateBiomaterialsByKeywordRequest" />
+  </message>
+  <message name="EnumerateBiomaterialsByKeywordResponse">
+    <part name="parameters" element="tns:EnumerateBiomaterialsByKeywordResponse" />
+  </message>
+  <message name="EnumerateHybridizationsRequest">
+    <part name="parameters" element="tns:EnumerateHybridizationsRequest" />
+  </message>
+  <message name="EnumerateHybridizationsResponse">
+    <part name="parameters" element="tns:EnumerateHybridizationsResponse" />
+  </message>
+  <message name="EnumerateFilesRequest">
+    <part name="parameters" element="tns:EnumerateFilesRequest" />
+  </message>
+  <message name="EnumerateFilesResponse">
+    <part name="parameters" element="tns:EnumerateFilesResponse" />
+  </message>
+  <message name="EnumerateByExampleRequest">
+    <part name="parameters" element="tns:EnumerateByExampleRequest" />
+  </message>
+  <message name="EnumerateByExampleResponse">
+    <part name="parameters" element="tns:EnumerateByExampleResponse" />
+  </message>
+  <message name="UnsupportedCategoryFaultFaultMessage">
+    <part name="fault" element="ns10:UnsupportedCategoryFault" />
+  </message>
+  <message name="IncorrectEntityTypeFaultFaultMessage">
+    <part name="fault" element="ns10:IncorrectEntityTypeFault" />
+  </message>
+  <message name="NoEntityMatchingReferenceFaultFaultMessage">
+    <part name="fault" element="ns10:NoEntityMatchingReferenceFault" />
+  </message>
+  <message name="DataStagingFaultFaultMessage">
+    <part name="fault" element="ns10:DataStagingFault" />
+  </message>
+  <message name="InconsistentDataSetsFaultFaultMessage">
+    <part name="fault" element="ns10:InconsistentDataSetsFault" />
+  </message>
   <!--============================================================
 
                        P O R T T Y P E
@@ -593,6 +813,9 @@
     <operation name="searchForExperiments">
       <input message="tns:SearchForExperimentsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForExperimentsRequest" />
       <output message="tns:SearchForExperimentsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForExperimentsResponse" />
+      <fault name="UnsupportedCategoryFault" message="tns:UnsupportedCategoryFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/UnsupportedCategoryFaultFaultMessage" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
     </operation>
     <operation name="getAllPrincipalInvestigators">
       <input message="tns:GetAllPrincipalInvestigatorsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetAllPrincipalInvestigatorsRequest" />
@@ -613,26 +836,43 @@
     <operation name="getFileContentsZipTransfer">
       <input message="tns:GetFileContentsZipTransferRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsZipTransferRequest" />
       <output message="tns:GetFileContentsZipTransferResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsZipTransferResponse" />
+      <fault name="DataStagingFault" message="tns:DataStagingFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/DataStagingFaultFaultMessage" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
     </operation>
     <operation name="getFileContentsTransfers">
       <input message="tns:GetFileContentsTransfersRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsTransfersRequest" />
       <output message="tns:GetFileContentsTransfersResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsTransfersResponse" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
+      <fault name="DataStagingFault" message="tns:DataStagingFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/DataStagingFaultFaultMessage" />
     </operation>
     <operation name="getFileContentsTransfer">
       <input message="tns:GetFileContentsTransferRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsTransferRequest" />
       <output message="tns:GetFileContentsTransferResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetFileContentsTransferResponse" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
+      <fault name="DataStagingFault" message="tns:DataStagingFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/DataStagingFaultFaultMessage" />
     </operation>
     <operation name="getDataSet">
       <input message="tns:GetDataSetRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetDataSetRequest" />
       <output message="tns:GetDataSetResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetDataSetResponse" />
+      <fault name="InconsistentDataSetsFault" message="tns:InconsistentDataSetsFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/InconsistentDataSetsFaultFaultMessage" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
     </operation>
     <operation name="searchForBiomaterials">
       <input message="tns:SearchForBiomaterialsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForBiomaterialsRequest" />
       <output message="tns:SearchForBiomaterialsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForBiomaterialsResponse" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
+      <fault name="UnsupportedCategoryFault" message="tns:UnsupportedCategoryFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/UnsupportedCategoryFaultFaultMessage" />
     </operation>
     <operation name="searchForHybridizations">
       <input message="tns:SearchForHybridizationsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForHybridizationsRequest" />
       <output message="tns:SearchForHybridizationsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForHybridizationsResponse" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
     </operation>
     <operation name="searchForExperimentsByKeyword">
       <input message="tns:SearchForExperimentsByKeywordRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForExperimentsByKeywordRequest" />
@@ -641,6 +881,8 @@
     <operation name="searchForFiles">
       <input message="tns:SearchForFilesRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForFilesRequest" />
       <output message="tns:SearchForFilesResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForFilesResponse" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
     </operation>
     <operation name="searchForBiomaterialsByKeyword">
       <input message="tns:SearchForBiomaterialsByKeywordRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForBiomaterialsByKeywordRequest" />
@@ -649,14 +891,22 @@
     <operation name="getMageTabExport">
       <input message="tns:GetMageTabExportRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetMageTabExportRequest" />
       <output message="tns:GetMageTabExportResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetMageTabExportResponse" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
+      <fault name="DataStagingFault" message="tns:DataStagingFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/DataStagingFaultFaultMessage" />
     </operation>
     <operation name="getMageTabZipTransfer">
       <input message="tns:GetMageTabZipTransferRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetMageTabZipTransferRequest" />
       <output message="tns:GetMageTabZipTransferResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetMageTabZipTransferResponse" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
+      <fault name="DataStagingFault" message="tns:DataStagingFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/DataStagingFaultFaultMessage" />
     </operation>
     <operation name="searchForQuantitationTypes">
       <input message="tns:SearchForQuantitationTypesRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForQuantitationTypesRequest" />
       <output message="tns:SearchForQuantitationTypesResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchForQuantitationTypesResponse" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
     </operation>
     <operation name="searchByExample">
       <input message="tns:SearchByExampleRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/SearchByExampleRequest" />
@@ -665,14 +915,44 @@
     <operation name="getAnnotationSet">
       <input message="tns:GetAnnotationSetRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetAnnotationSetRequest" />
       <output message="tns:GetAnnotationSetResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetAnnotationSetResponse" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
     </operation>
     <operation name="getTermsForCategory">
       <input message="tns:GetTermsForCategoryRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetTermsForCategoryRequest" />
       <output message="tns:GetTermsForCategoryResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetTermsForCategoryResponse" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
     </operation>
     <operation name="getAllCharacteristicCategories">
       <input message="tns:GetAllCharacteristicCategoriesRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetAllCharacteristicCategoriesRequest" />
       <output message="tns:GetAllCharacteristicCategoriesResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/GetAllCharacteristicCategoriesResponse" />
+      <fault name="NoEntityMatchingReferenceFault" message="tns:NoEntityMatchingReferenceFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/NoEntityMatchingReferenceFaultFaultMessage" />
+      <fault name="IncorrectEntityTypeFault" message="tns:IncorrectEntityTypeFaultFaultMessage" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/IncorrectEntityTypeFaultFaultMessage" />
+    </operation>
+    <operation name="enumerateExperimentsByKeyword">
+      <input message="tns:EnumerateExperimentsByKeywordRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateExperimentsByKeywordRequest" />
+      <output message="tns:EnumerateExperimentsByKeywordResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateExperimentsByKeywordResponse" />
+    </operation>
+    <operation name="enumerateBiomaterials">
+      <input message="tns:EnumerateBiomaterialsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateBiomaterialsRequest" />
+      <output message="tns:EnumerateBiomaterialsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateBiomaterialsResponse" />
+    </operation>
+    <operation name="enumerateBiomaterialsByKeyword">
+      <input message="tns:EnumerateBiomaterialsByKeywordRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateBiomaterialsByKeywordRequest" />
+      <output message="tns:EnumerateBiomaterialsByKeywordResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateBiomaterialsByKeywordResponse" />
+    </operation>
+    <operation name="enumerateHybridizations">
+      <input message="tns:EnumerateHybridizationsRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateHybridizationsRequest" />
+      <output message="tns:EnumerateHybridizationsResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateHybridizationsResponse" />
+    </operation>
+    <operation name="enumerateFiles">
+      <input message="tns:EnumerateFilesRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateFilesRequest" />
+      <output message="tns:EnumerateFilesResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateFilesResponse" />
+    </operation>
+    <operation name="enumerateByExample">
+      <input message="tns:EnumerateByExampleRequest" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateByExampleRequest" />
+      <output message="tns:EnumerateByExampleResponse" wsa:Action="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/EnumerateByExampleResponse" />
     </operation>
     <wsdl:operation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="GetMultipleResourceProperties">
       <wsdl:input name="GetMultipleResourcePropertiesRequest" message="wsrpw:GetMultipleResourcePropertiesRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetMultipleResourceProperties" />

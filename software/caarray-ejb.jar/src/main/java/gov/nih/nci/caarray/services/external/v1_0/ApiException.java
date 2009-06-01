@@ -80,64 +80,30 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.external.v1_0.query;
+package gov.nih.nci.caarray.services.external.v1_0;
 
-import java.io.Serializable;
 
 /**
- * Bean for specifying paging and sorting constraints for a query.
+ * Base class for exceptions for the External API.
  * 
  * @author dkokotov
  */
-public class PagingParams implements Serializable {
+public class ApiException extends Exception {
     private static final long serialVersionUID = 1L;
-    
-    private int maxResults;
-    private int firstResult;
 
     /**
-     * Constructor.
+     * Constructor for no message.
+     */
+    public ApiException() {
+        super();
+    }
+
+    /**
+     * Constructor with message.
      * 
-     * @param maxResults page size
-     * @param firstResult start index
+     * @param msg provides detailed description of the exception.
      */
-    public PagingParams(int maxResults, int firstResult) {
-        this.maxResults = maxResults;
-        this.firstResult = firstResult;
-    }
-    
-    /**
-     * Empty constructor, for serialization.
-     */
-    public PagingParams() {
-        // noop
-    }
-
-    /**
-     * @return the pageSize
-     */
-    public int getMaxResults() {
-        return maxResults;
-    }
-
-    /**
-     * @param pageSize the pageSize to set
-     */
-    public void setMaxResults(int pageSize) {
-        this.maxResults = pageSize;
-    }
-
-    /**
-     * @return the index
-     */
-    public int getFirstResult() {
-        return firstResult;
-    }
-
-    /**
-     * @param index the index to set
-     */
-    public void setFirstResult(int index) {
-        this.firstResult = index;
+    public ApiException(String msg) {
+        super(msg);
     }
 }

@@ -82,13 +82,15 @@
  */
 package gov.nih.nci.caarray.services.external.v1_0.data;
 
+import gov.nih.nci.caarray.services.external.v1_0.ApiException;
+
 
 /**
  * Exception thrown to indicate that there was an issue with transferring data over the remote connection.
  * 
  * @author dkokotov
  */
-public class DataTransferException extends Exception {
+public class DataTransferException extends ApiException {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -98,15 +100,5 @@ public class DataTransferException extends Exception {
      */
     public DataTransferException(String msg) {
         super(msg);
-    }
-
-    /**
-     * Constructor for given underlying cause.
-     * 
-     * @param msg provides detailed description of the exception.
-     * @param cause the cause 
-     */
-    public DataTransferException(String msg, Throwable cause) {
-        super(msg, cause);
     }
 }

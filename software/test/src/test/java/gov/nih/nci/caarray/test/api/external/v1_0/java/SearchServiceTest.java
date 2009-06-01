@@ -5,16 +5,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
-import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
-import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataType;
-import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
-import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
@@ -28,6 +23,7 @@ import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -143,6 +139,9 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         } catch (InvalidReferenceException e) {
             e.printStackTrace();
             fail("Couldn't search experiments: " + e);
+        } catch (UnsupportedCategoryException e) {
+            e.printStackTrace();
+            fail("Couldn't search experiments: " + e);
         }
 
         crit = new ExperimentSearchCriteria();
@@ -152,6 +151,9 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
             assertEquals(3, experiments.size());
             assertEquals("dsfdsf", experiments.get(0).getTitle());
         } catch (InvalidReferenceException e) {
+            e.printStackTrace();
+            fail("Couldn't search experiments: " + e);
+        } catch (UnsupportedCategoryException e) {
             e.printStackTrace();
             fail("Couldn't search experiments: " + e);
         }
@@ -165,6 +167,9 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
             assertEquals(1, experiments.size());
             assertEquals("fdsfds", experiments.get(0).getTitle());
         } catch (InvalidReferenceException e) {
+            e.printStackTrace();
+            fail("Couldn't search experiments: " + e);
+        } catch (UnsupportedCategoryException e) {
             e.printStackTrace();
             fail("Couldn't search experiments: " + e);
         }
@@ -183,7 +188,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
     
     @Test
-    public void testSearchForBiomaterials() throws InvalidReferenceException {
+    public void testSearchForBiomaterials() throws InvalidReferenceException, UnsupportedCategoryException {
         BiomaterialSearchCriteria crit = new BiomaterialSearchCriteria();
         crit.setExperiment(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
         crit.setTypes(EnumSet.of(BiomaterialType.SOURCE, BiomaterialType.SAMPLE));

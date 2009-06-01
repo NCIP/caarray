@@ -182,6 +182,36 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		
 		
 	}
+					
+	public static void authorizeEnumerateExperimentsByKeyword() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeEnumerateBiomaterials() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeEnumerateBiomaterialsByKeyword() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeEnumerateHybridizations() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeEnumerateFiles() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeEnumerateByExample() throws RemoteException {
+		
+		
+	}
 	
 	
 	public boolean isPermitted(Subject peerSubject, MessageContext context, QName operation)
@@ -385,6 +415,54 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		} else if(operation.getLocalPart().equals("getAllCharacteristicCategories")){
 			try{
 				authorizeGetAllCharacteristicCategories();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("enumerateExperimentsByKeyword")){
+			try{
+				authorizeEnumerateExperimentsByKeyword();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("enumerateBiomaterials")){
+			try{
+				authorizeEnumerateBiomaterials();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("enumerateBiomaterialsByKeyword")){
+			try{
+				authorizeEnumerateBiomaterialsByKeyword();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("enumerateHybridizations")){
+			try{
+				authorizeEnumerateHybridizations();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("enumerateFiles")){
+			try{
+				authorizeEnumerateFiles();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("enumerateByExample")){
+			try{
+				authorizeEnumerateByExample();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();

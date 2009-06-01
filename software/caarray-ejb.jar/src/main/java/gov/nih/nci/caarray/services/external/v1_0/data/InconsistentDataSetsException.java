@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.services.external.v1_0.data;
 
+import gov.nih.nci.caarray.services.external.v1_0.ApiException;
+
 
 /**
  * Exception thrown to indicate that the data sets requested in a getDataSet call were inconsistent, e.g. did not 
@@ -89,7 +91,7 @@ package gov.nih.nci.caarray.services.external.v1_0.data;
  * 
  * @author dkokotov
  */
-public class InconsistentDataSetsException extends Exception {
+public class InconsistentDataSetsException extends ApiException {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -99,15 +101,5 @@ public class InconsistentDataSetsException extends Exception {
      */
     public InconsistentDataSetsException(String msg) {
         super(msg);
-    }
-
-    /**
-     * Constructor for given underlying cause.
-     * 
-     * @param msg provides detailed description of the exception.
-     * @param cause the cause 
-     */
-    public InconsistentDataSetsException(String msg, Throwable cause) {
-        super(msg, cause);
     }
 }

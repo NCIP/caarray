@@ -109,7 +109,7 @@ import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
-import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
+import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
@@ -124,12 +124,14 @@ import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
 import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.AbstractSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
-import gov.nih.nci.caarray.services.external.v1_0.search.SearchUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -149,21 +151,21 @@ public class JavaApiExample {
     private int port = DEFAULT_JNDI_PORT;
     private CaArrayServer server;
     private SearchService searchService;
-    private SearchUtils searchUtils;
+    private AbstractSearchApiUtils searchUtils;
     private DataService dataService;
     private DataApiUtils dataUtils;
     
-    private static final String TEST_FILE_TYPE_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AGILENT_CSV";
+    private static final String TEST_FILE_TYPE_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CEL";
     private static final String TEST_ORGANISM_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:1";
     private static final String TEST_EXPERIMENT_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1";
-    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:89";
-    private static final String TEST_HYB2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:93";
-    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:230";
-    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:246";
-//    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1";
-//    private static final String TEST_HYB2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:2";
-//    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:1";
-//    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:2";
+//    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:89";
+//    private static final String TEST_HYB2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:93";
+//    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:230";
+//    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:246";
+    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1";
+    private static final String TEST_HYB2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:2";
+    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:1";
+    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:2";
 
     public static void main(String[] args) {
         JavaApiExample client = new JavaApiExample();
@@ -185,7 +187,7 @@ public class JavaApiExample {
             server.connect();
             System.out.println("Successfully connected to server");
             searchService = server.getSearchService();
-            searchUtils = new SearchUtils(searchService);
+            searchUtils = new JavaSearchApiUtils(searchService);
             dataService = server.getDataService();
             dataUtils = new JavaDataApiUtils(dataService);
         } catch (ServerConnectionException e) {
@@ -201,6 +203,18 @@ public class JavaApiExample {
     public void runTest() {
         try {
             StopWatch sw = new StopWatch();
+
+            System.out.println("Experiment full list");
+            for (Experiment e : searchUtils.experimentsByCriteria(new ExperimentSearchCriteria()).list()) {
+                System.out.println("Next experiment: " + e);
+            }
+            
+            System.out.println("Experiment iteration");
+            for (Iterator<Experiment> expIt = searchUtils.experimentsByCriteria(new ExperimentSearchCriteria())
+                    .iterate(2); expIt.hasNext();) {
+                Experiment e = expIt.next();
+                System.out.println("Next experiment: " + e);
+            }
             
             List<Organism> organisms = searchUtils.byExample(new ExampleSearchCriteria<Organism>(new Organism()))
                     .list();
@@ -239,13 +253,13 @@ public class JavaApiExample {
             List<FileType> chpTypes = searchUtils.byExample(
                     new ExampleSearchCriteria<FileType>(exampleType, MatchMode.START)).list();
             System.out.println("Affymetrix types: " + chpTypes);
-            exampleType.setName(null);
             exampleType.setCategory(FileTypeCategory.DERIVED);
-            List<FileType> derivedTypes = searchUtils.byExample(new ExampleSearchCriteria<FileType>(exampleType)).list();
-            System.out.println("Derived types: " + derivedTypes);
-            FileType agilentCsv = (FileType) searchService.getByReference(new CaArrayEntityReference(
+            List<FileType> derivedTypes = searchUtils.byExample(
+                    new ExampleSearchCriteria<FileType>(exampleType, MatchMode.START)).list();
+            System.out.println("Affy Derived types: " + derivedTypes);
+            FileType affyCel = (FileType) searchService.getByReference(new CaArrayEntityReference(
                     TEST_FILE_TYPE_ID));
-            System.out.println("Retrieved file type by reference: " + agilentCsv);
+            System.out.println("Retrieved file type by reference: " + affyCel);
             
             List<Person> pis = searchService.getAllPrincipalInvestigators();
             System.out.println("PIs: " + pis);            
@@ -264,12 +278,13 @@ public class JavaApiExample {
             ExperimentSearchCriteria experimentCrit = new ExperimentSearchCriteria();
             experimentCrit.setPrincipalInvestigator(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Person:9"));
             experimentCrit.getAnnotationCriterions().add(new AnnotationCriterion(dsCats.get(0).getReference(), "Glioblastoma Multiforme"));
+            experimentCrit.setOrganism(mouseOrgs.get(0).getReference());
             List<Experiment> exps = searchUtils.experimentsByCriteria(experimentCrit).list();
             System.out.println("Experiments by criteria: " + exps);
             
             KeywordSearchCriteria experimentKeywordCrit = new KeywordSearchCriteria();
             experimentKeywordCrit.setKeyword("MDR");
-            List<Experiment> keywordExps = searchService.searchForExperimentsByKeyword(experimentKeywordCrit, new PagingParams(5, 0)).getResults();
+            List<Experiment> keywordExps = searchService.searchForExperimentsByKeyword(experimentKeywordCrit, new LimitOffset(5, 0)).getResults();
             System.out.println("Experiments by keyword criteria: " + keywordExps); 
             
             BiomaterialKeywordSearchCriteria sampleKeywordCrit = new BiomaterialKeywordSearchCriteria();
@@ -284,6 +299,7 @@ public class JavaApiExample {
             fileCriteria.setExperiment(new CaArrayEntityReference(TEST_EXPERIMENT_ID));
             fileCriteria.getExperimentGraphNodes().add(new CaArrayEntityReference(TEST_HYB1_ID));
             fileCriteria.getExperimentGraphNodes().add(new CaArrayEntityReference(TEST_BIOMATERIAL2_ID));
+            fileCriteria.getTypes().add(affyCel.getReference());
             List<DataFile> files = searchUtils.filesByCriteria(fileCriteria).list();
 
             for (DataFile file : files) {
@@ -310,7 +326,7 @@ public class JavaApiExample {
 
             BiomaterialSearchCriteria bsc = new BiomaterialSearchCriteria();
             bsc.setExperiment(new CaArrayEntityReference(TEST_EXPERIMENT_ID));
-            bsc.setTypes(EnumSet.of(BiomaterialType.SOURCE, BiomaterialType.SAMPLE));
+            //bsc.setTypes(EnumSet.of(BiomaterialType.SOURCE, BiomaterialType.SAMPLE));
             bsc.getAnnotationCriterions().add(
                     new AnnotationCriterion(dsCats.get(0).getReference(), "Glioblastoma Multiforme"));
             List<Biomaterial> bms = searchUtils.biomaterialsByCriteria(bsc).list();

@@ -100,13 +100,4 @@ public class IncorrectEntityTypeException extends InvalidReferenceException {
     public IncorrectEntityTypeException(CaArrayEntityReference reference) {
         super(reference);
     }
-
-    /**
-     * Constructor for given underlying cause.
-     * @param cause the cause
-     * @param reference the problematic reference
-     */
-    public IncorrectEntityTypeException(Throwable cause, CaArrayEntityReference reference) {
-        super(cause, reference);
-    }
 }

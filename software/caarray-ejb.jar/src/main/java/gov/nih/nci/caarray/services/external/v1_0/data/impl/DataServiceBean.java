@@ -208,7 +208,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
 
     private gov.nih.nci.caarray.domain.data.DataSet createMergedDataSet(
             List<gov.nih.nci.caarray.domain.data.DataSet> dataSets, DataSetRequest request)
-            throws InconsistentDataSetsException {
+            throws InconsistentDataSetsException, InvalidReferenceException {
         gov.nih.nci.caarray.domain.data.DataSet dataSet = new gov.nih.nci.caarray.domain.data.DataSet();
         dataSet.getQuantitationTypes().addAll(getQuantitationTypes(request));
         addDesignElementList(dataSet, dataSets);
@@ -239,7 +239,8 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     }
 
     private void addHybridizationDatas(gov.nih.nci.caarray.domain.data.DataSet dataSet,
-            List<gov.nih.nci.caarray.domain.data.DataSet> dataSets, DataSetRequest request) {
+            List<gov.nih.nci.caarray.domain.data.DataSet> dataSets, DataSetRequest request)
+            throws InvalidReferenceException {
         for (gov.nih.nci.caarray.domain.data.DataSet nextDataSet : dataSets) {
             for (HybridizationData nextHybridizationData : nextDataSet.getHybridizationDataList()) {
                 addHybridizationData(dataSet, nextHybridizationData, request);
@@ -248,7 +249,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     }
 
     private void addHybridizationData(gov.nih.nci.caarray.domain.data.DataSet dataSet,
-            HybridizationData copyFromHybridizationData, DataSetRequest request) {
+            HybridizationData copyFromHybridizationData, DataSetRequest request) throws InvalidReferenceException {
         HybridizationData hybridizationData = new HybridizationData();
         hybridizationData.setHybridization(copyFromHybridizationData.getHybridization());
         dataSet.getHybridizationDataList().add(hybridizationData);
@@ -345,11 +346,12 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         return files;
     }
 
-    private List<gov.nih.nci.caarray.domain.data.QuantitationType> getQuantitationTypes(DataSetRequest request) {
+    private List<gov.nih.nci.caarray.domain.data.QuantitationType> getQuantitationTypes(DataSetRequest request)
+            throws InvalidReferenceException {
         List<gov.nih.nci.caarray.domain.data.QuantitationType> types = 
             new ArrayList<gov.nih.nci.caarray.domain.data.QuantitationType>(request.getDataFiles().size());
         for (CaArrayEntityReference qtRef : request.getQuantitationTypes()) {
-            types.add((gov.nih.nci.caarray.domain.data.QuantitationType) getByLsid(qtRef.getId()));
+            types.add(getRequiredByLsid(qtRef.getId(), gov.nih.nci.caarray.domain.data.QuantitationType.class));
         }
         return types;
     }
@@ -448,7 +450,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
             return mageTabSet;
         } catch (IOException e) {
             LOG.error("Error exporting to MAGE-TAB", e);
-            throw new DataTransferException("Could not generate idf/sdrf: ", e);
+            throw new DataTransferException("Could not generate idf/sdrf");
         } 
     }
     

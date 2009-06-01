@@ -91,7 +91,7 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
  * 
  * @author dkokotov
  */
-public class InvalidReferenceException extends Exception {
+public class InvalidReferenceException extends ApiException {
     private static final long serialVersionUID = 1L;
     
     private final CaArrayEntityReference reference;
@@ -106,20 +106,9 @@ public class InvalidReferenceException extends Exception {
     }
 
     /**
-     * Constructor for given underlying cause.
-     * @param cause the cause
-     * @param reference the problematic reference
-     */
-    public InvalidReferenceException(Throwable cause, CaArrayEntityReference reference) {
-        super(cause);
-        this.reference = reference;
-    }
-
-    /**
      * @return the reference
      */
     public CaArrayEntityReference getReference() {
         return reference;
     }
-
 }

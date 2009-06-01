@@ -155,7 +155,7 @@ public class GridDataApiUtils extends AbstractDataApiUtils {
             if (e instanceof IOException) {
                 throw (IOException) e;
             } else {
-                throw new DataTransferException("Could not retrieve file data via Grid Transfer", e);
+                throw new DataTransferException("Could not retrieve file data via Grid Transfer");
             }
         } finally {
             if (tclient != null) {
