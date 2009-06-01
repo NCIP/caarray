@@ -148,7 +148,7 @@
 
         <dependency conf="project" name="javacsv" org="javacsv" rev="1.0"/>
 
-        <dependency conf="project" name="csm" org="ncicb" rev="4.1"/>
+        <dependency conf="project" name="csm" org="ncicb" rev="4.1.0.2"/>
 
         <dependency conf="project" name="svnant" org="org.tigris" rev="1.0"/>
 
