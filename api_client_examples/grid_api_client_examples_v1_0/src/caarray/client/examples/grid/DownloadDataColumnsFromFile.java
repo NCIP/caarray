@@ -200,14 +200,14 @@ public class DownloadDataColumnsFromFile {
         // ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         // experimentSearchCriteria.setPublicIdentifier(EXPERIMENT_PUBLIC_IDENTIFIER);
 
-        Experiment[] experiments = client.searchForExperiments(experimentSearchCriteria);
-        if (experiments == null || experiments.length <= 0) {
+        List<Experiment> experiments = (client.searchForExperiments(experimentSearchCriteria, null)).getResults();
+        if (experiments == null || experiments.size() <= 0) {
             return null;
         }
 
         // Assuming that only one experiment was found, pick the first result.
         // This will always be true for a search by public identifier, but may not be true for a search by title.
-        Experiment experiment = experiments[0];
+        Experiment experiment = experiments.get(0);
         return experiment.getReference();
     }
 
@@ -221,14 +221,14 @@ public class DownloadDataColumnsFromFile {
         CaArrayEntityReference chpFileTypeRef = getChpFileType();
         fileSearchCriteria.getTypes().add(chpFileTypeRef);
 
-        DataFile[] files = client.searchForFiles(fileSearchCriteria);
-        if (files == null || files.length <= 0) {
+        List<DataFile> files = (client.searchForFiles(fileSearchCriteria, null)).getResults();
+        if (files == null || files.size() <= 0) {
             return null;
         }
 
         // The client application will typically let the user choose one out of the many files,
         // but we will just pick the first result here.
-        DataFile file = files[0];
+        DataFile file = files.get(0);
         return file.getReference();
     }
 
@@ -237,7 +237,7 @@ public class DownloadDataColumnsFromFile {
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CHP");
         criteria.setExample(exampleFileType);
-        List<FileType> fileTypes = (client.searchByExample(criteria)).getResults();
+        List<FileType> fileTypes = (client.searchByExample(criteria, null)).getResults();
         FileType chpFileType = fileTypes.iterator().next();
         return chpFileType.getReference();
     }
@@ -250,7 +250,7 @@ public class DownloadDataColumnsFromFile {
             QuantitationType exampleQuantitationType = new QuantitationType();
             exampleQuantitationType.setName(quantitationTypeName);
             criteria.setExample(exampleQuantitationType);
-            List<QuantitationType> quantitationTypes = (client.searchByExample(criteria)).getResults();
+            List<QuantitationType> quantitationTypes = (client.searchByExample(criteria, null)).getResults();
             if (quantitationTypes == null || quantitationTypes.size() <= 0) {
                 return null;
             }

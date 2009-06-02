@@ -178,14 +178,14 @@ public class SelectFiles {
         // ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         // experimentSearchCriteria.setPublicIdentifier(EXPERIMENT_PUBLIC_IDENTIFIER);
 
-        Experiment[] experiments = client.searchForExperiments(experimentSearchCriteria);
-        if (experiments.length <= 0) {
+        List<Experiment> experiments = (client.searchForExperiments(experimentSearchCriteria, null)).getResults();
+        if (experiments == null || experiments.size() <= 0) {
             return null;
         }
 
         // Assuming that only one experiment was found, pick the first result.
         // This will always be true for a search by public identifier, but may not be true for a search by title.
-        Experiment experiment = experiments[0];
+        Experiment experiment = experiments.get(0);
         return experiment.getReference();
     }
 
@@ -198,8 +198,8 @@ public class SelectFiles {
         criteria.getNames().add(SAMPLE_NAME_01);
         criteria.getNames().add(SAMPLE_NAME_02);
         criteria.getTypes().add(BiomaterialType.SAMPLE);
-        Biomaterial[] samples = client.searchForBiomaterials(criteria);
-        if (samples == null || samples.length <= 0) {
+        List<Biomaterial> samples = client.searchForBiomaterials(criteria, null).getResults();
+        if (samples == null || samples.size() <= 0) {
             return null;
         }
         Set<CaArrayEntityReference> sampleRefs = new HashSet<CaArrayEntityReference>();
@@ -217,8 +217,8 @@ public class SelectFiles {
         fileSearchCriteria.setExperiment(experimentRef);
         fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
 
-        DataFile[] files = client.searchForFiles(fileSearchCriteria);
-        if (files.length <= 0) {
+        List<DataFile> files = client.searchForFiles(fileSearchCriteria, null).getResults();
+        if (files.size() <= 0) {
             return null;
         }
 
@@ -241,8 +241,8 @@ public class SelectFiles {
         CaArrayEntityReference celFileTypeRef = getCelFileType();
         fileSearchCriteria.getTypes().add(celFileTypeRef);
 
-        DataFile[] files = client.searchForFiles(fileSearchCriteria);
-        if (files.length <= 0) {
+        List<DataFile> files = client.searchForFiles(fileSearchCriteria, null).getResults();
+        if (files.size() <= 0) {
             return null;
         }
 
@@ -260,7 +260,7 @@ public class SelectFiles {
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CEL");
         criteria.setExample(exampleFileType);
-        List<FileType> fileTypes = (client.searchByExample(criteria)).getResults();
+        List<FileType> fileTypes = (client.searchByExample(criteria, null)).getResults();
         FileType celFileType = fileTypes.iterator().next();
         return celFileType.getReference();
     }
@@ -275,8 +275,8 @@ public class SelectFiles {
         fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
         fileSearchCriteria.setExtension(".CHP");
 
-        DataFile[] files = client.searchForFiles(fileSearchCriteria);
-        if (files.length <= 0) {
+        List<DataFile> files = client.searchForFiles(fileSearchCriteria, null).getResults();
+        if (files.size() <= 0) {
             return null;
         }
 
@@ -298,8 +298,8 @@ public class SelectFiles {
         fileSearchCriteria.setExperimentGraphNodes(sampleRefs);
         fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
 
-        DataFile[] files = client.searchForFiles(fileSearchCriteria);
-        if (files.length <= 0) {
+        List<DataFile> files = client.searchForFiles(fileSearchCriteria, null).getResults();
+        if (files.size() <= 0) {
             return null;
         }
 

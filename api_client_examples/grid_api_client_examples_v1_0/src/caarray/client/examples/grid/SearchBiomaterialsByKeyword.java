@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * A client searching for biomaterials by keyword using the caArray Grid service API.
@@ -117,13 +118,13 @@ public class SearchBiomaterialsByKeyword {
         criteria.getTypes().add(BiomaterialType.SAMPLE);
         criteria.getTypes().add(BiomaterialType.SOURCE);
         long startTime = System.currentTimeMillis();
-        Biomaterial[] biomaterials = client.searchForBiomaterialsByKeyword(criteria);
+        List<Biomaterial> biomaterials = (client.searchForBiomaterialsByKeyword(criteria, null)).getResults();
         long totalTime = System.currentTimeMillis() - startTime;
-        if (biomaterials == null || biomaterials.length <= 0) {
+        if (biomaterials == null || biomaterials.size() <= 0) {
             System.err.println("No biomaterials found.");
             return;
         }
-        System.out.println("Found " + biomaterials.length + " biomaterials in " + totalTime + " ms.");
+        System.out.println("Found " + biomaterials.size() + " biomaterials in " + totalTime + " ms.");
         System.out.println("Name\tType\tTissue Site\tDisease State");
         for (Biomaterial biomaterial : biomaterials) {
             printBiomaterialDetails(biomaterial);

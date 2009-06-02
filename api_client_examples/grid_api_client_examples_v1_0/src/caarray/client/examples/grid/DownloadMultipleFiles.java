@@ -152,14 +152,14 @@ public class DownloadMultipleFiles {
         // ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         // experimentSearchCriteria.setPublicIdentifier(EXPERIMENT_PUBLIC_IDENTIFIER);
 
-        Experiment[] experiments = client.searchForExperiments(experimentSearchCriteria);
-        if (experiments == null || experiments.length <= 0) {
+        List<Experiment> experiments = (client.searchForExperiments(experimentSearchCriteria, null)).getResults();
+        if (experiments == null || experiments.size() <= 0) {
             return null;
         }
 
         // Assuming that only one experiment was found, pick the first result.
         // This will always be true for a search by public identifier, but may not be true for a search by title.
-        Experiment experiment = experiments[0];
+        Experiment experiment = experiments.get(0);
         return experiment.getReference();
     }
 
@@ -180,8 +180,8 @@ public class DownloadMultipleFiles {
         // fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
         // fileSearchCriteria.setExtension(".CHP");
 
-        DataFile[] files = client.searchForFiles(fileSearchCriteria);
-        if (files == null || files.length <= 0) {
+        List<DataFile> files = (client.searchForFiles(fileSearchCriteria, null)).getResults();
+        if (files == null || files.size() <= 0) {
             return null;
         }
 
@@ -198,7 +198,7 @@ public class DownloadMultipleFiles {
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CEL");
         criteria.setExample(exampleFileType);
-        List<FileType> fileTypes = (client.searchByExample(criteria)).getResults();
+        List<FileType> fileTypes = (client.searchByExample(criteria, null)).getResults();
         FileType celFileType = fileTypes.iterator().next();
         return celFileType.getReference();
     }

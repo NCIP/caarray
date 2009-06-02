@@ -184,14 +184,14 @@ public class DownloadDataColumnsFromHybridizations {
         // ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         // experimentSearchCriteria.setPublicIdentifier(EXPERIMENT_PUBLIC_IDENTIFIER);
 
-        Experiment[] experiments = client.searchForExperiments(experimentSearchCriteria);
-        if (experiments == null || experiments.length <= 0) {
+        List<Experiment> experiments = (client.searchForExperiments(experimentSearchCriteria, null)).getResults();
+        if (experiments == null || experiments.size() <= 0) {
             return null;
         }
 
         // Assuming that only one experiment was found, pick the first result.
         // This will always be true for a search by public identifier, but may not be true for a search by title.
-        Experiment experiment = experiments[0];
+        Experiment experiment = experiments.get(0);
         return experiment.getReference();
     }
 
@@ -201,8 +201,8 @@ public class DownloadDataColumnsFromHybridizations {
     private Set<CaArrayEntityReference> selectHybridizations(CaArrayEntityReference experimentRef) throws RemoteException {
         HybridizationSearchCriteria searchCriteria = new HybridizationSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
-        Hybridization[] hybridizations = client.searchForHybridizations(searchCriteria);
-        if (hybridizations == null || hybridizations.length <= 0) {
+        List<Hybridization> hybridizations = (client.searchForHybridizations(searchCriteria, null)).getResults();
+        if (hybridizations == null || hybridizations.size() <= 0) {
             return null;
         }
 
@@ -225,8 +225,8 @@ public class DownloadDataColumnsFromHybridizations {
         CaArrayEntityReference chpFileTypeRef = getChpFileType();
         searchCriteria.setExperimentGraphNodes(hybridizationRefs);
         searchCriteria.getTypes().add(chpFileTypeRef);
-        DataFile[] dataFiles = client.searchForFiles(searchCriteria);
-        if (dataFiles == null || dataFiles.length == 0) {
+        List<DataFile> dataFiles = (client.searchForFiles(searchCriteria, null)).getResults();
+        if (dataFiles == null || dataFiles.size() == 0) {
             return false;
         } else {
             return true;
@@ -238,7 +238,7 @@ public class DownloadDataColumnsFromHybridizations {
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CHP");
         criteria.setExample(exampleFileType);
-        List<FileType> fileTypes = (client.searchByExample(criteria)).getResults();
+        List<FileType> fileTypes = (client.searchByExample(criteria, null)).getResults();
         FileType chpFileType = fileTypes.iterator().next();
         return chpFileType.getReference();
     }
@@ -251,7 +251,7 @@ public class DownloadDataColumnsFromHybridizations {
             QuantitationType exampleQuantitationType = new QuantitationType();
             exampleQuantitationType.setName(quantitationTypeName);
             criteria.setExample(exampleQuantitationType);
-            List<QuantitationType> quantitationTypes = (client.searchByExample(criteria)).getResults();
+            List<QuantitationType> quantitationTypes = (client.searchByExample(criteria, null)).getResults();
             if (quantitationTypes == null || quantitationTypes.size() <= 0) {
                 return null;
             }

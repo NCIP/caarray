@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Cli
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.axis.types.URI.MalformedURIException;
@@ -143,13 +144,13 @@ public class DownloadMageTabExport {
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
 
-        Experiment[] experiments = client.searchForExperiments(experimentSearchCriteria);
-        if (experiments == null || experiments.length <= 0) {
+        List<Experiment> experiments = (client.searchForExperiments(experimentSearchCriteria, null)).getResults();
+        if (experiments == null || experiments.size() <= 0) {
             return null;
         }
 
         // Multiple experiments with the same name can exist. Here, we're picking the first result.
-        Experiment experiment = experiments[0];
+        Experiment experiment = experiments.get(0);
         return experiment.getReference();
     }
 }

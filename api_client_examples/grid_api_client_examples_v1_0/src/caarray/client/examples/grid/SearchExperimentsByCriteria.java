@@ -132,7 +132,7 @@ public class SearchExperimentsByCriteria {
         ArrayProvider exampleProvider = new ArrayProvider();
         exampleProvider.setName(PROVIDER_NAME);
         providerCriteria.setExample(exampleProvider);
-        List<ArrayProvider> arrayProviders = (client.searchByExample(providerCriteria)).getResults();
+        List<ArrayProvider> arrayProviders = (client.searchByExample(providerCriteria, null)).getResults();
         if (arrayProviders == null || arrayProviders.size() <= 0) {
             System.err.println("Could not find array provider called " + PROVIDER_NAME);
             return;
@@ -144,7 +144,7 @@ public class SearchExperimentsByCriteria {
         Organism exampleOrganism = new Organism();
         exampleOrganism.setCommonName(ORGANISM_NAME);
         organismCriteria.setExample(exampleOrganism);
-        List<Organism> organisms = (client.searchByExample(organismCriteria)).getResults();
+        List<Organism> organisms = (client.searchByExample(organismCriteria, null)).getResults();
         if (organisms == null || organisms.size() <= 0) {
             System.err.println("Could not find organism with common name = " + ORGANISM_NAME);
             return;
@@ -156,7 +156,7 @@ public class SearchExperimentsByCriteria {
         AssayType exampleAssayType = new AssayType();
         exampleAssayType.setName(ASSAY_TYPE);
         assayTypeCriteria.setExample(exampleAssayType);
-        List<AssayType> assayTypes = (client.searchByExample(assayTypeCriteria)).getResults();
+        List<AssayType> assayTypes = (client.searchByExample(assayTypeCriteria, null)).getResults();
         if (assayTypes == null || assayTypes.size() <= 0) {
             System.err.println("Could not find assay type " + ASSAY_TYPE);
             return;
@@ -186,12 +186,12 @@ public class SearchExperimentsByCriteria {
 
         // Search for experiments that satisfy all of the above criteria.
         long startTime = System.currentTimeMillis();
-        Experiment[] experiments = client.searchForExperiments(experimentSearchCriteria);
+        List<Experiment> experiments = (client.searchForExperiments(experimentSearchCriteria, null)).getResults();
         long totalTime = System.currentTimeMillis() - startTime;
-        if (experiments == null || experiments.length <= 0) {
+        if (experiments == null || experiments.size() <= 0) {
             System.out.println("No experiments found matching the requested criteria.");
         } else {
-            System.out.println("Retrieved " + experiments.length + " experiments in " + totalTime + " ms.");
+            System.out.println("Retrieved " + experiments.size() + " experiments in " + totalTime + " ms.");
         }
     }
 
@@ -200,7 +200,7 @@ public class SearchExperimentsByCriteria {
         Category exampleCategory = new Category();
         exampleCategory.setName(categoryName);
         criteria.setExample(exampleCategory);
-        List<Category> categories = client.searchByExample(criteria).getResults();
+        List<Category> categories = client.searchByExample(criteria, null).getResults();
         CaArrayEntityReference categoryRef = categories.get(0).getReference();
         return categoryRef;
     }

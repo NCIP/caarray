@@ -82,11 +82,16 @@
  */
 package caarray.client.examples.grid;
 
+import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.query.AnnotationCriterion;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * A client searching for biomaterials using various criteria via the caArray Grid service API.
@@ -113,22 +118,33 @@ public class SearchBiomaterialsByCriteria {
         BiomaterialSearchCriteria biomaterialSearchCriteria = new BiomaterialSearchCriteria();
 
         // Set external ID.
-        // biomaterialSearchCriteria.setExternalId(EXTERNAL_ID);
+        biomaterialSearchCriteria.getExternalIds().add(EXTERNAL_ID);
 
         // Select tissue site.
-//        AnnotationCriterion tissueSite = new AnnotationCriterion();
-//        tissueSite.setValue("Brain");
-//        tissueSite.setCategory("OrganismPart");
-//        biomaterialSearchCriteria.getAnnotations().add(tissueSite);
+        AnnotationCriterion tissueSite = new AnnotationCriterion();
+        tissueSite.setValue("Brain");
+        CaArrayEntityReference categoryRef = getCategoryReference("OrganismPart");
+        tissueSite.setCategory(categoryRef);
+        biomaterialSearchCriteria.getAnnotationCriterions().add(tissueSite);
 
         // Search for biomaterials that satisfy all of the above criteria.
         long startTime = System.currentTimeMillis();
-        Biomaterial[] biomaterials = client.searchForBiomaterials(biomaterialSearchCriteria);
+        List<Biomaterial> biomaterials = (client.searchForBiomaterials(biomaterialSearchCriteria, null)).getResults();
         long totalTime = System.currentTimeMillis() - startTime;
-        if (biomaterials == null || biomaterials.length <= 0) {
+        if (biomaterials == null || biomaterials.size() <= 0) {
             System.out.println("No biomaterials found matching the requested criteria.");
         } else {
-            System.out.println("Retrieved " + biomaterials.length + " biomaterials in " + totalTime + " ms.");
+            System.out.println("Retrieved " + biomaterials.size() + " biomaterials in " + totalTime + " ms.");
         }
+    }
+
+    private CaArrayEntityReference getCategoryReference(String categoryName) throws RemoteException {
+        ExampleSearchCriteria<Category> criteria = new ExampleSearchCriteria<Category>();
+        Category exampleCategory = new Category();
+        exampleCategory.setName(categoryName);
+        criteria.setExample(exampleCategory);
+        List<Category> categories = (client.searchByExample(criteria, null)).getResults();
+        CaArrayEntityReference categoryRef = categories.get(0).getReference();
+        return categoryRef;
     }
 }

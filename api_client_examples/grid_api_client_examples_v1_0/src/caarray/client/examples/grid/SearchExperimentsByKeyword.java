@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * An LSDBrowser-like client searching for experiments by keyword using the caArray Grid service API.
@@ -116,13 +117,13 @@ public class SearchExperimentsByKeyword {
         KeywordSearchCriteria criteria = new KeywordSearchCriteria();
         criteria.setKeyword(KEYPHRASE);
         long startTime = System.currentTimeMillis();
-        Experiment[] experiments = client.searchForExperimentsByKeyword(criteria);
+        List<Experiment> experiments = (client.searchForExperimentsByKeyword(criteria, null)).getResults();
         long totalTime = System.currentTimeMillis() - startTime;
-        if (experiments == null || experiments.length <= 0) {
+        if (experiments == null || experiments.size() <= 0) {
             System.err.println("No experiments found.");
             return;
         }
-        System.out.println("Found " + experiments.length + " experiments in " + totalTime + " ms.");
+        System.out.println("Found " + experiments.size() + " experiments in " + totalTime + " ms.");
         System.out.println("Public Identifier\tTitle\tAssay Type\tOrganism\tNumber of Samples\tDisease States");
         for (Experiment experiment : experiments) {
             printExperimentDetails(experiment);
@@ -140,8 +141,8 @@ public class SearchExperimentsByKeyword {
         BiomaterialSearchCriteria criteria = new BiomaterialSearchCriteria();
         criteria.setExperiment(experiment.getReference());
         criteria.getTypes().add(BiomaterialType.SAMPLE);
-        Biomaterial[] biomaterials = client.searchForBiomaterials(criteria);
-        int numSamples = biomaterials == null ? 0 : biomaterials.length;
+        List<Biomaterial> biomaterials = client.searchForBiomaterials(criteria, null).getResults();
+        int numSamples = biomaterials == null ? 0 : biomaterials.size();
         System.out.print(numSamples + "\t");
 
         // Retrieve and print disease states.
