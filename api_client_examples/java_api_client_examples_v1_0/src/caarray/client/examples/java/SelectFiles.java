@@ -96,6 +96,7 @@ import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.rmi.RemoteException;
@@ -159,7 +160,7 @@ public class SelectFiles {
         }
     }
 
-    private void selectFilesFromSamples(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
+    private void selectFilesFromSamples(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
         Set<CaArrayEntityReference> sampleRefs = searchForSamples(experimentRef);
         if (sampleRefs == null || sampleRefs.size() <= 0) {
             System.out.println("Could not find the requested samples.");
@@ -176,7 +177,7 @@ public class SelectFiles {
     /**
      * Search for an experiment based on its title or public identifier.
      */
-    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidReferenceException {
+    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
@@ -200,7 +201,7 @@ public class SelectFiles {
      * Search for samples based on name.
      */
     private Set<CaArrayEntityReference> searchForSamples(CaArrayEntityReference experimentRef) throws RemoteException,
-            InvalidReferenceException {
+            InvalidReferenceException, UnsupportedCategoryException {
         BiomaterialSearchCriteria criteria = new BiomaterialSearchCriteria();
         criteria.setExperiment(experimentRef);
         criteria.getNames().add(SAMPLE_NAME_01);

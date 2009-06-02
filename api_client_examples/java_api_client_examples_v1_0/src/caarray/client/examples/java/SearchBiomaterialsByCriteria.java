@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.rmi.RemoteException;
@@ -122,7 +123,7 @@ public class SearchBiomaterialsByCriteria {
         }
     }
 
-    private void search() throws RemoteException, InvalidReferenceException {
+    private void search() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
         BiomaterialSearchCriteria biomaterialSearchCriteria = new BiomaterialSearchCriteria();
 
         // Set external ID.

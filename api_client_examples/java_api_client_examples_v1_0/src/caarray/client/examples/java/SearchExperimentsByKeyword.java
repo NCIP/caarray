@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.rmi.RemoteException;
@@ -118,7 +119,7 @@ public class SearchExperimentsByKeyword {
         }
     }
 
-    private void seek() throws RemoteException, InvalidReferenceException {
+    private void seek() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
         KeywordSearchCriteria criteria = new KeywordSearchCriteria();
         criteria.setKeyword(KEYPHRASE);
         long startTime = System.currentTimeMillis();
@@ -135,7 +136,7 @@ public class SearchExperimentsByKeyword {
         }
     }
 
-    private void printExperimentDetails(Experiment experiment) throws RemoteException, InvalidReferenceException {
+    private void printExperimentDetails(Experiment experiment) throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
         // Print basic experiment attributes.
         System.out.print(experiment.getPublicIdentifier() + "\t");
         System.out.print(experiment.getTitle() + "\t");

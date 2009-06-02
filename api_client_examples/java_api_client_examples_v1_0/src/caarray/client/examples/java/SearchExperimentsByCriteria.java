@@ -94,6 +94,7 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.rmi.RemoteException;
@@ -129,7 +130,7 @@ public class SearchExperimentsByCriteria {
         }
     }
 
-    private void search() throws RemoteException, InvalidReferenceException {
+    private void search() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
 
         // Select array provider. (See LookUpEntities example client to see how to get list of all array providers.)

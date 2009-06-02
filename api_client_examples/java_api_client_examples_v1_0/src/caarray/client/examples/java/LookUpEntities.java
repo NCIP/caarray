@@ -98,8 +98,8 @@ import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.factor.Factor;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
-import gov.nih.nci.caarray.external.v1_0.query.PagingParams;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
@@ -109,6 +109,7 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.rmi.RemoteException;
@@ -142,7 +143,7 @@ public class LookUpEntities {
         }
     }
 
-    private void lookup() throws RemoteException, NoEntityMatchingReferenceException, InvalidReferenceException {
+    private void lookup() throws RemoteException, NoEntityMatchingReferenceException, InvalidReferenceException, UnsupportedCategoryException {
         lookupArrayDataTypes();
         lookupArrayDesigns();
         lookupArrayProviders();
@@ -436,7 +437,7 @@ public class LookUpEntities {
         System.out.println("End of principal investigator lookup.");
     }
 
-    private void lookupCharacteristicCategories() throws RemoteException, InvalidReferenceException {
+    private void lookupCharacteristicCategories() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
         CaArrayEntityReference experimentRef = searchForExperiment();
         startTime = System.currentTimeMillis();
         List<Category> categories = searchService.getAllCharacteristicCategories(experimentRef);
@@ -557,7 +558,7 @@ public class LookUpEntities {
         Experiment exampleExperiment = new Experiment();
         criteria.setExample(exampleExperiment);
         // Get the first (up to) 10 experiments.
-        PagingParams pagingParams = new PagingParams(10, 0);
+        LimitOffset pagingParams = new LimitOffset(10, 0);
         startTime = System.currentTimeMillis();
         SearchResult<Experiment> results = searchService.searchByExample(criteria, pagingParams);
         List<Experiment> experiments = results.getResults();
@@ -569,7 +570,7 @@ public class LookUpEntities {
         System.out.println();
 
         // Get the next (up to) 10 experiments.
-        pagingParams = new PagingParams(10, 10);
+        pagingParams = new LimitOffset(10, 10);
         startTime = System.currentTimeMillis();
         results = searchService.searchByExample(criteria, pagingParams);
         experiments = results.getResults();
@@ -584,7 +585,7 @@ public class LookUpEntities {
     /**
      * Search for an experiment based on its title.
      */
-    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidReferenceException {
+    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
