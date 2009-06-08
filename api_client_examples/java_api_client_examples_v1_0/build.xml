@@ -137,19 +137,6 @@
         </java>
     </target>
 
-    <target name="download_multiple_files" depends="build">
-        <java classname="caarray.client.examples.java.DownloadMultipleFiles">
-            <classpath>
-                <pathelement path="${classes.dir}" />
-                <fileset dir="${lib.dir}">
-                    <include name="**/*.jar" />
-                </fileset>
-            </classpath>
-            <sysproperty key="server.hostname" value="${server.hostname}" />
-            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
-        </java>
-    </target>
-
     <!-- ******************************************************************* -->
     <!-- ** DOWNLOAD DATA COLUMNS                                         ** -->
     <!-- ******************************************************************* -->

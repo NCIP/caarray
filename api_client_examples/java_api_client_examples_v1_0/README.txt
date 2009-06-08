@@ -20,7 +20,6 @@ Clients to test the caArray Java API v1.0:
      select_files
      download_file
      download_file_zip
-     download_multiple_files
      download_data_columns_from_file
      download_data_columns_from_hyb
      download_data_columns_from_illumina_file
