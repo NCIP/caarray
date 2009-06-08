@@ -205,15 +205,16 @@ public class DownloadSampleAnnotationsForHybridizations {
         }
 
         // Check if the hybridizations have CHP files associated with them.
-        if (haveChpFiles(hybridizationRefs)) {
+        if (haveChpFiles(experimentRef, hybridizationRefs)) {
             return hybridizationRefs;
         } else {
             return null;
         }
     }
 
-    private boolean haveChpFiles(List<CaArrayEntityReference> hybridizationRefs) throws RemoteException {
+    private boolean haveChpFiles(CaArrayEntityReference experimentRef, List<CaArrayEntityReference> hybridizationRefs) throws RemoteException {
         FileSearchCriteria searchCriteria = new FileSearchCriteria();
+        searchCriteria.setExperiment(experimentRef);
         CaArrayEntityReference chpFileTypeRef = getChpFileType();
         HashSet<CaArrayEntityReference> setOfHybridizationRefs = new HashSet<CaArrayEntityReference>(hybridizationRefs);
         searchCriteria.setExperimentGraphNodes(setOfHybridizationRefs);
