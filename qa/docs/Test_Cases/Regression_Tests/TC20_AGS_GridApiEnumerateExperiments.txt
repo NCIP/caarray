@@ -10,14 +10,27 @@ Regression test for the Analytical Grid API. Enumerate Experiments.
 
 3. If not already done, unzip the file C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_external_v1_0_XXX.zip to a folder named C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_external_v1_0_XXX_zip.
 
-4. Copy file "https://gforge.nci.nih.gov/svnroot/caarray2/trunk/qa/docs/Test_Cases/Regression_Tests/TC20_Artifacts/GridApiEnumerateExperiments.java" to this directory:
+4. Copy file "https://gforge.nci.nih.gov/svnroot/caarray2/trunk/qa/docs/Test_Cases/Regression_Tests/TC20_Artifacts/GridApiEnumerateExperiments.java" to this directory (where "GridApiExample.java" already should be):
 
-C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_external_v1_0_XXX_zip\example\src\gov\nih\nci\caarray\example\external\v1_0\
+C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_external_v1_0_XXX_zip\example\grid\src\gov\nih\nci\caarray\example\external\v1_0\grid\
 
-5. Copy these three files:
+Copy file "https://gforge.nci.nih.gov/svnroot/caarray2/trunk/qa/docs/Test_Cases/Regression_Tests/TC20_Artifacts/build_TC20_GridApiEnumerateExperiments.xml"
 
-	1. C:\NCICB_SVN\CAARRAY_R2_3_0_ALPHA3\software\dist\caarray_client_2_3_0_zip\grid\lib
+Copy file to this directory:
+C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_external_v1_0_XXX_zip
 
-to this directory:
+5. You need to copy these two jar files:
+C:\NCICB_SVN\CAARRAY_XXX\software\lib\caarray-project\activation-1.1.jar
+C:\NCICB_SVN\CAARRAY_XXX\software\lib\caarray-project\mail-1.2.jar
 
-C:\NCICB_SVN\CAARRAY_R2_3_0_ALPHA3\software\dist\caarray_client_2_3_0_zip\grid\lib
+Copy each one to this directory:
+
+C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_external_v1_0_XXX_zip\lib\grid
+
+6. Open a command prompt to this location:
+
+C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_external_v1_0_XXX_zip
+
+7. Run the following:
+
+ant -f build_TC20_GridApiEnumerateExperiments.xml test:grid-api-external-v1_0-enumerate-organisms -Dhostname=cbapp-q1002.nci.nih.gov -Dgrid.port=59580
