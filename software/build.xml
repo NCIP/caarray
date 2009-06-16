@@ -69,7 +69,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <!-- delegate retrieval of third-party dependencies -->
     <ant antfile="${basedir}/build/build.xml" inheritall="false" target="init:bootstrap:dependencies" dir="${basedir}">
         <property name="no.ivy" value="${no.ivy}"/>
-        <property name="nosvn" value="${nosvn}"/>
         <property name="clean.bootstrap.libs.and.ivy.cache" value="${clean.bootstrap.libs.and.ivy.cache}"/>
         <property name="local.repo.dir" value="${local.repo.dir}"/>
     </ant>
@@ -264,18 +263,15 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <target name="build:caarray">
         <ant antfile="${basedir}/build/build.xml" inheritall="false" target="clean-build-with-zips" dir="${basedir}">
              <property name="local.globoss.home" value="${loc.globoss.home}"/>
-             <property name="nosvn" value="${nosvn}"/>
         </ant>
     </target>
 
     <target name="build:init-sql">
         <ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-schema-sql" dir="${basedir}">
             <property name="no.ivy" value="true"/>
-            <property name="nosvn" value="${nosvn}"/>
         </ant>
         <ant antfile="${basedir}/build/build.xml" inheritall="false" target="database:generate-mged-sql" dir="${basedir}">
             <property name="no.ivy" value="true"/>
-            <property name="nosvn" value="${nosvn}"/>
         </ant>
     </target>
 
