@@ -107,6 +107,8 @@
     }
 
     doFilter = function() {
+    	jobNumFiles = 0;
+        jobSize = 0;
         var checkboxIds = $('selectFilesForm').__checkbox_selectedFileIds || {};
         TabUtils.disableFormCheckboxes(checkboxIds);
         TabUtils.showLoadingTextKeepMainContent();
