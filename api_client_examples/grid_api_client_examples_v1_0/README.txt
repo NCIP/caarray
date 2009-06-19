@@ -1,6 +1,6 @@
 Java clients to test the caArray GRID API v1.0:
 -----------------------------------------------
-1. The clients connect to array-dev.nci.nih.gov which is the NCI Development instance of caArray.
+1. The clients connect to array-stage.nci.nih.gov which is the NCI CBIIT Stage instance of caArray.
    If using a different installation of caArray, please set the right SERVER CONNECTION PROPERTIES in build.xml.
    You must set the right grid.server.hostname and grid.server.http.port.
 2. All jar dependencies including the caArray client jar should be in the lib/directory.
@@ -31,10 +31,45 @@ Java clients to test the caArray GRID API v1.0:
      download_magetab_export_with_data
      download_array_design
 
-NOTE: The output of the tests depends on certain data being available
+-----
+NOTE FOR THOSE TESTING A LOCAL INSTALLATION OF caArray (as opposed to array-stage):
+
+The output of the tests depends on certain data being available
 in the caArray system you are connecting to. Most tests rely on the
 following public experiment being present:
    Name: Affymetrix Experiment for API Testing
    Array design: Test3.cdf
    Data files: test3_data.zip
-The data/ directory contains these files if you need them.
+The data/ directory contains these (and other) files if you need them.
+-----
+KNOWN ISSUES IN RC1 WHICH WILL BE FIXED BEFORE GA:
+
+1. ant select_files: The search for derived data files with extension ".CHP" returns no results instead of 2 results.
+2. ant select_files: The search for Affymetrix CEL files throws an exception.
+   The following WORKAROUND has been introduced in SelectFiles.java to address the problem:
+   Replaced the following line:
+      CaArrayEntityReference celFileTypeRef = getCelFileType();
+   ... with the following line:
+      CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CEL");
+3. ant lookup_entities: If you look at the file LookUpEntities.java, you will see that 3 methods are commented out:
+   * lookupCharacteristicCategories()
+   * lookupEntityByReference()
+   * lookupEntitiesByReference()
+   These methods don't work correctly in RC1.
+4. ant download_data_columns_from_file, download_data_columns_from_hyb, download_sample_annotations:
+   The search for Affymetrix CHP files throws an exception.
+   The following WORKAROUND has been introduced in DownloadDataColumnsFromFile.java, DownloadDataColumnsFromHybridizations.java and DownloadSampleAnnotationsForHybridizations.java to address the problem:
+   WORKAROUND:
+   Replace the following line:
+      CaArrayEntityReference chpFileTypeRef = getChpFileType();
+   ... with the following line:
+      CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CHP");
+5. ant download_data_columns_from_genepix_file:
+   The search for Genepix GPR files throws an exception.
+   The following WORKAROUND has been introduced in DownloadDataColumnsFromGenepixFile.java to address the problem:
+   WORKAROUND:
+   Replace the following line:
+      CaArrayEntityReference gprFileTypeRef = getGprFileType();
+   ... with the following line:
+      CaArrayEntityReference gprFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:GENEPIX_GPR");
+

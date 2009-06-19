@@ -87,7 +87,7 @@ public final class BaseProperties {
     public static final String GRID_SERVER_HOSTNAME_KEY = "grid.server.hostname";
     public static final String GRID_SERVER_PORT_KEY = "grid.server.http.port";
 
-    public static final String GRID_SERVER_HOSTNAME_DEFAULT = "array-dev.nci.nih.gov";
+    public static final String GRID_SERVER_HOSTNAME_DEFAULT = "array-stage.nci.nih.gov";
     public static final String GRID_SERVER_PORT_DEFAULT = "80";
 
     // Array designs

@@ -146,7 +146,7 @@ public class LookUpEntities {
         }
     }
 
-    private void lookup() throws RemoteException, DeserializationException {
+    private void lookup() throws RemoteException, DeserializationException, InvalidReferenceException {
         lookupArrayDataTypes();
         lookupArrayDesigns();
         lookupArrayProviders();
@@ -165,12 +165,14 @@ public class LookUpEntities {
         lookupTerms();
         lookupTermSources();
         lookupPrincipalInvestigators();
-        // lookupAnnotationCategories();
-        // lookupAnnotationValues(category);
+	// This method is commented out due to a defect in the 2.3.0 RC1 pre-release.
+//        lookupCharacteristicCategories();
+        lookupTermsInCategory();
         enumerateExperiments();
 
-        lookupEntityByReference();
-        lookupEntitiesByReference();
+	// These methods are commented out due to a defect in the 2.3.0 RC1 pre-release.
+//        lookupEntityByReference();
+//        lookupEntitiesByReference();
         lookupPersonsByMatchMode();
         lookupExperimentsPageByPage();
     }

@@ -218,7 +218,9 @@ public class DownloadDataColumnsFromFile {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         // Search for all AFFYMETRIX_CHP data files in the experiment.
-        CaArrayEntityReference chpFileTypeRef = getChpFileType();
+	// The following is a WORKAROUND for a defect in the 2.3.0 RC1 pre-release.
+        // CaArrayEntityReference chpFileTypeRef = getChpFileType();
+        CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CHP");
         fileSearchCriteria.getTypes().add(chpFileTypeRef);
 
         List<DataFile> files = (client.searchForFiles(fileSearchCriteria, null)).getResults();

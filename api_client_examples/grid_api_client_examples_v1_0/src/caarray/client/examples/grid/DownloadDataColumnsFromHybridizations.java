@@ -223,7 +223,9 @@ public class DownloadDataColumnsFromHybridizations {
     private boolean haveChpFiles(CaArrayEntityReference experimentRef, Set<CaArrayEntityReference> hybridizationRefs) throws RemoteException {
         FileSearchCriteria searchCriteria = new FileSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
-        CaArrayEntityReference chpFileTypeRef = getChpFileType();
+	// The following is a WORKAROUND for a defect in the 2.3.0 RC1 pre-release.
+        // CaArrayEntityReference chpFileTypeRef = getChpFileType();
+        CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CHP");
         searchCriteria.setExperimentGraphNodes(hybridizationRefs);
         searchCriteria.getTypes().add(chpFileTypeRef);
         List<DataFile> dataFiles = (client.searchForFiles(searchCriteria, null)).getResults();

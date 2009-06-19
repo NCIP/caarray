@@ -6,7 +6,7 @@
     <!-- ******************************************************************* -->
     <!-- ** SERVER CONNECTION PROPERTIES                                  ** -->
     <!-- ******************************************************************* -->
-    <property name="server.hostname" value="array-dev.nci.nih.gov" />
+    <property name="server.hostname" value="array-stage.nci.nih.gov" />
     <property name="server.jndi.port" value="8080" />
 
     <!-- ******************************************************************* -->

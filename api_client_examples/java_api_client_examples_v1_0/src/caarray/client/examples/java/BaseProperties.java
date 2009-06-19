@@ -87,7 +87,7 @@ public final class BaseProperties {
     public static final String SERVER_HOSTNAME_KEY = "server.hostname";
     public static final String SERVER_JNDI_PORT_KEY = "server.jndi.port";
 
-    public static final String SERVER_HOSTNAME_DEFAULT = "array-dev.nci.nih.gov";
+    public static final String SERVER_HOSTNAME_DEFAULT = "array-stage.nci.nih.gov";
     public static final String SERVER_JNDI_PORT_DEFAULT = "8080";
 
     // Array designs

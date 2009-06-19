@@ -238,7 +238,9 @@ public class SelectFiles {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
 
-        CaArrayEntityReference celFileTypeRef = getCelFileType();
+	// The following is a WORKAROUND for a defect in the 2.3.0 RC1 pre-release.
+        // CaArrayEntityReference celFileTypeRef = getCelFileType();
+        CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CEL");
         fileSearchCriteria.getTypes().add(celFileTypeRef);
 
         List<DataFile> files = client.searchForFiles(fileSearchCriteria, null).getResults();

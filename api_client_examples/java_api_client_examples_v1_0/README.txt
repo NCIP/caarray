@@ -1,6 +1,6 @@
 Clients to test the caArray Java API v1.0:
 ------------------------------------------
-1. The clients connect to array-dev.nci.nih.gov which is the NCI Development instance of caArray.
+1. The clients connect to array-stage.nci.nih.gov which is the NCI CBIIT Stage instance of caArray.
    If using a different installation of caArray, please set the right SERVER CONNECTION PROPERTIES in build.xml.
    You must set the right server.hostname and server.jndi.port.
 2. All jar dependencies including the caArray client jar should be in the lib/directory.
@@ -30,10 +30,18 @@ Clients to test the caArray Java API v1.0:
      download_magetab_export_with_data
      download_array_design
 
-NOTE: The output of the tests depends on certain data being available
+-----
+NOTE FOR THOSE TESTING A LOCAL INSTALLATION OF caArray (as opposed to array-stage):
+
+The output of the tests depends on certain data being available
 in the caArray system you are connecting to. Most tests rely on the
 following public experiment being present:
    Name: Affymetrix Experiment for API Testing
    Array design: Test3.cdf
    Data files: test3_data.zip
 The data/ directory contains these (and other) files if you need them.
+-----
+KNOWN ISSUES IN RC1 WHICH WILL BE FIXED BEFORE GA:
+
+1. ant select_files: The search for derived data files with extension ".CHP" returns no results instead of 2 results.
+
