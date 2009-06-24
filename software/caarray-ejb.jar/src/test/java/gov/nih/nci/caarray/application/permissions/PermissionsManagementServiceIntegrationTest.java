@@ -135,11 +135,11 @@ public class PermissionsManagementServiceIntegrationTest extends AbstractCaarray
     @Test
     public void testChangeOwner() throws Exception {
         UsernameHolder.setUser(STANDARD_USER);
-        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        Transaction tx = HibernateUtil.beginTransaction();
         CollaboratorGroup created = this.permissionsManagementService.create(TEST);
         tx.commit();
         assertEquals(STANDARD_USER, created.getOwner().getLoginName());
-        tx = HibernateUtil.getCurrentSession().beginTransaction();
+        tx = HibernateUtil.beginTransaction();
         List<CollaboratorGroup> groups = this.permissionsManagementService.getCollaboratorGroupsForOwner(created
                 .getOwner().getUserId());
         tx.commit();
@@ -147,12 +147,12 @@ public class PermissionsManagementServiceIntegrationTest extends AbstractCaarray
 
         UsernameHolder.setUser("systemadministrator");
         User caarrayuser = SecurityUtils.getAuthorizationManager().getUser("caarrayuser");
-        tx = HibernateUtil.getCurrentSession().beginTransaction();
+        tx = HibernateUtil.beginTransaction();
         groups = this.permissionsManagementService.getCollaboratorGroupsForOwner(caarrayuser.getUserId());
         assertEquals(0, groups.size());
         this.permissionsManagementService.changeOwner(created.getId(), "caarrayuser");
         tx.commit();
-        tx = HibernateUtil.getCurrentSession().beginTransaction();
+        tx = HibernateUtil.beginTransaction();
         groups = this.permissionsManagementService.getCollaboratorGroupsForOwner(caarrayuser.getUserId());
         tx.commit();
         assertEquals(1, groups.size());

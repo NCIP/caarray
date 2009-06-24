@@ -140,8 +140,8 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
@@ -317,11 +317,13 @@ public class ArrayDataServiceTest extends AbstractCaarrayTest {
         Source targetSrc1 = new Source();
         targetSrc1.setId(1L);
         targetSrc1.setName("targetSrc1");
+        targetSrc1.setExperiment(focusCel.getProject().getExperiment());
         searchDaoStub.save(targetSrc1);
         Source targetSrc2 = new Source();
         targetSrc2.setName("targetSrc2");
         targetSrc2.setId(2L);
         searchDaoStub.save(targetSrc2);
+        targetSrc2.setExperiment(focusCel.getProject().getExperiment());
         focusCel.getProject().getExperiment().getSources().addAll(Arrays.asList(targetSrc1, targetSrc2));
 
         DataImportOptions options = DataImportOptions.getAssociateToBiomaterialsOptions(

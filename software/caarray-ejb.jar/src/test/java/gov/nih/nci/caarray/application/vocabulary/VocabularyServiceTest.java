@@ -48,7 +48,7 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.business.vocabulary;
+package gov.nih.nci.caarray.application.vocabulary;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -56,6 +56,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.OrganismDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
@@ -259,18 +261,6 @@ public class VocabularyServiceTest extends AbstractCaarrayTest {
     @Test
     public void testSearchForOrganismNames() {
         assertEquals(Collections.EMPTY_LIST, vocabularyService.searchForOrganismNames("test"));
-    }
-
-
-    @Test
-    public void testVocabularyServiceException() {
-        VocabularyServiceException vocE = new VocabularyServiceException("test");
-        vocE.getMessage();
-        vocE = new VocabularyServiceException();
-        vocE.getMessage();
-        vocE = new VocabularyServiceException("test", new Exception("test2"));
-        vocE.setErrorCode(2);
-        vocE.getErrorCode();
     }
 
     // ////// INNER CLASS TEST STUBS///////////////////////

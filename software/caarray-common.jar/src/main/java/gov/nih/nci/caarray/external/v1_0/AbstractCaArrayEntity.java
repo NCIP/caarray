@@ -99,7 +99,8 @@ public abstract class AbstractCaArrayEntity implements Serializable {
     private String id;
 
     /**
-     * @return the id
+     * @return the id for this entity. The id uniquely identifies both the entity type and the specific instance
+     * of the entity, such that the external API can provide a method to retrieve an entity given an id.
      */
     public String getId() {
         return id;

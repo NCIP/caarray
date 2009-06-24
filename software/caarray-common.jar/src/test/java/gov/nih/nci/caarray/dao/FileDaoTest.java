@@ -310,19 +310,23 @@ public class FileDaoTest extends AbstractDaoTest {
         Source so1 = new Source();
         so1.setName("source");
         DUMMY_EXPERIMENT_1.getSources().add(so1);
+        so1.setExperiment(DUMMY_EXPERIMENT_1);
         Sample sa1 = new Sample();
         sa1.setName("sample");
         so1.getSamples().add(sa1);
         sa1.getSources().add(so1);
         DUMMY_EXPERIMENT_1.getSamples().add(sa1);
+        sa1.setExperiment(DUMMY_EXPERIMENT_1);
         Extract ex1 = new Extract();
         ex1.setName("extract1");
         sa1.getExtracts().add(ex1);
         ex1.getSamples().add(sa1);
         DUMMY_EXPERIMENT_1.getExtracts().add(ex1);
+        ex1.setExperiment(DUMMY_EXPERIMENT_1);
         Extract ex2 = new Extract();
         ex2.setName("extract2");
         DUMMY_EXPERIMENT_1.getExtracts().add(ex2);
+        ex2.setExperiment(DUMMY_EXPERIMENT_1);
         LabeledExtract le1 = new LabeledExtract();
         le1.setName("LE1");
         ex1.getLabeledExtracts().add(le1);
@@ -332,6 +336,7 @@ public class FileDaoTest extends AbstractDaoTest {
         le1.getHybridizations().add(h1);
         h1.getLabeledExtracts().add(le1);
         DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le1);
+        le1.setExperiment(DUMMY_EXPERIMENT_1);
         LabeledExtract le2 = new LabeledExtract();
         le2.setName("LE2");        
         ex2.getLabeledExtracts().add(le2);
@@ -339,6 +344,7 @@ public class FileDaoTest extends AbstractDaoTest {
         le2.getHybridizations().add(h2);
         h2.getLabeledExtracts().add(le2);
         DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le2);
+        le2.setExperiment(DUMMY_EXPERIMENT_1);
         LabeledExtract le3 = new LabeledExtract();
         le3.setName("LE3");        
         le3.getHybridizations().add(h1);
@@ -346,7 +352,8 @@ public class FileDaoTest extends AbstractDaoTest {
         le3.getHybridizations().add(h2);
         h2.getLabeledExtracts().add(le3);
         DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le3);
-        
+        le3.setExperiment(DUMMY_EXPERIMENT_1);
+
         CaArrayFile file4 = new CaArrayFile();
         file4.setName("file4.cdf");
         file4.setFileType(FileType.AFFYMETRIX_CDF);

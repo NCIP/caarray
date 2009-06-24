@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -104,7 +105,6 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -365,6 +365,7 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
                 source = new Source();
                 source.setName(newAnnotationName);
                 experiment.getSources().add(source);
+                source.setExperiment(experiment);
             }
             fillInAnnotationChain(hybridization, source, newAnnotationName);
             return source;
@@ -374,6 +375,7 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
                 sample = new Sample();
                 sample.setName(newAnnotationName);
                 experiment.getSamples().add(sample);
+                sample.setExperiment(experiment);
             }
             fillInAnnotationChain(hybridization, sample, newAnnotationName);
             return sample;
@@ -383,6 +385,7 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
                 extract = new Extract();
                 extract.setName(newAnnotationName);
                 experiment.getExtracts().add(extract);
+                extract.setExperiment(experiment);
             }
             fillInAnnotationChain(hybridization, extract, newAnnotationName);
             return extract;
@@ -392,6 +395,7 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
                 labeledExtract = new LabeledExtract();
                 labeledExtract.setName(newAnnotationName);
                 experiment.getLabeledExtracts().add(labeledExtract);
+                labeledExtract.setExperiment(experiment);
             }
             fillInAnnotationChain(hybridization, labeledExtract, newAnnotationName);
             return labeledExtract;

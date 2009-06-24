@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.business.vocabulary;
+package gov.nih.nci.caarray.application.vocabulary;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;

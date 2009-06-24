@@ -85,7 +85,8 @@ package gov.nih.nci.caarray.external.v1_0.experiment;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 /**
- * An Organism.
+ * An Organism is a special type of Term which represents an organism from which biomaterials for a microarray
+ * experiment can be drawn.
  * 
  * @author dkokotov
  */
@@ -96,7 +97,7 @@ public class Organism extends Term {
     private String scientificName;
     
     /**
-     * @return the commonName
+     * @return the common (layman) name for this organism.
      */
     public String getCommonName() {
         return commonName;
@@ -110,7 +111,7 @@ public class Organism extends Term {
     }
 
     /**
-     * @return the scientificName
+     * @return the scientific name for this organism.
      */
     public String getScientificName() {
         return scientificName;

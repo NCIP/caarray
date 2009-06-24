@@ -2,8 +2,6 @@
 -- file from the CSM 4.1 distribution.  It has been modified to use our replacements
 -- and not to drop the db itself, and the order of the drops was reversed.
 
-USE @database.name@;
-
 DROP TABLE IF EXISTS csm_user_pe
 ;
 

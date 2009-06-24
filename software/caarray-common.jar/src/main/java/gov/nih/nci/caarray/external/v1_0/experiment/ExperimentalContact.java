@@ -115,7 +115,7 @@ public class ExperimentalContact extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the roles
+     * @return a set of MGED terms describing the roles played by the person on the experiment.
      */
     public Set<Term> getRoles() {
         return roles;

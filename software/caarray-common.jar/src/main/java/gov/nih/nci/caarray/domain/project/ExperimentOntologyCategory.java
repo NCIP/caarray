@@ -178,7 +178,11 @@ public enum ExperimentOntologyCategory {
      */
     PROTOCOL_TYPE("ProtocolType", ExperimentOntology.MGED_ONTOLOGY), 
     /**
-     * External Sample Id, used for samples.
+     * External Id, used for biomaterials.
+     */
+    EXTERNAL_ID("ExternalId", ExperimentOntology.CAARRAY),
+    /**
+     * External Sample Id, used for samples. This is to support legacy data sets, new data sets should use ExternalId.
      */
     EXTERNAL_SAMPLE_ID("ExternalSampleId", ExperimentOntology.CAARRAY);
 

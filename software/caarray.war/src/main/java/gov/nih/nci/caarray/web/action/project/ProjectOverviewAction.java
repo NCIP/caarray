@@ -82,14 +82,10 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getArrayDesignService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getVocabularyService;
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.AssayType;
@@ -138,12 +134,12 @@ public class ProjectOverviewAction extends ProjectTabAction {
      * {@inheritDoc}
      */
     @Override
-    public void prepare() throws VocabularyServiceException {
+    public void prepare() {
         super.prepare();
-        VocabularyService vocabService = getVocabularyService();
+        VocabularyService vocabService = ServiceLocatorFactory.getVocabularyService();
         this.organisms = vocabService.getOrganisms();
 
-        ArrayDesignService arrayDesignService = getArrayDesignService();
+        ArrayDesignService arrayDesignService = ServiceLocatorFactory.getArrayDesignService();
         this.manufacturers = arrayDesignService.getAllProviders();
         prepareArrayDesigns();
     }
@@ -158,12 +154,12 @@ public class ProjectOverviewAction extends ProjectTabAction {
             containsAssayTypes = false;
         }
         if (containsAssayTypes) {
-            this.arrayDesigns =  getArrayDesignService().getImportedArrayDesigns(
+            this.arrayDesigns =  ServiceLocatorFactory.getArrayDesignService().getImportedArrayDesigns(
                     getExperiment().getManufacturer(), getExperiment().getAssayTypes());
         } else if (getExperiment().getManufacturer() != null) {
             //Struts puts a null into the list if no assay types are selected.  Pass
             //null instead of a list with a null value
-            this.arrayDesigns =  getArrayDesignService().getImportedArrayDesigns(
+            this.arrayDesigns =  ServiceLocatorFactory.getArrayDesignService().getImportedArrayDesigns(
                     getExperiment().getManufacturer(), null);
         } else {
             this.arrayDesigns.clear();
@@ -180,10 +176,14 @@ public class ProjectOverviewAction extends ProjectTabAction {
             setEditMode(false);
         }
         if (!isEditMode() && getExperiment() != null && getExperiment().getId() != null) {
-            setTissueSites(getProjectManagementService().getTissueSitesForExperiment(getExperiment()));
-            setCellTypes(getProjectManagementService().getCellTypesForExperiment(getExperiment()));
-            setDiseaseState(getProjectManagementService().getDiseaseStatesForExperiment(getExperiment()));
-            setMaterialTypes(getProjectManagementService().getMaterialTypesForExperiment(getExperiment()));
+            setTissueSites(ServiceLocatorFactory.getProjectManagementService().getTissueSitesForExperiment(
+                    getExperiment()));
+            setCellTypes(ServiceLocatorFactory.getProjectManagementService().getCellTypesForExperiment(
+                    getExperiment()));
+            setDiseaseState(ServiceLocatorFactory.getProjectManagementService().getDiseaseStatesForExperiment(
+                    getExperiment()));
+            setMaterialTypes(ServiceLocatorFactory.getProjectManagementService().getMaterialTypesForExperiment(
+                    getExperiment()));
         }
         return super.load();
     }
@@ -219,10 +219,11 @@ public class ProjectOverviewAction extends ProjectTabAction {
         if (this.assayTypeValues != null || this.manufacturerId != null) {
             Organization provider = null;
             if (this.manufacturerId != null) {
-                provider = getGenericDataService().getPersistentObject(Organization.class,
+                provider = ServiceLocatorFactory.getGenericDataService().getPersistentObject(Organization.class,
                         this.manufacturerId);
             }
-            this.arrayDesigns = getArrayDesignService().getImportedArrayDesigns(provider, this.assayTypeValues);
+            this.arrayDesigns = ServiceLocatorFactory.getArrayDesignService().getImportedArrayDesigns(provider,
+                    this.assayTypeValues);
         } else {
             this.arrayDesigns.clear();
         }
@@ -361,7 +362,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
      */
     @SkipValidation
     public String generateAssayList() {
-        setAssayTypes(new TreeSet<AssayType>(getProjectManagementService().getAssayTypes()));
+        setAssayTypes(new TreeSet<AssayType>(ServiceLocatorFactory.getProjectManagementService().getAssayTypes()));
         return "generateAssayList";
     }
     /**

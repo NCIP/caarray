@@ -115,8 +115,7 @@ public class GenericDataServiceStub implements GenericDataService {
         return null;
     }
 
-    public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids)
-            throws IllegalAccessException, InstantiationException {
+    public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
         return new ArrayList<T>();
     }
 
@@ -167,8 +166,7 @@ public class GenericDataServiceStub implements GenericDataService {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders)
-            throws IllegalAccessException, InstantiationException {
+    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders) {
         return new ArrayList<T>();
     }
 
@@ -187,7 +185,7 @@ public class GenericDataServiceStub implements GenericDataService {
     }
 
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, int maxResults, int firstResult,
-            Order... orders) throws IllegalAccessException, InstantiationException {
+            Order... orders) {
         return Collections.emptyList();
     }
 }

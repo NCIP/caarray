@@ -85,7 +85,8 @@ package gov.nih.nci.caarray.external.v1_0.value;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 /**
- * A TermValue is a value defined by a term within an ontology.
+ * A TermValue is a value defined by a term within a controlled vocabulary.
+ * 
  * @author dkokotov
  */
 public class TermValue extends AbstractValue {

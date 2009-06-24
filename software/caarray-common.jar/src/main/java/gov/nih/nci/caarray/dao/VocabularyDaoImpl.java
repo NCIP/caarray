@@ -52,29 +52,22 @@ package gov.nih.nci.caarray.dao;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-
-import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.vocabulary</code> package.
@@ -202,14 +195,8 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
             sb.append(" AND c.category.name like :keyword");
         }
         
-        Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>(); 
         if (experiment != null) {
-            List<Long> bmIds = new ArrayList<Long>();
-            for (AbstractBioMaterial bm : experiment.getAllBiomaterials()) {
-                bmIds.add(bm.getId());
-            }
-            sb.append(" AND ")
-                    .append(HibernateHelper.buildInClause(bmIds, "bm.id", idBlocks));
+            sb.append(" AND bm.experiment = :experiment");
         }
         
         sb.append(" ORDER BY c.category.name");
@@ -219,7 +206,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
             q.setString("keyword", keyword + "%");
         }
         if (experiment != null) {
-            HibernateHelper.bindInClauseParameters(q, idBlocks);
+            q.setEntity("experiment", experiment);
         }
 
         return q.list();

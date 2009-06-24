@@ -87,7 +87,7 @@ import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * a CaArrayEntityReference encapsulates a reference to an entity which can be retrieved using that reference.
+ * CaArrayEntityReference encapsulates an external id identifying an entity that can be retrieved via the API.
  * 
  * @author dkokotov
  */
@@ -104,25 +104,25 @@ public class CaArrayEntityReference implements Serializable {
     }
     
     /**
-     * Create a new CaArrayEntityReference with given LSID.
-     * @param lsid the LSID
+     * Create a new CaArrayEntityReference with given id.
+     * @param id the id of the entity this is referencing. 
      */
-    public CaArrayEntityReference(String lsid) {
-        this.id = lsid;
+    public CaArrayEntityReference(String id) {
+        this.id = id;
     }
 
     /**
-     * @return the lsid
+     * @return the id of the entity this is referencing
      */
     public String getId() {
         return id;
     }
 
     /**
-     * @param lsid the lsid to set
+     * @param id the id to set
      */
-    public void setId(String lsid) {
-        this.id = lsid;
+    public void setId(String id) {
+        this.id = id;
     }    
     
     /**

@@ -88,6 +88,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -565,21 +566,51 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         try {
 
             tx = HibernateUtil.beginTransaction();
-            Source s = new Source();
-            s.setName("Test Source");
-            s.getCharacteristics().add(DUMMY_CHARACTERISTIC);
-            DUMMY_CHARACTERISTIC.setBioMaterial(s);
+            Experiment e = new Experiment();
+            e.setTitle("Foo");
+            e.setOrganism(DUMMY_ORGANISM_1);
+            Source s1 = new Source();
+            s1.setName("Test Source");
+            s1.setExperiment(e);
+            s1.getCharacteristics().add(DUMMY_CHARACTERISTIC);
+            DUMMY_CHARACTERISTIC.setBioMaterial(s1);
+            
+            TermBasedCharacteristic char2 = new TermBasedCharacteristic();
+            char2.setCategory(DUMMY_CATEGORY_2);
+            char2.setTerm(DUMMY_TERM_3);
+
+            Source s2 = new Source();
+            s2.setName("Test Source2");
+            s1.getCharacteristics().add(char2);
+            char2.setBioMaterial(s2);
+
             DAO_OBJECT.save(DUMMY_CHARACTERISTIC);
+            DAO_OBJECT.save(char2);
             DAO_OBJECT.save(DUMMY_CATEGORY_1);
-            DAO_OBJECT.save(s);
+            DAO_OBJECT.save(DUMMY_CATEGORY_2);
+            DAO_OBJECT.save(e);
+            DAO_OBJECT.save(s1);
+            DAO_OBJECT.save(s2);
+
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
 
-            List<Category> all_chars = DAO_OBJECT.searchForCharacteristicCategory(null, TermBasedCharacteristic.class,
+            List<Category> chars = DAO_OBJECT.searchForCharacteristicCategory(null, TermBasedCharacteristic.class,
                     null);
+            assertEquals(2 , chars.size());
 
-            assertEquals(1 , all_chars.size());
+            chars = DAO_OBJECT.searchForCharacteristicCategory(e, TermBasedCharacteristic.class,
+                    null);
+            assertEquals(1 , chars.size());
+
+            chars = DAO_OBJECT.searchForCharacteristicCategory(null, TermBasedCharacteristic.class,
+                    "DummyTestCategory2");
+            assertEquals(1 , chars.size());
+
+            chars = DAO_OBJECT.searchForCharacteristicCategory(e, TermBasedCharacteristic.class,
+            "DummyTestCategory2");
+            assertEquals(0 , chars.size());
 
             tx.commit();
 

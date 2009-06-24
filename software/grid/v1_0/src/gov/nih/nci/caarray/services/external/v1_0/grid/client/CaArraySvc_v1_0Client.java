@@ -4,14 +4,20 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
+import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.HybridizationData;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.query.AnnotationCriterion;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.services.external.v1_0.grid.common.CaArraySvc_v1_0I;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidReferenceFault;
@@ -25,6 +31,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -91,12 +98,31 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
                     SearchApiUtils searchUtils = new GridSearchApiUtils(client);
                     
                     StopWatch sw = new StopWatch();
-                    
+
+                    // get all filetypes using example search
+                    System.out.println("FileTypes via example search");
+                    SearchResult<FileType> ftExampleResult = client.searchByExample(new ExampleSearchCriteria<FileType>(
+                            new FileType()), null);
+                    for (FileType ft : ftExampleResult.getResults()) {
+                        System.out.println("FT: " + ft);
+                    }
+
+                    // get all bms using example search
+                    System.out.println("Experiments via example search");
+                    SearchResult<Biomaterial> bmExampleResult = client.searchByExample(new ExampleSearchCriteria<Biomaterial>(
+                            new Biomaterial()), new LimitOffset(10, 0));
+                    for (Biomaterial b : bmExampleResult.getResults()) {
+                        System.out.println("Bioamterial: " + b);
+                    }
+
                     DataSetRequest dataRequest = new DataSetRequest();
  
                     // get all experiments via SearchApiUtils
                     System.out.println("Experiments via SearchApiUtils list");
-                    List<Experiment> exps = searchUtils.experimentsByCriteria(new ExperimentSearchCriteria()).list(); 
+                    ExperimentSearchCriteria expCrit = new ExperimentSearchCriteria();
+                    expCrit.setOrganism(new CaArrayEntityReference(
+                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:2"));
+                    List<Experiment> exps = searchUtils.experimentsByCriteria(expCrit).list(); 
                     for (Experiment e : exps) {
                         System.out.println("Experiment: " + e);
                     }

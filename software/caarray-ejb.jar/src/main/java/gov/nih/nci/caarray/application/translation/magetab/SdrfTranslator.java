@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.application.translation.magetab;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
@@ -151,6 +151,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.MultiKeyMap;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -214,9 +215,9 @@ final class SdrfTranslator extends AbstractTranslator {
             return;
         }
 
-        Set<String> externalSampleIds = getExistingSampleExternalIdsForCurrentExperiment();
+        Set<String> externalIds = getExistingExternalIdsForCurrentExperiment();
         for (SdrfDocument document : getDocumentSet().getSdrfDocuments()) {
-            validateSdrf(document, externalSampleIds);
+            validateSdrf(document, externalIds);
         }
         validateFileReferences();
     }
@@ -259,22 +260,22 @@ final class SdrfTranslator extends AbstractTranslator {
 
 
 
-    private void validateSdrf(SdrfDocument document, Set<String> externalSampleIds) {
+    private void validateSdrf(SdrfDocument document, Set<String> externalIds) {
         validateArrayDesigns(document);
-        validateSamples(document, externalSampleIds);
+        validateSamples(document, externalIds);
     }
 
-    private void validateSamples(SdrfDocument document, Set<String> externalSampleIds) {
-        for (gov.nih.nci.caarray.magetab.sdrf.Sample sdrfSample : document.getAllSamples()) {
-            for (Characteristic sdrfCharacteristic : sdrfSample.getCharacteristics()) {
-                if (ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(
-                        sdrfCharacteristic.getCategory())
-                        && sdrfCharacteristic.getValue() != null
-                        && sdrfCharacteristic.getValue().length() > 0) {
-                    boolean added = externalSampleIds.add(sdrfCharacteristic.getValue());
+    private void validateSamples(SdrfDocument document, Set<String> externalIds) {
+        for (gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial sdrfBm : document.getAllBiomaterials()) {
+            for (Characteristic sdrfCharacteristic : sdrfBm.getCharacteristics()) {
+                String category = sdrfCharacteristic.getCategory();
+                boolean isExternalId = ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(category)
+                        || ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName().equals(category); 
+                if (isExternalId && !StringUtils.isEmpty(sdrfCharacteristic.getValue())) {
+                    boolean added = externalIds.add(sdrfCharacteristic.getValue());
                     if (!added) {
-                        document.addErrorMessage("[ExternalSampleId] value '" + sdrfCharacteristic.getValue()
-                                + "' is referenced multiple times (ExternalSampleId must be unique). "
+                        document.addErrorMessage("[" + category + "] value '" + sdrfCharacteristic.getValue()
+                                + "' is referenced multiple times (" + category + " must be unique). "
                                 + "Please correct and try again.");
                     }
                 }
@@ -282,16 +283,14 @@ final class SdrfTranslator extends AbstractTranslator {
         }
     }
 
-    @SuppressWarnings("deprecation")
-    private Set<String> getExistingSampleExternalIdsForCurrentExperiment() {
+    private Set<String> getExistingExternalIdsForCurrentExperiment() {
         Set<String> results = new HashSet<String>();
-        Project project = new Project();
-        project.setId(getFileSet().getProjectId());
-        Set<Sample> persistedSamples = getProjectDao().getUnfilteredSamplesForProject(project);
-        for (Sample s : persistedSamples) {
-            if (s.getExternalSampleId() != null && !results.add(s.getExternalSampleId())) {
+        Set<AbstractBioMaterial> persistedBms = getProjectDao().getUnfilteredBiomaterialsForProject(
+                getFileSet().getProjectId());
+        for (AbstractBioMaterial bm : persistedBms) {
+            if (bm.getExternalId() != null && !results.add(bm.getExternalId())) {
                 throw new IllegalStateException("System contains samples with duplicate external sample id " + "("
-                        + s.getExternalSampleId() + ") already. Unable to continue, please correct"
+                        + bm.getExternalId() + ") already. Unable to continue, please correct"
                         + " existing samples and try again.");
             }
         }
@@ -511,11 +510,9 @@ final class SdrfTranslator extends AbstractTranslator {
             } else if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equals(category)) {
                 Organism organism = getOrganism(forceToTerm(characteristic));
                 bioMaterial.setOrganism(organism);
-            } else if (ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(category)) {
-                if (bioMaterial instanceof Sample) {
-                    Sample s = (Sample) bioMaterial;
-                    s.setExternalSampleId(sdrfCharacteristic.getValue());
-                }
+            } else if (ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(category)
+                    || ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName().equals(category)) {
+                bioMaterial.setExternalId(sdrfCharacteristic.getValue());
             } else {
                 for (AbstractCharacteristic existingCharacteristic : bioMaterial.getCharacteristics()) {
                     if (existingCharacteristic.getCategory().equals(characteristic.getCategory())) {

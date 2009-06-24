@@ -130,8 +130,7 @@ public class GenericDataServiceBean implements GenericDataService {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids)
-            throws IllegalAccessException, InstantiationException {
+    public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
         LogUtil.logSubsystemEntry(LOG, entityClass, ids);
         List<T> result = this.daoFactory.getSearchDao().retrieveByIds(entityClass, ids);
         LogUtil.logSubsystemExit(LOG);
@@ -171,8 +170,7 @@ public class GenericDataServiceBean implements GenericDataService {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders)
-            throws IllegalAccessException, InstantiationException {
+    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders) {
         return this.daoFactory.getSearchDao().retrieveAll(entityClass, orders);
     }
     
@@ -180,7 +178,7 @@ public class GenericDataServiceBean implements GenericDataService {
      * {@inheritDoc}
      */
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, int maxResults, int firstResult,
-            Order... orders) throws IllegalAccessException, InstantiationException {
+            Order... orders) {
         return this.daoFactory.getSearchDao().retrieveAll(entityClass, maxResults, firstResult, orders);
     }
 

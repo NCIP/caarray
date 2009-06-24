@@ -102,7 +102,7 @@ public enum SearchSampleCategory implements BiomaterialSearchCategory {
      * External Sample Id.
      */
     SAMPLE_EXTERNAL_ID ("search.category.externalSampleId",
-            ArrayUtils.EMPTY_STRING_ARRAY, "this.externalSampleId"),
+            ArrayUtils.EMPTY_STRING_ARRAY, "this.externalId"),
 
     /**
      * Disease State.

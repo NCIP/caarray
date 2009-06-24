@@ -92,8 +92,8 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -468,7 +468,7 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         Experiment e = tResult.getInvestigations().iterator().next();
         assertEquals(6, e.getSamples().size());
         for (Sample s : e.getSamples()) {
-            assertNotNull(s.getExternalSampleId());
+            assertNotNull(s.getExternalId());
         }
     }
 
@@ -490,7 +490,7 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
         Experiment e = result.getInvestigations().iterator().next();
         assertEquals(6, e.getSamples().size());
         for (Sample s : e.getSamples()) {
-            assertNotNull(s.getExternalSampleId());
+            assertNotNull(s.getExternalId());
         }
     }
 
@@ -574,7 +574,7 @@ public class MageTabTranslatorTest extends AbstractCaarrayTest {
     private void verifyExtendedFactorValuesSampleChars(Sample s, String c1Value, Float c2Num,
             String c2String, String c2Unit, String c3Value, String c3ts) {
         assertEquals(2, s.getCharacteristics().size());
-        assertEquals(c1Value, s.getExternalSampleId());
+        assertEquals(c1Value, s.getExternalId());
         if (c2Num != null) {
             MeasurementCharacteristic c2 = (MeasurementCharacteristic) s.getCharacteristic("Age");            
             assertEquals(c2Num, c2.getValue());

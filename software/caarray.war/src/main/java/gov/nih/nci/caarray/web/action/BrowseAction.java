@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action;
 
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
@@ -164,7 +165,7 @@ public class BrowseAction extends ActionSupport {
      */
     @Override
     public String execute() {
-        BrowseService bs = CaArrayActionHelper.getBrowseService();
+        BrowseService bs = ServiceLocatorFactory.getBrowseService();
         List<Object[]> resultList = bs.tabList(this.category);
         this.tabs = new TreeSet<BrowseTab>();
         for (Object[] tab : resultList) {
@@ -178,7 +179,7 @@ public class BrowseAction extends ActionSupport {
      * @return tab
      */
     public String list() {
-        BrowseService bs = CaArrayActionHelper.getBrowseService();
+        BrowseService bs = ServiceLocatorFactory.getBrowseService();
         this.results.setFullListSize(bs.browseCount(this.category, this.id));
         this.results.setList(bs.browseList(this.results.getPageSortParams(), this.category, this.id));
         return "tab";

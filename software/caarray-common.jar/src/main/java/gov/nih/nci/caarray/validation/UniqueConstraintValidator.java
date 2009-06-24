@@ -37,10 +37,12 @@ package gov.nih.nci.caarray.validation;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UnfilteredCallback;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.Session;
@@ -77,9 +79,10 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
     public boolean isValid(final Object o) {
         UnfilteredCallback unfilteredCallback = new UnfilteredCallback() {
             public Object doUnfiltered(Session s) {
-                Criteria crit = s.createCriteria(getUnwrappedClass(o).getClass());
+                Class<?> classWithConstraint = findClassDeclaringConstraint(unwrap(o).getClass()); 
+                Criteria crit = s.createCriteria(classWithConstraint);
                 ClassMetadata metadata = HibernateUtil.getSessionFactory()
-                        .getClassMetadata(getUnwrappedClass(o).getClass());
+                        .getClassMetadata(classWithConstraint);
                 for (UniqueConstraintField field : uniqueConstraint.fields()) {
                     Object fieldVal = metadata.getPropertyValue(o, field.name(), EntityMode.POJO);
                     if (fieldVal == null) {
@@ -101,7 +104,7 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
                         // satisfying uniqueness
                         ClassMetadata fieldMetadata = HibernateUtil
                                 .getSessionFactory().getClassMetadata(
-                                        getUnwrappedClass(fieldVal).getClass());
+                                        unwrap(fieldVal).getClass());
                         if (fieldMetadata == null || fieldMetadata.getIdentifier(fieldVal, EntityMode.POJO) != null) {
                             crit.add(Restrictions.eq(field.name(), ReflectHelper.getGetter(o.getClass(), field.name())
                                     .get(o)));
@@ -115,8 +118,9 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
                 if (id != null) {
                     crit.add(Restrictions.ne(metadata.getIdentifierPropertyName(), id));
                 }
-
-                return crit.list().size() == 0;
+                
+                int numMatches =  crit.list().size(); 
+                return numMatches == 0;
             }
         };
         return (Boolean) HibernateUtil.doUnfiltered(unfilteredCallback);
@@ -124,19 +128,40 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
     }
 
     /**
-     * Get Class for given persistent entity instance, properly handling
-     * proxies.
+     * If entity is a hibernate proxy, return the actual object it proxies, otherwise return the entity itself.
      *
      * @param entity
-     * @return
+     * @return the unwrapped proxy, or original object.
      */
-    private static Object getUnwrappedClass(Object entity) {
+    private static Object unwrap(Object entity) {
         if (entity instanceof HibernateProxy) {
             return ((HibernateProxy) entity).getHibernateLazyInitializer()
                     .getImplementation();
         } else {
             return entity;
         }
+    }
+    
+    private Class<?> findClassDeclaringConstraint(Class<?> concreteClass) { 
+        for (Class<?> klass = concreteClass; !Object.class.equals(klass); klass = klass.getSuperclass()) {
+            if (declaresConstraint(klass)) {
+                return klass;
+            }
+        }
+        return null;
+    }
+    
+    private boolean declaresConstraint(Class<?> entityClass) {
+        Annotation[] annotations = entityClass.getDeclaredAnnotations();
+        for (Annotation a : annotations) {
+            if (a.equals(uniqueConstraint)) {
+                return true;
+            } else if (UniqueConstraints.class.equals(a.annotationType())) {
+                UniqueConstraints ucs = (UniqueConstraints) a;
+                return ArrayUtils.contains(ucs.constraints(), uniqueConstraint);
+            }
+        }
+        return false;
     }
 
     /**

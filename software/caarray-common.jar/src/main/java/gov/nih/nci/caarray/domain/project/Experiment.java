@@ -132,12 +132,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.Filters;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.Where;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
@@ -149,6 +150,7 @@ import org.hibernate.validator.NotNull;
 @UniqueConstraint(fields = @UniqueConstraintField(name = "publicIdentifier"))
 @SuppressWarnings({"PMD.TooManyFields", "PMD.ExcessiveClassLength",
                    "PMD.ExcessivePublicCount", "PMD.AvoidDuplicateLiterals" })
+@FilterDef(name = "BiomaterialFilter")                   
 public class Experiment extends AbstractCaArrayEntity {
     // Experiment is central object -- can't reduce set of linked entities
 
@@ -587,11 +589,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the sources
      */
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "experimentsource",
-            joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
-            inverseJoinColumns = {@JoinColumn(name = "source_id") })
-    @ForeignKey(name = "experimentsource_invest_fk", inverseName = "experimentsource_source_fk")
+    @OneToMany(mappedBy = "experiment", targetEntity = AbstractBioMaterial.class, fetch = FetchType.LAZY)
+    @Where(clause = "discriminator = '" + Source.DISCRIMINATOR + "'")
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Source> getSources() {
@@ -613,15 +612,14 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the samples
      */
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "experimentsample",
-            joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
-            inverseJoinColumns = {@JoinColumn(name = "sample_id") })
-    @LazyCollection(LazyCollectionOption.EXTRA)
-    @ForeignKey(name = "experimentsample_invest_fk", inverseName = "experimentsample_sample_fk")
+    @OneToMany(mappedBy = "experiment", targetEntity = AbstractBioMaterial.class, fetch = FetchType.LAZY)
+    @Filters({
+        @Filter(name = "BiomaterialFilter", condition = "discriminator = '" + Sample.DISCRIMINATOR + "'"),              
+        @Filter(name = "Project1", condition = SAMPLES_ALIAS_FILTER)
+    }
+    )
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @Filter(name = "Project1", condition = SAMPLES_ALIAS_FILTER)
     public Set<Sample> getSamples() {
         return this.samples;
     }
@@ -649,14 +647,11 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the extracts
      */
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "experimentextract",
-            joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
-            inverseJoinColumns = {@JoinColumn(name = "extract_id") })
-    @ForeignKey(name = "experimentextract_invest_fk", inverseName = "experimentextract_extract_fk")
+    @OneToMany(mappedBy = "experiment", targetEntity = AbstractBioMaterial.class, fetch = FetchType.LAZY)
+    @Where(clause = "discriminator = '" + Extract.DISCRIMINATOR + "'")
+    @Filter(name = "Project1", condition = EXTRACTS_ALIAS_FILTER)
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @Filter(name = "Project1", condition = EXTRACTS_ALIAS_FILTER)
     public Set<Extract> getExtracts() {
         return this.extracts;
     }
@@ -676,14 +671,11 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the labeledExtracts
      */
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "experimentlabeledextract",
-            joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
-            inverseJoinColumns = {@JoinColumn(name = "labeled_extract_id") })
-    @ForeignKey(name = "experimentle_invest_fk", inverseName = "experimentle_le_fk")
+    @OneToMany(mappedBy = "experiment", targetEntity = AbstractBioMaterial.class, fetch = FetchType.LAZY)
+    @Where(clause = "discriminator = '" + LabeledExtract.DISCRIMINATOR + "'")
+    @Filter(name = "Project1", condition = LABELED_EXTRACTS_ALIAS_FILTER)
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @Filter(name = "Project1", condition = LABELED_EXTRACTS_ALIAS_FILTER)
     public Set<LabeledExtract> getLabeledExtracts() {
         return this.labeledExtracts;
     }

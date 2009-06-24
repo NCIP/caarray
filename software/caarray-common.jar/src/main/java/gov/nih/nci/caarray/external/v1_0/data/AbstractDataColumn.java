@@ -99,7 +99,7 @@ public abstract class AbstractDataColumn implements Serializable {
     private QuantitationType quantitationType;
 
     /**
-     * @return the quantitationType
+     * @return the value type of values in this column
      */
     public QuantitationType getQuantitationType() {
         return quantitationType;

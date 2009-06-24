@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.util;
 
-import com.fiveamsolutions.nci.commons.audit.AuditLogInterceptor;
-import com.fiveamsolutions.nci.commons.util.CompositeInterceptor;
 import gov.nih.nci.caarray.security.SecurityInterceptor;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHelper;
@@ -99,7 +97,10 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.engine.FilterDefinition;
 
+import com.fiveamsolutions.nci.commons.audit.AuditLogInterceptor;
+import com.fiveamsolutions.nci.commons.util.CompositeInterceptor;
 import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 
 /**
@@ -176,6 +177,7 @@ public final class HibernateUtil {
             InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), result, SecurityUtils
                     .getAuthorizationManager());
         }
+        result.enableFilter("BiomaterialFilter");
         return result;
     }
 
@@ -201,7 +203,10 @@ public final class HibernateUtil {
     }
 
     /**
-     * @param enable enabled. This should generally only be called via test code.
+     * Set whether security filters should be enabled for the next session returned from getCurrentSession().
+     * This should generally only be called via test code.
+     * 
+     * @param enable whether the filters should be enabled. 
      */
     public static void setFiltersEnabled(boolean enable) {
         filtersEnabled = enable;
@@ -257,7 +262,7 @@ public final class HibernateUtil {
     }
 
     /**
-     * Disable filters on the current session.
+     * Disable security filters on the current session.
      */
     public static void disableFilters() {
         disableFilters(getCurrentSession());
@@ -266,7 +271,12 @@ public final class HibernateUtil {
     private static void disableFilters(Session session) {
         Set<String> filters = session.getSessionFactory().getDefinedFilterNames();
         for (String filterName : filters) {
-            session.disableFilter(filterName);
+            // we only want to disable the security filters. assume security filters are ones
+            // with USER_NAME and APPLICATION_ID parameters
+            FilterDefinition fd = session.getSessionFactory().getFilterDefinition(filterName);
+            if (fd.getParameterNames().contains("USER_NAME") && fd.getParameterNames().contains("APPLICATION_ID")) {
+                session.disableFilter(filterName);                
+            }
         }
     }
 

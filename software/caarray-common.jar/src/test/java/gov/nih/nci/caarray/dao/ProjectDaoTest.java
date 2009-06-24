@@ -106,6 +106,7 @@ import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.publication.Publication;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
@@ -658,6 +659,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             Sample s = new Sample();
             s.setName("New Sample");
             p.getExperiment().getSamples().add(s);
+            s.setExperiment(p.getExperiment());
             DAO_OBJECT.save(p);
             tx.commit();
 
@@ -885,7 +887,9 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
         tx = HibernateUtil.beginTransaction();
         p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
-        assertEquals(1, p.getExperiment().getSamples().size());
+        Set<Sample> samples = p.getExperiment().getSamples();
+        int size = samples.size();
+        assertEquals(1, size);
         s = p.getExperiment().getSamples().iterator().next();
         assertNull(s.getDescription());
         assertEquals(0, s.getCharacteristics().size());
@@ -1096,7 +1100,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     }
 
     @Test
-    public void testGetBioMaterialForExperiment() throws Exception {
+    public void testGetBioMaterialsForExperiment() throws Exception {
         Transaction tx = null;
         try {
             tx = HibernateUtil.beginTransaction();
@@ -1120,7 +1124,9 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertNotNull(DAO_OBJECT.getExtractForExperiment(DUMMY_EXPERIMENT_1, "DummyExtract"));
             assertNotNull(DAO_OBJECT.getLabeledExtractForExperiment(DUMMY_EXPERIMENT_1, "DummyLabeledExtract"));
 
-            assertEquals(1, DAO_OBJECT.getUnfilteredSamplesForProject(DUMMY_PROJECT_1).size());
+            Set<AbstractBioMaterial> bms = DAO_OBJECT.getUnfilteredBiomaterialsForProject(DUMMY_PROJECT_1.getId());
+            int size = bms.size();
+            assertEquals(4, size);
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);

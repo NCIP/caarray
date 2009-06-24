@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 
@@ -110,8 +110,9 @@ public class ProjectWorkspaceAction {
      */
     @SkipValidation
     public String workspace() {
-        this.projects.setList(getProjectManagementService().getMyProjects(this.projects.getPageSortParams()));
-        this.projects.setFullListSize(getProjectManagementService().getMyProjectCount());
+        this.projects.setList(ServiceLocatorFactory.getProjectManagementService().getMyProjects(
+                this.projects.getPageSortParams()));
+        this.projects.setFullListSize(ServiceLocatorFactory.getProjectManagementService().getMyProjectCount());
         return Action.SUCCESS;
     }
 

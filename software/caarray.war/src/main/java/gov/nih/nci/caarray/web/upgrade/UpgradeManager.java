@@ -82,11 +82,11 @@
  */
 package gov.nih.nci.caarray.web.upgrade;
 
+import gov.nih.nci.caarray.application.ConfigurationHelper;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.ConfigurationHelper;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;

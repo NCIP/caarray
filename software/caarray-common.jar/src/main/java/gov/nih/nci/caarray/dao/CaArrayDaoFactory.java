@@ -151,23 +151,10 @@ public interface CaArrayDaoFactory {
     OrganismDao getOrganismDao();
 
     /**
-     * Returns a <code>CountryDao</code>.
-     *
-     * @return a <code>CountryDao</code>.
-     */
-    CountryDao getCountryDao();
-
-    /**
-     * Returns a <code>StateDao</code>.
-     *
-     * @return a <code>StateDao</code>.
-     */
-    StateDao getStateDao();
-
-    /**
      * @return a <code>CollaboratorGroupDao</code>.
      */
     CollaboratorGroupDao getCollaboratorGroupDao();
+    
     /**
      * @return a <code>BrowseDao</code>.
      */

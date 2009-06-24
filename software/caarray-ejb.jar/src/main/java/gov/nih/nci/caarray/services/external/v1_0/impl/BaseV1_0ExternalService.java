@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.services.external.v1_0.impl;
 
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -261,9 +262,9 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      * {@inheritDoc}
      */
     @SuppressWarnings(UNCHECKED)
-    protected java.lang.Object getByLsid(String lsid) {        
+    protected java.lang.Object getByExternalId(String lsid) {        
         Class<? extends AbstractCaArrayEntity> entityClass = 
-            (Class<? extends AbstractCaArrayEntity>) getClassFromLsid(lsid);
+            (Class<? extends AbstractCaArrayEntity>) getClassFromExternalId(lsid);
         EntityHandler<? extends AbstractCaArrayEntity> resolver = entityHandlerRegistry.getResolver(entityClass); 
         if (resolver == null) {
             return null;
@@ -281,7 +282,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      * @throws InvalidReferenceException if no entity exists with given lsid or the entity is not of the expected type.
      */
     protected <T> T getRequiredByLsid(String lsid, Class<T> type) throws InvalidReferenceException {
-        java.lang.Object o = getByLsid(lsid);
+        java.lang.Object o = getByExternalId(lsid);
         if (o == null) {
             throw new NoEntityMatchingReferenceException(new CaArrayEntityReference(lsid));
         }
@@ -425,7 +426,8 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
          * The objectId is expected to be the database id of the internal object.
          */
         public java.lang.Object resolve(String objectId) {
-            return getDataService().getPersistentObject(internalClass, Long.valueOf(objectId));
+            return ServiceLocatorFactory.getGenericDataService().getPersistentObject(internalClass,
+                    Long.valueOf(objectId));
         }
 
         /**

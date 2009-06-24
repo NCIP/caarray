@@ -82,8 +82,8 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import gov.nih.nci.caarray.application.ServiceLocator;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 
 import java.io.Serializable;
 

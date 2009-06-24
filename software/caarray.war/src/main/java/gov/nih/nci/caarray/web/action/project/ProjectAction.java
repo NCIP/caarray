@@ -1,12 +1,12 @@
 package gov.nih.nci.caarray.web.action.project;
 
-import java.util.Collections;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.struts2.ServletActionContext;
@@ -129,7 +129,8 @@ public class ProjectAction extends AbstractBaseProjectAction {
      */
     public String changeWorkflowStatus() {
         try {
-            getProjectManagementService().changeProjectLockStatus(getProject().getId(), workflowStatus);
+            ServiceLocatorFactory.getProjectManagementService().changeProjectLockStatus(getProject().getId(),
+                    workflowStatus);
             String msgKey = "project.workflowStatusUpdated." + (getProject().islocked() ? "locked" : "unlocked");
             List<String> arg = Collections.singletonList(getProject().getExperiment().getTitle());
             ActionHelper.saveMessage(getText(msgKey, arg));
@@ -152,7 +153,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
             return projectNotFound();
         }
         try {
-            getProjectManagementService().deleteProject(getProject());
+            ServiceLocatorFactory.getProjectManagementService().deleteProject(getProject());
             ActionHelper.saveMessage(getText("project.deleted"));
         } catch (ProposalWorkflowException e) {
             List<String> args = new ArrayList<String>();

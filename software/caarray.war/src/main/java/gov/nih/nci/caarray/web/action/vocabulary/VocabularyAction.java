@@ -82,7 +82,8 @@
  */
 package gov.nih.nci.caarray.web.action.vocabulary;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getVocabularyService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyUtils;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -90,7 +91,6 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -139,7 +139,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      */
     public void prepare() {
         if (getCurrentTerm() != null && getCurrentTerm().getId() != null) {
-            Term retrieved = getVocabularyService().getTerm(getCurrentTerm().getId());
+            Term retrieved = ServiceLocatorFactory.getVocabularyService().getTerm(getCurrentTerm().getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(getCurrentTerm(),
                         SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
@@ -190,7 +190,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
             session.removeAttribute("returnInitialTab2Url");
             return edit();
         }
-        this.setTerms(CaArrayActionHelper.getTermsFromCategory(this.getCategory()));
+        this.setTerms(VocabularyUtils.getTermsFromCategory(this.getCategory()));
         return SUCCESS;
     }
 
@@ -201,8 +201,8 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String searchForTerms() {
-        this.setTerms(getVocabularyService().getTerms(CaArrayActionHelper.getCategory(this.getCategory()),
-                getCurrentTerm().getValue()));
+        this.setTerms(ServiceLocatorFactory.getVocabularyService().getTerms(
+                VocabularyUtils.getCategory(this.getCategory()), getCurrentTerm().getValue()));
         return "termAutoCompleterValues";
     }
 
@@ -214,7 +214,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     @SkipValidation
     public String edit() {
         setEditMode(true);
-        setSources(getVocabularyService().getAllSources());
+        setSources(ServiceLocatorFactory.getVocabularyService().getAllSources());
         return INPUT;
     }
 
@@ -226,7 +226,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     @SkipValidation
     public String details() {
         setEditMode(false);
-        setSources(getVocabularyService().getAllSources());
+        setSources(ServiceLocatorFactory.getVocabularyService().getAllSources());
         return INPUT;
     }
 
@@ -242,7 +242,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
         }
     )
     public String save() {
-        getVocabularyService().saveTerm(getCurrentTerm());
+        ServiceLocatorFactory.getVocabularyService().saveTerm(getCurrentTerm());
         if (getCurrentTerm().getId() == null) {
             ActionHelper.saveMessage(getText("vocabulary.term.created", new String[] {getCurrentTerm().getValue()}));
         } else {
@@ -270,7 +270,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     public void validate() {
         super.validate();
         if (hasErrors()) {
-            setSources(getVocabularyService().getAllSources());
+            setSources(ServiceLocatorFactory.getVocabularyService().getAllSources());
         }
     }
 
@@ -289,7 +289,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     }
 
     private Category retrieveCategory() {
-        return CaArrayActionHelper.getCategory(getCategory());
+        return VocabularyUtils.getCategory(getCategory());
     }
 
     /**

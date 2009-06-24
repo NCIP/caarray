@@ -82,14 +82,11 @@
  */
 package gov.nih.nci.caarray.web.action;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getArrayDesignService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileAccessService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManagementService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getVocabularyService;
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignDeleteException;
 import gov.nih.nci.caarray.application.fileaccess.FileExtension;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyUtils;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -269,18 +266,18 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      * {@inheritDoc}
      */
     public void prepare() {
-        this.organisms = getVocabularyService().getOrganisms();
-        this.providers = getArrayDesignService().getAllProviders();
-        this.featureTypes = CaArrayActionHelper.getTermsFromCategory(ExperimentOntologyCategory.TECHNOLOGY_TYPE);
+        this.organisms = ServiceLocatorFactory.getVocabularyService().getOrganisms();
+        this.providers = ServiceLocatorFactory.getArrayDesignService().getAllProviders();
+        this.featureTypes = VocabularyUtils.getTermsFromCategory(ExperimentOntologyCategory.TECHNOLOGY_TYPE);
         if (arrayDesign != null && arrayDesign.getId() != null) {
-            ArrayDesign retrieved = getArrayDesignService().getArrayDesign(arrayDesign.getId());
+            ArrayDesign retrieved = ServiceLocatorFactory.getArrayDesignService().getArrayDesign(arrayDesign.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(getArrayDesign(),
                         SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
             } else {
                 arrayDesign = retrieved;
             }
-            locked = getArrayDesignService().isArrayDesignLocked(arrayDesign.getId());
+            locked = ServiceLocatorFactory.getArrayDesignService().isArrayDesignLocked(arrayDesign.getId());
         }
     }
 
@@ -290,7 +287,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String list() {
-        arrayDesigns = getArrayDesignService().getArrayDesigns();
+        arrayDesigns = ServiceLocatorFactory.getArrayDesignService().getArrayDesigns();
         return "list";
     }
 
@@ -361,7 +358,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     public String saveMeta() {
         if (!createMode && editMode) {
 
-            if (getArrayDesignService().isDuplicate(arrayDesign)) {
+            if (ServiceLocatorFactory.getArrayDesignService().isDuplicate(arrayDesign)) {
                 List<String> args = new ArrayList<String>();
                 args.add(getArrayDesign().getName());
                 ActionHelper.saveMessage(getText("arraydesign.duplicate", args));
@@ -466,13 +463,13 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     @SkipValidation
     public String delete() {
         try {
-            getArrayDesignService().deleteArrayDesign(getArrayDesign());
+            ServiceLocatorFactory.getArrayDesignService().deleteArrayDesign(getArrayDesign());
             ActionHelper.saveMessage(getText("arrayDesign.deletionSuccess",
                     new String[] {getArrayDesign().getName() }));
         } catch (ArrayDesignDeleteException e) {
             ActionHelper.saveMessage(e.getMessage());
         }
-        arrayDesigns = getArrayDesignService().getArrayDesigns();
+        arrayDesigns = ServiceLocatorFactory.getArrayDesignService().getArrayDesigns();
         return SUCCESS;
     }
 
@@ -509,12 +506,12 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         try {
             // figure out if we are editing or creating.
             if (arrayDesign.getId() != null && (uploadFileName == null || uploadFileName.isEmpty())) {
-                getArrayDesignService().saveArrayDesign(arrayDesign);
+                ServiceLocatorFactory.getArrayDesignService().saveArrayDesign(arrayDesign);
             } else {
                 // Checks if any uploaded files are zip files. If they are, the files are unzipped,
                 // and the appropriate properties are updated so that the unzipped files are
                 // part of the uploads list.
-                getFileAccessService().unzipFiles(uploads, uploadFileName);
+                ServiceLocatorFactory.getFileAccessService().unzipFiles(uploads, uploadFileName);
                 handleFiles();
             }
         } catch (RuntimeException re) {
@@ -534,12 +531,12 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             arrayDesign.getDesignFiles().clear();
         } catch (IllegalAccessException iae) {
             LOG.debug("Swallowed exception saving array design file", iae);
-            arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
+            arrayDesign = ServiceLocatorFactory.getArrayDesignService().getArrayDesign(arrayDesign.getId());
             addActionError(iae.getMessage());
         } catch (Exception e) {
             LOG.debug("Swallowed exception saving array design file", e);
             if (arrayDesign.getId() != null) {
-                arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
+                arrayDesign = ServiceLocatorFactory.getArrayDesignService().getArrayDesign(arrayDesign.getId());
             }
             addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.importingFile"));
         } finally {
@@ -560,7 +557,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String generateAssayList() {
-        setAssayTypes(new TreeSet<AssayType>(getProjectManagementService().getAssayTypes()));
+        setAssayTypes(new TreeSet<AssayType>(ServiceLocatorFactory.getProjectManagementService().getAssayTypes()));
 
         return "generateAssayList";
     }
@@ -636,19 +633,20 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         if (!arrayDesignFiles.isEmpty()) {
             CaArrayFileSet designFiles = new CaArrayFileSet();
             for (String fileName : arrayDesignFiles.keySet()) {
-                CaArrayFile designFile = getFileAccessService().add(arrayDesignFiles.get(fileName), fileName);
+                CaArrayFile designFile = ServiceLocatorFactory.getFileAccessService().add(
+                        arrayDesignFiles.get(fileName), fileName);
 
                 designFile.setFileType(arrayDesignFileTypes.get(fileName));
                 designFiles.add(designFile);
 
             }
 
-            getFileManagementService().saveArrayDesign(arrayDesign, designFiles);
+            ServiceLocatorFactory.getFileManagementService().saveArrayDesign(arrayDesign, designFiles);
 
             // even if some of the file could not be parsed still import the array design details
             for (CaArrayFile designFile : designFiles.getFiles()) {
                 if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
-                    getFileManagementService().importArrayDesignDetails(arrayDesign);
+                    ServiceLocatorFactory.getFileManagementService().importArrayDesignDetails(arrayDesign);
                     break;
                 }
             }

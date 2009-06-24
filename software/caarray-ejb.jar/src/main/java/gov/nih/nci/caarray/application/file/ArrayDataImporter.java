@@ -242,6 +242,7 @@ final class ArrayDataImporter {
         return dataFileRelationshipNodeNames;
     }
 
+    @SuppressWarnings("unchecked")
     private List<String> getRelationshipNodeName(FileValidationResult result, String keyName) {
         List<String> names = new ArrayList<String>();
         if (result != null && result.getValidationProperties(keyName) != null) {

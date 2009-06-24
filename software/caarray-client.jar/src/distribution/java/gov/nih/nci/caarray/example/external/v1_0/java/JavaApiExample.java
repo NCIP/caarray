@@ -204,6 +204,21 @@ public class JavaApiExample {
         try {
             StopWatch sw = new StopWatch();
 
+            List<FileType> fileTypes = searchUtils.byExample(new ExampleSearchCriteria<FileType>(new FileType()))
+                    .list();
+            System.out.println("File Types: " + fileTypes);
+            FileType exampleType = new FileType();
+            exampleType.setName("AFFYMETRIX");
+            List<FileType> chpTypes = searchUtils.byExample(
+                    new ExampleSearchCriteria<FileType>(exampleType, MatchMode.START)).list();
+            System.out.println("Affymetrix types: " + chpTypes);
+            exampleType.setCategory(FileTypeCategory.DERIVED);
+            List<FileType> derivedTypes = searchUtils.byExample(
+                    new ExampleSearchCriteria<FileType>(exampleType, MatchMode.START)).list();
+            System.out.println("Affy Derived types: " + derivedTypes);
+            FileType affyCel = (FileType) searchService.getByReference(new CaArrayEntityReference(TEST_FILE_TYPE_ID));
+            System.out.println("Retrieved file type by reference: " + affyCel);
+    
             System.out.println("Experiment full list");
             for (Experiment e : searchUtils.experimentsByCriteria(new ExperimentSearchCriteria()).list()) {
                 System.out.println("Next experiment: " + e);
@@ -245,21 +260,6 @@ public class JavaApiExample {
             List<Term> terms = searchService.getTermsForCategory(dsCats.get(0).getReference(), null);
             System.out.println("DiseaseState terms: " + terms);
             
-            List<FileType> fileTypes = searchUtils.byExample(new ExampleSearchCriteria<FileType>(new FileType()))
-                    .list();
-            System.out.println("File Types: " + fileTypes);
-            FileType exampleType = new FileType();
-            exampleType.setName("AFFYMETRIX");
-            List<FileType> chpTypes = searchUtils.byExample(
-                    new ExampleSearchCriteria<FileType>(exampleType, MatchMode.START)).list();
-            System.out.println("Affymetrix types: " + chpTypes);
-            exampleType.setCategory(FileTypeCategory.DERIVED);
-            List<FileType> derivedTypes = searchUtils.byExample(
-                    new ExampleSearchCriteria<FileType>(exampleType, MatchMode.START)).list();
-            System.out.println("Affy Derived types: " + derivedTypes);
-            FileType affyCel = (FileType) searchService.getByReference(new CaArrayEntityReference(
-                    TEST_FILE_TYPE_ID));
-            System.out.println("Retrieved file type by reference: " + affyCel);
             
             List<Person> pis = searchService.getAllPrincipalInvestigators();
             System.out.println("PIs: " + pis);            

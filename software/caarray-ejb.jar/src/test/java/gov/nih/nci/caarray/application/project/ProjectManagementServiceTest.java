@@ -534,7 +534,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         });
         Project project = new Project();
 
-        assertNull(this.projectManagementService.getSampleByExternalId(project, "def"));
+        assertNull(this.projectManagementService.getBiomaterialByExternalId(project, "def", Sample.class));
     }
 
     @Test
@@ -552,7 +552,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         });
         Project project = new Project();
 
-        assertNull(this.projectManagementService.getSampleByExternalId(project, "abc"));
+        assertNull(this.projectManagementService.getBiomaterialByExternalId(project, "abc", Sample.class));
     }
 
     @Test
@@ -572,7 +572,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
         });
         Project project = new Project();
 
-        Sample sampleByExternalId = this.projectManagementService.getSampleByExternalId(project, "abc");
+        Sample sampleByExternalId = this.projectManagementService.getBiomaterialByExternalId(project, "abc", Sample.class);
         assertNotNull(sampleByExternalId);
         assertSame(project.getExperiment(), sampleByExternalId.getExperiment());
     }
@@ -763,7 +763,7 @@ public class ProjectManagementServiceTest extends AbstractCaarrayTest {
                     Project p = (Project) po;
                     if (sampleToMatch.getExperiment().getProject().getId().equals(p.getId())) {
                         for (Sample s : p.getExperiment().getSamples()) {
-                            if (sampleToMatch.getExternalSampleId().equals(s.getExternalSampleId())) {
+                            if (sampleToMatch.getExternalId().equals(s.getExternalId())) {
                                 results.add((T) s);
                             }
                         }

@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -96,6 +97,8 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.AttributeMutator;
 import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.SecurityPolicy;
+import gov.nih.nci.caarray.validation.UniqueConstraint;
+import gov.nih.nci.caarray.validation.UniqueConstraintField;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
@@ -123,6 +126,7 @@ import javax.persistence.Transient;
 
 import org.apache.commons.collections.Closure;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -135,13 +139,18 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 
 /**
- *
+ * AbstractBiomaterial represents a biomaterial at some stage prior to being hybridized to an array.
+ * @author dkokotov 
  */
 @Entity
 @Table(name = "biomaterial")
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "discriminator", discriminatorType = DiscriminatorType.STRING)
+@UniqueConstraint(fields = {
+        @UniqueConstraintField(name = "externalId"),
+        @UniqueConstraintField(name = "experiment", nullsEqual = false) },
+        generateDDLConstraint = false, message = "{biomaterial.externalId.uniqueConstraint}")
 public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
     private static final long serialVersionUID = 1234567890L;
 
@@ -151,9 +160,28 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
     private Term diseaseState;
     private String name;
     private String description;
+    private String externalId;
     private Set<AbstractCharacteristic> characteristics = new HashSet<AbstractCharacteristic>();
     private List<ProtocolApplication> protocolApplications = new ArrayList<ProtocolApplication>();
     private Organism organism;
+    private Experiment experiment;
+
+    /**
+     * {@inheritDoc}
+     */
+    @ManyToOne
+    @JoinColumn(name = "experiment_id")
+    @ForeignKey(name = "biomaterial_experiment_fk")
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
+    /**
+     * @param experiment the experiment to set
+     */
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+    }
 
     /**
      * @return the tissueSite
@@ -265,6 +293,21 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
      */
     public void setDescription(final String descriptionVal) {
         this.description = descriptionVal;
+    }
+    
+    /**
+     * @return the externalId
+     */
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
+    public String getExternalId() {
+        return this.externalId;
+    }
+
+    /**
+     * @param externalId the externalId to set
+     */
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     /**
@@ -448,6 +491,9 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
         if (this.getOrganism() == null) {
             this.setOrganism(bm.getOrganism());
         }
+        if (this.getExternalId() == null) {
+            this.setExternalId(bm.getExternalId());
+        }
 
         mergeCharacteristics(bm);
     }
@@ -484,8 +530,18 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
         }
         this.getCharacteristics().addAll(newChars);
         bm.getCharacteristics().removeAll(newChars);
-
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("name", getName())
+            .toString();
+    }
+
     /**
      * Attribute filter for characteristics under the TCGA Policy.
      *

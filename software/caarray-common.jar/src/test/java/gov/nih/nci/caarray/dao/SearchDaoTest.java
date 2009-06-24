@@ -458,10 +458,12 @@ public class SearchDaoTest {
             source.setName("Source 1 Name");
             source.setDescription("ZZZ");
             project.getExperiment().getSources().add(source);
+            source.setExperiment(project.getExperiment());
             Source source2 = new Source();
             source2.setName("Source 2 Name");
             source2.setDescription("AAA");
             project.getExperiment().getSources().add(source2);
+            source2.setExperiment(project.getExperiment());
             s.save(DUMMY_ASSAYTYPE_1);
             s.save(project);
             s.flush();
@@ -526,10 +528,12 @@ public class SearchDaoTest {
             source.setName("Source 1 Name");
             source.setDescription("ZZZ");
             project.getExperiment().getSources().add(source);
+            source.setExperiment(project.getExperiment());
             Source source2 = new Source();
             source2.setName("Source 2 Name");
             source2.setDescription("AAA");
             project.getExperiment().getSources().add(source2);
+            source2.setExperiment(project.getExperiment());
             s.save(DUMMY_ASSAYTYPE_1);
             s.save(project);
             s.flush();

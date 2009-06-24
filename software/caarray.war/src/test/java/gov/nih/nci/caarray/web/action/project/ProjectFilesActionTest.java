@@ -943,6 +943,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         Source src1 = new Source();
         src1.setName("Src1");
         src1.setId(252L);
+        src1.setExperiment(exp);
         dataServiceStub.save(src1);
         exp.getSources().add(src1);
 
@@ -951,6 +952,8 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         smp1.setId(781L);
         exp.getSamples().add(smp1);
         src1.getSamples().add(smp1);
+        src1.setExperiment(exp);
+        smp1.setExperiment(exp);
         dataServiceStub.save(smp1);
 
         this.action.setNodeType(ExperimentDesignTreeNodeType.ROOT);

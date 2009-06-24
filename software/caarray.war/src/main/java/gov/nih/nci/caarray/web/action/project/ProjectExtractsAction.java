@@ -82,19 +82,14 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.search.ExtractSortCriterion;
-import gov.nih.nci.caarray.security.PermissionDeniedException;
-import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -132,22 +127,11 @@ public class ProjectExtractsAction extends AbstractProjectAssociatedAnnotationsL
 
     /**
      * {@inheritDoc}
-     *
-     * @throws VocabularyServiceException
      */
     @Override
-    public void prepare() throws VocabularyServiceException {
+    public void prepare() {
         super.prepare();
-
-        if (this.currentExtract.getId() != null) {
-            Extract retrieved = getGenericDataService().getPersistentObject(Extract.class, this.currentExtract.getId());
-            if (retrieved == null) {
-                throw new PermissionDeniedException(this.currentExtract,
-                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
-            } else {
-                this.currentExtract = retrieved;
-            }
-        }
+        this.currentExtract = retrieveByIdOrExternalId(Extract.class, this.currentExtract);
     }
 
     /**
@@ -155,7 +139,7 @@ public class ProjectExtractsAction extends AbstractProjectAssociatedAnnotationsL
      */
     @Override
     protected void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException {
-        CaArrayActionHelper.getProjectManagementService().copyExtract(getProject(), this.currentExtract.getId());
+        ServiceLocatorFactory.getProjectManagementService().copyExtract(getProject(), this.currentExtract.getId());
     }
 
     /**

@@ -152,7 +152,7 @@ public class ProtocolTest extends AbstractSeleniumTest {
     private void addSample() {
         String name = "Sample";
         doClick(name);
-        selenium.type("projectForm_currentSample_externalSampleId", "External id for Sample One");
+        selenium.type("projectForm_currentSample_externalId", "External id for Sample One");
         selenium.keyPress("id=sourcePickerAssociatedValueName", TAB_KEY);
         selenium.keyPress("id=materialTypeSearchInput", TAB_KEY);
         selenium.select("projectForm_protocolType", "label=acclimatization");

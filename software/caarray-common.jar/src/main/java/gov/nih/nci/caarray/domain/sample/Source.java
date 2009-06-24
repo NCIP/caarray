@@ -96,10 +96,8 @@ import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -111,14 +109,16 @@ import org.hibernate.annotations.ForeignKey;
  *
  */
 @Entity
-@DiscriminatorValue("SO")
+@DiscriminatorValue(Source.DISCRIMINATOR)
 public class Source extends AbstractBioMaterial {
     private static final long serialVersionUID = 1234567890L;
     private static final String DEFAULT_FK_ID = "source_id";
-
+    
+    /** the Hibernate discriminator for this biomaterial subclass. */
+    public static final String DISCRIMINATOR = "SO";
+    
     private Set<Sample> samples = new HashSet<Sample>();
     private Set<AbstractContact> providers = new HashSet<AbstractContact>();
-    private Experiment experiment;
 
     /**
      * Gets the samples.
@@ -173,24 +173,6 @@ public class Source extends AbstractBioMaterial {
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setProviders(final Set<AbstractContact> providersVal) {
         this.providers = providersVal;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @ManyToOne
-    @JoinTable(name = "experimentsource",
-            joinColumns = {@JoinColumn(name = "source_id", insertable = false, updatable = false) },
-            inverseJoinColumns = {@JoinColumn(name = "experiment_id", insertable = false, updatable = false) })
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    /**
-     * @param experiment the experiment to set
-     */
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
     }
 
     /**

@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getPermissionsManagementService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.AuthorizationManager;
@@ -136,7 +136,7 @@ public class CollaboratorsAction extends ActionSupport {
      */
     @SkipValidation
     public String listGroups() {
-        this.groups = getPermissionsManagementService().getCollaboratorGroupsForCurrentUser();
+        this.groups = ServiceLocatorFactory.getPermissionsManagementService().getCollaboratorGroupsForCurrentUser();
         return "list";
     }
 
@@ -148,7 +148,7 @@ public class CollaboratorsAction extends ActionSupport {
     @SkipValidation
     public String delete() throws CSTransactionException {
         String grpName = this.targetGroup.getGroup().getGroupName();
-        getPermissionsManagementService().delete(this.targetGroup);
+        ServiceLocatorFactory.getPermissionsManagementService().delete(this.targetGroup);
         ActionHelper.saveMessage(getText("collaboration.group.record.deleted", new String[] {grpName}));
         return listGroups();
     }
@@ -161,9 +161,9 @@ public class CollaboratorsAction extends ActionSupport {
      */
     public String name() throws CSException {
         if (targetGroup == null) {
-            getPermissionsManagementService().create(getGroupName());
+            ServiceLocatorFactory.getPermissionsManagementService().create(getGroupName());
         } else {
-            getPermissionsManagementService().rename(getTargetGroup(), getGroupName());
+            ServiceLocatorFactory.getPermissionsManagementService().rename(getTargetGroup(), getGroupName());
         }
         ActionHelper.saveMessage(getText("collaboration.group.record.saved", new String[] {getGroupName()}));
         return listGroups();
@@ -197,7 +197,7 @@ public class CollaboratorsAction extends ActionSupport {
     @SkipValidation
     public String addUsers() throws CSTransactionException, CSObjectNotFoundException {
         if (CollectionUtils.isNotEmpty(getUsers())) {
-            getPermissionsManagementService().addUsers(getTargetGroup(), getUsers());
+            ServiceLocatorFactory.getPermissionsManagementService().addUsers(getTargetGroup(), getUsers());
             String s = "Users";
             if (getUsers().size() == 1) {
                 User u = SecurityUtils.getAuthorizationManager().getUserById(getUsers().get(0).toString());
@@ -205,8 +205,8 @@ public class CollaboratorsAction extends ActionSupport {
             }
             ActionHelper.saveMessage(getText("collaboration.group.added", new String[] {s}));
         }
-        setAllUsers((List<User>) CollectionUtils.subtract(getPermissionsManagementService().getUsers(getTargetUser()),
-                getTargetGroup().getGroup().getUsers()));
+        setAllUsers((List<User>) CollectionUtils.subtract(ServiceLocatorFactory.getPermissionsManagementService()
+                .getUsers(getTargetUser()), getTargetGroup().getGroup().getUsers()));
         return Action.SUCCESS;
     }
 
@@ -227,7 +227,7 @@ public class CollaboratorsAction extends ActionSupport {
     @SkipValidation
     public String removeUsers() throws CSTransactionException, CSObjectNotFoundException {
         if (CollectionUtils.isNotEmpty(getUsers())) {
-            getPermissionsManagementService().removeUsers(getTargetGroup(), getUsers());
+            ServiceLocatorFactory.getPermissionsManagementService().removeUsers(getTargetGroup(), getUsers());
             String s = "Users";
             if (getUsers().size() == 1) {
                 User u = SecurityUtils.getAuthorizationManager().getUserById(getUsers().get(0).toString());

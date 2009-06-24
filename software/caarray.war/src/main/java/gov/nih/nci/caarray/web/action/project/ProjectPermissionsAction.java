@@ -1,11 +1,8 @@
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getPermissionsManagementService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
@@ -15,7 +12,6 @@ import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
 import java.io.UnsupportedEncodingException;
@@ -58,13 +54,13 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
      * {@inheritDoc}
      */
     @Override
-    public void prepare() throws VocabularyServiceException {
+    public void prepare() {
         super.prepare();
 
-        this.collaboratorGroups = getPermissionsManagementService().getCollaboratorGroups();
+        this.collaboratorGroups = ServiceLocatorFactory.getPermissionsManagementService().getCollaboratorGroups();
         if (this.collaboratorGroup.getId() != null) {
-            CollaboratorGroup retrieved = getGenericDataService().getPersistentObject(CollaboratorGroup.class,
-                                                                           this.collaboratorGroup.getId());
+            CollaboratorGroup retrieved = ServiceLocatorFactory.getGenericDataService().getPersistentObject(
+                    CollaboratorGroup.class, this.collaboratorGroup.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.collaboratorGroup,
                         SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
@@ -73,8 +69,8 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
             }
         }
         if (this.accessProfile.getId() != null) {
-            AccessProfile retrieved = getGenericDataService().getPersistentObject(AccessProfile.class,
-                    this.accessProfile.getId());
+            AccessProfile retrieved = ServiceLocatorFactory.getGenericDataService().getPersistentObject(
+                    AccessProfile.class, this.accessProfile.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.accessProfile,
                         SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
@@ -105,7 +101,8 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     @SkipValidation
     public String setTcgaPolicy() {
         try {
-            getProjectManagementService().setUseTcgaPolicy(getProject().getId(), this.useTcgaPolicy);
+            ServiceLocatorFactory.getProjectManagementService().setUseTcgaPolicy(getProject().getId(),
+                    this.useTcgaPolicy);
             ActionHelper.saveMessage(getText("project.tcgaPolicyUpdated", new String[]{getText("project.tcgaPolicy."
                     + (this.useTcgaPolicy ? "enabled" : "disabled")) }));
             return SUCCESS;
@@ -179,7 +176,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
             if (sid.intValue() == -1) {
                 continue;
             }
-            Sample sample = getGenericDataService().getPersistentObject(Sample.class, sid);
+            Sample sample = ServiceLocatorFactory.getGenericDataService().getPersistentObject(Sample.class, sid);
             if (this.accessProfile.getSecurityLevel().getSampleSecurityLevels().contains(this.securityChoices)) {
                 this.accessProfile.getSampleSecurityLevels().put(sample, this.securityChoices);
             }
@@ -203,13 +200,14 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
                 if (this.accessProfile.getId() == null && this.collaboratorGroup != null) {
                     // must be a new access profile
                     AccessProfile newProfile =
-                            getProjectManagementService().addGroupProfile(getProject(), this.collaboratorGroup);
+                            ServiceLocatorFactory.getProjectManagementService().addGroupProfile(
+                            getProject(), this.collaboratorGroup);
                     newProfile.setSecurityLevel(this.accessProfile.getSecurityLevel());
                     this.accessProfile = newProfile;
                     this.accessProfiles.add(newProfile);
                 }
                 saveSamplePermissions();
-                getPermissionsManagementService().saveAccessProfile(this.accessProfile);
+                ServiceLocatorFactory.getPermissionsManagementService().saveAccessProfile(this.accessProfile);
                 LOG.debug("Done saving access profile for project " + getProject().getId());
                 ActionHelper.saveMessage(getText("project.permissionsSaved"));
                 return SUCCESS;
@@ -236,7 +234,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     }
 
     private void searchForSamples() {
-        ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
+        ProjectManagementService pms = ServiceLocatorFactory.getProjectManagementService();
         SearchSampleCategory[] categories = new SearchSampleCategory[]{SearchSampleCategory.valueOf(permSampleSearch)};
         sampleResults = pms.searchSamplesByExperimentAndCategory(permSampleKeyword,
                 getProject().getExperiment(), categories);

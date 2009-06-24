@@ -97,7 +97,7 @@ public class Category extends AbstractCaArrayEntity {
     private TermSource termSource;
 
     /**
-     * @return the name
+     * @return the name of this category.
      */
     public String getName() {
         return name;
@@ -111,7 +111,8 @@ public class Category extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the accession
+     * @return the accession for this category. The accession is a vocabulary-specific code that uniquely identifies the
+     *         category within the vocabulary.
      */
     public String getAccession() {
         return accession;
@@ -125,7 +126,7 @@ public class Category extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the url
+     * @return the url for this category.
      */
     public String getUrl() {
         return url;
@@ -139,7 +140,7 @@ public class Category extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the termSource
+     * @return the TermSource representing the vocabulary to which this Category belongs
      */
     public TermSource getTermSource() {
         return termSource;

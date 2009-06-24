@@ -97,10 +97,8 @@ import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -112,16 +110,18 @@ import org.hibernate.annotations.ForeignKey;
 
    */
 @Entity
-@DiscriminatorValue("EX")
+@DiscriminatorValue(Extract.DISCRIMINATOR)
 public class Extract extends AbstractBioMaterial implements ProtectableDescendent {
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
 
+    /** the Hibernate discriminator for this biomaterial subclass. */
+    public static final String DISCRIMINATOR = "EX";
+
     private Set<Sample> samples = new HashSet<Sample>();
     private Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
-    private Experiment experiment;
 
     /**
      * Gets the samples.
@@ -177,26 +177,9 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
     @Override
     public String toString() {
         return new ToStringBuilder(this)
+            .appendSuper(super.toString())
             .append("labeledExtracts", labeledExtracts)
             .toString();
-    }
-
-    /**
-     * @return the experiment to which this source belongs
-     */
-    @ManyToOne
-    @JoinTable(name = "experimentextract",
-            joinColumns = {@JoinColumn(name = "extract_id", insertable = false, updatable = false) },
-            inverseJoinColumns = {@JoinColumn(name = "experiment_id", insertable = false, updatable = false) })
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    /**
-     * @param experiment the experiment to set
-     */
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
     }
 
     /**

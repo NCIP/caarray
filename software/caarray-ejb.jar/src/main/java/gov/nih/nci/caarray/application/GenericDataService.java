@@ -108,11 +108,8 @@ public interface GenericDataService extends com.fiveamsolutions.nci.commons.serv
      * @param entityClass the class of the entity to retrieve
      * @param orders the order by clauses
      * @return the list of t's
-     * @throws IllegalAccessException if entityClass.newInstance fails
-     * @throws InstantiationException if entityClass.newInstance fails
      */
-    <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders)
-        throws IllegalAccessException, InstantiationException;
+    <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders);
 
     /**
      * Retrieves the given number of instances of the given class, starting with the given index, out of all
@@ -125,11 +122,9 @@ public interface GenericDataService extends com.fiveamsolutions.nci.commons.serv
      * figure out which entity to start with is undefined. 
      * @return the list of instances. If maxResults was greater than 0, the list will have at most 
      * maxResults elements, but may have less.
-     * @throws IllegalAccessException if entityClass.newInstance fails
-     * @throws InstantiationException if entityClass.newInstance fails
      */
     <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, int maxResults, int firstResult,
-            Order... orders) throws IllegalAccessException, InstantiationException;
+            Order... orders);
 
     /**
      * Retrieves all instances of the given class with given ids.
@@ -137,11 +132,8 @@ public interface GenericDataService extends com.fiveamsolutions.nci.commons.serv
      * @param entityClass the class of the entity to retrieve
      * @param ids the ids of entities to retrieve
      * @return the list of entities with given ids
-     * @throws IllegalAccessException if entityClass.newInstance fails
-     * @throws InstantiationException if entityClass.newInstance fails
      */
-    <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids)
-            throws IllegalAccessException, InstantiationException;
+    <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids);
 
     /**
      * Deletes an object from the database.  May throw exceptions if the object is referenced

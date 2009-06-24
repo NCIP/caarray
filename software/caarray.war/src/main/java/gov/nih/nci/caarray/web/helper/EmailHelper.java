@@ -82,11 +82,11 @@
  */
 package gov.nih.nci.caarray.web.helper;
 
+import gov.nih.nci.caarray.application.ConfigurationHelper;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
-import gov.nih.nci.caarray.util.ConfigurationHelper;
 import gov.nih.nci.caarray.util.EmailUtil;
 
 import java.text.MessageFormat;

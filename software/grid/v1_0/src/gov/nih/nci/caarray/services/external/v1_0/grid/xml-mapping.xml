@@ -180,7 +180,7 @@
   <class name="gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory" verify-constructable="false">
     <map-to xml="FileTypeCategory" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" />
   </class>    
-  <class name="gov.nih.nci.caarray.external.v1_0.data.FileType">
+  <class name="gov.nih.nci.caarray.external.v1_0.data.FileType" extends="gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity">
     <map-to xml="FileType" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />

@@ -176,6 +176,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
+    
     public List<Project> getProjectsForOwner(User user) {
         final String q = "SELECT DISTINCT p FROM " + Project.class.getName()
                 + " p left join fetch p.experiment e where p.id in"
@@ -189,7 +190,9 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         query.setEntity("application", SecurityUtils.getApplication());
         query.setEntity("user", user);
 
-        return query.list();
+        @SuppressWarnings("unchecked")
+        List<Project> projects = query.list();
+        return projects;
     }
 
     /**
@@ -204,6 +207,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     private Query getProjectsForUserQuery(boolean count,
             PageSortParams<Project> pageSortParams) {
         User user  = UsernameHolder.getCsmUser();
+        @SuppressWarnings("deprecation")
         SortCriterion<Project> sortCrit = pageSortParams != null ? pageSortParams.getSortCriterion() : null;
         String ownerSubqueryStr =
                 "(select pe.value from " + ProtectionElement.class.getName()
@@ -265,6 +269,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
 
     private Query getSearchQuery(boolean count, PageSortParams<Project> params, String keyword,
             SearchCategory... categories) {
+        @SuppressWarnings("deprecation")
         SortCriterion<Project> sortCrit = params != null ? params.getSortCriterion() : null;
         StringBuffer sb = new StringBuffer();
         if (count) {
@@ -461,15 +466,18 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings(UNCHECKED)
-    public Set<Sample> getUnfilteredSamplesForProject(final Project project) {
+    public Set<AbstractBioMaterial> getUnfilteredBiomaterialsForProject(final Long projectId) {
         UnfilteredCallback unfilteredCallback = new UnfilteredCallback() {
             public Object doUnfiltered(Session s) {
-                Project p = (Project) s.get(Project.class, project.getId());
-                return p.getExperiment().getSamples();
+                Query q = s.createQuery("FROM " + AbstractBioMaterial.class.getName()
+                        + " bm WHERE bm.experiment.project.id = ?");
+                q.setParameter(0, projectId);                    
+                return q.list();
             }
         };
-        return (Set<Sample>) HibernateUtil.doUnfiltered(unfilteredCallback);
+        @SuppressWarnings(UNCHECKED)        
+        List<AbstractBioMaterial> bms = (List<AbstractBioMaterial>) HibernateUtil.doUnfiltered(unfilteredCallback);
+        return new HashSet<AbstractBioMaterial>(bms);
     }
 
     /**

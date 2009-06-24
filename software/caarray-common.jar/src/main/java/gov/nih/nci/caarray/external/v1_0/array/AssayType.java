@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.external.v1_0.array;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 
 /**
- * AssayType represents kinds of assays that can be run on data.
+ * AssayType represents kinds of assays (measurements) that can be run on biomaterials hybridized to microarrays.
  * 
  * @author dkokotov
  */
@@ -103,6 +103,7 @@ public class AssayType extends AbstractCaArrayEntity {
     
     /**
      * Create a new assay type with given name.
+     * 
      * @param name the name of the assay type
      */
     public AssayType(String name) {
@@ -110,7 +111,7 @@ public class AssayType extends AbstractCaArrayEntity {
     }
     
     /**
-     * @return the name
+     * @return the name of the assay type.
      */
     public String getName() {
         return name;

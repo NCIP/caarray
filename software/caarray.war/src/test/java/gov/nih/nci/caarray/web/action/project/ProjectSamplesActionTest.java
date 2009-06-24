@@ -95,8 +95,8 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -107,6 +107,7 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -184,10 +185,10 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
         //valid sample external id
         sample = new Sample();
         sample.setName("sample2");
-        sample.setExternalSampleId("abc");
+        sample.setExternalId("abc");
         action.setCurrentSample(sample);
         action.prepare();
-        assertEquals("abc", action.getCurrentSample().getExternalSampleId());
+        assertEquals("abc", action.getCurrentSample().getExternalId());
 
         // invalid current sample id
         sample = new Sample();
@@ -211,21 +212,21 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
         //valid sample external id
         Sample sample = new Sample();
         sample.setName("sample4");
-        sample.setExternalSampleId("abc");
+        sample.setExternalId("abc");
         action.setCurrentSample(sample);
         action.prepare();
-        assertEquals("abc", action.getCurrentSample().getExternalSampleId());
+        assertEquals("abc", action.getCurrentSample().getExternalId());
 
         // invalid current sample id
         sample = new Sample();
         sample.setName("sample5");
-        sample.setExternalSampleId("def");
+        sample.setExternalId("def");
         action.setCurrentSample(sample);
         try {
             action.prepare();
             fail("Expected PermissionDeniedException");
         } catch (PermissionDeniedException pde) {
-            assertTrue(pde.getMessage().endsWith("externalSampleId def"));
+            assertTrue(pde.getMessage().endsWith("external id def"));
         }
     }
 
@@ -358,7 +359,6 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testSaveDuplicate() {
 
         action.getProject().getExperiment().getSamples().add(DUMMY_SAMPLE);
@@ -466,10 +466,11 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
 
     private static class LocalProjectManagementService extends ProjectManagementServiceStub {
         @Override
-        public Sample getSampleByExternalId(Project project, String externalSampleId) {
-            Sample sampleByExternalId = super.getSampleByExternalId(project, externalSampleId);
-            if ("abc".equals(externalSampleId)) {
-                return sampleByExternalId;
+        public <T extends AbstractBioMaterial> T getBiomaterialByExternalId(Project project, String externalId,
+                Class<T> biomaterialClass) {
+            T bmByExternalId = super.getBiomaterialByExternalId(project, externalId, biomaterialClass);
+            if ("abc".equals(externalId)) {
+                return bmByExternalId;
             }
             return null;
         }

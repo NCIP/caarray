@@ -86,12 +86,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -111,6 +113,7 @@ import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 public class HibernateValidatorTest extends AbstractBaseStrutsTest {
 
     private TestAction action;
+    private Transaction tx;
 
     @Before
     public void onSetUp() {
@@ -123,6 +126,11 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
 
         this.action.setSource(s1);
         this.action.setSource2(s2);
+        tx = HibernateUtil.beginTransaction();
+    }
+    
+    public void teardown() {
+        HibernateUtil.rollbackTransaction(tx);        
     }
 
     @Test

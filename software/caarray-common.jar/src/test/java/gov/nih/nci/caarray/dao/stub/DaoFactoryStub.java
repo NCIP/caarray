@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.dao.BrowseDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.CollaboratorGroupDao;
 import gov.nih.nci.caarray.dao.ContactDao;
-import gov.nih.nci.caarray.dao.CountryDao;
 import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.HybridizationDao;
 import gov.nih.nci.caarray.dao.OrganismDao;
@@ -96,7 +95,6 @@ import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.ProtocolDao;
 import gov.nih.nci.caarray.dao.SampleDao;
 import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.dao.StateDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 
 /**
@@ -163,23 +161,8 @@ public class DaoFactoryStub implements CaArrayDaoFactory {
     /**
      * {@inheritDoc}
      */
-    public CountryDao getCountryDao() {
-        return new CountryDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public CollaboratorGroupDao getCollaboratorGroupDao() {
         return new CollaboratorGroupDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public StateDao getStateDao()
-    {
-        return new StateDaoStub();
     }
 
     /**

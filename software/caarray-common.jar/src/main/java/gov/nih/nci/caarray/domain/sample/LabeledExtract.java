@@ -98,7 +98,6 @@ import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -113,14 +112,16 @@ import org.hibernate.annotations.ForeignKey;
  *
  */
 @Entity
-@DiscriminatorValue("LA")
+@DiscriminatorValue(LabeledExtract.DISCRIMINATOR)
 public class LabeledExtract extends AbstractBioMaterial implements ProtectableDescendent {
     private static final long serialVersionUID = 1234567890L;
+
+    /** the Hibernate discriminator for this biomaterial subclass. */
+    public static final String DISCRIMINATOR = "LA";
 
     private Term label;
     private Set<Extract> extracts = new HashSet<Extract>();
     private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
-    private Experiment experiment;
 
     /**
      * Gets the label.
@@ -190,24 +191,6 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setHybridizations(final Set<Hybridization> hybridizationsVal) {
         this.hybridizations = hybridizationsVal;
-    }
-
-    /**
-     * @return the experiment to which this source belongs
-     */
-    @ManyToOne
-    @JoinTable(name = "experimentlabeledextract",
-            joinColumns = {@JoinColumn(name = "labeled_extract_id", insertable = false, updatable = false) },
-            inverseJoinColumns = {@JoinColumn(name = "experiment_id", insertable = false, updatable = false) })
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    /**
-     * @param experiment the experiment to set
-     */
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
     }
 
     /**

@@ -82,19 +82,14 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.search.LabeledExtractSortCriterion;
-import gov.nih.nci.caarray.security.PermissionDeniedException;
-import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -131,22 +126,11 @@ public class ProjectLabeledExtractsAction extends AbstractProjectAssociatedAnnot
 
     /**
      * {@inheritDoc}
-     * @throws VocabularyServiceException
      */
     @Override
-    public void prepare() throws VocabularyServiceException {
+    public void prepare() {
         super.prepare();
-
-        if (this.currentLabeledExtract.getId() != null) {
-            LabeledExtract retrieved = getGenericDataService().getPersistentObject(LabeledExtract.class,
-                                                                               this.currentLabeledExtract.getId());
-            if (retrieved == null) {
-                throw new PermissionDeniedException(this.currentLabeledExtract,
-                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
-            } else {
-                this.currentLabeledExtract = retrieved;
-            }
-        }
+        this.currentLabeledExtract = retrieveByIdOrExternalId(LabeledExtract.class, this.currentLabeledExtract);
     }
 
     /**
@@ -154,7 +138,8 @@ public class ProjectLabeledExtractsAction extends AbstractProjectAssociatedAnnot
      */
     @Override
     protected void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException {
-        getProjectManagementService().copyLabeledExtract(getProject(), this.currentLabeledExtract.getId());
+        ServiceLocatorFactory.getProjectManagementService().copyLabeledExtract(getProject(),
+                this.currentLabeledExtract.getId());
     }
 
     /**

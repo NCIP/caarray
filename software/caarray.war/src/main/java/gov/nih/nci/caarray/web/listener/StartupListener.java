@@ -82,11 +82,11 @@
  */
 package gov.nih.nci.caarray.web.listener;
 
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.fileaccess.FileCleanupThread;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.Log4JRepositorySelector;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.util.Timer;
 

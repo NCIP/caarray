@@ -80,203 +80,144 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.business.vocabulary;
+package gov.nih.nci.caarray.application;
 
-import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.domain.project.ExperimentOntology;
-import gov.nih.nci.caarray.domain.protocol.Protocol;
-import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.audit.AuditLogService;
+import gov.nih.nci.caarray.application.browse.BrowseService;
+import gov.nih.nci.caarray.application.file.FileManagementService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.application.registration.RegistrationService;
+import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 
 /**
- * Basic stub for tests.
+ * Provides access to a <code>ServiceLocator</code>.
  */
-@SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class VocabularyServiceStub implements VocabularyService {
+public final class ServiceLocatorFactory {
 
-    public Set<Term> getTerms(Category category) {
-        return getTerms(category, null);
-    }
+    private static ServiceLocator locator = new ServiceLocatorImplementation();
 
-    public Set<Term> getTerms(Category category, String value) {
-        Set<Term> terms = new HashSet<Term>();
-        TermSource source = getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName(),
-                ExperimentOntology.MGED_ONTOLOGY.getVersion());
-        for (int i = 0; i < 10; i++) {
-            Term term = createTerm(source, category, "term" + i);
-            terms.add(term);
-        }
-        return terms;
+    private ServiceLocatorFactory() {
+
     }
 
     /**
-     * {@inheritDoc}
+     * Returns a <code>ServiceLocator</code> instance.
+     *
+     * @return the locator
      */
-    public TermSource getSource(String name, String version) {
-        TermSource source = new TermSource();
-        source.setName(name);
-        source.setVersion(version);
-        return source;
+    public static ServiceLocator getLocator() {
+        return locator;
     }
 
     /**
-     * {@inheritDoc}
+     * Allows registration of a <code>ServiceLocator</code> instance; should only
+     * be used in test code to replace the actual locator with a test stub.
+     *
+     * @param locator the locator to set
      */
-    public TermSource getSourceByUrl(String url, String version) {
-        TermSource source = new TermSource();
-        source.setName("Name for " + url);
-        source.setUrl(url);
-        source.setVersion(version);
-        return source;
+    public static void setLocator(ServiceLocator locator) {
+        ServiceLocatorFactory.locator = locator;
     }
 
     /**
-     * {@inheritDoc}
+     * Convenience method for obtaining the singleton service. 
+     * @return the service
      */
-    public Set<TermSource> getSources(String name) {
-        TermSource ts = getSource(name, null);
-        Set<TermSource> result = new HashSet<TermSource>();
-        result.add(ts);
-        return result;
+    public static ProjectManagementService getProjectManagementService() {
+        return (ProjectManagementService) getLocator().lookup(ProjectManagementService.JNDI_NAME);
     }
 
     /**
-     * {@inheritDoc}
+     * Convenience method for obtaining the singleton service. 
+     * @return the service
      */
-    public Set<TermSource> getSourcesByUrl(String url) {
-        TermSource ts = getSourceByUrl(url, null);
-        Set<TermSource> result = new HashSet<TermSource>();
-        result.add(ts);
-        return result;
-    }
-
-    public Term getTerm(TermSource source, String value) {
-        Term term = new Term();
-        term.setSource(source);
-        term.setValue(value);
-        Category cat = new Category();
-        cat.setSource(source);
-        cat.setName("Category for " + value);
-        term.setCategory(cat);
-        return term;
-    }
-
-    @SuppressWarnings("deprecation")
-    public Term getTerm(Long id) {
-        Term term = new Term();
-        term.setId(id);
-        return term;
-    }
-
-    public Organism getOrganism(Long id) {
-        Organism org = new Organism();
-        org.setId(id);
-        return org;
-    }
-
-    public Organism getOrganism(TermSource source, String scientificName) {
-        Organism org = new Organism();
-        org.setTermSource(source);
-        org.setScientificName(scientificName);
-        return org;
-    }
-
-    public List<Organism> getOrganisms() {
-        List<Organism> orgs = new ArrayList<Organism>();
-        Organism o1 = new Organism();
-        o1.setId(1L);
-        o1.setScientificName("Mizouse");
-        orgs.add(o1);
-        return orgs;
-    }
-
-    public Category createCategory(TermSource source, String categoryName) {
-        Category category = new Category();
-        category.setSource(source);
-        category.setName(categoryName);
-        return category;
-    }
-
-    public Term createTerm(TermSource source, Category category, String value) {
-        Term term = new Term();
-        term.setSource(source);
-        term.setValue(value);
-        term.setCategory(category);
-        return term;
-    }
-
-    public Category getCategory(TermSource source, String categoryName) {
-        Category category = new Category();
-        category.setName(categoryName);
-        return category;
-    }
-
-    public TermSource createSource(String name, String url, String version) {
-        TermSource ts = getSource(name, version);
-        ts.setUrl(url);
-        return ts;
-    }
-
-    public void saveTerm(Term term) {
-        // do nothing
-    }
-
-    public List<TermSource> getAllSources() {
-        return null;
+    public static PermissionsManagementService getPermissionsManagementService() {
+        return (PermissionsManagementService) getLocator().lookup(PermissionsManagementService.JNDI_NAME);
     }
 
     /**
-     * {@inheritDoc}
+     * Convenience method for obtaining the singleton service. 
+     * @return the service
      */
-    public List<Protocol> getProtocolsByProtocolType(Term type, String name) {
-        return null;
+    public static FileAccessService getFileAccessService() {
+        return (FileAccessService) getLocator().lookup(FileAccessService.JNDI_NAME);
     }
 
     /**
-     * {@inheritDoc}
+     * Convenience method for obtaining the singleton service. 
+     * @return the service
      */
-    public Protocol getProtocol(String name, TermSource source) {
-        return null;
-    }
-
-    public Term findTermInAllTermSourceVersions(TermSource termSource, String value) {
-        return null;
+    public static FileManagementService getFileManagementService() {
+        return (FileManagementService) getLocator().lookup(FileManagementService.JNDI_NAME);
     }
 
     /**
-     * {@inheritDoc}
+     * Convenience method for obtaining the singleton service. 
+     * @return the service
      */
-    public <T extends AbstractCharacteristic> List<Category> searchForCharacteristicCategory(
-            Class<T> characteristicClass, String keyword) {
-        return Collections.emptyList();
-    }    
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Organism> searchForOrganismNames(String keyword) {
-        return new ArrayList<Organism>();
+    public static VocabularyService getVocabularyService() {
+        return (VocabularyService) getLocator().lookup(VocabularyService.JNDI_NAME);
     }
 
+    /**
+     * Convenience method for obtaining the singleton service. 
+     * @return the service
+     */
+    public static GenericDataService getGenericDataService() {
+        return (GenericDataService) getLocator().lookup(GenericDataService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. 
+     * @return the service
+     */
+    public static ArrayDesignService getArrayDesignService() {
+        return (ArrayDesignService) getLocator().lookup(ArrayDesignService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. 
+     * @return the service
+     */
+    public static ArrayDataService getArrayDataService() {
+        return (ArrayDataService) getLocator().lookup(ArrayDataService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. 
+     * @return the service
+     */
+    public static RegistrationService getRegistrationService() {
+        return (RegistrationService) getLocator().lookup(RegistrationService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. 
+     * @return the service
+     */
+    public static BrowseService getBrowseService() {
+        return (BrowseService) getLocator().lookup(BrowseService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. 
+     * @return the service
+     */
+    public static AuditLogService getAuditLogService() {
+        return (AuditLogService) getLocator().lookup(AuditLogService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the MAGE-TAB Exporter singleton service.
+     * @return the MAGE-TAB Exporter service
+     */
+    public static MageTabExporter getMageTabExporter() {
+        return (MageTabExporter) getLocator().lookup(MageTabExporter.JNDI_NAME);
+    }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -98,7 +98,7 @@ public class TermSource extends AbstractCaArrayEntity {
     private String url;
 
     /**
-     * @return the name
+     * @return the name for this term source
      */
     public String getName() {
         return name;
@@ -112,7 +112,7 @@ public class TermSource extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the version
+     * @return the version for this term source
      */
     public String getVersion() {
         return version;
@@ -126,7 +126,7 @@ public class TermSource extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the url
+     * @return the url of this term source.
      */
     public String getUrl() {
         return url;

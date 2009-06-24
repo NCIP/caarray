@@ -82,10 +82,10 @@
  */
 package gov.nih.nci.caarray.services.external.v1_0.data.impl;
 
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessUtils;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
@@ -201,7 +201,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         List<gov.nih.nci.caarray.domain.data.DataSet> dataSets = new ArrayList<gov.nih.nci.caarray.domain.data.DataSet>(
                 arrayDatas.size());
         for (AbstractArrayData data : arrayDatas) {
-            dataSets.add(getArrayDataService().getData(data, getQuantitationTypes(request)));
+            dataSets.add(ServiceLocatorFactory.getArrayDataService().getData(data, getQuantitationTypes(request)));
         }
         return dataSets;
     }
@@ -464,8 +464,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         File sdrfFile = tempCache.createFile(sdrfFileName);
 
         // Translate the experiment and export to the temporary files.
-        MageTabExporter exporter = getMageTabExporter();
-        return exporter.exportToMageTab(experiment, idfFile, sdrfFile);
+        return ServiceLocatorFactory.getMageTabExporter().exportToMageTab(experiment, idfFile, sdrfFile);
     }
     
     private List<CaArrayFile> getDataFilesReferencedByMageTab(MageTabDocumentSet mageTab, Experiment experiment) {
@@ -484,8 +483,8 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
                 fileNames.add(file.getName());
             }
         }
-        List<CaArrayFile> dataFiles = getDataService().pageAndFilterCollection(experiment.getProject().getFiles(),
-                "name", fileNames,
+        List<CaArrayFile> dataFiles = ServiceLocatorFactory.getGenericDataService().pageAndFilterCollection(
+                experiment.getProject().getFiles(), "name", fileNames,
                 new PageSortParams<CaArrayFile>(-1, 0, new AdHocSortCriterion<CaArrayFile>("name"), false));
         return dataFiles;
     }

@@ -94,9 +94,9 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyUtils;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
@@ -105,7 +105,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.Collection;
@@ -154,7 +153,7 @@ public class ProjectExperimentContactsActionTest extends AbstractCaarrayTest {
 
     @Test
     @SuppressWarnings("deprecation")
-    public void testPrepare() throws VocabularyServiceException {
+    public void testPrepare() {
         // no current experiment contact id
         action.prepare();
         assertNull(action.getCurrentExperimentContact().getId());
@@ -205,7 +204,7 @@ public class ProjectExperimentContactsActionTest extends AbstractCaarrayTest {
         action.save();
 
         assertEquals(0, action.getExperiment().getExperimentContacts().size());
-        Term piRole = CaArrayActionHelper.getMOTerm(ExperimentContact.PI_ROLE);
+        Term piRole = VocabularyUtils.getMOTerm(ExperimentContact.PI_ROLE);
         DUMMY_EXPERIMENT_CONTACT.getRoles().add(piRole);
         Person person = new Person(STANDARD_USER);
         action.getCurrentExperimentContact().setContact(person);
@@ -230,7 +229,7 @@ public class ProjectExperimentContactsActionTest extends AbstractCaarrayTest {
 
         Project p = new Project();
 
-        Term piRole = CaArrayActionHelper.getMOTerm(ExperimentContact.PI_ROLE);
+        Term piRole = VocabularyUtils.getMOTerm(ExperimentContact.PI_ROLE);
         DUMMY_EXPERIMENT_CONTACT.getRoles().add(piRole);
         p.getExperiment().getExperimentContacts().add(DUMMY_EXPERIMENT_CONTACT);
         ExperimentContact ec = new ExperimentContact();
@@ -249,7 +248,7 @@ public class ProjectExperimentContactsActionTest extends AbstractCaarrayTest {
 
         Project p = new Project();
 
-        Term piRole = CaArrayActionHelper.getMOTerm(ExperimentContact.PI_ROLE);
+        Term piRole = VocabularyUtils.getMOTerm(ExperimentContact.PI_ROLE);
         DUMMY_EXPERIMENT_CONTACT.getRoles().add(piRole);
         p.getExperiment().getExperimentContacts().add(DUMMY_EXPERIMENT_CONTACT);
         action.setProject(p);

@@ -89,6 +89,9 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
+ * An AnnotationColumn represents a column of AnnotationValueSets for a particular experiment graph node, with one
+ * AnnotationValueSet for each category in the parent AnnotationSet.
+ * 
  * @author dkokotov
  */
 public class AnnotationColumn implements Serializable {
@@ -98,28 +101,28 @@ public class AnnotationColumn implements Serializable {
     private List<AnnotationValueSet> valueSets = new ArrayList<AnnotationValueSet>();
     
     /**
-     * @return the node
+     * @return the experiment graph node for which this AnnotationColumn has value sets.
      */
     public AbstractExperimentGraphNode getNode() {
         return node;
     }
 
     /**
-     * @param node the node to set
+     * @param node the experiment graph node for which this AnnotationColumn has value sets.
      */
     public void setNode(AbstractExperimentGraphNode node) {
         this.node = node;
     }
 
     /**
-     * @return the valueSets
+     * @return the list of value sets for this column's node, one for each category from the parent annotation set
      */
     public List<AnnotationValueSet> getValueSets() {
         return valueSets;
     }
 
     /**
-     * @param valueSets the valueSets to set
+     * @param valueSets list of value sets for this column's node.
      */
     public void setValueSets(List<AnnotationValueSet> valueSets) {
         this.valueSets = valueSets;

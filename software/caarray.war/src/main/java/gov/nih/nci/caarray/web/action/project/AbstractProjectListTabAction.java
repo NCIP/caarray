@@ -82,11 +82,12 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -148,7 +149,7 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
      */
     @SuppressWarnings("unchecked")
     protected void updatePagedList() {
-        GenericDataService gds = getGenericDataService();
+        GenericDataService gds = ServiceLocatorFactory.getGenericDataService();
         this.pagedItems.setList(gds.pageCollection(getCollection(), this.pagedItems.getPageSortParams()));
         this.pagedItems.setFullListSize(gds.collectionSize(getCollection()));
     }
@@ -198,8 +199,13 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
             return edit();
         }
 
-        if (this.getItem().getId() == null) {
-            getCollection().add(getItem());
+        PersistentObject item = getItem();
+        if (item.getId() == null) {
+            getCollection().add(item);
+            if (item instanceof AbstractBioMaterial) {
+                AbstractBioMaterial abm = (AbstractBioMaterial) getItem();
+                abm.setExperiment(getProject().getExperiment());
+            }
             ActionHelper.saveMessage(getText("experiment.items.created", new String[] {getItemName()}));
         } else {
             ActionHelper.saveMessage(getText("experiment.items.updated", new String[] {getItemName()}));

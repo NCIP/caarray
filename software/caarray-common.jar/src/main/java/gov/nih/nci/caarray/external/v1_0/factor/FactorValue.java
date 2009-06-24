@@ -92,7 +92,7 @@ import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * FactorValue represents the value of an experimental factor for a hybridization chain.
+ * FactorValue represents the value of an experimental factor for a particular hybridization chain.
  * 
  * @author dkokotov
  */
@@ -117,7 +117,7 @@ public class FactorValue implements Serializable {
     }
 
     /**
-     * @return the factor
+     * @return the factor whose value this contains
      */
     public Factor getFactor() {
         return factor;

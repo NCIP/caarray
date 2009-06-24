@@ -11,6 +11,15 @@
             <s:textfield name="currentSource.name" key="experiment.sources.name" required="true" size="80" tabindex="1" />
         </c:if>
         <s:textarea name="currentSource.description" key="experiment.sources.description" rows="3" cols="80" tabindex="2" />
+        <s:textfield key="currentSource.externalId" size="80" tabindex="3" />
+        <c:if test="${!empty currentSource.externalId}">
+            <caarray:outputUrl var="permalinkUrl">
+                <jsp:attribute name="url"><c:url value="/project/${project.experiment.publicIdentifier}/source/${currentSource.externalId}"/></jsp:attribute>
+            </caarray:outputUrl>
+            <s:textfield theme="readonly" label="Source URL" value="%{#attr.permalinkUrl}">
+                <s:param name="url">true</s:param>
+            </s:textfield>
+        </c:if>
         <caarray:termSelector baseId="tissueSite" category="<%= ExperimentOntologyCategory.ORGANISM_PART %>" tabIndex="3" termField="${currentSource.tissueSite}"
             termFieldName="currentSource.tissueSite" required="true" returnInitialTab1="annotations" returnInitialTab2="sources" returnInitialTab2Url="${thisUrl}" />
         <caarray:termSelector baseId="materialType" category="<%= ExperimentOntologyCategory.MATERIAL_TYPE %>" termField="${currentSource.materialType}"

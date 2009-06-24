@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.dao;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -214,11 +215,11 @@ public interface ProjectDao extends CaArrayDao {
     List<Term> getDiseaseStatesForExperiment(Experiment experiment);
 
     /**
-     * Return an unfiltered list of Samples for a Project (by-passes security @Filter).
-     * @param project to find all samples associated to
-     * @return all samples persisted for project
+     * Return the full list of AbstractBiomaterials for a project with given id,  bypassing instance security filters.
+     * @param projectId id of project
+     * @return all biomaterials for the project with given id
      */
-    Set<Sample> getUnfilteredSamplesForProject(Project project);
+    Set<AbstractBioMaterial> getUnfilteredBiomaterialsForProject(Long projectId);
 
     /**
      * Get a Source from an Experiment, based on its name.

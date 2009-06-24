@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -94,6 +95,7 @@ import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
 import gov.nih.nci.caarray.domain.search.AnnotationCriterion;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCriteria;
+import gov.nih.nci.caarray.domain.search.ExternalBiomaterialSearchCategory;
 import gov.nih.nci.caarray.domain.search.SampleJoinableSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
@@ -102,8 +104,10 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Transaction;
 import org.junit.Test;
@@ -292,6 +296,48 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
 
             assertEquals(sampleCount , retrievedSamples.size());
             assertEquals(1 , sampleCount);
+
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            throw e;
+        }
+    }
+
+    /**
+     * Tests retrieving multiple biomaterials by keyword.
+     * Test encompasses save and delete.
+     * <code>Source</code>.
+     */
+    @Test
+    public void testGetBiomaterialsByCategory() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.beginTransaction();
+            saveSupportingObjects();
+            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            tx.commit();
+
+            tx = HibernateUtil.beginTransaction();
+
+            Set<Class<? extends AbstractBioMaterial>> classes = new HashSet<Class<? extends AbstractBioMaterial>>();
+            classes.add(Source.class);
+            classes.add(Sample.class);
+            classes.add(Extract.class);
+            
+            List<AbstractBioMaterial> retrievedBms = DAO_SAMPLE_OBJECT.searchByCategory(
+                    new PageSortParams<AbstractBioMaterial>(10000, 0, new AdHocSortCriterion<AbstractBioMaterial>(
+                            "name"), false), "Dummy", classes, ExternalBiomaterialSearchCategory.NAME);
+
+            tx.commit();
+
+            assertEquals(3, retrievedBms.size());
+            assertEquals(Extract.class, retrievedBms.get(0).getClass());
+            assertEquals(DUMMY_EXTRACT.getName(), retrievedBms.get(0).getName());
+            assertEquals(Sample.class, retrievedBms.get(1).getClass());
+            assertEquals(DUMMY_SAMPLE.getName(), retrievedBms.get(1).getName());
+            assertEquals(Source.class, retrievedBms.get(2).getClass());
+            assertEquals(DUMMY_SOURCE.getName(), retrievedBms.get(2).getName());
 
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
@@ -488,7 +534,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DUMMY_CHARACTERISTIC.setBioMaterial(DUMMY_SAMPLE);
 
             DUMMY_SAMPLE.getCharacteristics().add(DUMMY_CHARACTERISTIC);
-            DUMMY_SAMPLE.setExternalSampleId("123");
+            DUMMY_SAMPLE.setExternalId("123");
             DUMMY_SAMPLE.setDiseaseState(DUMMY_NORMALIZATION_TYPE);
             
             saveSupportingObjects();
@@ -508,35 +554,41 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
 
             BiomaterialSearchCriteria bsc = new BiomaterialSearchCriteria();
             bsc.setExperiment(DUMMY_EXPERIMENT_1);
-            List<Source> srcResults = DAO_SAMPLE_OBJECT.searchByCriteria(sourceParams, bsc, Source.class);
+            bsc.getBiomaterialClasses().add(Source.class);
+            List<Source> srcResults = DAO_SAMPLE_OBJECT.searchByCriteria(sourceParams, bsc);
             assertEquals(1, srcResults.size());
             assertEquals(DUMMY_SOURCE.getName(), srcResults.get(0).getName());
             
             bsc.setExperiment(null);
             bsc.getNames().add(DUMMY_EXTRACT.getName());
-            List<Extract> extResults = DAO_SAMPLE_OBJECT.searchByCriteria(extractParams, bsc, Extract.class);
+            bsc.getBiomaterialClasses().clear();
+            bsc.getBiomaterialClasses().add(Extract.class);
+            List<Extract> extResults = DAO_SAMPLE_OBJECT.searchByCriteria(extractParams, bsc);
             assertEquals(1, extResults.size());
             assertEquals(DUMMY_EXTRACT.getName(), extResults.get(0).getName());
 
             bsc.getExternalIds().add("123");
-            extResults = DAO_SAMPLE_OBJECT.searchByCriteria(extractParams, bsc, Extract.class);
+            extResults = DAO_SAMPLE_OBJECT.searchByCriteria(extractParams, bsc);
             assertEquals(0, extResults.size());
 
             bsc.getNames().clear();
-            bsc.getExternalIds().add(DUMMY_SAMPLE.getExternalSampleId());
-            List<Sample> results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc, Sample.class);
+            bsc.getExternalIds().add(DUMMY_SAMPLE.getExternalId());
+            bsc.getBiomaterialClasses().clear();
+            bsc.getBiomaterialClasses().add(Sample.class);
+            List<Sample> results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc);
             assertEquals(1, results.size());
             assertTrue(compareSamples(results.get(0), DUMMY_SAMPLE));
             
             bsc.setExperiment(DUMMY_EXPERIMENT_2);
-            results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc, Sample.class);
+            results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc);
             assertEquals(0, results.size());
             
             bsc = new BiomaterialSearchCriteria();
             Category ds = new Category();
             ds.setName(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName());
             bsc.getAnnotationCriterions().add(new AnnotationCriterion(ds, DUMMY_NORMALIZATION_TYPE.getValue()));
-            results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc, Sample.class);
+            bsc.getBiomaterialClasses().add(Sample.class);
+            results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc);
             assertEquals(1, results.size());
             assertTrue(compareSamples(results.get(0), DUMMY_SAMPLE));            
             

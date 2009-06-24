@@ -82,20 +82,15 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
-import gov.nih.nci.caarray.security.PermissionDeniedException;
-import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -134,53 +129,12 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
 
     /**
      * {@inheritDoc}
-     * @throws VocabularyServiceException
      */
     @SuppressWarnings("PMD.CyclomaticComplexity")
     @Override
-    public void prepare() throws VocabularyServiceException {
+    public void prepare() {
         super.prepare();
-        Sample retrieved = null;
-        if (this.currentSample.getId() != null) {
-            retrieved = getGenericDataService().getPersistentObject(Sample.class, this.currentSample.getId());
-            if (retrieved == null) {
-                throw new PermissionDeniedException(this.currentSample,
-                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
-            }
-        } else if (!isEditMode() && this.currentSample.getExternalSampleId() != null) {
-            retrieved = getProjectManagementService().getSampleByExternalId(getProject(),
-                    this.currentSample.getExternalSampleId());
-            if (retrieved == null) {
-                throw new SampleExternalIdPermissionDeniedException(this.currentSample,
-                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
-            }
-        }
-
-        if (retrieved != null) {
-            this.currentSample = retrieved;
-        }
-    }
-
-    /**
-     * A custom exception to show a message specific to searching by Sample.externalSampleId.
-     */
-    public class SampleExternalIdPermissionDeniedException extends PermissionDeniedException {
-
-        private static final long serialVersionUID = -1271512112927323609L;
-
-        /**
-         * Create a new SampleExternalIdPermissionDeniedException for a given user not having the given
-         * privilege to the given entity.
-         *
-         * @param s the sample on which an operation was requested
-         * @param privilege the privilege that was needed to perform the operation
-         * @param userName the user attempting the operation
-         */
-        public SampleExternalIdPermissionDeniedException(Sample s, String privilege, String userName) {
-            super(s, privilege, userName, String.format(
-                    "User %s does not have privilege %s for entity of type %s with externalSampleId %s", userName,
-                    privilege, s.getClass().getName(), s.getExternalSampleId()));
-        }
+        this.currentSample = retrieveByIdOrExternalId(Sample.class, this.currentSample);
     }
 
     /**
@@ -205,7 +159,7 @@ public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsLi
      */
     @Override
     protected void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException {
-        getProjectManagementService().copySample(getProject(), this.currentSample.getId());
+        ServiceLocatorFactory.getProjectManagementService().copySample(getProject(), this.currentSample.getId());
     }
 
     /**

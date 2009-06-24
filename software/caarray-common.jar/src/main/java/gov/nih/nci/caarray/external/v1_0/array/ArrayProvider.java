@@ -86,7 +86,7 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 
 
 /**
- * An ArrayProvider represents a manufacturer of microarrays.
+ * An ArrayProvider represents a provider (manufacturer) of microarrays.
  * 
  * @author dkokotov
  */
@@ -111,7 +111,7 @@ public class ArrayProvider extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the name
+     * @return the name of the provider.
      */
     public String getName() {
         return name;

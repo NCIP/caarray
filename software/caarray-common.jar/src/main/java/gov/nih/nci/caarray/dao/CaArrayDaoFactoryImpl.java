@@ -161,24 +161,6 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
     }
 
     /**
-     * Returns a <code>CountryDao</code>.
-     *
-     * @return a <code>CountryDao</code>.
-     */
-    public CountryDao getCountryDao() {
-        return new CountryDaoImpl();
-    }
-
-    /**
-     * Returns a <code>StateDao</code>.
-     *
-     * @return a <code>StateDao</code>.
-     */
-    public StateDao getStateDao() {
-        return new StateDaoImpl();
-    }
-
-    /**
      * {@inheritDoc}
      */
     public CollaboratorGroupDao getCollaboratorGroupDao() {
@@ -213,4 +195,3 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
         return new AuditLogDaoImpl();
     }
 }
-

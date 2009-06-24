@@ -82,8 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -134,10 +133,9 @@ public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnota
 
     /**
      * {@inheritDoc}
-     * @throws VocabularyServiceException
      */
     @Override
-    public void prepare() throws VocabularyServiceException {
+    public void prepare() {
         super.prepare();
 
         Set<ArrayDesign> arrayDesigns = getProject().getExperiment().getArrayDesigns();
@@ -149,8 +147,8 @@ public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnota
         }
 
         if (this.currentHybridization.getId() != null) {
-            Hybridization retrieved = getGenericDataService().getPersistentObject(Hybridization.class,
-                                                                              this.currentHybridization.getId());
+            Hybridization retrieved = ServiceLocatorFactory.getGenericDataService().getPersistentObject(
+                    Hybridization.class, this.currentHybridization.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentHybridization,
                         SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());

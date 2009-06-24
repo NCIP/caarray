@@ -83,9 +83,9 @@
 package gov.nih.nci.caarray.web.upgrade;
 
 import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import org.w3c.dom.Element;
 

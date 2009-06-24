@@ -84,14 +84,14 @@ package gov.nih.nci.caarray.util.j2ee;
 
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceBean;
+import gov.nih.nci.caarray.application.ServiceLocator;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceBean;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
 import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.application.browse.BrowseServiceBean;
-import gov.nih.nci.caarray.application.country.CountryService;
-import gov.nih.nci.caarray.application.country.CountryServiceBean;
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
@@ -102,8 +102,8 @@ import gov.nih.nci.caarray.application.registration.RegistrationService;
 import gov.nih.nci.caarray.application.registration.RegistrationServiceBean;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorBean;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceBean;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -142,7 +142,6 @@ public final class ServiceLocatorStub implements ServiceLocator {
         ServiceLocatorStub locatorStub = new ServiceLocatorStub();
         locatorStub.addLookup(ArrayDataService.JNDI_NAME, new ArrayDataServiceBean());
         locatorStub.addLookup(ArrayDesignService.JNDI_NAME, new ArrayDesignServiceBean());
-        locatorStub.addLookup(CountryService.JNDI_NAME, new CountryServiceBean());
         locatorStub.addLookup(FileAccessService.JNDI_NAME, new FileAccessServiceBean());
         locatorStub.addLookup(FileManagementService.JNDI_NAME, new FileManagementServiceBean());
         locatorStub.addLookup(GenericDataService.JNDI_NAME, new GenericDataServiceBean());

@@ -92,8 +92,18 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
+ * An AnnotationValueSet contains the set of values for a given category. An AnnotationValueSet always belongs to an
+ * AnnotationColumn, and the set of values is for the node corresponding to that column.
+ * 
+ * A node's set of values for a given category is calculated as follows:
+ * <ul>
+ * <li>if the node directly has a characteristic of the given category, then the set of values is a singleton containing
+ * that characteristic's values</li>
+ * <li>otherwise, the set of values consists of the union of the set of values for the given categories across the nodes
+ * that are the direct predecessors of this node in the experiment graph.</li>
+ * </ul>
+ * 
  * @author dkokotov
- *
  */
 public class AnnotationValueSet implements Serializable {
     private static final long serialVersionUID = 1L;

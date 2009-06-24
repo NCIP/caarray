@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -175,8 +176,8 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
         return null;
     }
 
-    public Set<Sample> getUnfilteredSamplesForProject(Project project) {
-        return new HashSet<Sample>();
+    public Set<AbstractBioMaterial> getUnfilteredBiomaterialsForProject(Long projectId) {
+        return new HashSet<AbstractBioMaterial>();
     }
 
     /**

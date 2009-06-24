@@ -86,8 +86,10 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 
 /**
+ * AbstractExperimentGraphNode represents a node within the sample-data relationship graph
+ * describing the structure of a microarray experiment. 
+ * 
  * @author dkokotov
- *
  */
 public abstract class AbstractExperimentGraphNode extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
@@ -110,14 +112,14 @@ public abstract class AbstractExperimentGraphNode extends AbstractCaArrayEntity 
     }
 
     /**
-     * @return the experiment
+     * @return a reference to the experiment to which this node belongs.
      */
     public CaArrayEntityReference getExperiment() {
         return experiment;
     }
 
     /**
-     * @param experiment the experiment to set
+     * @param experiment the reference to the experiment to which this node belongs
      */
     public void setExperiment(CaArrayEntityReference experiment) {
         this.experiment = experiment;

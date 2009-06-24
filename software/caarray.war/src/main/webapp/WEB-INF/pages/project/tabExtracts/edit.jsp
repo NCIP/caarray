@@ -12,6 +12,15 @@
         </c:if>
         <s:textarea name="currentExtract.description" key="experiment.extracts.description" rows="3" cols="80"
             tabindex="2" />
+        <s:textfield key="currentExtract.externalId" size="80" tabindex="3" />
+        <c:if test="${!empty currentExtract.externalId}">
+            <caarray:outputUrl var="permalinkUrl">
+                <jsp:attribute name="url"><c:url value="/project/${project.experiment.publicIdentifier}/extract/${currentExtract.externalId}"/></jsp:attribute>
+            </caarray:outputUrl>
+            <s:textfield theme="readonly" label="Sample URL" value="%{#attr.permalinkUrl}">
+                <s:param name="url">true</s:param>
+            </s:textfield>
+        </c:if>
         <caarray:annotationAssociationPicker baseId="samplePicker" entityName="Extract" associatedEntityName="Sample" itemId="${currentExtract.id}" tabIndex="3" />
         <caarray:termSelector baseId="materialType" category="<%= ExperimentOntologyCategory.MATERIAL_TYPE %>" termField="${currentExtract.materialType}"
             tabIndex="4" termFieldName="currentExtract.materialType" returnInitialTab1="annotations" returnInitialTab2="extracts" returnInitialTab2Url="${thisUrl}" />

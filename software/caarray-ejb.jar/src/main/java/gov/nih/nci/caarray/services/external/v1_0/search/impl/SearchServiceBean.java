@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.services.external.v1_0.search.impl;
 
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyUtils;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
@@ -113,13 +115,13 @@ import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.sample.AbstractExperimentGraphNode;
 import gov.nih.nci.caarray.external.v1_0.sample.AnnotationColumn;
 import gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet;
 import gov.nih.nci.caarray.external.v1_0.sample.AnnotationValueSet;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.external.v1_0.sample.Characteristic;
-import gov.nih.nci.caarray.external.v1_0.sample.AbstractExperimentGraphNode;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
@@ -178,8 +180,8 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         com.fiveamsolutions.nci.commons.data.search.PageSortParams<gov.nih.nci.caarray.domain.project.Experiment> 
             actualParams = toInternalParams(defaultIfNull(pagingParams, MAX_EXPERIMENT_RESULTS), "title", false);
         gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria internalCriteria = toInternalCriteria(criteria);
-        List<gov.nih.nci.caarray.domain.project.Experiment> experiments = getProjectManagementService()
-                .searchByCriteria(actualParams, internalCriteria);
+        List<gov.nih.nci.caarray.domain.project.Experiment> experiments = ServiceLocatorFactory
+                .getProjectManagementService().searchByCriteria(actualParams, internalCriteria);
         applySecurityPolicies(experiments);
         mapCollection(experiments, externalExperiments, Experiment.class);
         HibernateUtil.getCurrentSession().clear();
@@ -215,8 +217,8 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
             actualParams = toInternalParams(defaultIfNull(pagingParams, MAX_EXPERIMENT_RESULTS), 
                     ProjectSortCriterion.TITLE, false);
         String keyword = criteria.getKeyword();
-        List<Project> projects = getProjectManagementService().searchByCategory(actualParams, keyword,
-                SearchCategory.values());
+        List<Project> projects = ServiceLocatorFactory.getProjectManagementService().searchByCategory(actualParams,
+                keyword, SearchCategory.values());
         for (Project p : projects) {
             gov.nih.nci.caarray.domain.project.Experiment exp = p.getExperiment();
             applySecurityPolicies(exp);
@@ -234,25 +236,22 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         Set<BiomaterialType> types = criteria.getTypes();
         if (types.isEmpty()) {
             types = EnumSet.allOf(BiomaterialType.class);
-        }        
+        }
+        Set<Class<? extends AbstractBioMaterial>> bmClasses = new HashSet<Class<? extends AbstractBioMaterial>>();
+        for (BiomaterialType type : criteria.getTypes()) {
+            bmClasses.add(BIOMATERIAL_TYPE_TO_CLASS_MAP.get(type));
+        }
+
         LimitOffset actualParams = defaultIfNull(pagingParams, MAX_BIOMATERIAL_RESULTS);
 
         List<Biomaterial> externalBms = new ArrayList<Biomaterial>();        
-        for (BiomaterialType bmType : types) {
-            searchOneBiomaterialTypeByKeyword(actualParams, criteria.getKeyword(), BIOMATERIAL_TYPE_TO_CLASS_MAP
-                    .get(bmType), externalBms);            
-        }
-        return new SearchResult<Biomaterial>(externalBms, MAX_BIOMATERIAL_RESULTS, actualParams.getOffset());
-    }
-    
-    private <T extends AbstractBioMaterial> void searchOneBiomaterialTypeByKeyword(LimitOffset pagingParams,
-            String keyword, Class<T> biomaterialClass, List<Biomaterial> externalBms) {
-        com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> 
-        bmParams = toInternalParams(pagingParams, new AdHocSortCriterion<T>("this.name"), false);
-        List<T> bms = getProjectManagementService().searchByCategory(bmParams, keyword, biomaterialClass,
-                ExternalBiomaterialSearchCategory.valuesFor(biomaterialClass));
+        com.fiveamsolutions.nci.commons.data.search.PageSortParams<AbstractBioMaterial> bmParams = toInternalParams(
+                actualParams, new AdHocSortCriterion<AbstractBioMaterial>("this.name"), false);
+        List<AbstractBioMaterial> bms = getDaoFactory().getSampleDao().searchByCategory(bmParams,
+                criteria.getKeyword(), bmClasses, ExternalBiomaterialSearchCategory.values());
         applySecurityPolicies(bms);
         mapCollection(bms, externalBms, Biomaterial.class);
+        return new SearchResult<Biomaterial>(externalBms, MAX_BIOMATERIAL_RESULTS, actualParams.getOffset());
     }
 
     /**
@@ -260,7 +259,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
      */
     public List<Person> getAllPrincipalInvestigators() {
         List<Person> externalPersons = new ArrayList<Person>();
-        List<gov.nih.nci.caarray.domain.contact.Person> persons = getProjectManagementService()
+        List<gov.nih.nci.caarray.domain.contact.Person> persons = ServiceLocatorFactory.getProjectManagementService()
                 .getAllPrincipalInvestigators();
         mapCollection(persons, externalPersons, Person.class);
         return externalPersons;
@@ -276,6 +275,12 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
                 gov.nih.nci.caarray.domain.project.Experiment.class);
         List<gov.nih.nci.caarray.domain.vocabulary.Category> categories = getDaoFactory().getVocabularyDao()
                 .searchForCharacteristicCategory(experiment, AbstractCharacteristic.class, null);
+        // add in the four standard categories
+        for (ExperimentOntologyCategory cat : EnumSet.of(ExperimentOntologyCategory.ORGANISM_PART,
+                ExperimentOntologyCategory.DISEASE_STATE, ExperimentOntologyCategory.CELL_TYPE,
+                ExperimentOntologyCategory.MATERIAL_TYPE)) {
+            categories.add(VocabularyUtils.getCategory(cat)); 
+        }
         mapCollection(categories, externalCategories, Category.class);
         return externalCategories;
     }
@@ -301,8 +306,8 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     public AbstractCaArrayEntity getByReference(CaArrayEntityReference reference)
             throws NoEntityMatchingReferenceException {
         Class<? extends AbstractCaArrayEntity> entityClass = 
-            (Class<? extends AbstractCaArrayEntity>) getClassFromLsid(reference.getId());
-        java.lang.Object entity = getByLsid(reference.getId());
+            (Class<? extends AbstractCaArrayEntity>) getClassFromExternalId(reference.getId());
+        java.lang.Object entity = getByExternalId(reference.getId());
         if (entity == null) {
             throw new NoEntityMatchingReferenceException(reference);
         }
@@ -331,7 +336,8 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         com.fiveamsolutions.nci.commons.data.search.PageSortParams<CaArrayFile> actualParams = 
             toInternalParams(defaultIfNull(pagingParams, MAX_FILE_RESULTS), "name", false);
         gov.nih.nci.caarray.domain.search.FileSearchCriteria internalCriteria = toInternalCriteria(criteria);
-        List<CaArrayFile> files = getProjectManagementService().searchFiles(actualParams, internalCriteria);
+        List<CaArrayFile> files = ServiceLocatorFactory.getProjectManagementService().searchFiles(actualParams,
+                internalCriteria);
         mapCollection(files, externalFiles, DataFile.class);
         HibernateUtil.getCurrentSession().clear();
         return new SearchResult<DataFile>(externalFiles, MAX_FILE_RESULTS, actualParams.getIndex());
@@ -421,17 +427,12 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
             LimitOffset pagingParams) throws InvalidReferenceException, UnsupportedCategoryException {
         LimitOffset actualParams = defaultIfNull(pagingParams, MAX_BIOMATERIAL_RESULTS);
         List<Biomaterial> externalSamples = new ArrayList<Biomaterial>();
-        Set<BiomaterialType> types = criteria.getTypes();
-        if (types.isEmpty()) {
-            types = EnumSet.allOf(BiomaterialType.class);
-        }
         gov.nih.nci.caarray.domain.search.BiomaterialSearchCriteria intCriteria = toInternalCriteria(criteria);
         
-        for (BiomaterialType type : types) {
-            List<? extends AbstractBioMaterial> bms = searchOneBiomaterialType(intCriteria,
-                    actualParams, BIOMATERIAL_TYPE_TO_CLASS_MAP.get(type));
-            mapCollection(bms, externalSamples, Biomaterial.class);                                   
-        }
+        List<? extends AbstractBioMaterial> bms = getDaoFactory().getSampleDao().searchByCriteria(
+                toInternalParams(actualParams, "name", false, AbstractBioMaterial.class), intCriteria);
+
+        mapCollection(bms, externalSamples, Biomaterial.class);                                   
 
         return new SearchResult<Biomaterial>(externalSamples, MAX_BIOMATERIAL_RESULTS, actualParams.getOffset());
     }
@@ -446,6 +447,9 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         intCriteria.getExternalIds().addAll(criteria.getExternalIds());
         for (AnnotationCriterion ac : criteria.getAnnotationCriterions()) {
             intCriteria.getAnnotationCriterions().add(toInternalCriterion(ac));
+        }
+        for (BiomaterialType type : criteria.getTypes()) {
+            intCriteria.getBiomaterialClasses().add(BIOMATERIAL_TYPE_TO_CLASS_MAP.get(type));
         }
         return intCriteria;
     }
@@ -470,13 +474,6 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
                 ExperimentOntologyCategory.ORGANISM_PART.getCategoryName()).contains(category.getName());
     }
 
-    private <T extends AbstractBioMaterial> List<T> searchOneBiomaterialType(
-            gov.nih.nci.caarray.domain.search.BiomaterialSearchCriteria intCriteria, LimitOffset pagingParams,
-            Class<T> biomaterialClass) {
-        return getDaoFactory().getSampleDao().searchByCriteria(
-                toInternalParams(pagingParams, "name", false, biomaterialClass), intCriteria, biomaterialClass);
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -498,12 +495,12 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria intCriteria = 
             new gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria();
         
-        intCriteria.setHybridization((gov.nih.nci.caarray.domain.hybridization.Hybridization) getByLsid(criteria
+        intCriteria.setHybridization((gov.nih.nci.caarray.domain.hybridization.Hybridization) getByExternalId(criteria
                 .getHybridization().getId()));
         
         for (CaArrayEntityReference arrayDataTypeRef : criteria.getArrayDataTypes()) {
             intCriteria.getArrayDataTypes().add(
-                    (gov.nih.nci.caarray.domain.data.ArrayDataType) getByLsid(arrayDataTypeRef.getId()));
+                    (gov.nih.nci.caarray.domain.data.ArrayDataType) getByExternalId(arrayDataTypeRef.getId()));
         }
         
         for (CaArrayEntityReference fileTypeRef : criteria.getFileTypes()) {

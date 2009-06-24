@@ -82,14 +82,6 @@
  */
 package gov.nih.nci.caarray.domain.search;
 
-import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
-import gov.nih.nci.caarray.domain.sample.Extract;
-import gov.nih.nci.caarray.domain.sample.LabeledExtract;
-import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.domain.sample.Source;
-
-import java.util.EnumSet;
-import java.util.Set;
 import org.apache.commons.lang.ArrayUtils;
 
 /**
@@ -105,9 +97,9 @@ public enum ExternalBiomaterialSearchCategory implements BiomaterialSearchCatego
     NAME("search.category.sample", ArrayUtils.EMPTY_STRING_ARRAY, "this.name"),
 
     /**
-     * External Id (Samples only).
+     * External Id. 
      */
-    EXTERNAL_ID("search.category.externalSampleId", ArrayUtils.EMPTY_STRING_ARRAY, "this.externalSampleId"),
+    EXTERNAL_ID("search.category.externalId", ArrayUtils.EMPTY_STRING_ARRAY, "this.externalId"),
 
     /**
      * Disease State.
@@ -150,34 +142,8 @@ public enum ExternalBiomaterialSearchCategory implements BiomaterialSearchCatego
     /**
      * Cell Type.
      */
-    CELL_TYPE("search.category.cellType", new String[] {"this.cellType scs" }, "scs.value"),
+    CELL_TYPE("search.category.cellType", new String[] {"this.cellType scs" }, "scs.value");
     
-    /**
-     * Provider (Sources only).
-     */
-   PROVIDER("search.category.sourceProvider", new String[] {"this.providers sps" }, "sps.name");
-
-    /**
-     * Categories applicable for sources.
-     */
-    public static final Set<ExternalBiomaterialSearchCategory> SOURCE_CATEGORIES = EnumSet.complementOf(EnumSet
-            .of(EXTERNAL_ID));
-    /**
-     * Categories applicable for samples.
-     */
-    public static final Set<ExternalBiomaterialSearchCategory> SAMPLE_CATEGORIES = EnumSet.complementOf(EnumSet
-            .of(PROVIDER));
-    /**
-     * Categories applicable for extracts.
-     */
-    public static final Set<ExternalBiomaterialSearchCategory> EXTRACT_CATEGORIES = EnumSet.complementOf(EnumSet
-            .of(EXTERNAL_ID, PROVIDER));
-    /**
-     * Categories applicable for labeled extracts.
-     */
-    public static final Set<ExternalBiomaterialSearchCategory> LABELED_EXTRACT_CATEGORIES = EnumSet
-            .complementOf(EnumSet.of(EXTERNAL_ID, PROVIDER));
-
     private final String resourceKey;
     private final String[] joins;
     private final String[] searchFields;
@@ -217,27 +183,5 @@ public enum ExternalBiomaterialSearchCategory implements BiomaterialSearchCatego
             sb.append(field).append(" LIKE :keyword");
         }
         return sb.toString();
-    }
-
-    /**
-     * returns the categories applicable for given biomaterial class.
-     * 
-     * @param bmClass the biomaterial class
-     * @return the applicable categories
-     */
-    public static ExternalBiomaterialSearchCategory[] valuesFor(Class<? extends AbstractBioMaterial> bmClass) {
-        Set<ExternalBiomaterialSearchCategory> categories = null;
-        if (Source.class.equals(bmClass)) {
-            categories = SOURCE_CATEGORIES;
-        } else if (Sample.class.equals(bmClass)) {
-            categories = SAMPLE_CATEGORIES;
-        } else if (Extract.class.equals(bmClass)) {
-            categories = EXTRACT_CATEGORIES;
-        } else if (LabeledExtract.class.equals(bmClass)) {
-            categories = LABELED_EXTRACT_CATEGORIES;
-        } else {
-            throw new IllegalArgumentException("Unknown biomaterial class: " + bmClass);
-        }
-        return categories.toArray(new ExternalBiomaterialSearchCategory[categories.size()]);
     }
 }

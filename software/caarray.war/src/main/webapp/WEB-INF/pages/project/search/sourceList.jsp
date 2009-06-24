@@ -18,6 +18,7 @@
              </c:url>
              <a href="${projectUrl}"><caarray:abbreviate value="${row.name}" maxWidth="30"/></a>
         </display:column>
+        <display:column property="externalId" titleKey="search.result.externalId" />
         <display:column property="description" titleKey="experiment.sources.description" />
         <display:column sortProperty="ORGANISM" titleKey="search.result.organism" sortable="true">
           <c:choose>

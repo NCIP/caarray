@@ -82,8 +82,8 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 

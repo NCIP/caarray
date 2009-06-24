@@ -114,7 +114,9 @@ public class AuditLogDaoImpl implements AuditLogDao {
         }
         cr.setMaxResults(sort.getPageSize());
         cr.setFirstResult(sort.getIndex());
-        return cr.list();
+        @SuppressWarnings("unchecked")
+        List<AuditLogRecord> records = cr.list();
+        return records;
     }
 
     /**

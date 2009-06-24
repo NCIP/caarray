@@ -82,18 +82,13 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.SourceSortCriterion;
-import gov.nih.nci.caarray.security.PermissionDeniedException;
-import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -132,21 +127,11 @@ public class ProjectSourcesAction extends AbstractProjectProtocolAnnotationListT
 
     /**
      * {@inheritDoc}
-     * @throws VocabularyServiceException
      */
     @Override
-    public void prepare() throws VocabularyServiceException {
+    public void prepare() {
         super.prepare();
-
-        if (this.currentSource.getId() != null) {
-            Source retrieved = getGenericDataService().getPersistentObject(Source.class, this.currentSource.getId());
-            if (retrieved == null) {
-                throw new PermissionDeniedException(this.currentSource,
-                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
-            } else {
-                this.currentSource = retrieved;
-            }
-        }
+        this.currentSource = retrieveByIdOrExternalId(Source.class, this.currentSource);
     }
 
     /**
@@ -155,7 +140,7 @@ public class ProjectSourcesAction extends AbstractProjectProtocolAnnotationListT
      */
     @Override
     protected void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException {
-        getProjectManagementService().copySource(getProject(), this.currentSource.getId());
+        ServiceLocatorFactory.getProjectManagementService().copySource(getProject(), this.currentSource.getId());
     }
 
     /**

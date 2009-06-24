@@ -80,68 +80,66 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.country;
+package gov.nih.nci.caarray.application;
 
-import static org.junit.Assert.assertNotNull;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
-import gov.nih.nci.caarray.dao.CountryDao;
-import gov.nih.nci.caarray.dao.stub.CountryDaoStub;
-import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
-import gov.nih.nci.caarray.domain.country.Country;
+import gov.nih.nci.caarray.domain.ConfigParamEnum;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.sql.DataSource;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.commons.configuration.DataConfiguration;
+import org.apache.commons.configuration.DatabaseConfiguration;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
 
-import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
-
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 /**
- * @author John Hedden (Amentra, Inc.)
- *
+ * Helper class for retrieving system configuration.
+ * @author dkokotov
  */
-public class CountryServiceTest extends AbstractCaarrayTest {
+public final class ConfigurationHelper {
+    private static final String DATASOURCE_JNDI_LOC = "java:jdbc/CaArrayDataSource";
+    private static final String TABLE_NAME = "config_parameter";
+    private static final String PARAM_NAME_COLUMN = "param";
+    private static final String PARAM_VALUE_COLUMN = "raw_value";
 
-    private CountryService countryService;
-    private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
-
-    @Before
-    public void setUp() {
-        CountryServiceBean countryServiceBean = new CountryServiceBean();
-        countryServiceBean.setDaoFactory(this.daoFactoryStub);
-        this.countryService = countryServiceBean;
+    private ConfigurationHelper() {
+        // empty constructor
     }
 
-    @Test
-    public void testGetCountries() {
-        List<Country> countries = this.countryService.getCountries();
-        assertNotNull(countries);
-    }
-
-    private static class LocalDaoFactoryStub extends DaoFactoryStub {
-
-        LocalCountryDaoStub countryDao;
-
-        @Override
-        public CountryDao getCountryDao() {
-            if (this.countryDao == null) {
-                this.countryDao = new LocalCountryDaoStub();
+    /**
+     * @return the system configuration.
+     */
+    public static DataConfiguration getConfiguration() {
+        DataSource ds = null;
+        try {
+            ds = (DataSource) ServiceLocatorFactory.getLocator().lookup(DATASOURCE_JNDI_LOC);
+            if (ds == null) {
+                ds = getAdhocDataSource();
             }
-            return this.countryDao;
+        } catch (IllegalStateException e) {
+            ds = getAdhocDataSource();
         }
-
+        DatabaseConfiguration config = new DatabaseConfiguration(ds, TABLE_NAME, PARAM_NAME_COLUMN, PARAM_VALUE_COLUMN);
+        config.setDelimiterParsingDisabled(true);
+        return new DataConfiguration(config);
     }
 
-    private static class LocalCountryDaoStub extends CountryDaoStub {
-
-        private final Map<Long, PersistentObject> savedObjects = new HashMap<Long, PersistentObject>();
-
-        @Override
-        public void save(PersistentObject caArrayObject) {
-            this.savedObjects.put(caArrayObject.getId(), caArrayObject);
-        }
+    /**
+     * @return whether this is a development deployment, or a production deployment
+     */
+    public static boolean isDev() {
+        return getConfiguration().getBoolean(ConfigParamEnum.DEVELOPMENT_MODE.name(), false);
     }
+    
+    private static DataSource getAdhocDataSource() {
+        MysqlDataSource ds = new MysqlDataSource();
+        Configuration config = HibernateUtil.getConfiguration();
+        ds.setUrl(config.getProperty(Environment.URL));
+        ds.setUser(config.getProperty(Environment.USER));
+        ds.setPassword(config.getProperty(Environment.PASS));
+        return ds;
+    }
+
 }

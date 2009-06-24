@@ -113,23 +113,25 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<AssayType> assayTypes = new HashSet<AssayType>();
     private Set<Factor> factors = new HashSet<Factor>();
     private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
-    
+
     /**
-     * @return the publicIdentifier
+     * @return the public identifier for this experiment. This is a human readable permanent identifier for this
+     *         experiment that can be used in publications to identify it.
      */
     public String getPublicIdentifier() {
         return publicIdentifier;
     }
 
     /**
-     * @param publicIdentifier the publicIdentifier to set
+     * @param publicIdentifier the public identifier for this experiment. This is a human readable permanent identifier
+     *            for this experiment that can be used in publications to identify it.
      */
     public void setPublicIdentifier(String publicIdentifier) {
         this.publicIdentifier = publicIdentifier;
     }
 
     /**
-     * @return the title
+     * @return the title of the experiment
      */
     public String getTitle() {
         return title;
@@ -143,7 +145,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the description
+     * @return the long-form description
      */
     public String getDescription() {
         return description;
@@ -157,7 +159,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the organism
+     * @return the organism from which the biomaterials in the experiment are drawn
      */
     public Organism getOrganism() {
         return organism;
@@ -171,7 +173,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the contacts
+     * @return a set of ExperimentContacts corresponding to the people and organizations involved with the experiment.
      */
     public Set<ExperimentalContact> getContacts() {
         return contacts;
@@ -185,7 +187,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the experimentalDesigns
+     * @return the set of MGED ontology terms defining the experimental design of this experiment.
      */
     public Set<Term> getExperimentalDesigns() {
         return experimentalDesigns;
@@ -199,7 +201,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the replicateTypes
+     * @return the set of MGED ontology terms defining the replication strategy of this experiment.
      */
     public Set<Term> getReplicateTypes() {
         return replicateTypes;
@@ -213,7 +215,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the normalizationTypes
+     * @return the set of MGED ontology terms defining the normalization strategy of this experiment.
      */
     public Set<Term> getNormalizationTypes() {
         return normalizationTypes;
@@ -227,21 +229,21 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the arrayProvider
+     * @return the provider of arrays used in this experiment.
      */
     public ArrayProvider getArrayProvider() {
         return arrayProvider;
     }
 
     /**
-     * @param arrayProvider the arrayProvider to set
+     * @param arrayProvider array provider to set
      */
     public void setArrayProvider(ArrayProvider arrayProvider) {
         this.arrayProvider = arrayProvider;
     }
 
     /**
-     * @return the assayTypes
+     * @return the set of assay types associated with this experiment.
      */
     public Set<AssayType> getAssayTypes() {
         return assayTypes;
@@ -255,7 +257,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the factors
+     * @return the set of experimental factors in this experiment.
      */
     public Set<Factor> getFactors() {
         return factors;
@@ -269,7 +271,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the qualityControlTypes
+     * @return the set of MGED ontology terms defining the quality control strategy of this experiment.
      */
     public Set<Term> getQualityControlTypes() {
         return qualityControlTypes;
@@ -283,7 +285,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
     
     /**
-     * @return the arrayDesigns
+     * @return the set of array designs used in this experiment.
      */
     public Set<ArrayDesign> getArrayDesigns() {
         return arrayDesigns;

@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.domain.search;
 
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -97,6 +98,8 @@ public class BiomaterialSearchCriteria {
     private Set<String> names = new HashSet<String>();
     private Set<String> externalIds = new HashSet<String>();
     private Set<AnnotationCriterion> annotationCriterions = new HashSet<AnnotationCriterion>();
+    private Set<Class<? extends AbstractBioMaterial>> biomaterialClasses = 
+        new HashSet<Class<? extends AbstractBioMaterial>>();
     
     /**
      * @return the experiment
@@ -152,5 +155,19 @@ public class BiomaterialSearchCriteria {
      */
     public void setAnnotationCriterions(Set<AnnotationCriterion> annotationCriterions) {
         this.annotationCriterions = annotationCriterions;
+    }
+
+    /**
+     * @return the biomaterialClasses
+     */
+    public Set<Class<? extends AbstractBioMaterial>> getBiomaterialClasses() {
+        return biomaterialClasses;
+    }
+
+    /**
+     * @param biomaterialClasses the biomaterialClasses to set
+     */
+    public void setBiomaterialClasses(Set<Class<? extends AbstractBioMaterial>> biomaterialClasses) {
+        this.biomaterialClasses = biomaterialClasses;
     }
 }

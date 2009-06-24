@@ -26,7 +26,7 @@
                 </c:otherwise>
             </c:choose>
         </display:column>
-        <display:column property="externalSampleId" titleKey="search.result.externalSampleId" />
+        <display:column property="externalId" titleKey="search.result.externalId" />
         <display:column property="description" titleKey="experiment.samples.description" />
         <display:column sortProperty="ORGANISM" titleKey="search.result.organism" sortable="true">
           <c:choose>

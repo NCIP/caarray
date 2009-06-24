@@ -91,7 +91,7 @@ import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 /**
- * Representation of an array design.
+ * ArrayDesign describes a particular array model.
  * 
  * @author dkokotov
  */
@@ -108,7 +108,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private Set<DataFile> files = new HashSet<DataFile>();
 
     /**
-     * @return the name
+     * @return the name of this array design.
      */
     public String getName() {
         return name;
@@ -122,7 +122,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the version
+     * @return the version of the design.
      */
     public String getVersion() {
         return version;
@@ -136,7 +136,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the arrayProvider
+     * @return the provider of this array design.
      */
     public ArrayProvider getArrayProvider() {
         return arrayProvider;
@@ -150,7 +150,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
     
     /**
-     * @return the technologyType
+     * @return the MGED term describing the tecnology used in this array design.
      */
     public Term getTechnologyType() {
         return technologyType;
@@ -164,7 +164,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the organism
+     * @return the organism for whose genetic tissue the array is designed.
      */
     public Organism getOrganism() {
         return organism;
@@ -178,7 +178,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the lsid
+     * @return the LSID for this array design.
      */
     public String getLsid() {
         return lsid;
@@ -192,7 +192,8 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the files
+     * @return the set of files which contain actual information about the layout of this array. The format of these
+     * files is specific to each array provider.
      */
     public Set<DataFile> getFiles() {
         return files;
@@ -206,7 +207,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the assayTypes
+     * @return the assay types which this array design supports.
      */
     public Set<AssayType> getAssayTypes() {
         return assayTypes;

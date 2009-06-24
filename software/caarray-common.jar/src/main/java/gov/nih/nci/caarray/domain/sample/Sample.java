@@ -87,11 +87,8 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.security.Protectable;
-import gov.nih.nci.caarray.validation.UniqueConstraint;
-import gov.nih.nci.caarray.validation.UniqueConstraintField;
 
 import java.util.Comparator;
 import java.util.HashSet;
@@ -100,35 +97,26 @@ import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.validator.Length;
 
   /**
-
+   * 
    */
 @Entity
-@DiscriminatorValue("SA")
-@UniqueConstraint(fields = {
-        @UniqueConstraintField(name = "externalSampleId"),
-        @UniqueConstraintField(name = "experiment", nullsEqual = false) },
-        generateDDLConstraint = false, message = "{sample.externalSampleId.uniqueConstraint}")
+@DiscriminatorValue(Sample.DISCRIMINATOR)
 public class Sample extends AbstractBioMaterial implements Protectable {
-    /**
-     * The serial version UID for serialization.
-     */
     private static final long serialVersionUID = 1234567890L;
 
-    private Experiment experiment;
-    private String externalSampleId;
+    /** the Hibernate discriminator for this biomaterial subclass. */
+    public static final String DISCRIMINATOR = "SA";
+
     private Set<Source> sources = new HashSet<Source>();
     private Set<Extract> extracts = new HashSet<Extract>();
 
@@ -185,39 +173,6 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
-    }
-
-    /**
-     * @return the experiment to which this source belongs
-     */
-    @ManyToOne
-    @JoinTable(name = "experimentsample",
-            joinColumns = {@JoinColumn(name = "sample_id", insertable = false, updatable = false) },
-            inverseJoinColumns = {@JoinColumn(name = "experiment_id", insertable = false, updatable = false) })
-    public Experiment getExperiment() {
-        return this.experiment;
-    }
-
-    /**
-     * @param experiment the experiment to set
-     */
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
-
-    /**
-     * @return the externalSampleId
-     */
-    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
-    public String getExternalSampleId() {
-        return this.externalSampleId;
-    }
-
-    /**
-     * @param externalSampleId the externalSampleId to set
-     */
-    public void setExternalSampleId(String externalSampleId) {
-        this.externalSampleId = externalSampleId;
     }
 
     /**
@@ -299,9 +254,6 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     public void merge(AbstractExperimentDesignNode node) {
         Sample sample = (Sample) node;
         super.merge(sample);
-        if (this.getExternalSampleId() == null) {
-            this.setExternalSampleId(sample.getExternalSampleId());
-        }
 
         for (AccessProfile profile : this.getExperiment().getProject().getAllAccessProfiles()) {
             SampleSecurityLevel thisLevel = profile.getSampleSecurityLevels().get(this);

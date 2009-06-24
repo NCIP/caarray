@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.application.arraydesign;
 
 import gov.nih.nci.caarray.application.file.FileManagementMDB;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.AbstractProbe;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -347,7 +347,7 @@ public class AffymetrixPgfClfDesignHandler extends AbstractAffymetrixArrayDesign
             currentMDB.beginTransaction();
         } else {
             HibernateUtil.getCurrentSession().getTransaction().commit();
-            HibernateUtil.getCurrentSession().beginTransaction();
+            HibernateUtil.beginTransaction();
         }
     }
 

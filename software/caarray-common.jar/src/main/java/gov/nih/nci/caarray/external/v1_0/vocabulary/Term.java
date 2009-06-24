@@ -98,7 +98,8 @@ public class Term extends AbstractCaArrayEntity {
     private String value;
 
     /**
-     * @return the accession
+     * @return the accession for this term. The accession is a vocabulary-specific code that uniquely identifies the
+     *         term within the vocabulary.
      */
     public String getAccession() {
         return accession;
@@ -112,7 +113,7 @@ public class Term extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the url
+     * @return the url for this term.
      */
     public String getUrl() {
         return url;
@@ -126,7 +127,7 @@ public class Term extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the termSource
+     * @return the TermSource representing the vocabulary to which this Term belongs
      */
     public TermSource getTermSource() {
         return termSource;
@@ -140,7 +141,7 @@ public class Term extends AbstractCaArrayEntity {
     }
     
     /**
-     * @return the value
+     * @return the value for this term
      */
     public String getValue() {
         return value;

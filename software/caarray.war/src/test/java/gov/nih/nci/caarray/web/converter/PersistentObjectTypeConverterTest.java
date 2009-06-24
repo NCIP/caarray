@@ -87,11 +87,11 @@ import static org.junit.Assert.assertNull;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceBean;
+import gov.nih.nci.caarray.application.ServiceLocator;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
 import org.junit.Test;
 

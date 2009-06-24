@@ -189,14 +189,18 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         characteristic.setCategory(DUMMY_CATEGORY);
         characteristic.setTerm(DUMMY_REPLICATE_TYPE);
         DUMMY_SOURCE.getCharacteristics().add(characteristic);
+        DUMMY_SOURCE.setExperiment(DUMMY_EXPERIMENT_1);
         DUMMY_SAMPLE.setName("DummySample");
         DUMMY_SAMPLE.setDescription("DummySampleDescription");
         characteristic = new TermBasedCharacteristic();
         characteristic.setCategory(DUMMY_CATEGORY);
         characteristic.setTerm(DUMMY_NORMALIZATION_TYPE);
         DUMMY_SAMPLE.getCharacteristics().add(characteristic);
+        DUMMY_SAMPLE.setExperiment(DUMMY_EXPERIMENT_1);
         DUMMY_EXTRACT.setName("DummyExtract");
+        DUMMY_EXTRACT.setExperiment(DUMMY_EXPERIMENT_1);
         DUMMY_LABELED_EXTRACT.setName("DummyLabeledExtract");
+        DUMMY_LABELED_EXTRACT.setExperiment(DUMMY_EXPERIMENT_1);
         DUMMY_EXPERIMENT_1.getSources().add(DUMMY_SOURCE);
         DUMMY_EXPERIMENT_1.getSamples().add(DUMMY_SAMPLE);
         DUMMY_EXPERIMENT_1.getExtracts().add(DUMMY_EXTRACT);

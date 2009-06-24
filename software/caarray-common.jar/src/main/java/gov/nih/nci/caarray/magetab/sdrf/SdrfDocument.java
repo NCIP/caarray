@@ -1258,6 +1258,18 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     /**
+     * @return all biomaterials defined in this document
+     */
+    public List<AbstractBioMaterial> getAllBiomaterials() {
+        List<AbstractBioMaterial> list = new LinkedList<AbstractBioMaterial>();
+        list.addAll(getAllSources());
+        list.addAll(getAllSamples());
+        list.addAll(getAllExtracts());
+        list.addAll(getAllLabeledExtracts());
+        return list;
+    }
+
+    /**
      * @return the allSamples
      */
     public List<Sample> getAllSamples() {

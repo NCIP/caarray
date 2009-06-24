@@ -88,9 +88,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Indicates the source of array data and the complete list of <code>QuantitationTypes</code> that may be
- * associated with the particular type and version.
- *
+ * ArrayDataType represents a type of array. Different array types have different possible
+ * quantities (as represented by <code>QuantitationType</code>s) that can be measured by them.
+ * 
  * @author dkokotov
  */
 public class ArrayDataType extends AbstractCaArrayEntity {
@@ -101,7 +101,7 @@ public class ArrayDataType extends AbstractCaArrayEntity {
     private Set<QuantitationType> quantitationTypes = new HashSet<QuantitationType>();
 
     /**
-     * @return the name
+     * @return the name of this array type
      */
     public String getName() {
         return name;
@@ -115,7 +115,7 @@ public class ArrayDataType extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the version
+     * @return the version of this array type
      */
     public String getVersion() {
         return version;
@@ -129,7 +129,8 @@ public class ArrayDataType extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the quantitationTypes
+     * @return the quantities that can be measured by arrays of this type. Note that individual arrays may only measure
+     *         a subset of this.
      */
     public Set<QuantitationType> getQuantitationTypes() {
         return quantitationTypes;

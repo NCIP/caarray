@@ -187,14 +187,8 @@ public class AffymetrixChpDesignElementListFixer extends AbstractMigrator {
             || AffymetrixArrayDataTypes.AFFYMETRIX_SNP_CHP.getName().equals(data.getType().getName()));
     }
 
-    private List<DerivedArrayData> getAllDerivedDatas() throws MigrationStepFailedException {
-        try {
-            return getDataService().retrieveAll(DerivedArrayData.class);
-        } catch (IllegalAccessException e) {
-            throw new MigrationStepFailedException(e);
-        } catch (InstantiationException e) {
-            throw new MigrationStepFailedException(e);
-        }
+    private List<DerivedArrayData> getAllDerivedDatas() {
+        return getDataService().retrieveAll(DerivedArrayData.class);
     }
 
     private List<Long> getAllAffymetrixDesignIds() {

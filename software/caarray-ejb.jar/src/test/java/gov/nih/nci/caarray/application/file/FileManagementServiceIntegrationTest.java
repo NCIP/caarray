@@ -94,7 +94,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -106,6 +106,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -123,14 +124,12 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Transaction;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
@@ -395,7 +394,9 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertEquals(2, project.getExperiment().getSources().size());
         assertEquals(2, project.getExperiment().getSamples().size());
-        assertEquals(4, project.getExperiment().getExtracts().size());
+        Set<Extract> extracts = project.getExperiment().getExtracts();
+        System.out.println("Updated extracts: " + extracts);
+        assertEquals(4, extracts.size());
         assertEquals(4, project.getExperiment().getLabeledExtracts().size());
         assertEquals(4, project.getExperiment().getHybridizations().size());
         assertNotNull(findSource(project, "Source A"));
@@ -412,7 +413,9 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertEquals(2, project.getExperiment().getSources().size());
         assertEquals(2, project.getExperiment().getSamples().size());
-        assertEquals(4, project.getExperiment().getExtracts().size());
+        extracts = project.getExperiment().getExtracts();
+        System.out.println("Updated extracts: " + extracts);
+        assertEquals(4, extracts.size());
         assertEquals(4, project.getExperiment().getLabeledExtracts().size());
         assertEquals(4, project.getExperiment().getHybridizations().size());
         assertNotNull(findSource(project, "Source A"));
@@ -431,10 +434,8 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         tx = HibernateUtil.beginTransaction();
         project = (Project) HibernateUtil.getCurrentSession().load(Project.class, project.getId());
         importFiles(project, fileSet, null);
-        tx.commit();
+        HibernateUtil.getCurrentSession().getTransaction().commit();
     }
-
-
 
     @SuppressWarnings("PMD")
     private void uploadAndValidateFiles(Project project, Map<File, FileType> files) throws Exception {

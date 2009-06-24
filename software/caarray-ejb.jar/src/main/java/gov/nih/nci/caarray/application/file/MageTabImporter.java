@@ -92,11 +92,15 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Factor;
-import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
@@ -111,7 +115,6 @@ import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 import java.io.File;
 import java.util.List;
 import java.util.Set;
-
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -293,7 +296,6 @@ class MageTabImporter {
         // multi-IDF import. Hence, continue to allow for this in the object model.
         if (!translationResult.getInvestigations().isEmpty()) {
             mergeTranslatedData(targetProject.getExperiment(), translationResult.getInvestigations().iterator().next());
-            getProjectDao().save(targetProject);
         }
     }
 
@@ -311,14 +313,29 @@ class MageTabImporter {
 
         originalExperiment.getHybridizations().addAll(translatedExperiment.getHybridizations());
         getCaArrayDao().save(originalExperiment.getHybridizations());
-        originalExperiment.getLabeledExtracts().addAll(translatedExperiment.getLabeledExtracts());
+        
+        for (LabeledExtract le : translatedExperiment.getLabeledExtracts()) {
+            le.setExperiment(originalExperiment);
+            originalExperiment.getLabeledExtracts().add(le);
+        }
         getCaArrayDao().save(originalExperiment.getLabeledExtracts());
-        originalExperiment.getExtracts().addAll(translatedExperiment.getExtracts());
+        for (Extract e : translatedExperiment.getExtracts()) {
+            e.setExperiment(originalExperiment);
+            originalExperiment.getExtracts().add(e);
+        }
         getCaArrayDao().save(originalExperiment.getExtracts());
-        originalExperiment.getSamples().addAll(translatedExperiment.getSamples());
+        CaArrayDaoFactory.INSTANCE.getProjectDao().flushSession();
+        for (Sample s : translatedExperiment.getSamples()) {
+            s.setExperiment(originalExperiment);
+            originalExperiment.getSamples().add(s);
+        }
         getCaArrayDao().save(originalExperiment.getSamples());
-        originalExperiment.getSources().addAll(translatedExperiment.getSources());
+        for (Source s : translatedExperiment.getSources()) {
+            s.setExperiment(originalExperiment);
+            originalExperiment.getSources().add(s);
+        }
         getCaArrayDao().save(originalExperiment.getSources());
+
     }
 
     private void mergeExperimentContacts(Experiment originalExperiment, Experiment translatedExperiment) {

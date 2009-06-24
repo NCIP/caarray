@@ -1,15 +1,15 @@
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyUtils;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,15 +55,15 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
         boolean initialSave = getProject().getId() == null;
         if (initialSave && getProject().getExperiment().getPrimaryInvestigator() == null) {
             // make sure PI is set so that the experiment has a public ID - assume PI is user
-            Term piRole = CaArrayActionHelper.getMOTerm(ExperimentContact.PI_ROLE);
-            Term mainPocRole = CaArrayActionHelper.getMOTerm(ExperimentContact.MAIN_POC_ROLE);
+            Term piRole = VocabularyUtils.getMOTerm(ExperimentContact.PI_ROLE);
+            Term mainPocRole = VocabularyUtils.getMOTerm(ExperimentContact.MAIN_POC_ROLE);
             ExperimentContact pi =
                     new ExperimentContact(getExperiment(), new Person(UsernameHolder.getCsmUser()), Arrays.asList(
                             piRole, mainPocRole));
             getExperiment().getExperimentContacts().add(pi);
         }
         try {
-            getProjectManagementService().saveProject(getProject(),
+            ServiceLocatorFactory.getProjectManagementService().saveProject(getProject(),
                     this.orphans.toArray(new PersistentObject[this.orphans.size()]));
             ActionHelper.saveMessage(getText("project.saved"));
             setEditMode(true);

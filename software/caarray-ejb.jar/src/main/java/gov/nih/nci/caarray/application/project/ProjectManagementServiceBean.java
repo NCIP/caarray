@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
@@ -119,7 +120,6 @@ import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
@@ -492,6 +492,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             copy.getSources().add(source);
         }
         project.getExperiment().getSamples().add(copy);
+        copy.setExperiment(project.getExperiment());
         getDaoFactory().getProjectDao().save(project);
         LogUtil.logSubsystemExit(LOG);
         return copy;
@@ -509,6 +510,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         Extract copy = new Extract();
         copyInto(Extract.class, copy, extract);
         project.getExperiment().getExtracts().add(copy);
+        copy.setExperiment(project.getExperiment());
         for (Sample sample : extract.getSamples()) {
             sample.getExtracts().add(copy);
             copy.getSamples().add(sample);
@@ -531,6 +533,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         copyInto(LabeledExtract.class, copy, le);
         copy.setLabel(le.getLabel());
         project.getExperiment().getLabeledExtracts().add(copy);
+        copy.setExperiment(project.getExperiment());
         for (Extract e : le.getExtracts()) {
             e.getLabeledExtracts().add(copy);
             copy.getExtracts().add(e);
@@ -584,6 +587,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         Source copy = new Source();
         copyInto(Source.class, copy, source);
         project.getExperiment().getSources().add(copy);
+        copy.setExperiment(project.getExperiment());
         getDaoFactory().getProjectDao().save(project);
         return copy;
     }
@@ -677,19 +681,25 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public Sample getSampleByExternalId(Project project, String externalSampleId) {
-        Sample s = new Sample();
-        s.setExternalSampleId(externalSampleId);
-        s.setExperiment(project.getExperiment());
-        List<Sample> samples = getSearchDao().query(s);
-        if (samples == null) {
-            return null;
-        } else if (samples.size() > 1) {
-            throw new IllegalStateException("Too many samples found matching external sample id");
-        } else if (samples.isEmpty()) {
-            return null;
+    public <T extends AbstractBioMaterial> T getBiomaterialByExternalId(Project project, String externalId,
+            Class<T> biomaterialClass) {
+        T bm;
+        try {
+            bm = biomaterialClass.newInstance();
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException("Could not create new instance of class " + biomaterialClass);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException("Could not create new instance of class " + biomaterialClass);
         }
-        return samples.get(0);
+        bm.setExternalId(externalId);
+        bm.setExperiment(project.getExperiment());
+        List<T> bms = getSearchDao().query(bm);
+        if (bms == null || bms.isEmpty()) {
+            return null;
+        } else if (bms.size() > 1) {
+            throw new IllegalStateException("Too many biomaterials found matching external id");
+        } 
+        return bms.get(0);
     }
 
     /**

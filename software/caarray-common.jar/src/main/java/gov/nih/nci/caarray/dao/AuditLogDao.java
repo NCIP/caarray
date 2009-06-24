@@ -89,7 +89,7 @@ import gov.nih.nci.caarray.domain.search.AuditLogSearchCriteria;
 import java.util.List;
 
 /**
- *
+ * 
  * @author gax
  */
 public interface AuditLogDao {
@@ -100,6 +100,7 @@ public interface AuditLogDao {
      * @return matching log records.
      */
     List<AuditLogRecord> getRecords(AuditLogSearchCriteria criteria, PageSortParams<AuditLogRecord> sort);
+
     /**
      * @param criteria criteria
      * @return row count.

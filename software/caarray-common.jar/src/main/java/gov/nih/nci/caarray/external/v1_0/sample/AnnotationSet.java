@@ -91,6 +91,10 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
+ * An AnnotationSet represents a table of annotation values for a particular list of characteristics across a list
+ * of experiment graph nodes. the columns in this table correspond to experiment graph nodes and the rows correspond
+ * to categories. Each cell then contains an AnnotationValueSet which has the set of values for the category and 
+ * graph node for its column and row.
  * 
  * @author dkokotov
  */
@@ -101,7 +105,7 @@ public class AnnotationSet implements Serializable {
     private List<AnnotationColumn> columns = new ArrayList<AnnotationColumn>();
 
     /**
-     * @return the categories
+     * @return the categories for which this AnnotationSet contains AnnotationValueSets.
      */
     public List<Category> getCategories() {
         return categories;
@@ -115,7 +119,8 @@ public class AnnotationSet implements Serializable {
     }
 
     /**
-     * @return the columns
+     * @return the list of AnnotationColumns, where each AnnotationColumn contains a list of AnnotationValueSets 
+     *         for a particular experiment graph node.
      */
     public List<AnnotationColumn> getColumns() {
         return columns;

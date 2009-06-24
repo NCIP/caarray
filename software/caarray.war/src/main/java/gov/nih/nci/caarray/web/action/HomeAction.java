@@ -83,8 +83,9 @@
 package gov.nih.nci.caarray.web.action;
 
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.browse.BrowseService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -176,7 +177,7 @@ public class HomeAction {
      * @return input
      */
     public String execute() {
-        BrowseService bs = CaArrayActionHelper.getBrowseService();
+        BrowseService bs = ServiceLocatorFactory.getBrowseService();
         browseItems = new ArrayList<BrowseItems>();
         for (BrowseCategory cat : BrowseCategory.values()) {
             browseItems.add(new BrowseItems(cat, bs.countByBrowseCategory(cat)));
@@ -184,7 +185,7 @@ public class HomeAction {
         browseItems.add(new BrowseItems("browse.report.hybridizations", bs.hybridizationCount()));
         browseItems.add(new BrowseItems("browse.report.users", bs.userCount()));
         
-        VocabularyService voc = CaArrayActionHelper.getVocabularyService();
+        VocabularyService voc = ServiceLocatorFactory.getVocabularyService();
         this.categories = voc.searchForCharacteristicCategory(TermBasedCharacteristic.class, null);
         this.organisms = voc.getOrganisms();
 

@@ -796,6 +796,9 @@ public class MageTabParserTest extends AbstractCaarrayTest {
         verifyFeature13141Sample(sdrfDocument.getAllSamples().get(2), "Sample C", "345");
         sdrfDocument = documentSet.getSdrfDocument(MageTabDataFiles.FEATURE_13141_SDRF2.getName());
         assertNotNull(sdrfDocument);
+        verifyFeature13141Source(sdrfDocument.getAllSources().get(0), "Source D", "ext1");
+        verifyFeature13141Source(sdrfDocument.getAllSources().get(1), "Source E", "ext2");
+        verifyFeature13141Source(sdrfDocument.getAllSources().get(2), "Source F", "ext3");
         verifyFeature13141Sample(sdrfDocument.getAllSamples().get(0), "Sample D", "456");
         verifyFeature13141Sample(sdrfDocument.getAllSamples().get(1), "Sample E", "567");
         verifyFeature13141Sample(sdrfDocument.getAllSamples().get(2), "Sample F", "678");
@@ -806,6 +809,14 @@ public class MageTabParserTest extends AbstractCaarrayTest {
         assertEquals(1, s1.getCharacteristics().size());
         assertEquals(ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName(), s1.getCharacteristics().get(0).getCategory());
         assertEquals(expectedTermValue, s1.getCharacteristics().get(0).getValue());
+        assertEquals(null, s1.getCharacteristics().get(0).getTerm());
+    }
+
+    private void verifyFeature13141Source(Source s1, String expectedName, String expectedValue) {
+        assertEquals(expectedName, s1.getName());
+        assertEquals(1, s1.getCharacteristics().size());
+        assertEquals(ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName(), s1.getCharacteristics().get(0).getCategory());
+        assertEquals(expectedValue, s1.getCharacteristics().get(0).getValue());
         assertEquals(null, s1.getCharacteristics().get(0).getTerm());
     }
 
@@ -910,7 +921,8 @@ public class MageTabParserTest extends AbstractCaarrayTest {
             String c2Value, String c2Unit, String c3Value, String c3ts) {
         assertEquals(sampleName, sample.getName());
         assertEquals(3, sample.getCharacteristics().size());
-        assertEquals("ExternalSampleId", sample.getCharacteristics().get(0).getCategory());
+        assertEquals(ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName(), sample.getCharacteristics()
+                .get(0).getCategory());
         assertEquals(c1Value, sample.getCharacteristics().get(0).getValue());
         assertNull(sample.getCharacteristics().get(0).getTerm());
         assertNull(sample.getCharacteristics().get(0).getUnit());

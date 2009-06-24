@@ -82,12 +82,12 @@
  */
 package gov.nih.nci.caarray.web.action.protocol;
 
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,7 +135,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
      */
     public void prepare() {
         if (getProtocol() != null && getProtocol().getId() != null) {
-            Protocol retrieved = CaArrayActionHelper.getGenericDataService().getPersistentObject(Protocol.class,
+            Protocol retrieved = ServiceLocatorFactory.getGenericDataService().getPersistentObject(Protocol.class,
                     this.getProtocol().getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.protocol,
@@ -173,7 +173,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
     @SkipValidation
     public String edit() {
         setEditMode(true);
-        setSources(CaArrayActionHelper.getVocabularyService().getAllSources());
+        setSources(ServiceLocatorFactory.getVocabularyService().getAllSources());
         return INPUT;
     }
 
@@ -184,7 +184,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
     @SkipValidation
     public String details() {
         setEditMode(false);
-        setSources(CaArrayActionHelper.getVocabularyService().getAllSources());
+        setSources(ServiceLocatorFactory.getVocabularyService().getAllSources());
         return INPUT;
     }
 
@@ -201,7 +201,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
         }
     )
     public String save() throws InstantiationException, IllegalAccessException {
-        CaArrayActionHelper.getGenericDataService().save(getProtocol());
+        ServiceLocatorFactory.getGenericDataService().save(getProtocol());
         List<String> args = new ArrayList<String>();
         args.add(getProtocol().getName());
         ActionHelper.saveMessage(getText("protocol.saved", args));
@@ -218,7 +218,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
     public void validate() {
         super.validate();
         if (!ActionHelper.isSkipValidationSetOnCurrentAction() && getProtocol() != null) {
-            Protocol p = CaArrayActionHelper.getVocabularyService().getProtocol(getProtocol().getName(),
+            Protocol p = ServiceLocatorFactory.getVocabularyService().getProtocol(getProtocol().getName(),
                     getProtocol().getSource());
             if (p != null && !p.getId().equals(getProtocol().getId())) {
                 addFieldError("protocol.name", getText("protocol.duplicate.name"));
@@ -226,7 +226,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
         }
 
         if (hasErrors()) {
-            setSources(CaArrayActionHelper.getVocabularyService().getAllSources());
+            setSources(ServiceLocatorFactory.getVocabularyService().getAllSources());
         }
     }
 
@@ -262,7 +262,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
             return edit();
         }
 
-        setProtocols(CaArrayActionHelper.getGenericDataService().retrieveAll(Protocol.class, Order.asc("name")));
+        setProtocols(ServiceLocatorFactory.getGenericDataService().retrieveAll(Protocol.class, Order.asc("name")));
         return SUCCESS;
     }
 

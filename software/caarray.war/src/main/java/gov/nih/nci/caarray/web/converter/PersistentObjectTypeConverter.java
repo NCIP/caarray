@@ -83,8 +83,8 @@
 package gov.nih.nci.caarray.web.converter;
 
 import gov.nih.nci.caarray.application.GenericDataService;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import gov.nih.nci.caarray.application.ServiceLocator;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 
 import com.fiveamsolutions.nci.commons.web.struts2.converter.AbstractPersistentObjectTypeConverter;
 

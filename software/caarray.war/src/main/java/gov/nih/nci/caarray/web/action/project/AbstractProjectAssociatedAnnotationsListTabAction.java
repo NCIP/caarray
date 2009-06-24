@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 
 import java.util.Collection;
@@ -105,7 +105,8 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public abstract class AbstractProjectAssociatedAnnotationsListTabAction<T extends AbstractBioMaterial> extends
         AbstractProjectProtocolAnnotationListTabAction {
-
+    private static final long serialVersionUID = 1L;
+    
     private final String associatedResourceKey;
     private String associatedValueName;
     private Collection<T> unassociatedValues;
@@ -169,8 +170,8 @@ public abstract class AbstractProjectAssociatedAnnotationsListTabAction<T extend
         if (getAssociatedValueName() ==  null) {
             setAssociatedValueName("");
         }
-        Collection<T> possibleValues = getGenericDataService().filterCollection(getPossibleAssociationsCollection(),
-                "name", getAssociatedValueName());
+        Collection<T> possibleValues = ServiceLocatorFactory.getGenericDataService().filterCollection(
+                getPossibleAssociationsCollection(), "name", getAssociatedValueName());
         setUnassociatedValues(possibleValues);
         return "associationValues";
     }

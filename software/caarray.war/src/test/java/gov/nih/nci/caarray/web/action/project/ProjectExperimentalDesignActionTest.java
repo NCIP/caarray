@@ -84,8 +84,8 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 

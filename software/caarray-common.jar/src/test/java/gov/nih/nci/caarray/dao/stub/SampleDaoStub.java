@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
@@ -123,6 +124,14 @@ public class SampleDaoStub extends AbstractDaoStub implements SampleDao {
      */
     public <T extends AbstractBioMaterial> List<T> searchByCategory(PageSortParams<T> params, String keyword,
             Class<T> biomaterialClass, BiomaterialSearchCategory... categories) {
+        return Collections.emptyList();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public List<AbstractBioMaterial> searchByCategory(PageSortParams<AbstractBioMaterial> params, String keyword,
+            Set<Class<? extends AbstractBioMaterial>> biomaterialClasses, BiomaterialSearchCategory... categories) {
         return Collections.emptyList();
     }
 
@@ -174,7 +183,7 @@ public class SampleDaoStub extends AbstractDaoStub implements SampleDao {
     }
 
     public <T extends AbstractBioMaterial> List<T> searchByCriteria(PageSortParams<T> params,
-            BiomaterialSearchCriteria criteria, Class<T> biomaterialType) {
+            BiomaterialSearchCriteria criteria) {
         return Collections.emptyList();
     }
 }

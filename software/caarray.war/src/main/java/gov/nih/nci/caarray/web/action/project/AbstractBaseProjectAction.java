@@ -82,8 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.UsernameHolder;
@@ -136,12 +135,12 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
     /**
      * {@inheritDoc}
      */
-    public void prepare() throws VocabularyServiceException {
+    public void prepare() {
         Project retrieved = null;
         if (this.project.getId() != null) {
-            retrieved = getProjectManagementService().getProject(this.project.getId());
+            retrieved = ServiceLocatorFactory.getProjectManagementService().getProject(this.project.getId());
         } else if (this.project.getExperiment().getPublicIdentifier() != null) {
-            retrieved = getProjectManagementService().getProjectByPublicId(
+            retrieved = ServiceLocatorFactory.getProjectManagementService().getProjectByPublicId(
                     this.project.getExperiment().getPublicIdentifier());
         }
         if (retrieved != null) {

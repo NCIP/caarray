@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.action;
 
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -429,7 +430,7 @@ public class SearchAction extends ActionSupport {
 
         SearchCategory[] categories = (categoryExp.equals(SEARCH_EXPERIMENT_CATEGORY_ALL)) ? SearchCategory.values()
                 : new SearchCategory[] {SearchCategory.valueOf(categoryExp) };
-        ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
+        ProjectManagementService pms = ServiceLocatorFactory.getProjectManagementService();
         int projectCount = pms.searchCount(keyword, categories);
         tabs = new LinkedHashMap<String, Integer>();
         tabs.put(EXPERIMENTS_TAB, projectCount);
@@ -465,7 +466,7 @@ public class SearchAction extends ActionSupport {
             return Action.INPUT;
         }
         tabs = new LinkedHashMap<String, Integer>();
-        ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
+        ProjectManagementService pms = ServiceLocatorFactory.getProjectManagementService();
 
         checkSampleOrganism();
 
@@ -530,7 +531,7 @@ public class SearchAction extends ActionSupport {
             return Action.INPUT;
         }
         tabs = new LinkedHashMap<String, Integer>();
-        ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
+        ProjectManagementService pms = ServiceLocatorFactory.getProjectManagementService();
         if (selectedCategory != null) {
             int sampleCount = pms.countSamplesByCharacteristicCategory(selectedCategory, keyword);
             tabs.put(SAMPLES_TAB, sampleCount);
@@ -566,7 +567,7 @@ public class SearchAction extends ActionSupport {
      */
     public String experiments() {
         currentTab = EXPERIMENTS_TAB;
-        ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
+        ProjectManagementService pms = ServiceLocatorFactory.getProjectManagementService();
         SearchCategory[] categories = (categoryExp.equals(SEARCH_EXPERIMENT_CATEGORY_ALL)) ? SearchCategory.values()
                 : new SearchCategory[] {SearchCategory.valueOf(categoryExp) };
         List<Project> projects = pms.searchByCategory(this.results.getPageSortParams(), keyword, categories);
@@ -582,7 +583,7 @@ public class SearchAction extends ActionSupport {
     public String samples() {
         currentTab = SAMPLES_TAB;
         if (this.resultSampleCount > 0) {
-            ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
+            ProjectManagementService pms = ServiceLocatorFactory.getProjectManagementService();
             List<Sample> bioMats = null;
             if (SEARCH_CATEGORY_OTHER_CHAR.equals(categorySample)) {
                 bioMats = pms.searchSamplesByCharacteristicCategory(
@@ -609,7 +610,7 @@ public class SearchAction extends ActionSupport {
     public String sources() {
         currentTab = SOURCES_TAB;
         if (this.resultSourceCount > 0) {
-            ProjectManagementService pms = CaArrayActionHelper.getProjectManagementService();
+            ProjectManagementService pms = ServiceLocatorFactory.getProjectManagementService();
             List<Source> sources = null;
             if (SEARCH_CATEGORY_OTHER_CHAR.equals(categorySample)) {
                 sources = pms.searchSourcesByCharacteristicCategory(

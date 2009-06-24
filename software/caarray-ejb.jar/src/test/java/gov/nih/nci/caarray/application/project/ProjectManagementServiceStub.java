@@ -102,12 +102,11 @@ import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
-import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
 
-import gov.nih.nci.security.authorization.domainobjects.User;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -173,14 +172,14 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      * {@inheritDoc}
      */
     public List<Project> getMyProjects(PageSortParams<Project> pageSortParams) {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     /**
      * {@inheritDoc}
      */
     public List<Project> getProjectsForOwner(User user) {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
 
@@ -381,11 +380,19 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public Sample getSampleByExternalId(Project project, String externalSampleId) {
-        Sample s = new Sample();
-        s.setExternalSampleId(externalSampleId);
-        s.setExperiment(project.getExperiment());
-        return s;
+    public <T extends AbstractBioMaterial> T getBiomaterialByExternalId(Project project, String externalId,
+            Class<T> biomaterialClass) {
+        T bm;
+        try {
+            bm = biomaterialClass.newInstance();
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException("Could not create new instance of class " + biomaterialClass);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException("Could not create new instance of class " + biomaterialClass);
+        }
+        bm.setExternalId(externalId);
+        bm.setExperiment(project.getExperiment());
+        return bm;
     }
 
     /**
@@ -405,6 +412,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public <T extends AbstractBioMaterial> List<T> searchByCategory(PageSortParams<T> params, String keyword,
             Class<T> biomaterialClass, BiomaterialSearchCategory... categories) {
 
@@ -452,7 +460,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      * {@inheritDoc}
      */
     public List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c) {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     /**
@@ -460,7 +468,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      */
     public List<Sample> searchSamplesByCharacteristicCategory(
             PageSortParams<Sample> params, Category c, String keyword) {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     /**
@@ -468,7 +476,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      */
     public List<Source> searchSourcesByCharacteristicCategory(
             PageSortParams<Source> params, Category c, String keyword) {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     /**

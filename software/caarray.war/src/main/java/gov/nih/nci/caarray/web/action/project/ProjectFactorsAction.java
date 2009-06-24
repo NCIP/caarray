@@ -82,16 +82,14 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getTermsFromCategory;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyUtils;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
-import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.search.FactorSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -129,15 +127,14 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
 
     /**
      * {@inheritDoc}
-     *
-     * @throws VocabularyServiceException
      */
     @Override
-    public void prepare() throws VocabularyServiceException {
+    public void prepare() {
         super.prepare();
 
         if (this.currentFactor.getId() != null) {
-            Factor retrieved = getGenericDataService().getPersistentObject(Factor.class, this.currentFactor.getId());
+            Factor retrieved = ServiceLocatorFactory.getGenericDataService().getPersistentObject(Factor.class,
+                    this.currentFactor.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentFactor, SecurityUtils.READ_PRIVILEGE,
                         UsernameHolder.getUser());
@@ -152,7 +149,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      */
     @Override
     public String view() {
-        setCategories(getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
+        setCategories(VocabularyUtils.getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
         return super.view();
     }
 
@@ -162,7 +159,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     @Override
     @SkipValidation
     public String edit() {
-        setCategories(getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
+        setCategories(VocabularyUtils.getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
         return super.edit();
     }
 
@@ -173,7 +170,8 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     public void validate() {
         super.validate();
         if (hasErrors()) {
-            setCategories(getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
+            setCategories(
+                    VocabularyUtils.getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY));
         }
     }
 
@@ -184,7 +182,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      */
     @Override
     protected void doCopyItem() throws ProposalWorkflowException, InconsistentProjectStateException {
-        getProjectManagementService().copyFactor(getProject(), this.currentFactor.getId());
+        ServiceLocatorFactory.getProjectManagementService().copyFactor(getProject(), this.currentFactor.getId());
     }
 
     /**

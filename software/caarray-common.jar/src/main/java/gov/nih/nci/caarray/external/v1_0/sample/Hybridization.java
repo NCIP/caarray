@@ -89,7 +89,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * a Hybridization represents the product of hybridizing extracted genetic material with the probes on an array.
+ * a Hybridization is an experiment graph node that represents the product of hybridizing extracted genetic material
+ * with the probes on an array.
  * 
  * @author dkokotov
  */
@@ -100,28 +101,28 @@ public class Hybridization extends AbstractExperimentGraphNode {
     private ArrayDesign arrayDesign;
 
     /**
-     * @return the factorValues
+     * @return the set of factor values associated with this hybridization.
      */
     public Set<FactorValue> getFactorValues() {
         return factorValues;
     }
 
     /**
-     * @param factorValues the factorValues to set
+     * @param factorValues the set of factor values associated with this hybridization.
      */
     public void setFactorValues(Set<FactorValue> factorValues) {
         this.factorValues = factorValues;
     }
 
     /**
-     * @return the arrayDesign
+     * @return the array design for the array to which this hybridization represents the act of hybridizing.
      */
     public ArrayDesign getArrayDesign() {
         return arrayDesign;
     }
 
     /**
-     * @param arrayDesign the arrayDesign to set
+     * @param arrayDesign the array design for the array associated with this hybridization.
      */
     public void setArrayDesign(ArrayDesign arrayDesign) {
         this.arrayDesign = arrayDesign;

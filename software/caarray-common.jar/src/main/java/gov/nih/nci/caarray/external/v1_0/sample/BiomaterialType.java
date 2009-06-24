@@ -84,8 +84,10 @@ package gov.nih.nci.caarray.external.v1_0.sample;
 
 
 /**
+ * BiomaterialType contains constants representing different types of Biomaterials. These correspond to types defined
+ * in MAGE-TAB, and represent different stages in the treatment of a biomaterial prior to hybridization.
+ *  
  * @author dkokotov
- *
  */
 public enum BiomaterialType {
     /**

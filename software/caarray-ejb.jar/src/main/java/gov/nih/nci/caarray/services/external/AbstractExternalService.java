@@ -82,28 +82,20 @@
  */
 package gov.nih.nci.caarray.services.external;
 
-import gov.nih.nci.caarray.application.GenericDataService;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.project.ProjectManagementService;
-import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.security.SecurityPolicy;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.criterion.MatchMode;
-
 import net.sf.dozer.util.mapping.MapperIF;
 
+import org.hibernate.criterion.MatchMode;
 
 /**
  * Base class for external service implementations. Has utility methods.
@@ -112,48 +104,6 @@ import net.sf.dozer.util.mapping.MapperIF;
  */
 public abstract class AbstractExternalService {
     private final CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
-    /**
-     * @return a reference to the ArrayDesignService EJB
-     */
-    protected ArrayDesignService getArrayDesignService() {
-        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
-    }
-
-    /**
-     * @return a reference to the ArrayDataService EJB
-     */
-    protected ArrayDataService getArrayDataService() {
-        return (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
-    }
-
-    /**
-     * @return a reference to the GenericDataService EJB
-     */
-    protected GenericDataService getDataService() {
-        return (GenericDataService) ServiceLocatorFactory.getLocator().lookup(GenericDataService.JNDI_NAME);
-    }
-
-    /**
-     * @return a reference to the VocabularyService EJB
-     */
-    protected VocabularyService getVocabularyService() {
-        return (VocabularyService) ServiceLocatorFactory.getLocator().lookup(VocabularyService.JNDI_NAME);
-    }
-
-    /**
-     * @return a reference to the ProjectManagementService EJB
-     */
-    protected ProjectManagementService getProjectManagementService() {
-        return (ProjectManagementService) ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
-    }
-
-    /**
-     * @return the MAGE-TAB Exporter service
-     */
-    protected MageTabExporter getMageTabExporter() {
-        return (MageTabExporter) ServiceLocatorFactory.getLocator().lookup(MageTabExporter.JNDI_NAME);
-    }
 
     /**
      * @return an instance of the Dozer Mapper.
@@ -213,20 +163,22 @@ public abstract class AbstractExternalService {
     }
 
     /**
-     * Retrieve the entity in the internal domain model identified by the given lsid. This is
+     * Retrieve the entity in the internal domain model identified by the given external id. This is
      * expected to be implemented by version-specific subclasses.
-     * @param lsid the LSID
+     * 
+     * @param id the external id
      * @return the entity
      */
-    protected abstract Object getByLsid(String lsid);
+    protected abstract Object getByExternalId(String id);
 
     /**
-     * Return the class of the entity identified by the given LSID. 
-     * @param lsid the LSID
+     * Return the class of the entity identified by the given external id. 
+     * 
+     * @param id the external id
      * @return the class.
      */
-    protected Class<?> getClassFromLsid(String lsid) {
-        LSID lsidObj = new LSID(lsid);
+    protected Class<?> getClassFromExternalId(String id) {
+        LSID lsidObj = new LSID(id);
         try {
             return Class.forName(lsidObj.getNamespace());
         } catch (ClassNotFoundException e) {
@@ -235,12 +187,15 @@ public abstract class AbstractExternalService {
     }
 
     /**
-     * Return the id of the entity identified by the given LSID. 
-     * @param lsid the LSID
-     * @return the class.
+     * Return the identifier of the entity identified by the given external id. This would be the String
+     * that identifies the entity within its class. Typically it is the database identifier, but for some
+     * classes in the external model it is not. 
+     * 
+     * @param id the external id
+     * @return the entity id
      */
-    protected Long getIdFromLsid(String lsid) {
-        LSID lsidObj = new LSID(lsid);
+    protected Long getIdFromExternalId(String id) {
+        LSID lsidObj = new LSID(id);
         return Long.valueOf(lsidObj.getObjectId());
     }
 

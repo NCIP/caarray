@@ -415,13 +415,16 @@ public interface ProjectManagementService {
     List<Term> getDiseaseStatesForExperiment(Experiment experiment);
 
     /**
-     * Returns the sample for a given project with the given public identifier.
+     * Returns the biomaterial of given type for a given project with the given public identifier.
      *
+     * @param <T> the type of biomaterial desired
      * @param project the project to which the sample belongs
-     * @param externalSampleId the sample's external identifier
+     * @param externalId the biomaterial's external identifier
+     * @param biomaterialClass the AbstractBioMaterial subclass corresponding to the type of biomaterial desired
      * @return the sample with given external identifier, or null if there is no sample with that public identifier
      */
-    Sample getSampleByExternalId(Project project, String externalSampleId);
+    <T extends AbstractBioMaterial> T getBiomaterialByExternalId(Project project, String externalId,
+            Class<T> biomaterialClass);
 
     /**
      * Performs a query for samples and sources by text matching for the given keyword.
@@ -438,7 +441,7 @@ public interface ProjectManagementService {
      * @param categories Indicates which categories to search. Passing null will search all categories.
      * @return a list of matching biomaterials
      */
-    <T extends AbstractBioMaterial>List<T> searchByCategory(PageSortParams<T> params, String keyword,
+    <T extends AbstractBioMaterial> List<T> searchByCategory(PageSortParams<T> params, String keyword,
             Class<T> biomaterialClass, BiomaterialSearchCategory... categories);
 
     /**

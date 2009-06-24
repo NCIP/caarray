@@ -82,9 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileAccessService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getFileManagementService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption;
 import gov.nih.nci.caarray.application.file.InvalidFileException;
@@ -105,7 +103,6 @@ import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
 import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
@@ -486,7 +483,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         int skippedFiles = 0;
         for (CaArrayFile caArrayFile : getSelectedFiles()) {
             if (caArrayFile.isDeletable()) {
-                getFileAccessService().remove(caArrayFile);
+                ServiceLocatorFactory.getFileAccessService().remove(caArrayFile);
                 deletedFiles++;
             } else {
                 skippedFiles++;
@@ -519,7 +516,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 if (caArrayFile.getValidationResult() != null) {
                     caArrayFile.getValidationResult().getMessageSet().clear();
                 }
-                getFileAccessService().save(caArrayFile);
+                ServiceLocatorFactory.getFileAccessService().save(caArrayFile);
             }
             ActionHelper.saveMessage(getSelectedFiles().size() + " file(s) updated.");
         }
@@ -565,7 +562,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             }
         }
         if (!fileSet.getFiles().isEmpty()) {
-            getFileManagementService().validateFiles(getProject(), fileSet);
+            ServiceLocatorFactory.getFileManagementService().validateFiles(getProject(), fileSet);
         }
         ActionHelper.saveMessage(getText("project.fileValidate.success", new String[] {String.valueOf(fileSet
                 .getFiles().size()) }));
@@ -605,10 +602,10 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         this.selectedFiles.clear();
 
         if (idfFile != null) {
-
             selectedFiles.add(idfFile);
             // find files ref'ing sdrf file.
-            List<String> filenames = getFileManagementService().findIdfRefFileNames(idfFile, getProject());
+            List<String> filenames = ServiceLocatorFactory.getFileManagementService().findIdfRefFileNames(idfFile,
+                    getProject());
             if (!filenames.isEmpty() && validateReferencedFilesPresent(filenames)) {
                 findFilesByName(filenames);
                 boolean addErrorMessage = false;
@@ -722,7 +719,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 ExperimentDesignNodeType targetNodeType = (this.nodeType == null ? null : this.nodeType.getNodeType());
                 DataImportOptions dataImportOptions = DataImportOptions.getDataImportOptions(
                         this.targetAnnotationOption, this.newAnnotationName, targetNodeType, entityIds);
-                getFileManagementService().importFiles(getProject(), fileSet, dataImportOptions);
+                ServiceLocatorFactory.getFileManagementService().importFiles(getProject(), fileSet, dataImportOptions);
             }
             ActionHelper.saveMessage(getText("project.fileImport.success", new String[] {String.valueOf(fileSet
                     .getFiles().size()) }));
@@ -768,7 +765,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             fileSet.add(file);
         }
         if (!fileSet.getFiles().isEmpty()) {
-            getFileManagementService().addSupplementalFiles(getProject(), fileSet);
+            ServiceLocatorFactory.getFileManagementService().addSupplementalFiles(getProject(), fileSet);
         }
         ActionHelper.saveMessage(fileSet.getFiles().size() + " supplemental file(s) added to project.");
         refreshProject();
@@ -1001,8 +998,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 // where [type] is the container type and [number] is the id of the biomaterial parent
                 Long biomaterialParentId = Long.parseLong(StringUtils.substringAfterLast(StringUtils
                         .substringBeforeLast(this.nodeId, "_"), "_"));
-                AbstractBioMaterial bioMaterialParent = getGenericDataService().getPersistentObject(
-                        AbstractBioMaterial.class, biomaterialParentId);
+                AbstractBioMaterial bioMaterialParent = ServiceLocatorFactory.getGenericDataService()
+                        .getPersistentObject(AbstractBioMaterial.class, biomaterialParentId);
                 addJsonForExperimentDesignNodes(jsArray, this.nodeType.getChildrenNodeType(), this.nodeType
                         .getContainedNodes(bioMaterialParent), this.nodeId);
             } else if (this.nodeType.isBiomaterialNode()) {
@@ -1223,13 +1220,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public void setSelectedFileIds(List<Long> selectedFileIds) {
         this.selectedFileIds = selectedFileIds;
-        try {
-            this.selectedFiles = getGenericDataService().retrieveByIds(CaArrayFile.class, selectedFileIds);
-        } catch (IllegalAccessException e) {
-            LOG.error("Could not retrieve files for selected ids", e);
-        } catch (InstantiationException e) {
-            LOG.error("Could not retrieve files for selected ids", e);
-        }
+        this.selectedFiles = ServiceLocatorFactory.getGenericDataService().retrieveByIds(CaArrayFile.class,
+                selectedFileIds);
     }
 
     /**
@@ -1544,7 +1536,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             File sdrfFile = tempCache.createFile(sdrfFileName);
 
             // Translate the experiment and export to the temporary files.
-            MageTabExporter exporter = CaArrayActionHelper.getMageTabExporter();
+            MageTabExporter exporter = ServiceLocatorFactory.getMageTabExporter();
             exporter.exportToMageTab(getExperiment(), idfFile, sdrfFile);
 
             // Zip up the temporary files and send as response.

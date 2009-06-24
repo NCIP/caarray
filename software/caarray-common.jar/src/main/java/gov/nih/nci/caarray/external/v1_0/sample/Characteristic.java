@@ -161,6 +161,7 @@ public class Characteristic implements Serializable {
     }
 
     /**
+     * Set the value of this charactestic to be a TermValue with given term.
      * 
      * @param term the term
      */
@@ -171,8 +172,7 @@ public class Characteristic implements Serializable {
     }
 
     /**
-     * 
-     * @return the term
+     * @return if the value of this charactestic is a TermValue, return the term for that value, else return null.
      */
     public Term getTermValue() {
         if (this.value instanceof TermValue) {
@@ -183,6 +183,7 @@ public class Characteristic implements Serializable {
     }
 
     /**
+     * Set the value of this charactestic to be a MeasurementValue with given measurement.
      * 
      * @param measurement the measurement
      */
@@ -191,10 +192,10 @@ public class Characteristic implements Serializable {
         mv.setMeasurement(measurement);
         this.value = mv;
     }
-    
+
     /**
-     * 
-     * @return the measurement 
+     * @return if the value of this charactestic is a MeasurementValue, return the measurement for that value, else
+     *         return null.
      */
     public Float getMeasurementValue() {
         if (this.value instanceof MeasurementValue) {

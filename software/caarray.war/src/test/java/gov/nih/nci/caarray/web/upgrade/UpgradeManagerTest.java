@@ -84,13 +84,13 @@ package gov.nih.nci.caarray.web.upgrade;
 
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.application.ConfigurationHelper;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.UserTransactionStub;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
-import gov.nih.nci.caarray.util.ConfigurationHelper;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import org.apache.commons.configuration.DataConfiguration;

@@ -82,25 +82,27 @@
  */
 package gov.nih.nci.caarray.web.action;
 
-
-import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
-import com.opensymphony.xwork2.ActionSupport;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+
 import java.util.ArrayList;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getPermissionsManagementService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getProjectManagementService;
 import java.util.List;
+
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
+import com.opensymphony.xwork2.ActionSupport;
 
 /**
  *
  * @author gax
  */
 public class OwnershipAction extends ActionSupport {
+    private static final long serialVersionUID = 1L;
+
     private List<User> users;
     private List<CollaboratorGroup> groups;
     private List<Project> projects;
@@ -129,7 +131,7 @@ public class OwnershipAction extends ActionSupport {
      * @return SUCCESS.
      */
     public String listOwners() {
-        users = getPermissionsManagementService().getUsers(user);
+        users = ServiceLocatorFactory.getPermissionsManagementService().getUsers(user);
         return SUCCESS;
     }
 
@@ -258,8 +260,8 @@ public class OwnershipAction extends ActionSupport {
             return "listOwners";
         }
         long id = owner.getUserId().longValue();
-        groups = getPermissionsManagementService().getCollaboratorGroupsForOwner(id);
-        projects = getProjectManagementService().getProjectsForOwner(owner);
+        groups = ServiceLocatorFactory.getPermissionsManagementService().getCollaboratorGroupsForOwner(id);
+        projects = ServiceLocatorFactory.getProjectManagementService().getProjectsForOwner(owner);
         
         return SUCCESS;
     }
@@ -271,17 +273,17 @@ public class OwnershipAction extends ActionSupport {
     public String reassign() throws CSException {
         if (owner == null) {
             addActionError("Select a new Owner");
-            users = getPermissionsManagementService().getUsers(targetUser);
+            users = ServiceLocatorFactory.getPermissionsManagementService().getUsers(targetUser);
             users.remove(targetUser);
             return "newOwner";
         }
 
         for (long gId : groupIds) {
-            getPermissionsManagementService().changeOwner(gId, owner.getLoginName());
+            ServiceLocatorFactory.getPermissionsManagementService().changeOwner(gId, owner.getLoginName());
             ActionHelper.saveMessage("Collaboration Group " + gId + " assigned to " + owner.getLoginName());
         }
         for (long pId : projectIds) {
-            getProjectManagementService().changeOwner(pId, owner.getLoginName());
+            ServiceLocatorFactory.getProjectManagementService().changeOwner(pId, owner.getLoginName());
             ActionHelper.saveMessage("Experiment " + pId + " assigned to " + owner.getLoginName());
         }
 
@@ -293,7 +295,7 @@ public class OwnershipAction extends ActionSupport {
      * @return SUCCESS
      */
     public String usersTable() {
-        users = getPermissionsManagementService().getUsers(user);
+        users = ServiceLocatorFactory.getPermissionsManagementService().getUsers(user);
         return SUCCESS;
     }
 
@@ -307,7 +309,7 @@ public class OwnershipAction extends ActionSupport {
             assets();
             return "assets";
         }
-        users = getPermissionsManagementService().getUsers(user);
+        users = ServiceLocatorFactory.getPermissionsManagementService().getUsers(user);
         users.remove(targetUser);
         return SUCCESS;
     }

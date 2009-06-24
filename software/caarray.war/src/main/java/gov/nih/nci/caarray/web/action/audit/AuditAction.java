@@ -85,10 +85,12 @@ package gov.nih.nci.caarray.web.action.audit;
 import com.fiveamsolutions.nci.commons.audit.AuditLogRecord;
 import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.opensymphony.xwork2.ActionSupport;
+
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.audit.AuditLogService;
 import gov.nih.nci.caarray.domain.search.AuditLogSearchCriteria;
 import gov.nih.nci.caarray.domain.search.AuditLogSortCriterion;
-import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
+
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 /**
@@ -122,7 +124,7 @@ public class AuditAction extends ActionSupport {
      */
     @SkipValidation
     public String list() {
-        AuditLogService service = CaArrayActionHelper.getAuditLogService();
+        AuditLogService service = ServiceLocatorFactory.getAuditLogService();
         results.setFullListSize(service.getRecordsCount(criteria));
         results.setList(service.getRecords(criteria, results.getPageSortParams()));
         return SUCCESS;

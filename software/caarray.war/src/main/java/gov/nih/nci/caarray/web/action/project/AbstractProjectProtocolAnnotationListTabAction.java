@@ -82,13 +82,18 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyUtils;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.web.action.CaArrayActionHelper;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -108,6 +113,8 @@ import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public abstract class AbstractProjectProtocolAnnotationListTabAction extends AbstractProjectListTabAction {
+    private static final long serialVersionUID = 1L;
+    
     static final Transformer FILE_TYPE_TRANSFORMER = new Transformer() {
         /**
          * Transforms files to their extensions.
@@ -187,7 +194,37 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     }
 
     private void initForm() {
-        setProtocolTypes(CaArrayActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PROTOCOL_TYPE));
+        setProtocolTypes(VocabularyUtils.getTermsFromCategory(ExperimentOntologyCategory.PROTOCOL_TYPE));
+    }
+
+    /**
+     * Retrieve a biomaterial based on either the id or external id of the example biomaterial, depending on which
+     * attribute is not null. If both attributes are null, returns the example itself.
+     * 
+     * @param <T> the biomaterial subclass
+     * @param biomaterialClass the biomaterial subclass
+     * @param example the biomaterial example, whose id and external id are used to do the retrieval.
+     * @return the retrieved biomaterial. If no biomaterial has the given id or external id, a PermissionDeniedException
+     *         is thrown. If the example did not have either the id or external id set, returns the example itself.
+     */
+    protected <T extends AbstractBioMaterial> T retrieveByIdOrExternalId(Class<T> biomaterialClass, T example) {
+        T retrieved = example;
+        if (example.getId() != null) {
+            retrieved = ServiceLocatorFactory.getGenericDataService().getPersistentObject(biomaterialClass,
+                    example.getId());
+            if (retrieved == null) {
+                throw new PermissionDeniedException(example,
+                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
+            }
+        } else if (!isEditMode() && example.getExternalId() != null) {
+            retrieved = ServiceLocatorFactory.getProjectManagementService().getBiomaterialByExternalId(getProject(),
+                    example.getExternalId(), biomaterialClass);
+            if (retrieved == null) {
+                throw new ExternalIdPermissionDeniedException(example,
+                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
+            }
+        }
+        return retrieved;
     }
 
     /**
@@ -246,7 +283,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
      */
     @SkipValidation
     public String retrieveXmlProtocolList() {
-        setProtocols(CaArrayActionHelper.getVocabularyService().getProtocolsByProtocolType(getProtocolType(),
+        setProtocols(ServiceLocatorFactory.getVocabularyService().getProtocolsByProtocolType(getProtocolType(),
                 getProtocolName()));
         return "protocolAutoCompleterValues";
     }

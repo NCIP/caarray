@@ -82,9 +82,8 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.CaArrayActionHelper.getTermsFromCategory;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyUtils;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.publication.Publication;
@@ -129,11 +128,11 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
      * {@inheritDoc}
      */
     @Override
-    public void prepare() throws VocabularyServiceException {
+    public void prepare() {
         super.prepare();
 
         if (this.currentPublication.getId() != null) {
-            Publication retrieved = getGenericDataService().getPersistentObject(Publication.class,
+            Publication retrieved = ServiceLocatorFactory.getGenericDataService().getPersistentObject(Publication.class,
                     this.currentPublication.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentPublication,
@@ -143,8 +142,8 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
             }
         }
 
-        this.publicationTypes = getTermsFromCategory(ExperimentOntologyCategory.PUBLICATION_TYPE);
-        this.publicationStatuses = getTermsFromCategory(ExperimentOntologyCategory.PUBLICATION_STATUS);
+        this.publicationTypes = VocabularyUtils.getTermsFromCategory(ExperimentOntologyCategory.PUBLICATION_TYPE);
+        this.publicationStatuses = VocabularyUtils.getTermsFromCategory(ExperimentOntologyCategory.PUBLICATION_STATUS);
     }
 
     /**

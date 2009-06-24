@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 
 import java.util.List;
+import java.util.Set;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
@@ -142,7 +143,8 @@ public interface SampleDao extends CaArrayDao {
     int countSamplesByCharacteristicCategory(Category c, String keyword);
 
     /**
-     * Performs a query for samples or sources by text matching for the given keyword.
+     * Performs a query for biomaterials by text matching for the given keyword. This query method supports
+     * searching a single type of biomaterial.
      *
      * Note that this method currently only supports SortCriterions that are either simple properties of the target
      * class or required single-valued associations from it. If a non-required association is used in the sort
@@ -153,10 +155,29 @@ public interface SampleDao extends CaArrayDao {
      * @param keyword text to search for
      * @param biomaterialClass the AbstractBioMaterial subclass whose instances to search
      * @param categories Indicates which categories to search. Passing null will search all categories.
-     * @return a list of matching experiments
+     * @return a list of matching biomaterials of type biomaterialSubclass
      */
     <T extends AbstractBioMaterial> List<T> searchByCategory(PageSortParams<T> params, String keyword,
             Class<T> biomaterialClass, BiomaterialSearchCategory... categories);
+
+    /**
+     * Performs a query for biomaterials by text matching for the given keyword. This query method supports searching
+     * across multiple types of biomaterials.
+     * 
+     * Note that this method currently only supports SortCriterions that are either simple properties of the target
+     * class or required single-valued associations from it. If a non-required association is used in the sort
+     * criterion, then any instances for which that association is null will not be included in the results (as an inner
+     * join is used)
+     * 
+     * @param params paging and sorting parameters
+     * @param keyword text to search for
+     * @param biomaterialClasses the AbstractBioMaterial subclasses to include in the search. If this is an empty, then
+     *            this method will return an empty list.
+     * @param categories Indicates which categories to search. Passing null will search all categories.
+     * @return a list of matching biomaterials
+     */
+    List<AbstractBioMaterial> searchByCategory(PageSortParams<AbstractBioMaterial> params, String keyword,
+            Set<Class<? extends AbstractBioMaterial>> biomaterialClasses, BiomaterialSearchCategory... categories);
 
     /**
      * Performs a query for all sources which contain a characteristic and category supplied.
@@ -180,10 +201,9 @@ public interface SampleDao extends CaArrayDao {
      * 
      * @param params paging and sorting parameters
      * @param criteria the criteria for the search
-     * @param biomaterialType the class of biomaterials to search for
      * @param <T> the type of biomaterials to search for
      * @return a list of matching biomaterials of the given type.
      */
     <T extends AbstractBioMaterial> List<T> searchByCriteria(PageSortParams<T> params,
-            BiomaterialSearchCriteria criteria, Class<T> biomaterialType);
+            BiomaterialSearchCriteria criteria);
 }
