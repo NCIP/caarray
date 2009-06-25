@@ -1230,7 +1230,7 @@
                 <include name="${axis.jar}" />
                 <include name="${javaee.jar}"/>
                 <include name="${wsdl4j.jar}"/>
-		<include name="${google-collections.jar}"/>
+        <include name="${google-collections.jar}"/>
             </fileset>
         </path>
         <pathtofileset name="caarray-client.common.grid.dependencies.fileset" pathrefid="caarray-client.common.grid.dependencies.path" dir="${project.lib}"/>
@@ -1420,7 +1420,7 @@
     <!-- ** MAIN TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-    <target name="continuous-integration" depends="clean,init:third-party-paths,build-tags,database:reinitialize,build,check,test,javadoc"/>
+    <target name="continuous-integration" depends="clean,init:third-party-paths,build-tags,database:recreate-database,database:reinitialize,build,check,test,javadoc"/>
 
 
     <target name="nightly-build" depends="continuous-integration,
@@ -2554,7 +2554,7 @@
 
     <target name="database:execute-sql" unless="nodbintegration" depends="init:third-party-paths,database:drop-schema,database:create-schema,database:populate,database:env-specific-sql" description="Run SQL scripts, skipping Hibernate code generation"/>
 
-    <target name="database:recreate-database" unless="nodbintegration" description="Drops and recreates caarraydb database" depends="init:third-party-paths">
+    <target name="database:recreate-database" unless="nodbintegration" description="Drops and recreates caarraydb database" depends="init:third-party-paths,database:init-sql">
         <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
     </target>
 
