@@ -109,10 +109,10 @@ public enum ProjectSortCriterion implements SortCriterion<Project> {
     /**
      * Workflow status.
      */
-    STATUS("statusInternal"),
+    STATUS("locked"),
 
     /**
-     * Workflow status.
+     * Last updated.
      */
     LAST_UPDATED("lastUpdated");
 
