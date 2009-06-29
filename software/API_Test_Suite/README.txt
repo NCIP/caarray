@@ -44,12 +44,12 @@ Test Case | API | AssayType | Expected Results
           |     |  type2    |                    
           
 IMPORTANT: A test case must be specified for each individual test, as an
-entry in the 'Test Case' column is used to distinguish from a continuation
-of a test case on multiple rows. If the test does not correspond to a documented
-test case, a test case of '0' should be used.
+entry in the 'Test Case' column is used to distinguish a new test from a 
+continuation of a test case on multiple rows. If the test does not correspond 
+to a documented test case, a test case of '0' should be used.
 
 Configuration parameters common to all or most configuration files:
-Test Case: Indicates the row number of the test case in the 'API_backlog.xls' 
+Test Case: Indicates the Test Case ID of the test case in the 'API_backlog.xls' 
 	test plan to which a test corresponds.
 API: One of either 'java' or 'grid', indicating the API to be used for the test
 Expected Results: Expected number of results for a search. Only an exact match
