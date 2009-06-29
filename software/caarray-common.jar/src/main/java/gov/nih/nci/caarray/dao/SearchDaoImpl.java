@@ -99,7 +99,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.LockMode;
@@ -290,7 +289,10 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         StringBuilder filterQueryStr = new StringBuilder();
 
         Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
-        if (!CollectionUtils.isEmpty(values)) {
+        // jboss 4.0.5 only has commons-collections 3.1
+        // for now, it is easier to downgrade commons that to build an application.xxml with the right jars.
+        //if (!org.apache.commons.collections.CollectionUtils.isEmpty(values)) {
+        if (values != null && !values.isEmpty()) {
             filterQueryStr.append("where ").append(HibernateHelper.buildInClause(values, property, idBlocks));
         }
 

@@ -101,7 +101,7 @@ public class InvalidReferenceException extends ApiException {
      * @param reference the problematic reference
      */
     public InvalidReferenceException(CaArrayEntityReference reference) {
-        super();
+        super(reference.getId());
         this.reference = reference;
     }
 

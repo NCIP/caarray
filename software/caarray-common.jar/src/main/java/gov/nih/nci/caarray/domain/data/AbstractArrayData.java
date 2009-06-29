@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain.data;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 
 import java.util.HashSet;
@@ -101,6 +102,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -229,4 +231,10 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
     public String toString() {
         return new ToStringBuilder(this).append(name).append(dataFile).toString();
     }
+    
+    /**
+     * @return the set of hybridizations associated with this array data.
+     */
+    @Transient
+    public abstract Set<Hybridization> getHybridizations();
 }

@@ -1230,7 +1230,7 @@
                 <include name="${axis.jar}" />
                 <include name="${javaee.jar}"/>
                 <include name="${wsdl4j.jar}"/>
-        <include name="${google-collections.jar}"/>
+		<include name="${google-collections.jar}"/>
             </fileset>
         </path>
         <pathtofileset name="caarray-client.common.grid.dependencies.fileset" pathrefid="caarray-client.common.grid.dependencies.path" dir="${project.lib}"/>
@@ -1616,7 +1616,7 @@
                 </section>
             </manifest>
             <fileset dir="${caarray-client.classes.dir}">
-                <exclude name="**/services/external/**/*.class" />              
+                <exclude name="**/services/external/**/*.class" />
             </fileset>
             <fileset dir="${caarray-client.resources.dir}" />
             <fileset dir="${caarray-common.classes.dir}">
@@ -1653,7 +1653,7 @@
                     </section>
                 </manifest>
                 <fileset dir="${caarray-client.classes.dir}">
-                    <exclude name="**/services/CaArrayServer.class" />              
+                    <exclude name="**/services/CaArrayServer.class" />
                 </fileset>
                 <fileset dir="${caarray-client.resources.dir}" />
                 <fileset dir="${caarray-common.classes.dir}">
@@ -1707,7 +1707,7 @@
                 <zipfileset prefix="docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_external_model.eap" />
                 <zipfileset prefix="example/java/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/external/@{version}/java/**/*.java"/>
                 <zipfileset prefix="example/grid/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/external/@{version}/grid/**/*.java"/>
-                <zipfileset prefix="lib/grid" refid="caarray-client.external.@{version}.grid.dependencies.fileset" />               
+                <zipfileset prefix="lib/grid" refid="caarray-client.external.@{version}.grid.dependencies.fileset" />
                 <zipfileset prefix="lib/grid" refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
                 <zipfileset prefix="lib/grid" refid="grid.dependencies.caarray-grid-svc.@{version}.build.fileset" />
                 <zipfileset prefix="lib/grid" file="${caarray-grid-svc.common.jar}" />
@@ -2101,7 +2101,7 @@
         <caarray-run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};" classpathref.id="common.test.dependencies.path" />
     </target>
 
-    <!-- caarray-ejb.jar -->
+	<!-- caarray-ejb.jar -->
 
     <target name="test:instrument:caarray-ejb.jar" unless="notest" depends="init:third-party-paths,compile:caarray-ejb.jar">
         <cobertura-instrument todir="${caarray-ejb.instrumented.classes.dir}" datafile="${cobertura.file}">
@@ -2368,7 +2368,7 @@
     </target>
 
     <target name="test:selenium:run-tests:do-run" unless="notest" depends="init:third-party-paths">
-        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/selenium" classpath="${test.classes.dir};${caarray-client.jar};${test.data.classes.dir};${test.data.target.dir};" classpathref.id="selenium.dependencies.path" />
+        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/selenium" classpath="${test.classes.dir};${test.data.classes.dir};${test.data.target.dir};" classpathref.id="selenium.dependencies.path" />
     </target>
 
     <target name="test:selenium:run-tests" unless="notest" depends="init:third-party-paths,test:selenium:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data,build:caarray-client.jar,test:selenium:start-server,test:selenium:run-tests:do-run,test:selenium:stop-server"/>
@@ -2378,11 +2378,36 @@
     </target>
 
     <target name="test:api:run-tests" unless="notest" depends="init:third-party-paths,test:api:compile-tests,build:caarray-client.jar">
-        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/java" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${test.classes.dir};${caarray-client.jar};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" source.include="**/api/**/java/**/*.java" source.exclude="**/Abstract*.java" />
+        <echo> make sure you run "ant test:api:init-data" to setup test data</echo>
+        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/java"
+            instrumented.classes="${caarray-common.instrumented.classes.dir}"
+            classpath="${test.classes.dir};${caarray-client.classes.dir};${caarray-client.resources.dir};${caarray-ejb.classes.dir};${caarray-common.classes.dir}"
+            classpathref.id="client.test.dependencies.path"
+            source.include="**/api/**/java/**/*ServiceTest.java" source.exclude="**/Abstract*.java" />
+    </target>
+
+    <target name="test:api:init-data" unless="notest" depends="init:third-party-paths,database:recreate-database">
+        <!--
+        the dump file was created with :
+        mysqldump -compact -add-drop-table -u root caarraydb | gzip > caarraydb.sql.gz
+        NOTE: you may have to prepend the sql file with "SET foreign_key_checks = 0;"
+
+        -->
+        <mkdir dir="${test.target.dir}"/>
+        <gunzip src="${test.dir}/src/test/sql/caarraydb.sql.gz" dest="${test.target.dir}/caarraydb.sql"/>
+        <exec executable="${mysql.executable}" input="${test.target.dir}/caarraydb.sql">
+            <arg value="-u"/><arg value="${database.user}"/>
+            <arg value="-p${database.password}"/>
+            <arg value="-h"/><arg value="${database.server}"/>
+            <arg value="-P"/><arg value="${database.port}"/>
+            <arg value="${database.name}"/>
+        </exec>
+        <!--run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}"
+            sql.file="${test.target.dir}/caarraydb.sql" /-->
     </target>
 
     <target name="test:grid:run-tests" unless="notest"  depends="init:third-party-paths,test:grid:compile-tests,build:caarray-client.jar,build:caarray-grid-svc">
-        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/grid" classpath="${test.classes.dir};${caarray-client.jar};${caarray-grid-svc.common.jar};${caarray-client.resources.dir};" classpathref.id="test.grid.dependencies.path" source.include="**/api/**/grid/**/*.java" source.exclude="**/Abstract*.java" />
+        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/grid" classpath="${test.classes.dir};${caarray-grid-svc.common.jar};${caarray-client.resources.dir};" classpathref.id="test.grid.dependencies.path" source.include="**/api/**/grid/**/*.java" source.exclude="**/Abstract*.java" />
     </target>
 
     <!-- ******************************************************************* -->

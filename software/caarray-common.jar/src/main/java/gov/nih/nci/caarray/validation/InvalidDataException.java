@@ -98,7 +98,7 @@ public final class InvalidDataException extends Exception {
      * @param validationResult contains validation messages, including the error that caused this exception.
      */
     public InvalidDataException(ValidationResult validationResult) {
-        super();
+        super(validationResult.toString());
         this.validationResult = validationResult;
     }
 
@@ -108,5 +108,5 @@ public final class InvalidDataException extends Exception {
     public ValidationResult getValidationResult() {
         return validationResult;
     }
-    
+
 }

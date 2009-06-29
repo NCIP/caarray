@@ -97,6 +97,7 @@ public class AffymetrixCdfReaderTest extends AbstractCaarrayTest {
 
     @Test
     public final void testCreate() throws AffymetrixArrayDesignReadException {
+System.out.println("----------*-*-*----------"+AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL.getAbsolutePath());
         AffymetrixCdfReader reader = AffymetrixCdfReader.create(AffymetrixArrayDesignFiles.TEST3_CDF);
         assertNotNull(reader.getCdfData());
         reader.close();
