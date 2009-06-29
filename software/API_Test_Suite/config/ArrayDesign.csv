@@ -1,0 +1,9 @@
+Test Case,API,Name,Associated Provider,Assay Type,Min Results,Expected Results,Expected Provider,Expected Organism
+47,java,,,,50,,,
+48,grid,,,,50,,,
+49,java,HG-U133_Plus_2,,,,1,Affymetrix,human
+50,grid,HG-U133_Plus_2,,,,1,Affymetrix,human
+14,java,invalid junk,,,,0,,
+15,grid,invalid junk,,,,0,,
+16,java,,Affymetrix,,20,,,
+17,grid,,Affymetrix,,20,,,

@@ -1,0 +1,9 @@
+Test Case,API,Name,Quantitation Type,Expected Results,Expected Quantitations
+43,java,,,7,
+44,grid,,,7,
+45,java,Affymetrix CHP (Gene Expression),,1,11
+46,grid,Affymetrix CHP (Gene Expression),,1,11
+211,java,invalid junk,,0,
+212,grid,invalid junk,,0,
+213,java,,CHPSignal,1,11
+214,grid,,CHPSignal,1,11
