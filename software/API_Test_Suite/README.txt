@@ -5,7 +5,7 @@ RUNNING THE TEST SUITE
 --------------------------------------------------------------
 
 To run the test suite: in a command line shell, navigate to the
-'API Test Suite' directory and run the default ant command ('ant').
+'API_Test_Suite' directory and run the default ant command ('ant').
 The default ant task will clean, build, and run the test suite. A 
 test result report .csv file will be written to the 'report' directory.
 
