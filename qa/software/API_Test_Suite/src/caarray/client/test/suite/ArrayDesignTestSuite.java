@@ -86,16 +86,13 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
-import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
-import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.File;
 import java.util.List;
 
-import caarray.client.test.TestConfigurationException;
+import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
-import caarray.client.test.TestUtils;
 import caarray.client.test.search.ArrayDesignSearch;
 import caarray.client.test.search.ExampleSearch;
 
@@ -112,9 +109,6 @@ public class ArrayDesignTestSuite extends SearchByExampleTestSuite
     private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
             + File.separator + "ArrayDesign.csv";
 
-    /* ## Configuration file column headers ##*/
-    private static final String TEST_CASE = "Test Case";
-    private static final String API = "API";
     private static final String NAME = "Name";
     private static final String PROVIDER = "Associated Provider";
     private static final String ASSAY_TYPE = "Assay Type";
@@ -132,103 +126,66 @@ public class ArrayDesignTestSuite extends SearchByExampleTestSuite
      * @param gridClient
      * @param javaSearchService
      */
-    public ArrayDesignTestSuite(CaArraySvc_v1_0Client gridClient,
-            SearchService javaSearchService)
+    public ArrayDesignTestSuite(ApiFacade apiFacade)
     {
-        super(gridClient, javaSearchService);
+        super(apiFacade);
     }
 
-    @Override
-    protected void constructSearches(List<String> spreadsheetRows)
-            throws TestConfigurationException
+    protected void populateSearch(String[] input, ExampleSearch exampleSearch)
     {
-        int index = 1;
-        String row = spreadsheetRows.get(index);
-        ArrayDesignSearch search = null;
-    
-        // Iterate each row of spreadsheet input and construct individual search objects
-        while (row != null)
+        ArrayDesignSearch search = (ArrayDesignSearch)exampleSearch;
+        ArrayDesign example = new ArrayDesign();
+        if (headerIndexMap.get(API) < input.length
+                && !input[headerIndexMap.get(API)].equals(""))
         {
-            String[] input = TestUtils.split(row, DELIMITER);
-            //If the input row begins a new search, create a new object
-            //otherwise, continue adding parameters to the existing object
-            if (isNewSearch(input))
-            {
-                search = new ArrayDesignSearch();
-                ArrayDesign example = new ArrayDesign();
-                if (headerIndexMap.get(API) < input.length
-                        && !input[headerIndexMap.get(API)].equals(""))
-                {
-                    search.setApi(input[headerIndexMap.get(API)].trim());
-                }
-    
-                if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
-                    example.setName(input[headerIndexMap.get(NAME)].trim());
-                
-                if (headerIndexMap.get(PROVIDER) < input.length && !input[headerIndexMap.get(PROVIDER)].equals(""))
-                {
-                    ArrayProvider provider = new ArrayProvider();
-                    provider.setName(input[headerIndexMap.get(PROVIDER)]);
-                    example.setArrayProvider(provider);
-                }
-                if (headerIndexMap.get(ASSAY_TYPE) < input.length && !input[headerIndexMap.get(ASSAY_TYPE)].equals(""))
-                {
-                    example.getAssayTypes().add(new AssayType(input[headerIndexMap.get(ASSAY_TYPE)]));
-                }
-                search.setArrayDesign(example);
-                if (headerIndexMap.get(TEST_CASE) < input.length
-                        && !input[headerIndexMap.get(TEST_CASE)].equals(""))
-                    search.setTestCase(Integer.parseInt(input[headerIndexMap.get(TEST_CASE)]
-                            .trim()));
-                if (headerIndexMap.get(EXPECTED_RESULTS) < input.length
-                        && !input[headerIndexMap.get(EXPECTED_RESULTS)].equals(""))
-                    search.setExpectedResults(Integer
-                            .parseInt(input[headerIndexMap.get(EXPECTED_RESULTS)].trim()));
-                if (headerIndexMap.get(MIN_RESULTS) < input.length
-                        && !input[headerIndexMap.get(MIN_RESULTS)].equals(""))
-                    search.setMinResults(Integer
-                            .parseInt(input[headerIndexMap.get(MIN_RESULTS)].trim()));
-                if (headerIndexMap.get(EXPECTED_PROVIDER) < input.length
-                        && !input[headerIndexMap.get(EXPECTED_PROVIDER)].equals(""))
-                    search.setExpectedProvider(input[headerIndexMap.get(EXPECTED_PROVIDER)].trim());
-                if (headerIndexMap.get(EXPECTED_ORGANISM) < input.length
-                        && !input[headerIndexMap.get(EXPECTED_ORGANISM)].equals(""))
-                    search.setExpectedOrganism(input[headerIndexMap.get(EXPECTED_ORGANISM)]);
-    
-            }
-            else
-            {
-                if (search == null)
-                    throw new TestConfigurationException(
-                            "No test case indicated for row: " + index);
-    
-                if (headerIndexMap.get(ASSAY_TYPE) < input.length && !input[headerIndexMap.get(ASSAY_TYPE)].equals(""))
-                {
-                    search.getArrayDesign().getAssayTypes().add(new AssayType(input[headerIndexMap.get(ASSAY_TYPE)]));
-                }
-            }
-    
-            if (search != null)
-                configuredSearches.add(search);
-    
-            index++;
-            if (index < spreadsheetRows.size())
-            {
-                row = spreadsheetRows.get(index);
-            }
-            else
-            {
-                row = null;
-            }
+            search.setApi(input[headerIndexMap.get(API)].trim());
         }
-    }
 
+        if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
+            example.setName(input[headerIndexMap.get(NAME)].trim());
+        
+        if (headerIndexMap.get(PROVIDER) < input.length && !input[headerIndexMap.get(PROVIDER)].equals(""))
+        {
+            ArrayProvider provider = new ArrayProvider();
+            provider.setName(input[headerIndexMap.get(PROVIDER)]);
+            example.setArrayProvider(provider);
+        }
+        if (headerIndexMap.get(ASSAY_TYPE) < input.length && !input[headerIndexMap.get(ASSAY_TYPE)].equals(""))
+        {
+            example.getAssayTypes().add(new AssayType(input[headerIndexMap.get(ASSAY_TYPE)]));
+        }
+        search.setArrayDesign(example);
+        if (headerIndexMap.get(TEST_CASE) < input.length
+                && !input[headerIndexMap.get(TEST_CASE)].equals(""))
+            search.setTestCase(Integer.parseInt(input[headerIndexMap.get(TEST_CASE)]
+                    .trim()));
+        if (headerIndexMap.get(EXPECTED_RESULTS) < input.length
+                && !input[headerIndexMap.get(EXPECTED_RESULTS)].equals(""))
+            search.setExpectedResults(Integer
+                    .parseInt(input[headerIndexMap.get(EXPECTED_RESULTS)].trim()));
+        if (headerIndexMap.get(MIN_RESULTS) < input.length
+                && !input[headerIndexMap.get(MIN_RESULTS)].equals(""))
+            search.setMinResults(Integer
+                    .parseInt(input[headerIndexMap.get(MIN_RESULTS)].trim()));
+        if (headerIndexMap.get(EXPECTED_PROVIDER) < input.length
+                && !input[headerIndexMap.get(EXPECTED_PROVIDER)].equals(""))
+            search.setExpectedProvider(input[headerIndexMap.get(EXPECTED_PROVIDER)].trim());
+        if (headerIndexMap.get(EXPECTED_ORGANISM) < input.length
+                && !input[headerIndexMap.get(EXPECTED_ORGANISM)].equals(""))
+            search.setExpectedOrganism(input[headerIndexMap.get(EXPECTED_ORGANISM)]);
+    }
     
-    private boolean isNewSearch(String[] input)
+    
+    
+    @Override
+    protected void populateAdditionalSearchValues(String[] input,
+            ExampleSearch exampleSearch)
     {
-        int testCaseIndex = headerIndexMap.get(TEST_CASE);
-        return (testCaseIndex < input.length && !input[testCaseIndex]
-                .equals(""));
+        ArrayDesignSearch search = (ArrayDesignSearch)exampleSearch;
+        if (headerIndexMap.get(ASSAY_TYPE) < input.length && !input[headerIndexMap.get(ASSAY_TYPE)].equals(""))
+        {
+            search.getArrayDesign().getAssayTypes().add(new AssayType(input[headerIndexMap.get(ASSAY_TYPE)]));
+        }
     }
 
     @Override
@@ -335,5 +292,13 @@ public class ArrayDesignTestSuite extends SearchByExampleTestSuite
         }
         
     }
+
+    @Override
+    protected ExampleSearch getExampleSearch()
+    {
+        return new ArrayDesignSearch();
+    }
+    
+    
 
 }

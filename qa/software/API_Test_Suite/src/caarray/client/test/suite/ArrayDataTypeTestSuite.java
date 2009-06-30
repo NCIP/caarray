@@ -85,16 +85,13 @@ package caarray.client.test.suite;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
-import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
-import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.File;
 import java.util.List;
 
-import caarray.client.test.TestConfigurationException;
+import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
-import caarray.client.test.TestUtils;
 import caarray.client.test.search.ArrayDataTypeSearch;
 import caarray.client.test.search.ExampleSearch;
 
@@ -110,9 +107,6 @@ public class ArrayDataTypeTestSuite extends SearchByExampleTestSuite
     private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
             + File.separator + "ArrayDataType.csv";
 
-    /* ## Configuration file column headers ##*/
-    private static final String TEST_CASE = "Test Case";
-    private static final String API = "API";
     private static final String NAME = "Name";
     private static final String QUANT_TYPE = "Quantitation Type";
     private static final String EXPECTED_RESULTS = "Expected Results";
@@ -122,59 +116,14 @@ public class ArrayDataTypeTestSuite extends SearchByExampleTestSuite
             API, NAME, QUANT_TYPE, EXPECTED_QUANT, EXPECTED_RESULTS };
 
     
-    public ArrayDataTypeTestSuite(CaArraySvc_v1_0Client gridClient,
-            SearchService javaSearchService)
+    public ArrayDataTypeTestSuite(ApiFacade apiFacade)
     {
-        super(gridClient, javaSearchService);
+        super(apiFacade);
     }
 
-    @Override
-    protected void constructSearches(List<String> spreadsheetRows)
-            throws TestConfigurationException
+    protected void populateSearch(String[] input, ExampleSearch exampleSearch)
     {
-        int index = 1;
-        String row = spreadsheetRows.get(index);
-        ArrayDataTypeSearch search = null;
-    
-        // Convert spreadsheet input to ArrayDataTypeSearch objects
-        while (row != null)
-        {
-            String[] input = TestUtils.split(row, DELIMITER);
-            if (isNewSearch(input))
-            {
-                search = new ArrayDataTypeSearch();
-                populateSearch(input, search);  
-            }
-            else
-            {
-                if (search == null)
-                    throw new TestConfigurationException(
-                            "No test case indicated for row: " + index);
-    
-                if (headerIndexMap.get(QUANT_TYPE) < input.length && !input[headerIndexMap.get(QUANT_TYPE)].equals(""))
-                {
-                    QuantitationType qType = new QuantitationType();
-                    qType.setName(input[headerIndexMap.get(QUANT_TYPE)]);
-                    search.getArrayDataType().getQuantitationTypes().add(qType);
-                }
-            }
-    
-            configuredSearches.add(search);
-    
-            index++;
-            if (index < spreadsheetRows.size())
-            {
-                row = spreadsheetRows.get(index);
-            }
-            else
-            {
-                row = null;
-            }
-        }
-    }
-
-    private void populateSearch(String[] input, ArrayDataTypeSearch search)
-    {
+        ArrayDataTypeSearch search = (ArrayDataTypeSearch)exampleSearch;
         ArrayDataType example = new ArrayDataType();
         if (headerIndexMap.get(API) < input.length
                 && !input[headerIndexMap.get(API)].equals(""))
@@ -205,11 +154,17 @@ public class ArrayDataTypeTestSuite extends SearchByExampleTestSuite
                     .parseInt(input[headerIndexMap.get(EXPECTED_QUANT)].trim()));
     }
     
-    private boolean isNewSearch(String[] input)
+    @Override
+    protected void populateAdditionalSearchValues(String[] input,
+            ExampleSearch exampleSearch)
     {
-        int testCaseIndex = headerIndexMap.get(TEST_CASE);
-        return (testCaseIndex < input.length && !input[testCaseIndex]
-                .equals(""));
+        ArrayDataTypeSearch search = (ArrayDataTypeSearch)exampleSearch;
+        if (headerIndexMap.get(QUANT_TYPE) < input.length && !input[headerIndexMap.get(QUANT_TYPE)].equals(""))
+        {
+            QuantitationType qType = new QuantitationType();
+            qType.setName(input[headerIndexMap.get(QUANT_TYPE)]);
+            search.getArrayDataType().getQuantitationTypes().add(qType);
+        }
     }
 
     
@@ -287,6 +242,12 @@ public class ArrayDataTypeTestSuite extends SearchByExampleTestSuite
     protected String[] getColumnHeaders()
     {
         return COLUMN_HEADERS;
+    }
+    
+    @Override
+    protected ExampleSearch getExampleSearch()
+    {
+        return new ArrayDataTypeSearch();
     }
 
 }

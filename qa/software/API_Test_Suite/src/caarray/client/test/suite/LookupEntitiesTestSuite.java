@@ -90,14 +90,12 @@ import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
-import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
-import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.File;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
+import caarray.client.test.ApiFacade;
 import caarray.client.test.TestConfigurationException;
 import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
@@ -133,10 +131,9 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
      * @param gridClient
      * @param javaSearchService
      */
-    public LookupEntitiesTestSuite(CaArraySvc_v1_0Client gridClient,
-            SearchService javaSearchService)
+    public LookupEntitiesTestSuite(ApiFacade apiFacade)
     {
-        super(gridClient, javaSearchService);
+        super(apiFacade);
     }
 
     /* (non-Javadoc)
@@ -228,8 +225,25 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
                 row = null;
             }
         }
+        filterTestsByApi();
     }
 
+    private void filterTestsByApi()
+    {
+        String api = TestProperties.getTargetApi();
+        if (!api.equalsIgnoreCase(TestProperties.API_ALL))
+        {
+            List<ConfigurableTest> filteredTests = new ArrayList<ConfigurableTest>();
+            for (ConfigurableTest test : configuredTests)
+            {
+                if (test.getApi().equalsIgnoreCase(api))
+                    filteredTests.add(test);
+            }
+            configuredTests = filteredTests;
+        }
+        
+    }
+    
     /* (non-Javadoc)
      * @see caarray.client.test.ConfigurableTestSuite#executeConfiguredTests(caarray.client.test.TestResultReport)
      */
@@ -326,21 +340,15 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
             return testResult;
         }
         
-        private List<Person> getInvestigators() throws RemoteException
+        private List<Person> getInvestigators() throws Exception
         {
-            List<Person> resultList = new ArrayList<Person>();
-            if (api.equalsIgnoreCase("java"))
-                resultList.addAll(javaSearchService.getAllPrincipalInvestigators());
-            else if (api.equalsIgnoreCase("grid"))
-            {
-                Person[] results = gridClient.getAllPrincipalInvestigators();
-                if (results != null)
-                {
-                    for (Person person : results)
-                        resultList.add(person);
-                }
-            }
-            return resultList;    
+            return apiFacade.getAllPrincipalInvestigators(api);    
+        }
+
+
+        public String getApi()
+        {
+            return api;
         }
         
     }
@@ -411,27 +419,20 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
             CaArrayEntityReference categoryRef = categories.get(0)
                     .getReference();
 
-            long startTime = System.currentTimeMillis();
-            if (api.equalsIgnoreCase("java"))
-            {
-                resultsList.addAll(javaSearchService.getTermsForCategory(
-                        categoryRef, null));
-            }
-            else if (api.equalsIgnoreCase("grid"))
-            {
-                Term[] result = gridClient.getTermsForCategory(categoryRef, null);
-                if (result != null)
-                {
-                    for (Term term : result)
-                    {
-                        resultsList.add(term);  
-                    }
-                }              
-            }
+            long startTime = System.currentTimeMillis();           
+            resultsList.addAll(apiFacade.getTermsForCategory(api, categoryRef, null));
             long elapsedTime = System.currentTimeMillis() - startTime;
+            
             testResult.setElapsedTime(elapsedTime);
             return resultsList;
         }
+
+
+        public String getApi()
+        {
+            return api;
+        }
+        
     }
     
     class GetByReferenceTest implements ConfigurableTest
@@ -516,15 +517,12 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
         private AbstractCaArrayEntity getByReference() throws Exception
         {
             CaArrayEntityReference ref = new CaArrayEntityReference(reference);
-            if (api.equalsIgnoreCase("java"))
-            {
-                return javaSearchService.getByReference(ref);
-            }
-            if (api.equalsIgnoreCase("grid"))
-            {
-                return gridClient.getByReference(ref);
-            }
-            return null;
+            return apiFacade.getByReference(api, ref);
+        }
+        
+        public String getApi()
+        {
+            return api;
         }
     }
     
@@ -618,32 +616,17 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
         private List<AbstractCaArrayEntity> getByReferences() throws Exception
         {
             
-            if (api.equalsIgnoreCase("java"))
+            List<CaArrayEntityReference> refs = new ArrayList<CaArrayEntityReference>();
+            for (String reference : references)
             {
-                List<CaArrayEntityReference> refs = new ArrayList<CaArrayEntityReference>();
-                for (String reference : references)
-                {
-                    refs.add(new CaArrayEntityReference(reference));
-                }
-                return javaSearchService.getByReferences(refs);
+                refs.add(new CaArrayEntityReference(reference));
             }
-            if (api.equalsIgnoreCase("grid"))
-            {
-                CaArrayEntityReference refs[] = new CaArrayEntityReference[references.size()];
-                for (int i = 0; i < references.size(); i++)
-                {
-                    refs[i] = new CaArrayEntityReference(references.get(i));
-                }
-                AbstractCaArrayEntity[] results = gridClient.getByReferences(refs);
-                List<AbstractCaArrayEntity> resultsList = new ArrayList<AbstractCaArrayEntity>();
-                for (AbstractCaArrayEntity result : results)
-                {
-                    resultsList.add(result);
-                }
-                return resultsList;
-            }
-            
-            return new ArrayList<AbstractCaArrayEntity>();
+            return apiFacade.getByReferences(api, refs);
+        }
+        
+        public String getApi()
+        {
+            return api;
         }
     }
 

@@ -86,14 +86,16 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
-import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
-import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import caarray.client.test.ApiFacade;
+import caarray.client.test.TestConfigurationException;
+import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
 import caarray.client.test.TestResultReport;
+import caarray.client.test.TestUtils;
 import caarray.client.test.search.ExampleSearch;
 
 /**
@@ -105,12 +107,57 @@ import caarray.client.test.search.ExampleSearch;
  */
 public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
 {
+    protected static final String TEST_CASE = "Test Case";
+    protected static final String API = "API";
     protected List<ExampleSearch> configuredSearches = new ArrayList<ExampleSearch>();
 
-    protected SearchByExampleTestSuite(CaArraySvc_v1_0Client gridClient,
-            SearchService javaSearchService)
+    protected SearchByExampleTestSuite(ApiFacade apiFacade)
     {
-        super(gridClient,javaSearchService);
+        super(apiFacade);
+    }
+
+    @Override
+    protected void constructSearches(List<String> spreadsheetRows)
+            throws TestConfigurationException
+    {
+        int index = 1;
+        String row = spreadsheetRows.get(index);
+        ExampleSearch search = null;
+    
+        // Iterate each row of spreadsheet input and construct individual search objects
+        while (row != null)
+        {
+            String[] input = TestUtils.split(row, DELIMITER);
+            //If the input row begins a new search, create a new object
+            //otherwise, continue adding parameters to the existing object
+            if (isNewSearch(input))
+            {
+                search = getExampleSearch();
+                populateSearch(input, search);  
+            }
+            else
+            {
+                if (search == null)
+                    throw new TestConfigurationException(
+                            "No test case indicated for row: " + index);
+    
+                populateAdditionalSearchValues(input, search);
+            }
+    
+            if (search != null)
+                configuredSearches.add(search);
+    
+            index++;
+            if (index < spreadsheetRows.size())
+            {
+                row = spreadsheetRows.get(index);
+            }
+            else
+            {
+                row = null;
+            }
+        }
+        filterSearchesByAPI();
     }
 
     protected void executeConfiguredTests(TestResultReport resultReport)
@@ -165,6 +212,21 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
         
         System.out.println(getType() + " tests complete ...");
     }
+    
+    private void filterSearchesByAPI()
+    {
+        String api = TestProperties.getTargetApi();
+        if (!api.equalsIgnoreCase(TestProperties.API_ALL))
+        {
+            List<ExampleSearch> filteredSearches = new ArrayList<ExampleSearch>();
+            for (ExampleSearch search : configuredSearches)
+            {
+                if (search.getApi().equalsIgnoreCase(api))
+                    filteredSearches.add(search);
+            }
+            configuredSearches = filteredSearches;
+        }
+    }
 
     /**
      * Convenience method for adding an unexpected error message to a test result.
@@ -181,6 +243,19 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
             testResult.setTestCase(search.getTestCase());
         testResult.addDetail(errorMessage);
     }
+    
+    /**
+     * Returns true if a row of spreadsheet input is the start of a new test case, false otherwise.
+     * 
+     * @param input Input row taken from a configuration spreadsheet.
+     * @return true if a row of spreadsheet input is the start of a new test case, false otherwise.
+     */
+    protected boolean isNewSearch(String[] input)
+    {
+        int testCaseIndex = headerIndexMap.get(TEST_CASE);
+        return (testCaseIndex < input.length && !input[testCaseIndex]
+                .equals(""));
+    }
 
     /**
      * Determines the pass/fail status of a test based on the given search results.
@@ -190,4 +265,26 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
      * @param testResult TestResult to which a status will be added.
      */
     protected abstract void evaluateResults(List<? extends AbstractCaArrayEntity> resultsList, ExampleSearch search, TestResult testResult);
+    
+    /**
+     * Populates an ExampleSearch bean with values taken from a configuration spreadsheet.
+     * 
+     * @param input Input row taken from a configuration spreadsheet.
+     * @param exampleSearch ExampleSearch bean to be populated.
+     */
+    protected abstract void populateSearch(String[] input, ExampleSearch exampleSearch);
+    
+    /**
+     * For test cases configured in multiple rows of a spreadsheet, populates search
+     * with the values entered in continuation rows.
+     * @param input Input row taken from a configuration spreadsheet.
+     * @param exampleSearch ExampleSearch bean to be populated.
+     */
+    protected abstract void populateAdditionalSearchValues(String[] input, ExampleSearch exampleSearch);
+    
+    /**
+     * Returns a new, type-specific ExampleSearch object to be populated.
+     * @return a new, type-specific ExampleSearch object to be populated.
+     */
+    protected abstract ExampleSearch getExampleSearch();
 }

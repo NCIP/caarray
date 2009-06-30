@@ -4,10 +4,38 @@ External API test suite for caArray java and grid clients v1.0
 RUNNING THE TEST SUITE
 --------------------------------------------------------------
 
+Before building and running the test suite, confirm that the
+lib, lib/java, and lib/grid directories contain the .jar files
+corresponding to the tag to be tested. The directory contents
+should be as follows:
+	lib: should contain the caarray-client-external-v1_0.jar
+		 file contained in the caarray-client.zip file.
+	lib/java: should contain the .jar files contained in the
+		 lib/java directory of the caarray-client.zip file.
+	lib/grid: should contain the .jar files contained in the
+		 lib/grid directory of the caarray-client.zip file.
+		 
+		 
 To run the test suite: in a command line shell, navigate to the
-'API_Test_Suite' directory and run the default ant command ('ant').
-The default ant task will clean, build, and run the test suite. A 
-test result report .csv file will be written to the 'report' directory.
+'API_Test_Suite' directory and run one of the following commands:
+	1) ant
+	   The default ant command will build and run the full test
+	   suite against both the java and grid APIs.
+	2) ant test_java
+	   This command will build and run only the portions of the
+	   test suite pertaining to the java API. Only the .jar files
+	   included in the /lib and lib/java directories will be included
+	   in the classpath, confirming the integrity of the dependency
+	   directories as provided to end users.
+	3) ant test_grid
+	   This command will build and run only the portions of the
+	   test suite pertaining to the grid API. Only the .jar files
+	   included in the /lib and lib/grid directories will be included
+	   in the classpath, confirming the integrity of the dependency
+	   directories as provided to end users.
+
+A test result report .csv file will be written to the 'report' directory
+upon completion of the test suite.
 
 
 CONFIGURING THE TEST SUITE

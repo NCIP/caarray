@@ -85,7 +85,7 @@ package caarray.client.test;
 import java.io.File;
 
 /**
- * Provides access to properties required to run the tests.
+ * Provides access to properties required to run the test suite.
  * 
  * @author vaughng
  * Jun 26, 2009
@@ -104,10 +104,16 @@ public class TestProperties {
     public static final String GRID_SERVER_HOSTNAME_DEFAULT = "array-stage.nci.nih.gov";
     public static final String GRID_SERVER_PORT_DEFAULT = "80";
     
-    public static final String REPORT_DIR = "report.dir";
-    public static final String REPORT_FILE = "report.file";
+    public static final String REPORT_DIR_KEY = "report.dir";
+    public static final String REPORT_FILE_KEY = "report.file";
     public static final String DEFAULT_REPORT_DIR = "report";
     public static final String DEFAULT_REPORT_FILE = "External_API_Test_Results";
+    
+    public static final String API_ALL = "all";
+    public static final String API_GRID = "grid";
+    public static final String API_JAVA = "java";
+    public static final String API_KEY = "api.use";
+    public static final String DEFAULT_API = API_ALL;
     
     public static final String CONFIG_DIR = "config";
     
@@ -133,12 +139,16 @@ public class TestProperties {
     
     public static String getReportDir()
     {
-    	return System.getProperty(REPORT_DIR,DEFAULT_REPORT_DIR);
+    	return System.getProperty(REPORT_DIR_KEY,DEFAULT_REPORT_DIR);
     }
+    
     public static String getReportFile()
     {
-    	return System.getProperty(REPORT_DIR,DEFAULT_REPORT_DIR) + File.separator + System.getProperty(REPORT_FILE,DEFAULT_REPORT_FILE);
+    	return System.getProperty(REPORT_DIR_KEY,DEFAULT_REPORT_DIR) + File.separator + System.getProperty(REPORT_FILE_KEY,DEFAULT_REPORT_FILE);
     }
 
-	
+	public static String getTargetApi()
+	{
+	    return System.getProperty(API_KEY,DEFAULT_API);
+	}
 }

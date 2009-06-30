@@ -83,15 +83,10 @@
 package caarray.client.test;
 
 import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
-import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
-import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
-
-import org.apache.axis.types.URI.MalformedURIException;
 
 import caarray.client.test.suite.ArrayDataTypeTestSuite;
 import caarray.client.test.suite.ArrayDesignTestSuite;
@@ -107,32 +102,12 @@ import caarray.client.test.suite.LookupEntitiesTestSuite;
  */
 public class TestMain {
 
-	private CaArraySvc_v1_0Client gridClient = null;
-	private SearchService javaSearchService = null;
 	private TestResultReport resultReport = new TestResultReport();
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		
-		TestMain test = new TestMain();	
-		try
-		{
-			test.runTests();
-		}
-		catch (Throwable t)
-		{
-			System.out.println("An unexpected error occurred during test execution.");
-			t.printStackTrace();
-		}
-		
-	}
 	
-	private void runTests() throws ServerConnectionException, RemoteException, MalformedURIException, FileNotFoundException, IOException
+	public void runTests(ApiFacade apiFacade) throws ServerConnectionException, RemoteException, FileNotFoundException, IOException
     {
-    	init();
-    	ConfigurableTestSuite[] testSuites = new ConfigurableTestSuite[]{new ArrayDataTypeTestSuite(gridClient, javaSearchService),
-    	        new ArrayDesignTestSuite(gridClient,javaSearchService), new LookupEntitiesTestSuite(gridClient, javaSearchService)};
+    	ConfigurableTestSuite[] testSuites = new ConfigurableTestSuite[]{new ArrayDataTypeTestSuite(apiFacade),
+    	        new ArrayDesignTestSuite(apiFacade), new LookupEntitiesTestSuite(apiFacade)};
     	
     	System.out.println("Executing test suites ...");
     	for (ConfigurableTestSuite testSuite : testSuites)
@@ -141,19 +116,6 @@ public class TestMain {
     	}
     	resultReport.writeReport();
     	System.out.println("Tests completed.");
-    }
-
-    private void init() throws ServerConnectionException, RemoteException, MalformedURIException
-    {
-        String hostName = TestProperties.getJavaServerHostname();
-        int port = TestProperties.getJavaServerJndiPort();
-        System.out.println("Connecting to java server: " + hostName + ":" + port);
-    	CaArrayServer server = new CaArrayServer(hostName, port);
-        server.connect();
-        javaSearchService = server.getSearchService();
-        String gridUrl = TestProperties.getGridServiceUrl();
-        System.out.println("Connecting to grid service: " + gridUrl);
-        gridClient = new CaArraySvc_v1_0Client(gridUrl);
     }
 
 }

@@ -83,16 +83,14 @@
 package caarray.client.test;
 
 /**
+ * Encapsulates the results of an individual test.
+ * 
  * @author vaughng
  * Jun 25, 2009
  */
 public class TestResult {
 
 	private int testCase = 0;
-	public void setTestCase(int testCase) {
-		this.testCase = testCase;
-	}
-
 	private boolean passed = true;
 	private String details;
 	private long elapsedTime = 0;
@@ -128,8 +126,12 @@ public class TestResult {
 	}
 
 	public int getTestCase() {
-		return testCase;
-	}
+    	return testCase;
+    }
+
+    public void setTestCase(int testCase) {
+    	this.testCase = testCase;
+    }
 	
 	
 }

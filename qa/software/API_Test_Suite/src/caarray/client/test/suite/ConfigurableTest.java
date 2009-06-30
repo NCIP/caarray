@@ -92,4 +92,5 @@ public interface ConfigurableTest
 {
 
     public TestResult runTest();
+    public String getApi();
 }

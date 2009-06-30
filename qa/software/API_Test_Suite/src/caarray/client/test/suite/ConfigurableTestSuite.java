@@ -86,8 +86,6 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
-import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
-import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -100,6 +98,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import caarray.client.test.ApiFacade;
 import caarray.client.test.TestConfigurationException;
 import caarray.client.test.TestResultReport;
 import caarray.client.test.TestUtils;
@@ -114,15 +113,14 @@ public abstract class ConfigurableTestSuite
 {
 
     protected static final String DELIMITER = ",";
-    protected final CaArraySvc_v1_0Client gridClient;
-    protected final SearchService javaSearchService;
+    /*protected final CaArraySvc_v1_0Client gridClient;
+    protected final SearchService javaSearchService;*/
+    protected ApiFacade apiFacade;
     protected Map<String, Integer> headerIndexMap = new HashMap<String, Integer>();
 
-    protected ConfigurableTestSuite(CaArraySvc_v1_0Client gridClient,
-            SearchService javaSearchService)
+    protected ConfigurableTestSuite(ApiFacade apiFacade)
     {
-        this.gridClient = gridClient;
-        this.javaSearchService = javaSearchService;
+        this.apiFacade = apiFacade;
     }
     
     /**
@@ -249,9 +247,9 @@ public abstract class ConfigurableTestSuite
      * @throws RemoteException
      */
     protected SearchResult<? extends AbstractCaArrayEntity> getSearchResults(String api, ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria, LimitOffset offset)
-            throws RemoteException
+            throws Exception
     {
-        SearchResult<? extends AbstractCaArrayEntity> result = null;
+        /*SearchResult<? extends AbstractCaArrayEntity> result = null;
         if (api.equalsIgnoreCase("grid"))
         {
             result = gridClient.searchByExample(criteria, offset);
@@ -263,8 +261,8 @@ public abstract class ConfigurableTestSuite
         else
         {
             System.out.println("No API specified for example search, ignoring search.");
-        }
-        return result;
+        }*/
+        return apiFacade.searchByExample(api, criteria, offset);
     }
 
     /**

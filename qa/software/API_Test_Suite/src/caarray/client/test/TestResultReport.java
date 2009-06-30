@@ -96,6 +96,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
+ * Encapsulates the results of one or more individual tests,
+ * and produces a report file detailing the test results.
+ * 
  * @author vaughng
  * Jun 25, 2009
  */
@@ -113,16 +116,40 @@ public class TestResultReport {
 		
 	}
 	
+	/**
+	 * Adds a TestResult to this report.
+	 * 
+	 * @param testResult The TestResult to be added.
+	 */
 	public void addTestResult(TestResult testResult)
 	{
 		results.add(testResult);
 	}
 	
+	/**
+	 * Adds an error message that does not correspond to an
+	 * individual test, such as an error encountered in a configuration
+	 * file. Error messages will be included in the report file.
+	 * 
+	 * @param errorMessage An error message that does not correspond to an individual test.
+	 */
 	public void addErrorMessage(String errorMessage)
 	{
 		errorMessages.add(errorMessage);
 	}
 	
+	/**
+	 * Produces a CSV file detailing the TestResults contained
+	 * in this TestResultReport. Error messages not specific to
+	 * individual tests will also be included in the report file.
+	 * The name and location of the file is determined by properties
+	 * obtained from the TestProperties class, with the addition of
+	 * a time stamp included in the file name to prevent the overwriting
+	 * of previous report files.
+	 * 
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public void writeReport() throws FileNotFoundException, IOException
 	{
 		String reportDirName = TestProperties.getReportDir();

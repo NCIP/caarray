@@ -126,7 +126,8 @@ public class TestUtils {
 	    
 	    //Remove quotes, and split the substituted input around the delimiter
 	    input = replacement.toString();
-	    input = input.replaceAll("\"","");
+	    String boundryQuotePattern = "\"" + delimiter + "\"";
+	    input = input.replaceAll(boundryQuotePattern,"");
 	    String[] delimited = input.split(delimiter);
 	    
 	    //Replace instances of the delimiter substitution with the delimiter
