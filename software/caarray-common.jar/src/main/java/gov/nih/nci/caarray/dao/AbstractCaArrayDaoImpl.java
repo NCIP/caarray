@@ -98,6 +98,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Example;
@@ -210,8 +211,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         T entityToMatch = criteria.getExample();
         CaArrayUtils.blankStringPropsToNull(entityToMatch);
         
-        Criteria c = HibernateUtil.getCurrentSession().createCriteria(entityToMatch.getClass()).setResultTransformer(
-                CriteriaSpecification.DISTINCT_ROOT_ENTITY);        
+        Criteria c = HibernateUtil.getCurrentSession().createCriteria(getPersistentClass(entityToMatch.getClass()))
+                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         c.add(createExample(entityToMatch, criteria.getMatchMode(), criteria.isExcludeNulls(), criteria
                 .getExcludeProperties()));
         new SearchCriteriaHelper<T>(c, criteria).addCriteriaForAssociations();            
@@ -278,6 +279,23 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         return example;
     }
 
+    private PersistentClass getClassMapping(Class<? extends PersistentObject> exampleClass) {
+        Class<?> persistentClass = getPersistentClass(exampleClass);
+        return persistentClass == null ? null : HibernateUtil.getConfiguration().getClassMapping(
+                persistentClass.getName());
+    }
+
+    private Class<?> getPersistentClass(Class<? extends PersistentObject> exampleClass) {
+        Configuration hcfg = HibernateUtil.getConfiguration();
+        for (Class<?> klass = exampleClass; !Object.class.equals(klass); klass = klass
+                .getSuperclass()) {
+            if (hcfg.getClassMapping(klass.getName()) != null) {
+                return klass;
+            }
+        }
+        return null;
+    }
+
     
     /**
      * Provides helper methods for search DAOs.
@@ -309,9 +327,12 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         @SuppressWarnings("unchecked")
         public void addCriteriaForAssociations() {
             try {
-                PersistentClass pclass = HibernateUtil.getConfiguration().getClassMapping(
-                        exampleCriteria.getExample().getClass().getName());
-                Iterator<Property> properties = pclass.getPropertyIterator();
+                PersistentClass pclass = getClassMapping(exampleCriteria.getExample().getClass());
+                if (pclass == null) {
+                    throw new DAOException("Could not find hibernate class mapping in hierarchy of class "
+                            + exampleCriteria.getExample().getClass().getName());
+                }
+                Iterator<Property> properties = pclass.getPropertyClosureIterator();
                 while (properties.hasNext()) {
                     Property prop = properties.next();
                     if (prop.getType().isAssociationType()) {
@@ -326,7 +347,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
                 throw new DAOException(UNABLE_TO_GET_ASSOCIATION_VAL, ite);
             }
         }
-
+        
         /**
          * Add one search criterion based on the association to be matched.
          * 

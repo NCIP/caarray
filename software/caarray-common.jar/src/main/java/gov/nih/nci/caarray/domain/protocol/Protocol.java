@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.security.Protectable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -116,7 +115,7 @@ import org.hibernate.validator.NotNull;
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "source" }))
-public class Protocol extends AbstractCaArrayEntity implements Protectable {
+public class Protocol extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
     private String contact;

@@ -380,6 +380,15 @@ public class FileDaoTest extends AbstractDaoTest {
         le4.getHybridizations().add(h3);
         h3.getLabeledExtracts().add(le4);
         DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le4);
+        
+        CaArrayFile file6 = new CaArrayFile();
+        file6.setName("file6.chp");
+        file6.setFileType(FileType.AFFYMETRIX_CHP);
+        file6.setFileStatus(FileStatus.UPLOADED);
+        in1 = new ByteArrayInputStream("test chp2".getBytes());
+        file6.writeContents(in1);
+        DAO_OBJECT.save(file6);
+
 
         tx.commit();
 
@@ -388,12 +397,31 @@ public class FileDaoTest extends AbstractDaoTest {
         
         PageSortParams<CaArrayFile> params = new PageSortParams<CaArrayFile>(5, 0, new AdHocSortCriterion<CaArrayFile>("name"), false);
         FileSearchCriteria criteria = new FileSearchCriteria();        
-        criteria.setExperiment(e);
         criteria.setIncludeDerived(true);
         criteria.setIncludeRaw(true);
         criteria.setIncludeSupplemental(false);
-        
+
         List<CaArrayFile> files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(3, files.size());
+        assertEquals(file2.getName(), files.get(0).getName());
+        assertEquals(file3.getName(), files.get(1).getName());
+        assertEquals(file6.getName(), files.get(2).getName());
+
+        criteria.setExtension("CHP");
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(2, files.size());
+        assertEquals(file3.getName(), files.get(0).getName());
+        assertEquals(file6.getName(), files.get(1).getName());
+
+        criteria.getExperimentNodes().add(ex2);
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(1, files.size());
+        assertEquals(file3.getName(), files.get(0).getName());
+
+        criteria.setExtension(null);
+        criteria.getExperimentNodes().clear();
+        criteria.setExperiment(e);
+        files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(2, files.size());
         assertEquals(file2.getName(), files.get(0).getName());
         assertEquals(file3.getName(), files.get(1).getName());
@@ -439,6 +467,10 @@ public class FileDaoTest extends AbstractDaoTest {
 
         criteria.getExperimentNodes().clear();
         criteria.setExtension("CHP");
+        files = DAO_OBJECT.searchFiles(params, criteria);
+        assertEquals(1, files.size());
+        assertEquals(file3.getName(), files.get(0).getName());                
+        criteria.setExtension(".CHP");
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
         assertEquals(file3.getName(), files.get(0).getName());                

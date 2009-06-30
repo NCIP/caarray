@@ -150,11 +150,7 @@
 
         <dependency conf="project" name="csm" org="ncicb" rev="4.1.0.2"/>
 
-        <dependency conf="project" name="svnant" org="org.tigris" rev="1.1.0-RC2"/>
-
-        <dependency conf="project" name="svnClientAdapter" org="org.tigris" rev="1.0"/>
-
-        <dependency conf="project" name="svnjavahl" org="org.tigris" rev="1.0"/>
+        <dependency conf="project" name="svnant" org="org.tigris" rev="1.2.1"/>
 
         <dependency conf="project" name="clm" org="ncicb" rev="4.0"/>
 

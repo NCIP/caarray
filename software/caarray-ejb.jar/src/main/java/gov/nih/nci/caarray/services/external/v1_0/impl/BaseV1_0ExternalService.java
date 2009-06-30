@@ -87,7 +87,9 @@ import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
+import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -123,7 +125,6 @@ import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceExcep
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -482,20 +483,16 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
         public List<Biomaterial> queryByExample(ExampleSearchCriteria<Biomaterial> criteria, 
                 LimitOffset pagingParams) {
             List<AbstractBioMaterial> results = new ArrayList<AbstractBioMaterial>();
-            Set<BiomaterialType> bmTypes = criteria.getExample().getType() == null ? EnumSet
-                    .allOf(BiomaterialType.class) : EnumSet.of(criteria.getExample().getType());
-            for (BiomaterialType bmType : bmTypes) {
-                criteria.getExample().setType(bmType);
-                results.addAll((List<AbstractBioMaterial>) getDaoFactory().getSearchDao().queryEntityByExample(
-                        toInternalCriteria(criteria), pagingParams.getLimit(), pagingParams.getOffset(),
-                        getOrders()));
-            }
+            results.addAll((List<AbstractBioMaterial>) getDaoFactory().getSearchDao().queryEntityByExample(
+                    toInternalCriteria(criteria), pagingParams.getLimit(), pagingParams.getOffset(), getOrders()));
             return mapCollection(results, Biomaterial.class);
         }
         
         @Override
         protected PersistentObject toInternalExample(Biomaterial bm) {
-            return mapEntity(bm, BIOMATERIAL_TYPE_TO_CLASS_MAP.get(bm.getType()));
+            Class<? extends PersistentObject> klass = bm.getType() == null ? AbstractBioMaterialWrapper.class
+                    : BIOMATERIAL_TYPE_TO_CLASS_MAP.get(bm.getType()); 
+            return mapEntity(bm, klass);
         }
     }
 
@@ -560,5 +557,39 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
                 throw new IllegalStateException("Invalid file type category: " + criteria.getExample().getCategory());
             }
         }
+    }
+
+    /**
+     * Dummy wrapper class to enable one to create an example of AbstractBioMaterial.
+     * 
+     * @author dkokotov
+     */
+    private static final class AbstractBioMaterialWrapper extends AbstractBioMaterial {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        protected void doAddDirectPredecessor(AbstractExperimentDesignNode predecessor) {
+            // no-op
+        }
+
+        @Override
+        protected void doAddDirectSuccessor(AbstractExperimentDesignNode successor) {
+            // no-op
+        }
+
+        @Override
+        public Set<? extends AbstractExperimentDesignNode> getDirectPredecessors() {
+            return null;
+        }
+
+        @Override
+        public Set<? extends AbstractExperimentDesignNode> getDirectSuccessors() {
+            return null;
+        }
+
+        @Override
+        public ExperimentDesignNodeType getNodeType() {
+            return null;
+        }        
     }
 }

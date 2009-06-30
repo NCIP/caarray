@@ -13,6 +13,8 @@ Users must explicitly set the software.dir property if local repository is to be
 -->
 
 <ivysettings>
+    <properties file="${ivy.settings.dir}/build/local.properties" override="false"/>
+    <properties file="${ivy.settings.dir}/build/default.properties" override="false"/>
     <settings defaultResolver="ncicb-chain"/>
 
     <!-- defaultCacheDir causes the caarray to use it's own ivy cache directory -->

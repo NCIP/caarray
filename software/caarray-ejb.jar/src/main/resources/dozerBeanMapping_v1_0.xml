@@ -321,42 +321,14 @@
             <b>arrayDesign</b>
         </field>
   	</mapping>    
-	<mapping> 
-    	<class-a>gov.nih.nci.caarray.domain.sample.Source</class-a>
-    	<class-b>gov.nih.nci.caarray.external.v1_0.sample.Biomaterial</class-b>   
-    	<field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.sample.Biomaterial">
-      		<a>id</a>
-     	 	<b>id</b>
-    	</field>
-        <field>
-            <a>nodeType</a>
-            <b>type</b>
-        </field>
-        <field>
-            <a>diseaseState</a>
-            <b>diseaseState.term</b>
-        </field>
-        <field>
-            <a>tissueSite</a>
-            <b>tissueSite.term</b>
-        </field>
-        <field>
-            <a>materialType</a>
-            <b>materialType.term</b>
-        </field>
-        <field>
-            <a>cellType</a>
-            <b>cellType.term</b>
-        </field>
-  	</mapping>
     <mapping> 
-        <class-a>gov.nih.nci.caarray.domain.sample.Sample</class-a>
+        <class-a>gov.nih.nci.caarray.domain.sample.AbstractBioMaterial</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.sample.Biomaterial</class-b>   
         <field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.sample.Biomaterial">
             <a>id</a>
             <b>id</b>
         </field>
-        <field>
+        <field type="one-way">
             <a>nodeType</a>
             <b>type</b>
         </field>
@@ -376,64 +348,8 @@
             <a>cellType</a>
             <b>cellType.term</b>
         </field>
-    </mapping>
-    <mapping> 
-        <class-a>gov.nih.nci.caarray.domain.sample.Extract</class-a>
-        <class-b>gov.nih.nci.caarray.external.v1_0.sample.Biomaterial</class-b>   
-        <field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.sample.Biomaterial">
-            <a>id</a>
-            <b>id</b>
-        </field>
-        <field>
-            <a>nodeType</a>
-            <b>type</b>
-        </field>
-        <field>
-            <a>diseaseState</a>
-            <b>diseaseState.term</b>
-        </field>
-        <field>
-            <a>tissueSite</a>
-            <b>tissueSite.term</b>
-        </field>
-        <field>
-            <a>materialType</a>
-            <b>materialType.term</b>
-        </field>
-        <field>
-            <a>cellType</a>
-            <b>cellType.term</b>
-        </field>
-    </mapping>
-    <mapping> 
-        <class-a>gov.nih.nci.caarray.domain.sample.LabeledExtract</class-a>
-        <class-b>gov.nih.nci.caarray.external.v1_0.sample.Biomaterial</class-b>   
-        <field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.sample.Biomaterial">
-            <a>id</a>
-            <b>id</b>
-        </field>
-        <field>
-            <a>nodeType</a>
-            <b>type</b>
-        </field>
-        <field>
-            <a>diseaseState</a>
-            <b>diseaseState.term</b>
-        </field>
-        <field>
-            <a>tissueSite</a>
-            <b>tissueSite.term</b>
-        </field>
-        <field>
-            <a>materialType</a>
-            <b>materialType.term</b>
-        </field>
-        <field>
-            <a>cellType</a>
-            <b>cellType.term</b>
-        </field>
-    </mapping>
-    <mapping> 
+   </mapping>
+   <mapping> 
         <class-a>gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.sample.Characteristic</class-b>   
         <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.FactorValueConverter">

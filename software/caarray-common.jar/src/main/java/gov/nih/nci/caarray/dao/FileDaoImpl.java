@@ -206,7 +206,9 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         }
         
         Criteria c = HibernateUtil.getCurrentSession().createCriteria(CaArrayFile.class);
-        c.add(Restrictions.eq("project", criteria.getExperiment().getProject()));            
+        if (criteria.getExperiment() != null) {
+            c.add(Restrictions.eq("project", criteria.getExperiment().getProject()));
+        }
         if (!criteria.getTypes().isEmpty()) {
             Set<String> typeNames = new HashSet<String>();
             for (FileType ft : criteria.getTypes()) {
@@ -215,7 +217,11 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
             c.add(Restrictions.in("type", typeNames));
         }
         if (criteria.getExtension() != null) {
-            c.add(Restrictions.ilike("name", "%." + criteria.getExtension()));
+            String extension = criteria.getExtension();
+            if (!extension.startsWith(".")) {
+                extension = "." + extension;
+            }
+            c.add(Restrictions.ilike("name", "%" + extension));
         }        
         Set<String> includedTypes = new HashSet<String>();     
         if (criteria.isIncludeDerived()) {
