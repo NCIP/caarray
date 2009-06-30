@@ -282,7 +282,7 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
             this.testCase = testCase;
         }
         
-        @Override
+        
         public TestResult runTest()
         {
             TestResult testResult = new TestResult();
@@ -358,7 +358,7 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
             this.minResults = minResults;
         }
 
-        @Override
+        
         public TestResult runTest()
         {
             TestResult testResult = new TestResult();
@@ -447,7 +447,7 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
             this.expectedResults = expectedResults;
         }
 
-        @Override
+        
         public TestResult runTest()
         {
             TestResult testResult = new TestResult();
@@ -542,7 +542,7 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
             this.expectedResults = expectedResults;
         }
 
-        @Override
+        
         public TestResult runTest()
         {
             TestResult testResult = new TestResult();
