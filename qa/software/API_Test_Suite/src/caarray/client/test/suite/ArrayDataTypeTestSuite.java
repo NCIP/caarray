@@ -143,35 +143,7 @@ public class ArrayDataTypeTestSuite extends SearchByExampleTestSuite
             if (isNewSearch(input))
             {
                 search = new ArrayDataTypeSearch();
-                ArrayDataType example = new ArrayDataType();
-                if (headerIndexMap.get(API) < input.length
-                        && !input[headerIndexMap.get(API)].equals(""))
-                {
-                    search.setApi(input[headerIndexMap.get(API)].trim());
-                }
-    
-                if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
-                    example.setName(input[headerIndexMap.get(NAME)].trim());
-                if (headerIndexMap.get(QUANT_TYPE) < input.length && !input[headerIndexMap.get(QUANT_TYPE)].equals(""))
-                {
-                    QuantitationType qType = new QuantitationType();
-                    qType.setName(input[headerIndexMap.get(QUANT_TYPE)].trim());
-                    example.getQuantitationTypes().add(qType);
-                }
-                search.setArrayDataType(example);
-                if (headerIndexMap.get(TEST_CASE) < input.length
-                        && !input[headerIndexMap.get(TEST_CASE)].equals(""))
-                    search.setTestCase(Integer.parseInt(input[headerIndexMap.get(TEST_CASE)]
-                            .trim()));
-                if (headerIndexMap.get(EXPECTED_RESULTS) < input.length
-                        && !input[headerIndexMap.get(EXPECTED_RESULTS)].equals(""))
-                    search.setExpectedResults(Integer
-                            .parseInt(input[headerIndexMap.get(EXPECTED_RESULTS)].trim()));
-                if (headerIndexMap.get(EXPECTED_QUANT) < input.length
-                        && !input[headerIndexMap.get(EXPECTED_QUANT)].equals(""))
-                    search.setExpectedQuantitations(Integer
-                            .parseInt(input[headerIndexMap.get(EXPECTED_QUANT)].trim()));
-    
+                populateSearch(input, search);  
             }
             else
             {
@@ -187,8 +159,7 @@ public class ArrayDataTypeTestSuite extends SearchByExampleTestSuite
                 }
             }
     
-            if (search != null)
-                configuredSearches.add(search);
+            configuredSearches.add(search);
     
             index++;
             if (index < spreadsheetRows.size())
@@ -202,6 +173,38 @@ public class ArrayDataTypeTestSuite extends SearchByExampleTestSuite
         }
     }
 
+    private void populateSearch(String[] input, ArrayDataTypeSearch search)
+    {
+        ArrayDataType example = new ArrayDataType();
+        if (headerIndexMap.get(API) < input.length
+                && !input[headerIndexMap.get(API)].equals(""))
+        {
+            search.setApi(input[headerIndexMap.get(API)].trim());
+        }
+
+        if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
+            example.setName(input[headerIndexMap.get(NAME)].trim());
+        if (headerIndexMap.get(QUANT_TYPE) < input.length && !input[headerIndexMap.get(QUANT_TYPE)].equals(""))
+        {
+            QuantitationType qType = new QuantitationType();
+            qType.setName(input[headerIndexMap.get(QUANT_TYPE)].trim());
+            example.getQuantitationTypes().add(qType);
+        }
+        search.setArrayDataType(example);
+        if (headerIndexMap.get(TEST_CASE) < input.length
+                && !input[headerIndexMap.get(TEST_CASE)].equals(""))
+            search.setTestCase(Integer.parseInt(input[headerIndexMap.get(TEST_CASE)]
+                    .trim()));
+        if (headerIndexMap.get(EXPECTED_RESULTS) < input.length
+                && !input[headerIndexMap.get(EXPECTED_RESULTS)].equals(""))
+            search.setExpectedResults(Integer
+                    .parseInt(input[headerIndexMap.get(EXPECTED_RESULTS)].trim()));
+        if (headerIndexMap.get(EXPECTED_QUANT) < input.length
+                && !input[headerIndexMap.get(EXPECTED_QUANT)].equals(""))
+            search.setExpectedQuantitations(Integer
+                    .parseInt(input[headerIndexMap.get(EXPECTED_QUANT)].trim()));
+    }
+    
     private boolean isNewSearch(String[] input)
     {
         int testCaseIndex = headerIndexMap.get(TEST_CASE);
