@@ -85,8 +85,6 @@ package caarray.client.test;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.globus.wsrf.RemoveNotSupportedException;
-
 /**
  * @author vaughng
  * Jun 26, 2009
