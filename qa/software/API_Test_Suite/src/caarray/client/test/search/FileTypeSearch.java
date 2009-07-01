@@ -85,6 +85,9 @@ package caarray.client.test.search;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Bean encapsulating details of a search-by-example FileType search.
  * 
@@ -94,6 +97,7 @@ import gov.nih.nci.caarray.external.v1_0.data.FileType;
 public class FileTypeSearch extends ExampleSearch
 {
     private FileType fileType;
+    private List<String> expectedNames = new ArrayList<String>(), expectedCategories = new ArrayList<String>();
     
     /**
      * 
@@ -117,6 +121,26 @@ public class FileTypeSearch extends ExampleSearch
     public void setFileType(FileType fileType)
     {
         this.fileType = fileType;
+    }
+
+    public List<String> getExpectedNames()
+    {
+        return expectedNames;
+    }
+
+    public void addExpectedName(String expectedName)
+    {
+        expectedNames.add(expectedName);
+    }
+
+    public List<String> getExpectedCategories()
+    {
+        return expectedCategories;
+    }
+
+    public void addExpectedCategory(String expectedCategory)
+    {
+        expectedCategories.add(expectedCategory);
     }
 
 }

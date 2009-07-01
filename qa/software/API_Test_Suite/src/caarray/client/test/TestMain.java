@@ -90,7 +90,9 @@ import java.rmi.RemoteException;
 
 import caarray.client.test.suite.ArrayDataTypeTestSuite;
 import caarray.client.test.suite.ArrayDesignTestSuite;
+import caarray.client.test.suite.AssayTypeTestSuite;
 import caarray.client.test.suite.ConfigurableTestSuite;
+import caarray.client.test.suite.FileTypeTestSuite;
 import caarray.client.test.suite.LookupEntitiesTestSuite;
 
 /**
@@ -107,7 +109,8 @@ public class TestMain {
 	public void runTests(ApiFacade apiFacade) throws ServerConnectionException, RemoteException, FileNotFoundException, IOException
     {
     	ConfigurableTestSuite[] testSuites = new ConfigurableTestSuite[]{new ArrayDataTypeTestSuite(apiFacade),
-    	        new ArrayDesignTestSuite(apiFacade), new LookupEntitiesTestSuite(apiFacade)};
+    	        new ArrayDesignTestSuite(apiFacade), new LookupEntitiesTestSuite(apiFacade), new AssayTypeTestSuite(apiFacade),
+    	        new FileTypeTestSuite(apiFacade)};
     	
     	System.out.println("Executing test suites ...");
     	for (ConfigurableTestSuite testSuite : testSuites)

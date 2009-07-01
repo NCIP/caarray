@@ -109,6 +109,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
 {
     protected static final String TEST_CASE = "Test Case";
     protected static final String API = "API";
+    protected static final String EXPECTED_RESULTS = "Expected Results";
     protected List<ExampleSearch> configuredSearches = new ArrayList<ExampleSearch>();
 
     protected SearchByExampleTestSuite(ApiFacade apiFacade)
@@ -169,7 +170,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
             {
                 if (search.getApi() == null)
                 {
-                    setTestResultErrorMessage(testResult, search,
+                    setTestResultFailure(testResult, search,
                             "No API indicated for ArrayDataType test case: "
                                     + search.getTestCase());
                     resultReport.addTestResult(testResult);
@@ -202,7 +203,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
             catch (Throwable t)
             {
 
-                setTestResultErrorMessage(testResult, search,
+                setTestResultFailure(testResult, search,
                         "An exception occured executing an " + getType() + " search-by-example: "
                                 + t.getLocalizedMessage());
             }
@@ -235,7 +236,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
      * @param search
      * @param errorMessage
      */
-    protected void setTestResultErrorMessage(TestResult testResult,
+    protected void setTestResultFailure(TestResult testResult,
             ExampleSearch search, String errorMessage)
     {
         testResult.setPassed(false);
@@ -258,15 +259,6 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
     }
 
     /**
-     * Determines the pass/fail status of a test based on the given search results.
-     * 
-     * @param resultsList The results of a test search.
-     * @param search ExampleSearch specifying the expected results of the test search.
-     * @param testResult TestResult to which a status will be added.
-     */
-    protected abstract void evaluateResults(List<? extends AbstractCaArrayEntity> resultsList, ExampleSearch search, TestResult testResult);
-    
-    /**
      * Populates an ExampleSearch bean with values taken from a configuration spreadsheet.
      * 
      * @param input Input row taken from a configuration spreadsheet.
@@ -282,6 +274,15 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
      */
     protected abstract void populateAdditionalSearchValues(String[] input, ExampleSearch exampleSearch);
     
+    /**
+     * Determines the pass/fail status of a test based on the given search results.
+     * 
+     * @param resultsList The results of a test search.
+     * @param search ExampleSearch specifying the expected results of the test search.
+     * @param testResult TestResult to which a status will be added.
+     */
+    protected abstract void evaluateResults(List<? extends AbstractCaArrayEntity> resultsList, ExampleSearch search, TestResult testResult);
+
     /**
      * Returns a new, type-specific ExampleSearch object to be populated.
      * @return a new, type-specific ExampleSearch object to be populated.

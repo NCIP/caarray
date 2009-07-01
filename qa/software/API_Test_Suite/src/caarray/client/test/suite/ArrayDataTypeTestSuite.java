@@ -109,7 +109,6 @@ public class ArrayDataTypeTestSuite extends SearchByExampleTestSuite
 
     private static final String NAME = "Name";
     private static final String QUANT_TYPE = "Quantitation Type";
-    private static final String EXPECTED_RESULTS = "Expected Results";
     private static final String EXPECTED_QUANT = "Expected Quantitations";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,

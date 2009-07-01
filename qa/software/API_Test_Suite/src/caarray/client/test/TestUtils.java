@@ -85,6 +85,8 @@ package caarray.client.test;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.globus.wsrf.RemoveNotSupportedException;
+
 /**
  * @author vaughng
  * Jun 26, 2009
@@ -101,11 +103,18 @@ public class TestUtils {
 	   */
 	  public static String[] split(String input, String delimiter)
 	  {
+	      
 	    if (input == null)
 	      return null;
 	    
+	    String[] delimited;
+	    
 	    if (input.indexOf("\"") < 0)
-	      return input.split(delimiter);
+	    {
+	        delimited = input.split(delimiter);
+	        return removeNulls(delimited);  
+	    }
+	      
 	    
 	    //Quoted text containing at least one comma
 	    String quotePattern = "\"[^\"]*" + delimiter + "[^\"]*\"";
@@ -128,7 +137,7 @@ public class TestUtils {
 	    input = replacement.toString();
 	    String boundryQuotePattern = "\"" + delimiter + "\"";
 	    input = input.replaceAll(boundryQuotePattern,"");
-	    String[] delimited = input.split(delimiter);
+	    delimited = input.split(delimiter);
 	    
 	    //Replace instances of the delimiter substitution with the delimiter
 	    for (int i = 0; i < delimited.length; i++)
@@ -136,7 +145,7 @@ public class TestUtils {
 	      delimited[i] = delimited[i].replaceAll(substitute,delimiter);
 	    }
 	    
-	    return delimited;
+	    return removeNulls(delimited);
 	  }
 	  
 	  /**
@@ -175,5 +184,26 @@ public class TestUtils {
 	    }
 	    
 	    return retVal;
+	  }
+	  
+	  /**
+	   * Returns the result of replacing any null values in the given array with
+	   * the empty string.
+	   * 
+	   * @param arg Array in which nulls will be removed.
+	   * @return An array containing empty strings in place of null values.
+	   */
+	  public static String[] removeNulls(String[] arg)
+	  {
+	      if (arg == null)
+	          return null;
+	      String[] retVal = new String[arg.length];
+	      System.arraycopy(arg, 0, retVal, 0, arg.length);
+	      for (int i = 0; i < retVal.length; i++)
+	      {
+	          if (retVal[i] == null)
+	              retVal[i] = "";
+	      }
+	      return retVal;
 	  }
 }
