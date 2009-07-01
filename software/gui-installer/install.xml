@@ -224,8 +224,6 @@
                         <os family="windows"/>
                     </listener>
 
-                    <listener installer="ProgressBarInstallerListener"/>
-
                     <listener installer="AntActionInstallerListener" uninstaller="AntActionUninstallerListener" />
                 </listeners>
 
