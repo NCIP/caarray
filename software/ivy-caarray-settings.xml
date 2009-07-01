@@ -1,20 +1,18 @@
 <!--
-$Id: $
-$HeadURL: $
-
-This file is the is the settings file used by Ivy and the Ivy Eclipse plugin for caArray build dependencies.
+This file is the is the settings file used by Ivy for caArray build dependencies. When configuring the
+IvyDE plugin for eclipse, you should point it at ivy-caarray-settings-eclipse.xml instead.
 
 The settings define two resolvers:
   1) An ncicb-ivy-repo resolver points to the NCICB Ivy Repository
   2) Another resolver points to a local filesystem repository where temporary artifacts can be published as part
      of a project or where you can test out your ivy definitions before they are added to official NCICB Ivy Repository.
+     This can also be used to speed up builds and make it possible to do builds offline.
 
-Users must explicitly set the software.dir property if local repository is to be used.
+The local resolver looks for the ivy repo in ${local.repo.dir}. This is set to a default value in build/default.properties,
+and can be overridden via local.properties or -D on the ant command line.
 -->
 
 <ivysettings>
-    <properties file="${ivy.settings.dir}/build/local.properties" override="false"/>
-    <properties file="${ivy.settings.dir}/build/default.properties" override="false"/>
     <settings defaultResolver="ncicb-chain"/>
 
     <!-- defaultCacheDir causes the caarray to use it's own ivy cache directory -->
