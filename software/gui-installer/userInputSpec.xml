@@ -1,6 +1,11 @@
 <userInput>
     <!-- Install -->
     <panel order="0">
+        <field type="title" txt="Installer Staging Cleanup" bold="true" size="1" />
+        <field type="staticText" align="left" txt="The caArray installer staging directory must be removed prior to installing/upgrading, and it can take a moment or two.  Please click Next to remove it."/>
+    </panel>
+    
+    <panel order="1">
         <field type="title" txt="Installation Mode" bold="true" size="1" />
         <field type="staticText" align="left" txt="Choose Install if you haven't installed caArray on this machine before. Choose Upgrade if caArray has previously been installed. WARNING: When choosing Install, the installer will remove any previously installed application servers (using caBIG installers) or databases installed based on the information you provide, so be sure to backup your application server and database instance if they exist. For detailed descriptions on each of the properties in this installer, see ${installer.properties.wiki.page} (fresh install), or ${upgrade.properties.wiki.page} (upgrade install)."/>
         <field type="divider" align="top"/>
@@ -12,10 +17,14 @@
                 <choice txt="Upgrade" id="setup.type.upgrade" value="upgrade" />
             </spec>
         </field>
+        <fileextractor>
+            <extractfile filename="res/cleanup.xml" toDirName="."/>               
+        </fileextractor>
+        <panelreader classname="res/cleanup.xml" methodname="cleanup" language="ant"/>
     </panel>
 
     <!-- Install -->
-    <panel order="1">
+    <panel order="2">
         <field type="title" txt="Installation Type" bold="true" size="1" />
         <field type="staticText" align="left" txt="A Typical install requires you to enter an essential mininum number of values to successfully install the software. A Typical install configures ports and other required values. A Custom install allows you to modify all of the configurable values such as port numbers."/>
         <field type="divider" align="top"/>
@@ -30,7 +39,7 @@
     </panel>
 
     <!-- Install -->
-    <panel order="2">
+    <panel order="3">
         <field type="title" txt="Configure your JBoss application server" bold="true" size="1" />
         <field type="divider" align="top"/>
     <field type="staticText" align="left" txt="As part of this installtion, JBoss will be installed in ${UserPathPanelVariable}.  It will be configured based on the values you enter below.  NOTE: The Hostname below (and on other panels of this installer) is the host name accesible from this machine and others on the local network. To access this JBoss application server from the Internet, you may need to provide the JBoss HTTP Port to your Network administrator to allow access through the firewall."/>
@@ -113,7 +122,7 @@
 
     </panel>
 
-    <panel order="3">
+    <panel order="4">
         <field type="title" txt="Create a JBoss Web Console Password" bold="true" size="1" />
         <field type="staticText" align="left" txt="The password you enter below is the password used to access the JBoss web console. This is a password you are creating, so you must keep track of this password for future use."/>
         <field type="divider" align="top"/>
@@ -196,7 +205,7 @@
 
     </panel>
 
-    <panel order="4">
+    <panel order="5">
         <field type="title" txt="Additional JBoss installation options" bold="true" size="1" />
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -282,7 +291,7 @@
     </panel>
 
     <!-- Install -->
-    <panel order="5">
+    <panel order="6">
         <field type="title" txt="Configure your Grid application server" bold="true" size="1" />
     <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Grid Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -363,7 +372,7 @@
     </panel>
 
 
-    <panel order="6">
+    <panel order="7">
         <field type="title" txt="Additional Grid installation options" bold="true" size="1" />
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Grid Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -449,7 +458,7 @@
     </panel>
 
     <!-- upgrade -->
-    <panel order="7">
+    <panel order="8">
         <field type="title" txt="Configure your existing JBoss application server" bold="true" size="1" />
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see ${upgrade.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -548,7 +557,7 @@
 
 
 
-    <panel order="8">
+    <panel order="9">
         <field type="title" txt="Configure research center contact information for Grid configuration" bold="true" size="1" />
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see Grid Settings section at ${installer.properties.wiki.page} (fresh install), or ${upgrade.properties.wiki.page} (upgrade install)."/>
         <field type="divider" align="top"/>
@@ -634,7 +643,7 @@
 
 
     <!-- Install -->
-    <panel order="9">
+    <panel order="10">
 
         <field type="title" txt="Configuring your MySQL database connection " bold="true" size="1" />
         <field type="staticText" align="left" txt="The information you enter below will connect you to an existing MySQL database. It's highly recommended that 'Database Host Name' NOT be the machine from which you are currently installing. The 'Database User' must have full access to 'Database Name'. It's highly recommended you contact your database administrator to obtain this information. NOTE: All database objects for 'Database Name' will be dropped and recreated during the installation process. For detailed descriptions on each of the properties below, see the Database Settings section at ${installer.properties.wiki.page}"/>
@@ -675,7 +684,7 @@
         </field>
     </panel>
 
-    <panel order="10">
+    <panel order="11">
         <field type="title" txt="Duplicate Hybridizations Behavior" bold="true" size="1" />
         <field type="staticText" align="left" txt="Prior to caArray 2.2.0, it was possible to create two distinct Hybridizations with the same name within a single Experiment. As of 2.2.0, this behavior has been changed, and Hybridization names will now be required to be unique within an Experiment. By default, duplicate Hybridizations in your existing (pre-2.2.0) Experiments will be renamed to be distinct. The naming convention is such that Hybridizations names will have a dash and incrementing integer, starting at 1, appended to the name (e.g., myHybridization-1, myHybridization-2, ... myHybridization-N). If you prefer to override this default strategy, you can choose to merge duplicate Hybridizations into a single Hybridization instead. Please note that if you choose to override the default strategy, you will not be able to undo the change."/>
         <field type="divider" align="top"/>
@@ -688,7 +697,7 @@
         </field>
     </panel>
 
-    <panel order="11">
+    <panel order="12">
         <field type="title" txt="Authentication Type" bold="true" size="1" />
         <field type="staticText" align="left" txt="There are two types of ways to authenticate users: against database or using an LDAP server. To connect to LDAP, you must have an LDAP server available in your network."/>
         <field type="divider" align="top"/>
@@ -702,7 +711,7 @@
         </field>
     </panel>
 
-    <panel order="12">
+    <panel order="13">
         <field type="title" txt="LDAP Configuration" bold="true" size="1" />
         <field type="staticText" align="left" txt="Choose the URL for the LDAP server and the Base DN for authenticating users."/>
         <field type="divider" align="top"/>
@@ -720,7 +729,7 @@
         </field>
     </panel>
 
-    <panel order="13">
+    <panel order="14">
         <field type="title" txt="Configure Global Settings" bold="true" size="1" />
         <field type="staticText" align="left" txt="The information you enter below will connect you to an existing Index Server. The Externally Accessible Hostname is the Hostname or the Domain name for the installation machine. This hostname must be accessible by the 'Index URL'. UPT URL is where the UPT application is being installed. For detailed descriptions on each of the properties below, see the Global Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -750,7 +759,7 @@
     </panel>
 
 
-    <panel order="14">
+    <panel order="15">
         <field type="title" txt="Database Configuration " bold="true" size="1" />
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Database Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -766,7 +775,7 @@
     </panel>
 
 
-    <panel order="15">
+    <panel order="16">
         <field type="title" txt="Mail Server Configuration" bold="true" size="1" />
         <field type="staticText" align="left" txt="Mail Server Hostname and Mail Server Port Number is the hostname where the mail server is being configured.For detailed descriptions on each of the properties below, see the Mail Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -801,7 +810,7 @@
         </field>
     </panel>
 
-    <panel order="16">
+    <panel order="17">
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
         <field type="divider" align="top"/>
@@ -833,7 +842,7 @@
         <field type="staticText" align="left" txt="Database User [${database.user}] "/>
     </panel>
 
-    <panel order="17">
+    <panel order="18">
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
         <field type="divider" align="top"/>

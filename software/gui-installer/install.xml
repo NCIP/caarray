@@ -182,6 +182,7 @@
                     <res id="UserPathPanel.dir.linux" src="@{this.dir}/linuxdir.txt" />
                     <res id="MySQLColumnValueAnalyzerPanel.properties" src="@{this.dir}/MySQLColumnValueAnalyzerPanel.properties" />
                     <res id="MySQLDatabaseInfoExtractionPanel.properties" src="@{this.dir}/MySQLDatabaseInfoExtractionPanel.properties" />
+                    <res id="cleanup.xml"  src="@{this.dir}/cleanup.xml"/>
                 </resources>
 
                 <!--
@@ -193,27 +194,28 @@
                     <panel classname="HelloPanel"/>
                     <panel classname="InfoPanel"/>
                     <panel classname="LicencePanel"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.0" />
+                    <panel classname="UserInputPanel"  id="UserInputPanel.0"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.1" />
                     <panel classname="UserPathPanel" id="UserPathPanelInstallation" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.1" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.2" condition="custom.installation"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.3" condition="typical.installation"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.4" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.2" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.3" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.4" condition="typical.installation"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.5" condition="custom.installation"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.6" condition="custom.installation"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.7" condition="upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.7" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.8" condition="upgrade"/>
                     <panel classname="MySQLDatabaseInfoExtractionPanel"  id="MySQLDatabaseInfoExtractionPanel.1" condition="upgrade"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.8" />
-                    <panel classname="UserInputPanel"  id="UserInputPanel.9" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.9" />
+                    <panel classname="UserInputPanel"  id="UserInputPanel.10" condition="install"/>
                     <panel classname="MySQLColumnValueAnalyzerPanel"  id="MySQLColumnValueAnalyzerPanel.1" condition="upgrade"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.10" condition="should.show.duplicate.hybridization.details.panel.condition"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.11" condition="custom.installation|upgrade"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.12" condition="ldap.setup"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.13" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.14" condition="custom.installation"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.15" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.11" condition="should.show.duplicate.hybridization.details.panel.condition"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.12" condition="custom.installation|upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.13" condition="ldap.setup"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.14" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.15" condition="custom.installation"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.16" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.17" condition="upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.17" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.18" condition="upgrade"/>
                     <panel classname="InstallationGroupPanel"/>
                     <panel classname="ExtendedInstallPanel"/>
                     <panel classname="SimpleFinishPanel"/>
