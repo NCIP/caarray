@@ -86,9 +86,6 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
-import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
-import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 import java.io.File;
@@ -111,8 +108,6 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
     private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
     + File.separator + "LookupEntities.csv";
     
-    private static final String TEST_CASE = "Test Case";
-    private static final String API = "API";
     private static final String PI_EXPECTED_RESULTS = "Principal Investigators Expected Results";
     private static final String CC_EXPECTED_RESULTS = "Characteristic Categories Expected Results";
     private static final String TERMS_NAME = "Terms for Category Name";
@@ -258,13 +253,6 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
         System.out.println("LookupEntities tests complete ...");
     }
     
-    private boolean isNewSearch(String[] input)
-    {
-        int testCaseIndex = headerIndexMap.get(TEST_CASE);
-        return (testCaseIndex < input.length && !input[testCaseIndex]
-                .equals(""));
-    }
-
     @Override
     protected String[] getColumnHeaders()
     {
@@ -409,15 +397,7 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
         private List<Term> getTerms(TestResult testResult) throws Exception
         {
             List<Term> resultsList = new ArrayList<Term>();
-            ExampleSearchCriteria<Category> criteria = new ExampleSearchCriteria<Category>();
-            Category exampleCategory = new Category();
-            exampleCategory.setName(name);
-            criteria.setExample(exampleCategory);
-            SearchResult<Category> results = (SearchResult<Category>) getSearchResults(
-                    api, criteria, null);
-            List<Category> categories = results.getResults();
-            CaArrayEntityReference categoryRef = categories.get(0)
-                    .getReference();
+            CaArrayEntityReference categoryRef = apiFacade.getCategoryReference(api, name);
 
             long startTime = System.currentTimeMillis();           
             resultsList.addAll(apiFacade.getTermsForCategory(api, categoryRef, null));

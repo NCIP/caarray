@@ -99,4 +99,12 @@ public class FullApiFacade implements ApiFacade
         return getFacade(api).searchByExample(api, criteria, offset);
     }
 
+    public CaArrayEntityReference getCategoryReference(String api,
+            String categoryName) throws Exception
+    {
+        return getFacade(api).getCategoryReference(api, categoryName);
+    }
+    
+    
+
 }

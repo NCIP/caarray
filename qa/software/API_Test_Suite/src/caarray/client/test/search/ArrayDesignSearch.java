@@ -95,8 +95,6 @@ public class ArrayDesignSearch extends ExampleSearch
 {
 
     private String name = null, associatedProvider = null, expectedProvider = null, expectedOrganism = null;
-    private Integer minResults = null;
-    
     private ArrayDesign arrayDesign;
     
     /**
@@ -138,22 +136,7 @@ public class ArrayDesignSearch extends ExampleSearch
     {
         this.expectedOrganism = expectedOrganism;
     }
-    public Integer getExpectedResults()
-    {
-        return expectedResults;
-    }
-    public void setExpectedResults(Integer expectedResults)
-    {
-        this.expectedResults = expectedResults;
-    }
-    public Integer getMinResults()
-    {
-        return minResults;
-    }
-    public void setMinResults(Integer minResults)
-    {
-        this.minResults = minResults;
-    }
+    
     public ArrayDesign getArrayDesign()
     {
         return arrayDesign;

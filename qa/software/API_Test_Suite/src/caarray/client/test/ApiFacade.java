@@ -34,4 +34,6 @@ public interface ApiFacade
     public AbstractCaArrayEntity getByReference(String api, CaArrayEntityReference reference) throws Exception;
     
     public List<AbstractCaArrayEntity> getByReferences(String api, List<CaArrayEntityReference> references) throws Exception;
+    
+    public CaArrayEntityReference getCategoryReference(String api, String categoryName) throws Exception;
 }

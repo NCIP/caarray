@@ -4,7 +4,7 @@
 package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.external.v1_0.data.FileType;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 
 import java.io.File;
 import java.util.List;
@@ -13,32 +13,33 @@ import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
 import caarray.client.test.search.ExampleSearch;
-import caarray.client.test.search.FileTypeSearch;
+import caarray.client.test.search.TermSourceSearch;
 
 /**
- * Encapsulates a collection of FileType search-by-example tests.
- * 
+ *  Encapsulates a collection of TermSource search-by-example tests.
+ *  
  * @author vaughng
- *
+ * Jul 2, 2009
  */
-public class FileTypeTestSuite extends SearchByExampleTestSuite
+public class TermSourceTestSuite extends SearchByExampleTestSuite
 {
 
     private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
-    + File.separator + "FileType.csv";
+            + File.separator + "TermSource.csv";
 
+    private static final String MIN_RESULTS = "Min Results";
     private static final String NAME = "Name";
     private static final String EXPECTED_NAME = "Expected Name";
-    private static final String CATEGORY = "Category";
-    private static final String EXPECTED_CATEGORY = "Expected Category";
-    
+    private static final String URL = "Url";
+    private static final String EXPECTED_URL = "Expected Url";
+
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-        API, NAME, CATEGORY, EXPECTED_RESULTS, EXPECTED_NAME, EXPECTED_CATEGORY };
-    
+            API, NAME, MIN_RESULTS, EXPECTED_NAME, URL,
+            EXPECTED_URL, EXPECTED_RESULTS };
     /**
      * @param apiFacade
      */
-    public FileTypeTestSuite(ApiFacade apiFacade)
+    public TermSourceTestSuite(ApiFacade apiFacade)
     {
         super(apiFacade);
     }
@@ -51,22 +52,23 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
             List<? extends AbstractCaArrayEntity> resultsList,
             ExampleSearch search, TestResult testResult)
     {
-        FileTypeSearch fileTypeSearch = (FileTypeSearch)search;
-        List<FileType> fileResults = (List<FileType>)resultsList;
-        if (fileTypeSearch.getExpectedResults() != null)
+        TermSourceSearch termSearch = (TermSourceSearch)search;
+        List<TermSource> termSourceResults = (List<TermSource>)resultsList;
+        int namedResults = 0;
+        for (TermSource termSource : termSourceResults)
         {
-            int namedResults = 0;
-            for (FileType fileType : fileResults)
-            {
-                if (fileType.getName() != null)
-                    namedResults++;
-            }
-            if (namedResults != fileTypeSearch.getExpectedResults())
+            if (termSource.getName() != null)
+                namedResults++;
+        }
+        if (termSearch.getExpectedResults() != null)
+        {
+            
+            if (namedResults != termSearch.getExpectedResults())
             {
                 String errorMessage = "Failed with unexpected number of results, expected: "
-                        + fileTypeSearch.getExpectedResults()
+                        + termSearch.getExpectedResults()
                         + ", actual number of results: " + namedResults;
-                setTestResultFailure(testResult, fileTypeSearch, errorMessage);
+                setTestResultFailure(testResult, termSearch, errorMessage);
             }
             else
             {
@@ -75,15 +77,32 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
                 testResult.addDetail(detail);
             }
         }
-        if (testResult.isPassed() && !fileTypeSearch.getExpectedNames().isEmpty())
+        if (termSearch.getMinResults() != null)
         {
             
-            for (String expectedName : fileTypeSearch.getExpectedNames())
+            if (namedResults < termSearch.getMinResults())
+            {
+                String errorMessage = "Failed with unexpected number of results, expected minimum: "
+                        + termSearch.getMinResults()
+                        + ", actual number of results: " + namedResults;
+                setTestResultFailure(testResult, termSearch, errorMessage);
+            }
+            else
+            {
+                String detail = "Found expected number of results: "
+                        + namedResults;
+                testResult.addDetail(detail);
+            }
+        }
+        if (!termSearch.getExpectedNames().isEmpty())
+        {
+            
+            for (String expectedName : termSearch.getExpectedNames())
             {
                 boolean foundName = false;
-                for (FileType fileType : fileResults)
+                for (TermSource termSource : termSourceResults)
                 {
-                    if (fileType.getName().equalsIgnoreCase(expectedName))
+                    if (termSource.getName().equalsIgnoreCase(expectedName))
                     {
                         foundName = true;
                         break;
@@ -92,7 +111,7 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
                 if (!foundName)
                 {
                     String errorMessage = "Didn't find expected name: " + expectedName;
-                    setTestResultFailure(testResult, fileTypeSearch, errorMessage);
+                    setTestResultFailure(testResult, termSearch, errorMessage);
                 }
                 else
                 {
@@ -101,15 +120,15 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
                 }
             }         
         }
-        if (testResult.isPassed() && !fileTypeSearch.getExpectedCategories().isEmpty())
+        if (!termSearch.getExpectedUrls().isEmpty())
         {
             
-            for (String expectedCategory : fileTypeSearch.getExpectedCategories())
+            for (String expectedUrl : termSearch.getExpectedUrls())
             {
                 boolean foundName = false;
-                for (FileType fileType : fileResults)
+                for (TermSource termSource : termSourceResults)
                 {
-                    if (fileType.getCategory() != null && fileType.getCategory().getName().equalsIgnoreCase(expectedCategory))
+                    if (termSource.getUrl().equalsIgnoreCase(expectedUrl))
                     {
                         foundName = true;
                         break;
@@ -117,12 +136,12 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
                 }
                 if (!foundName)
                 {
-                    String errorMessage = "Didn't find expected category: " + expectedCategory;
-                    setTestResultFailure(testResult, fileTypeSearch, errorMessage);
+                    String errorMessage = "Didn't find expected url: " + expectedUrl;
+                    setTestResultFailure(testResult, termSearch, errorMessage);
                 }
                 else
                 {
-                    String detail = "Found expected category: " + expectedCategory;
+                    String detail = "Found expected url: " + expectedUrl;
                     testResult.addDetail(detail);
                 }
             }         
@@ -135,7 +154,7 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
     @Override
     protected ExampleSearch getExampleSearch()
     {
-        return new FileTypeSearch();
+       return new TermSourceSearch();
     }
 
     /* (non-Javadoc)
@@ -145,18 +164,18 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
     protected void populateAdditionalSearchValues(String[] input,
             ExampleSearch exampleSearch)
     {
+        TermSourceSearch search = (TermSourceSearch)exampleSearch;
+        
         if (headerIndexMap.get(EXPECTED_NAME) < input.length
                 && !input[headerIndexMap.get(EXPECTED_NAME)].equals(""))
-        {
-            FileTypeSearch search = (FileTypeSearch)exampleSearch;
-            search.addExpectedName(input[headerIndexMap.get(EXPECTED_NAME)]);
-        }
-        if (headerIndexMap.get(EXPECTED_CATEGORY) < input.length
-                && !input[headerIndexMap.get(EXPECTED_CATEGORY)].equals(""))
-        {
-            FileTypeSearch search = (FileTypeSearch)exampleSearch;
-            search.addExpectedName(input[headerIndexMap.get(EXPECTED_CATEGORY)]);
-        }
+            search.addExpectedName(input[headerIndexMap.get(EXPECTED_NAME)]
+                                               .trim());
+        
+            
+        if (headerIndexMap.get(EXPECTED_URL) < input.length
+                && !input[headerIndexMap.get(EXPECTED_URL)].equals(""))
+            search.addExpectedUrl(input[headerIndexMap.get(EXPECTED_URL)]
+                    .trim());
     }
 
     /* (non-Javadoc)
@@ -165,32 +184,42 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
     @Override
     protected void populateSearch(String[] input, ExampleSearch exampleSearch)
     {
-        FileTypeSearch search = (FileTypeSearch)exampleSearch;
-        FileType example = new FileType();
+        TermSourceSearch search = (TermSourceSearch) exampleSearch;
+        TermSource example = new TermSource();
         if (headerIndexMap.get(API) < input.length
                 && !input[headerIndexMap.get(API)].equals(""))
         {
             search.setApi(input[headerIndexMap.get(API)].trim());
         }
 
-        if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
+        if (headerIndexMap.get(NAME) < input.length
+                && !input[headerIndexMap.get(NAME)].equals(""))
             example.setName(input[headerIndexMap.get(NAME)].trim());
-        
-        search.setFileType(example);
+        if (headerIndexMap.get(URL) < input.length
+                && !input[headerIndexMap.get(URL)].equals(""))
+            example.setUrl(input[headerIndexMap.get(URL)].trim());
+
+        search.setTermSource(example);
         if (headerIndexMap.get(TEST_CASE) < input.length
                 && !input[headerIndexMap.get(TEST_CASE)].equals(""))
-            search.setTestCase(Integer.parseInt(input[headerIndexMap.get(TEST_CASE)]
-                    .trim()));
+            search.setTestCase(Integer.parseInt(input[headerIndexMap
+                    .get(TEST_CASE)].trim()));
         if (headerIndexMap.get(EXPECTED_RESULTS) < input.length
                 && !input[headerIndexMap.get(EXPECTED_RESULTS)].equals(""))
-            search.setExpectedResults(Integer
-                    .parseInt(input[headerIndexMap.get(EXPECTED_RESULTS)].trim()));
+            search.setExpectedResults(Integer.parseInt(input[headerIndexMap
+                    .get(EXPECTED_RESULTS)].trim()));
+        if (headerIndexMap.get(MIN_RESULTS) < input.length
+                && !input[headerIndexMap.get(MIN_RESULTS)].equals(""))
+            search.setMinResults(Integer.parseInt(input[headerIndexMap
+                    .get(MIN_RESULTS)].trim()));
         if (headerIndexMap.get(EXPECTED_NAME) < input.length
                 && !input[headerIndexMap.get(EXPECTED_NAME)].equals(""))
-            search.addExpectedName(input[headerIndexMap.get(EXPECTED_NAME)].trim());
-        if (headerIndexMap.get(EXPECTED_CATEGORY) < input.length
-                && !input[headerIndexMap.get(EXPECTED_CATEGORY)].equals(""))
-            search.addExpectedCategory(input[headerIndexMap.get(EXPECTED_CATEGORY)].trim());
+            search.addExpectedName(input[headerIndexMap.get(EXPECTED_NAME)]
+                    .trim());
+        if (headerIndexMap.get(EXPECTED_URL) < input.length
+                && !input[headerIndexMap.get(EXPECTED_URL)].equals(""))
+            search.addExpectedUrl(input[headerIndexMap.get(EXPECTED_URL)]
+                    .trim());
     }
 
     /* (non-Javadoc)
@@ -217,7 +246,7 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
     @Override
     protected String getType()
     {
-        return "FileType";
+        return "TermSource";
     }
 
 }

@@ -96,6 +96,7 @@ public abstract class ExampleSearch
     protected Integer testCase = null;
     protected String api = null;
     protected Integer expectedResults = null;
+    protected Integer minResults = null;
 
     protected ExampleSearch()
     {
@@ -131,6 +132,16 @@ public abstract class ExampleSearch
     public void setExpectedResults(Integer expectedResults)
     {
         this.expectedResults = expectedResults;
+    }
+
+    public Integer getMinResults()
+    {
+        return minResults;
+    }
+
+    public void setMinResults(Integer minResults)
+    {
+        this.minResults = minResults;
     }
 
 }

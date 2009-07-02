@@ -94,6 +94,9 @@ import caarray.client.test.suite.AssayTypeTestSuite;
 import caarray.client.test.suite.ConfigurableTestSuite;
 import caarray.client.test.suite.FileTypeTestSuite;
 import caarray.client.test.suite.LookupEntitiesTestSuite;
+import caarray.client.test.suite.OrganismTestSuite;
+import caarray.client.test.suite.QuantitationTypeTestSuite;
+import caarray.client.test.suite.TermSourceTestSuite;
 
 /**
  * Main class for executing a collection of tests against the caArray
@@ -110,7 +113,8 @@ public class TestMain {
     {
     	ConfigurableTestSuite[] testSuites = new ConfigurableTestSuite[]{new ArrayDataTypeTestSuite(apiFacade),
     	        new ArrayDesignTestSuite(apiFacade), new LookupEntitiesTestSuite(apiFacade), new AssayTypeTestSuite(apiFacade),
-    	        new FileTypeTestSuite(apiFacade)};
+    	        new FileTypeTestSuite(apiFacade), new OrganismTestSuite(apiFacade), new TermSourceTestSuite(apiFacade),
+    	        new QuantitationTypeTestSuite(apiFacade)};
     	
     	System.out.println("Executing test suites ...");
     	for (ConfigurableTestSuite testSuite : testSuites)

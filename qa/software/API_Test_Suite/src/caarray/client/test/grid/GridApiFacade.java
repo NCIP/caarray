@@ -9,6 +9,7 @@ import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
@@ -110,5 +111,21 @@ public class GridApiFacade implements ApiFacade
     {
         return gridClient.searchByExample(criteria, offset);
     }
+    public CaArrayEntityReference getCategoryReference(String api,
+            String categoryName) throws Exception
+    {
+        ExampleSearchCriteria<Category> criteria = new ExampleSearchCriteria<Category>();
+        Category exampleCategory = new Category();
+        exampleCategory.setName(categoryName);
+        criteria.setExample(exampleCategory);
+        SearchResult<Category> results = (SearchResult<Category>) searchByExample(
+                api, criteria, null);
+        List<Category> categories = results.getResults();
+        if (!categories.isEmpty())
+            return categories.get(0).getReference();
+        return null;
+    }
+    
+    
 
 }

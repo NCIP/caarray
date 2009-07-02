@@ -113,7 +113,6 @@ public class ArrayDesignTestSuite extends SearchByExampleTestSuite
     private static final String PROVIDER = "Associated Provider";
     private static final String ASSAY_TYPE = "Assay Type";
     private static final String MIN_RESULTS = "Min Results";
-    private static final String EXPECTED_RESULTS = "Expected Results";
     private static final String EXPECTED_PROVIDER = "Expected Provider";
     private static final String EXPECTED_ORGANISM = "Expected Organism";
 

@@ -85,6 +85,9 @@ package caarray.client.test.search;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Bean encapsulating details of a search-by-example Quantitation Type search.
  * 
@@ -94,6 +97,7 @@ import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 public class QuantitationTypeSearch extends ExampleSearch
 {
     private QuantitationType quantitationType;
+    private List<String> expectedNames = new ArrayList<String>(), expectedDataTypes = new ArrayList<String>();
     
     /**
      * 
@@ -120,6 +124,27 @@ public class QuantitationTypeSearch extends ExampleSearch
     public void setQuantitationType(QuantitationType quantitationType)
     {
         this.quantitationType = quantitationType;
+    }
+
+
+    public List<String> getExpectedNames()
+    {
+        return expectedNames;
+    }
+
+    public void addExpectedName(String expectedName)
+    {
+        expectedNames.add(expectedName);
+    }
+
+    public List<String> getExpectedDataTypes()
+    {
+        return expectedDataTypes;
+    }
+
+    public void addExpectedDataType(String expectedDataType)
+    {
+        expectedDataTypes.add(expectedDataType);
     }
 
 }

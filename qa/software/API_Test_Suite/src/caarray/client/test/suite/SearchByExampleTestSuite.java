@@ -107,9 +107,6 @@ import caarray.client.test.search.ExampleSearch;
  */
 public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
 {
-    protected static final String TEST_CASE = "Test Case";
-    protected static final String API = "API";
-    protected static final String EXPECTED_RESULTS = "Expected Results";
     protected List<ExampleSearch> configuredSearches = new ArrayList<ExampleSearch>();
 
     protected SearchByExampleTestSuite(ApiFacade apiFacade)
@@ -245,19 +242,6 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
         testResult.addDetail(errorMessage);
     }
     
-    /**
-     * Returns true if a row of spreadsheet input is the start of a new test case, false otherwise.
-     * 
-     * @param input Input row taken from a configuration spreadsheet.
-     * @return true if a row of spreadsheet input is the start of a new test case, false otherwise.
-     */
-    protected boolean isNewSearch(String[] input)
-    {
-        int testCaseIndex = headerIndexMap.get(TEST_CASE);
-        return (testCaseIndex < input.length && !input[testCaseIndex]
-                .equals(""));
-    }
-
     /**
      * Populates an ExampleSearch bean with values taken from a configuration spreadsheet.
      * 

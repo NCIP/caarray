@@ -113,6 +113,9 @@ public abstract class ConfigurableTestSuite
 {
 
     protected static final String DELIMITER = ",";
+    protected static final String TEST_CASE = "Test Case";
+    protected static final String API = "API";
+    protected static final String EXPECTED_RESULTS = "Expected Results";
     /*protected final CaArraySvc_v1_0Client gridClient;
     protected final SearchService javaSearchService;*/
     protected ApiFacade apiFacade;
@@ -302,5 +305,18 @@ public abstract class ConfigurableTestSuite
      * @return a string representation of the type of this test suite.
      */
     protected abstract String getType();
+
+    /**
+     * Returns true if a row of spreadsheet input is the start of a new test case, false otherwise.
+     * 
+     * @param input Input row taken from a configuration spreadsheet.
+     * @return true if a row of spreadsheet input is the start of a new test case, false otherwise.
+     */
+    protected boolean isNewSearch(String[] input)
+    {
+        int testCaseIndex = headerIndexMap.get(TEST_CASE);
+        return (testCaseIndex < input.length && !input[testCaseIndex]
+                .equals(""));
+    }
 
 }
