@@ -107,8 +107,8 @@ import caarray.client.test.search.ExampleSearch;
  */
 public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
 {
+    protected static final String MIN_RESULTS = "Min Results";
     protected List<ExampleSearch> configuredSearches = new ArrayList<ExampleSearch>();
-
     protected SearchByExampleTestSuite(ApiFacade apiFacade)
     {
         super(apiFacade);

@@ -5,8 +5,12 @@ package caarray.client.test.grid;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
+import gov.nih.nci.caarray.external.v1_0.array.AssayType;
+import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
@@ -124,6 +128,50 @@ public class GridApiFacade implements ApiFacade
         if (!categories.isEmpty())
             return categories.get(0).getReference();
         return null;
+    }
+    public ArrayProvider getArrayProvider(String api, String providerName)
+            throws Exception
+    {
+        ArrayProvider provider = new ArrayProvider();
+        provider.setName(providerName);
+        ExampleSearchCriteria<ArrayProvider> providerCriteria = new ExampleSearchCriteria<ArrayProvider>();
+        providerCriteria.setExample(provider);
+        SearchResult<ArrayProvider> results = (SearchResult<ArrayProvider>)searchByExample(api, providerCriteria, null);
+        if (!results.getResults().isEmpty())
+            return results.getResults().get(0);
+        return null;
+    }
+    public Organism getOrganism(String api, String scientificName,
+            String commonName) throws Exception
+    {
+        ExampleSearchCriteria<Organism> organismCriteria = new ExampleSearchCriteria<Organism>();
+        Organism exampleOrganism = new Organism();
+        exampleOrganism.setCommonName(commonName);
+        exampleOrganism.setScientificName(scientificName);
+        organismCriteria.setExample(exampleOrganism);
+        SearchResult<Organism> organisms = (SearchResult<Organism>)searchByExample(api,
+                organismCriteria, null).getResults();
+        if (!organisms.getResults().isEmpty())
+            return organisms.getResults().get(0);
+        return null;
+    }
+    public AssayType getAssayType(String api, String type) throws Exception
+    {
+        ExampleSearchCriteria<AssayType> assayCriteria = new ExampleSearchCriteria<AssayType>();
+        AssayType assay = new AssayType();
+        assay.setName(type);
+        assayCriteria.setExample(assay);
+        SearchResult<AssayType> assays = (SearchResult<AssayType>)searchByExample(api,
+                assayCriteria, null).getResults();
+        if (!assays.getResults().isEmpty())
+            return assays.getResults().get(0);
+        return null;
+    }
+    public SearchResult<? extends AbstractCaArrayEntity> searchForExperiments(
+            String api, ExperimentSearchCriteria criteria, LimitOffset offset)
+            throws Exception
+    {
+        return gridClient.searchForExperiments(criteria, offset);
     }
     
     

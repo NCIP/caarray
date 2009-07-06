@@ -1,0 +1,17 @@
+Test Case,API,Title,Public Identifier,Array Provider,Organism Scientific Name,Organism Common Name,Assay Type Name,Annotation Category,Annotation Value,Principal Investigator Ref,Expected Results,Min Results,Expected Assay Type,Expected Provider,Expected Organism Scientific Name,Expected Title
+16,java,,,,,,,,,,,100,,,,
+17,java,QA Affymetrix Experiment for API Testing,,,,,,,,,1,,,,,
+17,java,"invalid#%!""",,,,,,,,,0,,,,,
+17,java,${empty},,,,,,,,,,100,,,,
+18,java,,woost-00035,,,,,,,,1,,SNP,,,
+18,java,,invalid#%!,,,,,,,,0,,,,,
+18,java,,${empty},,,,,,,,,100,,,,
+19,java,,,Affymetrix,,,,,,,,60,,,,
+19,java,,,"invalid#%!""",,,,,,,0,,,,,
+19,java,,,${empty},,,,,,,,100,,,,
+20,java,,,,,,Gene Expression,,,,,80,,,,
+20,java,,,,,,invalid#%!,,,,0,,,,,
+20,java,,,,,,${empty},,,,,100,,,,
+21,java,,,,,,,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,2,,,,,
+21,java,,,,,,,,,invalid#%!,0,,,,,
+21,java,,,,,,,,,${empty},,100

@@ -5,8 +5,12 @@ package caarray.client.test.full;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
+import gov.nih.nci.caarray.external.v1_0.array.AssayType;
+import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
@@ -103,6 +107,30 @@ public class FullApiFacade implements ApiFacade
             String categoryName) throws Exception
     {
         return getFacade(api).getCategoryReference(api, categoryName);
+    }
+
+    public ArrayProvider getArrayProvider(String api, String providerName)
+            throws Exception
+    {
+        return getFacade(api).getArrayProvider(api, providerName);
+    }
+
+    public Organism getOrganism(String api, String scientificName,
+            String commonName) throws Exception
+    {
+        return getFacade(api).getOrganism(api, scientificName, commonName);
+    }
+
+    public AssayType getAssayType(String api, String type) throws Exception
+    {
+        return getFacade(api).getAssayType(api, type);
+    }
+
+    public SearchResult<? extends AbstractCaArrayEntity> searchForExperiments(
+            String api, ExperimentSearchCriteria criteria, LimitOffset offset)
+            throws Exception
+    {
+        return getFacade(api).searchForExperiments(api, criteria, offset);
     }
     
     

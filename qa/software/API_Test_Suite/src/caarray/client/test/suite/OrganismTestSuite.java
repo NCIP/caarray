@@ -27,7 +27,6 @@ public class OrganismTestSuite extends SearchByExampleTestSuite
     private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
             + File.separator + "Organism.csv";
 
-    private static final String MIN_RESULTS = "Min Results";
     private static final String COMMON_NAME = "Common Name";
     private static final String EXPECTED_COMMON_NAME = "Expected Common Name";
     private static final String SCIENTIFIC_NAME = "Scientific Name";

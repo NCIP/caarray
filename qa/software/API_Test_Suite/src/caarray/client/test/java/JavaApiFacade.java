@@ -5,8 +5,12 @@ package caarray.client.test.java;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
+import gov.nih.nci.caarray.external.v1_0.array.AssayType;
+import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
@@ -90,5 +94,54 @@ public class JavaApiFacade implements ApiFacade
         return null;
     }
 
+    public ArrayProvider getArrayProvider(String api, String providerName)
+            throws Exception
+    {
+        ArrayProvider provider = new ArrayProvider();
+        provider.setName(providerName);
+        ExampleSearchCriteria<ArrayProvider> providerCriteria = new ExampleSearchCriteria<ArrayProvider>();
+        providerCriteria.setExample(provider);
+        SearchResult<? extends AbstractCaArrayEntity> results = searchByExample(api, providerCriteria, null);
+        if (!results.getResults().isEmpty())
+            return (ArrayProvider)results.getResults().get(0);
+        return null;
+    }
+
+    public Organism getOrganism(String api, String scientificName,
+            String commonName) throws Exception
+    {
+        ExampleSearchCriteria<Organism> organismCriteria = new ExampleSearchCriteria<Organism>();
+        Organism exampleOrganism = new Organism();
+        exampleOrganism.setCommonName(commonName);
+        exampleOrganism.setScientificName(scientificName);
+        organismCriteria.setExample(exampleOrganism);
+        SearchResult<? extends AbstractCaArrayEntity> organisms = searchByExample(api,
+                organismCriteria, null);
+        if (!organisms.getResults().isEmpty())
+            return (Organism)organisms.getResults().get(0);
+        return null;
+    }
+
+    public AssayType getAssayType(String api, String type) throws Exception
+    {
+        ExampleSearchCriteria<AssayType> assayCriteria = new ExampleSearchCriteria<AssayType>();
+        AssayType assay = new AssayType();
+        assay.setName(type);
+        assayCriteria.setExample(assay);
+        SearchResult<? extends AbstractCaArrayEntity> assays = searchByExample(api,
+                assayCriteria, null);
+        if (!assays.getResults().isEmpty())
+            return (AssayType)assays.getResults().get(0);
+        return null;
+    }
+
+    public SearchResult<? extends AbstractCaArrayEntity> searchForExperiments(
+            String api, ExperimentSearchCriteria criteria, LimitOffset offset)
+            throws Exception
+    {
+        return javaSearchService.searchForExperiments(criteria, offset);
+    }
+
+    
     
 }

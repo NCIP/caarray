@@ -27,7 +27,6 @@ public class TermSourceTestSuite extends SearchByExampleTestSuite
     private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
             + File.separator + "TermSource.csv";
 
-    private static final String MIN_RESULTS = "Min Results";
     private static final String NAME = "Name";
     private static final String EXPECTED_NAME = "Expected Name";
     private static final String URL = "Url";

@@ -14,7 +14,7 @@ public abstract class CriteriaSearch
 
     protected Integer testCase = null;
     protected String api = null;
-    protected Integer expectedResults = null;
+    protected Integer expectedResults = null, minResults = null;
     
     protected CriteriaSearch(){}
 
@@ -46,6 +46,16 @@ public abstract class CriteriaSearch
     public void setExpectedResults(Integer expectedResults)
     {
         this.expectedResults = expectedResults;
+    }
+
+    public Integer getMinResults()
+    {
+        return minResults;
+    }
+
+    public void setMinResults(Integer minResults)
+    {
+        this.minResults = minResults;
     }
     
     
