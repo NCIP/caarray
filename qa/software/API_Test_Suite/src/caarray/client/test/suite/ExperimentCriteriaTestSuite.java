@@ -73,7 +73,7 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
         int namedResults = 0;
         for (Experiment experiment : experimentResults)
         {
-            if (experiment.getTitle() != null)
+            if (experiment != null && experiment.getTitle() != null)
                 namedResults++;
         }
         if (experimentSearch.getExpectedResults() != null)
@@ -118,7 +118,7 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
                 boolean foundName = false;
                 for (Experiment experiment : experimentResults)
                 {
-                    if (experiment.getTitle().equalsIgnoreCase(expectedName))
+                    if (experiment != null && experiment.getTitle().equalsIgnoreCase(expectedName))
                     {
                         foundName = true;
                         break;
@@ -144,14 +144,18 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
                 boolean foundName = false;
                 for (Experiment experiment : experimentResults)
                 {
-                    for (AssayType assay : experiment.getAssayTypes())
+                    if (experiment != null)
                     {
-                        if (assay.getName().equalsIgnoreCase(expectedAssay))
+                        for (AssayType assay : experiment.getAssayTypes())
                         {
-                            foundName = true;
-                            break;
+                            if (assay != null && assay.getName().equalsIgnoreCase(expectedAssay))
+                            {
+                                foundName = true;
+                                break;
+                            }
                         }
                     }
+                    
                     
                 }
                 if (!foundName)
@@ -174,7 +178,7 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
                 boolean foundName = false;
                 for (Experiment experiment : experimentResults)
                 {
-                    if (experiment.getArrayProvider() != null && experiment.getArrayProvider().getName().equalsIgnoreCase(expectedProvider))
+                    if (experiment != null && experiment.getArrayProvider() != null && experiment.getArrayProvider().getName().equalsIgnoreCase(expectedProvider))
                     {
                         foundName = true;
                         break;
@@ -201,7 +205,7 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
                 boolean foundName = false;
                 for (Experiment experiment : experimentResults)
                 {
-                    if (experiment.getOrganism() != null && experiment.getOrganism().getScientificName().equalsIgnoreCase(expectedName))
+                    if (experiment != null && experiment.getOrganism() != null && experiment.getOrganism().getScientificName().equalsIgnoreCase(expectedName))
                     {
                         foundName = true;
                         break;
@@ -257,7 +261,7 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
         }
         if (headerIndexMap.get(TEST_CASE) < input.length
                 && !input[headerIndexMap.get(TEST_CASE)].equals(""))
-            search.setTestCase(Integer.parseInt(input[headerIndexMap.get(TEST_CASE)]
+            search.setTestCase(Float.parseFloat(input[headerIndexMap.get(TEST_CASE)]
                     .trim()));
         if (headerIndexMap.get(EXPECTED_RESULTS) < input.length
                 && !input[headerIndexMap.get(EXPECTED_RESULTS)].equals(""))
@@ -445,12 +449,14 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
     }
 
     @Override
-    protected List<AbstractCaArrayEntity> executeSearch(
-            CriteriaSearch search) throws Exception
+    protected List<? extends AbstractCaArrayEntity> executeSearch(
+            CriteriaSearch search, TestResult testResult) throws Exception
     {
         ExperimentCriteriaSearch criteriaSearch = (ExperimentCriteriaSearch)search;
         List<Experiment> resultsList = new ArrayList<Experiment>();
-        SearchResult<Experiment> results = (SearchResult<Experiment>)apiFacade
+        try
+        {
+            SearchResult<Experiment> results = (SearchResult<Experiment>)apiFacade
             .searchForExperiments(criteriaSearch.getApi(), criteriaSearch.getExperimentSearchCriteria(), null);
         resultsList.addAll(results.getResults());
         while (!results.isFullResult())
@@ -463,7 +469,16 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
             .searchForExperiments(criteriaSearch.getApi(), criteriaSearch.getExperimentSearchCriteria(), offset);
             resultsList.addAll(results.getResults());
         }
-        return null;
+        }
+        catch (Throwable e)
+        {
+            System.out.println("Error encountered executing search: " + e.getMessage());
+            testResult.addDetail("Exception encountered: " + e.getClass() + ": " + e.getMessage());
+        } 
+        
+        
+        
+        return resultsList;
     }
 
 }

@@ -93,7 +93,7 @@ public class TestResultComparator implements Comparator<TestResult>
 
 	
 	public int compare(TestResult o1, TestResult o2) {
-		return new Integer(o1.getTestCase()).compareTo(o2.getTestCase());
+		return new Float(o1.getTestCase()).compareTo(o2.getTestCase());
 	}
 
 	

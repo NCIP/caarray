@@ -90,7 +90,7 @@ package caarray.client.test;
  */
 public class TestResult {
 
-	private int testCase = 0;
+	private float testCase = 0.0f;
 	private boolean passed = true;
 	private String details;
 	private long elapsedTime = 0;
@@ -125,11 +125,11 @@ public class TestResult {
 		this.elapsedTime = elapsedTime;
 	}
 
-	public int getTestCase() {
+	public float getTestCase() {
     	return testCase;
     }
 
-    public void setTestCase(int testCase) {
+    public void setTestCase(float testCase) {
     	this.testCase = testCase;
     }
 	

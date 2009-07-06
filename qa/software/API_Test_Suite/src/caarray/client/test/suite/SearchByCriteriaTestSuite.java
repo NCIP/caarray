@@ -114,25 +114,8 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                     continue;
                 }
 
-                
-                /*ExampleSearchCriteria<AbstractCaArrayEntity> criteria = new ExampleSearchCriteria<AbstractCaArrayEntity>();
-                criteria.setExample(search.getExample());
-                List<AbstractCaArrayEntity> resultsList = new ArrayList<AbstractCaArrayEntity>();
-                
-                SearchResult<? extends AbstractCaArrayEntity> results = getSearchResults(search.getApi(), criteria, null);
-                resultsList.addAll(results.getResults());
-                while (!results.isFullResult())
-                {
-                    LimitOffset offset = new LimitOffset(results
-                            .getMaxAllowedResults(), results.getResults()
-                            .size()
-                            + results.getFirstResultOffset());
-                    results = getSearchResults(search.getApi(), criteria, offset);
-                    resultsList.addAll(results.getResults());
-                }*/
-                //TODO: execute search
                 long startTime = System.currentTimeMillis();
-                List<AbstractCaArrayEntity> resultsList = executeSearch(search);
+                List<? extends AbstractCaArrayEntity> resultsList = executeSearch(search, testResult);
                 long elapsedTime = System.currentTimeMillis() - startTime;
 
                 testResult.setElapsedTime(elapsedTime);
@@ -145,8 +128,9 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
             {
 
                 setTestResultFailure(testResult, search,
-                        "An exception occured executing an " + getType() + " search-by-example: "
-                                + t.getLocalizedMessage());
+                        "An exception occured executing an " + getType() + " search: "
+                                + t.getMessage());
+                t.printStackTrace();
             }
 
             resultReport.addTestResult(testResult);
@@ -223,9 +207,10 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
      * Executes a type-specific criteria search.
      * 
      * @param search CriteriaSearch that will be used to execute the search.
+     * @param testResult TODO
      * @return The results of the search.
      * @throws Exception TODO
      */
-    protected abstract List<AbstractCaArrayEntity> executeSearch(CriteriaSearch search) throws Exception;
+    protected abstract List<? extends AbstractCaArrayEntity> executeSearch(CriteriaSearch search, TestResult testResult) throws Exception;
 
 }

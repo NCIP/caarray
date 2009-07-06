@@ -12,18 +12,18 @@ package caarray.client.test.search;
 public abstract class CriteriaSearch
 {
 
-    protected Integer testCase = null;
+    protected Float testCase = null;
     protected String api = null;
     protected Integer expectedResults = null, minResults = null;
     
     protected CriteriaSearch(){}
 
-    public Integer getTestCase()
+    public Float getTestCase()
     {
         return testCase;
     }
 
-    public void setTestCase(Integer testCase)
+    public void setTestCase(Float testCase)
     {
         this.testCase = testCase;
     }

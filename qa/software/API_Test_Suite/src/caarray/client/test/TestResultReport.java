@@ -179,7 +179,7 @@ public class TestResultReport {
 		}
 		for (TestResult result : results)
 		{
-			String[] resultArray = new String[]{Integer.toString(result.getTestCase()),
+			String[] resultArray = new String[]{Float.toString(result.getTestCase()),
 					(result.isPassed() ? "passed" : "failed"), Long.toString(result.getElapsedTime()) + " ms",result.getDetails()};
 			String results = TestUtils.delimit(resultArray, DELIMITER);
 			writer.write(results);

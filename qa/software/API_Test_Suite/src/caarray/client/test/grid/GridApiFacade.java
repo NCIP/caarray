@@ -15,6 +15,7 @@ import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 
 import java.rmi.RemoteException;
@@ -122,11 +123,19 @@ public class GridApiFacade implements ApiFacade
         Category exampleCategory = new Category();
         exampleCategory.setName(categoryName);
         criteria.setExample(exampleCategory);
-        SearchResult<Category> results = (SearchResult<Category>) searchByExample(
-                api, criteria, null);
-        List<Category> categories = results.getResults();
-        if (!categories.isEmpty())
-            return categories.get(0).getReference();
+        try
+        {
+            SearchResult<Category> results = (SearchResult<Category>) searchByExample(
+                    api, criteria, null);
+            List<Category> categories = results.getResults();
+            if (!categories.isEmpty())
+                return categories.get(0).getReference();
+        }
+        catch (UnsupportedCategoryException e)
+        {
+            System.out.println("Unsupported category: " + e.getMessage());
+        }
+        
         return null;
     }
     public ArrayProvider getArrayProvider(String api, String providerName)
@@ -150,7 +159,7 @@ public class GridApiFacade implements ApiFacade
         exampleOrganism.setScientificName(scientificName);
         organismCriteria.setExample(exampleOrganism);
         SearchResult<Organism> organisms = (SearchResult<Organism>)searchByExample(api,
-                organismCriteria, null).getResults();
+                organismCriteria, null);
         if (!organisms.getResults().isEmpty())
             return organisms.getResults().get(0);
         return null;
@@ -162,7 +171,7 @@ public class GridApiFacade implements ApiFacade
         assay.setName(type);
         assayCriteria.setExample(assay);
         SearchResult<AssayType> assays = (SearchResult<AssayType>)searchByExample(api,
-                assayCriteria, null).getResults();
+                assayCriteria, null);
         if (!assays.getResults().isEmpty())
             return assays.getResults().get(0);
         return null;

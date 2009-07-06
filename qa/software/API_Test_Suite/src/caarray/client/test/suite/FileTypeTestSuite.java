@@ -179,7 +179,7 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
         search.setFileType(example);
         if (headerIndexMap.get(TEST_CASE) < input.length
                 && !input[headerIndexMap.get(TEST_CASE)].equals(""))
-            search.setTestCase(Integer.parseInt(input[headerIndexMap.get(TEST_CASE)]
+            search.setTestCase(Float.parseFloat(input[headerIndexMap.get(TEST_CASE)]
                     .trim()));
         if (headerIndexMap.get(EXPECTED_RESULTS) < input.length
                 && !input[headerIndexMap.get(EXPECTED_RESULTS)].equals(""))

@@ -93,7 +93,7 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 public abstract class ExampleSearch
 {
 
-    protected Integer testCase = null;
+    protected Float testCase = null;
     protected String api = null;
     protected Integer expectedResults = null;
     protected Integer minResults = null;
@@ -102,12 +102,12 @@ public abstract class ExampleSearch
     {
     }
 
-    public Integer getTestCase()
+    public Float getTestCase()
     {
         return testCase;
     }
 
-    public void setTestCase(Integer testCase)
+    public void setTestCase(Float testCase)
     {
         this.testCase = testCase;
     }
