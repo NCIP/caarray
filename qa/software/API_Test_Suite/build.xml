@@ -79,7 +79,7 @@
 	</target>
 
 	<target name="run_tests_all" depends="build_all">
-		<java classname="caarray.client.test.full.FullTest">
+		<java classname="caarray.client.test.full.FullTest" fork="yes">
 			<classpath>
 				<pathelement path="${classes.dir}" />
 				<fileset dir="${lib.dir}">
