@@ -472,9 +472,8 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
         }
         catch (Throwable e)
         {
-            System.out.println("Error encountered executing search: " + e.getMessage() + " cause: " + (e.getCause() != null ? e.getCause().getMessage()
-                    : ""));
-            testResult.addDetail("Exception encountered executing search: " + e.getClass() + ": " + e.getMessage());
+            System.out.println("Error encountered executing search: " + e.getMessage());
+            testResult.addDetail("Exception encountered executing search: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
         } 
         
         

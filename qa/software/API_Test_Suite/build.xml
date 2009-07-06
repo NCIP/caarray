@@ -97,7 +97,7 @@
 	</target>
 
 	<target name="run_tests_grid" depends="clean,build_grid">
-		<java classname="caarray.client.test.grid.GridTest">
+		<java classname="caarray.client.test.grid.GridTest"  fork="yes">
 			<classpath>
 				<pathelement path="${classes.dir}" />
 				<fileset dir="${lib.dir}">
@@ -118,7 +118,7 @@
 	</target>
 
 	<target name="run_tests_java" depends="clean,build_java">
-		<java classname="caarray.client.test.java.JavaTest">
+		<java classname="caarray.client.test.java.JavaTest" fork="yes">
 			<classpath>
 				<pathelement path="${classes.dir}" />
 				<fileset dir="${lib.dir}">
