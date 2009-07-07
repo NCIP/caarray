@@ -88,12 +88,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-import caarray.client.test.search.ExperimentCriteriaSearch;
 import caarray.client.test.suite.ArrayDataTypeTestSuite;
 import caarray.client.test.suite.ArrayDesignTestSuite;
 import caarray.client.test.suite.AssayTypeTestSuite;
 import caarray.client.test.suite.ConfigurableTestSuite;
 import caarray.client.test.suite.ExperimentCriteriaTestSuite;
+import caarray.client.test.suite.ExperimentKeywordTestSuite;
 import caarray.client.test.suite.FileTypeTestSuite;
 import caarray.client.test.suite.LookupEntitiesTestSuite;
 import caarray.client.test.suite.OrganismTestSuite;
@@ -116,7 +116,7 @@ public class TestMain {
     	ConfigurableTestSuite[] testSuites = new ConfigurableTestSuite[]{new ArrayDataTypeTestSuite(apiFacade),
     	        new ArrayDesignTestSuite(apiFacade), new LookupEntitiesTestSuite(apiFacade), new AssayTypeTestSuite(apiFacade),
     	        new FileTypeTestSuite(apiFacade), new OrganismTestSuite(apiFacade), new TermSourceTestSuite(apiFacade),
-    	        new QuantitationTypeTestSuite(apiFacade), new ExperimentCriteriaTestSuite(apiFacade)};
+    	        new QuantitationTypeTestSuite(apiFacade), new ExperimentCriteriaTestSuite(apiFacade), new ExperimentKeywordTestSuite(apiFacade)};
     	
     	System.out.println("Executing test suites ...");
     	for (ConfigurableTestSuite testSuite : testSuites)

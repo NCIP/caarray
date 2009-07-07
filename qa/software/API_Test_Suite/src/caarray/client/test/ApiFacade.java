@@ -7,10 +7,12 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
+import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
@@ -49,4 +51,6 @@ public interface ApiFacade
     public Organism getOrganism(String api, String scientificName, String commonName) throws Exception;
     
     public AssayType getAssayType(String api, String type) throws Exception;
+    
+    public SearchResult<Experiment> searchForExperimentByKeyword(String api, KeywordSearchCriteria criteria, LimitOffset limitOffset) throws Exception;
 }
