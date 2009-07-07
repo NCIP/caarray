@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.dao;
 
 import static org.junit.Assert.assertEquals;
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.domain.array.Array;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -214,6 +216,81 @@ public class HybridizationDaoTest extends AbstractDaoTest {
 
     @Test
     public void testSearchByCriteria() throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+
+        saveSupportingObjects();
+        
+        Hybridization h1 = new Hybridization();
+        h1.setName("h1");
+        DUMMY_EXPERIMENT_1.getHybridizations().add(h1);
+        h1.setExperiment(DUMMY_EXPERIMENT_1);
+        
+        Hybridization h2 = new Hybridization();
+        h2.setName("h2");
+        h2.setArray(new Array());
+        DUMMY_EXPERIMENT_1.getHybridizations().add(h2);
+        h2.setExperiment(DUMMY_EXPERIMENT_1);
+
+        Source so1 = new Source();
+        so1.setName("source");
+        DUMMY_EXPERIMENT_1.getSources().add(so1);
+        so1.setExperiment(DUMMY_EXPERIMENT_1);
+        Sample sa1 = new Sample();
+        sa1.setName("sample");
+        so1.getSamples().add(sa1);
+        sa1.getSources().add(so1);
+        DUMMY_EXPERIMENT_1.getSamples().add(sa1);
+        sa1.setExperiment(DUMMY_EXPERIMENT_1);
+        Extract ex1 = new Extract();
+        ex1.setName("extract1");
+        sa1.getExtracts().add(ex1);
+        ex1.getSamples().add(sa1);
+        DUMMY_EXPERIMENT_1.getExtracts().add(ex1);
+        ex1.setExperiment(DUMMY_EXPERIMENT_1);
+        Extract ex2 = new Extract();
+        ex2.setName("extract2");
+        sa1.getExtracts().add(ex2);
+        ex2.getSamples().add(sa1);
+        DUMMY_EXPERIMENT_1.getExtracts().add(ex2);
+        ex2.setExperiment(DUMMY_EXPERIMENT_1);
+        LabeledExtract le1 = new LabeledExtract();
+        le1.setName("LE1");
+        ex1.getLabeledExtracts().add(le1);
+        le1.getExtracts().add(ex1);
+        ex2.getLabeledExtracts().add(le1);
+        le1.getExtracts().add(ex2);
+        le1.getHybridizations().add(h1);
+        h1.getLabeledExtracts().add(le1);
+        DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le1);
+        le1.setExperiment(DUMMY_EXPERIMENT_1);
+        LabeledExtract le2 = new LabeledExtract();
+        le2.setName("LE2");        
+        ex2.getLabeledExtracts().add(le2);
+        le2.getExtracts().add(ex2);
+        le2.getHybridizations().add(h2);
+        h2.getLabeledExtracts().add(le2);
+        DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le2);
+        le2.setExperiment(DUMMY_EXPERIMENT_1);
+        LabeledExtract le3 = new LabeledExtract();
+        le3.setName("LE3");        
+        le3.getHybridizations().add(h1);
+        h1.getLabeledExtracts().add(le3);
+        le3.getHybridizations().add(h2);
+        h2.getLabeledExtracts().add(le3);
+        DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le3);
+        le3.setExperiment(DUMMY_EXPERIMENT_1);
+
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        List<Hybridization> hybs = DAO_OBJECT.getWithNoArrayDesign();
+        assertEquals(2, hybs.size());
+        assertEquals(h1.getName(), hybs.get(0).getName());
+        assertEquals(h2.getName(), hybs.get(1).getName());
+    }    
+    
+    @Test
+    public void testGetWithNoArrayDesign() throws Exception {
         Transaction tx = HibernateUtil.beginTransaction();
 
         saveSupportingObjects();

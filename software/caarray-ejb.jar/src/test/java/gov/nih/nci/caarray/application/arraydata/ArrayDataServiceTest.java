@@ -125,7 +125,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
@@ -210,7 +210,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * Tests the ArrayDataService subsystem
  */
 @SuppressWarnings("PMD")
-public class ArrayDataServiceTest extends AbstractCaarrayTest {
+public class ArrayDataServiceTest extends AbstractServiceTest {
     private static final String GAL_DERISI_LSID_OBJECT_ID = "JoeDeRisi-fix";
     private static final String GAL_YEAST1_LSID_OBJECT_ID = "Yeast1";
     private static final String AFFY_TEST3_LSID_OBJECT_ID = "Test3";

@@ -87,7 +87,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
@@ -159,7 +159,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  *
  */
 @SuppressWarnings("PMD")
-public class MageTabTranslatorTest extends AbstractCaarrayTest {
+public class MageTabTranslatorTest extends AbstractServiceTest {
 
     private MageTabTranslator translator;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();

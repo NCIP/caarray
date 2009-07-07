@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -131,6 +132,15 @@ public interface ArrayDataService {
      */
     void importData(CaArrayFile file, boolean createAnnotation, DataImportOptions dataImportOptions)
             throws InvalidDataFileException;
+    
+    /**
+     * Returns the array design referenced by the given data file, if any.
+     * @param file the data file.
+     * @return if the data file explicitly refers to an array design, and that design has been imported,
+     * returns the ArrayDesign corresponding to it. Otherwise (if either the data file does not explicitly
+     * refer to a design, or the design it refers to has not been imported), returns null
+     */
+    ArrayDesign getArrayDesign(CaArrayFile file);
 
     /**
      * Returns the complete data content of the provided array data object.

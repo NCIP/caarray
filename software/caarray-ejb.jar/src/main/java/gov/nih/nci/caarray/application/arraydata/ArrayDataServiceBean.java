@@ -84,7 +84,9 @@ package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -94,6 +96,7 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
+import java.io.File;
 import java.util.List;
 
 import javax.ejb.Local;
@@ -171,6 +174,19 @@ public class ArrayDataServiceBean implements ArrayDataService {
         LogUtil.logSubsystemExit(LOG);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public ArrayDesign getArrayDesign(CaArrayFile caArrayFile) {
+        LogUtil.logSubsystemEntry(LOG, caArrayFile);
+        AbstractDataFileHandler handler = ArrayDataHandlerFactory.getInstance().getHandler(caArrayFile.getFileType());
+        File file = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
+        ArrayDesign ad = handler.getArrayDesign(ServiceLocatorFactory.getArrayDesignService(), file);
+        TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(caArrayFile);
+        LogUtil.logSubsystemExit(LOG);
+        return ad;
+    }
+    
     private void checkArguments(AbstractArrayData arrayData) {
         if (arrayData == null) {
             throw new IllegalArgumentException("Argument arrayData was null");

@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.application.permissions;
 
 import static org.junit.Assert.assertEquals;
-import gov.nih.nci.caarray.AbstractCaarrayIntegrationTest;
+import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
@@ -106,7 +106,7 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
  * Test cases for service.
  */
 @SuppressWarnings("PMD")
-public class PermissionsManagementServiceIntegrationTest extends AbstractCaarrayIntegrationTest {
+public class PermissionsManagementServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     private static final String TEST = "test";
     private PermissionsManagementService permissionsManagementService;

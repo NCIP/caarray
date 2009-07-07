@@ -105,7 +105,7 @@ public class HybridizationDaoImpl extends AbstractCaArrayDaoImpl implements Hybr
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings({"unchecked" })
+    @SuppressWarnings("unchecked")
     public List<Hybridization> searchByCriteria(PageSortParams<Hybridization> params,
             HybridizationSearchCriteria criteria) {
         Criteria c = HibernateUtil.getCurrentSession().createCriteria(Hybridization.class);
@@ -138,5 +138,15 @@ public class HybridizationDaoImpl extends AbstractCaArrayDaoImpl implements Hybr
         }
         c.addOrder(toOrder(params));
         return c.list();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<Hybridization> getWithNoArrayDesign() {
+        return HibernateUtil.getCurrentSession().createQuery(
+                "select h from " + Hybridization.class.getName()
+                        + " h left join h.array a where a is null or a.design is null order by h.name asc").list();
     }
 }

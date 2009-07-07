@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.services.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -107,7 +107,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 @SuppressWarnings("deprecation")
-public class DataRetrievalServiceTest extends AbstractCaarrayTest {
+public class DataRetrievalServiceTest extends AbstractServiceTest {
 
     private DataRetrievalService service;
     private final LocalArrayDataServiceStub arrayDataService = new LocalArrayDataServiceStub();

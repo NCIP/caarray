@@ -1465,7 +1465,7 @@
 
     <target name="configure-datasource-for-test" unless="schema.sql.exists">
         <copy todir="${caarray-common.test.classes.dir}" overwrite="true">
-            <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml,MGEDOntology.owl" />
+            <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml,MGEDOntology.owl,ValidatorMessages.properties" />
         </copy>
         <replace dir="${caarray-common.test.classes.dir}" includes="*.cfg.xml">
             <replacefilter token="@HIBERNATE_CONFIG_START@" value="${comment.end}" />
@@ -1481,7 +1481,8 @@
             <replacefilter token="#@SESSION_CONTEXT@" value="${hibernate.session.context}" />
             <replacefilter token="#@CONNECTION_PROVIDER@" value="${hibernate.connection.provider}" />
         </replace>
-        <move file="${caarray-common.test.classes.dir}/template.csm.new.hibernate.cfg.xml" toFile="${caarray-common.test.classes.dir}/csm/${csm.application.name}.csm.new.hibernate.cfg.xml" />
+        <move file="${caarray-common.test.classes.dir}/template.csm.new.hibernate.cfg.xml" 
+        		toFile="${caarray-common.test.classes.dir}/csm/${csm.application.name}.csm.new.hibernate.cfg.xml" />
     </target>
 
     <!-- ******************************************************************* -->

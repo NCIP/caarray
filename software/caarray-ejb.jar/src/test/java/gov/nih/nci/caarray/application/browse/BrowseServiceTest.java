@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.application.browse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.dao.BrowseDao;
 import gov.nih.nci.caarray.dao.stub.BrowseDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -101,7 +101,7 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 /**
  * @author Winston Cheng
  */
-public class BrowseServiceTest extends AbstractCaarrayTest {
+public class BrowseServiceTest extends AbstractServiceTest {
     private BrowseService browseService;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private static final int NUM_PROJECTS = 5;

@@ -86,7 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.AbstractCaarrayIntegrationTest;
+import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
@@ -128,7 +128,7 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
  * Integration Test class for ProjectManagementService subsystem.
  */
 @SuppressWarnings("PMD")
-public class ProjectManagementServiceIntegrationTest extends AbstractCaarrayIntegrationTest {
+public class ProjectManagementServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     private ProjectManagementService projectManagementService;
     private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();

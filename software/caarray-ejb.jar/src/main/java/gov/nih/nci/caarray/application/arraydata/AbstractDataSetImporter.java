@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.Array;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -110,6 +111,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -162,6 +164,24 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
         lookupArrayData();
         if (getArrayData() == null) {
             createArrayData(createAnnnotation);
+        } else {
+            for (Hybridization h : getArrayData().getHybridizations()) {
+                ensureArrayDesignSetForHyb(h);
+            }
+        }
+    }
+
+    private void ensureArrayDesignSetForHyb(Hybridization h)  {
+        // if array was not set for a hybridization via mage-tab, try to look it up
+        // from data file or experiment
+        if (h.getArray() == null) {
+            h.setArray(new Array());
+        }
+        if (h.getArray().getDesign() == null) {
+            ArrayDesign ad = getArrayDesignFromFileOrExperiment();
+            if (ad != null) {
+                h.getArray().setDesign(ad);
+            }
         }
     }
 
@@ -248,6 +268,10 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
         return caArrayFile;
     }
 
+    final Experiment getExperiment() {
+        return getCaArrayFile().getProject().getExperiment();
+    }
+
     private CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
     }
@@ -289,14 +313,27 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
     }
 
     private Hybridization createHybridization(String hybridizationName) {
-        Experiment experiment = getCaArrayFile().getProject().getExperiment();
         Hybridization hybridization = new Hybridization();
         hybridization.setName(hybridizationName);
         Array array = new Array();
-        array.setDesign(getDataFileHandler().getArrayDesign(getArrayDesignService(), getFile()));
-        hybridization.setArray(array);
-        experiment.getHybridizations().add(hybridization);
+        ArrayDesign ad = getArrayDesignFromFileOrExperiment();
+        if (ad != null) {
+            array.setDesign(ad);
+            hybridization.setArray(array);
+        } 
+        getExperiment().getHybridizations().add(hybridization);
         return hybridization;
+    }
+
+    private ArrayDesign getArrayDesignFromFileOrExperiment() {
+        ArrayDesign ad = getDataFileHandler().getArrayDesign(getArrayDesignService(), getFile());
+        if (ad == null) {
+            Set<ArrayDesign> experimentDesigns = getExperiment().getArrayDesigns();
+            if (experimentDesigns.size() == 1) {
+                ad = experimentDesigns.iterator().next();
+            } 
+        }
+        return ad;
     }
 
     Hybridization lookupOrCreateHybridization(String hybridizationName, boolean createAnnotation) {

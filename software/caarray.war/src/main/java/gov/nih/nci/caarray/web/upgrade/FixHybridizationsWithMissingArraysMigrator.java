@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common-jar Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,41 +80,77 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray;
+package gov.nih.nci.caarray.web.upgrade;
 
-import gov.nih.nci.caarray.dao.HibernateIntegrationTestCleanUpUtility;
-import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
+import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.array.Array;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Experiment;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Transaction;
-import org.junit.After;
-import org.junit.Before;
+import java.util.List;
+import java.util.Set;
 
 /**
- * Base class for hibernate integration tests that handles setting up hibernate and cleaning up when done.
- * @author Steve Lustbader
+ * Migrator to find hybridizations with missing arrays, and where possible, create them 
+ * based on array designs specified in data files or the experiment. 
+ * 
+ * The migrator will use the array design for the experiment, if there is only one. Otherwise,
+ * it will extract the array design from one of the data files associated with the hybridization, if
+ * present. If none of the data files specify the array design, and the experiment has more than one
+ * array design specified, then no action will be taken.
+ *
+ * @author Dan Kokotov
  */
-public abstract class AbstractCaarrayIntegrationTest extends AbstractCaarrayTest {
-    @Before
-    public void baseIntegrationSetUp() {
-        UsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
-        HibernateUtil.setFiltersEnabled(false);
-        HibernateUtil.openAndBindSession();
-    }
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.CyclomaticComplexity" })
+public class FixHybridizationsWithMissingArraysMigrator extends AbstractMigrator {
+    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
-    @After
-    public void baseIntegrationTearDown() {
-        try {
-            Transaction tx = HibernateUtil.getCurrentSession().getTransaction();
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-        } catch (HibernateException e) {
-            // ok - there was no active transaction
+    /**
+     * {@inheritDoc}
+     */
+    public void migrate() throws MigrationStepFailedException {
+        List<Hybridization> hybsWithoutArray = daoFactory.getHybridizationDao().getWithNoArrayDesign();
+        for (Hybridization h : hybsWithoutArray) {
+            ensureArrayDesignSetForHyb(h);
         }
-        HibernateUtil.unbindAndCleanupSession();
-        HibernateIntegrationTestCleanUpUtility.cleanUp();
     }
 
+    private void ensureArrayDesignSetForHyb(Hybridization h)  {
+        if (h.getArray() == null) {
+            h.setArray(new Array());
+        }
+        ArrayDesign ad = getArrayDesignFromExperiment(h.getExperiment());
+        if (ad == null) {
+            ad = getArrayDesignFromFiles(h.getAllDataFiles());
+        }
+        if (ad != null) {
+            h.getArray().setDesign(ad);
+        }
+    }
+    
+    private ArrayDesign getArrayDesignFromFiles(Set<CaArrayFile> files) {
+        ArrayDataService ads = ServiceLocatorFactory.getArrayDataService();
+        for (CaArrayFile file : files) {
+            ArrayDesign ad = ads.getArrayDesign(file);
+            if (ad != null) {
+                return ad;
+            }
+        }
+        return null;
+    }
+    
+    private ArrayDesign getArrayDesignFromExperiment(Experiment e) {
+        return e.getArrayDesigns().size() == 1 ? e.getArrayDesigns().iterator().next() : null;
+    }
+
+    /**
+     * @param daoFactory the daoFactory to set
+     */
+    public void setDaoFactory(CaArrayDaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
 }

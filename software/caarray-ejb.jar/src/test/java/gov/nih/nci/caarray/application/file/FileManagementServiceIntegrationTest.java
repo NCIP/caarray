@@ -87,7 +87,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.AbstractCaarrayIntegrationTest;
+import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
@@ -103,6 +103,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -113,6 +114,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
@@ -126,6 +128,8 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -139,7 +143,7 @@ import org.junit.Test;
  * @author Steve Lustbader
  */
 @SuppressWarnings("PMD")
-public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegrationTest {
+public class FileManagementServiceIntegrationTest extends AbstractServiceIntegrationTest {
     @SuppressWarnings("unused")
     private FileManagementService fileManagementService;
     private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();
@@ -157,6 +161,10 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
     @Before
     public void setUp() {
         this.fileManagementService = createFileManagementService(fileAccessService);
+        resetData();
+    }
+    
+    private static void resetData() {
         DUMMY_ORGANISM = new Organism();
         DUMMY_PROVIDER = new Organization();
         DUMMY_PROJECT_1 = new Project();
@@ -320,6 +328,116 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         testSource = findSource(project, "TK6neo replicate 3");
         assertEquals("cell", testSource.getMaterialType().getValue());
         assertEquals("HG-Focus", project.getExperiment().getHybridizationByName("H_TK6 replicate 1").getArray().getDesign().getName());
+        tx.commit();
+    }
+
+    @Test
+    public void testImportMageTabWithoutArrayDesignRef() throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
+        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        tx.commit();
+
+        Set<File> inputFiles = TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET.getAllFiles();
+        MageTabDocumentSet docSet = TestMageTabSets.EXTENDED_FACTOR_VALUES_DATA_SET; 
+        importFiles(DUMMY_PROJECT_1, inputFiles, docSet);
+
+        tx = HibernateUtil.beginTransaction();
+        Project project = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        assertEquals(5, project.getImportedFiles().size());
+        assertEquals(3, project.getExperiment().getHybridizations().size());
+        for (Hybridization h : project.getExperiment().getHybridizations()) {
+            assertEquals("Test3", h.getArray().getDesign().getName());
+        }
+        tx.commit();        
+    }
+
+    @Test
+    public void testImportMageTabWithoutArrayDesignRef2() throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
+        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        tx.commit();
+
+        Set<File> inputFiles = TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET.getAllFiles();
+        MageTabDocumentSet docSet = TestMageTabSets.EXTENDED_FACTOR_VALUES_DATA_SET; 
+
+        tx = HibernateUtil.beginTransaction();
+        Project project = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        CaArrayFileSet fileSet = uploadFiles(project, inputFiles, docSet);
+        for (CaArrayFile file : fileSet.getFilesByType(FileType.AFFYMETRIX_CEL)) {
+            file.setFileType(FileType.AFFYMETRIX_DAT);
+        }
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        project = (Project) HibernateUtil.getCurrentSession().load(Project.class, project.getId());
+        importFiles(project, fileSet, null);
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        project = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        assertEquals(5, project.getImportedFiles().size());
+        assertEquals(3, project.getExperiment().getHybridizations().size());
+        for (Hybridization h : project.getExperiment().getHybridizations()) {
+            assertEquals("Test3", h.getArray().getDesign().getName());
+        }
+        tx.commit();
+    }
+    
+    @Test
+    public void testImportNonMageTabWithoutArrayDesign() throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
+        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        tx.commit();
+
+        Set<File> inputFiles = new HashSet<File>(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET.getAllFiles());
+        for (Iterator<File> fileIt = inputFiles.iterator(); fileIt.hasNext(); ) {
+            File f = fileIt.next();
+            if (!f.getName().endsWith("CEL")) {
+                fileIt.remove();
+            }
+        }
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET, false); 
+        docSet.getIdfDocuments().clear();
+        docSet.getSdrfDocuments().clear();
+
+        tx = HibernateUtil.beginTransaction();
+        Project project = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        CaArrayFileSet fileSet = uploadFiles(project, inputFiles, docSet);
+        for (CaArrayFile file : fileSet.getFilesByType(FileType.AFFYMETRIX_CEL)) {
+            file.setFileType(FileType.AFFYMETRIX_DAT);
+        }
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        project = (Project) HibernateUtil.getCurrentSession().load(Project.class, project.getId());
+        importFiles(project, fileSet, DataImportOptions.getAutoCreatePerFileOptions());
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        project = (Project) HibernateUtil.getCurrentSession().load(Project.class, project.getId());
+        assertEquals(3, project.getImportedFiles().size());
+        assertEquals(3, project.getExperiment().getHybridizations().size());
+        for (Hybridization h : project.getExperiment().getHybridizations()) {
+            assertEquals("Test3", h.getArray().getDesign().getName());
+        }
         tx.commit();
     }
 
@@ -545,7 +663,6 @@ public class FileManagementServiceIntegrationTest extends AbstractCaarrayIntegra
         bean.setSubmitter(submitter);
 
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
-        TemporaryFileCacheLocator.resetTemporaryFileCache();
 
         return bean;
     }

@@ -72,6 +72,7 @@
         <migrator-class>gov.nih.nci.caarray.web.upgrade.CsmFilterMigrator</migrator-class>
     </migration>
     <migration fromVersion="2.3.0.alpha5" toVersion="2.3.0.rc2">
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.FixHybridizationsWithMissingArraysMigrator</migrator-class>
         <sql-script>migrate-2.3.0.alpha5-to-2.3.0.rc2.sql</sql-script>
         <migrator-class>gov.nih.nci.caarray.web.upgrade.CsmFilterMigrator</migrator-class>
     </migration>

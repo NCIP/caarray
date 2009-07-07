@@ -86,7 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.AbstractCaarrayIntegrationTest;
+import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
@@ -122,7 +122,7 @@ import org.junit.Test;
  * Integration Test class for ArrayDesignService subsystem.
  */
 @SuppressWarnings("PMD")
-public class ArrayDesignServiceIntegrationTest extends AbstractCaarrayIntegrationTest {
+public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     private ArrayDesignService arrayDesignService;
     private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();

@@ -103,4 +103,8 @@ public class HybridizationDaoStub extends AbstractDaoStub implements Hybridizati
             HybridizationSearchCriteria criteria) {
         return Collections.emptyList();
     }
+    
+    public List<Hybridization> getWithNoArrayDesign() {
+        return Collections.emptyList();
+    }
 }

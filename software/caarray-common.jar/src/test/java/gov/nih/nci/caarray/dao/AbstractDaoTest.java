@@ -82,40 +82,15 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.AbstractCaarrayTest;
-import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.util.UsernameHolder;
-
-import org.hibernate.HibernateException;
-import org.hibernate.Transaction;
-import org.junit.After;
-import org.junit.Before;
+import gov.nih.nci.caarray.AbstractHibernateTest;
 
 /**
- * Helper methods for the dao classes
+ * Base class for DAO tests.
+ * 
+ * @author dkokotov
  */
-@SuppressWarnings("PMD")
-public abstract class AbstractDaoTest extends AbstractCaarrayTest {
-    @Before
-    public void abstractSetup() {
-        UsernameHolder.setUser(STANDARD_USER);
-        HibernateUtil.setFiltersEnabled(true);
-        HibernateUtil.openAndBindSession();
-   }
-
-
-    @After
-    public void tearDown() {
-        try {
-            Transaction tx = HibernateUtil.getCurrentSession().getTransaction();
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-        } catch (HibernateException e) {
-            // ok - there was no active transaction
-        }
-        HibernateUtil.unbindAndCleanupSession();
-        HibernateIntegrationTestCleanUpUtility.cleanUp();
+public abstract class AbstractDaoTest extends AbstractHibernateTest {
+    public AbstractDaoTest() {
+        super(true);
     }
-
 }

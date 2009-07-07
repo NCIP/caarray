@@ -87,7 +87,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.dao.CollaboratorGroupDao;
 import gov.nih.nci.caarray.dao.SearchDao;
@@ -127,7 +127,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * Test cases for service.
  */
 @SuppressWarnings("PMD")
-public class PermissionsManagementServiceTest extends AbstractCaarrayTest {
+public class PermissionsManagementServiceTest extends AbstractServiceTest {
 
     private static final String TEST = "test";
     private PermissionsManagementService permissionsManagementService;

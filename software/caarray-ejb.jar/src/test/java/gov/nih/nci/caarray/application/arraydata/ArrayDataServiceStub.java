@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -113,6 +114,10 @@ public class ArrayDataServiceStub implements ArrayDataService {
     public void importData(CaArrayFile caArrayFile, boolean createAnnotation, DataImportOptions importOptions)
             throws InvalidDataFileException {
         // no-op
+    }
+    
+    public ArrayDesign getArrayDesign(CaArrayFile file) {
+        return null;
     }
 
     public void initialize() {

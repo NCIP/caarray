@@ -88,7 +88,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
@@ -159,7 +159,7 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  * Test class for ArrayDesignService subsystem.
  */
 @SuppressWarnings("PMD")
-public class ArrayDesignServiceTest extends AbstractCaarrayTest {
+public class ArrayDesignServiceTest extends AbstractServiceTest {
 
     private ArrayDesignService arrayDesignService;
     private final LocalDaoFactoryStub caArrayDaoFactoryStub = new LocalDaoFactoryStub();
