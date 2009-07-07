@@ -95,14 +95,14 @@ import java.util.List;
 public interface AuditLogDao {
 
     /**
-     * @param criteria criteria
-     * @param sort sort
+     * @param criteria filter/search criteria
+     * @param sort sort parameters
      * @return matching log records.
      */
     List<AuditLogRecord> getRecords(AuditLogSearchCriteria criteria, PageSortParams<AuditLogRecord> sort);
 
     /**
-     * @param criteria criteria
+     * @param criteria filter/search criteria criteria
      * @return row count.
      */
     int getRecordsCount(AuditLogSearchCriteria criteria);

@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.nih.nci.caarray.dao;
 
 import com.fiveamsolutions.nci.commons.audit.AuditLogDetail;
@@ -108,6 +103,21 @@ public class AuditLogDaoTest extends AbstractDaoTest {
         assertTrue(l.get(0).getDetails().iterator().next().getMessage().contains("bbb"));
         assertEquals(r2.getId(), l.get(0).getId());
 
+    }
+
+    @Test
+    public void regressiongForge21514_recordShownTooManyTimesFix(){
+        AuditLogDetail d3 = new AuditLogDetail(r1, "bar", null, null);
+        d3.setMessage("bla bla bla ccc bla bla bla");
+        r1.getDetails().add(d3);
+        HibernateUtil.getCurrentSession().update(r1);
+
+        AuditLogDaoImpl instance = new AuditLogDaoImpl();
+        AuditLogSearchCriteria cr = new AuditLogSearchCriteria();
+
+        List<AuditLogRecord> l = instance.getRecords(cr, sort);
+        assertEquals(2, l.size());
+        assertEquals(2, l.get(0).getDetails().size());
     }
 
 }

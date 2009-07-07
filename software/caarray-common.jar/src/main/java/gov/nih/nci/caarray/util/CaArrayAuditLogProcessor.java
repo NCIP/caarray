@@ -157,6 +157,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
                     + (entity.isGroupProfile() ? " to group " + entity.getGroup().getGroup().getGroupName() : "")
                     + (oldVal == null ? " set" : " changed from " + oldVal) + " to " + newVal);
             record.getDetails().add(detail);
+
         } else if ("sampleSecurityLevels".equals(property)) {
             logAccessProfileSamples(record, entity, columnName, (Map<Sample, SampleSecurityLevel>) oldVal,
                     (Map<Sample, SampleSecurityLevel>) newVal);
@@ -241,40 +242,51 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
 
     private void logAccessProfileSamples(AuditLogRecord record, AccessProfile entity, String columnName,
             Map<Sample, SampleSecurityLevel> o, Map<Sample, SampleSecurityLevel> n) {
+        
+        // header message.
         String pname = entity.getProject().getExperiment().getTitle();
+        AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
+        StringBuffer sb = new StringBuffer("Access to samples on experiment ");
+        sb.append(pname);
+        if (entity.isPublicProfile()) {
+            sb.append("'s Public Access Profile");
+        } else {
+            sb.append("'s Access Profile to Group ")
+                    .append(entity.getGroup().getGroup().getGroupName());
+        }        
+        detail.setMessage(sb.toString());
+        record.getDetails().add(detail);
+        boolean added1Sample = false;
+
         if (o != null) {
             for (Map.Entry<Sample, SampleSecurityLevel> e : o.entrySet()) {
                 SampleSecurityLevel v = n.get(e.getKey());
-                StringBuffer m = new StringBuffer("Access to sample ").append(e.getKey().getName());
-                if (v == null) {
-                    m.append(" removed");
-                } else if (v != e.getValue()) {
-                    m.append(" changed from ").append(e.getValue()).append(" to ").append(v);
-                } else {
-                    m = null;
-                }
-                if (m != null) {
-                    if (entity.isPublicProfile()) {
-                        m.append(' ').append(pname).append("'s Public Access Profile");
-                    } else {
-                        m.append(' ').append(pname).append("'s Access Profile to group ")
-                                .append(entity.getGroup().getGroup().getGroupName());
-                    }
-                    AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
+                if (v != null && v != e.getValue()) {
+                    StringBuffer m = new StringBuffer(" - Access to sample ").append(e.getKey().getName());
+                    m.append(" changed from ").append(e.getValue()).append(" to ").append(v);                
+                    detail = new AuditLogDetail(record, columnName, null, null);
                     super.processDetail(detail, e.getValue(), v);
                     detail.setMessage(m.toString());
                     record.getDetails().add(detail);
+                    added1Sample = true;
                 }
             }
         }
+
         for (Map.Entry<Sample, SampleSecurityLevel> e : n.entrySet()) {
-            if (o == null || !o.containsKey(e.getKey())) {
-                AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
+            // dont log transitions from null to NONE, as they occure when transitioning to a SELECTIVE state.
+            if ((o == null || !o.containsKey(e.getKey())) && e.getValue() != SampleSecurityLevel.NONE) {
+                detail = new AuditLogDetail(record, columnName, null, null);
                 super.processDetail(detail, null, e.getValue());
-                detail.setMessage("Access on experiment " + pname + "'s sample " + e.getKey().getName() + " set to "
+                detail.setMessage(" - Access on sample " + e.getKey().getName() + " set to "
                         + e.getValue());
                 record.getDetails().add(detail);
+                added1Sample = true;
             }
+        }
+        if (!added1Sample) {
+            // no need for a header is nothing was added.
+            record.getDetails().remove(detail);
         }
     }
 }

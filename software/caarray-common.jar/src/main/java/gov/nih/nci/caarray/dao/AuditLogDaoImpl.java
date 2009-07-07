@@ -84,15 +84,12 @@ package gov.nih.nci.caarray.dao;
 
 import com.fiveamsolutions.nci.commons.audit.AuditLogRecord;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
 import gov.nih.nci.caarray.domain.search.AuditLogSearchCriteria;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.sql.JoinFragment;
+import org.hibernate.Query;
 
 /**
  *
@@ -105,17 +102,26 @@ public class AuditLogDaoImpl implements AuditLogDao {
      */
     public List<AuditLogRecord> getRecords(AuditLogSearchCriteria criteria,
             PageSortParams<AuditLogRecord> sort) {
-        Criteria cr = buildCriteria(criteria);
+        StringBuffer sb = new StringBuffer();
+        buildHql(criteria, sb, "distinct r");
+        sb.append(" order by ");
         if (sort.getSortCriteria().isEmpty()) {
-            cr.addOrder(Order.desc("createdDate"));
+            sb.append("r.createdDate desc");
         } else {
-            String prop = sort.getSortCriteria().get(0).getOrderField();
-            cr.addOrder(sort.isDesc() ? Order.desc(prop) : Order.asc(prop));
+            String comma = "";
+            for (SortCriterion<AuditLogRecord> s : sort.getSortCriteria()) {
+                sb.append(comma);
+                sb.append("r.").append(s.getOrderField());
+                comma = ", ";
+            }
+            sb.append(sort.isDesc() ? " desc" : " asc");
         }
-        cr.setMaxResults(sort.getPageSize());
-        cr.setFirstResult(sort.getIndex());
+
+        Query q = buildQuery(criteria, sb);
+        q.setMaxResults(sort.getPageSize());
+        q.setFirstResult(sort.getIndex());
         @SuppressWarnings("unchecked")
-        List<AuditLogRecord> records = cr.list();
+        List<AuditLogRecord> records = q.list();
         return records;
     }
 
@@ -123,22 +129,40 @@ public class AuditLogDaoImpl implements AuditLogDao {
      * {@inheritDoc}
      */
     public int getRecordsCount(AuditLogSearchCriteria criteria) {
-        Criteria cr = buildCriteria(criteria);
-        cr.setProjection(Projections.rowCount());
-        return ((Number) cr.uniqueResult()).intValue();
+        StringBuffer sb = new StringBuffer();
+        buildHql(criteria, sb, "count(distinct r)");
+        Query q = buildQuery(criteria, sb);
+        return ((Number) q.uniqueResult()).intValue();
     }
 
-    private Criteria buildCriteria(AuditLogSearchCriteria criteria) {
-        Criteria cr = HibernateUtil.getCurrentSession().createCriteria(AuditLogRecord.class);
-        Criteria d = cr.createCriteria("details", "d", JoinFragment.INNER_JOIN);
+    private void buildHql(AuditLogSearchCriteria criteria, StringBuffer hql, String selectClause) {
+        hql.append("select ").append(selectClause).append(" from ").append(AuditLogRecord.class.getName())
+                .append(" r inner join r.details d");
+
+        String where = " where";
+        String and = "";
         if (StringUtils.isNotBlank(criteria.getUsername())) {
-            cr.add(Restrictions.eq("username", criteria.getUsername()));
+            hql.append(where);
+            hql.append(" r.username = :username");
+            and = " and";
+            where = "";
         }
-        if (StringUtils.isNotBlank(criteria.getMessage())) {            
-            d.add(Restrictions.ilike("message", "%" + criteria.getMessage() + "%"));
+        if (StringUtils.isNotBlank(criteria.getMessage())) {
+            hql.append(and);
+            hql.append(where);
+            hql.append(" lower(d.message) like :message");
         }
-        return cr;
     }
 
-
+    private Query buildQuery(AuditLogSearchCriteria criteria, StringBuffer sb) {
+        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        if (StringUtils.isNotBlank(criteria.getUsername())) {
+            q.setParameter("username", criteria.getUsername());
+        }
+        if (StringUtils.isNotBlank(criteria.getMessage())) {
+            q.setParameter("message", "%" + criteria.getMessage().toLowerCase() + "%");
+        }        
+        
+        return q;
+    }
 }

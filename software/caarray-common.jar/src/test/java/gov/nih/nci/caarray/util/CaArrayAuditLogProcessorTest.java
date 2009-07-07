@@ -1,6 +1,5 @@
 package gov.nih.nci.caarray.util;
 
-import org.hibernate.criterion.Order;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.dao.AbstractDaoTest;
@@ -20,9 +19,9 @@ import org.hibernate.Transaction;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.audit.AuditLogDetail;
+import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.PropertyProjection;
 
 /**
  *
@@ -79,7 +78,7 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
 
     @Test
     public void testSampleSecurityLog() {
-        Transaction tx = HibernateUtil.beginTransaction();        
+        Transaction tx = HibernateUtil.beginTransaction();
         ProjectTestHelper helper = new ProjectTestHelper(){};
         helper.setup();
         ProjectTestHelper.saveStuff();
@@ -91,7 +90,37 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
         HibernateUtil.getCurrentSession().flush();
 
         List<AuditLogDetail> l2 = HibernateUtil.getCurrentSession().createCriteria(AuditLogDetail.class).list();
-        assertEquals(1L, l2.size() - l.size());
+        assertEquals(2L, l2.size() - l.size());
+        tx.commit();
+    }
+
+    @Test
+    public void testSampleSecurityLog_Selective_READ_SELECTIVE() {
+        testSampleSecurityLog_Selective(1, SecurityLevel.READ_SELECTIVE, SampleSecurityLevel.NONE);
+    }
+
+    @Test
+    public void testSampleSecurityLog_Selective_NONE() {
+        testSampleSecurityLog_Selective(0, SecurityLevel.NO_VISIBILITY, SampleSecurityLevel.NONE);
+    }
+
+
+    private void testSampleSecurityLog_Selective(int expectedCount, SecurityLevel projectLevel, SampleSecurityLevel sampleLevel) {
+        Transaction tx = HibernateUtil.beginTransaction();
+        ProjectTestHelper helper = new ProjectTestHelper(){};
+        helper.setup();
+        ProjectTestHelper.saveStuff();
+        HibernateUtil.getCurrentSession().flush();
+        List<AuditLogDetail> l = HibernateUtil.getCurrentSession().createCriteria(AuditLogDetail.class).list();
+        Project p = ProjectTestHelper.getDummyProject();
+
+        p.getPublicProfile().getSampleSecurityLevels().put(ProjectTestHelper.getDummySample(), sampleLevel);
+        p.getPublicProfile().setSecurityLevel(projectLevel);
+        HibernateUtil.getCurrentSession().saveOrUpdate(p);
+        HibernateUtil.getCurrentSession().flush();
+
+        List<AuditLogDetail> l2 = HibernateUtil.getCurrentSession().createCriteria(AuditLogDetail.class).list();
+        assertEquals(expectedCount, l2.size() - l.size());
         tx.commit();
     }
 
