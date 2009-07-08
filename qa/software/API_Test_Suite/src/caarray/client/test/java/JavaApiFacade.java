@@ -151,6 +151,13 @@ public class JavaApiFacade implements ApiFacade
         return javaSearchService.searchForExperimentsByKeyword(criteria, limitOffset);
     }
 
+    public List<Category> getAllCharacteristicCategories(String api,
+            CaArrayEntityReference reference) throws Exception
+    {
+        return javaSearchService.getAllCharacteristicCategories(reference);
+    }
+
+    
     
     
 }

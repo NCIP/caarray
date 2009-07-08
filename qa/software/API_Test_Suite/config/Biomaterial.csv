@@ -1,0 +1,7 @@
+Test Case,API,Name,Type,Match Mode,Expected Results,Min Results,Expected External ID,Expected Type
+51,java,,,,,20000,,
+52,grid,,,,,20000,,
+53,java,QaApiTestSample01,,,1,,QA_API_TEST_EXTERNAL_ID_01,SAMPLE
+54,grid,QaApiTestSample01,,,1,,QA_API_TEST_EXTERNAL_ID_01,SAMPLE
+318,java,TCGA,SAMPLE,START,,2000,,
+319,grid,TCGA,SAMPLE,START,,2000,,

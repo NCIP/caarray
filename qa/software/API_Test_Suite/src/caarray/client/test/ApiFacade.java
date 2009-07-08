@@ -15,6 +15,7 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 import java.util.List;
@@ -53,4 +54,6 @@ public interface ApiFacade
     public AssayType getAssayType(String api, String type) throws Exception;
     
     public SearchResult<Experiment> searchForExperimentByKeyword(String api, KeywordSearchCriteria criteria, LimitOffset limitOffset) throws Exception;
+    
+    public List<Category> getAllCharacteristicCategories(String api, CaArrayEntityReference reference) throws Exception;
 }

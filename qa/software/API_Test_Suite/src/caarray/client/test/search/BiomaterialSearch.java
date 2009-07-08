@@ -84,6 +84,10 @@ package caarray.client.test.search;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Bean encapsulating details of a search-by-example Biomaterial search.
@@ -94,7 +98,8 @@ import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 public class BiomaterialSearch extends ExampleSearch
 {
     private Biomaterial biomaterial;
-    
+    private List<BiomaterialType> expectedType = new ArrayList<BiomaterialType>();
+    private List<String> expectedExternalId = new ArrayList<String>();
     /**
      * 
      */
@@ -120,6 +125,26 @@ public class BiomaterialSearch extends ExampleSearch
     public void setBiomaterial(Biomaterial biomaterial)
     {
         this.biomaterial = biomaterial;
+    }
+
+    public List<BiomaterialType> getExpectedType()
+    {
+        return expectedType;
+    }
+
+    public void addExpectedType(BiomaterialType expectedType)
+    {
+        this.expectedType.add(expectedType);
+    }
+
+    public List<String> getExpectedExternalId()
+    {
+        return expectedExternalId;
+    }
+
+    public void addExpectedExternalId(String expectedExternalId)
+    {
+        this.expectedExternalId.add(expectedExternalId);
     }
 
 }

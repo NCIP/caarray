@@ -84,8 +84,12 @@ package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
+import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 import java.io.File;
@@ -116,9 +120,12 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
     private static final String REFERENCE_EXPECTED_RESULTS = "Reference Expected Results";
     private static final String REFERENCES = "References";
     private static final String REFERENCES_EXPECTED_RESULTS = "References Expected Results";
+    private static final String CC_EXPERIMENT_TITLE = "Characteristic Categories Experiment Title";
+    private static final String CC_EXPECTED_CATEGORIES = "Expected Characteristic Categories";
     
     private static final String[] COLUMN_HEADERS = new String[]{TEST_CASE,API,PI_EXPECTED_RESULTS,CC_EXPECTED_RESULTS,
-        TERMS_NAME, TERMS_MIN_RESULTS, REFERENCE, REFERENCE_EXPECTED_RESULTS, REFERENCES, REFERENCES_EXPECTED_RESULTS};
+        TERMS_NAME, TERMS_MIN_RESULTS, REFERENCE, REFERENCE_EXPECTED_RESULTS, REFERENCES, REFERENCES_EXPECTED_RESULTS,
+        CC_EXPERIMENT_TITLE, CC_EXPECTED_CATEGORIES};
     
     private List<ConfigurableTest> configuredTests = new ArrayList<ConfigurableTest>();
     
@@ -203,6 +210,42 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
                         }
                     }
                     test = new GetByReferencesTest(api,testCase,references,expectedResults);
+                }
+                else if (headerIndexMap.get(CC_EXPECTED_RESULTS) < input.length
+                        && !input[headerIndexMap.get(CC_EXPECTED_RESULTS)].equals(""))
+                {
+                    int expectedResults = Integer.parseInt(input[headerIndexMap.get(CC_EXPECTED_RESULTS)].trim());
+                    String title = null;
+                    if (headerIndexMap.get(CC_EXPERIMENT_TITLE) < input.length
+                        && !input[headerIndexMap.get(CC_EXPERIMENT_TITLE)].equals(""))
+                    {
+                        title = input[headerIndexMap.get(CC_EXPERIMENT_TITLE)].trim();
+                        if (title.startsWith(VAR_START))
+                            title = getVariableValue(title);
+                    }
+                    List<String> expectedNames = new ArrayList<String>();
+                    if (headerIndexMap.get(CC_EXPECTED_CATEGORIES) < input.length
+                        && !input[headerIndexMap.get(CC_EXPECTED_CATEGORIES)].equals(""))
+                    {
+                        expectedNames.add(input[headerIndexMap.get(CC_EXPECTED_CATEGORIES)].trim());
+                    }
+                    int refIndex = index + 1;
+                    while (refIndex < spreadsheetRows.size())
+                    {
+                        String refRow = spreadsheetRows.get(refIndex);
+                        String[] inp = TestUtils.split(refRow, DELIMITER);
+                        if (!isNewSearch(inp))
+                        {
+                            expectedNames.add(inp[headerIndexMap.get(CC_EXPECTED_CATEGORIES)]);
+                            refIndex++;
+                        }
+                        else
+                        {
+                            index = refIndex-1;
+                            break;
+                        }
+                    }
+                    test = new CharacteristicCategoriesTest(api,testCase,title,expectedResults,expectedNames);
                 }
             }
             if (test != null)
@@ -412,6 +455,122 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
         {
             return api;
         }
+        
+    }
+    
+    class CharacteristicCategoriesTest implements ConfigurableTest
+    {
+        private String api, title;
+        private int testCase, expectedResults;
+        private List<String> expectedNames;
+        
+        public CharacteristicCategoriesTest(String api, int testCase, String title, int expectedResults, List<String> expectedNames)
+        {
+            this.api = api;
+            this.testCase = testCase;
+            this.title = title;
+            this.expectedResults = expectedResults;
+            this.expectedNames = expectedNames;
+        }
+
+        public String getApi()
+        {
+            return api;
+        }
+
+        public TestResult runTest()
+        {
+            TestResult testResult = new TestResult();
+            testResult.setTestCase(testCase);
+            if (api == null)
+            {
+                testResult.setPassed(false);
+                testResult.setTestCase(testCase);
+                String detail = "No API set for getAllCharacteristicCategories search.";
+                testResult.addDetail(detail);
+                return testResult;
+            }
+               
+            try
+            {
+                ExperimentSearchCriteria criteria = new ExperimentSearchCriteria();
+                CaArrayEntityReference ref = null;
+                criteria.setTitle(title);
+                SearchResult<Experiment> result = (SearchResult<Experiment>)apiFacade.searchForExperiments(api, criteria, null);
+                if (result.getResults().isEmpty())
+                {
+                    ref = new CaArrayEntityReference(title);
+                }
+                else
+                {
+                    Experiment experiment = result.getResults().get(0);
+                    ref = experiment.getReference();
+                }
+                long start = System.currentTimeMillis();
+                List<Category> results = apiFacade.getAllCharacteristicCategories(api, ref);
+                long elapsedTime = System.currentTimeMillis() - start;
+                testResult.setElapsedTime(elapsedTime);
+                if (results == null)
+                {
+                    if (expectedResults > 0)
+                    {
+                        testResult.setPassed(false);
+                        String detail = "Failed with unexpected number of results, expected: " + expectedResults + 
+                        ", no result returned.";
+                        testResult.addDetail(detail);
+                    }
+                    else
+                    {
+                        testResult.setPassed(true);
+                        String detail = "Found " + expectedResults + " results.";
+                        testResult.addDetail(detail);
+                    }
+                }
+                else
+                {
+                    if (results.size() != expectedResults)
+                    {
+                        testResult.setPassed(false);
+                        String detail = "Failed with unexpected number of results, expected: " + expectedResults +                           
+                            ", actual results returned: " + results.size();
+                        testResult.addDetail(detail);
+                    }
+                    else
+                    {
+                        testResult.setPassed(true);
+                        for (String name : expectedNames)
+                        {
+                            boolean foundName = false;
+                            for (Category category : results)
+                            {
+                                if (category.getName().equalsIgnoreCase(name))
+                                {
+                                    foundName = true;
+                                    break;
+                                }
+                            }
+                            if (!foundName)
+                            {
+                                testResult.setPassed(false);
+                                String detail = "Didn't find expected category: " + name;
+                                testResult.addDetail(detail);
+                            }
+                        }
+                    }
+                    
+                }
+                
+            }
+            catch (Throwable t)
+            {
+                testResult.setPassed(false);
+                String detail = "Unexpected error occurred: " + t.getLocalizedMessage();
+                testResult.addDetail(detail);
+            }
+            
+            return testResult;
+        }
+        
         
     }
     

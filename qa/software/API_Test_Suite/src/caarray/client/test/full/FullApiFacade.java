@@ -15,6 +15,7 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 
@@ -139,6 +140,12 @@ public class FullApiFacade implements ApiFacade
             KeywordSearchCriteria criteria, LimitOffset limitOffset) throws Exception
     {
         return getFacade(api).searchForExperimentByKeyword(api, criteria, limitOffset);
+    }
+
+    public List<Category> getAllCharacteristicCategories(String api,
+            CaArrayEntityReference reference) throws Exception
+    {
+        return getFacade(api).getAllCharacteristicCategories(api, reference);
     }
     
     

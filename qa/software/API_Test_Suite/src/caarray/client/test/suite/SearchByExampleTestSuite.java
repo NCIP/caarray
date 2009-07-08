@@ -174,20 +174,35 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                     continue;
                 }
 
+                
                 ExampleSearchCriteria<AbstractCaArrayEntity> criteria = new ExampleSearchCriteria<AbstractCaArrayEntity>();
                 criteria.setExample(search.getExample());
+                if (search.getMatchMode() != null)
+                {
+                   criteria.setMatchMode(search.getMatchMode()); 
+                }
                 List<AbstractCaArrayEntity> resultsList = new ArrayList<AbstractCaArrayEntity>();
                 long startTime = System.currentTimeMillis();
-                SearchResult<? extends AbstractCaArrayEntity> results = getSearchResults(search.getApi(), criteria, null);
-                resultsList.addAll(results.getResults());
-                while (!results.isFullResult())
+                try
                 {
-                    LimitOffset offset = new LimitOffset(results
-                            .getMaxAllowedResults(), results.getResults()
-                            .size()
-                            + results.getFirstResultOffset());
-                    results = getSearchResults(search.getApi(), criteria, offset);
+                    SearchResult<? extends AbstractCaArrayEntity> results = getSearchResults(search.getApi(), criteria, null);
                     resultsList.addAll(results.getResults());
+                    while (!results.isFullResult())
+                    {
+                        LimitOffset offset = new LimitOffset(results
+                                .getMaxAllowedResults(), results.getResults()
+                                .size()
+                                + results.getFirstResultOffset());
+                        results = getSearchResults(search.getApi(), criteria, offset);
+                        resultsList.addAll(results.getResults());
+                    }
+                }
+                catch (Throwable t)
+                {
+                    String detail = "An exception occured executing an " + getType() + " search-by-example: "
+                    + t.getClass() + " " + t.getLocalizedMessage();
+                    testResult.addDetail(detail);
+                    t.printStackTrace();
                 }
                 long elapsedTime = System.currentTimeMillis() - startTime;
 
@@ -202,7 +217,8 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
 
                 setTestResultFailure(testResult, search,
                         "An exception occured executing an " + getType() + " search-by-example: "
-                                + t.getLocalizedMessage());
+                                + t.getClass() + " " + t.getLocalizedMessage());
+                t.printStackTrace();
             }
 
             resultReport.addTestResult(testResult);

@@ -83,6 +83,7 @@
 package caarray.client.test.search;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
 
 /**
  * Base class for beans encapsulating details of a search-by-example test search.
@@ -97,6 +98,7 @@ public abstract class ExampleSearch
     protected String api = null;
     protected Integer expectedResults = null;
     protected Integer minResults = null;
+    protected MatchMode matchMode;
 
     protected ExampleSearch()
     {
@@ -142,6 +144,16 @@ public abstract class ExampleSearch
     public void setMinResults(Integer minResults)
     {
         this.minResults = minResults;
+    }
+
+    public MatchMode getMatchMode()
+    {
+        return matchMode;
+    }
+
+    public void setMatchMode(MatchMode matchMode)
+    {
+        this.matchMode = matchMode;
     }
 
 }

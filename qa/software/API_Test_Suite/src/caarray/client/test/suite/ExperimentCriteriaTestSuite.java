@@ -313,18 +313,26 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
         if (headerIndexMap.get(ARRAY_PROVIDER) < input.length && !input[headerIndexMap.get(ARRAY_PROVIDER)].equals(""))
         {
             String name = input[headerIndexMap.get(ARRAY_PROVIDER)].trim();
+            CaArrayEntityReference ref = null;
             if (name.startsWith(VAR_START))
-                name = getVariableValue(name);
-            ArrayProvider provider = apiFacade.getArrayProvider(search.getApi(), name);
-            if (provider != null)
             {
-                criteria.setArrayProvider(provider.getReference());
+                name = getVariableValue(name);
+                ref = new CaArrayEntityReference(name);
             }
             else
             {
-                //likely a purposeful invalid reference, so this should work the same way
-                criteria.setArrayProvider(new CaArrayEntityReference(input[headerIndexMap.get(ARRAY_PROVIDER)].trim()));
+                ArrayProvider provider = apiFacade.getArrayProvider(search.getApi(), name);
+                if (provider != null)
+                {
+                    criteria.setArrayProvider(provider.getReference());
+                }
+                else
+                {
+                    ref = new CaArrayEntityReference(name);
+                }
             }
+            criteria.setArrayProvider(ref);
+            
             
         }
         Organism organism = null;
@@ -360,18 +368,27 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
         if (headerIndexMap.get(ASSAY_TYPE) < input.length && !input[headerIndexMap.get(ASSAY_TYPE)].equals(""))
         {
             String name = input[headerIndexMap.get(ASSAY_TYPE)];
+            CaArrayEntityReference ref = null;
+            //Variables will indicate actual values for the ref (e.g. empty string) rather than search values)
             if (name.startsWith(VAR_START))
-                name = getVariableValue(name);
-            
-            AssayType assay = apiFacade.getAssayType(search.getApi(), name);
-            if (assay != null)
             {
-                criteria.setAssayType(assay.getReference());
+                name = getVariableValue(name);
+                ref = new CaArrayEntityReference(name);
             }
             else
             {
-                criteria.setAssayType(new CaArrayEntityReference(input[headerIndexMap.get(ASSAY_TYPE)]));
+                AssayType assay = apiFacade.getAssayType(search.getApi(), name);
+                if (assay != null)
+                {
+                    ref = assay.getReference();
+                    criteria.setAssayType(assay.getReference());
+                }
+                else
+                {
+                    ref = new CaArrayEntityReference(name);
+                }
             }
+            criteria.setAssayType(ref);
         }
         addAnnotationCriterion(search, criteria, input);
         if (headerIndexMap.get(PI_REF) < input.length && !input[headerIndexMap.get(PI_REF)].equals(""))

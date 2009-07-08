@@ -189,6 +189,20 @@ public class GridApiFacade implements ApiFacade
     {
         return gridClient.searchForExperimentsByKeyword(criteria, limitOffset);
     }
+    public List<Category> getAllCharacteristicCategories(String api,
+            CaArrayEntityReference reference) throws Exception
+    {
+        List<Category> resultsList = new ArrayList<Category>();
+        Category[] categories = gridClient.getAllCharacteristicCategories(reference);
+        if (categories != null)
+        {
+            for (Category category : categories)
+            {
+                resultsList.add(category);
+            }
+        }
+        return resultsList;
+    }
     
     
 

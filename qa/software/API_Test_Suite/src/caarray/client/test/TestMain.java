@@ -91,6 +91,7 @@ import java.rmi.RemoteException;
 import caarray.client.test.suite.ArrayDataTypeTestSuite;
 import caarray.client.test.suite.ArrayDesignTestSuite;
 import caarray.client.test.suite.AssayTypeTestSuite;
+import caarray.client.test.suite.BiomaterialTestSuite;
 import caarray.client.test.suite.ConfigurableTestSuite;
 import caarray.client.test.suite.ExperimentCriteriaTestSuite;
 import caarray.client.test.suite.ExperimentKeywordTestSuite;
@@ -116,8 +117,10 @@ public class TestMain {
     	ConfigurableTestSuite[] testSuites = new ConfigurableTestSuite[]{new ArrayDataTypeTestSuite(apiFacade),
     	        new ArrayDesignTestSuite(apiFacade), new LookupEntitiesTestSuite(apiFacade), new AssayTypeTestSuite(apiFacade),
     	        new FileTypeTestSuite(apiFacade), new OrganismTestSuite(apiFacade), new TermSourceTestSuite(apiFacade),
-    	        new QuantitationTypeTestSuite(apiFacade), new ExperimentCriteriaTestSuite(apiFacade), new ExperimentKeywordTestSuite(apiFacade)};
-    	
+    	        new QuantitationTypeTestSuite(apiFacade), new ExperimentCriteriaTestSuite(apiFacade), new ExperimentKeywordTestSuite(apiFacade),
+    	        new BiomaterialTestSuite(apiFacade)};
+	    //TODO: include biomaterials search
+	    
     	System.out.println("Executing test suites ...");
     	for (ConfigurableTestSuite testSuite : testSuites)
     	{
