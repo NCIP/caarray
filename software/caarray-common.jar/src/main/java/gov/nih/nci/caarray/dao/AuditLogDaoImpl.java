@@ -106,15 +106,16 @@ public class AuditLogDaoImpl implements AuditLogDao {
         buildHql(criteria, sb, "distinct r");
         sb.append(" order by ");
         if (sort.getSortCriteria().isEmpty()) {
-            sb.append("r.createdDate desc");
+            sb.append("createdDate asc, r.id desc");
         } else {
+            String direction = sort.isDesc() ? " desc" : " asc";
             String comma = "";
             for (SortCriterion<AuditLogRecord> s : sort.getSortCriteria()) {
                 sb.append(comma);
-                sb.append("r.").append(s.getOrderField());
+                sb.append("r.").append(s.getOrderField()).append(direction);
                 comma = ", ";
             }
-            sb.append(sort.isDesc() ? " desc" : " asc");
+            sb.append(comma).append("r.id").append(direction);
         }
 
         Query q = buildQuery(criteria, sb);

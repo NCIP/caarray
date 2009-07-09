@@ -239,6 +239,16 @@
         </auth-constraint>
     </security-constraint>
 
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>protected</web-resource-name>
+            <url-pattern>/protected/audit/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>SystemAdministrator</role-name>
+        </auth-constraint>
+    </security-constraint>
+
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>

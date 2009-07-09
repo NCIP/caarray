@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.search.AuditLogSearchCriteria;
 import gov.nih.nci.caarray.domain.search.AuditLogSortCriterion;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.displaytag.properties.SortOrderEnum;
 
 /**
  *
@@ -104,6 +105,13 @@ public class AuditAction extends ActionSupport {
             SEARCH_PAGE_SIZE, AuditLogSortCriterion.DATE.name(), AuditLogSortCriterion.class);
 
     private final AuditLogSearchCriteria criteria = new AuditLogSearchCriteria();
+
+    /**
+     * default ctor.
+     */
+    public AuditAction() {
+        results.setSortDirection(SortOrderEnum.DESCENDING);
+    }
 
     /**
      * @return search results.

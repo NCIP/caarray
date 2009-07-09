@@ -102,6 +102,7 @@ import com.fiveamsolutions.nci.commons.audit.AuditLogDetail;
 import com.fiveamsolutions.nci.commons.audit.AuditLogRecord;
 import com.fiveamsolutions.nci.commons.audit.AuditType;
 import com.fiveamsolutions.nci.commons.audit.DefaultProcessor;
+import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 
 /**
  *
@@ -146,14 +147,17 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         }
     }
 
-    @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
+    @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked", "PMD.NPathComplexity" })
     private void logAccessProfile(AuditLogRecord record, AccessProfile entity, String property, String columnName,
             Object oldVal, Object newVal) {
         if ("securityLevelInternal".equals(property) && !entity.isHostProfile()) {
+            if (oldVal == null && newVal == SecurityLevel.NONE) {
+                return;
+            }
             AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
             super.processDetail(detail, oldVal, newVal);
             String type = entity.isPublicProfile() ? "Public" : "Group";
-            detail.setMessage(type + " Access Profile for project " + entity.getProject().getExperiment().getTitle()
+            detail.setMessage(type + " Access Profile for experiment " + entity.getProject().getExperiment().getTitle()
                     + (entity.isGroupProfile() ? " to group " + entity.getGroup().getGroup().getGroupName() : "")
                     + (oldVal == null ? " set" : " changed from " + oldVal) + " to " + newVal);
             record.getDetails().add(detail);
@@ -173,7 +177,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
             super.processDetail(detail, oldVal, newVal);
             String newS = Boolean.TRUE.equals(newVal) ? "Locked" : "Unlocked";
-            detail.setMessage("Project " + entity.getExperiment().getTitle() + " " + newS
+            detail.setMessage("Experiment " + entity.getExperiment().getTitle() + " " + newS
                     + (record.getType() == AuditType.INSERT ?  " when created" : ""));
             record.getDetails().add(detail);
         } else {
