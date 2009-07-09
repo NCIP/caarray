@@ -115,6 +115,11 @@ public class TestProperties {
     public static final String API_KEY = "api.use";
     public static final String DEFAULT_API = API_ALL;
     
+    public static final String TEST_VERSION_KEY = "test.version";
+    public static final String TEST_VERSION_SHORT = "short";
+    public static final String TEST_VERSION_LONG = "long";
+    public static final String TEST_VERSION_ALL = "all";
+    
     public static final String CONFIG_DIR = "config";
     
     public static String getJavaServerHostname() {
@@ -150,5 +155,10 @@ public class TestProperties {
 	public static String getTargetApi()
 	{
 	    return System.getProperty(API_KEY,DEFAULT_API);
+	}
+	
+	public static String getTestVersion()
+	{
+	    return System.getProperty(TEST_VERSION_KEY,TEST_VERSION_SHORT);
 	}
 }

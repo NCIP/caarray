@@ -10,11 +10,14 @@ import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.ServerConnectionException;
@@ -128,6 +131,8 @@ public class FullApiFacade implements ApiFacade
     {
         return getFacade(api).getAssayType(api, type);
     }
+    
+    
 
     public SearchResult<? extends AbstractCaArrayEntity> searchForExperiments(
             String api, ExperimentSearchCriteria criteria, LimitOffset offset)
@@ -146,6 +151,25 @@ public class FullApiFacade implements ApiFacade
             CaArrayEntityReference reference) throws Exception
     {
         return getFacade(api).getAllCharacteristicCategories(api, reference);
+    }
+
+    public Experiment getExperiment(String api, String title) throws Exception
+    {
+        return getFacade(api).getExperiment(api, title);
+    }
+
+    public SearchResult<Biomaterial> searchForBiomaterialByKeyword(String api,
+            BiomaterialKeywordSearchCriteria criteria, LimitOffset limitOffset)
+            throws Exception
+    {
+        return getFacade(api).searchForBiomaterialByKeyword(api, criteria, limitOffset);
+    }
+
+    public SearchResult<? extends AbstractCaArrayEntity> searchForBiomaterials(
+            String api, BiomaterialSearchCriteria criteria, LimitOffset offset)
+            throws Exception
+    {
+        return getFacade(api).searchForBiomaterials(api, criteria, offset);
     }
     
     

@@ -23,6 +23,11 @@
 	<property name="grid.lib.dir" value="${lib.dir}/grid" />
 	<property name="java.lib.dir" value="${lib.dir}/java" />
 	<property name="classes.dir" value="${basedir}/classes" />
+	
+	<!-- ******************************************************************* -->
+	<!-- ** TEST SUITE PROPERTIES                                         ** -->
+	<!-- ******************************************************************* -->
+	<property name="test.version" value="long" />
 
 	<!-- ******************************************************************* -->
 	<!-- ** TEST RESULT REPORT PROPERTIES                                 ** -->
@@ -93,6 +98,7 @@
 			<sysproperty key="report.dir" value="${report.dir}"/>
 			<sysproperty key="report.file" value="${report.file}"/>
 			<sysproperty key="api.use" value="all"/>
+			<sysproperty key="test.version" value="${test.version}"/>
 		</java>
 	</target>
 
@@ -114,6 +120,7 @@
 			<sysproperty key="report.dir" value="${report.dir}"/>
 			<sysproperty key="report.file" value="${report.file}"/>
 			<sysproperty key="api.use" value="grid"/>
+			<sysproperty key="test.version" value="${test.version}"/>
 		</java>
 	</target>
 
@@ -135,6 +142,7 @@
 			<sysproperty key="report.dir" value="${report.dir}"/>
 			<sysproperty key="report.file" value="${report.file}"/>
 			<sysproperty key="api.use" value="java"/>
+			<sysproperty key="test.version" value="${test.version}"/>
 		</java>
 	</target>
 

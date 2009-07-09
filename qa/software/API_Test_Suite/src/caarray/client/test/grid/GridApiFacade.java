@@ -10,11 +10,14 @@ import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
@@ -202,6 +205,30 @@ public class GridApiFacade implements ApiFacade
             }
         }
         return resultsList;
+    }
+    public Experiment getExperiment(String api, String title) throws Exception
+    {
+        ExampleSearchCriteria<Experiment> experimentCriteria = new ExampleSearchCriteria<Experiment>();
+        Experiment experiment = new Experiment();
+        experiment.setTitle(title);
+        experimentCriteria.setExample(experiment);
+        SearchResult<Experiment> experiments = (SearchResult<Experiment>)searchByExample(api,
+                experimentCriteria, null);
+        if (!experiments.getResults().isEmpty())
+            return experiments.getResults().get(0);
+        return null;
+    }
+    public SearchResult<Biomaterial> searchForBiomaterialByKeyword(String api,
+            BiomaterialKeywordSearchCriteria criteria, LimitOffset limitOffset)
+            throws Exception
+    {
+        return gridClient.searchForBiomaterialsByKeyword(criteria, limitOffset);
+    }
+    public SearchResult<? extends AbstractCaArrayEntity> searchForBiomaterials(
+            String api, BiomaterialSearchCriteria criteria, LimitOffset offset)
+            throws Exception
+    {
+        return gridClient.searchForBiomaterials(criteria, offset);
     }
     
     

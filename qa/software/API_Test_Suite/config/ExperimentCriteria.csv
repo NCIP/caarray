@@ -15,10 +15,10 @@ Test Case,API,Title,Public Identifier,Array Provider,Organism Scientific Name,Or
 20.1,java,,,,,,,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,2,,,,,
 20.2,java,,,,,,,,,invalid#%!,0,,,,,
 20.3,java,,,,,,,,,${empty},,,
-21.1,java,,,,,,,TumorGrading,2,,0,5,
+21.1,java,,,,,,,OrganismPart,Brain,,,1,
 21.2,java,,,,,,,,invalid#%!,,0,,
-21.3,java,,,,,,,TumorGrading,2,,,1,
-,,,,,,,,ExternalSampleId,API_TEST_EXTERNAL_ID_02,,,,
+21.3,java,,,,,,,OrganismPart,Brain,,,1,
+,,,,,,,,DiseaseState,AbcCarcinoma,,,,
 22,java,,,Affymetrix,Plasmodium falciparum,,Gene Expression,,,,1,,
 23,grid,,,,,,,,,,,100,
 24.1,grid,QA Affymetrix Experiment for API Testing,,,,,,,,,1,,
@@ -36,10 +36,10 @@ Test Case,API,Title,Public Identifier,Array Provider,Organism Scientific Name,Or
 28.1,grid,,,,,,,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,2,
 28.2,grid,,,,,,,,,invalid#%!,0,
 28.3,grid,,,,,,,,,${empty},0,
-29.1,grid,,,,,,,TumorGrading,2,,,5
+29.1,grid,,,,,,,OrganismPart,Brain,,,1
 29.2,grid,,,,,,,,invalid#%!,,0,
-29.3,grid,,,,,,,TumorGrading,2,,,1
-,,,,,,,,ExternalSampleId,API_TEST_EXTERNAL_ID_02,,,
+29.3,grid,,,,,,,OrganismPart,Brain,,,1
+,,,,,,,,DiseaseState,AbcCarcinoma,,,
 30,grid,,,Affymetrix,Plasmodium falciparum,,Gene Expression,,,,1,
 354.1,java,,,,Plasmodium falciparum,,,,,,1,
 354.2,java,,,,invalid#%!,,,,,,0,

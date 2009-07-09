@@ -10,11 +10,14 @@ import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
@@ -37,6 +40,9 @@ public interface ApiFacade
     public SearchResult<? extends AbstractCaArrayEntity> searchForExperiments(String api, ExperimentSearchCriteria criteria, 
             LimitOffset offset) throws Exception;
     
+    public SearchResult<? extends AbstractCaArrayEntity> searchForBiomaterials(String api, BiomaterialSearchCriteria criteria,
+            LimitOffset offset) throws Exception;
+    
     public List<Person> getAllPrincipalInvestigators(String api) throws Exception;
     
     public List<Term> getTermsForCategory(String api, CaArrayEntityReference categoryRef, String valuePrefix) throws Exception;
@@ -53,7 +59,11 @@ public interface ApiFacade
     
     public AssayType getAssayType(String api, String type) throws Exception;
     
+    public Experiment getExperiment(String api, String title) throws Exception;
+    
     public SearchResult<Experiment> searchForExperimentByKeyword(String api, KeywordSearchCriteria criteria, LimitOffset limitOffset) throws Exception;
+    
+    public SearchResult<Biomaterial> searchForBiomaterialByKeyword(String api, BiomaterialKeywordSearchCriteria criteria, LimitOffset limitOffset) throws Exception;
     
     public List<Category> getAllCharacteristicCategories(String api, CaArrayEntityReference reference) throws Exception;
 }

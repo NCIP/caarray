@@ -87,14 +87,21 @@ import gov.nih.nci.caarray.services.ServerConnectionException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import caarray.client.test.suite.ArrayDataTypeTestSuite;
 import caarray.client.test.suite.ArrayDesignTestSuite;
 import caarray.client.test.suite.AssayTypeTestSuite;
+import caarray.client.test.suite.BiomaterialCriteriaTestSuite;
+import caarray.client.test.suite.BiomaterialKeywordTestSuite;
 import caarray.client.test.suite.BiomaterialTestSuite;
+import caarray.client.test.suite.CategoryTestSuite;
 import caarray.client.test.suite.ConfigurableTestSuite;
 import caarray.client.test.suite.ExperimentCriteriaTestSuite;
 import caarray.client.test.suite.ExperimentKeywordTestSuite;
+import caarray.client.test.suite.ExperimentTestSuite;
 import caarray.client.test.suite.FileTypeTestSuite;
 import caarray.client.test.suite.LookupEntitiesTestSuite;
 import caarray.client.test.suite.OrganismTestSuite;
@@ -114,12 +121,7 @@ public class TestMain {
 	
 	public void runTests(ApiFacade apiFacade) throws ServerConnectionException, RemoteException, FileNotFoundException, IOException
     {
-    	ConfigurableTestSuite[] testSuites = new ConfigurableTestSuite[]{new ArrayDataTypeTestSuite(apiFacade),
-    	        new ArrayDesignTestSuite(apiFacade), new LookupEntitiesTestSuite(apiFacade), new AssayTypeTestSuite(apiFacade),
-    	        new FileTypeTestSuite(apiFacade), new OrganismTestSuite(apiFacade), new TermSourceTestSuite(apiFacade),
-    	        new QuantitationTypeTestSuite(apiFacade), new ExperimentCriteriaTestSuite(apiFacade), new ExperimentKeywordTestSuite(apiFacade),
-    	        new BiomaterialTestSuite(apiFacade)};
-	    //TODO: include biomaterials search
+	    List<ConfigurableTestSuite> testSuites = getTestSuites(apiFacade);
 	    
     	System.out.println("Executing test suites ...");
     	for (ConfigurableTestSuite testSuite : testSuites)
@@ -129,5 +131,29 @@ public class TestMain {
     	resultReport.writeReport();
     	System.out.println("Tests completed.");
     }
+	
+	private List<ConfigurableTestSuite> getTestSuites(ApiFacade apiFacade)
+	{
+	    ConfigurableTestSuite[] shortSuites = new ConfigurableTestSuite[]{new ArrayDataTypeTestSuite(apiFacade),
+                new ArrayDesignTestSuite(apiFacade), new LookupEntitiesTestSuite(apiFacade), new AssayTypeTestSuite(apiFacade),
+                new FileTypeTestSuite(apiFacade), new OrganismTestSuite(apiFacade), new TermSourceTestSuite(apiFacade),
+                new QuantitationTypeTestSuite(apiFacade), new ExperimentCriteriaTestSuite(apiFacade), new ExperimentKeywordTestSuite(apiFacade),
+                new CategoryTestSuite(apiFacade), new ExperimentTestSuite(apiFacade), };
+	    
+	    ConfigurableTestSuite[] longSuites = new ConfigurableTestSuite[]{new BiomaterialCriteriaTestSuite(apiFacade),
+                new BiomaterialKeywordTestSuite(apiFacade), new BiomaterialTestSuite(apiFacade)};
+	    //TODO add back in biomaterial test suite
+	    
+	    String version = TestProperties.getTestVersion();
+	    if (version.equals(TestProperties.TEST_VERSION_SHORT))
+	        return Arrays.asList(shortSuites);
+	    if (version.equals(TestProperties.TEST_VERSION_LONG))
+	        return Arrays.asList(longSuites);
+	    
+	    List<ConfigurableTestSuite> all = new ArrayList<ConfigurableTestSuite>();
+	    all.addAll(Arrays.asList(shortSuites));
+	    all.addAll(Arrays.asList(longSuites));
+	    return all;
+	}
 
 }
