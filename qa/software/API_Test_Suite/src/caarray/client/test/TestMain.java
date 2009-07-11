@@ -102,11 +102,16 @@ import caarray.client.test.suite.ConfigurableTestSuite;
 import caarray.client.test.suite.ExperimentCriteriaTestSuite;
 import caarray.client.test.suite.ExperimentKeywordTestSuite;
 import caarray.client.test.suite.ExperimentTestSuite;
+import caarray.client.test.suite.ExperimentalContactTestSuite;
+import caarray.client.test.suite.FactorTestSuite;
 import caarray.client.test.suite.FileTypeTestSuite;
+import caarray.client.test.suite.HybridizationTestSuite;
 import caarray.client.test.suite.LookupEntitiesTestSuite;
 import caarray.client.test.suite.OrganismTestSuite;
+import caarray.client.test.suite.PersonTestSuite;
 import caarray.client.test.suite.QuantitationTypeTestSuite;
 import caarray.client.test.suite.TermSourceTestSuite;
+import caarray.client.test.suite.TermTestSuite;
 
 /**
  * Main class for executing a collection of tests against the caArray
@@ -138,10 +143,12 @@ public class TestMain {
                 new ArrayDesignTestSuite(apiFacade), new LookupEntitiesTestSuite(apiFacade), new AssayTypeTestSuite(apiFacade),
                 new FileTypeTestSuite(apiFacade), new OrganismTestSuite(apiFacade), new TermSourceTestSuite(apiFacade),
                 new QuantitationTypeTestSuite(apiFacade), new ExperimentCriteriaTestSuite(apiFacade), new ExperimentKeywordTestSuite(apiFacade),
-                new CategoryTestSuite(apiFacade), new ExperimentTestSuite(apiFacade), };
+                new CategoryTestSuite(apiFacade), new ExperimentTestSuite(apiFacade), new ExperimentalContactTestSuite(apiFacade),
+                new FactorTestSuite(apiFacade), new PersonTestSuite(apiFacade),
+                new TermTestSuite(apiFacade)};
 	    
 	    ConfigurableTestSuite[] longSuites = new ConfigurableTestSuite[]{new BiomaterialCriteriaTestSuite(apiFacade),
-                new BiomaterialKeywordTestSuite(apiFacade), new BiomaterialTestSuite(apiFacade)};
+                new BiomaterialKeywordTestSuite(apiFacade), new HybridizationTestSuite(apiFacade), new BiomaterialTestSuite(apiFacade)};
 	    //TODO add back in biomaterial test suite
 	    
 	    String version = TestProperties.getTestVersion();

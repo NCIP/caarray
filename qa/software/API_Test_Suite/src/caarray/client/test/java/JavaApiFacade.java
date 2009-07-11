@@ -7,6 +7,8 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
+import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
@@ -14,16 +16,24 @@ import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
+import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
+import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.Search;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import caarray.client.test.ApiFacade;
@@ -40,6 +50,7 @@ public class JavaApiFacade implements ApiFacade
 
     
     private SearchService javaSearchService = null;
+    private JavaSearchApiUtils apiUtils;
     
     public JavaApiFacade() throws ServerConnectionException
     {
@@ -49,6 +60,7 @@ public class JavaApiFacade implements ApiFacade
         CaArrayServer server = new CaArrayServer(hostName, port);
         server.connect();
         javaSearchService = server.getSearchService();
+        apiUtils = new JavaSearchApiUtils(javaSearchService);
     }
     
     public List<Person> getAllPrincipalInvestigators(String api)
@@ -187,7 +199,98 @@ public class JavaApiFacade implements ApiFacade
         return javaSearchService.searchForBiomaterials(criteria, offset);
     }
 
-    
+    public List<Experiment> experimentsByCriteriaSearchUtils(String api,
+            ExperimentSearchCriteria criteria) throws Exception
+    {
+        Search<Experiment> results = apiUtils.experimentsByCriteria(criteria);
+        List<Experiment> resultsList = new ArrayList<Experiment>();
+        for (Iterator<Experiment> resultsIter = results.iterate(); resultsIter.hasNext();)
+        {
+            resultsList.add(resultsIter.next());
+        }
+        return resultsList;
+    }
+
+    public List<Biomaterial> biomaterialsByCriteriaSearchUtils(String api,
+            BiomaterialSearchCriteria criteria) throws Exception
+    {
+        Search<Biomaterial> results = apiUtils.biomaterialsByCriteria(criteria);
+        List<Biomaterial> resultsList = new ArrayList<Biomaterial>();
+        for (Iterator<Biomaterial> resultsIter = results.iterate(); resultsIter.hasNext();)
+        {
+            resultsList.add(resultsIter.next());
+        }
+        return resultsList;
+    }
+
+    public List<Biomaterial> biomaterialsByKeywordSearchUtils(String api,
+            BiomaterialKeywordSearchCriteria criteria) throws Exception
+    {
+        Search<Biomaterial> results = apiUtils.biomaterialsByKeyword(criteria);
+        List<Biomaterial> resultsList = new ArrayList<Biomaterial>();
+        for (Iterator<Biomaterial> resultsIter = results.iterate(); resultsIter.hasNext();)
+        {
+            resultsList.add(resultsIter.next());
+        }
+        return resultsList;
+    }
+
+    public List<Experiment> experimentsByKeywordSearchUtils(String api,
+            KeywordSearchCriteria criteria) throws Exception
+    {
+        Search<Experiment> results = apiUtils.experimentsByKeyword(criteria);
+        List<Experiment> resultsList = new ArrayList<Experiment>();
+        for (Iterator<Experiment> resultsIter = results.iterate(); resultsIter.hasNext();)
+        {
+            resultsList.add(resultsIter.next());
+        }
+        return resultsList;
+    }
+
+    public List<DataFile> filesByCriteriaSearchUtils(String api,
+            FileSearchCriteria criteria) throws Exception
+    {
+        Search<DataFile> results = apiUtils.filesByCriteria(criteria);
+        List<DataFile> resultsList = new ArrayList<DataFile>();
+        for (Iterator<DataFile> resultsIter = results.iterate(); resultsIter.hasNext();)
+        {
+            resultsList.add(resultsIter.next());
+        }
+        return resultsList;
+    }
+
+    public List<Hybridization> hybridizationsByCriteriaSearchUtils(String api,
+            HybridizationSearchCriteria criteria) throws Exception
+    {
+        Search<Hybridization> results = apiUtils.hybridizationsByCriteria(criteria);
+        List<Hybridization> resultsList = new ArrayList<Hybridization>();
+        for (Iterator<Hybridization> resultsIter = results.iterate(); resultsIter.hasNext();)
+        {
+            resultsList.add(resultsIter.next());
+        }
+        return resultsList;
+    }
+
+    public SearchResult<? extends AbstractCaArrayEntity> searchForFiles(
+            String api, FileSearchCriteria criteria, LimitOffset offset)
+            throws Exception
+    {
+        return javaSearchService.searchForFiles(criteria, offset);
+    }
+
+    public SearchResult<? extends AbstractCaArrayEntity> searchForHybridizations(
+            String api, HybridizationSearchCriteria criteria, LimitOffset offset)
+            throws Exception
+    {
+        return javaSearchService.searchForHybridizations(criteria, offset);
+    }
+
+    public List<QuantitationType> searchForQuantitationTypes(String api,
+            QuantitationTypeSearchCriteria criteria, LimitOffset offset)
+            throws Exception
+    {
+        return javaSearchService.searchForQuantitationTypes(criteria);
+    }
     
     
 }

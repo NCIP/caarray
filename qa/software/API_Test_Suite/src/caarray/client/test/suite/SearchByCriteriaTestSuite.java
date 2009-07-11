@@ -4,7 +4,6 @@
 package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +22,8 @@ import caarray.client.test.search.CriteriaSearch;
  */
 public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
 {
+    protected static final String API_UTILS_SEARCH = "API Utils";
+    
     protected List<CriteriaSearch> configuredSearches = new ArrayList<CriteriaSearch>();
     /**
      * @param apiFacade

@@ -15,6 +15,7 @@ public abstract class CriteriaSearch
     protected Float testCase = null;
     protected String api = null;
     protected Integer expectedResults = null, minResults = null;
+    protected boolean apiUtilsSearch;
     
     protected CriteriaSearch(){}
 
@@ -56,6 +57,16 @@ public abstract class CriteriaSearch
     public void setMinResults(Integer minResults)
     {
         this.minResults = minResults;
+    }
+
+    public boolean isApiUtilsSearch()
+    {
+        return apiUtilsSearch;
+    }
+
+    public void setApiUtilsSearch(boolean apiUtilsSearch)
+    {
+        this.apiUtilsSearch = apiUtilsSearch;
     }
     
     

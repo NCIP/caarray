@@ -7,6 +7,8 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
+import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
@@ -14,10 +16,14 @@ import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
+import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
+import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.ServerConnectionException;
@@ -170,6 +176,64 @@ public class FullApiFacade implements ApiFacade
             throws Exception
     {
         return getFacade(api).searchForBiomaterials(api, criteria, offset);
+    }
+
+    public List<Experiment> experimentsByCriteriaSearchUtils(String api,
+            ExperimentSearchCriteria criteria) throws Exception
+    {
+        return getFacade(api).experimentsByCriteriaSearchUtils(api, criteria);
+    }
+
+    public List<Biomaterial> biomaterialsByCriteriaSearchUtils(String api,
+            BiomaterialSearchCriteria criteria) throws Exception
+    {
+        return getFacade(api).biomaterialsByCriteriaSearchUtils(api, criteria);
+    }
+
+    public List<Biomaterial> biomaterialsByKeywordSearchUtils(String api,
+            BiomaterialKeywordSearchCriteria criteria) throws Exception
+    {
+        return getFacade(api).biomaterialsByKeywordSearchUtils(api, criteria);
+    }
+
+    public List<Experiment> experimentsByKeywordSearchUtils(String api,
+            KeywordSearchCriteria criteria) throws Exception
+    {
+        return getFacade(api).experimentsByKeywordSearchUtils(api, criteria);
+    }
+
+    public List<DataFile> filesByCriteriaSearchUtils(String api,
+            FileSearchCriteria criteria) throws Exception
+    {
+        return getFacade(api).filesByCriteriaSearchUtils(api, criteria);
+    }
+
+    public List<Hybridization> hybridizationsByCriteriaSearchUtils(String api,
+            HybridizationSearchCriteria criteria) throws Exception
+    {
+        return getFacade(api).hybridizationsByCriteriaSearchUtils(api, criteria);
+    }
+
+
+    public SearchResult<? extends AbstractCaArrayEntity> searchForFiles(
+            String api, FileSearchCriteria criteria, LimitOffset offset)
+            throws Exception
+    {
+        return getFacade(api).searchForFiles(api, criteria, offset);
+    }
+
+    public SearchResult<? extends AbstractCaArrayEntity> searchForHybridizations(
+            String api, HybridizationSearchCriteria criteria, LimitOffset offset)
+            throws Exception
+    {
+        return getFacade(api).searchForHybridizations(api, criteria, offset);
+    }
+
+    public List<QuantitationType> searchForQuantitationTypes(
+            String api, QuantitationTypeSearchCriteria criteria,
+            LimitOffset offset) throws Exception
+    {
+        return getFacade(api).searchForQuantitationTypes(api, criteria, offset);
     }
     
     

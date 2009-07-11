@@ -4,7 +4,10 @@
 package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
+import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 
 import java.io.File;
 import java.util.List;
@@ -26,9 +29,12 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
             + File.separator + "Experiment.csv";
 
     private static final String TITLE = "Title";
+    private static final String ORG_SCI_NAME = "Organism Scientific Name";
+    private static final String ARRAY_PROVIDER = "Array Provider";
+    private static final String ASSAY_TYPE = "Assay Type";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-            API, TITLE, EXPECTED_RESULTS, MIN_RESULTS };
+            API, TITLE, ORG_SCI_NAME, ARRAY_PROVIDER, ASSAY_TYPE,EXPECTED_RESULTS, MIN_RESULTS };
 
 
     /**
@@ -107,7 +113,21 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
     protected void populateAdditionalSearchValues(String[] input,
             ExampleSearch exampleSearch)
     {
-        //NOOP
+        ExperimentSearch search = (ExperimentSearch)exampleSearch;
+        Experiment example = search.getExperiment();
+        if (headerIndexMap.get(ASSAY_TYPE) < input.length && !input[headerIndexMap.get(ASSAY_TYPE)].equals(""))
+        {
+            try
+            {
+                AssayType type = apiFacade.getAssayType(search.getApi(), input[headerIndexMap.get(ASSAY_TYPE)].trim());
+                example.getAssayTypes().add(type);
+            }
+            catch (Throwable t)
+            {
+                System.out.println("AssayType for Experiement test case: " + search.getTestCase() + " could not be found.");
+            }
+            
+        }
     }
 
     /* (non-Javadoc)
@@ -123,15 +143,56 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
         {
             search.setApi(input[headerIndexMap.get(API)].trim());
         }
-    
-        if (headerIndexMap.get(TITLE) < input.length && !input[headerIndexMap.get(TITLE)].equals(""))
-            example.setTitle(input[headerIndexMap.get(TITLE)].trim());
-        
-        search.setExperiment(example);
         if (headerIndexMap.get(TEST_CASE) < input.length
                 && !input[headerIndexMap.get(TEST_CASE)].equals(""))
             search.setTestCase(Float.parseFloat(input[headerIndexMap.get(TEST_CASE)]
                     .trim()));
+    
+        if (headerIndexMap.get(TITLE) < input.length && !input[headerIndexMap.get(TITLE)].equals(""))
+            example.setTitle(input[headerIndexMap.get(TITLE)].trim());
+        
+        if (headerIndexMap.get(ORG_SCI_NAME) < input.length && !input[headerIndexMap.get(ORG_SCI_NAME)].equals(""))
+        {
+            try
+            {
+                Organism organism = apiFacade.getOrganism(search.getApi(), input[headerIndexMap.get(ORG_SCI_NAME)].trim(), null);
+                example.setOrganism(organism);
+            }
+            catch (Throwable t)
+            {
+                System.out.println("Organism for Experiement test case: " + search.getTestCase() + " could not be found.");
+            }
+            
+        }
+        if (headerIndexMap.get(ARRAY_PROVIDER) < input.length && !input[headerIndexMap.get(ARRAY_PROVIDER)].equals(""))
+        {
+            try
+            {
+                ArrayProvider arrayProvider = apiFacade.getArrayProvider(search.getApi(), input[headerIndexMap.get(ARRAY_PROVIDER)].trim());
+                example.setArrayProvider(arrayProvider);
+            }
+            catch (Throwable t)
+            {
+                System.out.println("ArrayProvider for Experiement test case: " + search.getTestCase() + " could not be found.");
+            }
+            
+        }
+        if (headerIndexMap.get(ASSAY_TYPE) < input.length && !input[headerIndexMap.get(ASSAY_TYPE)].equals(""))
+        {
+            try
+            {
+                AssayType type = apiFacade.getAssayType(search.getApi(), input[headerIndexMap.get(ASSAY_TYPE)].trim());
+                example.getAssayTypes().add(type);
+            }
+            catch (Throwable t)
+            {
+                System.out.println("AssayType for Experiement test case: " + search.getTestCase() + " could not be found.");
+            }
+            
+        }
+        
+        search.setExperiment(example);
+        
         if (headerIndexMap.get(EXPECTED_RESULTS) < input.length
                 && !input[headerIndexMap.get(EXPECTED_RESULTS)].equals(""))
             search.setExpectedResults(Integer

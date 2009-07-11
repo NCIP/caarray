@@ -42,7 +42,7 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
     
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
             API, NAME, EXPECTED_RESULTS, MIN_RESULTS, TYPE, EXPERIMENT_TITLE, EXPERIMENT_REF,
-            ANNO_CATEGORY, ANNO_VALUE, };
+            ANNO_CATEGORY, ANNO_VALUE, API_UTILS_SEARCH};
 
     /**
      * @param apiFacade
@@ -116,19 +116,29 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
         List<Biomaterial> resultsList = new ArrayList<Biomaterial>();
         try
         {
-            SearchResult<Biomaterial> results = (SearchResult<Biomaterial>)apiFacade
-            .searchForBiomaterials(criteriaSearch.getApi(), criteriaSearch.getSearchCriteria(), null);
-        resultsList.addAll(results.getResults());
-        while (!results.isFullResult())
-        {
-            LimitOffset offset = new LimitOffset(results
-                    .getMaxAllowedResults(), results.getResults()
-                    .size()
-                    + results.getFirstResultOffset());
-            results = (SearchResult<Biomaterial>)apiFacade
-            .searchForBiomaterials(criteriaSearch.getApi(), criteriaSearch.getSearchCriteria(), offset);
-            resultsList.addAll(results.getResults());
-        }
+            if (search.isApiUtilsSearch())
+            {
+                resultsList.addAll(apiFacade.biomaterialsByCriteriaSearchUtils(search.getApi(), criteriaSearch.getSearchCriteria()));
+            }
+            else
+            {
+                SearchResult<Biomaterial> results = (SearchResult<Biomaterial>) apiFacade
+                        .searchForBiomaterials(criteriaSearch.getApi(),
+                                criteriaSearch.getSearchCriteria(), null);
+                resultsList.addAll(results.getResults());
+                while (!results.isFullResult())
+                {
+                    LimitOffset offset = new LimitOffset(results
+                            .getMaxAllowedResults(), results.getResults()
+                            .size()
+                            + results.getFirstResultOffset());
+                    results = (SearchResult<Biomaterial>) apiFacade
+                            .searchForBiomaterials(criteriaSearch.getApi(),
+                                    criteriaSearch.getSearchCriteria(), offset);
+                    resultsList.addAll(results.getResults());
+                }
+            }
+            
         }
         catch (Throwable e)
         {
@@ -203,6 +213,10 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
                 && !input[headerIndexMap.get(MIN_RESULTS)].equals(""))
             search.setMinResults(Integer
                     .parseInt(input[headerIndexMap.get(MIN_RESULTS)].trim()));
+        if (headerIndexMap.get(API_UTILS_SEARCH) < input.length
+                && !input[headerIndexMap.get(API_UTILS_SEARCH)].equals(""))
+            search.setApiUtilsSearch(Boolean.parseBoolean(input[headerIndexMap
+                    .get(MIN_RESULTS)].trim()));
         
         if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
         {

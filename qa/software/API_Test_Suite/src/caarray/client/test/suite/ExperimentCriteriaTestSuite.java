@@ -47,10 +47,11 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
     private static final String EXPECTED_ASSAY_TYPE = "Expected Assay Type";
     private static final String EXPECTED_PROVIDER = "Expected Provider";
     private static final String EXPECTED_ORG_SCI_NAME = "Expected Organism Scientific Name";
+    
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
             API, TITLE, EXPECTED_TITLE, EXPECTED_RESULTS, MIN_RESULTS, PUBLIC_ID, ARRAY_PROVIDER, ORG_COMMON_NAME, ORG_SCI_NAME,
-            ASSAY_TYPE, ANNO_CATEGORY, ANNO_VALUE, PI_REF,EXPECTED_ASSAY_TYPE, EXPECTED_PROVIDER, EXPECTED_ORG_SCI_NAME};
+            ASSAY_TYPE, ANNO_CATEGORY, ANNO_VALUE, PI_REF,EXPECTED_ASSAY_TYPE, EXPECTED_PROVIDER, EXPECTED_ORG_SCI_NAME, API_UTILS_SEARCH};
 
     /**
      * @param apiFacade
@@ -271,6 +272,10 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
                 && !input[headerIndexMap.get(MIN_RESULTS)].equals(""))
             search.setMinResults(Integer
                     .parseInt(input[headerIndexMap.get(MIN_RESULTS)].trim()));
+        if (headerIndexMap.get(API_UTILS_SEARCH) < input.length
+                && !input[headerIndexMap.get(API_UTILS_SEARCH)].equals(""))
+            search.setApiUtilsSearch(Boolean.parseBoolean(input[headerIndexMap
+                    .get(MIN_RESULTS)].trim()));
         if (headerIndexMap.get(EXPECTED_TITLE) < input.length
                 && !input[headerIndexMap.get(EXPECTED_TITLE)].equals(""))
             search.addExpectedTitle(input[headerIndexMap.get(EXPECTED_TITLE)].trim());
@@ -473,23 +478,36 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
         List<Experiment> resultsList = new ArrayList<Experiment>();
         try
         {
-            SearchResult<Experiment> results = (SearchResult<Experiment>)apiFacade
-            .searchForExperiments(criteriaSearch.getApi(), criteriaSearch.getExperimentSearchCriteria(), null);
-        resultsList.addAll(results.getResults());
-        while (!results.isFullResult())
-        {
-            LimitOffset offset = new LimitOffset(results
-                    .getMaxAllowedResults(), results.getResults()
-                    .size()
-                    + results.getFirstResultOffset());
-            results = (SearchResult<Experiment>)apiFacade
-            .searchForExperiments(criteriaSearch.getApi(), criteriaSearch.getExperimentSearchCriteria(), offset);
-            resultsList.addAll(results.getResults());
-        }
+            if (search.isApiUtilsSearch())
+            {
+                resultsList.addAll(apiFacade.experimentsByCriteriaSearchUtils(search.getApi(), criteriaSearch.getExperimentSearchCriteria()));
+            }
+            else
+            {
+                SearchResult<Experiment> results = (SearchResult<Experiment>) apiFacade
+                        .searchForExperiments(criteriaSearch.getApi(),
+                                criteriaSearch.getExperimentSearchCriteria(),
+                                null);
+                resultsList.addAll(results.getResults());
+                while (!results.isFullResult())
+                {
+                    LimitOffset offset = new LimitOffset(results
+                            .getMaxAllowedResults(), results.getResults()
+                            .size()
+                            + results.getFirstResultOffset());
+                    results = (SearchResult<Experiment>) apiFacade
+                            .searchForExperiments(criteriaSearch.getApi(),
+                                    criteriaSearch
+                                            .getExperimentSearchCriteria(),
+                                    offset);
+                    resultsList.addAll(results.getResults());
+                }
+            }
+            
         }
         catch (Throwable e)
         {
-            System.out.println("Error encountered executing search: " + e.getMessage());
+            System.out.println("Error encountered executing search: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
             testResult.addDetail("Exception encountered executing search: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
         } 
         
