@@ -57,6 +57,7 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
     @Test
     public void testGetDataSet_checkRequest() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testGetDataSet_checkRequest");
+        logForSilverCompatibility(TEST_OUTPUT, "Null");
         DataSetRequest dataRequest = null;
         try {
             service.getDataSet(dataRequest);
@@ -64,9 +65,10 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
             fail();
         } catch(javax.ejb.EJBException e) {
             assertEquals(IllegalArgumentException.class, e.getCausedByException().getClass());
-            logForSilverCompatibility(TEST_OUTPUT, "null validation validation :" + e.getCause());
+            logForSilverCompatibility(TEST_OUTPUT, "null validation :" + e.getCause());
         }
 
+        logForSilverCompatibility(TEST_OUTPUT, "Empty");
         dataRequest = new DataSetRequest();
         try {
             service.getDataSet(dataRequest);
@@ -74,9 +76,10 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
             fail();
         } catch(EJBException e) {
             assertEquals(IllegalArgumentException.class, e.getCausedByException().getClass());
-            logForSilverCompatibility(TEST_OUTPUT, "validation validation :" + e.getCause());
+            logForSilverCompatibility(TEST_OUTPUT, "validation :" + e.getCause());
         }
-
+        
+        logForSilverCompatibility(TEST_OUTPUT, "BadHib");
         dataRequest = new DataSetRequest();
         try {
             dataRequest.setHybridizations(Collections.singleton(new CaArrayEntityReference("foo hib")));
@@ -85,9 +88,10 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
             fail();
         } catch(EJBException e) {
             assertEquals(IllegalArgumentException.class, e.getCausedByException().getClass());
-            logForSilverCompatibility(TEST_OUTPUT, "validation validation :" + e.getCause());
+            logForSilverCompatibility(TEST_OUTPUT, "validation :" + e.getCause());
         }
 
+        logForSilverCompatibility(TEST_OUTPUT, "BadDataFiles");
         dataRequest = new DataSetRequest();
         try {
             dataRequest.setDataFiles(Collections.singleton(new CaArrayEntityReference("foo df")));
@@ -96,9 +100,10 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
             fail();
         } catch(EJBException e) {
             assertEquals(IllegalArgumentException.class, e.getCausedByException().getClass());
-            logForSilverCompatibility(TEST_OUTPUT, "validation validation :" + e.getCause());
+            logForSilverCompatibility(TEST_OUTPUT, "validation :" + e.getCause());
         }
 
+        logForSilverCompatibility(TEST_OUTPUT, "BadQuantitationTypes");
         dataRequest = new DataSetRequest();
         try {
             dataRequest.setQuantitationTypes(Collections.singleton(new CaArrayEntityReference("foo qt")));
@@ -107,7 +112,7 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
             fail();
         } catch(EJBException e) {
             assertEquals(IllegalArgumentException.class, e.getCausedByException().getClass());
-            logForSilverCompatibility(TEST_OUTPUT, "validation validation :" + e.getCause());
+            logForSilverCompatibility(TEST_OUTPUT, "validation :" + e.getCause());
         }
 
     }
