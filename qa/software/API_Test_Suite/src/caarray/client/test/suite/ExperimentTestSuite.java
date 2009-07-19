@@ -33,7 +33,7 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
     private static final String ARRAY_PROVIDER = "Array Provider";
     private static final String ASSAY_TYPE = "Assay Type";
 
-    private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
+    private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE, ENUMERATE,
             API, TITLE, ORG_SCI_NAME, ARRAY_PROVIDER, ASSAY_TYPE,EXPECTED_RESULTS, MIN_RESULTS };
 
 
@@ -200,6 +200,10 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
         if (headerIndexMap.get(MIN_RESULTS) < input.length
                 && !input[headerIndexMap.get(MIN_RESULTS)].equals(""))
             search.setMinResults(Integer.parseInt(input[headerIndexMap.get(MIN_RESULTS)].trim()));
+        if (headerIndexMap.get(ENUMERATE) < input.length
+                && !input[headerIndexMap.get(ENUMERATE)].equals(""))
+            search.setEnumerate(Boolean.parseBoolean(input[headerIndexMap
+                    .get(ENUMERATE)].trim()));
     }
 
     /* (non-Javadoc)

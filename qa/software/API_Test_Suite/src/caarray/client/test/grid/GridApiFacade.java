@@ -8,35 +8,54 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
+import gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
+import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridDataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.Search;
+import gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer;
+import gov.nih.nci.cagrid.wsenum.utils.EnumerationResponseHelper;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
+
+import javax.xml.soap.SOAPElement;
 
 import org.apache.axis.types.URI.MalformedURIException;
+import org.apache.commons.io.IOUtils;
+import org.cagrid.transfer.context.client.TransferServiceContextClient;
+import org.cagrid.transfer.context.client.helper.TransferClientHelper;
+import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
+import org.globus.ws.enumeration.ClientEnumIterator;
+import org.globus.wsrf.encoding.ObjectDeserializer;
 
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
@@ -52,14 +71,21 @@ public class GridApiFacade implements ApiFacade
 
     private CaArraySvc_v1_0Client gridClient = null;
     GridSearchApiUtils apiUtils = null;
+    GridDataApiUtils dataApiUtils = null;
     
     public GridApiFacade() throws RemoteException, MalformedURIException
+    {}
+    
+    public void connect() throws Exception
     {
         String gridUrl = TestProperties.getGridServiceUrl();
         System.out.println("Connecting to grid service: " + gridUrl);
         gridClient = new CaArraySvc_v1_0Client(gridUrl);
         apiUtils = new GridSearchApiUtils(gridClient);
+        dataApiUtils = new GridDataApiUtils(gridClient);
+    
     }
+    
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#getAllPrincipalInvestigators(java.lang.String)
      */
@@ -334,6 +360,308 @@ public class GridApiFacade implements ApiFacade
             }
         }
         return resultsList;
+    }
+    public AnnotationSet getAnnotationSet(String api,
+            AnnotationSetRequest annotationSetRequest) throws Exception
+    {
+        return gridClient.getAnnotationSet(annotationSetRequest);
+    }
+    
+    public Hybridization getHybridization(String api, String name)
+            throws Exception
+    {
+        ExampleSearchCriteria<Hybridization> crit = new ExampleSearchCriteria<Hybridization>();
+        Hybridization hyb = new Hybridization();
+        hyb.setName(name);
+        crit.setExample(hyb);
+        SearchResult<Hybridization> hybs = (SearchResult<Hybridization>)searchByExample(api,
+                crit, null);
+        if (!hybs.getResults().isEmpty())
+            return hybs.getResults().get(0);
+        return null;
+    }
+    public Biomaterial getBiomaterial(String api, String name) throws Exception
+    {
+        ExampleSearchCriteria<Biomaterial> crit = new ExampleSearchCriteria<Biomaterial>();
+        Biomaterial bio = new Biomaterial();
+        bio.setName(name);
+        crit.setExample(bio);
+        SearchResult<Biomaterial> bios = (SearchResult<Biomaterial>)searchByExample(api,
+                crit, null);
+        if (!bios.getResults().isEmpty())
+            return bios.getResults().get(0);
+        return null;
+    }
+    public List<DataFile> getFilesByName(String api, List<String> fileNames,
+            String experimentName) throws Exception
+    {
+        List<DataFile> resultsList = new ArrayList<DataFile>();
+        FileSearchCriteria crit = new FileSearchCriteria();
+        Experiment experiment = getExperiment(api, experimentName);
+        if (experiment != null)
+        {
+            crit.setExperiment(experiment.getReference());
+            List<DataFile> files = filesByCriteriaSearchUtils(api, crit);
+            for (DataFile file : files)
+            {
+                if (fileNames.contains(file.getName()))
+                {
+                    resultsList.add(file);
+                }
+            }
+        }
+        return resultsList;
+    }
+    public DataSet getDataSet(String api, DataSetRequest dataSetRequest)
+            throws Exception
+    {
+        return gridClient.getDataSet(dataSetRequest);
+    }
+    
+    public QuantitationType getQuantitationType(String api, String name)
+            throws Exception
+    {
+        ExampleSearchCriteria<QuantitationType> crit = new ExampleSearchCriteria<QuantitationType>();
+        QuantitationType quant = new QuantitationType();
+        quant.setName(name);
+        crit.setExample(quant);
+        SearchResult<QuantitationType> quants = (SearchResult<QuantitationType>)searchByExample(api,
+                crit, null);
+        if (!quants.getResults().isEmpty())
+            return quants.getResults().get(0);
+        return null;
+    }
+    public byte[][] getFileContents(String api,
+            List<CaArrayEntityReference> fileReferences, boolean compressed)
+            throws Exception
+    {
+        if (fileReferences.isEmpty())
+            return new byte[][]{new byte[0]};
+        
+        byte[][] retVal = new byte[fileReferences.size()][];
+        InputStream stream = null;
+        if (fileReferences.size() == 1)
+        {
+            TransferServiceContextReference serviceContextRef = gridClient.getFileContentsTransfer(fileReferences.get(0), compressed);
+            TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef.getEndpointReference());
+            stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
+            retVal[0] = IOUtils.toByteArray(stream);
+        }
+        else
+        {
+            FileDownloadRequest downloadRequest = new FileDownloadRequest();
+            downloadRequest.setFiles(fileReferences);
+            TransferServiceContextReference[] serviceContextRefs = gridClient
+                    .getFileContentsTransfers(downloadRequest, compressed);
+            if (serviceContextRefs == null || serviceContextRefs.length <= 0)
+            {
+                return new byte[][] { new byte[0] };
+            }
+            
+            
+            for (int i = 0; i < serviceContextRefs.length; i++)
+            {
+                TransferServiceContextClient transferClient = new TransferServiceContextClient(
+                        serviceContextRefs[i].getEndpointReference());
+                stream = TransferClientHelper.getData(transferClient
+                        .getDataTransferDescriptor());
+                retVal[i] = IOUtils.toByteArray(stream);
+            }
+        }
+        
+        return retVal;      
+    }
+    
+    public byte[] getFileContentsZip(String api,
+            List<CaArrayEntityReference> fileReferences, boolean compressed)
+            throws Exception
+    {
+        FileDownloadRequest downloadRequest = new FileDownloadRequest();
+        downloadRequest.setFiles(fileReferences);
+        TransferServiceContextReference serviceContextRef = gridClient.getFileContentsZipTransfer(downloadRequest,
+                compressed);
+        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef
+                .getEndpointReference());
+        InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
+        return IOUtils.toByteArray(stream);
+    }
+    
+    public byte[] copyFileContentsUtils(String api,
+            List<CaArrayEntityReference> fileReferences, boolean compressed)
+            throws Exception
+    {
+        if (fileReferences.isEmpty())
+            return new byte[0];
+        
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        dataApiUtils.copyFileContentsToOutputStream(fileReferences.get(0), compressed, stream);
+        return stream.toByteArray(); 
+    }
+    
+    public byte[] copyFileContentsZipUtils(String api,
+            List<CaArrayEntityReference> fileReferences, boolean compressed)
+            throws Exception
+    {
+        FileDownloadRequest downloadRequest = new FileDownloadRequest();
+        downloadRequest.setFiles(fileReferences);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        dataApiUtils.copyFileContentsZipToOutputStream(downloadRequest,
+                compressed, stream);
+        return stream.toByteArray();
+    }
+    public List<Biomaterial> enumerateBiomaterials(String api,
+            BiomaterialSearchCriteria criteria) throws Exception
+    {
+        EnumerationResponseContainer results = gridClient.enumerateBiomaterials(criteria);
+        ClientEnumIterator iter = EnumerationResponseHelper.createClientIterator(results,CaArraySvc_v1_0Client.class
+                .getResourceAsStream("client-config.wsdd"));
+        List<Biomaterial> resultsList = new ArrayList<Biomaterial>();
+        
+        while (iter.hasNext()) {
+            try {
+                SOAPElement elem = (SOAPElement) iter.next();
+                if (elem != null) {
+                    Biomaterial biomaterial = (Biomaterial) ObjectDeserializer.toObject(elem, Biomaterial.class);
+                    resultsList.add(biomaterial);
+                }
+            } catch (NoSuchElementException e) {
+                break;
+            }
+        }
+        return resultsList;
+    }
+    
+    public List<Biomaterial> enumerateBiomaterialsByKeyword(String api,
+            BiomaterialKeywordSearchCriteria criteria) throws Exception
+    {
+        EnumerationResponseContainer results = gridClient.enumerateBiomaterialsByKeyword(criteria);
+        ClientEnumIterator iter = EnumerationResponseHelper.createClientIterator(results,CaArraySvc_v1_0Client.class
+                .getResourceAsStream("client-config.wsdd"));
+        List<Biomaterial> resultsList = new ArrayList<Biomaterial>();
+        
+        while (iter.hasNext()) {
+            try {
+                SOAPElement elem = (SOAPElement) iter.next();
+                if (elem != null) {
+                    Biomaterial biomaterial = (Biomaterial) ObjectDeserializer.toObject(elem, Biomaterial.class);
+                    resultsList.add(biomaterial);
+                }
+            } catch (NoSuchElementException e) {
+                break;
+            }
+        }
+        return resultsList;
+    }
+    public List<? extends AbstractCaArrayEntity> enumerateByExample(String api,
+            ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria, Class clazz)
+            throws Exception
+    {
+        EnumerationResponseContainer results = gridClient.enumerateByExample(criteria);
+        ClientEnumIterator iter = EnumerationResponseHelper.createClientIterator(results,CaArraySvc_v1_0Client.class
+                .getResourceAsStream("client-config.wsdd"));
+        List<AbstractCaArrayEntity> resultsList = new ArrayList<AbstractCaArrayEntity>();
+        
+        while (iter.hasNext()) {
+            try {
+                SOAPElement elem = (SOAPElement) iter.next();
+                if (elem != null) {
+                    AbstractCaArrayEntity entity = (AbstractCaArrayEntity) ObjectDeserializer.toObject(elem, clazz);
+                    resultsList.add(entity);
+                }
+            } catch (NoSuchElementException e) {
+                break;
+            }
+        }
+        return resultsList;
+    
+    }
+    public List<Experiment> enumerateExperiments(String api,
+            ExperimentSearchCriteria criteria) throws Exception
+    {
+        EnumerationResponseContainer results = gridClient.enumerateExperiments(criteria);
+        ClientEnumIterator iter = EnumerationResponseHelper.createClientIterator(results,CaArraySvc_v1_0Client.class
+                .getResourceAsStream("client-config.wsdd"));
+        List<Experiment> resultsList = new ArrayList<Experiment>();
+        
+        while (iter.hasNext()) {
+            try {
+                SOAPElement elem = (SOAPElement) iter.next();
+                if (elem != null) {
+                    Experiment entity = (Experiment) ObjectDeserializer.toObject(elem, Experiment.class);
+                    resultsList.add(entity);
+                }
+            } catch (NoSuchElementException e) {
+                break;
+            }
+        }
+        return resultsList;
+    
+    }
+    public List<Experiment> enumerateExperimentsByKeyword(String api,
+            KeywordSearchCriteria criteria) throws Exception
+    {
+        EnumerationResponseContainer results = gridClient.enumerateExperimentsByKeyword(criteria);
+        ClientEnumIterator iter = EnumerationResponseHelper.createClientIterator(results,CaArraySvc_v1_0Client.class
+                .getResourceAsStream("client-config.wsdd"));
+        List<Experiment> resultsList = new ArrayList<Experiment>();
+        
+        while (iter.hasNext()) {
+            try {
+                SOAPElement elem = (SOAPElement) iter.next();
+                if (elem != null) {
+                    Experiment entity = (Experiment) ObjectDeserializer.toObject(elem, Experiment.class);
+                    resultsList.add(entity);
+                }
+            } catch (NoSuchElementException e) {
+                break;
+            }
+        }
+        return resultsList;
+    
+    }
+    public List<DataFile> enumerateFiles(String api, FileSearchCriteria criteria)
+            throws Exception
+    {
+        EnumerationResponseContainer results = gridClient.enumerateFiles(criteria);
+        ClientEnumIterator iter = EnumerationResponseHelper.createClientIterator(results,CaArraySvc_v1_0Client.class
+                .getResourceAsStream("client-config.wsdd"));
+        List<DataFile> resultsList = new ArrayList<DataFile>();
+        
+        while (iter.hasNext()) {
+            try {
+                SOAPElement elem = (SOAPElement) iter.next();
+                if (elem != null) {
+                    DataFile entity = (DataFile) ObjectDeserializer.toObject(elem, DataFile.class);
+                    resultsList.add(entity);
+                }
+            } catch (NoSuchElementException e) {
+                break;
+            }
+        }
+        return resultsList;
+    
+    }
+    public List<Hybridization> enumerateHybridizations(String api,
+            HybridizationSearchCriteria criteria) throws Exception
+    {
+        EnumerationResponseContainer results = gridClient.enumerateHybridizations(criteria);
+        ClientEnumIterator iter = EnumerationResponseHelper.createClientIterator(results,CaArraySvc_v1_0Client.class
+                .getResourceAsStream("client-config.wsdd"));
+        List<Hybridization> resultsList = new ArrayList<Hybridization>();
+        
+        while (iter.hasNext()) {
+            try {
+                SOAPElement elem = (SOAPElement) iter.next();
+                if (elem != null) {
+                    Hybridization entity = (Hybridization) ObjectDeserializer.toObject(elem, Hybridization.class);
+                    resultsList.add(entity);
+                }
+            } catch (NoSuchElementException e) {
+                break;
+            }
+        }
+        return resultsList;
+    
     }
     
     

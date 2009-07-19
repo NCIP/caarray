@@ -2,7 +2,7 @@
 <!-- ** PROJECT:   caArray External API Test Suite                       ** -->
 <!-- *********************************************************************** -->
 
-<project name="caarrayExternalAPITestSuite" default="all" basedir=".">
+<project name="caarrayExternalAPITestSuite" default="build_jar" basedir=".">
 	<!-- ******************************************************************* -->
 	<!-- ** SERVER CONNECTION PROPERTIES                                  ** -->
 	<!-- ******************************************************************* -->
@@ -23,11 +23,13 @@
 	<property name="grid.lib.dir" value="${lib.dir}/grid" />
 	<property name="java.lib.dir" value="${lib.dir}/java" />
 	<property name="classes.dir" value="${basedir}/classes" />
+	<property name="jar.dir" value="${basedir}/gui" />
+	<property name="jar.file" value="${jar.dir}/client_api_test_suite.jar" />
 	
 	<!-- ******************************************************************* -->
 	<!-- ** TEST SUITE PROPERTIES                                         ** -->
 	<!-- ******************************************************************* -->
-	<property name="test.version" value="short" />
+	<property name="test.version" value="all" />
 
 	<!-- ******************************************************************* -->
 	<!-- ** TEST RESULT REPORT PROPERTIES                                 ** -->
@@ -145,8 +147,38 @@
 			<sysproperty key="test.version" value="${test.version}"/>
 		</java>
 	</target>
+	
+	<path id="jar.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar"/>
+		</fileset>
+		<fileset dir="${grid.lib.dir}">
+			<include name="*.jar"/>
+		</fileset>
+		<fileset dir="${java.lib.dir}">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	<manifestclasspath property="jar.manifest.classpath" jarfile="${jar.file}">
+		<classpath refid="jar.classpath" />
+	</manifestclasspath>
 
-	<target name="all" depends="clean,build_all,run_tests_all"/>
+	<target name="jar" depends="clean,build_all">
+		<delete dir="${jar.dir}"/>
+		<mkdir dir="${jar.dir}"/>
+	    <jar destfile="${jar.file}"
+	         basedir="${classes.dir}"
+	         includes="**/*.class">
+	      <manifest>
+	        <attribute name="Main-Class" value="caarray.client.test.gui.GuiMain" />
+	      	<attribute name="Class-Path"  value="${jar.manifest.classpath}"/>
+	      </manifest>
+	    </jar>
+	  </target>
+
+
+	<target name="build_jar" depends="clean,jar"/>
+	<target name="test_all" depends="clean,jar,run_tests_all"/>
 	<target name="test_java" depends="run_tests_java"/>
 	<target name="test_grid" depends="run_tests_grid"/>
 

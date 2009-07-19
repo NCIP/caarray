@@ -1,0 +1,345 @@
+/**
+ * 
+ */
+package caarray.client.test.suite;
+
+import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import caarray.client.test.ApiFacade;
+import caarray.client.test.TestProperties;
+import caarray.client.test.TestResult;
+import caarray.client.test.search.CriteriaSearch;
+import caarray.client.test.search.FileContentsSearch;
+
+/**
+ * @author vaughng
+ * Jul 14, 2009
+ */
+public class FileContentsTestSuite extends SearchByCriteriaTestSuite
+{
+
+    private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
+            + File.separator + "FileContents.csv";
+
+                       
+
+    private static final String FILE_REF = "File Reference";
+    private static final String FILE = "File Name";
+    private static final String FILE_EXPERIMENT = "File Experiment";
+    private static final String FILE_EXPERIMENT_ID= "File Experiment Id";
+    private static final String MULTI_FILE_NUM= "Multi File Num";
+    private static final String MULTI_FILE_TYPE= "Multi File Type";
+    private static final String COMPRESSED = "Compressed";
+    private static final String ZIP = "Zip";   
+    private static final String EXPECTED_BYTES = "Expected Bytes";
+    private static final String MIN_BYTES = "Min Bytes";
+    private static final String MAX_BYTES = "Max Bytes";
+
+    private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
+            API, FILE_REF, API_UTILS_SEARCH,
+            FILE, FILE_EXPERIMENT, FILE_EXPERIMENT_ID, MULTI_FILE_NUM, MULTI_FILE_TYPE, COMPRESSED, ZIP, EXPECTED_BYTES, MIN_BYTES, MAX_BYTES};
+    /**
+     * @param apiFacade
+     */
+    public FileContentsTestSuite(ApiFacade apiFacade)
+    {
+        super(apiFacade);
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.suite.SearchByCriteriaTestSuite#evaluateResults(java.lang.Object, caarray.client.test.search.CriteriaSearch, caarray.client.test.TestResult)
+     */
+    @Override
+    protected void evaluateResults(Object resultsList, CriteriaSearch search,
+            TestResult testResult)
+    {
+        FileContentsSearch fileSearch = (FileContentsSearch)search;
+        int size = 0;
+        if (resultsList == null)
+            size = 0;
+        else if (resultsList instanceof byte[])
+            size = ((byte[])resultsList).length;
+        else if (resultsList instanceof byte[][])
+        {
+            byte[][] bytes = (byte[][]) resultsList;
+            for (byte[] result : bytes)
+            {
+                if (result != null)
+                    size += result.length;
+            }
+        }
+        
+        if (fileSearch.getExpectedBytes() != null)
+        {
+            
+            if (size != fileSearch.getExpectedBytes())
+            {
+                String errorMessage = "Failed with unexpected number of bytes, expected: "
+                        + fileSearch.getExpectedBytes()
+                        + ", actual number of bytes: " + size;
+                
+                setTestResultFailure(testResult, fileSearch, errorMessage);
+            }
+            else
+            {
+                String detail = "Found expected number of bytes: "
+                        + size;
+                testResult.addDetail(detail);
+            }
+        }
+        if (fileSearch.getMinBytes() != null)
+        {
+            
+            if (size < fileSearch.getMinBytes())
+            {
+                String errorMessage = "Failed with unexpected number of bytes, expected minimum: "
+                        + fileSearch.getMinBytes()
+                        + ", actual number of bytes: " + size;
+                setTestResultFailure(testResult, fileSearch, errorMessage);
+            }
+            else
+            {
+                String detail = "Found expected minimum bytes: "
+                        + size;
+                testResult.addDetail(detail);
+            }
+        }
+        if (fileSearch.getMaxBytes() != null)
+        {
+            
+            if (size > fileSearch.getMaxBytes())
+            {
+                String errorMessage = "Failed with unexpected number of bytes, expected max: "
+                        + fileSearch.getMaxBytes()
+                        + ", actual number of bytes: " + size;
+                setTestResultFailure(testResult, fileSearch, errorMessage);
+            }
+            else
+            {
+                String detail = "Found expected max bytes: "
+                        + size;
+                testResult.addDetail(detail);
+            }
+        }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.suite.SearchByCriteriaTestSuite#executeSearch(caarray.client.test.search.CriteriaSearch, caarray.client.test.TestResult)
+     */
+    @Override
+    protected Object executeSearch(CriteriaSearch search, TestResult testResult)
+            throws Exception
+    {
+        FileContentsSearch fileSearch = (FileContentsSearch)search;
+        try
+        {
+            if (fileSearch.isApiUtilsSearch())
+            {
+                if (fileSearch.isZip())
+                    return apiFacade.copyFileContentsZipUtils(search.getApi(), fileSearch.getFileReferences(), fileSearch.isCompressed());
+                
+                return apiFacade.copyFileContentsUtils(search.getApi(), fileSearch.getFileReferences(), fileSearch.isCompressed());
+            }
+            
+            if (fileSearch.isZip())
+                return apiFacade.getFileContentsZip(search.getApi(), fileSearch.getFileReferences(), fileSearch.isCompressed());
+            
+            return apiFacade.getFileContents(search.getApi(), fileSearch.getFileReferences(), fileSearch.isCompressed());
+        }
+        catch (Throwable e)
+        {
+            System.out.println("Error encountered retrieving file contents set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
+            testResult.addDetail("Exception encountered retrieving file contents set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
+        } 
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.suite.SearchByCriteriaTestSuite#getCriteriaSearch()
+     */
+    @Override
+    protected CriteriaSearch getCriteriaSearch()
+    {
+        return new FileContentsSearch();
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.suite.SearchByCriteriaTestSuite#populateAdditionalSearchValues(java.lang.String[], caarray.client.test.search.CriteriaSearch)
+     */
+    @Override
+    protected void populateAdditionalSearchValues(String[] input,
+            CriteriaSearch criteriaSearch) throws Exception
+    {
+        FileContentsSearch search = (FileContentsSearch)criteriaSearch;
+        String experimentName = search.getExperimentName();
+        if (headerIndexMap.get(FILE) < input.length && !input[headerIndexMap.get(FILE)].equals(""))
+        {
+            String name = input[headerIndexMap.get(FILE)].trim();
+            if (name.startsWith(VAR_START))
+                name = getVariableValue(name);
+            List<String> names = new ArrayList<String>();
+            names.add(name);
+            List<DataFile> files = apiFacade.getFilesByName(search.getApi(), names, experimentName);
+            for (DataFile file : files)
+            {
+                search.addFileReference(file.getReference());
+            }
+        }
+            
+        if (headerIndexMap.get(FILE_REF) < input.length
+                && !input[headerIndexMap.get(FILE_REF)].equals(""))
+        {
+            String ref = input[headerIndexMap.get(FILE_REF)].trim();
+            CaArrayEntityReference reference ;
+            if (ref.equals(NULL_VAR))
+                reference = null;          
+            else if (ref.startsWith(VAR_START))
+                reference = new CaArrayEntityReference(getVariableValue(ref));
+            else
+                reference = new CaArrayEntityReference(ref);
+            
+            search.addFileReference(reference);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.suite.SearchByCriteriaTestSuite#populateSearch(java.lang.String[], caarray.client.test.search.CriteriaSearch)
+     */
+    @Override
+    protected void populateSearch(String[] input, CriteriaSearch criteriaSearch)
+            throws Exception
+    {
+        FileContentsSearch search = (FileContentsSearch)criteriaSearch;
+        
+        if (headerIndexMap.get(API) < input.length
+                && !input[headerIndexMap.get(API)].equals(""))
+        {
+            search.setApi(input[headerIndexMap.get(API)].trim());
+        }
+        if (headerIndexMap.get(TEST_CASE) < input.length
+                && !input[headerIndexMap.get(TEST_CASE)].equals(""))
+            search.setTestCase(Float.parseFloat(input[headerIndexMap.get(TEST_CASE)]
+                    .trim()));
+        if (headerIndexMap.get(EXPECTED_BYTES) < input.length
+                && !input[headerIndexMap.get(EXPECTED_BYTES)].equals(""))
+            search.setExpectedBytes(Integer
+                    .parseInt(input[headerIndexMap.get(EXPECTED_BYTES)].trim()));
+        if (headerIndexMap.get(MIN_BYTES) < input.length
+                && !input[headerIndexMap.get(MIN_BYTES)].equals(""))
+            search.setMinBytes(Integer
+                    .parseInt(input[headerIndexMap.get(MIN_BYTES)].trim()));
+        if (headerIndexMap.get(MAX_BYTES) < input.length
+                && !input[headerIndexMap.get(MAX_BYTES)].equals(""))
+            search.setMaxBytes(Integer
+                    .parseInt(input[headerIndexMap.get(MAX_BYTES)].trim()));      
+        if (headerIndexMap.get(COMPRESSED) < input.length
+                && !input[headerIndexMap.get(COMPRESSED)].equals(""))
+            search.setCompressed(Boolean.parseBoolean(input[headerIndexMap.get(COMPRESSED)].trim()));
+        if (headerIndexMap.get(ZIP) < input.length
+                && !input[headerIndexMap.get(ZIP)].equals(""))
+            search.setZip(Boolean.parseBoolean(input[headerIndexMap.get(ZIP)].trim()));
+        if (headerIndexMap.get(API_UTILS_SEARCH) < input.length
+                && !input[headerIndexMap.get(API_UTILS_SEARCH)].equals(""))
+            search.setApiUtilsSearch(Boolean.parseBoolean(input[headerIndexMap.get(API_UTILS_SEARCH)].trim()));
+                
+        if (headerIndexMap.get(FILE_REF) < input.length
+                && !input[headerIndexMap.get(FILE_REF)].equals(""))
+        {
+            String ref = input[headerIndexMap.get(FILE_REF)].trim();
+            CaArrayEntityReference reference ;
+            if (ref.equals(NULL_VAR))
+                reference = null;          
+            else if (ref.startsWith(VAR_START))
+                reference = new CaArrayEntityReference(getVariableValue(ref));
+            else
+                reference = new CaArrayEntityReference(ref);
+            
+            search.addFileReference(reference);
+        }
+            
+        String experimentName = null;
+        CaArrayEntityReference experimentReference = null;
+        if (headerIndexMap.get(FILE_EXPERIMENT) < input.length && !input[headerIndexMap.get(FILE_EXPERIMENT)].equals(""))
+        {
+            experimentName = input[headerIndexMap.get(FILE_EXPERIMENT)].trim();
+        }
+        if (headerIndexMap.get(FILE_EXPERIMENT_ID) < input.length && !input[headerIndexMap.get(FILE_EXPERIMENT_ID)].equals(""))
+        {
+            String id = input[headerIndexMap.get(FILE_EXPERIMENT_ID)].trim();
+            ExperimentSearchCriteria crit = new ExperimentSearchCriteria();
+            crit.setPublicIdentifier(id);
+            List<Experiment> results = apiFacade.experimentsByCriteriaSearchUtils(search.getApi(), crit);
+            if (!results.isEmpty())
+            {
+                experimentName = results.get(0).getTitle();
+                experimentReference = results.get(0).getReference();
+            }
+                
+        }
+        if (headerIndexMap.get(FILE) < input.length && !input[headerIndexMap.get(FILE)].equals(""))
+        {
+            String name = input[headerIndexMap.get(FILE)].trim();
+            if (name.startsWith(VAR_START))
+                name = getVariableValue(name);
+            List<String> names = new ArrayList<String>();
+            names.add(name);
+            List<DataFile> files = apiFacade.getFilesByName(search.getApi(), names, experimentName);
+            for (DataFile file : files)
+            {
+                search.addFileReference(file.getReference());
+            }
+        }
+            
+        if (headerIndexMap.get(MULTI_FILE_NUM) < input.length && !input[headerIndexMap.get(MULTI_FILE_NUM)].equals(""))
+        {
+            int num = Integer.parseInt(input[headerIndexMap.get(MULTI_FILE_NUM)].trim());
+            String extension = input[headerIndexMap.get(MULTI_FILE_TYPE)].trim();
+            FileSearchCriteria crit = new FileSearchCriteria();
+            crit.setExtension(extension);
+            crit.setExperiment(experimentReference);
+            List<DataFile> files = apiFacade.filesByCriteriaSearchUtils(search.getApi(), crit);
+            for (int i = 0; i < files.size() && i < num; i++)
+            {
+                search.addFileReference(files.get(i).getReference());
+            }
+            
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.suite.ConfigurableTestSuite#getColumnHeaders()
+     */
+    @Override
+    protected String[] getColumnHeaders()
+    {
+        return COLUMN_HEADERS;
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.suite.ConfigurableTestSuite#getConfigFilename()
+     */
+    @Override
+    protected String getConfigFilename()
+    {
+        return CONFIG_FILE;
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.suite.ConfigurableTestSuite#getType()
+     */
+    @Override
+    protected String getType()
+    {
+        return "File Contents";
+    }
+
+}

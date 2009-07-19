@@ -5,12 +5,12 @@ package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
-import gov.nih.nci.caarray.external.v1_0.query.AnnotationCriterion;
-import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
-import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
+import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,63 +19,64 @@ import java.util.List;
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
-import caarray.client.test.search.BiomaterialCriteriaSearch;
 import caarray.client.test.search.CriteriaSearch;
+import caarray.client.test.search.HybridizationCriteriaSearch;
 
 /**
  * @author vaughng
- * Jul 9, 2009
+ * Jul 15, 2009
  */
-public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
+public class HybridizationCriteriaTestSuite extends SearchByCriteriaTestSuite
 {
 
-    private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
-            + File.separator + "BiomaterialCriteria.csv";
 
+    private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
+            + File.separator + "HybridizationCriteria.csv";
+
+    private static final String EXPERIMENT_ID = "Experiment Id";
+    private static final String EXPERIMENT_TITLE = "Experiment Name";
+    private static final String EXPERIMENT_REF = "Experiment Reference";
+    private static final String SAMPLE = "Sample";
+    private static final String SAMPLE_REF = "Sample Reference";
     private static final String NAME = "Name";
-    private static final String TYPE = "Type";
-    private static final String EXPERIMENT_TITLE = "Experiment Title";
-    private static final String EXPERIMENT_REF = "Experiment Ref";
-    private static final String ANNO_CATEGORY = "Annotation Category";
-    private static final String ANNO_VALUE = "Annotation Value";
     
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,ENUMERATE,
-            API, NAME, EXPECTED_RESULTS, MIN_RESULTS, TYPE, EXPERIMENT_TITLE, EXPERIMENT_REF,
-            ANNO_CATEGORY, ANNO_VALUE, API_UTILS_SEARCH};
+            API, EXPERIMENT_ID, EXPECTED_RESULTS, MIN_RESULTS,EXPERIMENT_TITLE, EXPERIMENT_REF,
+            SAMPLE, SAMPLE_REF, NAME, API_UTILS_SEARCH };
 
+    
     /**
      * @param apiFacade
      */
-    public BiomaterialCriteriaTestSuite(ApiFacade apiFacade)
+    public HybridizationCriteriaTestSuite(ApiFacade apiFacade)
     {
         super(apiFacade);
     }
 
     /* (non-Javadoc)
-     * @see caarray.client.test.suite.SearchByCriteriaTestSuite#evaluateResults(java.util.List, caarray.client.test.search.CriteriaSearch, caarray.client.test.TestResult)
+     * @see caarray.client.test.suite.SearchByCriteriaTestSuite#evaluateResults(java.lang.Object, caarray.client.test.search.CriteriaSearch, caarray.client.test.TestResult)
      */
     @Override
-    protected void evaluateResults(
-            Object resultsList,
-            CriteriaSearch search, TestResult testResult)
+    protected void evaluateResults(Object resultsList, CriteriaSearch search,
+            TestResult testResult)
     {
-        BiomaterialCriteriaSearch bioSearch = (BiomaterialCriteriaSearch)search;
-        List<Biomaterial> bioResults = (List<Biomaterial>)resultsList;
+        HybridizationCriteriaSearch hybSearch = (HybridizationCriteriaSearch)search;
+        List<Hybridization> hybResults = (List<Hybridization>)resultsList;
         int namedResults = 0;
-        for (Biomaterial biomaterial : bioResults)
+        for (Hybridization hyb : hybResults)
         {
-            if (biomaterial != null && biomaterial.getName() != null)
+            if (hyb != null && hyb.getName() != null)
                 namedResults++;
         }
-        if (bioSearch.getExpectedResults() != null)
+        if (hybSearch.getExpectedResults() != null)
         {
             
-            if (namedResults != bioSearch.getExpectedResults())
+            if (namedResults != hybSearch.getExpectedResults())
             {
                 String errorMessage = "Failed with unexpected number of results, expected: "
-                        + bioSearch.getExpectedResults()
+                        + hybSearch.getExpectedResults()
                         + ", actual number of results: " + namedResults;
-                setTestResultFailure(testResult, bioSearch, errorMessage);
+                setTestResultFailure(testResult, hybSearch, errorMessage);
             }
             else
             {
@@ -84,15 +85,15 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
                 testResult.addDetail(detail);
             }
         }
-        if (bioSearch.getMinResults() != null)
+        if (hybSearch.getMinResults() != null)
         {
             
-            if (namedResults < bioSearch.getMinResults())
+            if (namedResults < hybSearch.getMinResults())
             {
                 String errorMessage = "Failed with unexpected number of results, expected minimum: "
-                        + bioSearch.getMinResults()
+                        + hybSearch.getMinResults()
                         + ", actual number of results: " + namedResults;
-                setTestResultFailure(testResult, bioSearch, errorMessage);
+                setTestResultFailure(testResult, hybSearch, errorMessage);
             }
             else
             {
@@ -101,32 +102,31 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
                 testResult.addDetail(detail);
             }
         }
-        
     }
 
     /* (non-Javadoc)
      * @see caarray.client.test.suite.SearchByCriteriaTestSuite#executeSearch(caarray.client.test.search.CriteriaSearch, caarray.client.test.TestResult)
      */
     @Override
-    protected Object executeSearch(
-            CriteriaSearch search, TestResult testResult) throws Exception
+    protected Object executeSearch(CriteriaSearch search, TestResult testResult)
+            throws Exception
     {
-        BiomaterialCriteriaSearch criteriaSearch = (BiomaterialCriteriaSearch)search;
-        List<Biomaterial> resultsList = new ArrayList<Biomaterial>();
+        HybridizationCriteriaSearch criteriaSearch = (HybridizationCriteriaSearch)search;
+        List<Hybridization> resultsList = new ArrayList<Hybridization>();
         try
         {
             if (search.isApiUtilsSearch())
             {
-                resultsList.addAll(apiFacade.biomaterialsByCriteriaSearchUtils(search.getApi(), criteriaSearch.getSearchCriteria()));
+                resultsList.addAll(apiFacade.hybridizationsByCriteriaSearchUtils(search.getApi(), criteriaSearch.getSearchCriteria()));
             }
             else if (search.isEnumerate())
             {
-                resultsList.addAll(apiFacade.enumerateBiomaterials(search.getApi(), criteriaSearch.getSearchCriteria()));
+                resultsList.addAll(apiFacade.enumerateHybridizations(search.getApi(), criteriaSearch.getSearchCriteria()));
             }
             else
             {
-                SearchResult<Biomaterial> results = (SearchResult<Biomaterial>) apiFacade
-                        .searchForBiomaterials(criteriaSearch.getApi(),
+                SearchResult<Hybridization> results = (SearchResult<Hybridization>) apiFacade
+                        .searchForHybridizations(criteriaSearch.getApi(),
                                 criteriaSearch.getSearchCriteria(), null);
                 resultsList.addAll(results.getResults());
                 while (!results.isFullResult())
@@ -135,8 +135,8 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
                             .getMaxAllowedResults(), results.getResults()
                             .size()
                             + results.getFirstResultOffset());
-                    results = (SearchResult<Biomaterial>) apiFacade
-                            .searchForBiomaterials(criteriaSearch.getApi(),
+                    results = (SearchResult<Hybridization>) apiFacade
+                            .searchForHybridizations(criteriaSearch.getApi(),
                                     criteriaSearch.getSearchCriteria(), offset);
                     resultsList.addAll(results.getResults());
                 }
@@ -160,7 +160,7 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
     @Override
     protected CriteriaSearch getCriteriaSearch()
     {
-        return new BiomaterialCriteriaSearch();
+        return new HybridizationCriteriaSearch();
     }
 
     /* (non-Javadoc)
@@ -170,23 +170,41 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
     protected void populateAdditionalSearchValues(String[] input,
             CriteriaSearch criteriaSearch) throws Exception
     {
-        BiomaterialCriteriaSearch search = (BiomaterialCriteriaSearch)criteriaSearch;
-        BiomaterialSearchCriteria criteria = search.getSearchCriteria();
-        if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
+        HybridizationCriteriaSearch search = (HybridizationCriteriaSearch)criteriaSearch;
+        HybridizationSearchCriteria criteria = search.getSearchCriteria();
+        
+        if (headerIndexMap.get(SAMPLE) < input.length && !input[headerIndexMap.get(SAMPLE)].equals(""))
         {
-            String name = input[headerIndexMap.get(NAME)].trim();
+            String name = input[headerIndexMap.get(SAMPLE)];
             if (name.startsWith(VAR_START))
                 name = getVariableValue(name);
-                    
+            Biomaterial biomaterial = apiFacade.getBiomaterial(search.getApi(), name);
+            CaArrayEntityReference ref = new CaArrayEntityReference();
+            if (biomaterial != null)
+            {
+                ref = biomaterial.getReference();
+            }
+            else
+            {
+                ref.setId(name);
+            }
+            criteria.getBiomaterials().add(ref);
+        }
+        if (headerIndexMap.get(SAMPLE_REF) < input.length && !input[headerIndexMap.get(SAMPLE_REF)].equals(""))
+        {
+            String ref = input[headerIndexMap.get(SAMPLE_REF)];
+            if (ref.startsWith(VAR_START))
+                ref = getVariableValue(ref);
+            criteria.getBiomaterials().add(new CaArrayEntityReference(ref));
+        }
+        if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
+        {
+            String name = input[headerIndexMap.get(NAME)];
+            if (name.startsWith(VAR_START))
+                name = getVariableValue(name);
+            
             criteria.getNames().add(name);
         }
-        if (headerIndexMap.get(TYPE) < input.length && !input[headerIndexMap.get(TYPE)].equals(""))
-        {
-            String name = input[headerIndexMap.get(TYPE)].toUpperCase().trim();
-            BiomaterialType type = BiomaterialType.valueOf(name);
-            criteria.getTypes().add(type);
-        }
-        addAnnotationCriterion(search, criteria, input);
 
     }
 
@@ -197,8 +215,8 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
     protected void populateSearch(String[] input, CriteriaSearch criteriaSearch)
             throws Exception
     {
-        BiomaterialCriteriaSearch search = (BiomaterialCriteriaSearch)criteriaSearch;
-        BiomaterialSearchCriteria criteria = new BiomaterialSearchCriteria();
+        HybridizationCriteriaSearch search = (HybridizationCriteriaSearch)criteriaSearch;
+        HybridizationSearchCriteria criteria = new HybridizationSearchCriteria();
         if (headerIndexMap.get(API) < input.length
                 && !input[headerIndexMap.get(API)].equals(""))
         {
@@ -225,23 +243,6 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
             search.setEnumerate(Boolean.parseBoolean(input[headerIndexMap
                     .get(ENUMERATE)].trim()));
         
-        if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
-        {
-            String name = input[headerIndexMap.get(NAME)].trim();
-            if (name.startsWith(VAR_START))
-                name = getVariableValue(name);
-                    
-            criteria.getNames().add(name);
-        }
-            
-        if (headerIndexMap.get(TYPE) < input.length && !input[headerIndexMap.get(TYPE)].equals(""))
-        {
-            String name = input[headerIndexMap.get(TYPE)].toUpperCase().trim();
-            BiomaterialType type = BiomaterialType.valueOf(name);
-            criteria.getTypes().add(type);
-        }
-        
-        addAnnotationCriterion(search, criteria, input);
         if (headerIndexMap.get(EXPERIMENT_TITLE) < input.length && !input[headerIndexMap.get(EXPERIMENT_TITLE)].equals(""))
         {
             String title = input[headerIndexMap.get(EXPERIMENT_TITLE)];
@@ -259,6 +260,25 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
             }
             criteria.setExperiment(ref);
         }
+        if (headerIndexMap.get(EXPERIMENT_ID) < input.length && !input[headerIndexMap.get(EXPERIMENT_ID)].equals(""))
+        {
+            String id = input[headerIndexMap.get(EXPERIMENT_ID)];
+            if (id.startsWith(VAR_START))
+                id = getVariableValue(id);
+            ExperimentSearchCriteria crit = new ExperimentSearchCriteria();
+            crit.setPublicIdentifier(id);
+            List<Experiment> experiments = (List<Experiment>)apiFacade.searchForExperiments(search.getApi(), crit, null).getResults();
+            CaArrayEntityReference ref = new CaArrayEntityReference();
+            if (!experiments.isEmpty())
+            {
+                ref = experiments.get(0).getReference();
+            }
+            else
+            {
+                ref.setId(id);
+            }
+            criteria.setExperiment(ref);
+        }
         if (headerIndexMap.get(EXPERIMENT_REF) < input.length && !input[headerIndexMap.get(EXPERIMENT_REF)].equals(""))
         {
             String ref = input[headerIndexMap.get(EXPERIMENT_REF)];
@@ -266,43 +286,39 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
                 ref = getVariableValue(ref);
             criteria.setExperiment(new CaArrayEntityReference(ref));
         }
-        
-        search.setSearchCriteria(criteria);    
-    }
-    
-    private void addAnnotationCriterion(BiomaterialCriteriaSearch search, BiomaterialSearchCriteria criteria, String[] input) throws Exception
-    {
-        AnnotationCriterion annoCriterion = null;
-        if (headerIndexMap.get(ANNO_CATEGORY) < input.length && !input[headerIndexMap.get(ANNO_CATEGORY)].equals(""))
+        if (headerIndexMap.get(SAMPLE) < input.length && !input[headerIndexMap.get(SAMPLE)].equals(""))
         {
-            annoCriterion = new AnnotationCriterion();
-            String name = input[headerIndexMap.get(ANNO_CATEGORY)];
+            String name = input[headerIndexMap.get(SAMPLE)];
             if (name.startsWith(VAR_START))
                 name = getVariableValue(name);
-            
-            CaArrayEntityReference cat = apiFacade.getCategoryReference(search.getApi(), name);
-            if (cat != null)
+            Biomaterial biomaterial = apiFacade.getBiomaterial(search.getApi(), name);
+            CaArrayEntityReference ref = new CaArrayEntityReference();
+            if (biomaterial != null)
             {
-                annoCriterion.setCategory(cat);
+                ref = biomaterial.getReference();
             }
             else
             {
-                annoCriterion.setCategory(new CaArrayEntityReference(name));
+                ref.setId(name);
             }
-            
+            criteria.getBiomaterials().add(ref);
         }
-        if (headerIndexMap.get(ANNO_VALUE) < input.length && !input[headerIndexMap.get(ANNO_VALUE)].equals(""))
+        if (headerIndexMap.get(SAMPLE_REF) < input.length && !input[headerIndexMap.get(SAMPLE_REF)].equals(""))
         {
-            if (annoCriterion == null)
-                annoCriterion = new AnnotationCriterion();
-            
-            annoCriterion.setValue(input[headerIndexMap.get(ANNO_VALUE)]);
-            
+            String ref = input[headerIndexMap.get(SAMPLE_REF)];
+            if (ref.startsWith(VAR_START))
+                ref = getVariableValue(ref);
+            criteria.getBiomaterials().add(new CaArrayEntityReference(ref));
         }
-        if (annoCriterion != null)
+        if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
         {
-            criteria.getAnnotationCriterions().add(annoCriterion);
+            String name = input[headerIndexMap.get(NAME)];
+            if (name.startsWith(VAR_START))
+                name = getVariableValue(name);
+            criteria.getNames().add(name);
         }
+        
+        search.setSearchCriteria(criteria);    
     }
 
     /* (non-Javadoc)
@@ -329,7 +345,7 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
     @Override
     protected String getType()
     {
-        return "Biomaterial by Criteria";
+        return "Hybridization Criteria";
     }
 
 }

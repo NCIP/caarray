@@ -15,11 +15,16 @@ should be as follows:
 	lib/grid: should contain the .jar files contained in the
 		 lib/grid directory of the caarray-client.zip file.
 		 
-		 
-To run the test suite: in a command line shell, navigate to the
+To run the test suite via gui: 	in a command line shell, navigate to the
+'API_Test_Suite' directory and run the 'ant' command. This will build an
+executable .jar file in the /gui directory, which can be run by clicking
+on the file, or by navigating to the /gui directory in a command line shell
+and executing the command java -jar client_api_test_suite.jar.
+
+To run the test suite with ant: in a command line shell, navigate to the
 'API_Test_Suite' directory and run one of the following commands:
-	1) ant
-	   The default ant command will build and run the full test
+	1) ant test_all
+	   This command will build and run the full test
 	   suite against both the java and grid APIs.
 	2) ant test_java
 	   This command will build and run only the portions of the

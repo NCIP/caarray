@@ -99,6 +99,7 @@ public abstract class ExampleSearch
     protected Integer expectedResults = null;
     protected Integer minResults = null;
     protected MatchMode matchMode;
+    private boolean enumerate = false;
 
     protected ExampleSearch()
     {
@@ -154,6 +155,16 @@ public abstract class ExampleSearch
     public void setMatchMode(MatchMode matchMode)
     {
         this.matchMode = matchMode;
+    }
+
+    public boolean isEnumerate()
+    {
+        return enumerate;
+    }
+
+    public void setEnumerate(boolean enumerate)
+    {
+        this.enumerate = enumerate;
     }
 
 }

@@ -1,6 +1,5 @@
 package caarray.client.test.suite;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
@@ -24,7 +23,7 @@ public class ExperimentKeywordTestSuite extends SearchByCriteriaTestSuite
     
     private static final String KEYWORD = "Keyword";
     
-    private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
+    private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,ENUMERATE,
         API, EXPECTED_RESULTS, MIN_RESULTS, KEYWORD, API_UTILS_SEARCH};
     
     public ExperimentKeywordTestSuite(ApiFacade apiFacade)
@@ -34,7 +33,7 @@ public class ExperimentKeywordTestSuite extends SearchByCriteriaTestSuite
 
     @Override
     protected void evaluateResults(
-            List<? extends AbstractCaArrayEntity> resultsList,
+            Object resultsList,
             CriteriaSearch search, TestResult testResult)
     {
         ExperimentKeywordSearch experimentSearch = (ExperimentKeywordSearch) search;
@@ -81,7 +80,7 @@ public class ExperimentKeywordTestSuite extends SearchByCriteriaTestSuite
         }}
 
     @Override
-    protected List<? extends AbstractCaArrayEntity> executeSearch(
+    protected Object executeSearch(
             CriteriaSearch search, TestResult testResult) throws Exception
     {
         ExperimentKeywordSearch criteriaSearch = (ExperimentKeywordSearch)search;
@@ -91,6 +90,10 @@ public class ExperimentKeywordTestSuite extends SearchByCriteriaTestSuite
             if (search.isApiUtilsSearch())
             {
                 resultsList.addAll(apiFacade.experimentsByKeywordSearchUtils(search.getApi(), criteriaSearch.getSearchCriteria()));
+            }
+            else if (search.isEnumerate())
+            {
+                resultsList.addAll(apiFacade.enumerateExperimentsByKeyword(search.getApi(), criteriaSearch.getSearchCriteria()));
             }
             else
             {
@@ -162,7 +165,11 @@ public class ExperimentKeywordTestSuite extends SearchByCriteriaTestSuite
         if (headerIndexMap.get(API_UTILS_SEARCH) < input.length
                 && !input[headerIndexMap.get(API_UTILS_SEARCH)].equals(""))
             search.setApiUtilsSearch(Boolean.parseBoolean(input[headerIndexMap
-                    .get(MIN_RESULTS)].trim()));
+                    .get(API_UTILS_SEARCH)].trim()));
+        if (headerIndexMap.get(ENUMERATE) < input.length
+                && !input[headerIndexMap.get(ENUMERATE)].equals(""))
+            search.setEnumerate(Boolean.parseBoolean(input[headerIndexMap
+                    .get(ENUMERATE)].trim()));
         if (headerIndexMap.get(KEYWORD) < input.length
                 && !input[headerIndexMap.get(KEYWORD)].equals(""))
         {

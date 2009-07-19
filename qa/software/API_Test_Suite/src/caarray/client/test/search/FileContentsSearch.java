@@ -1,0 +1,121 @@
+/**
+ * 
+ */
+package caarray.client.test.search;
+
+import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author vaughng
+ * Jul 14, 2009
+ */
+public class FileContentsSearch extends CriteriaSearch
+{
+
+    private Integer expectedBytes = null, minBytes = null, maxBytes = null, multiFileNum = null;
+    private boolean compressed = false, zip = false;
+    private String multiFileType = null;
+    private List<CaArrayEntityReference> fileReferences = new ArrayList<CaArrayEntityReference>();
+    private String experimentName;
+    
+    /**
+     * 
+     */
+    public FileContentsSearch()
+    {
+        super();
+    }
+
+    public void addFileReference(CaArrayEntityReference ref)
+    {
+        fileReferences.add(ref);
+    }
+
+    public Integer getExpectedBytes()
+    {
+        return expectedBytes;
+    }
+
+    public void setExpectedBytes(Integer expectedBytes)
+    {
+        this.expectedBytes = expectedBytes;
+    }
+
+    public Integer getMinBytes()
+    {
+        return minBytes;
+    }
+
+    public void setMinBytes(Integer minBytes)
+    {
+        this.minBytes = minBytes;
+    }
+
+    public Integer getMaxBytes()
+    {
+        return maxBytes;
+    }
+
+    public void setMaxBytes(Integer maxBytes)
+    {
+        this.maxBytes = maxBytes;
+    }
+
+    public Integer getMultiFileNum()
+    {
+        return multiFileNum;
+    }
+
+    public void setMultiFileNum(Integer multiFileNum)
+    {
+        this.multiFileNum = multiFileNum;
+    }
+
+    public boolean isCompressed()
+    {
+        return compressed;
+    }
+
+    public void setCompressed(boolean compressed)
+    {
+        this.compressed = compressed;
+    }
+
+    public boolean isZip()
+    {
+        return zip;
+    }
+
+    public void setZip(boolean zip)
+    {
+        this.zip = zip;
+    }
+
+    public String getMultiFileType()
+    {
+        return multiFileType;
+    }
+
+    public void setMultiFileType(String multiFileType)
+    {
+        this.multiFileType = multiFileType;
+    }
+
+    public List<CaArrayEntityReference> getFileReferences()
+    {
+        return fileReferences;
+    }
+
+    public String getExperimentName()
+    {
+        return experimentName;
+    }
+
+    public void setExperimentName(String experimentName)
+    {
+        this.experimentName = experimentName;
+    }
+}

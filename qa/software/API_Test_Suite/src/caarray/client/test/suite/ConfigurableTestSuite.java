@@ -120,6 +120,8 @@ public abstract class ConfigurableTestSuite
     protected static final String VAR_START = "${";
     protected static final String EMPTY_STRING_VAR = "${empty}";
     protected static final String EMPTY_STRING_SPACE_VAR = "${empty_s}";
+    protected static final String NULL_VAR = "${null}";
+    protected static final String ENUMERATE = "Enumerate";
     private static Map<String, String> varMap = new HashMap<String, String>();
     
     protected ApiFacade apiFacade;
@@ -129,6 +131,7 @@ public abstract class ConfigurableTestSuite
     {
         varMap.put(EMPTY_STRING_VAR, "");
         varMap.put(EMPTY_STRING_SPACE_VAR, " ");
+        varMap.put(NULL_VAR, null);
     }
 
     protected ConfigurableTestSuite(ApiFacade apiFacade)
@@ -334,5 +337,10 @@ public abstract class ConfigurableTestSuite
         if (varMap.containsKey(var))
             return varMap.get(var);
         return var;
+    }
+    
+    public String getDisplayName()
+    {
+        return getType();
     }
 }

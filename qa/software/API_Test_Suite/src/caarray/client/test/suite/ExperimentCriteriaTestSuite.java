@@ -3,7 +3,6 @@
  */
 package caarray.client.test.suite;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
@@ -51,7 +50,8 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
             API, TITLE, EXPECTED_TITLE, EXPECTED_RESULTS, MIN_RESULTS, PUBLIC_ID, ARRAY_PROVIDER, ORG_COMMON_NAME, ORG_SCI_NAME,
-            ASSAY_TYPE, ANNO_CATEGORY, ANNO_VALUE, PI_REF,EXPECTED_ASSAY_TYPE, EXPECTED_PROVIDER, EXPECTED_ORG_SCI_NAME, API_UTILS_SEARCH};
+            ASSAY_TYPE, ANNO_CATEGORY, ANNO_VALUE, PI_REF,EXPECTED_ASSAY_TYPE, EXPECTED_PROVIDER, EXPECTED_ORG_SCI_NAME, API_UTILS_SEARCH,
+            ENUMERATE};
 
     /**
      * @param apiFacade
@@ -66,7 +66,7 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
      */
     @Override
     protected void evaluateResults(
-            List<? extends AbstractCaArrayEntity> resultsList,
+            Object resultsList,
             CriteriaSearch search, TestResult testResult)
     {
         ExperimentCriteriaSearch experimentSearch = (ExperimentCriteriaSearch)search;
@@ -275,7 +275,11 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
         if (headerIndexMap.get(API_UTILS_SEARCH) < input.length
                 && !input[headerIndexMap.get(API_UTILS_SEARCH)].equals(""))
             search.setApiUtilsSearch(Boolean.parseBoolean(input[headerIndexMap
-                    .get(MIN_RESULTS)].trim()));
+                    .get(API_UTILS_SEARCH)].trim()));
+        if (headerIndexMap.get(ENUMERATE) < input.length
+                && !input[headerIndexMap.get(ENUMERATE)].equals(""))
+            search.setEnumerate(Boolean.parseBoolean(input[headerIndexMap
+                    .get(ENUMERATE)].trim()));
         if (headerIndexMap.get(EXPECTED_TITLE) < input.length
                 && !input[headerIndexMap.get(EXPECTED_TITLE)].equals(""))
             search.addExpectedTitle(input[headerIndexMap.get(EXPECTED_TITLE)].trim());
@@ -471,7 +475,7 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
     }
 
     @Override
-    protected List<? extends AbstractCaArrayEntity> executeSearch(
+    protected Object executeSearch(
             CriteriaSearch search, TestResult testResult) throws Exception
     {
         ExperimentCriteriaSearch criteriaSearch = (ExperimentCriteriaSearch)search;
@@ -481,6 +485,10 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
             if (search.isApiUtilsSearch())
             {
                 resultsList.addAll(apiFacade.experimentsByCriteriaSearchUtils(search.getApi(), criteriaSearch.getExperimentSearchCriteria()));
+            }
+            else if (search.isEnumerate())
+            {
+                resultsList.addAll(apiFacade.enumerateExperiments(search.getApi(), criteriaSearch.getExperimentSearchCriteria()));
             }
             else
             {

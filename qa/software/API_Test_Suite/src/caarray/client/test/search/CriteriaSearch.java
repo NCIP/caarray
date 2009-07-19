@@ -15,7 +15,7 @@ public abstract class CriteriaSearch
     protected Float testCase = null;
     protected String api = null;
     protected Integer expectedResults = null, minResults = null;
-    protected boolean apiUtilsSearch;
+    protected boolean apiUtilsSearch = false, enumerate = false;
     
     protected CriteriaSearch(){}
 
@@ -67,6 +67,16 @@ public abstract class CriteriaSearch
     public void setApiUtilsSearch(boolean apiUtilsSearch)
     {
         this.apiUtilsSearch = apiUtilsSearch;
+    }
+
+    public boolean isEnumerate()
+    {
+        return enumerate;
+    }
+
+    public void setEnumerate(boolean enumerate)
+    {
+        this.enumerate = enumerate;
     }
     
     

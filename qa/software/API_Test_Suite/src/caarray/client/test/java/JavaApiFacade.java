@@ -8,30 +8,38 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
+import gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
-import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
+import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
+import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.Search;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchResultIterator;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -47,20 +55,28 @@ import caarray.client.test.TestProperties;
  */
 public class JavaApiFacade implements ApiFacade
 {
-
     
     private SearchService javaSearchService = null;
+    private DataService dataService;
     private JavaSearchApiUtils apiUtils;
+    private JavaDataApiUtils dataApiUtils;
     
-    public JavaApiFacade() throws ServerConnectionException
+    public JavaApiFacade()
+    {}
+    
+    public void connect() throws Exception
     {
+
         String hostName = TestProperties.getJavaServerHostname();
         int port = TestProperties.getJavaServerJndiPort();
         System.out.println("Connecting to java server: " + hostName + ":" + port);
         CaArrayServer server = new CaArrayServer(hostName, port);
         server.connect();
         javaSearchService = server.getSearchService();
+        dataService = server.getDataService();
         apiUtils = new JavaSearchApiUtils(javaSearchService);
+        dataApiUtils = new JavaDataApiUtils(dataService);
+    
     }
     
     public List<Person> getAllPrincipalInvestigators(String api)
@@ -252,7 +268,8 @@ public class JavaApiFacade implements ApiFacade
     {
         Search<DataFile> results = apiUtils.filesByCriteria(criteria);
         List<DataFile> resultsList = new ArrayList<DataFile>();
-        for (Iterator<DataFile> resultsIter = results.iterate(); resultsIter.hasNext();)
+        SearchResultIterator<DataFile> resultsIter = results.iterate();
+        while ( resultsIter.hasNext())
         {
             resultsList.add(resultsIter.next());
         }
@@ -291,6 +308,168 @@ public class JavaApiFacade implements ApiFacade
     {
         return javaSearchService.searchForQuantitationTypes(criteria);
     }
-    
+
+    public AnnotationSet getAnnotationSet(String api,
+            AnnotationSetRequest annotationSetRequest) throws Exception
+    {
+        return javaSearchService.getAnnotationSet(annotationSetRequest);
+    }
+
+    public Hybridization getHybridization(String api, String name)
+            throws Exception
+    {
+        ExampleSearchCriteria<Hybridization> crit = new ExampleSearchCriteria<Hybridization>();
+        Hybridization hyb = new Hybridization();
+        hyb.setName(name);
+        crit.setExample(hyb);
+        SearchResult<Hybridization> hybs = (SearchResult<Hybridization>)searchByExample(api,
+                crit, null);
+        if (!hybs.getResults().isEmpty())
+            return hybs.getResults().get(0);
+        return null;
+    }
+
+    public Biomaterial getBiomaterial(String api, String name) throws Exception
+    {
+        ExampleSearchCriteria<Biomaterial> crit = new ExampleSearchCriteria<Biomaterial>();
+        Biomaterial bio = new Biomaterial();
+        bio.setName(name);
+        crit.setExample(bio);
+        SearchResult<Biomaterial> bios = (SearchResult<Biomaterial>)searchByExample(api,
+                crit, null);
+        if (!bios.getResults().isEmpty())
+            return bios.getResults().get(0);
+        return null;
+    }
+
+    public List<DataFile> getFilesByName(String api, List<String> fileNames,
+            String experimentName) throws Exception
+    {
+        List<DataFile> resultsList = new ArrayList<DataFile>();
+        FileSearchCriteria crit = new FileSearchCriteria();
+        Experiment experiment = getExperiment(api, experimentName);
+        if (experiment != null)
+        {
+            crit.setExperiment(experiment.getReference());
+            List<DataFile> files = filesByCriteriaSearchUtils(api, crit);
+            for (DataFile file : files)
+            {
+                if (fileNames.contains(file.getName()))
+                {
+                    resultsList.add(file);
+                }
+            }
+        }
+        return resultsList;
+    }
+
+    public DataSet getDataSet(String api, DataSetRequest dataSetRequest)
+            throws Exception
+    {
+        return dataService.getDataSet(dataSetRequest);
+    }
+
+    public QuantitationType getQuantitationType(String api, String name)
+            throws Exception
+    {
+        ExampleSearchCriteria<QuantitationType> crit = new ExampleSearchCriteria<QuantitationType>();
+        QuantitationType quant = new QuantitationType();
+        quant.setName(name);
+        crit.setExample(quant);
+        SearchResult<QuantitationType> quants = (SearchResult<QuantitationType>)searchByExample(api,
+                crit, null);
+        if (!quants.getResults().isEmpty())
+            return quants.getResults().get(0);
+        return null;
+    }
+
+    public byte[][] getFileContents(String api,
+            List<CaArrayEntityReference> fileReferences, boolean compressed)
+            throws Exception
+    {
+        if (fileReferences.isEmpty())
+            return new byte[][]{new byte[0]};
+        byte[][] retVal = new byte[fileReferences.size()][];
+        
+        for (int i = 0; i < fileReferences.size(); i++)
+        {
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            dataApiUtils.copyFileContentsToOutputStream(fileReferences.get(0), compressed, outStream);
+            retVal[i] = outStream.toByteArray();  
+        }
+        return retVal;    
+    }
+
+    public byte[] getFileContentsZip(String api,
+            List<CaArrayEntityReference> fileReferences, boolean compressed)
+            throws Exception
+    {
+        FileDownloadRequest request = new FileDownloadRequest();
+        request.setFiles(fileReferences);
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        dataApiUtils.copyFileContentsZipToOutputStream(request, compressed, outStream);
+        return outStream.toByteArray();
+    }
+
+    public byte[] copyFileContentsUtils(String api,
+            List<CaArrayEntityReference> fileReferences, boolean compressed)
+            throws Exception
+    {
+        byte[][] retVal = getFileContents(api, fileReferences, compressed);
+        if (retVal == null || retVal.length == 0)
+            return new byte[0];
+        
+        return retVal[0];
+    }
+
+    public byte[] copyFileContentsZipUtils(String api,
+            List<CaArrayEntityReference> fileReferences, boolean compressed)
+            throws Exception
+    {
+        return getFileContentsZip(api, fileReferences, compressed);
+    }
+
+    public List<Biomaterial> enumerateBiomaterials(String api,
+            BiomaterialSearchCriteria criteria) throws Exception
+    {
+        return biomaterialsByCriteriaSearchUtils(api, criteria);
+    }
+
+    public List<Biomaterial> enumerateBiomaterialsByKeyword(String api,
+            BiomaterialKeywordSearchCriteria criteria) throws Exception
+    {
+        return biomaterialsByKeywordSearchUtils(api, criteria);
+    }
+
+    public List<? extends AbstractCaArrayEntity> enumerateByExample(String api,
+            ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria, Class clazz)
+            throws Exception
+    {
+        return apiUtils.byExample(criteria).list();
+    }
+
+    public List<Experiment> enumerateExperiments(String api,
+            ExperimentSearchCriteria criteria) throws Exception
+    {
+        return experimentsByCriteriaSearchUtils(api, criteria);
+    }
+
+    public List<Experiment> enumerateExperimentsByKeyword(String api,
+            KeywordSearchCriteria criteria) throws Exception
+    {
+        return experimentsByKeywordSearchUtils(api, criteria);
+    }
+
+    public List<DataFile> enumerateFiles(String api, FileSearchCriteria criteria)
+            throws Exception
+    {
+        return filesByCriteriaSearchUtils(api, criteria);
+    }
+
+    public List<Hybridization> enumerateHybridizations(String api,
+            HybridizationSearchCriteria criteria) throws Exception
+    {
+        return hybridizationsByCriteriaSearchUtils(api, criteria);
+    }   
     
 }

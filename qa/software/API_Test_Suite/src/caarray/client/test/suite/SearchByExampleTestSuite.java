@@ -185,21 +185,29 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                 long startTime = System.currentTimeMillis();
                 try
                 {
-                    SearchResult<? extends AbstractCaArrayEntity> results = getSearchResults(search.getApi(), criteria, null);
-                    resultsList.addAll(results.getResults());
-                    while (!results.isFullResult())
+                    if (search.isEnumerate())
                     {
-                        LimitOffset offset = new LimitOffset(results
-                                .getMaxAllowedResults(), results.getResults()
-                                .size()
-                                + results.getFirstResultOffset());
-                        results = getSearchResults(search.getApi(), criteria, offset);
-                        resultsList.addAll(results.getResults());
+                        resultsList.addAll(apiFacade.enumerateByExample(search.getApi(), criteria, search.getExample().getClass()));
                     }
+                    else
+                    {
+                        SearchResult<? extends AbstractCaArrayEntity> results = getSearchResults(search.getApi(), criteria, null);
+                        resultsList.addAll(results.getResults());
+                        while (!results.isFullResult())
+                        {
+                            LimitOffset offset = new LimitOffset(results
+                                    .getMaxAllowedResults(), results.getResults()
+                                    .size()
+                                    + results.getFirstResultOffset());
+                            results = getSearchResults(search.getApi(), criteria, offset);
+                            resultsList.addAll(results.getResults());
+                        }
+                    }
+                    
                 }
                 catch (Throwable t)
                 {
-                    String detail = "An exception occured executing an " + getType() + " search-by-example: "
+                    String detail = "An exception occured executing " + getType() + " search-by-example: "
                     + t.getClass() + " " + t.getLocalizedMessage();
                     testResult.addDetail(detail);
                     t.printStackTrace();

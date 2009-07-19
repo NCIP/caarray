@@ -145,7 +145,7 @@ public class FileTestSuite extends SearchByExampleTestSuite
     @Override
     protected String getType()
     {
-        return "FileType";
+        return "File";
     }
 
 }

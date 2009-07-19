@@ -3,8 +3,6 @@
  */
 package caarray.client.test.suite;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +21,6 @@ import caarray.client.test.search.CriteriaSearch;
 public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
 {
     protected static final String API_UTILS_SEARCH = "API Utils";
-    
     protected List<CriteriaSearch> configuredSearches = new ArrayList<CriteriaSearch>();
     /**
      * @param apiFacade
@@ -56,10 +53,11 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                 try
                 {
                     populateSearch(input, search);  
+                    configuredSearches.add(search);
                 }
                 catch (Exception e)
                 {
-                    throw new TestConfigurationException("Expection constructing test case: " + e);
+                    throw new TestConfigurationException("Expection constructing test case " + search.getTestCase() + ": "+ e.getClass());
                 }
                 
             }
@@ -75,12 +73,12 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                 }
                 catch (Exception e)
                 {
+                    e.printStackTrace();
                     throw new TestConfigurationException("Expection constructing test case: " + e);
                 }
             }
     
-            if (search != null)
-                configuredSearches.add(search);
+            
     
             index++;
             if (index < spreadsheetRows.size())
@@ -116,7 +114,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                 }
 
                 long startTime = System.currentTimeMillis();
-                List<? extends AbstractCaArrayEntity> resultsList = executeSearch(search, testResult);
+                Object resultsList = executeSearch(search, testResult);
                 long elapsedTime = System.currentTimeMillis() - startTime;
 
                 testResult.setElapsedTime(elapsedTime);
@@ -196,7 +194,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
      * @param search ExampleSearch specifying the expected results of the test search.
      * @param testResult TestResult to which a status will be added.
      */
-    protected abstract void evaluateResults(List<? extends AbstractCaArrayEntity> resultsList, CriteriaSearch search, TestResult testResult);
+    protected abstract void evaluateResults(Object resultsList, CriteriaSearch search, TestResult testResult);
 
     /**
      * Returns a new, type-specific CriteriaSearch object to be populated.
@@ -212,6 +210,6 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
      * @return The results of the search.
      * @throws Exception TODO
      */
-    protected abstract List<? extends AbstractCaArrayEntity> executeSearch(CriteriaSearch search, TestResult testResult) throws Exception;
+    protected abstract Object executeSearch(CriteriaSearch search, TestResult testResult) throws Exception;
 
 }

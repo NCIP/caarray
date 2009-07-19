@@ -8,12 +8,15 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
+import gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
@@ -22,6 +25,7 @@ import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
@@ -57,6 +61,12 @@ public class FullApiFacade implements ApiFacade
     {
         javaApiFacade = new JavaApiFacade();
         gridApiFacade = new GridApiFacade();
+    }
+    
+    public void connect() throws Exception
+    {
+        javaApiFacade.connect();
+        gridApiFacade.connect();
     }
     
     private ApiFacade getFacade(String api)
@@ -234,6 +244,112 @@ public class FullApiFacade implements ApiFacade
             LimitOffset offset) throws Exception
     {
         return getFacade(api).searchForQuantitationTypes(api, criteria, offset);
+    }
+
+    public AnnotationSet getAnnotationSet(String api,
+            AnnotationSetRequest annotationSetRequest) throws Exception
+    {
+        return getFacade(api).getAnnotationSet(api, annotationSetRequest);
+    }
+
+    public Hybridization getHybridization(String api, String name)
+            throws Exception
+    {
+        return getFacade(api).getHybridization(api, name);
+    }
+
+    public Biomaterial getBiomaterial(String api, String name) throws Exception
+    {
+        return getFacade(api).getBiomaterial(api, name);
+    }
+
+    public List<DataFile> getFilesByName(String api, List<String> fileNames,
+            String experimentName) throws Exception
+    {
+        return getFacade(api).getFilesByName(api, fileNames, experimentName);
+    }
+
+    public DataSet getDataSet(String api, DataSetRequest dataSetRequest)
+            throws Exception
+    {
+        return getFacade(api).getDataSet(api, dataSetRequest);
+    }
+
+    public QuantitationType getQuantitationType(String api, String name)
+            throws Exception
+    {
+        return getFacade(api).getQuantitationType(api, name);
+    }
+
+    public byte[][] getFileContents(String api,
+            List<CaArrayEntityReference> fileReferences, boolean compressed)
+            throws Exception
+    {
+        return getFacade(api).getFileContents(api, fileReferences, compressed);
+    }
+
+    public byte[] getFileContentsZip(String api,
+            List<CaArrayEntityReference> fileReferences, boolean compressed)
+            throws Exception
+    {
+        return getFacade(api).getFileContentsZip(api, fileReferences, compressed);
+    }
+
+    public byte[] copyFileContentsUtils(String api,
+            List<CaArrayEntityReference> fileReferences, boolean compressed)
+            throws Exception
+    {
+       return getFacade(api).copyFileContentsUtils(api, fileReferences, compressed);
+    }
+
+    public byte[] copyFileContentsZipUtils(String api,
+            List<CaArrayEntityReference> fileReferences, boolean compressed)
+            throws Exception
+    {
+        return getFacade(api).copyFileContentsZipUtils(api, fileReferences, compressed);
+    }
+
+    public List<Biomaterial> enumerateBiomaterials(String api,
+            BiomaterialSearchCriteria criteria) throws Exception
+    {
+        return getFacade(api).enumerateBiomaterials(api, criteria);
+    }
+
+    public List<Biomaterial> enumerateBiomaterialsByKeyword(String api,
+            BiomaterialKeywordSearchCriteria criteria) throws Exception
+    {
+        return getFacade(api).enumerateBiomaterialsByKeyword(api, criteria);
+    }
+
+    public List<? extends AbstractCaArrayEntity> enumerateByExample(String api,
+            ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria, Class clazz)
+            throws Exception
+    {
+        return getFacade(api).enumerateByExample(api, criteria, clazz);
+    }
+
+    public List<Experiment> enumerateExperiments(String api,
+            ExperimentSearchCriteria criteria) throws Exception
+    {
+        return getFacade(api).enumerateExperiments(api, criteria);
+    }
+
+    public List<Experiment> enumerateExperimentsByKeyword(String api,
+            KeywordSearchCriteria criteria) throws Exception
+    {
+        return getFacade(api).enumerateExperimentsByKeyword(api, criteria);
+    }
+
+    public List<DataFile> enumerateFiles(String api, FileSearchCriteria criteria)
+            throws Exception
+    {
+        return getFacade(api).enumerateFiles(api, criteria);
+    }
+
+    public List<Hybridization> enumerateHybridizations(String api,
+            HybridizationSearchCriteria criteria) throws Exception
+    {
+        return getFacade(api).enumerateHybridizations(api, criteria);
     }
     
     

@@ -130,6 +130,16 @@ public class TestProperties {
         return Integer.parseInt(System.getProperty(SERVER_JNDI_PORT_KEY, SERVER_JNDI_PORT_DEFAULT));
     }
     
+    public static void setJavaServerHostname(String hostname)
+    {
+        System.setProperty(SERVER_HOSTNAME_KEY, hostname);
+    }
+    
+    public static void setJavaServerJndiPort(int port)
+    {
+        System.setProperty(SERVER_JNDI_PORT_KEY, Integer.toString(port));
+    }
+    
 	public static String getGridServerHostname() {
         return System.getProperty(GRID_SERVER_HOSTNAME_KEY, GRID_SERVER_HOSTNAME_DEFAULT);
     }
@@ -137,6 +147,16 @@ public class TestProperties {
 	public static int getGridServerPort() {
         return Integer.parseInt(System.getProperty(GRID_SERVER_PORT_KEY, GRID_SERVER_PORT_DEFAULT));
     }
+	
+	public static void setGridServerHostname(String hostname)
+	{
+	    System.setProperty(GRID_SERVER_HOSTNAME_KEY, hostname);
+	}
+	
+	public static void setGridServerPort(int port)
+	{
+	    System.setProperty(GRID_SERVER_PORT_KEY, Integer.toString(port));
+	}
 
     public static String getGridServiceUrl() {
         return ("http://" + getGridServerHostname() + ":" + getGridServerPort() + "/wsrf/services/cagrid/CaArraySvc_v1_0");
