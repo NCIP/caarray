@@ -210,7 +210,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private List<File> uploads = new ArrayList<File>();
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
-    private List<Long> selectedFileIds = new ArrayList<Long>();
+    private Set<Long> selectedFileIds = new HashSet<Long>();
     private List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
     private int downloadGroupNumber = -1;
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
@@ -1211,17 +1211,17 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     /**
      * @return the selected file ids
      */
-    public List<Long> getSelectedFileIds() {
+    public Set<Long> getSelectedFileIds() {
         return selectedFileIds;
     }
 
     /**
      * @param selectedFileIds the ids of the selected files
      */
-    public void setSelectedFileIds(List<Long> selectedFileIds) {
+    public void setSelectedFileIds(Set<Long> selectedFileIds) {
         this.selectedFileIds = selectedFileIds;
         this.selectedFiles = ServiceLocatorFactory.getGenericDataService().retrieveByIds(CaArrayFile.class,
-                selectedFileIds);
+                new ArrayList(selectedFileIds));
     }
 
     /**

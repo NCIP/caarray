@@ -121,8 +121,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
@@ -408,7 +410,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         setCompressedSize(f3, 1024 * 1024 * 512);
         setId(f3, 3L);
         f3.setName("experiment-id-1015897540503881.idf");
-        List<Long> l = new ArrayList<Long>();
+        Set<Long> l = new HashSet<Long>();
         l.add(1L);
         l.add(2L);
         l.add(3L);
@@ -755,7 +757,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         setCompressedSize(f2, 1024 * 1024 * 384);
         f2.setName("missing_term_source.sdrf");
 
-        List<Long> l = new ArrayList<Long>();
+        Set<Long> l = new HashSet<Long>();
         l.add(1L);
         l.add(2L);
         // need to catch exception as these are test files and will not be retrieved
@@ -804,7 +806,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         setId(f2, 2L);
         setCompressedSize(f2, 1024 * 1024 * 384);
         f2.setName("missing_term_source.sdrf");
-        List<Long> l = new ArrayList<Long>();
+        Set<Long> l = new HashSet<Long>();
         l.add(1L);
         l.add(2L);
         l.add(3L);
