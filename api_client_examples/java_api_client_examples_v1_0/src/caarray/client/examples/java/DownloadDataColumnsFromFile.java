@@ -108,6 +108,8 @@ import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
+import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.IOException;
@@ -127,6 +129,7 @@ import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 public class DownloadDataColumnsFromFile {
     private static SearchService searchService = null;
     private static DataService dataService = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
     private static final String QUANTITATION_TYPES_CSV_STRING = BaseProperties.AFFYMETRIX_CHP_QUANTITATION_TYPES;
 
@@ -138,6 +141,7 @@ public class DownloadDataColumnsFromFile {
             server.connect();
             searchService = server.getSearchService();
             dataService = server.getDataService();
+            searchServiceHelper = new JavaSearchApiUtils(searchService);
             System.out.println("Downloading data columns from a file in the experiment " + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
@@ -233,7 +237,7 @@ public class DownloadDataColumnsFromFile {
         fileSearchCriteria.getTypes().add(chpFileTypeRef);
 
         System.out.println("SEARCHING FOR AFFY CHP FILES IN EXPERIMENT...");
-        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
+        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files == null || files.size() <= 0) {
             System.out.println("NO FILES FOUND...");
             return null;

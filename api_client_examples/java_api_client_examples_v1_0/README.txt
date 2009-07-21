@@ -41,7 +41,3 @@ following public experiment being present:
    Data files: test3_data.zip
 The data/ directory contains these (and other) files if you need them.
 -----
-KNOWN ISSUES IN RC1 WHICH WILL BE FIXED BEFORE GA:
-
-1. ant select_files: The search for derived data files with extension ".CHP" returns no results instead of 2 results.
-

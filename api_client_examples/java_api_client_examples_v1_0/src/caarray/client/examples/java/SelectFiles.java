@@ -97,6 +97,8 @@ import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
+import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.rmi.RemoteException;
@@ -112,6 +114,7 @@ import java.util.Set;
  */
 public class SelectFiles {
     private static SearchService searchService = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
     private static final String SAMPLE_NAME_01 = BaseProperties.SAMPLE_NAME_01;
     private static final String SAMPLE_NAME_02 = BaseProperties.SAMPLE_NAME_02;
@@ -123,6 +126,7 @@ public class SelectFiles {
                     .getServerJndiPort());
             server.connect();
             searchService = server.getSearchService();
+            searchServiceHelper = new JavaSearchApiUtils(searchService);
             CaArrayEntityReference experimentRef = selector.searchForExperiment();
             if (experimentRef == null) {
                 System.out.println("Could not find experiment with the requested title.");
@@ -207,7 +211,7 @@ public class SelectFiles {
         criteria.getNames().add(SAMPLE_NAME_01);
         criteria.getNames().add(SAMPLE_NAME_02);
         criteria.getTypes().add(BiomaterialType.SAMPLE);
-        List<Biomaterial> samples = (searchService.searchForBiomaterials(criteria, null)).getResults();
+        List<Biomaterial> samples = (searchServiceHelper.biomaterialsByCriteria(criteria)).list();
         if (samples == null || samples.size() <= 0) {
             return null;
         }
@@ -227,7 +231,7 @@ public class SelectFiles {
         fileSearchCriteria.setExperiment(experimentRef);
         fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
 
-        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
+        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files.size() <= 0) {
             return null;
         }
@@ -252,7 +256,7 @@ public class SelectFiles {
         CaArrayEntityReference celFileTypeRef = getCelFileType();
         fileSearchCriteria.getTypes().add(celFileTypeRef);
 
-        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
+        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files.size() <= 0) {
             return null;
         }
@@ -286,9 +290,9 @@ public class SelectFiles {
         fileSearchCriteria.setExperiment(experimentRef);
 
         fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
-        fileSearchCriteria.setExtension(".CHP");
+        fileSearchCriteria.setExtension("CHP");
 
-        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
+        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files.size() <= 0) {
             return null;
         }
@@ -312,7 +316,7 @@ public class SelectFiles {
         fileSearchCriteria.setExperimentGraphNodes(sampleRefs);
         fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
 
-        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
+        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files.size() <= 0) {
             return null;
         }

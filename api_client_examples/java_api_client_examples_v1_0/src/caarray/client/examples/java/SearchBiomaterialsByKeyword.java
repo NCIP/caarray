@@ -87,6 +87,9 @@ import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.rmi.RemoteException;
@@ -99,6 +102,7 @@ import java.util.List;
  */
 public class SearchBiomaterialsByKeyword {
     private static SearchService searchService = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String KEYPHRASE = "TCGA";
 
     public static void main(String[] args) {
@@ -108,6 +112,7 @@ public class SearchBiomaterialsByKeyword {
                     .getServerJndiPort());
             server.connect();
             searchService = server.getSearchService();
+            searchServiceHelper = new JavaSearchApiUtils(searchService);
             System.out.println("Searching for sources and samples by keyword " + KEYPHRASE + "...");
             seeker.search();
         } catch (Throwable t) {
@@ -116,13 +121,13 @@ public class SearchBiomaterialsByKeyword {
         }
     }
 
-    private void search() throws RemoteException {
+    private void search() throws RemoteException, InvalidReferenceException {
         BiomaterialKeywordSearchCriteria criteria = new BiomaterialKeywordSearchCriteria();
         criteria.setKeyword(KEYPHRASE);
         criteria.getTypes().add(BiomaterialType.SAMPLE);
         criteria.getTypes().add(BiomaterialType.SOURCE);
         long startTime = System.currentTimeMillis();
-        List<Biomaterial> biomaterials = (searchService.searchForBiomaterialsByKeyword(criteria, null)).getResults();
+        List<Biomaterial> biomaterials = (searchServiceHelper.biomaterialsByKeyword(criteria)).list();
         long totalTime = System.currentTimeMillis() - startTime;
         if (biomaterials == null || biomaterials.size() <= 0) {
             System.err.println("No biomaterials found.");

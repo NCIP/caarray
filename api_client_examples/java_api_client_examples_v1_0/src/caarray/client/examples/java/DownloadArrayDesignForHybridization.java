@@ -114,7 +114,7 @@ import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 public class DownloadArrayDesignForHybridization {
     private static SearchService searchService = null;
     private static DataService dataService = null;
-    private DataApiUtils dataServiceHelper = null;
+    private static DataApiUtils dataServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
     private static final String HYBRIDIZATION_NAME = BaseProperties.HYBRIDIZATION_NAME_01;
 
@@ -126,6 +126,7 @@ public class DownloadArrayDesignForHybridization {
             server.connect();
             searchService = server.getSearchService();
             dataService = server.getDataService();
+            dataServiceHelper = new JavaDataApiUtils(dataService);
             System.out.println("Downloading array design file for hybridization " + HYBRIDIZATION_NAME + " in "
                     + EXPERIMENT_TITLE + "...");
             downloader.download();
@@ -205,7 +206,6 @@ public class DownloadArrayDesignForHybridization {
 
     private void downloadContents(CaArrayEntityReference fileRef) throws RemoteException, DataTransferException,
             InvalidReferenceException, IOException {
-        dataServiceHelper = new JavaDataApiUtils(dataService);
         boolean compressFile = false;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         long startTime = System.currentTimeMillis();

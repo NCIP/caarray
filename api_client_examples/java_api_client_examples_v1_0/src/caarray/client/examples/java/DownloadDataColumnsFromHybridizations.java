@@ -110,6 +110,8 @@ import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
+import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.IOException;
@@ -129,6 +131,7 @@ import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 public class DownloadDataColumnsFromHybridizations {
     private static SearchService searchService = null;
     private static DataService dataService = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
     private static final String QUANTITATION_TYPES_CSV_STRING = BaseProperties.AFFYMETRIX_CHP_QUANTITATION_TYPES;
 
@@ -140,6 +143,7 @@ public class DownloadDataColumnsFromHybridizations {
             server.connect();
             searchService = server.getSearchService();
             dataService = server.getDataService();
+            searchServiceHelper = new JavaSearchApiUtils(searchService);
             System.out.println("Downloading data columns from hybridizations in " + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
@@ -213,7 +217,7 @@ public class DownloadDataColumnsFromHybridizations {
             throws RemoteException, InvalidReferenceException {
         HybridizationSearchCriteria searchCriteria = new HybridizationSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
-        List<Hybridization> hybridizations = (searchService.searchForHybridizations(searchCriteria, null)).getResults();
+        List<Hybridization> hybridizations = (searchServiceHelper.hybridizationsByCriteria(searchCriteria)).list();
         if (hybridizations == null || hybridizations.size() <= 0) {
             return null;
         }

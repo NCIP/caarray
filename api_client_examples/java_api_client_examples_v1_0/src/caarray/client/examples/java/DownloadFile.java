@@ -94,6 +94,8 @@ import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
 import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.ByteArrayOutputStream;
@@ -111,7 +113,8 @@ import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 public class DownloadFile {
     private static SearchService searchService = null;
     private static DataService dataService = null;
-    private DataApiUtils dataServiceHelper = null;
+    private static SearchApiUtils searchServiceHelper = null;
+    private static DataApiUtils dataServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
     private static final String DATA_FILE_NAME = BaseProperties.CEL_DATA_FILE_NAME;
 
@@ -123,6 +126,8 @@ public class DownloadFile {
             server.connect();
             searchService = server.getSearchService();
             dataService = server.getDataService();
+            searchServiceHelper = new JavaSearchApiUtils(searchService);
+            dataServiceHelper = new JavaDataApiUtils(dataService);
             System.out.println("Downloading file contents from " + DATA_FILE_NAME + " in experiment: "
                     + EXPERIMENT_TITLE + "...");
             fileDownloader.download();
@@ -173,7 +178,7 @@ public class DownloadFile {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
 
-        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
+        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files == null || files.size() <= 0) {
             return null;
         }
@@ -187,7 +192,6 @@ public class DownloadFile {
     }
 
     private void downloadContents(CaArrayEntityReference fileRef) throws RemoteException, DataTransferException, InvalidReferenceException, IOException {
-        dataServiceHelper = new JavaDataApiUtils(dataService);
         boolean compressFile = false;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         long startTime = System.currentTimeMillis();

@@ -108,7 +108,7 @@ import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 public class DownloadMageTabExportWithDataFiles {
     private static SearchService searchService = null;
     private static DataService dataService = null;
-    private DataApiUtils dataServiceHelper = null;
+    private static DataApiUtils dataServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
 
     public static void main(String[] args) {
@@ -119,6 +119,7 @@ public class DownloadMageTabExportWithDataFiles {
             server.connect();
             searchService = server.getSearchService();
             dataService = server.getDataService();
+            dataServiceHelper = new JavaDataApiUtils(dataService);
             System.out.println("Exporting MAGE-TAB plus data files for experiment: " + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
@@ -128,7 +129,6 @@ public class DownloadMageTabExportWithDataFiles {
     }
 
     private void download() throws RemoteException, MalformedURIException, IOException, Exception {
-        dataServiceHelper = new JavaDataApiUtils(dataService);
         CaArrayEntityReference experimentRef = searchForExperiment();
         if (experimentRef == null) {
             System.err.println("Could not find experiment with the requested title.");

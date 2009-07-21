@@ -92,6 +92,8 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
+import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.rmi.RemoteException;
@@ -104,6 +106,7 @@ import java.util.List;
  */
 public class SearchBiomaterialsByCriteria {
     private static SearchService searchService = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String EXTERNAL_ID = "API_TEST_EXTERNAL_ID_01";
     private static final String TISSUE_SITE_CATEGORY = "OrganismPart";
     private static final String TISSUE_SITE_VALUE = "Brain";
@@ -115,6 +118,7 @@ public class SearchBiomaterialsByCriteria {
                     .getServerJndiPort());
             server.connect();
             searchService = server.getSearchService();
+            searchServiceHelper = new JavaSearchApiUtils(searchService);
             System.out.println("Searching for biomaterials with external ID " + EXTERNAL_ID + "...");
             seeker.search();
         } catch (Throwable t) {
@@ -138,7 +142,7 @@ public class SearchBiomaterialsByCriteria {
 
         // Search for biomaterials that satisfy all of the above criteria.
         long startTime = System.currentTimeMillis();
-        List<Biomaterial> biomaterials = (searchService.searchForBiomaterials(biomaterialSearchCriteria, null)).getResults();
+        List<Biomaterial> biomaterials = (searchServiceHelper.biomaterialsByCriteria(biomaterialSearchCriteria)).list();
         long totalTime = System.currentTimeMillis() - startTime;
         if (biomaterials == null || biomaterials.size() <= 0) {
             System.out.println("No biomaterials found matching the requested criteria.");

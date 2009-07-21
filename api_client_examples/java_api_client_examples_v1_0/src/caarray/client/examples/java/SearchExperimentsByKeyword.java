@@ -90,6 +90,8 @@ import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
+import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.rmi.RemoteException;
@@ -102,6 +104,7 @@ import java.util.List;
  */
 public class SearchExperimentsByKeyword {
     private static SearchService searchService = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String KEYPHRASE = "Glioblastoma";
 
     public static void main(String[] args) {
@@ -111,6 +114,7 @@ public class SearchExperimentsByKeyword {
                     .getServerJndiPort());
             server.connect();
             searchService = server.getSearchService();
+            searchServiceHelper = new JavaSearchApiUtils(searchService);
             System.out.println("Searching for experiments by keyword " + KEYPHRASE + "...");
             seeker.seek();
         } catch (Throwable t) {
@@ -123,7 +127,7 @@ public class SearchExperimentsByKeyword {
         KeywordSearchCriteria criteria = new KeywordSearchCriteria();
         criteria.setKeyword(KEYPHRASE);
         long startTime = System.currentTimeMillis();
-        List<Experiment> experiments = (searchService.searchForExperimentsByKeyword(criteria, null)).getResults();
+        List<Experiment> experiments = (searchServiceHelper.experimentsByKeyword(criteria)).list();
         long totalTime = System.currentTimeMillis() - startTime;
         if (experiments == null || experiments.size() <= 0) {
             System.err.println("No experiments found.");

@@ -98,6 +98,8 @@ import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
 import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.ByteArrayOutputStream;
@@ -116,7 +118,8 @@ import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 public class DownloadFileZipFromExperiment {
     private static SearchService searchService = null;
     private static DataService dataService = null;
-    private DataApiUtils dataServiceHelper = null;
+    private static SearchApiUtils searchServiceHelper = null;
+    private static DataApiUtils dataServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
 
     public static void main(String[] args) {
@@ -127,6 +130,8 @@ public class DownloadFileZipFromExperiment {
             server.connect();
             searchService = server.getSearchService();
             dataService = server.getDataService();
+            searchServiceHelper = new JavaSearchApiUtils(searchService);
+            dataServiceHelper = new JavaDataApiUtils(dataService);
             System.out.println("Downloading file zip from " + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
@@ -189,9 +194,9 @@ public class DownloadFileZipFromExperiment {
 
         // Alternatively, search for all derived data files with extension .CHP)
         // fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
-        // fileSearchCriteria.setExtension(".CHP");
+        // fileSearchCriteria.setExtension("CHP");
 
-        List<DataFile> files = (searchService.searchForFiles(fileSearchCriteria, null)).getResults();
+        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files.size() <= 0) {
             return null;
         }
@@ -220,7 +225,6 @@ public class DownloadFileZipFromExperiment {
      */
     private void downloadZipOfFiles(List<CaArrayEntityReference> fileRefs) throws RemoteException,
             MalformedURIException, IOException, Exception {
-        dataServiceHelper = new JavaDataApiUtils(dataService);
         FileDownloadRequest downloadRequest = new FileDownloadRequest();
         downloadRequest.setFiles(fileRefs);
         boolean compressEachIndividualFile = false;

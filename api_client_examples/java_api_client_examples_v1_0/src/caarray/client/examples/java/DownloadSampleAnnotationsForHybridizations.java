@@ -105,6 +105,8 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
+import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.IOException;
@@ -123,6 +125,7 @@ import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
  */
 public class DownloadSampleAnnotationsForHybridizations {
     private static SearchService searchService = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
 
     public static void main(String[] args) {
@@ -132,6 +135,7 @@ public class DownloadSampleAnnotationsForHybridizations {
                     .getServerJndiPort());
             server.connect();
             searchService = server.getSearchService();
+            searchServiceHelper = new JavaSearchApiUtils(searchService);
             System.out.println("Downloading sample annotations for hybridizations from " + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
@@ -201,7 +205,7 @@ public class DownloadSampleAnnotationsForHybridizations {
             throws RemoteException, InvalidReferenceException {
         HybridizationSearchCriteria searchCriteria = new HybridizationSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
-        List<Hybridization> hybridizations = (searchService.searchForHybridizations(searchCriteria, null)).getResults();
+        List<Hybridization> hybridizations = (searchServiceHelper.hybridizationsByCriteria(searchCriteria)).list();
         if (hybridizations == null || hybridizations.size() <= 0) {
             return null;
         }
@@ -228,7 +232,7 @@ public class DownloadSampleAnnotationsForHybridizations {
         HashSet<CaArrayEntityReference> setOfHybridizationRefs = new HashSet<CaArrayEntityReference>(hybridizationRefs);
         searchCriteria.setExperimentGraphNodes(setOfHybridizationRefs);
         searchCriteria.getTypes().add(chpFileTypeRef);
-        List<DataFile> dataFiles = (searchService.searchForFiles(searchCriteria, null)).getResults();
+        List<DataFile> dataFiles = (searchServiceHelper.filesByCriteria(searchCriteria)).list();
         if (dataFiles == null || dataFiles.size() == 0) {
             return false;
         } else {
