@@ -220,7 +220,8 @@ public class DownloadSampleAnnotationsForHybridizations {
     private boolean haveChpFiles(CaArrayEntityReference experimentRef, List<CaArrayEntityReference> hybridizationRefs) throws RemoteException, InvalidReferenceException {
         FileSearchCriteria searchCriteria = new FileSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
-        CaArrayEntityReference chpFileTypeRef = getChpFileType();
+        // CaArrayEntityReference chpFileTypeRef = getChpFileType();
+        CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CHP");
         HashSet<CaArrayEntityReference> setOfHybridizationRefs = new HashSet<CaArrayEntityReference>(hybridizationRefs);
         searchCriteria.setExperimentGraphNodes(setOfHybridizationRefs);
         searchCriteria.getTypes().add(chpFileTypeRef);

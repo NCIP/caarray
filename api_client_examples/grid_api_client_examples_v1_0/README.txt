@@ -54,7 +54,7 @@ KNOWN ISSUES IN RC2 WHICH WILL BE FIXED BEFORE GA:
    * lookupCharacteristicCategories()
    * lookupEntityByReference()
    * lookupEntitiesByReference()
-   These methods don't work correctly in RC1.
+   These methods don't work correctly in RC2.
 3. ant download_data_columns_from_file, download_data_columns_from_hyb, download_sample_annotations:
    The search for Affymetrix CHP files throws an exception.
    The following WORKAROUND has been introduced in DownloadDataColumnsFromFile.java, DownloadDataColumnsFromHybridizations.java and DownloadSampleAnnotationsForHybridizations.java to address the problem:

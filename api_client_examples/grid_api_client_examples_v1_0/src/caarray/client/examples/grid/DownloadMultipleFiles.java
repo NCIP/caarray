@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
@@ -170,7 +171,7 @@ public class DownloadMultipleFiles {
     /**
      * Search for a certain type or category of files in an experiment.
      */
-    private List<CaArrayEntityReference> searchForFiles(CaArrayEntityReference experimentRef) throws RemoteException {
+    private List<CaArrayEntityReference> searchForFiles(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
         // Search for all raw data files in the experiment. (Experiment ref is a mandatory parameter.)
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
