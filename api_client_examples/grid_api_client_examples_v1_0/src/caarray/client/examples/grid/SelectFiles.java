@@ -93,7 +93,10 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
+import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -108,6 +111,7 @@ import java.util.Set;
  */
 public class SelectFiles {
     private static CaArraySvc_v1_0Client client = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
     private static final String SAMPLE_NAME_01 = BaseProperties.SAMPLE_NAME_01;
     private static final String SAMPLE_NAME_02 = BaseProperties.SAMPLE_NAME_02;
@@ -116,6 +120,7 @@ public class SelectFiles {
         SelectFiles selector = new SelectFiles();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
+            searchServiceHelper = new GridSearchApiUtils(client);
             CaArrayEntityReference experimentRef = selector.searchForExperiment();
             if (experimentRef == null) {
                 System.out.println("Could not find experiment with the requested title.");
@@ -131,7 +136,7 @@ public class SelectFiles {
         }
     }
 
-    private void selectFilesInExperiment(CaArrayEntityReference experimentRef) throws RemoteException {
+    private void selectFilesInExperiment(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
         List<CaArrayEntityReference> fileRefs = selectRawFiles(experimentRef);
         if (fileRefs == null) {
             System.out.println("Could not find any raw files in the experiment.");
@@ -212,12 +217,12 @@ public class SelectFiles {
     /**
      * Select all raw data files in the experiment.
      */
-    private List<CaArrayEntityReference> selectRawFiles(CaArrayEntityReference experimentRef) throws RemoteException {
+    private List<CaArrayEntityReference> selectRawFiles(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
 
-        List<DataFile> files = client.searchForFiles(fileSearchCriteria, null).getResults();
+        List<DataFile> files = searchServiceHelper.filesByCriteria(fileSearchCriteria).list();
         if (files.size() <= 0) {
             return null;
         }
@@ -234,16 +239,15 @@ public class SelectFiles {
     /**
      * Select all Affymetrix CEL data files in the experiment.
      */
-    private List<CaArrayEntityReference> selectCelFiles(CaArrayEntityReference experimentRef) throws RemoteException {
+    private List<CaArrayEntityReference> selectCelFiles(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
 
-	// The following is a WORKAROUND for a defect in the 2.3.0 RC1 pre-release.
-        // CaArrayEntityReference celFileTypeRef = getCelFileType();
+        //CaArrayEntityReference celFileTypeRef = getCelFileType();
         CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CEL");
         fileSearchCriteria.getTypes().add(celFileTypeRef);
 
-        List<DataFile> files = client.searchForFiles(fileSearchCriteria, null).getResults();
+        List<DataFile> files = searchServiceHelper.filesByCriteria(fileSearchCriteria).list();
         if (files.size() <= 0) {
             return null;
         }
@@ -263,21 +267,21 @@ public class SelectFiles {
         exampleFileType.setName("AFFYMETRIX_CEL");
         criteria.setExample(exampleFileType);
         List<FileType> fileTypes = (client.searchByExample(criteria, null)).getResults();
-        FileType celFileType = fileTypes.iterator().next();
+        FileType celFileType = fileTypes.get(0);
         return celFileType.getReference();
     }
 
     /**
      * Select all derived data files with extension .CHP in the experiment.
      */
-    private List<CaArrayEntityReference> selectChpFiles(CaArrayEntityReference experimentRef) throws RemoteException {
+    private List<CaArrayEntityReference> selectChpFiles(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
 
         fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
-        fileSearchCriteria.setExtension(".CHP");
+        fileSearchCriteria.setExtension("CHP");
 
-        List<DataFile> files = client.searchForFiles(fileSearchCriteria, null).getResults();
+        List<DataFile> files = searchServiceHelper.filesByCriteria(fileSearchCriteria).list();
         if (files.size() <= 0) {
             return null;
         }

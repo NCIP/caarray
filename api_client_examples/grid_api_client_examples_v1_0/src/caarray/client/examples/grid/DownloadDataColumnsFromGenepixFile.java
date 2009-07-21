@@ -103,7 +103,10 @@ import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
+import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -121,6 +124,7 @@ import org.apache.axis.types.URI.MalformedURIException;
  */
 public class DownloadDataColumnsFromGenepixFile {
     private static CaArraySvc_v1_0Client client = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.GENEPIX_EXPERIMENT;
     private static final String QUANTITATION_TYPES_CSV_STRING = BaseProperties.GENEPIX_QUANTITATION_TYPES;
 
@@ -128,6 +132,7 @@ public class DownloadDataColumnsFromGenepixFile {
         DownloadDataColumnsFromGenepixFile downloader = new DownloadDataColumnsFromGenepixFile();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
+            searchServiceHelper = new GridSearchApiUtils(client);
             System.out.println("Downloading data columns from a file in the experiment " + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
@@ -214,16 +219,14 @@ public class DownloadDataColumnsFromGenepixFile {
     /**
      * Search for data files of a certain type in the experiment and select one.
      */
-    private CaArrayEntityReference selectDataFile(CaArrayEntityReference experimentRef) throws RemoteException {
+    private CaArrayEntityReference selectDataFile(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         // Search for all GENEPIX_GPR data files in the experiment.
-	// The following is a WORKAROUND for a defect in the 2.3.0 RC1 pre-release.
-        // CaArrayEntityReference gprFileTypeRef = getGprFileType();
-        CaArrayEntityReference gprFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:GENEPIX_GPR");
+        CaArrayEntityReference gprFileTypeRef = getGprFileType();
         fileSearchCriteria.getTypes().add(gprFileTypeRef);
 
-        List<DataFile> files = (client.searchForFiles(fileSearchCriteria, null)).getResults();
+        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files == null || files.size() <= 0) {
             return null;
         }

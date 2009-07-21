@@ -92,6 +92,8 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
+import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -112,12 +114,14 @@ import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
  */
 public class DownloadMultipleFiles {
     private static CaArraySvc_v1_0Client client = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
 
     public static void main(String[] args) {
         DownloadMultipleFiles downloader = new DownloadMultipleFiles();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
+            searchServiceHelper = new GridSearchApiUtils(client);
             System.out.println("Downloading multiple files from " + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
@@ -178,9 +182,9 @@ public class DownloadMultipleFiles {
 
         // Alternatively, search for all derived data files with extension .CHP)
         // fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
-        // fileSearchCriteria.setExtension(".CHP");
+        // fileSearchCriteria.setExtension("CHP");
 
-        List<DataFile> files = (client.searchForFiles(fileSearchCriteria, null)).getResults();
+        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files == null || files.size() <= 0) {
             return null;
         }

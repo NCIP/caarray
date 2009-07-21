@@ -107,6 +107,8 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
+import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer;
 import gov.nih.nci.cagrid.wsenum.utils.EnumerationResponseHelper;
 
@@ -130,6 +132,7 @@ import org.globus.wsrf.encoding.ObjectDeserializer;
  */
 public class LookUpEntities {
     private static CaArraySvc_v1_0Client client = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static long startTime;
     private static long totalTime;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
@@ -138,6 +141,7 @@ public class LookUpEntities {
         LookUpEntities entityFinder = new LookUpEntities();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
+            searchServiceHelper = new GridSearchApiUtils(client);
             System.out.println("Looking up various entities by example...");
             entityFinder.lookup();
         } catch (Throwable t) {
@@ -165,24 +169,22 @@ public class LookUpEntities {
         lookupTerms();
         lookupTermSources();
         lookupPrincipalInvestigators();
-	// This method is commented out due to a defect in the 2.3.0 RC1 pre-release.
 //        lookupCharacteristicCategories();
         lookupTermsInCategory();
         enumerateExperiments();
 
-	// These methods are commented out due to a defect in the 2.3.0 RC1 pre-release.
 //        lookupEntityByReference();
 //        lookupEntitiesByReference();
         lookupPersonsByMatchMode();
         lookupExperimentsPageByPage();
     }
 
-    private void lookupArrayDataTypes() throws RemoteException {
+    private void lookupArrayDataTypes() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<ArrayDataType> criteria = new ExampleSearchCriteria<ArrayDataType>();
         ArrayDataType exampleArrayDataType = new ArrayDataType();
         criteria.setExample(exampleArrayDataType);
         startTime = System.currentTimeMillis();
-        List<ArrayDataType> arrayDataTypes = (client.searchByExample(criteria, null)).getResults();
+        List<ArrayDataType> arrayDataTypes = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + arrayDataTypes.size() + " array data types in " + totalTime + " ms.");
         for (ArrayDataType arrayDataType : arrayDataTypes) {
@@ -191,12 +193,12 @@ public class LookUpEntities {
         System.out.println("End of array data type lookup.");
     }
 
-    private void lookupArrayDesigns() throws RemoteException {
+    private void lookupArrayDesigns() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<ArrayDesign> criteria = new ExampleSearchCriteria<ArrayDesign>();
         ArrayDesign exampleDesign = new ArrayDesign();
         criteria.setExample(exampleDesign);
         startTime = System.currentTimeMillis();
-        List<ArrayDesign> arrayDesigns = (client.searchByExample(criteria, null)).getResults();
+        List<ArrayDesign> arrayDesigns = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + arrayDesigns.size() + " array designs in " + totalTime + " ms.");
         for (ArrayDesign arrayDesign : arrayDesigns) {
@@ -205,12 +207,12 @@ public class LookUpEntities {
         System.out.println("End of array design lookup.");
     }
 
-    private void lookupArrayProviders() throws RemoteException {
+    private void lookupArrayProviders() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<ArrayProvider> criteria = new ExampleSearchCriteria<ArrayProvider>();
         ArrayProvider exampleProvider = new ArrayProvider();
         criteria.setExample(exampleProvider);
         startTime = System.currentTimeMillis();
-        List<ArrayProvider> arrayProviders = (client.searchByExample(criteria, null)).getResults();
+        List<ArrayProvider> arrayProviders = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + arrayProviders.size() + " array providers in " + totalTime + " ms.");
         for (ArrayProvider arrayProvider : arrayProviders) {
@@ -219,12 +221,12 @@ public class LookUpEntities {
         System.out.println("End of array provider lookup.");
     }
 
-    private void lookupAssayTypes() throws RemoteException {
+    private void lookupAssayTypes() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<AssayType> criteria = new ExampleSearchCriteria<AssayType>();
         AssayType exampleAssayType = new AssayType();
         criteria.setExample(exampleAssayType);
         startTime = System.currentTimeMillis();
-        List<AssayType> assayTypes = (client.searchByExample(criteria, null)).getResults();
+        List<AssayType> assayTypes = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + assayTypes.size() + " assay types in " + totalTime + " ms.");
         for (AssayType assayType : assayTypes) {
@@ -233,12 +235,12 @@ public class LookUpEntities {
         System.out.println("End of assay type lookup.");
     }
 
-    private void lookupBiomaterials() throws RemoteException {
+    private void lookupBiomaterials() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<Biomaterial> criteria = new ExampleSearchCriteria<Biomaterial>();
         Biomaterial exampleBiomaterial = new Biomaterial();
         criteria.setExample(exampleBiomaterial);
         startTime = System.currentTimeMillis();
-        List<Biomaterial> biomaterials = (client.searchByExample(criteria, null)).getResults();
+        List<Biomaterial> biomaterials = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + biomaterials.size() + " biomaterials in " + totalTime + " ms.");
         for (Biomaterial biomaterial : biomaterials) {
@@ -247,12 +249,12 @@ public class LookUpEntities {
         System.out.println("End of biomaterial lookup.");
     }
 
-    private void lookupCategories() throws RemoteException {
+    private void lookupCategories() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<Category> criteria = new ExampleSearchCriteria<Category>();
         Category exampleCategory = new Category();
         criteria.setExample(exampleCategory);
         startTime = System.currentTimeMillis();
-        List<Category> categories = (client.searchByExample(criteria, null)).getResults();
+        List<Category> categories = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + categories.size() + " categories in " + totalTime + " ms.");
         for (Category category : categories) {
@@ -261,12 +263,12 @@ public class LookUpEntities {
         System.out.println("End of category lookup.");
     }
 
-    private void lookupFiles() throws RemoteException {
+    private void lookupFiles() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<DataFile> criteria = new ExampleSearchCriteria<DataFile>();
         DataFile exampleFile = new DataFile();
         criteria.setExample(exampleFile);
         startTime = System.currentTimeMillis();
-        List<DataFile> files = (client.searchByExample(criteria, null)).getResults();
+        List<DataFile> files = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + files.size() + " files in " + totalTime + " ms.");
         for (DataFile file : files) {
@@ -275,12 +277,12 @@ public class LookUpEntities {
         System.out.println("End of file lookup.");
     }
 
-    private void lookupExperiments() throws RemoteException {
+    private void lookupExperiments() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<Experiment> criteria = new ExampleSearchCriteria<Experiment>();
         Experiment exampleExperiment = new Experiment();
         criteria.setExample(exampleExperiment);
         startTime = System.currentTimeMillis();
-        List<Experiment> experiments = (client.searchByExample(criteria, null)).getResults();
+        List<Experiment> experiments = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + experiments.size() + " experiments in " + totalTime + " ms.");
         for (Experiment experiment : experiments) {
@@ -289,12 +291,12 @@ public class LookUpEntities {
         System.out.println("End of experiment lookup.");
     }
 
-    private void lookupExperimentalContacts() throws RemoteException {
+    private void lookupExperimentalContacts() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<ExperimentalContact> criteria = new ExampleSearchCriteria<ExperimentalContact>();
         ExperimentalContact exampleContact = new ExperimentalContact();
         criteria.setExample(exampleContact);
         startTime = System.currentTimeMillis();
-        List<ExperimentalContact> contacts = (client.searchByExample(criteria, null)).getResults();
+        List<ExperimentalContact> contacts = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + contacts.size() + " experimental contacts in " + totalTime + " ms.");
         for (ExperimentalContact contact : contacts) {
@@ -303,12 +305,12 @@ public class LookUpEntities {
         System.out.println("End of experimental contact lookup.");
     }
 
-    private void lookupFactors() throws RemoteException {
+    private void lookupFactors() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<Factor> criteria = new ExampleSearchCriteria<Factor>();
         Factor exampleFactor = new Factor();
         criteria.setExample(exampleFactor);
         startTime = System.currentTimeMillis();
-        List<Factor> factors = (client.searchByExample(criteria, null)).getResults();
+        List<Factor> factors = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + factors.size() + " factors in " + totalTime + " ms.");
         for (Factor factor : factors) {
@@ -317,12 +319,12 @@ public class LookUpEntities {
         System.out.println("End of factor lookup.");
     }
 
-    private void lookupFileTypes() throws RemoteException {
+    private void lookupFileTypes() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         criteria.setExample(exampleFileType);
         startTime = System.currentTimeMillis();
-        List<FileType> fileTypes = (client.searchByExample(criteria, null)).getResults();
+        List<FileType> fileTypes = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + fileTypes.size() + " file types in " + totalTime + " ms.");
         for (FileType fileType : fileTypes) {
@@ -331,12 +333,12 @@ public class LookUpEntities {
         System.out.println("End of file type lookup.");
     }
 
-    private void lookupHybridizations() throws RemoteException {
+    private void lookupHybridizations() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<Hybridization> criteria = new ExampleSearchCriteria<Hybridization>();
         Hybridization exampleHybridization = new Hybridization();
         criteria.setExample(exampleHybridization);
         startTime = System.currentTimeMillis();
-        List<Hybridization> hybridizations = (client.searchByExample(criteria, null)).getResults();
+        List<Hybridization> hybridizations = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + hybridizations.size() + " hybridizations in " + totalTime + " ms.");
         for (Hybridization hybridization : hybridizations) {
@@ -345,12 +347,12 @@ public class LookUpEntities {
         System.out.println("End of hybridization lookup.");
     }
 
-    private void lookupOrganisms() throws RemoteException {
+    private void lookupOrganisms() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<Organism> criteria = new ExampleSearchCriteria<Organism>();
         Organism exampleOrganism = new Organism();
         criteria.setExample(exampleOrganism);
         startTime = System.currentTimeMillis();
-        List<Organism> organisms = (client.searchByExample(criteria, null)).getResults();
+        List<Organism> organisms = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + organisms.size() + " organisms in " + totalTime + " ms.");
         for (Organism organism : organisms) {
@@ -359,12 +361,12 @@ public class LookUpEntities {
         System.out.println("End of organism lookup.");
     }
 
-    private void lookupPersons() throws RemoteException {
+    private void lookupPersons() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<Person> criteria = new ExampleSearchCriteria<Person>();
         Person examplePerson = new Person();
         criteria.setExample(examplePerson);
         startTime = System.currentTimeMillis();
-        List<Person> persons = (client.searchByExample(criteria, null)).getResults();
+        List<Person> persons = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + persons.size() + " persons in " + totalTime + " ms.");
         for (Person person : persons) {
@@ -373,12 +375,12 @@ public class LookUpEntities {
         System.out.println("End of person lookup.");
     }
 
-    private void lookupQuantitationTypes() throws RemoteException {
+    private void lookupQuantitationTypes() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
         QuantitationType exampleQuantitationType = new QuantitationType();
         criteria.setExample(exampleQuantitationType);
         startTime = System.currentTimeMillis();
-        List<QuantitationType> qtypes = (client.searchByExample(criteria, null)).getResults();
+        List<QuantitationType> qtypes = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + qtypes.size() + " quantitation types in " + totalTime + " ms.");
         for (QuantitationType qtype : qtypes) {
@@ -387,12 +389,12 @@ public class LookUpEntities {
         System.out.println("End of quantitation type lookup.");
     }
 
-    private void lookupTerms() throws RemoteException {
+    private void lookupTerms() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<Term> criteria = new ExampleSearchCriteria<Term>();
         Term exampleTerm = new Term();
         criteria.setExample(exampleTerm);
         startTime = System.currentTimeMillis();
-        List<Term> terms = (client.searchByExample(criteria, null)).getResults();
+        List<Term> terms = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + terms.size() + " terms in " + totalTime + " ms.");
         for (Term term : terms) {
@@ -401,12 +403,12 @@ public class LookUpEntities {
         System.out.println("End of term lookup.");
     }
 
-    private void lookupTermSources() throws RemoteException {
+    private void lookupTermSources() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<TermSource> criteria = new ExampleSearchCriteria<TermSource>();
         TermSource exampleTermSource = new TermSource();
         criteria.setExample(exampleTermSource);
         startTime = System.currentTimeMillis();
-        List<TermSource> termSources = (client.searchByExample(criteria, null)).getResults();
+        List<TermSource> termSources = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + termSources.size() + " term sources in " + totalTime + " ms.");
         for (TermSource termSource : termSources) {
@@ -507,7 +509,7 @@ public class LookUpEntities {
         System.out.println("Found " + numExperimentsFound + " experiments in " + totalTime + " ms.");
     }
 
-    private void lookupPersonsByMatchMode() throws RemoteException {
+    private void lookupPersonsByMatchMode() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<Person> criteria = new ExampleSearchCriteria<Person>();
         Person examplePerson = new Person();
         // MatchMode = START
@@ -515,7 +517,7 @@ public class LookUpEntities {
         criteria.setExample(examplePerson);
         criteria.setMatchMode(MatchMode.START);
         startTime = System.currentTimeMillis();
-        List<Person> persons = (client.searchByExample(criteria, null)).getResults();
+        List<Person> persons = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + persons.size() + " persons with last name starting with Gan in " + totalTime + " ms.");
         for (Person person : persons) {
@@ -527,7 +529,7 @@ public class LookUpEntities {
         examplePerson.setLastName("ing");
         criteria.setMatchMode(MatchMode.END);
         startTime = System.currentTimeMillis();
-        persons = (client.searchByExample(criteria, null)).getResults();
+        persons = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + persons.size() + " persons with last name ending in ing in " + totalTime + " ms.");
         for (Person person : persons) {
@@ -539,7 +541,7 @@ public class LookUpEntities {
         examplePerson.setLastName("Gandhi");
         criteria.setMatchMode(MatchMode.EXACT);
         startTime = System.currentTimeMillis();
-        persons = (client.searchByExample(criteria, null)).getResults();
+        persons = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + persons.size() + " persons with last name Gandhi in " + totalTime + " ms.");
         for (Person person : persons) {
@@ -551,7 +553,7 @@ public class LookUpEntities {
         examplePerson.setLastName("n");
         criteria.setMatchMode(MatchMode.ANYWHERE);
         startTime = System.currentTimeMillis();
-        persons = (client.searchByExample(criteria, null)).getResults();
+        persons = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + persons.size() + " persons with last name containing n in " + totalTime + " ms.");
         for (Person person : persons) {

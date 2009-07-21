@@ -87,7 +87,10 @@ import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
+import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -99,12 +102,14 @@ import java.util.List;
  */
 public class SearchExperimentsByKeyword {
     private static CaArraySvc_v1_0Client client = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String KEYPHRASE = "Glioblastoma";
 
     public static void main(String[] args) {
         SearchExperimentsByKeyword seeker = new SearchExperimentsByKeyword();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
+            searchServiceHelper = new GridSearchApiUtils(client);
             System.out.println("Searching for experiments by keyword " + KEYPHRASE + "...");
             seeker.seek();
         } catch (Throwable t) {
@@ -113,11 +118,11 @@ public class SearchExperimentsByKeyword {
         }
     }
 
-    private void seek() throws RemoteException {
+    private void seek() throws RemoteException, InvalidReferenceException {
         KeywordSearchCriteria criteria = new KeywordSearchCriteria();
         criteria.setKeyword(KEYPHRASE);
         long startTime = System.currentTimeMillis();
-        List<Experiment> experiments = (client.searchForExperimentsByKeyword(criteria, null)).getResults();
+        List<Experiment> experiments = (searchServiceHelper.experimentsByKeyword(criteria)).list();
         long totalTime = System.currentTimeMillis() - startTime;
         if (experiments == null || experiments.size() <= 0) {
             System.err.println("No experiments found.");

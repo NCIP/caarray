@@ -87,7 +87,10 @@ import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
+import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -107,6 +110,7 @@ import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
  */
 public class DownloadFile {
     private static CaArraySvc_v1_0Client client = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
     private static final String DATA_FILE_NAME = BaseProperties.CEL_DATA_FILE_NAME;
 
@@ -114,6 +118,7 @@ public class DownloadFile {
         DownloadFile fileDownloader = new DownloadFile();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
+            searchServiceHelper = new GridSearchApiUtils(client);
             System.out.println("Downloading file contents from " + DATA_FILE_NAME + " in experiment: " + EXPERIMENT_TITLE + "...");
             fileDownloader.download();
         } catch (Throwable t) {
@@ -157,11 +162,11 @@ public class DownloadFile {
     /**
      * Search for a file with the given name.
      */
-    private CaArrayEntityReference searchForFile(CaArrayEntityReference experimentRef) throws RemoteException {
+    private CaArrayEntityReference searchForFile(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
 
-        List<DataFile> files = (client.searchForFiles(fileSearchCriteria, null)).getResults();
+        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files == null || files.size() <= 0) {
             return null;
         }

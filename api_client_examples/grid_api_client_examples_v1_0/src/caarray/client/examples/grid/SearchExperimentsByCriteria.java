@@ -92,7 +92,10 @@ import gov.nih.nci.caarray.external.v1_0.query.AnnotationCriterion;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
+import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -104,6 +107,7 @@ import java.util.List;
  */
 public class SearchExperimentsByCriteria {
     private static CaArraySvc_v1_0Client client = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String PROVIDER_NAME = "Affymetrix";
     private static final String ORGANISM_NAME = "human";
     private static final String TISSUE_SITE_CATEGORY = "OrganismPart";
@@ -115,6 +119,7 @@ public class SearchExperimentsByCriteria {
         SearchExperimentsByCriteria seeker = new SearchExperimentsByCriteria();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
+            searchServiceHelper = new GridSearchApiUtils(client);
             System.out.println("Searching for " + ORGANISM_NAME + " " + TISSUE_SITE_VALUE + " " + PROVIDER_NAME + " "
                     + ASSAY_TYPE + " experiments by " + PI_NAME + "...");
             seeker.search();
@@ -124,7 +129,7 @@ public class SearchExperimentsByCriteria {
         }
     }
 
-    private void search() throws RemoteException {
+    private void search() throws RemoteException, InvalidReferenceException {
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
 
         // Select array provider. (See LookUpEntities example client to see how to get list of all array providers.)
@@ -186,7 +191,7 @@ public class SearchExperimentsByCriteria {
 
         // Search for experiments that satisfy all of the above criteria.
         long startTime = System.currentTimeMillis();
-        List<Experiment> experiments = (client.searchForExperiments(experimentSearchCriteria, null)).getResults();
+        List<Experiment> experiments = (searchServiceHelper.experimentsByCriteria(experimentSearchCriteria)).list();
         long totalTime = System.currentTimeMillis() - startTime;
         if (experiments == null || experiments.size() <= 0) {
             System.out.println("No experiments found matching the requested criteria.");

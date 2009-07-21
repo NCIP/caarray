@@ -101,7 +101,10 @@ import gov.nih.nci.caarray.external.v1_0.value.MeasurementValue;
 import gov.nih.nci.caarray.external.v1_0.value.TermValue;
 import gov.nih.nci.caarray.external.v1_0.value.UserDefinedValue;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
+import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -119,12 +122,14 @@ import org.apache.axis.types.URI.MalformedURIException;
  */
 public class DownloadSampleAnnotationsForHybridizations {
     private static CaArraySvc_v1_0Client client = null;
+    private static SearchApiUtils searchServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
 
     public static void main(String[] args) {
         DownloadSampleAnnotationsForHybridizations downloader = new DownloadSampleAnnotationsForHybridizations();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
+            searchServiceHelper = new GridSearchApiUtils(client);
             System.out.println("Downloading sample annotations for hybridizations from " + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
@@ -190,10 +195,10 @@ public class DownloadSampleAnnotationsForHybridizations {
     /**
      * Select all hybridizations in the given experiment that have CHP data.
      */
-    private List<CaArrayEntityReference> selectHybridizations(CaArrayEntityReference experimentRef) throws RemoteException {
+    private List<CaArrayEntityReference> selectHybridizations(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
         HybridizationSearchCriteria searchCriteria = new HybridizationSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
-        List<Hybridization> hybridizations = (client.searchForHybridizations(searchCriteria, null)).getResults();
+        List<Hybridization> hybridizations = (searchServiceHelper.hybridizationsByCriteria(searchCriteria)).list();
         if (hybridizations == null || hybridizations.size() <= 0) {
             return null;
         }
@@ -212,16 +217,14 @@ public class DownloadSampleAnnotationsForHybridizations {
         }
     }
 
-    private boolean haveChpFiles(CaArrayEntityReference experimentRef, List<CaArrayEntityReference> hybridizationRefs) throws RemoteException {
+    private boolean haveChpFiles(CaArrayEntityReference experimentRef, List<CaArrayEntityReference> hybridizationRefs) throws RemoteException, InvalidReferenceException {
         FileSearchCriteria searchCriteria = new FileSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
-	// The following is a WORKAROUND for a defect in the 2.3.0 RC1 pre-release.
-        // CaArrayEntityReference chpFileTypeRef = getChpFileType();
-        CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CHP");
+        CaArrayEntityReference chpFileTypeRef = getChpFileType();
         HashSet<CaArrayEntityReference> setOfHybridizationRefs = new HashSet<CaArrayEntityReference>(hybridizationRefs);
         searchCriteria.setExperimentGraphNodes(setOfHybridizationRefs);
         searchCriteria.getTypes().add(chpFileTypeRef);
-        List<DataFile> dataFiles = (client.searchForFiles(searchCriteria, null)).getResults();
+        List<DataFile> dataFiles = (searchServiceHelper.filesByCriteria(searchCriteria)).list();
         if (dataFiles == null || dataFiles.size() == 0) {
             return false;
         } else {
