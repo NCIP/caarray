@@ -108,6 +108,7 @@ import caarray.client.test.search.ExampleSearch;
 public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
 {
     protected static final String MIN_RESULTS = "Min Results";
+    protected static final String PAGES = "Pages";
     protected List<ExampleSearch> configuredSearches = new ArrayList<ExampleSearch>();
     protected SearchByExampleTestSuite(ApiFacade apiFacade)
     {
@@ -189,18 +190,32 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                     {
                         resultsList.addAll(apiFacade.enumerateByExample(search.getApi(), criteria, search.getExample().getClass()));
                     }
+                    else if (search.isApiUtil())
+                    {
+                        resultsList.addAll(apiFacade.searchByExampleUtils(search.getApi(), criteria));
+                    }
                     else
                     {
-                        SearchResult<? extends AbstractCaArrayEntity> results = getSearchResults(search.getApi(), criteria, null);
-                        resultsList.addAll(results.getResults());
-                        while (!results.isFullResult())
+                        LimitOffset offset = null;
+                        if (search.getPages() != null)
                         {
-                            LimitOffset offset = new LimitOffset(results
-                                    .getMaxAllowedResults(), results.getResults()
-                                    .size()
+                            offset = new LimitOffset(search.getPages(),0);        
+                        }
+                        SearchResult<? extends AbstractCaArrayEntity> results = getSearchResults(search.getApi(), criteria, offset);
+                        search.addPageReturned(results.getResults().size());
+                        resultsList.addAll(results.getResults());
+                        while (!results.isFullResult() || (offset != null && search.getPages() != null 
+                                && results.getResults().size() == search.getPages()))
+                        {
+                            offset = new LimitOffset();
+                            if (search.getPages() != null)
+                                offset.setLimit(search.getPages());
+                            offset.setOffset(results.getResults().size()
                                     + results.getFirstResultOffset());
+                            
                             results = getSearchResults(search.getApi(), criteria, offset);
                             resultsList.addAll(results.getResults());
+                            search.addPageReturned(results.getResults().size());                         
                         }
                     }
                     

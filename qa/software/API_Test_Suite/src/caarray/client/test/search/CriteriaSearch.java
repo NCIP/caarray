@@ -16,6 +16,7 @@ public abstract class CriteriaSearch
     protected String api = null;
     protected Integer expectedResults = null, minResults = null;
     protected boolean apiUtilsSearch = false, enumerate = false;
+    protected Long maxTime = null;
     
     protected CriteriaSearch(){}
 
@@ -77,6 +78,16 @@ public abstract class CriteriaSearch
     public void setEnumerate(boolean enumerate)
     {
         this.enumerate = enumerate;
+    }
+
+    public Long getMaxTime()
+    {
+        return maxTime;
+    }
+
+    public void setMaxTime(Long minTime)
+    {
+        this.maxTime = minTime;
     }
     
     

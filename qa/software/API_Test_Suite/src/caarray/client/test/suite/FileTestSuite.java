@@ -5,6 +5,7 @@ package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.FileType;
 
 import java.io.File;
 import java.util.List;
@@ -28,9 +29,10 @@ public class FileTestSuite extends SearchByExampleTestSuite
     + File.separator + "File.csv";
 
     private static final String NAME = "Name";
+    private static final String FILE_TYPE = "File Type";
     
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-        API, NAME, EXPECTED_RESULTS};
+        API, NAME, FILE_TYPE, EXPECTED_RESULTS, MIN_RESULTS};
     
     /**
      * @param apiFacade
@@ -50,18 +52,35 @@ public class FileTestSuite extends SearchByExampleTestSuite
     {
         FileSearch fileSearch = (FileSearch)search;
         List<DataFile> fileResults = (List<DataFile>)resultsList;
+        int namedResults = 0;
+        for (DataFile fileType : fileResults)
+        {
+            if (fileType.getName() != null)
+                namedResults++;
+        }
         if (fileSearch.getExpectedResults() != null)
         {
-            int namedResults = 0;
-            for (DataFile fileType : fileResults)
-            {
-                if (fileType.getName() != null)
-                    namedResults++;
-            }
+            
             if (namedResults != fileSearch.getExpectedResults())
             {
                 String errorMessage = "Failed with unexpected number of results, expected: "
                         + fileSearch.getExpectedResults()
+                        + ", actual number of results: " + namedResults;
+                setTestResultFailure(testResult, fileSearch, errorMessage);
+            }
+            else
+            {
+                String detail = "Found expected number of results: "
+                        + namedResults;
+                testResult.addDetail(detail);
+            }
+        }
+        if (fileSearch.getMinResults() != null)
+        {
+            if (namedResults < fileSearch.getMinResults())
+            {
+                String errorMessage = "Failed with unexpected number of results, expected minimum: "
+                        + fileSearch.getMinResults()
                         + ", actual number of results: " + namedResults;
                 setTestResultFailure(testResult, fileSearch, errorMessage);
             }
@@ -109,6 +128,13 @@ public class FileTestSuite extends SearchByExampleTestSuite
 
         if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
             example.setName(input[headerIndexMap.get(NAME)].trim());
+        if (headerIndexMap.get(FILE_TYPE) < input.length && !input[headerIndexMap.get(FILE_TYPE)].equals(""))
+        {
+            String type = input[headerIndexMap.get(FILE_TYPE)].trim();
+            FileType fileType = new FileType();
+            fileType.setName(type);
+            example.setFileType(fileType);
+        }
         
         search.setDataFile(example);
         if (headerIndexMap.get(TEST_CASE) < input.length
@@ -119,6 +145,10 @@ public class FileTestSuite extends SearchByExampleTestSuite
                 && !input[headerIndexMap.get(EXPECTED_RESULTS)].equals(""))
             search.setExpectedResults(Integer
                     .parseInt(input[headerIndexMap.get(EXPECTED_RESULTS)].trim()));
+        if (headerIndexMap.get(MIN_RESULTS) < input.length
+                && !input[headerIndexMap.get(MIN_RESULTS)].equals(""))
+            search.setMinResults(Integer
+                    .parseInt(input[headerIndexMap.get(MIN_RESULTS)].trim()));
     }
 
     /* (non-Javadoc)

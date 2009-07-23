@@ -1,5 +1,9 @@
-Test Case,API,Name,Expected Results
-59,java,,9000
-60,grid,,9000
-61,java,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.mas5.txt,1
-62,grid,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.mas5.txt,1
+Test Case,API,Name,File Type,Expected Results,Min Results
+59,java,,,9000,
+60,grid,,,9000,
+61,java,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.mas5.txt,,1,
+62,grid,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.mas5.txt,,1,
+231,java,invalid#%!,,0,
+232,grid,invalid#%!,,0,
+233,java,,AFFYMETRIX_CEL,,2000
+234,grid,,AFFYMETRIX_CEL,,2000

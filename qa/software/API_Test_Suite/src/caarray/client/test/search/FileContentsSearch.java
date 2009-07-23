@@ -16,11 +16,11 @@ public class FileContentsSearch extends CriteriaSearch
 {
 
     private Integer expectedBytes = null, minBytes = null, maxBytes = null, multiFileNum = null;
-    private boolean compressed = false, zip = false;
+    private boolean compressed = false, zip = false, mage = false;
     private String multiFileType = null;
     private List<CaArrayEntityReference> fileReferences = new ArrayList<CaArrayEntityReference>();
     private String experimentName;
-    
+    private CaArrayEntityReference experimentRef = null;
     /**
      * 
      */
@@ -117,5 +117,37 @@ public class FileContentsSearch extends CriteriaSearch
     public void setExperimentName(String experimentName)
     {
         this.experimentName = experimentName;
+    }
+
+    /**
+     * @return the experimentRef
+     */
+    public CaArrayEntityReference getExperimentRef()
+    {
+        return experimentRef;
+    }
+
+    /**
+     * @param experimentRef the experimentRef to set
+     */
+    public void setExperimentRef(CaArrayEntityReference experimentRef)
+    {
+        this.experimentRef = experimentRef;
+    }
+
+    /**
+     * @return the mage
+     */
+    public boolean isMage()
+    {
+        return mage;
+    }
+
+    /**
+     * @param mage the mage to set
+     */
+    public void setMage(boolean mage)
+    {
+        this.mage = mage;
     }
 }

@@ -95,6 +95,7 @@ import caarray.client.test.suite.BiomaterialKeywordTestSuite;
 import caarray.client.test.suite.BiomaterialTestSuite;
 import caarray.client.test.suite.CategoryTestSuite;
 import caarray.client.test.suite.ConfigurableTestSuite;
+import caarray.client.test.suite.CriteriaPerformanceTestSuite;
 import caarray.client.test.suite.DataSetTestSuite;
 import caarray.client.test.suite.ExperimentCriteriaTestSuite;
 import caarray.client.test.suite.ExperimentKeywordTestSuite;
@@ -163,7 +164,8 @@ public class TestMain {
                 new ExperimentKeywordTestSuite(apiFacade),                            
                 new FileCriteriaTestSuite(apiFacade), new HybridizationCriteriaTestSuite(apiFacade),
                 new QuantitationTypeCriteriaTestSuite(apiFacade),
-                new AnnotationSetTestSuite(apiFacade), new DataSetTestSuite(apiFacade),new FileContentsTestSuite(apiFacade)};
+                new AnnotationSetTestSuite(apiFacade), new DataSetTestSuite(apiFacade),new FileContentsTestSuite(apiFacade),
+                new CriteriaPerformanceTestSuite(apiFacade)};
 	    
 	    
 	    return Arrays.asList(shortSuites);

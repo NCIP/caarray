@@ -104,12 +104,28 @@ public class JavaApiFacade implements ApiFacade
         return javaSearchService.getTermsForCategory(categoryRef, valuePrefix);
     }
 
-    public SearchResult<? extends AbstractCaArrayEntity> searchByExample(
+    public <T extends AbstractCaArrayEntity> SearchResult<T> searchByExample(
             String api,
-            ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria,
+            ExampleSearchCriteria<T> criteria,
             LimitOffset offset) throws Exception
     {
         return javaSearchService.searchByExample(criteria, offset);
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.ApiFacade#searchByExampleUtils(java.lang.String, gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria, gov.nih.nci.caarray.external.v1_0.query.LimitOffset)
+     */
+    public <T extends AbstractCaArrayEntity> List<T> searchByExampleUtils(
+            String api, ExampleSearchCriteria<T> criteria)
+            throws Exception
+    {
+        Search<T> search = apiUtils.byExample(criteria);
+        List<T> resultsList = new ArrayList<T>();
+        for (Iterator<T> resultsIter = search.iterate(); resultsIter.hasNext();)
+        {
+            resultsList.add(resultsIter.next());
+        }
+        return resultsList;
     }
 
     public CaArrayEntityReference getCategoryReference(String api,
@@ -442,7 +458,7 @@ public class JavaApiFacade implements ApiFacade
     }
 
     public List<? extends AbstractCaArrayEntity> enumerateByExample(String api,
-            ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria, Class clazz)
+            ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria, Class<? extends AbstractCaArrayEntity> clazz)
             throws Exception
     {
         return apiUtils.byExample(criteria).list();

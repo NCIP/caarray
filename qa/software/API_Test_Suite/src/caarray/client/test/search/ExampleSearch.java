@@ -83,7 +83,11 @@
 package caarray.client.test.search;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for beans encapsulating details of a search-by-example test search.
@@ -97,9 +101,10 @@ public abstract class ExampleSearch
     protected Float testCase = null;
     protected String api = null;
     protected Integer expectedResults = null;
-    protected Integer minResults = null;
+    protected Integer minResults = null, pages = null;
+    protected List<Integer> pagesReturned = new ArrayList<Integer>();
     protected MatchMode matchMode;
-    private boolean enumerate = false;
+    protected boolean enumerate = false, apiUtil = false;
 
     protected ExampleSearch()
     {
@@ -166,5 +171,36 @@ public abstract class ExampleSearch
     {
         this.enumerate = enumerate;
     }
+
+    public Integer getPages()
+    {
+        return pages;
+    }
+
+    public void setPages(Integer pages)
+    {
+        this.pages = pages;
+    }
+
+    public List<Integer> getPagesReturned()
+    {
+        return pagesReturned;
+    }
+
+    public void addPageReturned(Integer pageReturned)
+    {
+        pagesReturned.add(pageReturned);
+    }
+
+    public boolean isApiUtil()
+    {
+        return apiUtil;
+    }
+
+    public void setApiUtil(boolean apiUtil)
+    {
+        this.apiUtil = apiUtil;
+    }
+    
 
 }

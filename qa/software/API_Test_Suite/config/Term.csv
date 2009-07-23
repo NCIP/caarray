@@ -3,3 +3,5 @@ Test Case,API,Value,Expected Results,Min Results
 94,grid,,,5000
 95,java,AbcCarcinoma,,1
 96,grid,AbcCarcinoma,,1
+267,java,invalid#%!,0,
+268,grid,invalid#%!,0,

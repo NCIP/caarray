@@ -33,7 +33,7 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
     private static final String EXPECTED_CATEGORY = "Expected Category";
     
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-        API, NAME, CATEGORY, EXPECTED_RESULTS, EXPECTED_NAME, EXPECTED_CATEGORY };
+        API, NAME, CATEGORY, EXPECTED_RESULTS, MIN_RESULTS, EXPECTED_NAME, EXPECTED_CATEGORY };
     
     /**
      * @param apiFacade
@@ -53,18 +53,36 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
     {
         FileTypeSearch fileTypeSearch = (FileTypeSearch)search;
         List<FileType> fileResults = (List<FileType>)resultsList;
+        int namedResults = 0;
+        for (FileType fileType : fileResults)
+        {
+            if (fileType.getName() != null)
+                namedResults++;
+        }
         if (fileTypeSearch.getExpectedResults() != null)
         {
-            int namedResults = 0;
-            for (FileType fileType : fileResults)
-            {
-                if (fileType.getName() != null)
-                    namedResults++;
-            }
+            
             if (namedResults != fileTypeSearch.getExpectedResults())
             {
                 String errorMessage = "Failed with unexpected number of results, expected: "
                         + fileTypeSearch.getExpectedResults()
+                        + ", actual number of results: " + namedResults;
+                setTestResultFailure(testResult, fileTypeSearch, errorMessage);
+            }
+            else
+            {
+                String detail = "Found expected number of results: "
+                        + namedResults;
+                testResult.addDetail(detail);
+            }
+        }
+        if (fileTypeSearch.getMinResults() != null)
+        {
+            
+            if (namedResults < fileTypeSearch.getMinResults())
+            {
+                String errorMessage = "Failed with unexpected number of results, expected minimum: "
+                        + fileTypeSearch.getMinResults()
                         + ", actual number of results: " + namedResults;
                 setTestResultFailure(testResult, fileTypeSearch, errorMessage);
             }
@@ -185,6 +203,10 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
                 && !input[headerIndexMap.get(EXPECTED_RESULTS)].equals(""))
             search.setExpectedResults(Integer
                     .parseInt(input[headerIndexMap.get(EXPECTED_RESULTS)].trim()));
+        if (headerIndexMap.get(MIN_RESULTS) < input.length
+                && !input[headerIndexMap.get(MIN_RESULTS)].equals(""))
+            search.setMinResults(Integer
+                    .parseInt(input[headerIndexMap.get(MIN_RESULTS)].trim()));
         if (headerIndexMap.get(EXPECTED_NAME) < input.length
                 && !input[headerIndexMap.get(EXPECTED_NAME)].equals(""))
             search.addExpectedName(input[headerIndexMap.get(EXPECTED_NAME)].trim());

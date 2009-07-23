@@ -5,6 +5,7 @@ package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 
 import java.io.File;
 import java.util.List;
@@ -26,9 +27,10 @@ public class CategoryTestSuite extends SearchByExampleTestSuite
             + File.separator + "Category.csv";
 
     private static final String NAME = "Name";
+    private static final String TERM_SRC = "Term Source";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-            API, NAME, EXPECTED_RESULTS, MIN_RESULTS };
+            API, NAME, TERM_SRC, EXPECTED_RESULTS, MIN_RESULTS };
 
 
     /**
@@ -126,6 +128,16 @@ public class CategoryTestSuite extends SearchByExampleTestSuite
     
         if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
             example.setName(input[headerIndexMap.get(NAME)].trim());
+        if (headerIndexMap.get(TERM_SRC) < input.length && !input[headerIndexMap.get(TERM_SRC)].equals(""))
+        {
+            String term = input[headerIndexMap.get(TERM_SRC)].trim();
+            if (term.startsWith(VAR_START))
+                term = getVariableValue(term);
+            
+            TermSource termSource = new TermSource();
+            termSource.setName(term);
+            example.setTermSource(termSource);
+        }
         
         search.setCategory(example);
         if (headerIndexMap.get(TEST_CASE) < input.length

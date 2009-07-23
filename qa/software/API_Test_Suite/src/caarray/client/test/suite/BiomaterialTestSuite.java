@@ -7,6 +7,8 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
+import gov.nih.nci.caarray.external.v1_0.value.TermValue;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 import java.io.File;
 import java.util.List;
@@ -30,11 +32,12 @@ public class BiomaterialTestSuite extends SearchByExampleTestSuite
     private static final String NAME = "Name";
     private static final String TYPE = "Type";
     private static final String MATCH_MODE = "Match Mode";
+    private static final String TERM = "Term";
     private static final String EXPECTED_TYPE = "Expected Type";
     private static final String EXPECTED_EXTERNAL_ID = "Expected External ID";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-            API, NAME, TYPE, MATCH_MODE, EXPECTED_RESULTS, MIN_RESULTS, EXPECTED_EXTERNAL_ID, EXPECTED_TYPE};
+            API, NAME, TYPE, TERM, MATCH_MODE, EXPECTED_RESULTS, MIN_RESULTS, EXPECTED_EXTERNAL_ID, EXPECTED_TYPE};
     
     
     /**
@@ -201,6 +204,17 @@ public class BiomaterialTestSuite extends SearchByExampleTestSuite
         {
             BiomaterialType type = BiomaterialType.valueOf(input[headerIndexMap.get(TYPE)].trim().toUpperCase());
             example.setType(type);
+        }
+        if (headerIndexMap.get(TERM) < input.length && !input[headerIndexMap.get(TERM)].equals(""))
+        {
+            String term = input[headerIndexMap.get(TYPE)].trim();
+            if (term.startsWith(VAR_START))
+                term = getVariableValue(term);
+            TermValue value = new TermValue();
+            Term t = new Term();
+            t.setValue(term);
+            value.setTerm(t);
+            example.setDiseaseState(value);
         }
         if (headerIndexMap.get(MATCH_MODE) < input.length && !input[headerIndexMap.get(MATCH_MODE)].equals(""))
         {

@@ -18,7 +18,10 @@ import gov.nih.nci.caarray.external.v1_0.data.LongColumn;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.data.ShortColumn;
 import gov.nih.nci.caarray.external.v1_0.data.StringColumn;
+import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
+import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 
 import java.io.File;
@@ -43,6 +46,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
     private static final String FILE = "File";
     private static final String FILE_REF = "File Reference";
     private static final String FILE_EXPERIMENT = "File Experiment";
+    private static final String FILE_EXPERIMENT_ID = "File Experiment Id";
     private static final String QUANT_TYPE = "Quantitation Type";
     private static final String HYB = "Hybridization";
     private static final String HYB_REF = "Hybridization Reference";
@@ -53,7 +57,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
     private static final String EXPECTED_DATA_RESULTS = "Expected Data Results";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-            API, FILE_REF, FILE, EXPECTED_RESULTS, MIN_RESULTS, FILE_EXPERIMENT, QUANT_TYPE, HYB, HYB_REF,EXPECTED_QUANT_TYPE,
+            API, FILE_REF, FILE, EXPECTED_RESULTS, MIN_RESULTS, FILE_EXPERIMENT, FILE_EXPERIMENT_ID,QUANT_TYPE, HYB, HYB_REF,EXPECTED_QUANT_TYPE,
             EXPECTED_PROBE, EXPECTED_DATA_TYPE, EXPECTED_DATA_RESULTS};
     /**
      * @param apiFacade
@@ -359,12 +363,32 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
                 name = getVariableValue(name);
             List<String> fileNames = new ArrayList<String>();
             fileNames.add(name);
-            String experiment = input[headerIndexMap.get(FILE_EXPERIMENT)].trim();
-            List<DataFile> files = apiFacade.getFilesByName(search.getApi(), fileNames, experiment);
-            for (DataFile file : files)
+            if (headerIndexMap.get(FILE_EXPERIMENT) < input.length && !input[headerIndexMap.get(FILE_EXPERIMENT)].equals(""))
             {
-                criteria.getDataFiles().add(file.getReference());
+                String experiment = input[headerIndexMap.get(FILE_EXPERIMENT)].trim();
+                List<DataFile> files = apiFacade.getFilesByName(search.getApi(), fileNames, experiment);
+                for (DataFile file : files)
+                {
+                    criteria.getDataFiles().add(file.getReference());
+                }
             }
+            else if (headerIndexMap.get(FILE_EXPERIMENT_ID) < input.length && !input[headerIndexMap.get(FILE_EXPERIMENT_ID)].equals(""))
+            {
+                String experimentId = input[headerIndexMap.get(FILE_EXPERIMENT)].trim();
+                ExperimentSearchCriteria crit = new ExperimentSearchCriteria();
+                crit.setPublicIdentifier(experimentId);
+                SearchResult<Experiment> result = (SearchResult<Experiment>)apiFacade.searchForExperiments(search.getApi(), crit, null);
+                if (!result.getResults().isEmpty())
+                {
+                    Experiment exp = result.getResults().get(0);
+                    List<DataFile> files = apiFacade.getFilesByName(search.getApi(), fileNames, exp.getTitle());
+                    for (DataFile file : files)
+                    {
+                        criteria.getDataFiles().add(file.getReference());
+                    }
+                }
+            }
+            
         }
         if (headerIndexMap.get(HYB_REF) < input.length && !input[headerIndexMap.get(HYB_REF)].equals(""))
         {

@@ -10,6 +10,7 @@ import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 
 import caarray.client.test.ApiFacade;
@@ -34,7 +35,7 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
     private static final String ASSAY_TYPE = "Assay Type";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE, ENUMERATE,
-            API, TITLE, ORG_SCI_NAME, ARRAY_PROVIDER, ASSAY_TYPE,EXPECTED_RESULTS, MIN_RESULTS };
+            API, TITLE, ORG_SCI_NAME, ARRAY_PROVIDER, ASSAY_TYPE,EXPECTED_RESULTS, MIN_RESULTS, PAGES, API_UTILS_SEARCH };
 
 
     /**
@@ -83,7 +84,7 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
             if (namedResults < experimentSearch.getMinResults())
             {
                 String errorMessage = "Failed with unexpected number of results, expected minimum: "
-                    + experimentSearch.getExpectedResults()
+                    + experimentSearch.getMinResults()
                     + ", actual number of results: " + namedResults;
             setTestResultFailure(testResult, experimentSearch, errorMessage);
             }
@@ -94,7 +95,26 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
                 testResult.addDetail(detail);
             }
         }
-        
+        if (experimentSearch.getPages() != null)
+        {
+            boolean passed = true;
+            for (Iterator<Integer> iter = experimentSearch.getPagesReturned().iterator(); iter.hasNext();)
+            {
+                int size = iter.next();
+                if (iter.hasNext() && size != experimentSearch.getPages())
+                {
+                    String errorMessage = "Failed with unexpected page size: "
+                        + size;
+                    setTestResultFailure(testResult, experimentSearch, errorMessage);  
+                    passed = false;
+                }
+            }
+            if (passed)
+            {
+                String detail = "Found expected page size: " + experimentSearch.getPages();
+                testResult.addDetail(detail);
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -147,7 +167,14 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
                 && !input[headerIndexMap.get(TEST_CASE)].equals(""))
             search.setTestCase(Float.parseFloat(input[headerIndexMap.get(TEST_CASE)]
                     .trim()));
-    
+        if (headerIndexMap.get(PAGES) < input.length
+                && !input[headerIndexMap.get(PAGES)].equals(""))
+            search.setPages(Integer.parseInt(input[headerIndexMap.get(PAGES)]
+                    .trim()));
+        if (headerIndexMap.get(API_UTILS_SEARCH) < input.length
+                && !input[headerIndexMap.get(API_UTILS_SEARCH)].equals(""))
+            search.setApiUtil(Boolean.parseBoolean(input[headerIndexMap.get(API_UTILS_SEARCH)].trim()));
+        
         if (headerIndexMap.get(TITLE) < input.length && !input[headerIndexMap.get(TITLE)].equals(""))
             example.setTitle(input[headerIndexMap.get(TITLE)].trim());
         

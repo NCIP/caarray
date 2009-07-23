@@ -35,6 +35,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
     private static final String FILE = "File Name";
     private static final String FILE_EXPERIMENT = "File Experiment";
     private static final String FILE_EXPERIMENT_ID= "File Experiment Id";
+    private static final String EXPERIMENT_REF= "Experiment Reference";
     private static final String MULTI_FILE_NUM= "Multi File Num";
     private static final String MULTI_FILE_TYPE= "Multi File Type";
     private static final String COMPRESSED = "Compressed";
@@ -42,10 +43,12 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
     private static final String EXPECTED_BYTES = "Expected Bytes";
     private static final String MIN_BYTES = "Min Bytes";
     private static final String MAX_BYTES = "Max Bytes";
+    private static final String MAGE = "Mage Tab";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
             API, FILE_REF, API_UTILS_SEARCH,
-            FILE, FILE_EXPERIMENT, FILE_EXPERIMENT_ID, MULTI_FILE_NUM, MULTI_FILE_TYPE, COMPRESSED, ZIP, EXPECTED_BYTES, MIN_BYTES, MAX_BYTES};
+            FILE, FILE_EXPERIMENT, FILE_EXPERIMENT_ID, EXPERIMENT_REF,MULTI_FILE_NUM, MULTI_FILE_TYPE, COMPRESSED, ZIP, EXPECTED_BYTES, MIN_BYTES, MAX_BYTES,
+            MAX_TIME, MAGE};
     /**
      * @param apiFacade
      */
@@ -126,6 +129,23 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
             {
                 String detail = "Found expected max bytes: "
                         + size;
+                testResult.addDetail(detail);
+            }
+        }
+        if (fileSearch.getMaxTime() != null)
+        {
+            
+            if (testResult.getElapsedTime() > fileSearch.getMaxTime())
+            {
+                String errorMessage = "Search did not complete in expected time, expected: "
+                        + fileSearch.getMaxTime()
+                        + ", actual time: " + testResult.getElapsedTime();
+                setTestResultFailure(testResult, fileSearch, errorMessage);
+            }
+            else
+            {
+                String detail = "Search completed in expected time: "
+                        + testResult.getElapsedTime();
                 testResult.addDetail(detail);
             }
         }
@@ -250,6 +270,10 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
         if (headerIndexMap.get(API_UTILS_SEARCH) < input.length
                 && !input[headerIndexMap.get(API_UTILS_SEARCH)].equals(""))
             search.setApiUtilsSearch(Boolean.parseBoolean(input[headerIndexMap.get(API_UTILS_SEARCH)].trim()));
+        if (headerIndexMap.get(MAX_TIME) < input.length
+                && !input[headerIndexMap.get(MAX_TIME)].equals(""))
+            search.setMaxTime(Long
+                    .parseLong(input[headerIndexMap.get(MAX_TIME)].trim()));
                 
         if (headerIndexMap.get(FILE_REF) < input.length
                 && !input[headerIndexMap.get(FILE_REF)].equals(""))
@@ -272,6 +296,13 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
         {
             experimentName = input[headerIndexMap.get(FILE_EXPERIMENT)].trim();
         }
+        if (headerIndexMap.get(EXPERIMENT_REF) < input.length && !input[headerIndexMap.get(EXPERIMENT_REF)].equals(""))
+        {
+            String ref = input[headerIndexMap.get(EXPERIMENT_REF)].trim();
+            if (ref.startsWith(VAR_START))
+                ref = getVariableValue(ref);
+            search.setExperimentRef(new CaArrayEntityReference(ref));
+        }
         if (headerIndexMap.get(FILE_EXPERIMENT_ID) < input.length && !input[headerIndexMap.get(FILE_EXPERIMENT_ID)].equals(""))
         {
             String id = input[headerIndexMap.get(FILE_EXPERIMENT_ID)].trim();
@@ -282,6 +313,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
             {
                 experimentName = results.get(0).getTitle();
                 experimentReference = results.get(0).getReference();
+                search.setExperimentRef(experimentReference);
             }
                 
         }
@@ -296,6 +328,18 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
             for (DataFile file : files)
             {
                 search.addFileReference(file.getReference());
+            }
+        }
+        if (headerIndexMap.get(MAGE) < input.length && !input[headerIndexMap.get(MAGE)].equals(""))
+        {
+            search.setMage(Boolean.parseBoolean(input[headerIndexMap.get(MAGE)].trim()));
+            if (search.getExperimentRef() == null && experimentName != null)
+            {
+                Experiment exp = apiFacade.getExperiment(search.getApi(), experimentName);
+                if (exp != null)
+                {
+                    search.setExperimentRef(exp.getReference());
+                }
             }
         }
             

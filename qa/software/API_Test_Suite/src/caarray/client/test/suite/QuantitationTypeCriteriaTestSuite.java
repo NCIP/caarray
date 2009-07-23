@@ -227,7 +227,7 @@ public class QuantitationTypeCriteriaTestSuite extends
     @Override
     protected String getType()
     {
-        return "Quantitation Type";
+        return "Quantitation Type Criteria";
     }
 
 }

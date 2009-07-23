@@ -117,12 +117,23 @@ public class FullApiFacade implements ApiFacade
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#searchByExample(java.lang.String, gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria, gov.nih.nci.caarray.external.v1_0.query.LimitOffset)
      */
-    public SearchResult<? extends AbstractCaArrayEntity> searchByExample(
+    public <T extends AbstractCaArrayEntity> SearchResult<T> searchByExample(
             String api,
-            ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria,
+            ExampleSearchCriteria<T> criteria,
             LimitOffset offset) throws Exception
     {
         return getFacade(api).searchByExample(api, criteria, offset);
+    }
+
+    
+    /* (non-Javadoc)
+     * @see caarray.client.test.ApiFacade#searchByExampleUtils(java.lang.String, gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria, gov.nih.nci.caarray.external.v1_0.query.LimitOffset)
+     */
+    public <T extends AbstractCaArrayEntity> List<T> searchByExampleUtils(
+            String api, ExampleSearchCriteria<T> criteria)
+            throws Exception
+    {
+        return getFacade(api).searchByExampleUtils(api, criteria);
     }
 
     public CaArrayEntityReference getCategoryReference(String api,
@@ -322,11 +333,13 @@ public class FullApiFacade implements ApiFacade
     }
 
     public List<? extends AbstractCaArrayEntity> enumerateByExample(String api,
-            ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria, Class clazz)
+            ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria, Class<? extends AbstractCaArrayEntity> clazz)
             throws Exception
     {
         return getFacade(api).enumerateByExample(api, criteria, clazz);
     }
+    
+    
 
     public List<Experiment> enumerateExperiments(String api,
             ExperimentSearchCriteria criteria) throws Exception

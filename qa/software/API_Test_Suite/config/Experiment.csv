@@ -1,8 +1,15 @@
-Test Case,API,Title,Organism Scientific Name,Array Provider,Assay Type,Expected Results,Min Results,Enumerate
-63,java,,,,,,100,
-64,grid,,,,,,100,
-65,java,QA Affymetrix Experiment for API Testing,,,,1,,
-66,grid,QA Affymetrix Experiment for API Testing,,,,1,,
-67,java,,Plasmodium falciparum,Affymetrix,Gene Expression,1,,
-68,grid,,Plasmodium falciparum,Affymetrix,Gene Expression,1,,
-353,grid,,,,,,100,TRUE
+Test Case,API,Title,Organism Scientific Name,Array Provider,Assay Type,Expected Results,Min Results,Enumerate,Pages,API Utils
+63,java,,,,,,100,,,
+64,grid,,,,,,100,,,
+65,java,QA Affymetrix Experiment for API Testing,,,,1,,,,
+66,grid,QA Affymetrix Experiment for API Testing,,,,1,,,,
+67,java,,Plasmodium falciparum,Affymetrix,Gene Expression,1,,,,
+68,grid,,Plasmodium falciparum,Affymetrix,Gene Expression,1,,,,
+353,grid,,,,,,100,TRUE,,
+235,java,invalid#%!,,,,0,,,,
+236,grid,invalid#%!,,,,0,,,,
+237,java,,Plasmodium falciparum,,,1,,,,
+238,grid,,Plasmodium falciparum,,,1,,,,
+101,java,,,,,,100,,10,
+102,grid,,,,,,100,,10,
+103,java,,,,,,100,,,TRUE

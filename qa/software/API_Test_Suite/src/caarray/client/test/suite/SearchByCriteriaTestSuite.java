@@ -20,7 +20,7 @@ import caarray.client.test.search.CriteriaSearch;
  */
 public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
 {
-    protected static final String API_UTILS_SEARCH = "API Utils";
+    protected static final String MAX_TIME = "Max Time";
     protected List<CriteriaSearch> configuredSearches = new ArrayList<CriteriaSearch>();
     /**
      * @param apiFacade

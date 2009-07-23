@@ -46,8 +46,11 @@ public interface ApiFacade
 
     public void connect() throws Exception;
     
-    public SearchResult<? extends AbstractCaArrayEntity> searchByExample(String api, 
-            ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria, LimitOffset offset) throws Exception;
+    public <T extends AbstractCaArrayEntity> SearchResult<T> searchByExample(String api, 
+            ExampleSearchCriteria<T> criteria, LimitOffset offset) throws Exception;
+    
+    public <T extends AbstractCaArrayEntity> List<T> searchByExampleUtils(String api, 
+            ExampleSearchCriteria<T> criteria) throws Exception;
     
     public SearchResult<? extends AbstractCaArrayEntity> searchForExperiments(String api, ExperimentSearchCriteria criteria, 
             LimitOffset offset) throws Exception;
@@ -91,7 +94,7 @@ public interface ApiFacade
     public List<DataFile> enumerateFiles(String api, FileSearchCriteria criteria) throws Exception;
     
     public List<? extends AbstractCaArrayEntity> enumerateByExample(String api, 
-            ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria, Class clazz) throws Exception;
+            ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria, Class<? extends AbstractCaArrayEntity> clazz) throws Exception;
     
     public List<DataFile> getFilesByName(String api, List<String> fileNames, String experimentName) throws Exception;
     
