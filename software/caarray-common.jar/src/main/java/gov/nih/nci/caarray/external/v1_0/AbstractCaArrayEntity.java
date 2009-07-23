@@ -153,7 +153,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      */
     @Override
     public int hashCode() {
-        if(this.id != null) {
+        if (this.id != null) {
             return this.id.hashCode();
         } else {
             return HashCodeBuilder.reflectionHashCode(this);
