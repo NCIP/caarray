@@ -89,6 +89,8 @@ import gov.nih.nci.caarray.external.v1_0.value.UserDefinedValue;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -163,4 +165,22 @@ public class FactorValue implements Serializable {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+
 }

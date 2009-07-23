@@ -83,6 +83,8 @@
 package gov.nih.nci.caarray.external.v1_0.data;
 
 import java.io.Serializable;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * An AbstractDataColumn represents a list of values for a particular measurement within a hybridization data set. 
@@ -110,5 +112,21 @@ public abstract class AbstractDataColumn implements Serializable {
      */
     public void setQuantitationType(QuantitationType quantitationType) {
         this.quantitationType = quantitationType;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

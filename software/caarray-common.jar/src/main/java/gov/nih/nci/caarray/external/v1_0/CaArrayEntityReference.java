@@ -131,4 +131,30 @@ public class CaArrayEntityReference implements Serializable {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final CaArrayEntityReference other = (CaArrayEntityReference) obj;
+        return ((this.id == null) ? (other.id == null) : this.id.equals(other.id));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        // CHECKSTYLE:OFF
+        int hash = 3;
+        hash = 59 * hash + (this.id != null ? this.id.hashCode() : 0);
+        return hash;
+        // CHECKSTYLE:ON
+    }
+
+
 }

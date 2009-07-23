@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.external.v1_0;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -125,5 +127,36 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      */
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * Id properties are used to test for euality, if they are not null; otherwise, the other properties are used.
+     * @param obj object to compare this with.
+     * @return true if both ids are non-null and equal, or all properties are equal when id is null.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final AbstractCaArrayEntity other = (AbstractCaArrayEntity) obj;
+        if (this.id != null) {
+            return this.id.equals(other.id);
+        } else {
+            return EqualsBuilder.reflectionEquals(this, other);
+        }
+    }
+
+    /**
+     * Hashcode, based on id when not null; otherwise, the other properties are used to comute the hash code.
+     * @return hashcode computed from id when not null, other other properties.
+     */
+    @Override
+    public int hashCode() {
+        if(this.id != null) {
+            return this.id.hashCode();
+        } else {
+            return HashCodeBuilder.reflectionHashCode(this);
+        }
     }
 }

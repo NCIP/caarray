@@ -92,6 +92,8 @@ import gov.nih.nci.caarray.external.v1_0.value.TermValue;
 import gov.nih.nci.caarray.external.v1_0.value.UserDefinedValue;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * Characteristic represents a loosely typed attribute associated with a sample. The attribute consists of a category
@@ -210,5 +212,21 @@ public class Characteristic implements Serializable {
      */
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }
