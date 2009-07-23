@@ -98,6 +98,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
 import org.hibernate.validator.NotNull;
 
 /**
@@ -143,6 +145,7 @@ public abstract class AbstractCharacteristic extends AbstractUnitableValue {
      * @return the abstractBioMaterial
      */
     @ManyToOne
+    @LazyToOne(LazyToOneOption.PROXY)
     @ForeignKey(name = "characteristic_biomaterial_fk")
     public AbstractBioMaterial getBioMaterial() {
         return bioMaterial;

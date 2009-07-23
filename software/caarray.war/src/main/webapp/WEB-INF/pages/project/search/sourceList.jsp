@@ -40,18 +40,10 @@
             </c:forEach>
         </display:column>
         <display:column titleKey="search.result.experimentTitle" sortable="true" sortProperty="TITLE">
-            <c:set var="canReadExp" value="${caarrayfn:canRead(row.experiment.project, caarrayfn:currentUser())}"/>
-             <c:choose>
-                <c:when test="${canReadExp}">
                      <c:url var="viewExpUrl" value="/project/details.action">
                         <c:param name="project.id" value="${row.experiment.project.id}"/>
                      </c:url>
                      <a title="View experiment ${row.experiment.title} in read only mode" href="${viewExpUrl}">${row.experiment.title}</a>
-                </c:when>
-                <c:otherwise>
-                    ${row.experiment.title}
-                </c:otherwise>
-            </c:choose>
         </display:column>
         <s:set name="showDownloadGroups" value="%{@gov.nih.nci.caarray.web.action.project.AbstractProjectProtocolAnnotationListTabAction@isWillPerformDownloadByGroups(#attr.row.getAllDataFiles())}"/>
         <caarray:projectListTabDownloadColumn entityName="Source" itemId="${row.id}" showDownloadGroups="${showDownloadGroups}"/>

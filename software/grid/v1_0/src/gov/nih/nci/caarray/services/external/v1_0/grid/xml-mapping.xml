@@ -186,7 +186,7 @@
       <bind-xml name="name" node="attribute" />
     </field>
     <field name="category" type="string" handler="gov.nih.nci.caarray.services.external.v1_0.grid.common.FileTypeCategoryFieldHandler">
-      <bind-xml name="catgory" node="element" />
+      <bind-xml name="category" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.data.DataFile" extends="gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity">

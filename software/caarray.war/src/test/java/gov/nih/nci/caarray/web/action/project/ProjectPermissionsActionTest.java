@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
@@ -108,7 +107,6 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
-import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 
 /**
@@ -179,12 +177,6 @@ public class ProjectPermissionsActionTest extends AbstractCaarrayTest {
     @Test
     public void testEditPermissions() {
         assertEquals(Action.SUCCESS, action.editPermissions());
-    }
-
-    @Test
-    public void testSetTcgaPolicy() {
-        assertEquals(Action.SUCCESS, action.setTcgaPolicy());
-        assertTrue(ActionHelper.getMessages().contains("project.tcgaPolicyUpdated"));
     }
 
     @Test

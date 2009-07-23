@@ -594,6 +594,13 @@
         </path>
         <property name="jbossall-client.jar" refid="jbossall-client.jar.fileset" />
 
+        <path id="jboss-remoting.jar.path">
+            <fileset dir="${project.lib}" id="jboss-remoting.jar.fileset">
+                <include name="jboss-remoting-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-remoting.jar" refid="jboss-remoting.jar.fileset" />
+
         <path id="jboss-ejb3-client.jar.path">
             <fileset dir="${project.lib}" id="jboss-ejb3-client.jar.fileset">
                 <include name="jboss-ejb3-client-*.jar"/>
@@ -1219,6 +1226,7 @@
             <fileset refid="jboss.dependencies.fileset"/>
             <fileset dir="${project.lib}">
                 <include name="${jboss-ejb3x.jar}" />
+            	<include name="${jboss-remoting.jar}" />
             </fileset>
         </path>
         <pathtofileset name="caarray-client.common.java.dependencies.fileset" pathrefid="caarray-client.common.java.dependencies.path" dir="${project.lib}"/>

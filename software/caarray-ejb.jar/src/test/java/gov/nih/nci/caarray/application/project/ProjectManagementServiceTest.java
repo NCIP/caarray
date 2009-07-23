@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.project;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -502,17 +501,6 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
             e.printStackTrace();
         }
 
-    }
-
-    @Test
-    public void testSetUseTcgaPolicy() throws Exception {
-        Project project = this.projectManagementService.getProject(123L);
-        UsernameHolder.setUser(STANDARD_USER);
-        createProtectionGroup(project);
-        assertFalse(project.isUseTcgaPolicy());
-        this.projectManagementService.setUseTcgaPolicy(123L, true);
-        project = this.projectManagementService.getProject(123L);
-        assertTrue(project.isUseTcgaPolicy());
     }
 
     @Test(expected = IllegalStateException.class)

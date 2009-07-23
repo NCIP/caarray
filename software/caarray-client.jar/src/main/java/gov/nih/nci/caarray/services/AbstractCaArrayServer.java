@@ -145,16 +145,22 @@ public abstract class AbstractCaArrayServer {
         try {
             executeServiceForCredentialCheck();
         } catch (EJBAccessException e) {
-            throw new FailedLoginException("Authentication failed: incorrect username or password");
+            throw new FailedLoginException("Authentication failed: incorrect username or password"); // NOPMD
         }
     }
     
+    /**
+     * Execute some method in a remote EJB service that forces the authentication credentials to be checked. 
+     * This method must be side effect free, and should ideally be simple and fast, as the only purpose of
+     * executing it is to force the credential check.
+     * Subclasses should override this to invoke the appropriate API method.
+     */
     protected abstract void executeServiceForCredentialCheck();
 
     private void setCredentials(String username, String password) {
         LoginContext loginContext = null;
         try {
-            String authConfPath = CaArrayServer.class.getResource("/auth.conf").toExternalForm();
+            String authConfPath = AbstractCaArrayServer.class.getResource("/auth.conf").toExternalForm();
             System.setProperty("java.security.auth.login.config", authConfPath);
             final CaArrayCallbackHandler handler = new CaArrayCallbackHandler(username, password);
             loginContext = new LoginContext("client-login", handler);
@@ -178,5 +184,11 @@ public abstract class AbstractCaArrayServer {
         }
     }
     
+    /**
+     * Method called after obtaining a JNDI context from the remote EJB server. 
+     * Subclasses should override this method and lookup remote EJB references in this context.
+     * @param ctx the JNDI context where remote EJB service references can be looked up
+     * @throws NamingException if there is an error looking up a remote EJB in the context
+     */
     protected abstract void lookupServices(Context ctx) throws NamingException;
 }

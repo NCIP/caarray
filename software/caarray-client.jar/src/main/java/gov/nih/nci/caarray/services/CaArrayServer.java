@@ -113,11 +113,17 @@ public final class CaArrayServer extends AbstractCaArrayServer {
         super(hostname, jndiPort);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void executeServiceForCredentialCheck() {
         getSearchService().search((AbstractCaArrayObject) null);        
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void lookupServices(Context ctx) throws NamingException {
         searchService = (CaArraySearchService) ctx.lookup(CaArraySearchService.JNDI_NAME);

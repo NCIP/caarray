@@ -129,6 +129,7 @@
     	<field>
       		<a>contact</a>
      	 	<b>person</b>
+            <a-hint>gov.nih.nci.caarray.domain.contact.Person</a-hint>
     	</field>
   	</mapping>  
 	<mapping> 

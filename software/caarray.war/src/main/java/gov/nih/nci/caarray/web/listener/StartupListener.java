@@ -86,7 +86,6 @@ import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.fileaccess.FileCleanupThread;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.Log4JRepositorySelector;
 
 import java.util.Timer;
 
@@ -105,7 +104,6 @@ public class StartupListener extends AbstractHibernateSessionScopeListener {
      */
     @Override
     public void doContextInitialized(ServletContextEvent event) {
-        Log4JRepositorySelector.init("/caarray-log4j.xml");
         ArrayDataService arrayDataService =
             (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
         arrayDataService.initialize();

@@ -249,16 +249,6 @@ public interface ProjectManagementService {
     int getMyProjectCount();
 
     /**
-     * sets whether the project with given id uses the tcga policy.
-     *
-     * @param projectId the id of the project
-     * @param useTcgaPolicy whether the tcga policy should be used
-     * @return the modified project
-     * @throws ProposalWorkflowException if the tcga policy status cannot be modified in the project's current state
-     */
-    Project setUseTcgaPolicy(long projectId, boolean useTcgaPolicy) throws ProposalWorkflowException;
-
-    /**
      * Adds an empty (no access) profile for the given collaborator group to the given project.
      *
      * @param project the project

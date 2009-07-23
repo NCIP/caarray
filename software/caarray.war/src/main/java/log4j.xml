@@ -12,14 +12,9 @@
       <!-- Rollover at midnight each day -->
       <param name="DatePattern" value="'.'yyyy-MM-dd"/>
 
-      <!-- Rollover at the top of each hour
-      <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
-      -->
-
       <layout class="org.apache.log4j.PatternLayout">
          <!-- The default pattern: Date Priority [Category] Message\n -->
          <param name="ConversionPattern" value="%d{ISO8601} %-5p [%F:%L] : %m%n"/>
-
          <param name="LocationInfo" value="true"/>
       </layout>
    </appender>
@@ -63,6 +58,11 @@
     <logger name="gov.nih">
         <level value="debug"/>
     </logger>
+    
+    <logger name="org.displaytag">
+        <level value="error"/>
+    </logger>
+    
 
     <root>
         <level value="warn"/>

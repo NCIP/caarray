@@ -848,55 +848,6 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     }
 
     @Test
-    public void testTcgaPolicy() {
-        Transaction tx = HibernateUtil.beginTransaction();
-        saveSupportingObjects();
-        DUMMY_PROJECT_1.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
-        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
-        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
-        HibernateUtil.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
-        assertFalse(DUMMY_PROJECT_1.isUseTcgaPolicy());
-        tx.commit();
-
-        tx = HibernateUtil.beginTransaction();
-        Sample s = SEARCH_DAO.retrieve(Sample.class, DUMMY_SAMPLE.getId());
-        assertNotNull(s.getDescription());
-        assertEquals(1, DUMMY_SAMPLE.getCharacteristics().size());
-        tx.commit();
-
-        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
-        tx = HibernateUtil.beginTransaction();
-        s = SEARCH_DAO.retrieve(Sample.class, DUMMY_SAMPLE.getId());
-        assertNotNull(s.getDescription());
-        assertEquals(1, DUMMY_SAMPLE.getCharacteristics().size());
-        tx.commit();
-
-        UsernameHolder.setUser(STANDARD_USER);
-        tx = HibernateUtil.beginTransaction();
-        Project p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
-        p.setUseTcgaPolicy(true);
-        DAO_OBJECT.save(p);
-        tx.commit();
-
-        tx = HibernateUtil.beginTransaction();
-        s = SEARCH_DAO.retrieve(Sample.class, DUMMY_SAMPLE.getId());
-        assertNotNull(s.getDescription());
-        assertEquals(1, DUMMY_SAMPLE.getCharacteristics().size());
-        tx.commit();
-
-        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
-        tx = HibernateUtil.beginTransaction();
-        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
-        Set<Sample> samples = p.getExperiment().getSamples();
-        int size = samples.size();
-        assertEquals(1, size);
-        s = p.getExperiment().getSamples().iterator().next();
-        assertNull(s.getDescription());
-        assertEquals(0, s.getCharacteristics().size());
-        tx.rollback();
-    }
-
-    @Test
     public void testFilters() {
         Transaction tx = HibernateUtil.beginTransaction();
         FilterClause searchFilterClause = new FilterClause();

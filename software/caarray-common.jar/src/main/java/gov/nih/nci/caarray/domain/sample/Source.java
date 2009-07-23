@@ -83,6 +83,7 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.AbstractContact;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
@@ -101,9 +102,12 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 /**
  *
@@ -154,12 +158,14 @@ public class Source extends AbstractBioMaterial {
      * @return the providers
      */
     @ManyToMany(fetch = FetchType.LAZY)
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(
             name = "sourceprovider",
             joinColumns = { @javax.persistence.JoinColumn(name = DEFAULT_FK_ID) },
             inverseJoinColumns = { @javax.persistence.JoinColumn(name = "contact_id") }
     )
     @ForeignKey(name = "sourceprovider_source_fk", inverseName = "sourceprovider_provider_fk")
+    @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<AbstractContact> getProviders() {
         return providers;

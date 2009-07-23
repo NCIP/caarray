@@ -118,6 +118,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -191,8 +192,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         query.setEntity("user", user);
 
         @SuppressWarnings("unchecked")
-        List<Project> projects = query.list();
-        return projects;
+        List<Project> projects = query.list(); 
+        return projects; // NOPMD
     }
 
     /**
@@ -290,7 +291,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             }
         }
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
-        q.setString("keyword", "%" + keyword + "%");
+        q.setString("keyword", "%" + StringUtils.defaultString(keyword) + "%");
         return q;
     }
 

@@ -126,6 +126,8 @@
 
         <dependency conf="project" name="jboss-annotations-ejb3" org="jboss" rev="1.0"/>
 
+        <dependency conf="project" name="jboss-remoting" org="jboss" rev="1.4.6"/>
+        
         <dependency conf="project" name="jta" org="javax.transaction" rev="1.0.1B"/>
 
         <dependency conf="project" name="junit" org="junit" rev="4.3.1"/>

@@ -445,24 +445,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Project setUseTcgaPolicy(long projectId, boolean useTcgaPolicy) {
-        LogUtil.logSubsystemEntry(LOG, projectId);
-        Project project = getProject(projectId);
-        if (!project.canModifyPermissions(UsernameHolder.getCsmUser())) {
-            LogUtil.logSubsystemExit(LOG);
-            throw new PermissionDeniedException(project, SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder
-                    .getUser());
-        }
-        project.setUseTcgaPolicy(useTcgaPolicy);
-        getProjectDao().save(project);
-        LogUtil.logSubsystemExit(LOG);
-        return project;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public AccessProfile addGroupProfile(Project project, CollaboratorGroup group) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, project, group);
         if (!project.canModifyPermissions(UsernameHolder.getCsmUser())) {

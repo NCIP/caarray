@@ -400,7 +400,9 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
                     hibCriteria.createCriteria(fieldName).add(or);
                 }
             } else {
-                hibCriteria.createCriteria(fieldName).add(createExample(valueOfAssociation));
+                Disjunction or = Restrictions.disjunction();
+                or.add(createExample(valueOfAssociation));
+                hibCriteria.createCriteria(fieldName).add(or);
             }                
         }
         

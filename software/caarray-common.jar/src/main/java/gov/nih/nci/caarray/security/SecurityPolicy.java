@@ -129,18 +129,6 @@ public class SecurityPolicy {
     public static final SecurityPolicy BROWSE = new SecurityPolicy(BROWSE_POLICY_NAME, SecurityPolicyMode.WHITELIST);
     
     /**
-     * Name of the TCGA SecurityPolicy.
-     */
-    public static final String TCGA_POLICY_NAME = "TCGA";
-    
-    /**
-     * The "TCGA" SecurityPolicy applies to TCGA human projects and restricts public access to certain
-     * fields.
-     */
-    public static final SecurityPolicy TCGA = new SecurityPolicy(TCGA_POLICY_NAME, SecurityPolicyMode.BLACKLIST);
-    
-
-    /**
      * Constructor For SecurityPolicy with given name and mode of operation.
      * @param name the name for the policy
      * @param mode the mode of operation (blacklist or whitelist)

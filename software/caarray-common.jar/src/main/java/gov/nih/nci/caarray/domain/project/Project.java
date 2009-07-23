@@ -160,7 +160,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private AccessProfile publicProfile = new AccessProfile(SecurityLevel.NO_VISIBILITY);
     private AccessProfile hostProfile = new AccessProfile(SecurityLevel.READ_WRITE_SELECTIVE);
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
-    private boolean useTcgaPolicy = false;
     private transient Set<User> owners;
     private Date lastUpdated = new Date();
 
@@ -559,22 +558,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
                 CharSetUtils.keep(lastName, "A-Za-z"), 0, PUBLIC_ID_COMPONENT_LENGTH);
         String idComponent = StringUtils.leftPad(getExperiment().getId().toString(), PUBLIC_ID_COMPONENT_LENGTH, "0");
         getExperiment().setPublicIdentifier(piComponent + "-" + idComponent);
-    }
-
-    /**
-     * @return the useTcgaPolicy
-     */
-    @Column(nullable = false)
-    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
-    public boolean isUseTcgaPolicy() {
-        return useTcgaPolicy;
-    }
-
-    /**
-     * @param useTcgaPolicy the useTcgaPolicy to set
-     */
-    public void setUseTcgaPolicy(boolean useTcgaPolicy) {
-        this.useTcgaPolicy = useTcgaPolicy;
     }
 
     /**

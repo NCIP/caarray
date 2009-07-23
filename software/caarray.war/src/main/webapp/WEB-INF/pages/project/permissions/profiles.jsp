@@ -83,13 +83,6 @@
                                             </li>
                                         </ul>
                                         <br/>
-                                        <s:form action="project/permissions/setTcgaPolicy" cssClass="form" theme="simple" id="policy_form">
-                                            <s:hidden name="project.id"/>
-                                            <s:checkbox name="useTcgaPolicy" value="%{project.useTcgaPolicy}" cssStyle="border: none"/>
-                                            <s:label for="policy_form_useTcgaPolicy" value="Use TCGA Policy (applies only to Human SNP data)"/>
-                                            <input type="submit" class="enableEnterSubmit"/>
-                                        </s:form>
-                                        <caarray:linkButton actionClass="save" text="Save" style="margin-left: 0px" onclick="$('policy_form').submit(); return false;"/>
                                     </td>
                                 </tr>
                                 <tr>

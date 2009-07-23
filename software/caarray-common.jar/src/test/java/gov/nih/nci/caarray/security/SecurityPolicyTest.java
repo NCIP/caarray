@@ -87,12 +87,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 
 import org.junit.Test;
 
@@ -101,6 +100,11 @@ import org.junit.Test;
  * 
  */
 public class SecurityPolicyTest extends AbstractCaarrayTest {    
+    private static final String BLACKLIST_POLICY_NAME = "TCGA";    
+    private static final SecurityPolicy BLACKLIST = new SecurityPolicy(BLACKLIST_POLICY_NAME, SecurityPolicyMode.BLACKLIST);
+    
+
+
     @Test
     public void testSecurityPolicy() {
         TestClass test = new TestClass();
@@ -110,7 +114,7 @@ public class SecurityPolicyTest extends AbstractCaarrayTest {
         assertNull(test.getBaz());
         assertNotNull(test.getBros());
         assertTrue(test.getBros().contains("Bros"));
-        SecurityPolicy.applySecurityPolicies(test, Collections.singleton(SecurityPolicy.TCGA));
+        SecurityPolicy.applySecurityPolicies(test, Collections.singleton(BLACKLIST));
         assertEquals("FOO", test.getFoo());
         assertNull(test.getBaz());
         assertNotNull(test.getBros());
@@ -126,7 +130,7 @@ public class SecurityPolicyTest extends AbstractCaarrayTest {
         /**
          * @return the bros
          */
-        @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME, deny = SecurityPolicy.TCGA_POLICY_NAME)
+        @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME, deny = BLACKLIST_POLICY_NAME)
         public Set<String> getBros() {
             return bros;
         }
@@ -156,7 +160,7 @@ public class SecurityPolicyTest extends AbstractCaarrayTest {
         /**
          * @return the baz
          */
-        @AttributePolicy(deny = SecurityPolicy.TCGA_POLICY_NAME)
+        @AttributePolicy(deny = BLACKLIST_POLICY_NAME)
         public String getBaz() {
             return baz;
         }

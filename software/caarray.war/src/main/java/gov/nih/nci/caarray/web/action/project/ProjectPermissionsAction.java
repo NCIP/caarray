@@ -42,7 +42,6 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     private Set<AccessProfile> accessProfiles = new TreeSet<AccessProfile>();
     private AccessProfile accessProfile = new AccessProfile(SecurityLevel.NONE);
     private List<Long> sampleSecurityLevels = new ArrayList<Long>();
-    private boolean useTcgaPolicy;
     private String permSampleKeyword;
     private String permSampleSearch;
     private List<Sample> sampleResults = new ArrayList<Sample>();
@@ -91,27 +90,6 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     @SkipValidation
     public String editPermissions() {
         return SUCCESS;
-    }
-
-    /**
-     * Saves whether to use tcga policy.
-     *
-     * @return success
-     */
-    @SkipValidation
-    public String setTcgaPolicy() {
-        try {
-            ServiceLocatorFactory.getProjectManagementService().setUseTcgaPolicy(getProject().getId(),
-                    this.useTcgaPolicy);
-            ActionHelper.saveMessage(getText("project.tcgaPolicyUpdated", new String[]{getText("project.tcgaPolicy."
-                    + (this.useTcgaPolicy ? "enabled" : "disabled")) }));
-            return SUCCESS;
-        } catch (ProposalWorkflowException e) {
-            List<String> args = new ArrayList<String>();
-            args.add(getProject().getExperiment().getTitle());
-            ActionHelper.saveMessage(getText("project.permissionsSaveProblem", args));
-            return INPUT;
-        }
     }
 
     /**
@@ -301,21 +279,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     public void setSampleSecurityLevels(List<Long> sampleSecurityLevels) {
         this.sampleSecurityLevels = sampleSecurityLevels;
     }
-
-    /**
-     * @return the useTcgaPolicy
-     */
-    public boolean isUseTcgaPolicy() {
-        return this.useTcgaPolicy;
-    }
-
-    /**
-     * @param useTcgaPolicy the useTcgaPolicy to set
-     */
-    public void setUseTcgaPolicy(boolean useTcgaPolicy) {
-        this.useTcgaPolicy = useTcgaPolicy;
-    }
-
+    
     /**
      * @return the collaboratorGroups
      */

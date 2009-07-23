@@ -89,24 +89,16 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
-import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
-import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.security.AttributeMutator;
-import gov.nih.nci.caarray.security.AttributePolicy;
-import gov.nih.nci.caarray.security.SecurityPolicy;
 import gov.nih.nci.caarray.validation.UniqueConstraint;
 import gov.nih.nci.caarray.validation.UniqueConstraintField;
-import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -124,8 +116,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.collections.Closure;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -281,7 +271,6 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
      * @return the description
      */
     @Length(max = DEFAULT_STRING_COLUMN_SIZE)
-    @AttributePolicy(deny = SecurityPolicy.TCGA_POLICY_NAME)
     public String getDescription() {
         return this.description;
     }
@@ -317,8 +306,6 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
      */
     @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.LAZY)
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
-    @AttributePolicy(mutators = @AttributeMutator(policies = SecurityPolicy.TCGA_POLICY_NAME,
-            mutator = TcgaCharacteristicFilter.class))
     public Set<AbstractCharacteristic> getCharacteristics() {
         return this.characteristics;
     }
@@ -376,20 +363,6 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("PMD.CyclomaticComplexity")
-    public Set<SecurityPolicy> getPostLoadSecurityPolicies(User user) {
-        if (getExperiment() != null && getExperiment().getProject() != null) {
-            Project p = getExperiment().getProject();
-            if (p.isUseTcgaPolicy() && !p.isOwner(user) && !p.isCollaborator(user)) {
-                return Collections.singleton(SecurityPolicy.TCGA);
-            }            
-        }
-        return Collections.emptySet();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     // should really be one-to-many, but hibernate bug HHH-3160/HHH-1296 prevents reordering or deleting from the list
     // with a unique constraint on protocol_application
     @ManyToMany(fetch = FetchType.LAZY)
@@ -437,7 +410,6 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "biomaterial_organism_fk")
-    @AttributePolicy(deny = SecurityPolicy.TCGA_POLICY_NAME)
     public Organism getOrganism() {
         return this.organism;
     }
@@ -542,39 +514,4 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
             .toString();
     }
 
-    /**
-     * Attribute filter for characteristics under the TCGA Policy.
-     *
-     * @author dkokotov
-     */
-    public static class TcgaCharacteristicFilter implements Closure {
-        private static final String[] ALLOWED_CHARACTERISTIC_CATEGORIES =
-                {ExperimentOntologyCategory.CLINICAL_DIAGNOSIS.getCategoryName(),
-                        ExperimentOntologyCategory.HISTOLOGIC_DIAGNOSIS.getCategoryName(),
-                        ExperimentOntologyCategory.PATHOLOGIC_STATUS.getCategoryName(),
-                        ExperimentOntologyCategory.TISSUE_ANATOMIC_SITE.getCategoryName()};
-
-        /**
-         * {@inheritDoc}
-         */
-        @SuppressWarnings("unchecked")
-        public void execute(Object o) {
-            Set<AbstractCharacteristic> characteristics = (Set<AbstractCharacteristic>) o;
-            for (Iterator<AbstractCharacteristic> it = characteristics.iterator(); it.hasNext();) {
-                AbstractCharacteristic absChar = it.next();
-                if (!(absChar instanceof TermBasedCharacteristic)) {
-                    it.remove();
-                } else {
-                    TermBasedCharacteristic termChar = (TermBasedCharacteristic) absChar;
-                    if (!isCharacteristicAllowed(termChar)) {
-                        it.remove();
-                    }
-                }
-            }
-        }
-
-        private static boolean isCharacteristicAllowed(TermBasedCharacteristic termChar) {
-            return ArrayUtils.contains(ALLOWED_CHARACTERISTIC_CATEGORIES, termChar.getCategory().getName());
-        }
-    }
 }
