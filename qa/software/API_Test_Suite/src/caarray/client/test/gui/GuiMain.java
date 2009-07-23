@@ -182,6 +182,7 @@ public class GuiMain
         JScrollPane textScroll = new JScrollPane();
         textScroll.setViewportView(textDisplay);
         System.setOut(new PrintStream(new JTextAreaOutputStream(textDisplay)));
+        System.setErr(new PrintStream(new JTextAreaOutputStream(textDisplay)));
         centerPanel.add(textScroll);
         JScrollPane scroll = new JScrollPane(centerPanel);
         

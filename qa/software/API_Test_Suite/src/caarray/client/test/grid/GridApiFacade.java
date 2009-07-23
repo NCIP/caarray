@@ -9,6 +9,7 @@ import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
+import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
@@ -678,6 +679,29 @@ public class GridApiFacade implements ApiFacade
         }
         return resultsList;
     
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.ApiFacade#copyMageTabZipToOutputStream(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, boolean)
+     */
+    public byte[] copyMageTabZipToOutputStream(String api,
+            CaArrayEntityReference experimentReference, boolean compressed)
+            throws Exception
+    {
+        TransferServiceContextReference serviceContextRef = gridClient.getMageTabZipTransfer(experimentReference, compressed);
+        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef.getEndpointReference());
+        InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
+        byte[] byteArray = IOUtils.toByteArray(stream);
+        return byteArray;
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.ApiFacade#getMageTabExport(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference)
+     */
+    public MageTabFileSet getMageTabExport(String api,
+            CaArrayEntityReference experimentReference) throws Exception
+    {
+        return gridClient.getMageTabExport(experimentReference);
     }
     
     

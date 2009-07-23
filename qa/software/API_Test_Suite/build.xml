@@ -6,9 +6,9 @@
 	<!-- ******************************************************************* -->
 	<!-- ** SERVER CONNECTION PROPERTIES                                  ** -->
 	<!-- ******************************************************************* -->
-	<property name="grid.server.hostname" value="array-stage.nci.nih.gov" />
+	<property name="grid.server.hostname" value="array-qa.nci.nih.gov" />
 	<property name="grid.server.http.port" value="80" />
-	<property name="server.hostname" value="array-stage.nci.nih.gov" />
+	<property name="server.hostname" value="array-qa.nci.nih.gov" />
 	<property name="server.jndi.port" value="8080" />
 
 	<!-- ******************************************************************* -->

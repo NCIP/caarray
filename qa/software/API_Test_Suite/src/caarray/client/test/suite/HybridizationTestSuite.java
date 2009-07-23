@@ -4,6 +4,9 @@
 package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 
 import java.io.File;
@@ -26,9 +29,10 @@ public class HybridizationTestSuite extends SearchByExampleTestSuite
     + File.separator + "Hybridization.csv";
 
     private static final String NAME = "Name";
+    private static final String ARRAY_DESIGN = "Array Design";
     
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-        API, NAME, EXPECTED_RESULTS, MIN_RESULTS };
+        API, NAME, ARRAY_DESIGN,EXPECTED_RESULTS, MIN_RESULTS };
     
     /**
      * @param apiFacade
@@ -124,6 +128,25 @@ public class HybridizationTestSuite extends SearchByExampleTestSuite
         if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
         {
             example.setName(input[headerIndexMap.get(NAME)].trim());
+        }
+        if (headerIndexMap.get(ARRAY_DESIGN) < input.length && !input[headerIndexMap.get(ARRAY_DESIGN)].equals(""))
+        {
+            ArrayDesign design = new ArrayDesign();
+            design.setName(input[headerIndexMap.get(ARRAY_DESIGN)].trim());
+            ExampleSearchCriteria<ArrayDesign> crit = new ExampleSearchCriteria<ArrayDesign>();
+            try
+            {
+                SearchResult<ArrayDesign> result = apiFacade.searchByExample(search.getApi(), crit, null);
+                if (result.getResults() != null)
+                {
+                    example.setArrayDesign(result.getResults().get(0));
+                }
+            }
+            catch (Exception e)
+            {
+                System.out.println("Exception retrieving array design: " + e.getClass());
+            }
+            
         }
             
         

@@ -18,6 +18,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.healthmarketscience.rmiio.IOIteratorPipe.Source;
+
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
@@ -44,10 +46,11 @@ public class FileCriteriaTestSuite extends SearchByCriteriaTestSuite
     private static final String SAMPLE_REF = "Sample Reference";
     private static final String HYB = "Hybridization";
     private static final String HYB_REF = "Hybridization Reference";
+    private static final String SOURCE = "Source";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,ENUMERATE,
             API, EXPERIMENT_ID, EXPECTED_RESULTS, MIN_RESULTS,EXPERIMENT_TITLE, EXPERIMENT_REF,
-            EXTENSION, TYPE_REF, CATEGORY, SAMPLE, SAMPLE_REF, HYB, HYB_REF, API_UTILS_SEARCH };
+            EXTENSION, TYPE_REF, CATEGORY, SAMPLE, SAMPLE_REF, HYB, HYB_REF, SOURCE,API_UTILS_SEARCH };
 
     /**
      * @param apiFacade
@@ -391,6 +394,15 @@ public class FileCriteriaTestSuite extends SearchByCriteriaTestSuite
             if (ref.startsWith(VAR_START))
                 ref = getVariableValue(ref);
             criteria.getExperimentGraphNodes().add(new CaArrayEntityReference(ref));
+        }
+        if (headerIndexMap.get(SOURCE) < input.length && !input[headerIndexMap.get(SOURCE)].equals(""))
+        {
+            String name = input[headerIndexMap.get(SOURCE)];
+            if (name.startsWith(VAR_START))
+                name = getVariableValue(name);
+            CaArrayEntityReference ref = new CaArrayEntityReference(name);
+            //SearchResult<Source> TODO
+            criteria.getExperimentGraphNodes().add(ref);
         }
         
         search.setFileSearchCriteria(criteria);    

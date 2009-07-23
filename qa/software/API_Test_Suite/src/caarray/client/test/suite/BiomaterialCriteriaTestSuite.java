@@ -36,12 +36,13 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
     private static final String TYPE = "Type";
     private static final String EXPERIMENT_TITLE = "Experiment Title";
     private static final String EXPERIMENT_REF = "Experiment Ref";
+    private static final String EXTERNAL_ID = "External Id";
     private static final String ANNO_CATEGORY = "Annotation Category";
     private static final String ANNO_VALUE = "Annotation Value";
     
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,ENUMERATE,
             API, NAME, EXPECTED_RESULTS, MIN_RESULTS, TYPE, EXPERIMENT_TITLE, EXPERIMENT_REF,
-            ANNO_CATEGORY, ANNO_VALUE, API_UTILS_SEARCH};
+            EXTERNAL_ID,ANNO_CATEGORY, ANNO_VALUE, API_UTILS_SEARCH};
 
     /**
      * @param apiFacade
@@ -180,6 +181,14 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
                     
             criteria.getNames().add(name);
         }
+        if (headerIndexMap.get(EXTERNAL_ID) < input.length && !input[headerIndexMap.get(EXTERNAL_ID)].equals(""))
+        {
+            String id = input[headerIndexMap.get(EXTERNAL_ID)].trim();
+            if (id.startsWith(VAR_START))
+                id = getVariableValue(id);
+                    
+            criteria.getExternalIds().add(id);
+        }   
         if (headerIndexMap.get(TYPE) < input.length && !input[headerIndexMap.get(TYPE)].equals(""))
         {
             String name = input[headerIndexMap.get(TYPE)].toUpperCase().trim();
@@ -233,7 +242,14 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
                     
             criteria.getNames().add(name);
         }
-            
+        if (headerIndexMap.get(EXTERNAL_ID) < input.length && !input[headerIndexMap.get(EXTERNAL_ID)].equals(""))
+        {
+            String id = input[headerIndexMap.get(EXTERNAL_ID)].trim();
+            if (id.startsWith(VAR_START))
+                id = getVariableValue(id);
+                    
+            criteria.getExternalIds().add(id);
+        }   
         if (headerIndexMap.get(TYPE) < input.length && !input[headerIndexMap.get(TYPE)].equals(""))
         {
             String name = input[headerIndexMap.get(TYPE)].toUpperCase().trim();

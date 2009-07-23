@@ -5,9 +5,12 @@ package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.DataSet;
+import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -36,6 +39,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
     private static final String FILE_EXPERIMENT = "File Experiment";
     private static final String FILE_EXPERIMENT_ID= "File Experiment Id";
     private static final String EXPERIMENT_REF= "Experiment Reference";
+    private static final String HYB= "Hybridization";
     private static final String MULTI_FILE_NUM= "Multi File Num";
     private static final String MULTI_FILE_TYPE= "Multi File Type";
     private static final String COMPRESSED = "Compressed";
@@ -43,12 +47,15 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
     private static final String EXPECTED_BYTES = "Expected Bytes";
     private static final String MIN_BYTES = "Min Bytes";
     private static final String MAX_BYTES = "Max Bytes";
+    private static final String IDF_BYTES = "Expected IDF Bytes";
+    private static final String SDRF_BYTES = "Expected SDRF Bytes";
+    private static final String NUM_FILE = "Expected File Num";
     private static final String MAGE = "Mage Tab";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-            API, FILE_REF, API_UTILS_SEARCH,
+            API, FILE_REF, API_UTILS_SEARCH, HYB,
             FILE, FILE_EXPERIMENT, FILE_EXPERIMENT_ID, EXPERIMENT_REF,MULTI_FILE_NUM, MULTI_FILE_TYPE, COMPRESSED, ZIP, EXPECTED_BYTES, MIN_BYTES, MAX_BYTES,
-            MAX_TIME, MAGE};
+            MAX_TIME, IDF_BYTES, SDRF_BYTES, NUM_FILE, MAGE};
     /**
      * @param apiFacade
      */
@@ -66,6 +73,9 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
     {
         FileContentsSearch fileSearch = (FileContentsSearch)search;
         int size = 0;
+        int idfBytes = 0;
+        int sdrfBytes = 0;
+        int numFiles = 0;
         if (resultsList == null)
             size = 0;
         else if (resultsList instanceof byte[])
@@ -78,6 +88,19 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
                 if (result != null)
                     size += result.length;
             }
+        }
+        else if (resultsList instanceof MageTabFileSet)
+        {
+            MageTabFileSet fileSet = (MageTabFileSet)resultsList;
+            if (fileSet.getIdf() != null && fileSet.getIdf().getContents() != null)
+                idfBytes = fileSet.getIdf().getContents().length;
+            
+            if (fileSet.getSdrf() != null && fileSet.getSdrf().getContents() != null)
+                sdrfBytes = fileSet.getSdrf().getContents().length;
+            
+            if (fileSet.getDataFiles() != null)
+                numFiles = fileSet.getDataFiles().size();
+            
         }
         
         if (fileSearch.getExpectedBytes() != null)
@@ -149,6 +172,57 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
                 testResult.addDetail(detail);
             }
         }
+        if (fileSearch.getIdfBytes() != null)
+        {
+            
+            if (idfBytes > fileSearch.getIdfBytes())
+            {
+                String errorMessage = "Failed with unexpected number of IDF bytes, expected: "
+                        + fileSearch.getIdfBytes()
+                        + ", actual number of bytes: " + idfBytes;
+                setTestResultFailure(testResult, fileSearch, errorMessage);
+            }
+            else
+            {
+                String detail = "Found expected IDF bytes: "
+                        + idfBytes;
+                testResult.addDetail(detail);
+            }
+        }
+        if (fileSearch.getSdrfBytes() != null)
+        {
+            
+            if (sdrfBytes > fileSearch.getSdrfBytes())
+            {
+                String errorMessage = "Failed with unexpected number of SDRF bytes, expected: "
+                        + fileSearch.getSdrfBytes()
+                        + ", actual number of bytes: " + sdrfBytes;
+                setTestResultFailure(testResult, fileSearch, errorMessage);
+            }
+            else
+            {
+                String detail = "Found expected SDRF bytes: "
+                        + sdrfBytes;
+                testResult.addDetail(detail);
+            }
+        }
+        if (fileSearch.getNumFiles() != null)
+        {
+            
+            if (numFiles > fileSearch.getNumFiles())
+            {
+                String errorMessage = "Failed with unexpected number of files, expected: "
+                        + fileSearch.getNumFiles()
+                        + ", actual number of files: " + numFiles;
+                setTestResultFailure(testResult, fileSearch, errorMessage);
+            }
+            else
+            {
+                String detail = "Found expected number of files: "
+                        + numFiles;
+                testResult.addDetail(detail);
+            }
+        }
         
     }
 
@@ -170,6 +244,13 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
                 return apiFacade.copyFileContentsUtils(search.getApi(), fileSearch.getFileReferences(), fileSearch.isCompressed());
             }
             
+            if (fileSearch.isMage())
+            {
+                if (fileSearch.isZip())
+                    return apiFacade.copyMageTabZipToOutputStream(search.getApi(), fileSearch.getExperimentRef(), fileSearch.isCompressed());
+                
+                return apiFacade.getMageTabExport(search.getApi(), fileSearch.getExperimentRef());
+            }
             if (fileSearch.isZip())
                 return apiFacade.getFileContentsZip(search.getApi(), fileSearch.getFileReferences(), fileSearch.isCompressed());
             
@@ -260,7 +341,19 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
         if (headerIndexMap.get(MAX_BYTES) < input.length
                 && !input[headerIndexMap.get(MAX_BYTES)].equals(""))
             search.setMaxBytes(Integer
-                    .parseInt(input[headerIndexMap.get(MAX_BYTES)].trim()));      
+                    .parseInt(input[headerIndexMap.get(MAX_BYTES)].trim())); 
+        if (headerIndexMap.get(IDF_BYTES) < input.length
+                && !input[headerIndexMap.get(IDF_BYTES)].equals(""))
+            search.setIdfBytes(Integer
+                    .parseInt(input[headerIndexMap.get(IDF_BYTES)].trim()));    
+        if (headerIndexMap.get(SDRF_BYTES) < input.length
+                && !input[headerIndexMap.get(SDRF_BYTES)].equals(""))
+            search.setSdrfBytes(Integer
+                    .parseInt(input[headerIndexMap.get(SDRF_BYTES)].trim()));   
+        if (headerIndexMap.get(NUM_FILE) < input.length
+                && !input[headerIndexMap.get(NUM_FILE)].equals(""))
+            search.setNumFiles(Integer
+                    .parseInt(input[headerIndexMap.get(NUM_FILE)].trim()));  
         if (headerIndexMap.get(COMPRESSED) < input.length
                 && !input[headerIndexMap.get(COMPRESSED)].equals(""))
             search.setCompressed(Boolean.parseBoolean(input[headerIndexMap.get(COMPRESSED)].trim()));
@@ -328,6 +421,17 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
             for (DataFile file : files)
             {
                 search.addFileReference(file.getReference());
+            }
+        }
+        if (headerIndexMap.get(HYB) < input.length && !input[headerIndexMap.get(HYB)].equals(""))
+        {
+            Hybridization hyb = apiFacade.getHybridization(search.getApi(), input[headerIndexMap.get(HYB)].trim());
+            if (hyb != null && hyb.getArrayDesign() != null)
+            {
+                for (DataFile file : hyb.getArrayDesign().getFiles())
+                {
+                    search.addFileReference(file.getReference());
+                }
             }
         }
         if (headerIndexMap.get(MAGE) < input.length && !input[headerIndexMap.get(MAGE)].equals(""))

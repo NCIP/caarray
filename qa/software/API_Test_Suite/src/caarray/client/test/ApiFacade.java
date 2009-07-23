@@ -9,6 +9,7 @@ import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
+import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
@@ -137,4 +138,8 @@ public interface ApiFacade
     public byte[] copyFileContentsUtils(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
     
     public byte[] copyFileContentsZipUtils(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
+    
+    public MageTabFileSet getMageTabExport(String api, CaArrayEntityReference experimentReference) throws Exception;
+    
+    public byte[] copyMageTabZipToOutputStream(String api, CaArrayEntityReference experimentReference, boolean compressed) throws Exception;
 }

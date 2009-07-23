@@ -5,6 +5,7 @@ package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 
 import java.io.File;
 import java.util.List;
@@ -26,9 +27,10 @@ public class TermTestSuite extends SearchByExampleTestSuite
     + File.separator + "Term.csv";
 
     private static final String VALUE = "Value";
+    private static final String TERM_SOURCE = "Term Source";
     
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-        API, VALUE, EXPECTED_RESULTS, MIN_RESULTS };
+        API, VALUE, TERM_SOURCE, EXPECTED_RESULTS, MIN_RESULTS };
     
     /**
      * @param apiFacade
@@ -125,6 +127,13 @@ public class TermTestSuite extends SearchByExampleTestSuite
         {
             example.setValue(input[headerIndexMap.get(VALUE)].trim());
         }
+        if (headerIndexMap.get(TERM_SOURCE) < input.length && !input[headerIndexMap.get(TERM_SOURCE)].equals(""))
+        {
+            TermSource source = new TermSource();
+            source.setName(input[headerIndexMap.get(TERM_SOURCE)].trim());
+            example.setTermSource(source);
+        }
+
             
         
         search.setTerm(example);

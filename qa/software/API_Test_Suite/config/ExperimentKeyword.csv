@@ -15,3 +15,9 @@ Test Case,API,Keyword,Expected Results,Min Results,API Utils,Enumerate
 41,grid,GlaxoSmithKline,2,,,
 42,java,,,100,TRUE,
 348,grid,,,100,,TRUE
+275,java,woost-00041,1,,,
+276,java,Illumina,,3,,
+277,java,Mapping250K_Nsp,,3,,
+278,grid,woost-00041,1,,,
+279,grid,Illumina,,3,,
+280,grid,Mapping250K_Nsp,,3,,

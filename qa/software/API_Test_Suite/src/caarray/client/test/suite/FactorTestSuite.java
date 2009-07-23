@@ -5,6 +5,7 @@ package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.factor.Factor;
+import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 import java.io.File;
 import java.util.List;
@@ -26,9 +27,10 @@ public class FactorTestSuite extends SearchByExampleTestSuite
     + File.separator + "Factor.csv";
 
     private static final String NAME = "Name";
+    private static final String TYPE = "Type";
     
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-        API, NAME, EXPECTED_RESULTS, MIN_RESULTS };
+        API, NAME, TYPE,EXPECTED_RESULTS, MIN_RESULTS };
     
     /**
      * @param apiFacade
@@ -125,6 +127,12 @@ public class FactorTestSuite extends SearchByExampleTestSuite
         if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
         {
             example.setName(input[headerIndexMap.get(NAME)].trim());
+        }
+        if (headerIndexMap.get(TYPE) < input.length && !input[headerIndexMap.get(TYPE)].equals(""))
+        {
+            Term term = new Term();
+            term.setValue(input[headerIndexMap.get(TYPE)].trim());
+            example.setType(term);
         }
             
         

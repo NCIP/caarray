@@ -9,6 +9,7 @@ import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
+import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
@@ -363,6 +364,25 @@ public class FullApiFacade implements ApiFacade
             HybridizationSearchCriteria criteria) throws Exception
     {
         return getFacade(api).enumerateHybridizations(api, criteria);
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.ApiFacade#copyMageTabZipToOutputStream(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, boolean)
+     */
+    public byte[] copyMageTabZipToOutputStream(String api,
+            CaArrayEntityReference experimentReference, boolean compressed)
+            throws Exception
+    {
+        return getFacade(api).copyMageTabZipToOutputStream(api, experimentReference, compressed);
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.ApiFacade#getMageTabExport(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference)
+     */
+    public MageTabFileSet getMageTabExport(String api,
+            CaArrayEntityReference experimentReference) throws Exception
+    {
+        return getFacade(api).getMageTabExport(api, experimentReference);
     }
     
     
