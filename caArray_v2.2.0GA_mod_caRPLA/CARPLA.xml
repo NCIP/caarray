@@ -3,9 +3,15 @@
 
 	</description>
 
-	<!-- have manually copied local.properties into modded_dir/build -->
+	
 
-	<!-- go to 	mod_dir/build and run ant -->
+	<!-- caArray_v2.2.0GA needs to be downloaded. Make a copy. -->
+	<!-- These will become orig.dir and modded.dir respectively -->
+	<!-- This assumes existing jboss setup. -->
+	<!-- Manually copy *.properties into modded_dir/build -->
+	<!-- Top-level property files required for installer functionality (not used here) -->
+	
+
 	<property name="orig.dir" value="${basedir}/../caArray_v2.2.0GA" />
 	<property name="changes.dir" value="${basedir}/CAARRAY_SOFTWARE_CHANGES" />
 	<property name="modded.dir" value="${basedir}/../caArray2/software" />
