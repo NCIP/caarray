@@ -40,7 +40,7 @@
                 <div id="theForm">
                     <caarray:actions>
                         <caarray:action actionClass="cancel" text="Close Window" onclick="window.close()" />
-                        <caarray:action actionClass="import" text="Close Window and go to Manage Design Arrays" onclick="closeAndUpdate()" />
+                        <caarray:action actionClass="import" text="Close Window and go to Manage Array Designs" onclick="closeAndUpdate()" />
                     </caarray:actions>
                 </div>
             </div>
