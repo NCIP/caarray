@@ -1,6 +1,0 @@
-set-variable in /etc/my.cnf
-
-lower_case_table_names=1
-in mysql conf BEFORE 
-
-check local.properties for how to put this in jdbc properties...
