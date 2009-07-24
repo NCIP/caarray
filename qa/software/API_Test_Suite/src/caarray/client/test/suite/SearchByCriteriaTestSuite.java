@@ -57,7 +57,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                 }
                 catch (Exception e)
                 {
-                    throw new TestConfigurationException("Expection constructing test case " + search.getTestCase() + ": "+ e.getClass());
+                    throw new TestConfigurationException("Exception constructing test case " + search.getTestCase() + ": "+ e.getClass());
                 }
                 
             }

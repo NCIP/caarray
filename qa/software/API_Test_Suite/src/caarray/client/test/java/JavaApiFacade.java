@@ -509,6 +509,16 @@ public class JavaApiFacade implements ApiFacade
             CaArrayEntityReference experimentReference) throws Exception
     {
         return dataService.exportMageTab(experimentReference);
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.ApiFacade#copyMageTabZipApiUtils(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, boolean)
+     */
+    public byte[] copyMageTabZipApiUtils(String api,
+            CaArrayEntityReference experimentReference, boolean compressed)
+            throws Exception
+    {
+        return copyMageTabZipToOutputStream(api, experimentReference, compressed);
     }   
     
     

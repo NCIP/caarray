@@ -384,6 +384,16 @@ public class FullApiFacade implements ApiFacade
     {
         return getFacade(api).getMageTabExport(api, experimentReference);
     }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.ApiFacade#copyMageTabZipApiUtils(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, boolean)
+     */
+    public byte[] copyMageTabZipApiUtils(String api,
+            CaArrayEntityReference experimentReference, boolean compressed)
+            throws Exception
+    {
+        return getFacade(api).copyMageTabZipApiUtils(api, experimentReference, compressed);
+    }
     
     
 

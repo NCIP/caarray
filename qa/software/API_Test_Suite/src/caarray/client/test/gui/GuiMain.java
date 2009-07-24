@@ -196,7 +196,10 @@ public class GuiMain
             {
                 try
                     {
+                        long start = System.currentTimeMillis();
                         runTests();
+                        long time = System.currentTimeMillis() - start;
+                        System.out.println("Tests executed in: " + (double)time/(double)1000 + " seconds.");
                     }
                     catch (Exception e)
                     {

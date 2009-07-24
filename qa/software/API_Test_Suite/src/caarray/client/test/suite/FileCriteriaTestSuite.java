@@ -18,8 +18,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.healthmarketscience.rmiio.IOIteratorPipe.Source;
-
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
@@ -401,7 +399,7 @@ public class FileCriteriaTestSuite extends SearchByCriteriaTestSuite
             if (name.startsWith(VAR_START))
                 name = getVariableValue(name);
             CaArrayEntityReference ref = new CaArrayEntityReference(name);
-            //SearchResult<Source> TODO
+            //SearchResult<Sour> TODO
             criteria.getExperimentGraphNodes().add(ref);
         }
         

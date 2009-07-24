@@ -142,4 +142,6 @@ public interface ApiFacade
     public MageTabFileSet getMageTabExport(String api, CaArrayEntityReference experimentReference) throws Exception;
     
     public byte[] copyMageTabZipToOutputStream(String api, CaArrayEntityReference experimentReference, boolean compressed) throws Exception;
+    
+    public byte[] copyMageTabZipApiUtils(String api, CaArrayEntityReference experimentReference, boolean compressed) throws Exception;
 }

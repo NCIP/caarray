@@ -247,7 +247,13 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
             if (fileSearch.isMage())
             {
                 if (fileSearch.isZip())
+                {
+                    if (fileSearch.isApiUtilsSearch())
+                        return apiFacade.copyMageTabZipApiUtils(search.getApi(), fileSearch.getExperimentRef(), fileSearch.isCompressed());
+                    
                     return apiFacade.copyMageTabZipToOutputStream(search.getApi(), fileSearch.getExperimentRef(), fileSearch.isCompressed());
+                }
+                    
                 
                 return apiFacade.getMageTabExport(search.getApi(), fileSearch.getExperimentRef());
             }

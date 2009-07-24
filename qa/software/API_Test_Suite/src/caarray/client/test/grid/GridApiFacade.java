@@ -42,6 +42,7 @@ import gov.nih.nci.cagrid.wsenum.utils.EnumerationResponseHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -57,6 +58,8 @@ import org.cagrid.transfer.context.client.helper.TransferClientHelper;
 import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
 import org.globus.ws.enumeration.ClientEnumIterator;
 import org.globus.wsrf.encoding.ObjectDeserializer;
+
+import com.sun.media.sound.DataPusher;
 
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
@@ -702,6 +705,19 @@ public class GridApiFacade implements ApiFacade
             CaArrayEntityReference experimentReference) throws Exception
     {
         return gridClient.getMageTabExport(experimentReference);
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.client.test.ApiFacade#copyMageTabZipApiUtils(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, boolean)
+     */
+    public byte[] copyMageTabZipApiUtils(String api,
+            CaArrayEntityReference experimentReference, boolean compressed)
+            throws Exception
+    {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        dataApiUtils.copyMageTabZipToOutputStream(experimentReference, compressed, stream);
+        byte[] byteArray = stream.toByteArray();
+        return byteArray;
     }
     
     

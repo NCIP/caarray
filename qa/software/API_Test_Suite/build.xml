@@ -16,6 +16,7 @@
 	<!-- ******************************************************************* -->
 	<property name="src.dir" value="${basedir}/src" />
 	<property name="package.dir" value="/caarray/client/test" />
+	<property name="gui.src.dir" value="${package.dir}/gui" />
 	<property name="grid.src.dir" value="${package.dir}/grid" />
 	<property name="java.src.dir" value="${package.dir}/java" />
 	<property name="full.src.dir" value="${package.dir}/full" />
@@ -59,7 +60,7 @@
 
 	<target name="build_grid">
 		<mkdir dir="${classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true" excludes="${full.src.dir}/**,${java.src.dir}/**">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true" excludes="${full.src.dir}/**,${java.src.dir}/**,${gui.src.dir}/**">
 			<classpath>
 				<fileset dir="${lib.dir}">
 					<include name="*.jar" />
@@ -73,7 +74,7 @@
 
 	<target name="build_java">
 		<mkdir dir="${classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true" excludes="${full.src.dir}/**,${grid.src.dir}/**">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true" excludes="${full.src.dir}/**,${grid.src.dir}/**,${gui.src.dir}/**">
 			<classpath>
 				<fileset dir="${lib.dir}">
 					<include name="*.jar" />
@@ -93,6 +94,8 @@
 					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
+			<jvmarg value="-Xms64m"/>
+			<jvmarg value="-Xmx256m"/>
 			<sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
 			<sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
 			<sysproperty key="server.hostname" value="${server.hostname}" />
@@ -115,6 +118,8 @@
 					<include name="*.jar" />
 				</fileset>
 			</classpath>
+			<jvmarg value="-Xms64m"/>
+			<jvmarg value="-Xmx256m"/>
 			<sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
 			<sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
 			<sysproperty key="server.hostname" value="${server.hostname}" />
@@ -137,6 +142,8 @@
 					<include name="*.jar" />
 				</fileset>
 			</classpath>
+			<jvmarg value="-Xms64m"/>
+			<jvmarg value="-Xmx256m"/>
 			<sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
 			<sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
 			<sysproperty key="server.hostname" value="${server.hostname}" />
