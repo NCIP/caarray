@@ -17,8 +17,8 @@ should be as follows:
 		 
 To run the test suite via gui: 	in a command line shell, navigate to the
 'API_Test_Suite' directory and run the 'ant' command. This will build an
-executable .jar file in the /gui directory, which can be run by clicking
-on the file, or by navigating to the /gui directory in a command line shell
+executable .jar file in the API_Test_Suite directory, which can be run by clicking
+on the file, or by navigating to the API_Test_Suite directory in a command line shell
 and executing the command java -jar client_api_test_suite.jar.
 
 To run the test suite with ant: in a command line shell, navigate to the

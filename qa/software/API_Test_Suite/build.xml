@@ -26,6 +26,7 @@
 	<property name="classes.dir" value="${basedir}/classes" />
 	<property name="jar.dir" value="${basedir}/gui" />
 	<property name="jar.file" value="${jar.dir}/client_api_test_suite.jar" />
+	<property name="jar.dest.file" value="${basedir}/client_api_test_suite.jar" />
 	
 	<!-- ******************************************************************* -->
 	<!-- ** TEST SUITE PROPERTIES                                         ** -->
@@ -119,7 +120,7 @@
 				</fileset>
 			</classpath>
 			<jvmarg value="-Xms64m"/>
-			<jvmarg value="-Xmx256m"/>
+			<jvmarg value="-Xmx512m"/>
 			<sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
 			<sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
 			<sysproperty key="server.hostname" value="${server.hostname}" />
@@ -143,7 +144,7 @@
 				</fileset>
 			</classpath>
 			<jvmarg value="-Xms64m"/>
-			<jvmarg value="-Xmx256m"/>
+			<jvmarg value="-Xmx512m"/>
 			<sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
 			<sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
 			<sysproperty key="server.hostname" value="${server.hostname}" />
@@ -166,14 +167,13 @@
 			<include name="*.jar"/>
 		</fileset>
 	</path>
-	<manifestclasspath property="jar.manifest.classpath" jarfile="${jar.file}">
+	<manifestclasspath property="jar.manifest.classpath" jarfile="${jar.dest.file}">
 		<classpath refid="jar.classpath" />
 	</manifestclasspath>
 
 	<target name="jar" depends="clean,build_all">
-		<delete dir="${jar.dir}"/>
-		<mkdir dir="${jar.dir}"/>
-	    <jar destfile="${jar.file}"
+		<delete file="${jar.dest.file}"/>
+	    <jar destfile="${jar.dest.file}"
 	         basedir="${classes.dir}"
 	         includes="**/*.class">
 	      <manifest>

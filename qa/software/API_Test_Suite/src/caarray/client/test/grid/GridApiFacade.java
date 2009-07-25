@@ -42,7 +42,6 @@ import gov.nih.nci.cagrid.wsenum.utils.EnumerationResponseHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -58,8 +57,6 @@ import org.cagrid.transfer.context.client.helper.TransferClientHelper;
 import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
 import org.globus.ws.enumeration.ClientEnumIterator;
 import org.globus.wsrf.encoding.ObjectDeserializer;
-
-import com.sun.media.sound.DataPusher;
 
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;

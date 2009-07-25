@@ -196,10 +196,9 @@ public class GuiMain
             {
                 try
                     {
-                        long start = System.currentTimeMillis();
+                        
                         runTests();
-                        long time = System.currentTimeMillis() - start;
-                        System.out.println("Tests executed in: " + (double)time/(double)1000 + " seconds.");
+                        
                     }
                     catch (Exception e)
                     {
@@ -273,6 +272,7 @@ public class GuiMain
                        {
                            apiFacade.connect();
                            System.out.println("Executing test suites ...");
+                           long start = System.currentTimeMillis();
                            for (int i = 0; i < runTests.length; i++)
                            {
                                if (runTests[i])
@@ -280,6 +280,8 @@ public class GuiMain
                                    testSuites.get(i).runTests(resultReport);
                                }
                            }
+                           long time = System.currentTimeMillis() - start;
+                           System.out.println("Tests executed in: " + (double)time/(double)1000 + " seconds.");
                            resultReport.writeReport();
                            executionThread = null;
                            isRunning = false;
