@@ -290,7 +290,8 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
         try {
             return type.cast(o);                    
         } catch (ClassCastException e) {
-            throw new IncorrectEntityTypeException(new CaArrayEntityReference(lsid)); // NOPMD 
+            throw new IncorrectEntityTypeException(new CaArrayEntityReference(lsid), // NOPMD
+                        "expected a reference to a type " + type.getName());
         }
     }
 
@@ -337,7 +338,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      */
     protected <T> List<T> mapRequiredReferencesToEntities(Collection<CaArrayEntityReference> refs, Class<T> type)
             throws InvalidReferenceException {
-        List<T> entities = new ArrayList<T>();
+        List<T> entities = new ArrayList<T>(refs.size());
         mapRequiredReferencesToEntities(refs, entities, type);
         return entities;
     }

@@ -25,9 +25,6 @@ import gov.nih.nci.caarray.external.v1_0.data.HybridizationData;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 
 import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +32,6 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import org.junit.Before;
@@ -260,8 +256,8 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
         ZipInputStream zin = new ZipInputStream(is);
         ZipEntry ze = zin.getNextEntry();
         HashMap<String, String> expected = new HashMap<String, String>();
-        expected.put("admin-0000"+id+".idf", "<sythetic>");//?? changes  dynamic?
-        expected.put("admin-0000"+id+".sdrf", "<sythetic>");
+        expected.put("admin-0000"+id+".idf", "<synthetic>");//?? changes  dynamic?
+        expected.put("admin-0000"+id+".sdrf", "<synthetic>");
 
         expected.put("8kNew111_14v1p4m12.gpr", "84823097c0db8d62028cfaa896a14ff9");
         expected.put("8kNew111_14_4601_m84.gpr", "a563783e47fe4ef352f82ac1731f848b");
@@ -288,7 +284,7 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
         while (ze != null) {
             String exHash = expected.get(ze.getName());
             assertNotNull("unexpected file "+ze.getName(), exHash);
-            if (!"<sythetic>".equals(exHash)) {
+            if (!"<synthetic>".equals(exHash)) {
                 byte[] b = md5(zin);
                 String hash = toHex(b);
                 logForSilverCompatibility(TEST_OUTPUT, "file \""+ze.getName()+"\", MD5 \""+hash+"\"");                
@@ -319,7 +315,7 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
         assertNull("empty experiment.  should only have 2 entries", ze);
     }
 
-    private static byte[] md5(InputStream in) throws IOException, NoSuchAlgorithmException {
+    public static byte[] md5(InputStream in) throws IOException, NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         byte[] b = new byte[1024 * 8];
         int c = in.read(b);
@@ -331,7 +327,7 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
         return b;
     }
 
-    private static String toHex(byte[] b) {
+    public static String toHex(byte[] b) {
         String hash;
         hash = new BigInteger(1, b).toString(16);
         return hash;

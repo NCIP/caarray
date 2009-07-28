@@ -10,15 +10,26 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
+import gov.nih.nci.caarray.external.v1_0.array.AssayType;
+import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataType;
+import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact;
+import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
+import gov.nih.nci.caarray.external.v1_0.factor.Factor;
+import gov.nih.nci.caarray.external.v1_0.factor.FactorValue;
 import gov.nih.nci.caarray.external.v1_0.query.AnnotationCriterion;
+import gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
@@ -26,9 +37,15 @@ import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.external.v1_0.sample.AnnotationColumn;
+import gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
+import gov.nih.nci.caarray.external.v1_0.sample.Characteristic;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
+import gov.nih.nci.caarray.external.v1_0.value.AbstractValue;
+import gov.nih.nci.caarray.external.v1_0.value.TermValue;
+import gov.nih.nci.caarray.external.v1_0.value.UserDefinedValue;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
@@ -37,14 +54,15 @@ import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 
 import java.util.Set;
 import javax.ejb.EJBException;
 import org.junit.Test;
+import org.apache.commons.beanutils.PropertyUtils;
 
 
 /**
@@ -495,6 +513,8 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         assertEquals("name", "gov.nih.nci.ncicb.caarray:Hybridization:1015897590131481:1", h.getName());
     }
 
+    /////////////////////////////////
+
     @Test
     public void testSearchForQuantitationTypes() throws InvalidReferenceException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes");
@@ -514,6 +534,77 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         assertEquals(DataType.INTEGER, qt.getDataType());
     }
 
+    @Test
+    public void testSearchForQuantitationTypes_NoHyb() throws InvalidReferenceException {
+        logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_NoHyb");
+
+        try {
+            QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
+            List<QuantitationType> types = service.searchForQuantitationTypes(crit);
+            logForSilverCompatibility(TEST_OUTPUT, "unexpected validation outcome");
+            fail();
+        } catch(javax.ejb.EJBException e) {
+            assertEquals(NullPointerException.class, e.getCausedByException().getClass());
+            logForSilverCompatibility(TEST_OUTPUT, "null Hyb validation :" + e.getCause());
+        }
+    }
+
+    @Test
+    public void testSearchForQuantitationTypes_All() throws InvalidReferenceException {
+        logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_All");
+        QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
+        crit.setHybridization(new CaArrayEntityReference(
+                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1"));
+        List<QuantitationType> types = service.searchForQuantitationTypes(crit);
+        assertEquals(38, types.size());
+        
+    }
+
+    @Test
+    public void testSearchForQuantitationTypes_ArrayDataType() throws InvalidReferenceException {
+        logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_ArrayDataType");
+        QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
+        crit.setHybridization(new CaArrayEntityReference(
+                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1"));
+        crit.getArrayDataTypes().add(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.ArrayDataType:1"));//Affymetrix CHP (Gene Expression)
+        List<QuantitationType> types = service.searchForQuantitationTypes(crit);
+        assertEquals(0, types.size());
+
+        crit.getArrayDataTypes().clear();
+        crit.getArrayDataTypes().add(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.ArrayDataType:4"));//Genepix GPR (Gene Expression)
+        types = service.searchForQuantitationTypes(crit);
+    }
+
+    @Test
+    public void testSearchForQuantitationTypes_FileTypeCategories() throws InvalidReferenceException {
+        logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_FileTypeCategories");
+        QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
+        crit.setHybridization(new CaArrayEntityReference(
+                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1"));
+        crit.getFileTypeCategories().add(FileTypeCategory.DERIVED);
+        List<QuantitationType> types = service.searchForQuantitationTypes(crit);
+        assertEquals(38, types.size());
+    }
+
+
+    /*
+     * see GF 22409.
+     **/
+    @Test
+    public void testSearchForQuantitationTypes_FileTypes() throws InvalidReferenceException {
+        logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_FileTypes");
+        QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
+        crit.setHybridization(new CaArrayEntityReference(
+                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1"));
+        crit.getFileTypes().add(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:GENEPIX_GPR"));
+        List<QuantitationType> types = service.searchForQuantitationTypes(crit);
+        assertEquals(38, types.size());
+
+        crit.getFileTypes().clear();
+        crit.getFileTypes().add(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:ILLUMINA_IDAT"));
+        types = service.searchForQuantitationTypes(crit);
+        assertEquals(0, types.size());
+    }
     ///////////////////////////////
     
     @Test
@@ -540,7 +631,6 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         assertEquals("UncompressedSize", 1771373, df.getUncompressedSize());        
     }
 
-    // ExperimentGraphNodes, Extention, Type
     @Test
     public void testSearchForFiles_Experiment() throws InvalidReferenceException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Experiment");
@@ -548,32 +638,31 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         crit.setExperiment(new CaArrayEntityReference(
                 "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
         List<DataFile> files = service.searchForFiles(crit, null).getResults();
-        assertEquals(19, files.size());
+        assertEquals(files.toString(), 19, files.size());
     }
 
     @Test
     public void testSearchForFiles_ExperimentGraphNodes() throws InvalidReferenceException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_ExperimentGraphNodes");
-        Set<CaArrayEntityReference> nodes = new HashSet<CaArrayEntityReference>(4);
-        nodes.add(new CaArrayEntityReference(
-                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1"));//Hybridization
-        nodes.add(new CaArrayEntityReference(
-                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:74"));//Extract
-        nodes.add(new CaArrayEntityReference(
-                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:11"));//Labled Extract
-        nodes.add(new CaArrayEntityReference(
-                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:97"));//Sample
-        nodes.add(new CaArrayEntityReference(
-                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:112"));//Source
         FileSearchCriteria crit = new FileSearchCriteria();
-        crit.setExperimentGraphNodes(nodes);
+        crit.getExperimentGraphNodes().add(new CaArrayEntityReference(
+                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1"));//Hybridization
+        crit.getExperimentGraphNodes().add(new CaArrayEntityReference(
+                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:74"));//Extract
+        crit.getExperimentGraphNodes().add(new CaArrayEntityReference(
+                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:11"));//Labled Extract
+        crit.getExperimentGraphNodes().add(new CaArrayEntityReference(
+                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:97"));//Sample
+        crit.getExperimentGraphNodes().add(new CaArrayEntityReference(
+                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:112"));//Source
+        
         List<DataFile> files = service.searchForFiles(crit, null).getResults();
-        List<String> expectedNames = Arrays.asList(
+        List<String> expectedNames = new ArrayList<String>(Arrays.asList(
                 "8kReversNew17_111_4601_m83.gpr",
                 "8kNew111_14v1p4m12.gpr",
                 "8kNewPr111_14v1p4m13.gpr",
                 "8kNew111_17m12701m36.gpr",
-                "8kNew111_14_4601_m84.gpr");
+                "8kNew111_14_4601_m84.gpr"));
         assertEquals(expectedNames.size(), files.size());
         
         for (DataFile f : files) {
@@ -582,5 +671,506 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         assertTrue(expectedNames.toString(), expectedNames.isEmpty());
     }
 
+    @Test
+    public void testSearchForFiles_Extention() throws InvalidReferenceException {
+        logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Extention");
+        FileSearchCriteria crit = new FileSearchCriteria();
+        crit.setExtension("gpr");
+        List<DataFile> files = service.searchForFiles(crit, null).getResults();
+        assertEquals(19, files.size());
+        for(DataFile f:files){
+            System.out.println("types  "+f.getFileType());
+        }
+    }
+
+    @Test
+    public void testSearchForFiles_Type() throws InvalidReferenceException {
+        logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Type");
+        FileSearchCriteria crit = new FileSearchCriteria();
+        crit.getTypes().add(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:GENEPIX_GPR"));
+        List<DataFile> files = service.searchForFiles(crit, null).getResults();
+        assertEquals(19, files.size());
+    }
+
+    @Test
+    public void testSearchForFiles_All() throws InvalidReferenceException {
+        logForSilverCompatibility(TEST_NAME, "testSearchForFiles_All");
+        FileSearchCriteria crit = new FileSearchCriteria();
+        List<DataFile> files = service.searchForFiles(crit, null).getResults();
+        assertEquals(19, files.size());
+    }
+
+    @Test
+    public void testSearchForFiles_Limit() throws InvalidReferenceException {
+        logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Limit");
+        FileSearchCriteria fsc = new FileSearchCriteria();
+        SearchResult<DataFile> sr = service.searchForFiles(fsc, null);
+        assertTrue(sr.isFullResult());
+        int all = sr.getResults().size();
+        int chunk = all/2 + 2; // somewhere near past the middle
+        // first batch
+        LimitOffset off = new LimitOffset(chunk, 0);
+        sr = service.searchForFiles(fsc, off);
+        assertEquals(off.getOffset(), sr.getFirstResultOffset());
+        all -= sr.getResults().size();
+        List<String> ids = getIds(sr.getResults());
+        assertEquals(chunk, ids.size());
+        // second batch
+        off.setOffset(sr.getResults().size());
+        sr = service.searchForFiles(fsc, off);
+        all -= sr.getResults().size();
+        assertEquals(0, all);
+
+        // check we didnt get the same ones in the second chunk
+        ids.removeAll(getIds(sr.getResults()));
+        assertEquals(chunk, ids.size());
+    }
+
+    /////////////////////////////////////
+
+    @Test
+    public void testSearchByExample_Null() {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_Null");
+        try {
+            logForSilverCompatibility(TEST_OUTPUT, "null criteria");
+            SearchResult sr = service.searchByExample(null, null);
+            logForSilverCompatibility(TEST_OUTPUT, "unexpected outcome");
+            fail();
+        } catch(javax.ejb.EJBException e) {
+            assertEquals(NullPointerException.class, e.getCausedByException().getClass());
+            logForSilverCompatibility(TEST_OUTPUT, "null Criteria validation :" + e.getCause());
+        }
+
+        try {
+            logForSilverCompatibility(TEST_OUTPUT, "null exanple");
+            ExampleSearchCriteria xsc = new ExampleSearchCriteria(null);
+            SearchResult sr = service.searchByExample(xsc, null);
+            logForSilverCompatibility(TEST_OUTPUT, "unexpected outcome");
+            fail();
+        } catch(javax.ejb.EJBException e) {
+            assertEquals(NullPointerException.class, e.getCausedByException().getClass());
+            logForSilverCompatibility(TEST_OUTPUT, "null example validation :" + e.getCause());
+        }
+    }
+
+    private <T extends AbstractCaArrayEntity> void testExampleProperty(T example, String property, Object value, int count) throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample " + example.getClass().getName()+ "." + property);
+        ExampleSearchCriteria xsc = new ExampleSearchCriteria(example);
+        if (property != null) {
+            PropertyUtils.setProperty(example, property, value);
+        }
+        SearchResult<T> sr = service.searchByExample(xsc, null);
+        if (sr.isFullResult()){
+            assertEquals("count for search by "+property, count, sr.getResults().size());
+        } else {
+            assertTrue("result size " + sr.getResults().size() + " < " + count, sr.getResults().size() < count);
+            assertEquals(sr.getMaxAllowedResults(), sr.getResults().size());
+        }
+        if (property != null) {
+            for (T t : sr.getResults()) {
+                Object got = PropertyUtils.getProperty(t, property);
+                assertTrue(property + " \nexpected :"+value+"\nbut was :"+got, verify(property, value, got));
+            }
+        } else {
+           for (T t : sr.getResults()) {
+                System.out.println(t.toString());
+            }
+        }
+    }
+
+    private boolean verify(String prop, Object expected, Object actual) {
+        try{
+            if (expected == null && actual == null) return true;
+            if (expected == null || actual == null) return false;
+
+            if (expected instanceof Collection) {
+                for(Object e : (Collection)expected) {
+                    if(((Collection)actual).contains(e))
+                        return true;
+                }
+                return false;
+            } else if (expected instanceof String) {
+                return ((String)expected).equalsIgnoreCase((String)actual);
+            } else {
+                return expected.equals(actual);
+            }
+        }catch(Exception e) {
+            throw new RuntimeException(prop, e);
+        }
+    }
+
+    @Test
+    public void testSearchByExample_Organism() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_Organism");
+        testExampleProperty(new Organism(), null, null, 33);
+        testExampleProperty(new Organism(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:1", 1);
+        testExampleProperty(new Organism(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:0", 0);
+        testExampleProperty(new Organism(), "commonName", "thale cress", 1);
+        testExampleProperty(new Organism(), "scientificName", "Arabidopsis thaliana", 1);
+    }
+
+    @Test
+    public void testSearchByExample_DataFile() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_DataFile");
+        testExampleProperty(new DataFile(), null, null, 24);
+        testExampleProperty(new DataFile(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:1", 1);
+        testExampleProperty(new DataFile(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:0", 0);
+
+        testExampleProperty(new DataFile(), "compressedSize", 114521L, 1);
+        testExampleProperty(new DataFile(), "uncompressedSize", 114521L, 1);
+        testExampleProperty(new DataFile(), "name", "8kNew111_17_4601_m82.gpr", 1);
+        FileType type = new FileType();
+        type.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:MAGE_TAB_IDF");
+        testExampleProperty(new DataFile(), "fileType", type, 1);
+    }
+
+    @Test
+    public void testSearchByExample_QuantitationType() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_QuantitationType");
+        testExampleProperty(new QuantitationType(), null, null, 123);
+        testExampleProperty(new QuantitationType(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:1", 1);
+        testExampleProperty(new QuantitationType(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:0", 0);
+        testExampleProperty(new QuantitationType(), "name", "CHPDetection", 1);
+        testExampleProperty(new QuantitationType(), "dataType", DataType.STRING, 3);
+    }
+
+    @Test
+    public void testSearchByExample_Experiment() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_Experiment");
+        testExampleProperty(new Experiment(), null, null, 2);
+        testExampleProperty(new Experiment(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1", 1);
+        testExampleProperty(new Experiment(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:0", 0);
+
+        testExampleProperty(new Experiment(), "title", "test2", 1);
+        testExampleProperty(new Experiment(), "description", "empty experiment", 1);
+        testExampleProperty(new Experiment(), "publicIdentifier", "admin-00002", 1);
+        ArrayProvider ap = new ArrayProvider("Affymetrix");
+        ap.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayProvider:1");
+        testExampleProperty(new Experiment(), "arrayProvider", ap, 1);
+        AssayType at = new AssayType("Gene Expression");
+        at.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.AssayType:3");
+        testExampleProperty(new Experiment(), "assayTypes", Collections.singleton(at), 1);
+        Term t = new Term();
+        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:697");
+        testExampleProperty(new Experiment(), "experimentalDesigns", Collections.singleton(t), 1);
+        Factor f = new Factor();
+        f.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.factor.Factor:1");
+        testExampleProperty(new Experiment(), "factors", Collections.singleton(f), 1);
+        Organism o = new Organism();
+        o.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:2");
+        testExampleProperty(new Experiment(), "organism", o, 1);
+        Person p = new Person();
+        p.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:12");
+        testExampleProperty(new Experiment(), "contacts", Collections.singleton(p), 1);
+        ArrayDesign ad = new ArrayDesign();
+        ad.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayDesign:1");
+        ad.setName("Mm-Incyte-v1px_16Bx24Cx23R");
+        testExampleProperty(new Experiment(), "arrayDesigns", Collections.singleton(ad), 1);
+        testExampleProperty(new Experiment(), "normalizationTypes", "TODO", 1);
+        testExampleProperty(new Experiment(), "qualityControlTypes", "TODO", 1);
+        testExampleProperty(new Experiment(), "replicateTypes", "TODO", 1);
+    }
+
+    @Test
+    public void testSearchByExample_Person() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_Person");
+        testExampleProperty(new Person(), null, null, 4);
+        testExampleProperty(new Person(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:1", 1);
+        testExampleProperty(new Person(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:0", 0);
+
+        testExampleProperty(new Person(), "emailAddress", "JEGreen@nih.gov", 2);
+        testExampleProperty(new Person(), "firstName", "Alfonso", 1);
+        testExampleProperty(new Person(), "lastName", "Administrator", 2);
+        testExampleProperty(new Person(), "middleInitials", "E", 1);
+    }
+
+    @Test
+    public void testSearchByExample_Hybridization() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_Hybridization");
+        testExampleProperty(new Hybridization(), null, null, 19);
+        testExampleProperty(new Hybridization(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1", 1);
+        testExampleProperty(new Hybridization(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:0", 0);
+
+        ArrayDesign ad = new ArrayDesign();
+        ad.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayDesign:1");
+        ad.setName("Mm-Incyte-v1px_16Bx24Cx23R");
+        testExampleProperty(new Hybridization(), "arrayDesign", ad, 19);
+        CaArrayEntityReference  e = new CaArrayEntityReference ("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1");
+        testExampleProperty(new Hybridization(), "experiment", e, 19);
+        FactorValue fv = new FactorValue();
+        Factor f = new Factor();
+        f.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.factor.Factor:1");
+        fv.setFactor(f);
+        UserDefinedValue v = new UserDefinedValue();
+        Term t = new Term();
+        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:1");
+        v.setUnit(t);
+        v.setValue("Pr111 reference");
+        fv.setValue(v);
+        testExampleProperty(new Hybridization(), "factorValues", Collections.singleton(fv), 19);
+        testExampleProperty(new Hybridization(), "name", "gov.nih.nci.ncicb.caarray:Hybridization:1015897590131481:1", 1);
+    }
+    
+    @Test
+    public void testSearchByExample_Term() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_Term");
+        testExampleProperty(new Term(), null, null, 698);
+        testExampleProperty(new Term(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:1", 1);
+        testExampleProperty(new Term(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:0", 0);
+
+        testExampleProperty(new Term(), "accession", "MO_562", 1);
+        TermSource ts = new TermSource();
+        ts.setId("id=URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:3");
+        testExampleProperty(new Term(), "termSource", ts, 10);
+        testExampleProperty(new Term(), "url", "http://mged.sourceforge.net/ontologies/MGEDontology.php#silicon", 1);
+        testExampleProperty(new Term(), "value", "synthetic_RNA", 1);
+    }
+
+    @Test
+    public void testSearchByExample_Category() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_Category");
+        testExampleProperty(new Category(), null, null, 239);
+        testExampleProperty(new Category(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Category:1", 1);
+        testExampleProperty(new Category(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Category:0", 0);
+
+        testExampleProperty(new Category(), "accession", "MO_119", 1);
+        testExampleProperty(new Category(), "name", "MeasurementType", 1);
+        TermSource ts = new TermSource();
+        ts.setId("id=URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:1");
+        testExampleProperty(new Category(), "termSource", ts, 233);
+        testExampleProperty(new Category(), "url", "http://mged.sourceforge.net/ontologies/MGEDontology.php#InitialTimePoint", 1);
+    }
+
+    @Test
+    public void testSearchByExample_TermSource() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_TermSource");
+        testExampleProperty(new TermSource(), null, null, 8);
+        testExampleProperty(new TermSource(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:1", 1);
+        testExampleProperty(new TermSource(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:0", 0);
+
+        testExampleProperty(new TermSource(), "name", "MO", 1);
+        testExampleProperty(new TermSource(), "url", "http://example.com/a", 1);
+        testExampleProperty(new TermSource(), "version", "3.2", 1);
+    }
+
+    @Test
+    public void testSearchByExample_Factor() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_Factor");
+        testExampleProperty(new Factor(), null, null, 1);
+        testExampleProperty(new Factor(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.factor.Factor:1", 1);
+        testExampleProperty(new Factor(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.factor.Factor:0", 0);
+
+        testExampleProperty(new Factor(), "description", null, 1);
+        testExampleProperty(new Factor(), "name", "Cell Lines", 1);
+        Term t = new Term();
+        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:286");
+        testExampleProperty(new Factor(), "type", t, 1);
+    }
+
+    @Test
+    public void testSearchByExample_ExperimentalContact() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_ExperimentalContact");
+        testExampleProperty(new ExperimentalContact(), null, null, 4);
+        testExampleProperty(new ExperimentalContact(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experimentExperimentalContact:1", 1);
+        testExampleProperty(new ExperimentalContact(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experimentExperimentalContact:0", 0);
+
+        Person p = new Person();
+        p.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:9");
+        testExampleProperty(new ExperimentalContact(), "person", p, 1);
+        Term t = new Term();
+        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:286");//???
+        testExampleProperty(new ExperimentalContact(), "roles", Collections.singleton(t), 1);
+    }
+    
+    @Test
+    public void testSearchByExample_ArrayDesign() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_ArrayDesign");
+        testExampleProperty(new ArrayDesign(), null, null, 1);
+        testExampleProperty(new ArrayDesign(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayDesign:1", 1);
+        testExampleProperty(new ArrayDesign(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayDesign:0", 0);
+
+        ArrayProvider ap = new ArrayProvider();
+        ap.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayProvider:1");
+        testExampleProperty(new ArrayDesign(), "arrayProvider", ap, 1);
+        AssayType at = new AssayType("Gene Expression");
+        at.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.AssayType:3");
+        testExampleProperty(new ArrayDesign(), "assayTypes", Collections.singleton(at), 1);
+        DataFile df = new DataFile();
+        df.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:2");
+        testExampleProperty(new ArrayDesign(), "files", Collections.singleton(df), 1);
+        testExampleProperty(new ArrayDesign(), "lsid", "TODO", 0);
+        testExampleProperty(new ArrayDesign(), "name", "Mm-Incyte-v1px_16Bx24Cx23R", 1);
+        Organism o = new Organism();
+        o.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:2");// Mus musculus
+        testExampleProperty(new ArrayDesign(), "organism", o, 1);
+        Term t = new Term();
+        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:624");//???
+        testExampleProperty(new ArrayDesign(), "technologyType", t, 1);
+        testExampleProperty(new ArrayDesign(), "version", "1", 1);
+    }
+
+    @Test
+    public void testSearchByExample_Biomaterial() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_Biomaterial");
+        testExampleProperty(new Biomaterial(), null, null, 148);
+
+        testExampleProperty(new Biomaterial(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:1", 1);
+        testExampleProperty(new Biomaterial(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:0", 0);
+
+        TermValue tv = new TermValue();
+        Term t = new Term();
+        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:683");
+        tv.setTerm(t);
+        testExampleProperty(new Biomaterial(), "cellType", tv, 19);
+        
+        Characteristic c = new Characteristic();
+        Category ct = new Category();
+        ct.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Category:39");
+        c.setCategory(ct);
+        testExampleProperty(new Biomaterial(), "characteristics", Collections.singleton(c), 0);
+
+        testExampleProperty(new Biomaterial(), "description", "foo", 0);
+
+        tv = new TermValue();
+        tv.setTerm(t);
+        tv.setUnit(t);
+        testExampleProperty(new Biomaterial(), "diseaseState", tv, 0);
+
+        CaArrayEntityReference r = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1");
+        testExampleProperty(new Biomaterial(), "experiment", r, 148);
+
+        testExampleProperty(new Biomaterial(), "externalId", "foo", 0);
+
+        tv = new TermValue();
+        t = new Term();
+        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:152");
+        tv.setTerm(t);
+        testExampleProperty(new Biomaterial(), "materialType", tv, 1);
+
+        testExampleProperty(new Biomaterial(), "name", "Cy3 labeled Pr111 reference_8kNewPr111_14v1p4m11", 1);
+
+        Organism o = new Organism();
+        o.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:2");
+        testExampleProperty(new Biomaterial(), "organism", o, 1);
+
+        tv = new TermValue();
+        t = new Term();
+        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:682");
+        tv.setTerm(t);
+        testExampleProperty(new Biomaterial(), "tissueSite", tv, 1);
+
+        testExampleProperty(new Biomaterial(), "type", BiomaterialType.SOURCE, 37);
+    }
+
+    @Test
+    public void testSearchByExample_ArrayDataType() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_ArrayDataType");
+        testExampleProperty(new ArrayDataType(), null, null, 7);
+        testExampleProperty(new ArrayDataType(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.ArrayDataType:1", 1);
+        testExampleProperty(new ArrayDataType(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.ArrayDataType:0", 0);
+        testExampleProperty(new ArrayDataType(), "name", "Illumina CSV (Genotyping)", 1);
+        QuantitationType qt = new QuantitationType();
+        qt.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:33");
+        testExampleProperty(new ArrayDataType(), "quantitationTypes", Collections.singleton(qt), 1);
+        testExampleProperty(new ArrayDataType(), "version", "foo", 0);
+    }
+    
+    @Test
+    public void testSearchByExample_AssayType() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_AssayType");
+        testExampleProperty(new AssayType(), null, null, 6);
+        testExampleProperty(new AssayType(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.AssayType:0", 0);
+        testExampleProperty(new AssayType(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.AssayType:1", 1);
+        testExampleProperty(new AssayType(), "name", "Exon", 1);
+    }
+
+    @Test
+    public void testSearchByExample_ArrayProvider() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_ArrayProvider");
+        testExampleProperty(new ArrayProvider(), null, null, 8);
+        testExampleProperty(new ArrayProvider(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayProvider:0", 0);
+        testExampleProperty(new ArrayProvider(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayProvider:1", 1);
+        testExampleProperty(new ArrayProvider(), "name", "Nimblegen", 1);
+    }
+
+    ///////////////////////////////////////
+    
+    @Test
+    public void testGetAnnotationSet_Null() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testGetAnnotationSet_Null");
+        try {
+            logForSilverCompatibility(TEST_OUTPUT, "null request");
+            AnnotationSet aset = service.getAnnotationSet(null);
+            logForSilverCompatibility(TEST_OUTPUT, "unexpected outcome");
+            fail();
+        } catch(javax.ejb.EJBException e) {
+            assertEquals(NullPointerException.class, e.getCausedByException().getClass());
+            logForSilverCompatibility(TEST_OUTPUT, "null request validation :" + e.getCause());
+        }
+    }
+
+    @Test
+    public void testGetAnnotationSet_Empty() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testGetAnnotationSet_Empty");
+        AnnotationSetRequest r = new AnnotationSetRequest();
+        AnnotationSet aset = service.getAnnotationSet(r);
+        assertEquals(0, aset.getCategories().size());
+        assertEquals(0, aset.getColumns().size());
+    }
+
+    @Test
+    public void testGetAnnotationSet_Categories() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testGetAnnotationSet_Categories");
+        AnnotationSetRequest r = new AnnotationSetRequest();
+        String id = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Category:39";
+        r.getCategories().add(new CaArrayEntityReference(id));
+        r.getCategories().add(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Category:40"));
+        AnnotationSet aset = service.getAnnotationSet(r);
+        assertEquals(2, aset.getCategories().size());
+        assertEquals(0, aset.getColumns().size());
+        for (Category c : aset.getCategories()) {
+            if (c.getId().equalsIgnoreCase(id)) {
+                assertEquals("Individual", c.getName());
+                assertEquals("http://mged.sourceforge.net/ontologies/MGEDontology.php#Individual", c.getUrl());
+                assertEquals("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:1", c.getTermSource().getId());                
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void testGetAnnotationSet_ExperimentGraphNodes() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testGetAnnotationSet_ExperimentGraphNodes");
+        AnnotationSetRequest r = new AnnotationSetRequest();
+        String id = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:39";
+        r.getExperimentGraphNodes().add(new CaArrayEntityReference(id));
+        r.getExperimentGraphNodes().add(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:3"));
+        AnnotationSet aset = service.getAnnotationSet(r);
+        assertEquals(0, aset.getCategories().size());
+        assertEquals(2, aset.getColumns().size());
+        for (AnnotationColumn c : aset.getColumns()) {
+            assertTrue(c.getValueSets().isEmpty());
+        }
+    }
+
+    @Test
+    public void testGetAnnotationSet_ExperimentGraphNodes_Category() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testGetAnnotationSet_ExperimentGraphNodes_Category");
+        AnnotationSetRequest r = new AnnotationSetRequest();
+        String nid = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:39";
+        String cid = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Category:153";
+        r.getCategories().add(new CaArrayEntityReference(cid));
+        r.getExperimentGraphNodes().add(new CaArrayEntityReference(nid));
+        AnnotationSet aset = service.getAnnotationSet(r);
+        assertEquals(1, aset.getCategories().size());
+        assertEquals(1, aset.getColumns().size());
+        AnnotationColumn c = aset.getColumns().get(0);
+        Biomaterial b =  (Biomaterial) c.getNode();
+        assertEquals(nid, b.getId());
+        assertEquals(1, c.getValueSets().size());
+        Set<AbstractValue> v = c.getValueSets().get(0).getValues();
+        assertEquals(1, v.size());
+        System.out.println(v.iterator().next());
+    }
 
  }

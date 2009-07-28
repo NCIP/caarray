@@ -106,6 +106,16 @@ public class InvalidReferenceException extends ApiException {
     }
 
     /**
+     * Constructor with message.
+     * @param reference the problematic reference
+     * @param message message.
+     */
+    public InvalidReferenceException(CaArrayEntityReference reference, String message) {
+        super(reference.getId() + " : " + message);
+        this.reference = reference;
+    }
+
+    /**
      * @return the reference
      */
     public CaArrayEntityReference getReference() {

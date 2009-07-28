@@ -290,11 +290,11 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
      */
     public List<Term> getTermsForCategory(CaArrayEntityReference categoryRef, String valuePrefix)
             throws InvalidReferenceException {
-        List<Term> externalTerms = new ArrayList<Term>();
         gov.nih.nci.caarray.domain.vocabulary.Category category = getRequiredByLsid(categoryRef.getId(),
                 gov.nih.nci.caarray.domain.vocabulary.Category.class);
         Set<gov.nih.nci.caarray.domain.vocabulary.Term> terms = getDaoFactory().getVocabularyDao().getTermsRecursive(
                 category, valuePrefix);
+        List<Term> externalTerms = new ArrayList<Term>(terms.size());
         mapCollection(terms, externalTerms, Term.class);
         return externalTerms;
     }
@@ -499,8 +499,9 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
                 .getHybridization().getId()));
         
         for (CaArrayEntityReference arrayDataTypeRef : criteria.getArrayDataTypes()) {
-            intCriteria.getArrayDataTypes().add(
-                    (gov.nih.nci.caarray.domain.data.ArrayDataType) getByExternalId(arrayDataTypeRef.getId()));
+            gov.nih.nci.caarray.domain.data.ArrayDataType type =
+                    (gov.nih.nci.caarray.domain.data.ArrayDataType) getByExternalId(arrayDataTypeRef.getId());
+            intCriteria.getArrayDataTypes().add(type);
         }
         
         for (CaArrayEntityReference fileTypeRef : criteria.getFileTypes()) {

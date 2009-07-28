@@ -434,11 +434,9 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
             DataTransferException {
         gov.nih.nci.caarray.domain.project.Experiment experiment = getRequiredByLsid(experimentRef.getId(),
                 gov.nih.nci.caarray.domain.project.Experiment.class);
-        MageTabDocumentSet docSet = null;
         try {
             MageTabFileSet mageTabSet = new MageTabFileSet();
-
-            docSet = exportToMageTab(experiment);
+            MageTabDocumentSet docSet = exportToMageTab(experiment);
             mageTabSet.setIdf(toDataFileContents(docSet.getIdfDocuments().iterator().next().getFile(),
                     FileType.MAGE_TAB_IDF));
             mageTabSet.setSdrf(toDataFileContents(docSet.getSdrfDocuments().iterator().next().getFile(),
