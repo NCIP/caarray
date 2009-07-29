@@ -289,6 +289,15 @@ public class GuiMain
         }    
     }
     
+    private void resetTests()
+    {
+        List<ConfigurableTestSuite> shortTests = TestMain.getShortTestSuites(apiFacade);
+        List<ConfigurableTestSuite> longTests = TestMain.getLongTestSuites(apiFacade);
+        testSuites.clear();
+        testSuites.addAll(shortTests);
+        testSuites.addAll(longTests);
+    }
+    
     private void selectAll(boolean select)
     {
         for (JCheckBox box : testCheckBoxes)
@@ -326,6 +335,7 @@ public class GuiMain
                            System.out.println("Tests executed in: " + (double)time/(double)1000 + " seconds.");
                            resultReport.writeReport();
                            executionThread = null;
+                           resetTests();
                            isRunning = false;
                        }
                        catch (Throwable t)
