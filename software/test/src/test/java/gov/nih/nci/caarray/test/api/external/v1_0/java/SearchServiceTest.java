@@ -141,6 +141,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         service.getTermsForCategory(new CaArrayEntityReference(qtid), null);
     }
 
+    @Test
     public void testGetTermsForCategory_Null() throws InvalidReferenceException {
         logForSilverCompatibility(TEST_NAME, "testGetTermsForCategory_Null");
         try{
@@ -573,6 +574,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         crit.getArrayDataTypes().clear();
         crit.getArrayDataTypes().add(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.ArrayDataType:4"));//Genepix GPR (Gene Expression)
         types = service.searchForQuantitationTypes(crit);
+        assertEquals(38, types.size());
     }
 
     @Test
