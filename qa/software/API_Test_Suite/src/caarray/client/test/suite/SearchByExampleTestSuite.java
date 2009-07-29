@@ -156,7 +156,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                 row = null;
             }
         }
-        filterSearchesByAPI();
+        filterSearches();
     }
 
     protected void executeConfiguredTests(TestResultReport resultReport)
@@ -169,7 +169,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                 if (search.getApi() == null)
                 {
                     setTestResultFailure(testResult, search,
-                            "No API indicated for ArrayDataType test case: "
+                            "No API indicated for test case: "
                                     + search.getTestCase());
                     resultReport.addTestResult(testResult);
                     continue;
@@ -250,7 +250,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
         System.out.println(getType() + " tests complete ...");
     }
     
-    private void filterSearchesByAPI()
+    private void filterSearches()
     {
         String api = TestProperties.getTargetApi();
         if (!api.equalsIgnoreCase(TestProperties.API_ALL))
@@ -259,6 +259,17 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
             for (ExampleSearch search : configuredSearches)
             {
                 if (search.getApi().equalsIgnoreCase(api))
+                    filteredSearches.add(search);
+            }
+            configuredSearches = filteredSearches;
+        }
+        List<Float> excludedTests = TestProperties.getExcludedTests();
+        if (!excludedTests.isEmpty())
+        {
+            List<ExampleSearch> filteredSearches = new ArrayList<ExampleSearch>();
+            for (ExampleSearch search : configuredSearches)
+            {
+                if (!excludedTests.contains(search.getTestCase()))
                     filteredSearches.add(search);
             }
             configuredSearches = filteredSearches;

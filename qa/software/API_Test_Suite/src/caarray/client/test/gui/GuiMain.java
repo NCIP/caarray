@@ -17,7 +17,6 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -135,15 +134,58 @@ public class GuiMain
             }
             
         });
+        
+        JLabel excludeLabel = new JLabel("Exclude test cases (comma-separated list):");
+        final JTextField excludeText = new JTextField("",30);
+        JButton save5 = new JButton("Save");
+        save5.addActionListener(new ActionListener()
+        {
+
+            public void actionPerformed(ActionEvent arg0)
+            {
+                try
+                {
+                    String testString = excludeText.getText();
+                    if (testString != null)
+                    {
+                        String[] testCases = testString.split(",");
+                        if (testCases != null && testCases.length > 0)
+                        {
+                            List<Float> tests = new ArrayList<Float>();
+                            for (String test : testCases)
+                            {
+                                try
+                                {
+                                    tests.add(Float.parseFloat(test));
+                                }
+                                catch (NumberFormatException e)
+                                {
+                                    System.out.println(test + " is not a valid test case.");
+                                }
+                            }
+                            TestProperties.addExcludedTests(tests);
+                        }
+                        
+                    }
+                    
+                }
+                catch (NumberFormatException e)
+                {
+                    System.out.println(gridPortText.getText() + " is not a valid port number.");
+                }
+                
+            }
+            
+        });
 
         
         GridBagLayout topLayout = new GridBagLayout();
         topPanel.setLayout(topLayout);
         
-        JLabel[] labels = new JLabel[]{javaHostLabel,javaPortLabel,gridHostLabel,gridPortLabel};
-        JTextField[] textFields = new JTextField[]{javaHostText,javaPortText,gridHostText,gridPortText};
-        JButton[] buttons = new JButton[]{save,save2,save3,save4};
-        for (int i = 0; i < 4; i++)
+        JLabel[] labels = new JLabel[]{javaHostLabel,javaPortLabel,gridHostLabel,gridPortLabel, excludeLabel};
+        JTextField[] textFields = new JTextField[]{javaHostText,javaPortText,gridHostText,gridPortText,excludeText};
+        JButton[] buttons = new JButton[]{save,save2,save3,save4,save5};
+        for (int i = 0; i < labels.length; i++)
         {
             GridBagConstraints c = new GridBagConstraints();
             c.fill = GridBagConstraints.NONE;

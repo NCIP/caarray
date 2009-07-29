@@ -5,5 +5,5 @@ Test Case,API,Name,Type,Expected Results,Min Results
 76,grid,Age,,,1
 243,java,invalid#%!,,0,
 244,grid,invalid#%!,,0,
-245,,,disease_state,,1
-246,,,disease_state,,1
+245,java,,disease_state,,1
+246,grid,,disease_state,,1

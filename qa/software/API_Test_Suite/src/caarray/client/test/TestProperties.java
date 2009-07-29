@@ -83,6 +83,9 @@
 package caarray.client.test;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Provides access to properties required to run the test suite.
@@ -121,6 +124,8 @@ public class TestProperties {
     public static final String TEST_VERSION_ALL = "all";
     
     public static final String CONFIG_DIR = "config";
+    
+    private static List<Float> excludedTests = Collections.synchronizedList(new ArrayList<Float>());
     
     public static String getJavaServerHostname() {
         return System.getProperty(SERVER_HOSTNAME_KEY, SERVER_HOSTNAME_DEFAULT);
@@ -180,5 +185,15 @@ public class TestProperties {
 	public static String getTestVersion()
 	{
 	    return System.getProperty(TEST_VERSION_KEY,TEST_VERSION_SHORT);
+	}
+	
+	public static void addExcludedTests(List<Float> tests)
+	{
+	    excludedTests.addAll(tests);
+	}
+	
+	public static List<Float> getExcludedTests()
+	{
+	    return new ArrayList<Float>(excludedTests);
 	}
 }

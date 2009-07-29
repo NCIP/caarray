@@ -240,6 +240,15 @@ public class FileCriteriaTestSuite extends SearchByCriteriaTestSuite
                 ref = getVariableValue(ref);
             criteria.getExperimentGraphNodes().add(new CaArrayEntityReference(ref));
         }
+        if (headerIndexMap.get(SOURCE) < input.length && !input[headerIndexMap.get(SOURCE)].equals(""))
+        {
+            String name = input[headerIndexMap.get(SOURCE)];
+            if (name.startsWith(VAR_START))
+                name = getVariableValue(name);
+            Biomaterial bio = apiFacade.getBiomaterial(search.getApi(), name);
+            if (bio != null)
+                criteria.getExperimentGraphNodes().add(bio.getReference());
+        }
 
     }
 
@@ -398,9 +407,9 @@ public class FileCriteriaTestSuite extends SearchByCriteriaTestSuite
             String name = input[headerIndexMap.get(SOURCE)];
             if (name.startsWith(VAR_START))
                 name = getVariableValue(name);
-            CaArrayEntityReference ref = new CaArrayEntityReference(name);
-            //SearchResult<Sour> TODO
-            criteria.getExperimentGraphNodes().add(ref);
+            Biomaterial bio = apiFacade.getBiomaterial(search.getApi(), name);
+            if (bio != null)
+                criteria.getExperimentGraphNodes().add(bio.getReference());
         }
         
         search.setFileSearchCriteria(criteria);    

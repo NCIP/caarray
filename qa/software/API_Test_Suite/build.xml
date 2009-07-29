@@ -96,7 +96,7 @@
 				</fileset>
 			</classpath>
 			<jvmarg value="-Xms64m"/>
-			<jvmarg value="-Xmx256m"/>
+			<jvmarg value="-Xmx512m"/>
 			<sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
 			<sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
 			<sysproperty key="server.hostname" value="${server.hostname}" />

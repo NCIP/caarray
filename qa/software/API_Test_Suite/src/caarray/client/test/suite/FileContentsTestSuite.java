@@ -5,7 +5,6 @@ package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;

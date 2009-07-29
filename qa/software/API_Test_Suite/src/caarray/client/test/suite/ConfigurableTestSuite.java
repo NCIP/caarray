@@ -266,19 +266,6 @@ public abstract class ConfigurableTestSuite
     protected SearchResult<? extends AbstractCaArrayEntity> getSearchResults(String api, ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria, LimitOffset offset)
             throws Exception
     {
-        /*SearchResult<? extends AbstractCaArrayEntity> result = null;
-        if (api.equalsIgnoreCase("grid"))
-        {
-            result = gridClient.searchByExample(criteria, offset);
-        }
-        else if (api.equalsIgnoreCase("java"))
-        {
-            result = javaSearchService.searchByExample(criteria, offset);
-        }
-        else
-        {
-            System.out.println("No API specified for example search, ignoring search.");
-        }*/
         return apiFacade.searchByExample(api, criteria, offset);
     }
 

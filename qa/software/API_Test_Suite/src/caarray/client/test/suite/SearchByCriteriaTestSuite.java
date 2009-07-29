@@ -13,6 +13,7 @@ import caarray.client.test.TestResult;
 import caarray.client.test.TestResultReport;
 import caarray.client.test.TestUtils;
 import caarray.client.test.search.CriteriaSearch;
+import caarray.client.test.search.ExampleSearch;
 
 /**
  * @author vaughng
@@ -90,7 +91,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                 row = null;
             }
         }
-        filterSearchesByAPI();
+        filterSearches();
     }
 
     /* (non-Javadoc)
@@ -138,7 +139,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
         System.out.println(getType() + " tests complete ...");
     }
     
-    private void filterSearchesByAPI()
+    private void filterSearches()
     {
         String api = TestProperties.getTargetApi();
         if (!api.equalsIgnoreCase(TestProperties.API_ALL))
@@ -147,6 +148,17 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
             for (CriteriaSearch search : configuredSearches)
             {
                 if (search.getApi().equalsIgnoreCase(api))
+                    filteredSearches.add(search);
+            }
+            configuredSearches = filteredSearches;
+        }
+        List<Float> excludedTests = TestProperties.getExcludedTests();
+        if (!excludedTests.isEmpty())
+        {
+            List<CriteriaSearch> filteredSearches = new ArrayList<CriteriaSearch>();
+            for (CriteriaSearch search : configuredSearches)
+            {
+                if (!excludedTests.contains(search.getTestCase()))
                     filteredSearches.add(search);
             }
             configuredSearches = filteredSearches;
