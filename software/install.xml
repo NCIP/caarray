@@ -354,7 +354,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         -install:jboss:configure:log4j,
         -install:jboss:configure:secure-console,
         -install:jboss:configure:update-shutdown,
-        -install:jboss:configure:update-runconf,
+        -install:jboss:configure:java_opts,
         -install:jboss:configure:update-runscripts
         "/>
 
@@ -443,12 +443,46 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <jboss-update-shutdown />
     </target>
 
-     <target name="-install:jboss:configure:update-runconf" description="Updates run.conf JAVA_OPTS and sets to property">
-         <jboss-update-runconf/>
+     <target name="-install:jboss:configure:java_opts" description="Updates JAVA_OPTS">
+         <caarray-jboss-configure-java_opts/>
     </target>
 
     <target name="-install:jboss:configure:update-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
         <set-host-flag-in-start-jboss-scripts jboss.bin.dir="${jboss.home}/bin" host.flag.value="${jboss.server.hostname}"/>
+    </target>
+    
+    <target name="-set:target:port:configuration:file">
+        <property name="jboss.bin.dir" value="${jboss.home}/bin"/>
+        <osfamily property="os.family"/>
+        <switch value="${os.family}">
+            <case value="unix">
+                <property name="target.port.configuration.file" value="${jboss.bin.dir}/run.conf"/>
+            </case>
+            <case value="mac">
+                <property name="target.port.configuration.file" value="${jboss.bin.dir}/run.conf"/>
+            </case>
+            <case value="windows">
+                <property name="target.port.configuration.file" value="${jboss.bin.dir}/run.bat"/>
+            </case>
+        </switch>
+        <loadfile srcFile="${target.port.configuration.file}" property="port.configuration.file.contents"/>
+    </target>
+    
+    <target name="-install:jboss:configure:api:streaming:port" description="Configures the java API file streaming port number." depends="-set:target:port:configuration:file">
+        <propertyregex property="current.java.api.filestreaming.port.value" input="${file.to.search.through}" regexp="com.healthmarketscience.rmiio.exporter.port=(\d{1,})" select="\1" />
+        <if>
+            <isset property="current.java.api.filestreaming.port.value" />
+            <then>
+                <replaceregexp file="${target.port.configuration.file}"
+                    match="com.healthmarketscience.rmiio.exporter.port=\d{1,}"
+                    replace="com.healthmarketscience.rmiio.exporter.port=${java.api.filestreaming.port}"
+                    byline="true"/>
+
+            </then>
+            <else>
+                <caarray-jboss-configure-java_opts jboss.bin.dir="${jboss.bin.dir}"/>
+            </else>
+        </if>
     </target>
 
     <!-- Wrapper target to deploy JBOSS container -->
@@ -493,6 +527,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:jboss:caarray:re-configure,
         -install:jboss:configure:secure-console,
         -install:jboss:configure:update-runscripts,
+        -install:jboss:configure:api:streaming:port,
         install:jboss:caarray,
         install:jboss:start
         " />
@@ -692,6 +727,75 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                     <include name="run.sh"/>
                 </fileset>
             </replaceregexp>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="caarray-jboss-configure-java_opts">
+        <attribute name="jboss.bin.dir" default="${jboss.home}/bin" />
+        <attribute name="jboss.java.opts" default="${jboss.java.opts}" />
+        <sequential>
+
+            <propertyregex property="jboss.java.opts.is.set"
+                input="@{jboss.java.opts}"
+                regexp="^([^\$]\S+)"
+                select="\1"
+                />
+            <echo message="jboss.java.opts.is.set = ${jboss.java.opts.is.set}"/>
+            <if>
+                <and>
+                    <available file="@{jboss.bin.dir}/run.conf"/>
+                    <isset property="jboss.java.opts.is.set"/>
+                </and>
+                <then>
+                    <echo message="Setting JBoss java options"/>
+                    <osfamily property="os.family"/>
+                    <echo message="os.family=${os.family}"/>
+                    <switch value="${os.family}">
+                        <case value="unix">
+                            <replaceregexp file="@{jboss.bin.dir}/run.conf" byline="true"
+                                match="^(\s+JAVA_OPTS)=(.*)"
+                                replace="#\1=\2${line.separator}# added by macro${line.separator}\1=&quot;@{jboss.java.opts}&quot;"
+                                />
+                                </case>
+                        <case value="mac">
+                            <replaceregexp file="@{jboss.bin.dir}/run.conf" byline="true"
+                                match="^(\s+JAVA_OPTS)=(.*)"
+                                replace="#\1=\2${line.separator}# added by macro${line.separator}\1=&quot;@{jboss.java.opts}&quot;"
+                                />
+                        </case>
+                        <case value="windows">
+                            <var name="run.bat.match" unset="true"/>
+                            <loadfile
+                                property="run.bat.match"
+                                srcFile="@{jboss.bin.dir}/run.bat">
+                                <filterchain>
+                                    <linecontainsregexp>
+                                        <regexp pattern="JAVA_OPTS.*Dbda=bda"/>
+                                    </linecontainsregexp>
+                                </filterchain>
+                            </loadfile>
+                            <if>
+                                <isset property="run.bat.match"/>
+                                <then>
+                                    <replaceregexp file="@{jboss.bin.dir}/run.bat" byline="true"
+                                        match="(.*JAVA_OPTS.*)-Dbda=bda -Dprogram.name=%PROGNAME% (.*)"
+                                        replace="\1 -Dbda=bda -Dprogram.name=%PROGNAME% @{jboss.java.opts}"
+                                        />
+                                </then>
+                                <else>
+                                    <replaceregexp file="@{jboss.bin.dir}/run.bat" byline="true"
+                                        match="^(echo\s+JAVA_OPTS.*)"
+                                        replace=" rem Overriding JAVA_OPTS, added by bda${line.separator}set JAVA_OPTS= -Dbda=bda -Dprogram.name=%PROGNAME% @{jboss.java.opts}${line.separator}\1"
+                                        />
+                                </else>
+                            </if>
+                        </case>
+                    </switch>
+                </then>
+                <else>
+                    <echo message="Java options not updated because @{jboss.bin.dir} does not exist or jboss.java.opts has not value (@{jboss.java.opts})."/>
+                </else>
+            </if>
         </sequential>
     </macrodef>
 

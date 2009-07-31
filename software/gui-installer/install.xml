@@ -183,6 +183,7 @@
                     <res id="MySQLColumnValueAnalyzerPanel.properties" src="@{this.dir}/MySQLColumnValueAnalyzerPanel.properties" />
                     <res id="MySQLDatabaseInfoExtractionPanel.properties" src="@{this.dir}/MySQLDatabaseInfoExtractionPanel.properties" />
                     <res id="cleanup.xml"  src="@{this.dir}/cleanup.xml"/>
+                    <res id="filestreamingport.xml"  src="@{this.dir}/filestreamingport.xml"/>
                 </resources>
 
                 <!--
@@ -204,18 +205,19 @@
                     <panel classname="UserInputPanel"  id="UserInputPanel.6" condition="custom.installation"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.7" condition="custom.installation"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.8" condition="upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.9" condition="upgrade"/>
                     <panel classname="MySQLDatabaseInfoExtractionPanel"  id="MySQLDatabaseInfoExtractionPanel.1" condition="upgrade"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.9" />
-                    <panel classname="UserInputPanel"  id="UserInputPanel.10" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.10" />
+                    <panel classname="UserInputPanel"  id="UserInputPanel.11" condition="install"/>
                     <panel classname="MySQLColumnValueAnalyzerPanel"  id="MySQLColumnValueAnalyzerPanel.1" condition="upgrade"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.11" condition="should.show.duplicate.hybridization.details.panel.condition"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.12" condition="custom.installation|upgrade"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.13" condition="ldap.setup"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.14" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.15" condition="custom.installation"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.16" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.12" condition="should.show.duplicate.hybridization.details.panel.condition"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.13" condition="custom.installation|upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.14" condition="ldap.setup"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.15" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.16" condition="custom.installation"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.17" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.18" condition="upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.18" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.19" condition="upgrade"/>
                     <panel classname="InstallationGroupPanel"/>
                     <panel classname="ExtendedInstallPanel"/>
                     <panel classname="SimpleFinishPanel"/>
@@ -275,9 +277,11 @@
 
                 </packs>
                 <jar src="@{bda-util.dir}/ant-1.7.0.jar" stage="both" />
+                <jar src="@{bda-util.dir}/ant-contrib-1.0b3.jar" stage="both" />
                 <jar src="@{bda-util.dir}/ant-launcher-1.7.0.jar" stage="both"/>
                 <jar src="@{bda-util.dir}/ant-nodeps-1.7.0.jar" stage="both"/>
-                <jar src="@{bda-util.dir}/mysql-connector-java-5.0.5.jar" stage="both"/>            </installation>
+                <jar src="@{bda-util.dir}/mysql-connector-java-5.0.5.jar" stage="both"/>
+            </installation>
         ]]></config>
         </IzPack>
     </target>

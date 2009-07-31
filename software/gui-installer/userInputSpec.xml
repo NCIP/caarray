@@ -237,6 +237,13 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The ejbinvoker port number is already in use" id="error.label">
             </validator>
         </field>
+        
+        <field type="text" variable="java.api.filestreaming.port">
+            <spec txt="Java API file streaming Port Number " id="text.label" size="15" set="31522"/>
+            <validator
+                class="com.izforge.izpack.util.PortValidator" txt="Java API file streaming port number is already in use" id="error.label">
+            </validator>
+        </field>
 
         <field type="text" variable="jboss.hajrmi.port">
             <spec txt="Application hajrmi Port Number " id="text.label" size="15" set="31101"/>
@@ -503,8 +510,7 @@
             class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Server Name is a required field" id="indexurl.label">
         </validator>
         </field>
-
-
+        
         <field type="text" align="left" variable="grid.server.hostname">
             <spec txt="Grid Server Host Name " size="15" set="$HOST_NAME"/>
             <validator
@@ -553,11 +559,27 @@
         <field type="text" variable="upt.url">
             <spec txt="UPT URL " id="text.label" size="25" set=""/>
         </field>
+        <fileextractor>
+            <extractfile filename="res/filestreamingport.xml" toDirName="."/>               
+        </fileextractor>
+        <panelreader classname="res/filestreamingport.xml" methodname="set-filestreaming-port-number-as-property" language="ant" shouldExecuteAtPanelValidationTime="true">
+            <inpropertymap inpropertyname="existing.installation.home" inpropertyvalue="existing.installation.home"/>
+            <propertymap propertyname="java.api.filestreaming.port" mapname="java.api.filestreaming.port"/>
+        </panelreader>
     </panel>
 
 
-
     <panel order="9">
+        <field type="title" txt="Configure your Java API file streaming port on JBoss application server" bold="true" size="1" />
+        <field type="text" variable="java.api.filestreaming.port">
+            <spec txt="Java API file streaming Port Number " id="text.label" size="15" set="${java.api.filestreaming.port}"/>
+            <validator
+                class="com.izforge.izpack.util.PortValidator" txt="Java API file streaming port number is already in use" id="error.label">
+            </validator>
+        </field>
+    </panel>
+
+    <panel order="10">
         <field type="title" txt="Configure research center contact information for Grid configuration" bold="true" size="1" />
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see Grid Settings section at ${installer.properties.wiki.page} (fresh install), or ${upgrade.properties.wiki.page} (upgrade install)."/>
         <field type="divider" align="top"/>
@@ -643,7 +665,7 @@
 
 
     <!-- Install -->
-    <panel order="10">
+    <panel order="11">
 
         <field type="title" txt="Configuring your MySQL database connection " bold="true" size="1" />
         <field type="staticText" align="left" txt="The information you enter below will connect you to an existing MySQL database. It's highly recommended that 'Database Host Name' NOT be the machine from which you are currently installing. The 'Database User' must have full access to 'Database Name'. It's highly recommended you contact your database administrator to obtain this information. NOTE: All database objects for 'Database Name' will be dropped and recreated during the installation process. For detailed descriptions on each of the properties below, see the Database Settings section at ${installer.properties.wiki.page}"/>
@@ -684,7 +706,7 @@
         </field>
     </panel>
 
-    <panel order="11">
+    <panel order="12">
         <field type="title" txt="Duplicate Hybridizations Behavior" bold="true" size="1" />
         <field type="staticText" align="left" txt="Prior to caArray 2.2.0, it was possible to create two distinct Hybridizations with the same name within a single Experiment. As of 2.2.0, this behavior has been changed, and Hybridization names will now be required to be unique within an Experiment. By default, duplicate Hybridizations in your existing (pre-2.2.0) Experiments will be renamed to be distinct. The naming convention is such that Hybridizations names will have a dash and incrementing integer, starting at 1, appended to the name (e.g., myHybridization-1, myHybridization-2, ... myHybridization-N). If you prefer to override this default strategy, you can choose to merge duplicate Hybridizations into a single Hybridization instead. Please note that if you choose to override the default strategy, you will not be able to undo the change."/>
         <field type="divider" align="top"/>
@@ -697,7 +719,7 @@
         </field>
     </panel>
 
-    <panel order="12">
+    <panel order="13">
         <field type="title" txt="Authentication Type" bold="true" size="1" />
         <field type="staticText" align="left" txt="There are two types of ways to authenticate users: against database or using an LDAP server. To connect to LDAP, you must have an LDAP server available in your network."/>
         <field type="divider" align="top"/>
@@ -711,7 +733,7 @@
         </field>
     </panel>
 
-    <panel order="13">
+    <panel order="14">
         <field type="title" txt="LDAP Configuration" bold="true" size="1" />
         <field type="staticText" align="left" txt="Choose the URL for the LDAP server and the Base DN for authenticating users."/>
         <field type="divider" align="top"/>
@@ -729,7 +751,7 @@
         </field>
     </panel>
 
-    <panel order="14">
+    <panel order="15">
         <field type="title" txt="Configure Global Settings" bold="true" size="1" />
         <field type="staticText" align="left" txt="The information you enter below will connect you to an existing Index Server. The Externally Accessible Hostname is the Hostname or the Domain name for the installation machine. This hostname must be accessible by the 'Index URL'. UPT URL is where the UPT application is being installed. For detailed descriptions on each of the properties below, see the Global Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -759,7 +781,7 @@
     </panel>
 
 
-    <panel order="15">
+    <panel order="16">
         <field type="title" txt="Database Configuration " bold="true" size="1" />
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Database Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -775,7 +797,7 @@
     </panel>
 
 
-    <panel order="16">
+    <panel order="17">
         <field type="title" txt="Mail Server Configuration" bold="true" size="1" />
         <field type="staticText" align="left" txt="Mail Server Hostname and Mail Server Port Number is the hostname where the mail server is being configured.For detailed descriptions on each of the properties below, see the Mail Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -810,7 +832,7 @@
         </field>
     </panel>
 
-    <panel order="17">
+    <panel order="18">
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
         <field type="divider" align="top"/>
@@ -842,7 +864,7 @@
         <field type="staticText" align="left" txt="Database User [${database.user}] "/>
     </panel>
 
-    <panel order="18">
+    <panel order="19">
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
         <field type="divider" align="top"/>

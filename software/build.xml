@@ -242,6 +242,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <copy todir="@{target.dir}/@{izpack.binary.name}/lib">
           <fileset dir="@{bda-utils.dir}">
             <include name="ant-1.7.0.jar"/>
+            <include name="ant-contrib-*.jar"/>
             <include name="ant-launcher-1.7.0.jar"/>
             <include name="ant-nodeps-1.7.0.jar"/>
             <include name="mysql-connector-java-*.jar"/>
