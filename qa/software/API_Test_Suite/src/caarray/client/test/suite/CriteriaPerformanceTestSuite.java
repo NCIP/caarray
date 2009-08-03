@@ -9,6 +9,7 @@ import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,8 +30,9 @@ public class CriteriaPerformanceTestSuite extends SearchByCriteriaTestSuite
     + File.separator + "Performance.csv";
     
     private static final String TYPE = "Type";
+    private static final String PAGES = "Pages";
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-        API, MAX_TIME, TYPE};
+        API, MAX_TIME, TYPE, PAGES};
     
     public enum SearchType
     {
@@ -85,23 +87,60 @@ public class CriteriaPerformanceTestSuite extends SearchByCriteriaTestSuite
         {
             SearchType type = performanceSearch.getSearchType();
             String api = search.getApi();
+            LimitOffset offset = null;
+            if (performanceSearch.getPages() != null)
+            {
+                offset = new LimitOffset();
+                offset.setLimit(performanceSearch.getPages()*100);
+            } 
             switch (type)
             {
             case EXPERIMENT:
-                result = apiFacade.experimentsByCriteriaSearchUtils(api,
-                        new ExperimentSearchCriteria());
+                if (offset != null)
+                {
+                    result = apiFacade.searchForExperiments(api, new ExperimentSearchCriteria(), offset);
+                }
+                else
+                {
+                    result = apiFacade.experimentsByCriteriaSearchUtils(api,
+                            new ExperimentSearchCriteria());
+                }
+                
                 break;
             case EXPERIMENT_KEYWORD:
-                result = apiFacade.experimentsByKeywordSearchUtils(api,
-                        new KeywordSearchCriteria());
+                if (offset != null)
+                {
+                    result = apiFacade.searchForExperimentByKeyword(api, new KeywordSearchCriteria(), offset);
+                }
+                else
+                {
+                    result = apiFacade.experimentsByKeywordSearchUtils(api,
+                            new KeywordSearchCriteria());
+                }
+                
                 break;
             case BIOMATERIAL:
-                result = apiFacade.biomaterialsByCriteriaSearchUtils(api,
-                        new BiomaterialSearchCriteria());
+                if (offset != null)
+                {
+                    result = apiFacade.searchForBiomaterials(api, new BiomaterialSearchCriteria(), offset);
+                }
+                else
+                {
+                    result = apiFacade.biomaterialsByCriteriaSearchUtils(api,
+                            new BiomaterialSearchCriteria());
+                }
+                
                 break;
             case BIOMATERIAL_KEYWORD:
-                result = apiFacade.biomaterialsByKeywordSearchUtils(api,
-                        new BiomaterialKeywordSearchCriteria());
+                if (offset != null)
+                {
+                    result = apiFacade.searchForBiomaterialByKeyword(api, new BiomaterialKeywordSearchCriteria(), offset);
+                }
+                else
+                {
+                    result = apiFacade.biomaterialsByKeywordSearchUtils(api,
+                            new BiomaterialKeywordSearchCriteria());
+                }                
                 break;
             case DATASET:
                 result = apiFacade.getDataSet(api, new DataSetRequest());
@@ -173,6 +212,10 @@ public class CriteriaPerformanceTestSuite extends SearchByCriteriaTestSuite
             SearchType type = SearchType.valueOf(input[headerIndexMap.get(TYPE)].trim().toUpperCase());
             search.setSearchType(type);
         }
+        if (headerIndexMap.get(PAGES) < input.length
+                && !input[headerIndexMap.get(PAGES)].equals(""))
+            search.setPages(Integer.parseInt(input[headerIndexMap.get(PAGES)]
+                    .trim()));
     }
 
     /* (non-Javadoc)

@@ -143,9 +143,7 @@ public class GuiMain
 
             public void actionPerformed(ActionEvent arg0)
             {
-                try
-                {
-                    String testString = excludeText.getText();
+                String testString = excludeText.getText();
                     if (testString != null)
                     {
                         String[] testCases = testString.split(",");
@@ -163,17 +161,48 @@ public class GuiMain
                                     System.out.println(test + " is not a valid test case.");
                                 }
                             }
-                            TestProperties.addExcludedTests(tests);
+                            TestProperties.setExcludedTests(tests);
                         }
                         
                     }
                     
-                }
-                catch (NumberFormatException e)
-                {
-                    System.out.println(gridPortText.getText() + " is not a valid port number.");
-                }
                 
+                
+            }
+            
+        });
+        
+        JLabel includeLabel = new JLabel("Include only (comma-separated list):");
+        final JTextField includeText = new JTextField("",30);
+        JButton save6 = new JButton("Save");
+        save6.addActionListener(new ActionListener()
+        {
+
+            public void actionPerformed(ActionEvent arg0)
+            {
+                String testString = includeText.getText();
+                    if (testString != null)
+                    {
+                        String[] testCases = testString.split(",");
+                        if (testCases != null && testCases.length > 0)
+                        {
+                            List<Float> tests = new ArrayList<Float>();
+                            for (String test : testCases)
+                            {
+                                try
+                                {
+                                    tests.add(Float.parseFloat(test));
+                                }
+                                catch (NumberFormatException e)
+                                {
+                                    System.out.println(test + " is not a valid test case.");
+                                }
+                            }
+                            TestProperties.setIncludeOnlyTests(tests);
+                        }
+                        
+                    }
+                    
             }
             
         });
@@ -182,9 +211,9 @@ public class GuiMain
         GridBagLayout topLayout = new GridBagLayout();
         topPanel.setLayout(topLayout);
         
-        JLabel[] labels = new JLabel[]{javaHostLabel,javaPortLabel,gridHostLabel,gridPortLabel, excludeLabel};
-        JTextField[] textFields = new JTextField[]{javaHostText,javaPortText,gridHostText,gridPortText,excludeText};
-        JButton[] buttons = new JButton[]{save,save2,save3,save4,save5};
+        JLabel[] labels = new JLabel[]{javaHostLabel,javaPortLabel,gridHostLabel,gridPortLabel, excludeLabel, includeLabel};
+        JTextField[] textFields = new JTextField[]{javaHostText,javaPortText,gridHostText,gridPortText,excludeText, includeText};
+        JButton[] buttons = new JButton[]{save,save2,save3,save4,save5, save6};
         for (int i = 0; i < labels.length; i++)
         {
             GridBagConstraints c = new GridBagConstraints();

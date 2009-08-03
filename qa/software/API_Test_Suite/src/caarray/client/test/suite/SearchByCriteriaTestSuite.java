@@ -13,7 +13,6 @@ import caarray.client.test.TestResult;
 import caarray.client.test.TestResultReport;
 import caarray.client.test.TestUtils;
 import caarray.client.test.search.CriteriaSearch;
-import caarray.client.test.search.ExampleSearch;
 
 /**
  * @author vaughng
@@ -41,6 +40,8 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
         int index = 1;
         String row = spreadsheetRows.get(index);
         CriteriaSearch search = null;
+        List<Float> excludeTests = TestProperties.getExcludedTests();
+        List<Float> includeTests = TestProperties.getIncludeOnlyTests();
     
         // Iterate each row of spreadsheet input and construct individual search objects
         while (row != null)
@@ -51,24 +52,43 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
             if (isNewSearch(input))
             {
                 search = getCriteriaSearch();
-                try
+                boolean skip = false;
+                if (headerIndexMap.get(TEST_CASE) < input.length
+                && !input[headerIndexMap.get(TEST_CASE)].equals(""))
                 {
-                    populateSearch(input, search);  
-                    configuredSearches.add(search);
+                    search.setTestCase(Float.parseFloat(input[headerIndexMap.get(TEST_CASE)]
+                                                              .trim()));
+                    if (!excludeTests.isEmpty() && (excludeTests.contains(search.getTestCase()) || excludeTests.contains(Math.floor(search.getTestCase()))))
+                        skip = true;
+                    if (!includeTests.isEmpty() && (!includeTests.contains(search.getTestCase())&& !includeTests.contains(Math.floor(search.getTestCase()))))
+                        skip = true;
                 }
-                catch (Exception e)
+                if (!skip)
                 {
-                    throw new TestConfigurationException("Exception constructing test case " + search.getTestCase() + ": "+ e.getClass());
-                }
+                    try
+                    {
+                        populateSearch(input, search);  
+                        configuredSearches.add(search);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new TestConfigurationException("Exception constructing test case " + search.getTestCase() + ": "+ e.getClass());
+                    }
+                }              
                 
             }
             else
             {
+                boolean skip = false;
                 if (search == null)
                     throw new TestConfigurationException(
                             "No test case indicated for row: " + index);
-    
-                try
+                if (!excludeTests.isEmpty() && (excludeTests.contains(search.getTestCase()) || excludeTests.contains(Math.floor(search.getTestCase()))))
+                    skip = true;
+                if (!includeTests.isEmpty() && (!includeTests.contains(search.getTestCase())&& !includeTests.contains(Math.floor(search.getTestCase()))))
+                    skip = true;
+                if (!skip)
+                {try
                 {
                     populateAdditionalSearchValues(input, search);
                 }
@@ -77,6 +97,8 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                     e.printStackTrace();
                     throw new TestConfigurationException("Expection constructing test case: " + e);
                 }
+                    
+                }            
             }
     
             
@@ -158,7 +180,18 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
             List<CriteriaSearch> filteredSearches = new ArrayList<CriteriaSearch>();
             for (CriteriaSearch search : configuredSearches)
             {
-                if (!excludedTests.contains(search.getTestCase()))
+                if (!excludedTests.contains(search.getTestCase())&& !excludedTests.contains(search.getTestCase()))
+                    filteredSearches.add(search);
+            }
+            configuredSearches = filteredSearches;
+        }
+        List<Float> includeTests = TestProperties.getIncludeOnlyTests();
+        if (!includeTests.isEmpty())
+        {
+            List<CriteriaSearch> filteredSearches = new ArrayList<CriteriaSearch>();
+            for (CriteriaSearch search : configuredSearches)
+            {
+                if (includeTests.contains(search.getTestCase()) || includeTests.contains(Math.floor(search.getTestCase())))
                     filteredSearches.add(search);
             }
             configuredSearches = filteredSearches;

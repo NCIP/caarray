@@ -23,6 +23,7 @@ public class DataSetSearch extends CriteriaSearch
     private List<String> expectedQuantitationTypes = new ArrayList<String>();
     private Map<String, DataType> expectedDataType = new HashMap<String, DataType>();
     private Map<String,Integer> expectedDataResults = new HashMap<String, Integer>();
+    private String experimentName;
     
     /**
      * 
@@ -70,6 +71,22 @@ public class DataSetSearch extends CriteriaSearch
     public Map<String, Integer> getExpectedDataResults()
     {
         return expectedDataResults;
+    }
+
+    /**
+     * @return the experimentName
+     */
+    public String getExperimentName()
+    {
+        return experimentName;
+    }
+
+    /**
+     * @param experimentName the experimentName to set
+     */
+    public void setExperimentName(String experimentName)
+    {
+        this.experimentName = experimentName;
     }
 
 }

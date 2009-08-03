@@ -363,31 +363,12 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
                 name = getVariableValue(name);
             List<String> fileNames = new ArrayList<String>();
             fileNames.add(name);
-            if (headerIndexMap.get(FILE_EXPERIMENT) < input.length && !input[headerIndexMap.get(FILE_EXPERIMENT)].equals(""))
-            {
-                String experiment = input[headerIndexMap.get(FILE_EXPERIMENT)].trim();
-                List<DataFile> files = apiFacade.getFilesByName(search.getApi(), fileNames, experiment);
+            List<DataFile> files = apiFacade.getFilesByName(search.getApi(), fileNames, search.getExperimentName());
                 for (DataFile file : files)
                 {
                     criteria.getDataFiles().add(file.getReference());
                 }
-            }
-            else if (headerIndexMap.get(FILE_EXPERIMENT_ID) < input.length && !input[headerIndexMap.get(FILE_EXPERIMENT_ID)].equals(""))
-            {
-                String experimentId = input[headerIndexMap.get(FILE_EXPERIMENT)].trim();
-                ExperimentSearchCriteria crit = new ExperimentSearchCriteria();
-                crit.setPublicIdentifier(experimentId);
-                SearchResult<Experiment> result = (SearchResult<Experiment>)apiFacade.searchForExperiments(search.getApi(), crit, null);
-                if (!result.getResults().isEmpty())
-                {
-                    Experiment exp = result.getResults().get(0);
-                    List<DataFile> files = apiFacade.getFilesByName(search.getApi(), fileNames, exp.getTitle());
-                    for (DataFile file : files)
-                    {
-                        criteria.getDataFiles().add(file.getReference());
-                    }
-                }
-            }
+            
             
         }
         if (headerIndexMap.get(HYB_REF) < input.length && !input[headerIndexMap.get(HYB_REF)].equals(""))
@@ -504,12 +485,34 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
                 name = getVariableValue(name);
             List<String> fileNames = new ArrayList<String>();
             fileNames.add(name);
-            String experiment = input[headerIndexMap.get(FILE_EXPERIMENT)].trim();
-            List<DataFile> files = apiFacade.getFilesByName(search.getApi(), fileNames, experiment);
-            for (DataFile file : files)
+            if (headerIndexMap.get(FILE_EXPERIMENT) < input.length && !input[headerIndexMap.get(FILE_EXPERIMENT)].equals(""))
             {
-                criteria.getDataFiles().add(file.getReference());
+                String experiment = input[headerIndexMap.get(FILE_EXPERIMENT)].trim();
+                search.setExperimentName(experiment);
+                List<DataFile> files = apiFacade.getFilesByName(search.getApi(), fileNames, experiment);
+                for (DataFile file : files)
+                {
+                    criteria.getDataFiles().add(file.getReference());
+                }
             }
+            else if (headerIndexMap.get(FILE_EXPERIMENT_ID) < input.length && !input[headerIndexMap.get(FILE_EXPERIMENT_ID)].equals(""))
+            {
+                String experimentId = input[headerIndexMap.get(FILE_EXPERIMENT_ID)].trim();
+                ExperimentSearchCriteria crit = new ExperimentSearchCriteria();
+                crit.setPublicIdentifier(experimentId);
+                SearchResult<Experiment> result = (SearchResult<Experiment>)apiFacade.searchForExperiments(search.getApi(), crit, null);
+                if (!result.getResults().isEmpty())
+                {
+                    Experiment exp = result.getResults().get(0);
+                    search.setExperimentName(exp.getTitle());
+                    List<DataFile> files = apiFacade.getFilesByName(search.getApi(), fileNames, exp.getTitle());
+                    for (DataFile file : files)
+                    {
+                        criteria.getDataFiles().add(file.getReference());
+                    }
+                }
+            }
+            
         }
             
         if (headerIndexMap.get(HYB) < input.length && !input[headerIndexMap.get(HYB)].equals(""))

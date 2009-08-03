@@ -691,8 +691,7 @@ public class GridApiFacade implements ApiFacade
         TransferServiceContextReference serviceContextRef = gridClient.getMageTabZipTransfer(experimentReference, compressed);
         TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef.getEndpointReference());
         InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
-        byte[] byteArray = IOUtils.toByteArray(stream);
-        return byteArray;
+        return IOUtils.toByteArray(stream);
     }
 
     /* (non-Javadoc)
@@ -713,8 +712,7 @@ public class GridApiFacade implements ApiFacade
     {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         dataApiUtils.copyMageTabZipToOutputStream(experimentReference, compressed, stream);
-        byte[] byteArray = stream.toByteArray();
-        return byteArray;
+        return stream.toByteArray();
     }
     
     

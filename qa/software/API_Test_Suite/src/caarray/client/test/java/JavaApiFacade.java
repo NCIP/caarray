@@ -498,8 +498,7 @@ public class JavaApiFacade implements ApiFacade
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         dataApiUtils.copyMageTabZipToOutputStream(experimentReference, compressed, outStream);
-        byte[] byteArray = outStream.toByteArray();
-        return byteArray;
+        return outStream.toByteArray();
     }
 
     /* (non-Javadoc)

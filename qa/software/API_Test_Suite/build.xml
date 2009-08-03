@@ -6,9 +6,9 @@
 	<!-- ******************************************************************* -->
 	<!-- ** SERVER CONNECTION PROPERTIES                                  ** -->
 	<!-- ******************************************************************* -->
-	<property name="grid.server.hostname" value="array-qa.nci.nih.gov" />
+	<property name="grid.server.hostname" value="array-stage.nci.nih.gov" />
 	<property name="grid.server.http.port" value="80" />
-	<property name="server.hostname" value="array-qa.nci.nih.gov" />
+	<property name="server.hostname" value="array-stage.nci.nih.gov" />
 	<property name="server.jndi.port" value="8080" />
 
 	<!-- ******************************************************************* -->
@@ -96,7 +96,7 @@
 				</fileset>
 			</classpath>
 			<jvmarg value="-Xms64m"/>
-			<jvmarg value="-Xmx512m"/>
+			<jvmarg value="-Xmx1280m"/>
 			<sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
 			<sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
 			<sysproperty key="server.hostname" value="${server.hostname}" />
@@ -120,7 +120,7 @@
 				</fileset>
 			</classpath>
 			<jvmarg value="-Xms64m"/>
-			<jvmarg value="-Xmx512m"/>
+			<jvmarg value="-Xmx1280m"/>
 			<sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
 			<sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
 			<sysproperty key="server.hostname" value="${server.hostname}" />
@@ -144,7 +144,7 @@
 				</fileset>
 			</classpath>
 			<jvmarg value="-Xms64m"/>
-			<jvmarg value="-Xmx512m"/>
+			<jvmarg value="-Xmx1280m"/>
 			<sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
 			<sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
 			<sysproperty key="server.hostname" value="${server.hostname}" />

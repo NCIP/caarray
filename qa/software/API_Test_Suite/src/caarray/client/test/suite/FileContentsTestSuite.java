@@ -393,6 +393,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
         if (headerIndexMap.get(FILE_EXPERIMENT) < input.length && !input[headerIndexMap.get(FILE_EXPERIMENT)].equals(""))
         {
             experimentName = input[headerIndexMap.get(FILE_EXPERIMENT)].trim();
+            search.setExperimentName(experimentName);
         }
         if (headerIndexMap.get(EXPERIMENT_REF) < input.length && !input[headerIndexMap.get(EXPERIMENT_REF)].equals(""))
         {
@@ -412,6 +413,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
                 experimentName = results.get(0).getTitle();
                 experimentReference = results.get(0).getReference();
                 search.setExperimentRef(experimentReference);
+                search.setExperimentName(experimentName);
             }
                 
         }

@@ -98,13 +98,13 @@ public class TestProperties {
 	public static final String SERVER_HOSTNAME_KEY = "server.hostname";
     public static final String SERVER_JNDI_PORT_KEY = "server.jndi.port";
     
-    public static final String SERVER_HOSTNAME_DEFAULT = "array-qa.nci.nih.gov";
+    public static final String SERVER_HOSTNAME_DEFAULT = "array-stage.nci.nih.gov";
     public static final String SERVER_JNDI_PORT_DEFAULT = "8080";
     
 	public static final String GRID_SERVER_HOSTNAME_KEY = "grid.server.hostname";
     public static final String GRID_SERVER_PORT_KEY = "grid.server.http.port";
     
-    public static final String GRID_SERVER_HOSTNAME_DEFAULT = "array-qa.nci.nih.gov";
+    public static final String GRID_SERVER_HOSTNAME_DEFAULT = "array-stage.nci.nih.gov";
     public static final String GRID_SERVER_PORT_DEFAULT = "80";
     
     public static final String REPORT_DIR_KEY = "report.dir";
@@ -126,6 +126,7 @@ public class TestProperties {
     public static final String CONFIG_DIR = "config";
     
     private static List<Float> excludedTests = Collections.synchronizedList(new ArrayList<Float>());
+    private static List<Float> includeOnlyTests = Collections.synchronizedList(new ArrayList<Float>());
     
     public static String getJavaServerHostname() {
         return System.getProperty(SERVER_HOSTNAME_KEY, SERVER_HOSTNAME_DEFAULT);
@@ -187,13 +188,25 @@ public class TestProperties {
 	    return System.getProperty(TEST_VERSION_KEY,TEST_VERSION_SHORT);
 	}
 	
-	public static void addExcludedTests(List<Float> tests)
+	public static void setExcludedTests(List<Float> tests)
 	{
+	    excludedTests.clear();
 	    excludedTests.addAll(tests);
 	}
 	
 	public static List<Float> getExcludedTests()
 	{
 	    return new ArrayList<Float>(excludedTests);
+	}
+	
+	public static void setIncludeOnlyTests(List<Float> tests)
+	{
+	    includeOnlyTests.clear();
+	    includeOnlyTests.addAll(tests);
+	}
+	
+	public static List<Float> getIncludeOnlyTests()
+	{
+	    return new ArrayList<Float>(includeOnlyTests);
 	}
 }
