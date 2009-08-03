@@ -7,3 +7,5 @@ Test Case,API,Name,Type,Expected Results,Min Results
 244,grid,invalid#%!,,0,
 245,java,,disease_state,,1
 246,grid,,disease_state,,1
+326,java,GBM,disease_state,1,
+327,grid,GBM,disease_state,1,
