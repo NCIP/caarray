@@ -14,8 +14,12 @@ Test Case,API,Keyword,Expected Results,Min Results,API Utils,Enumerate
 123,grid,AbcCarcinoma,,8,,
 124,java,,,20000,TRUE,
 350,grid,,,20000,,TRUE
-287,java,QA_API_TEST_EXTERNAL_ID_02,1,
-288,java,Blood,,500
-289,grid,QA_API_TEST_EXTERNAL_ID_02,1,
-290,grid,Blood,,500
-291,grid,QA Illumina Experiment for API,1,
+287,java,QA_API_TEST_EXTERNAL_ID_02,1,,,
+288,java,Blood,,500,,
+289,grid,QA_API_TEST_EXTERNAL_ID_02,1,,,
+290,grid,Blood,,500,,
+291,grid,QA Illumina Experiment for API,1,,,
+330,java,solid_tumor,,1,,
+332,java,TJU,,1,,
+333,grid,solid_tumor,,1,,
+335,grid,TJU,,1,,
