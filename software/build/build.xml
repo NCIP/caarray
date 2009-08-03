@@ -1095,7 +1095,6 @@
                 <include name="${freemarker.jar}"/>
                 <include name="${jstl.jar}"/>
                 <include name="${standard.jar}"/>
-                <include name="${log4j.jar}"/>
                 <include name="${junit.jar}"/>
                 <include name="${oscache.jar}"/>
                 <include name="${sitemesh.jar}"/>
@@ -1209,6 +1208,9 @@
             <fileset refid="grid.dependencies.caarray-grid-svc.legacy.build.fileset" />
             <fileset refid="grid.dependencies.caarray-grid-svc.v1_0.build.fileset" />
             <fileset refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
+            <!--path refid="caarray-client.common.dependencies.path"/>
+            <path refid="caarray-client.common.grid.dependencies.path"/>
+            <path refid="axis.jar.path"/-->
         </path>
 
         <path id="caarray-client.common.dependencies.path">
@@ -2231,10 +2233,25 @@
         <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="70" totallinerate="79" />
     </target>
 
-    <!-- Functional (Selenium) Test Targets -->
+    <!-- Functional (Selenium) and API Test Targets -->
+    <target name="-test:functional:setup" depends="deploy:caarray.ear, deploy:caarray-grid-svc-jboss, test:api:init-data, deploy:start-jboss">
 
-    <target name="test:functional" unless="notest" depends="init:third-party-paths,test:functional:prepare,
-        deploy:start-jboss-and-deploy,
+        <waitfor maxwait="3" maxwaitunit="minute" checkevery="500">
+            <http url="http://${jboss.server.hostname}:${jboss.server.port}/caarray"/>
+        </waitfor>
+
+        <waitfor maxwait="3" maxwaitunit="minute" checkevery="500">
+            <http url="http://${jboss.server.hostname}:${jboss.server.port}/wsrf"/>
+        </waitfor>
+    </target>
+
+    <target name="test:functional" depends="
+        init:third-party-paths,
+        test:functional:prepare,
+        -test:functional:setup,
+        test:api:run-tests,
+        test:grid:run-tests,
+        database:execute-sql,
         test:functional:run-tests,
         deploy:stop-jboss,
         test:functional:report,
@@ -2362,7 +2379,7 @@
         </javac>
     </target>
 
-    <target name="test:functional:run-tests" unless="notest" depends="init:third-party-paths,test:selenium:run-tests,test:api:run-tests" />
+    <target name="test:functional:run-tests" unless="notest" depends="init:third-party-paths,test:selenium:run-tests" />
 
     <target name="test:functional:report" unless="notest" depends="init:third-party-paths">
         <mkdir dir="${site.dir}/junit/functional" />
@@ -2417,7 +2434,14 @@
     </target>
 
     <target name="test:grid:run-tests" unless="notest"  depends="init:third-party-paths,test:grid:compile-tests,build:caarray-client.jar,build:caarray-grid-svc">
-        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/grid" classpath="${test.classes.dir};${caarray-grid-svc.common.jar};${caarray-client.resources.dir};" classpathref.id="test.grid.dependencies.path" source.include="**/api/**/grid/**/*.java" source.exclude="**/Abstract*.java" />
+        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/grid"
+            classpath="${test.classes.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${caarray-grid-svc.common.jar};${caarray-client.resources.dir};"
+            classpathref.id="test.grid.dependencies.path"
+            source.include="**/api/**/grid/**/*ApiTest.java" source.exclude="**/Abstract*.java" >
+                <extentions>
+                    <sysproperty key="globoss.server.http.port" value="${jboss.server.port}" /><!-- same server, same port -->
+                </extentions>
+            </caarray-run-junit-tests>
     </target>
 
     <!-- ******************************************************************* -->

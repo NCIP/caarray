@@ -8,6 +8,7 @@
         <attribute name="classpathref.id" default="no.dependencies.path" />
         <attribute name="source.include" default="**/*Test.java" />
         <attribute name="source.exclude" default="**/Abstract*Test.java" />
+        <element name="extentions" optional="yes"/>
 
         <sequential>
             <mkdir dir="@{xml.output.dir}" />
@@ -23,6 +24,7 @@
                 <sysproperty key="globoss.server.hostname" value="${globoss.server.hostname}" />
                 <sysproperty key="globoss.server.http.port" value="${globoss.server.http.port}" />
                 <sysproperty key="selenium.server.port" value="${selenium.server.port}" />
+
                 <classpath>
                     <pathelement path="@{instrumented.classes}" />
                     <pathelement path="@{classpath}" />
@@ -36,6 +38,8 @@
                         <exclude name="@{source.exclude}" />
                     </fileset>
                 </batchtest>
+
+                <extentions/>
             </junit>
         </sequential>
     </macrodef>
