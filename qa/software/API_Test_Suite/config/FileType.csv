@@ -7,3 +7,5 @@ Test Case,API,Name,Category,Expected Results,Min Results,Expected Name,Expected 
 248,grid,invalid#%!,,0,,,
 249,java,,DERIVED,,8,,
 250,grid,,DERIVED,,8,,
+328,java,AFFYMETRIX_CEL,DERIVED,0,,,
+329,grid,AFFYMETRIX_CEL,DERIVED,0,,,
