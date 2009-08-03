@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.services.external.v1_0.search;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
@@ -105,7 +105,6 @@ import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 
 import java.util.List;
@@ -180,26 +179,6 @@ public interface SearchService {
             throws InvalidReferenceException;
 
     /**
-     * Retrieves the list of entities instance of an entity identified by the given reference.
-     * 
-     * @param references a list of references identifying the entity to retrieve.
-     * @return the instances identified by the references. this list will have the same length as the references list,
-     *         and the i-th element will be the entity for the i-th reference.
-     * @throws NoEntityMatchingReferenceException if there is no entity matching any reference in the list
-     */
-    List<AbstractCaArrayEntity> getByReferences(List<CaArrayEntityReference> references)
-            throws NoEntityMatchingReferenceException;
-
-    /**
-     * Retrieves an entity identified by the given reference.
-     * 
-     * @param reference a reference identifying the entity to retrieve.
-     * @return the entity identified by the reference.
-     * @throws NoEntityMatchingReferenceException if there is no entity with given reference.
-     */
-    AbstractCaArrayEntity getByReference(CaArrayEntityReference reference) throws NoEntityMatchingReferenceException;
-
-    /**
      * Returns a list of experiments satisfying the given search criteria.
      * 
      * @param criteria the search criteria.
@@ -229,7 +208,7 @@ public interface SearchService {
      * @return the list of files matching criteria, subject to the paging specifications.
      * @throws InvalidReferenceException if the search criteria includes any invalid references.
      */
-    SearchResult<DataFile> searchForFiles(FileSearchCriteria criteria, LimitOffset pagingParams)
+    SearchResult<File> searchForFiles(FileSearchCriteria criteria, LimitOffset pagingParams)
             throws InvalidReferenceException;
     
     /**

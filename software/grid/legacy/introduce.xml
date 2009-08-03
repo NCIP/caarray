@@ -62,18 +62,14 @@
   <ns2:Namespace location="./gov.nih.nci.caarray.domain.publication.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.publication" packageName="gov.nih.nci.caarray.domain.publication" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="Publication" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Publication" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./gov.nih.nci.caarray.domain.vocabulary.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.vocabulary" packageName="gov.nih.nci.caarray.domain.vocabulary" xsi:type="ns2:NamespaceType">
-   <ns2:SchemaElement className="Category" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Category" xsi:type="ns2:SchemaElementType"/>
-   <ns2:SchemaElement className="Term" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Term" xsi:type="ns2:SchemaElementType"/>
-   <ns2:SchemaElement className="TermSource" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="TermSource" xsi:type="ns2:SchemaElementType"/>
-  </ns2:Namespace>
   <ns2:Namespace location="./edu.georgetown.pir.xsd" namespace="gme://caArray.caBIG/2.1/edu.georgetown.pir" packageName="edu.georgetown.pir" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="AdditionalOrganismName" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AdditionalOrganismName" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Organism" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Organism" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
-  <ns2:Namespace location="./gov.nih.nci.caarray.domain.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain" packageName="gov.nih.nci.caarray.domain" xsi:type="ns2:NamespaceType">
-   <ns2:SchemaElement className="AbstractCaArrayEntity" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractCaArrayEntity" xsi:type="ns2:SchemaElementType"/>
-   <ns2:SchemaElement className="AbstractCaArrayObject" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractCaArrayObject" xsi:type="ns2:SchemaElementType"/>
+  <ns2:Namespace location="./gov.nih.nci.caarray.domain.vocabulary.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.vocabulary" packageName="gov.nih.nci.caarray.domain.vocabulary" xsi:type="ns2:NamespaceType">
+   <ns2:SchemaElement className="Category" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Category" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="Term" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Term" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="TermSource" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="TermSource" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace location="./gov.nih.nci.caarray.domain.project.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project" packageName="gov.nih.nci.caarray.domain.project" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="AbstractFactorValue" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractFactorValue" xsi:type="ns2:SchemaElementType"/>
@@ -85,6 +81,10 @@
    <ns2:SchemaElement className="Project" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Project" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="TermBasedFactorValue" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="TermBasedFactorValue" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="UserDefinedFactorValue" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="UserDefinedFactorValue" xsi:type="ns2:SchemaElementType"/>
+  </ns2:Namespace>
+  <ns2:Namespace location="./gov.nih.nci.caarray.domain.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain" packageName="gov.nih.nci.caarray.domain" xsi:type="ns2:NamespaceType">
+   <ns2:SchemaElement className="AbstractCaArrayEntity" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractCaArrayEntity" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="AbstractCaArrayObject" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractCaArrayObject" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace location="./gov.nih.nci.caarray.domain.sample.xsd" namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample" packageName="gov.nih.nci.caarray.domain.sample" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="AbstractBioMaterial" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractBioMaterial" xsi:type="ns2:SchemaElementType"/>

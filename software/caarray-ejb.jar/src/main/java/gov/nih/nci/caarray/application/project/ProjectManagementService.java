@@ -97,7 +97,6 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
 import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -504,13 +503,4 @@ public interface ProjectManagementService {
      * @throws CSException on CSM error
      */
     void changeOwner(Long projectId, String newOwner) throws CSException;
-
-    /**
-     * Performs a query for files by the given criteria.
-     *
-     * @param params paging and sorting parameters
-     * @param criteria the criteria for the search
-     * @return a list of matching files
-     */
-    List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria);
 }

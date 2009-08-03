@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.contact.AbstractContact;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
@@ -126,7 +125,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     /** value of the Term for the POC Role. */
     public static final String MAIN_POC_ROLE = "submitter";
 
-    private AbstractContact contact;
+    private Person contact;
     private Set<Term> roles = new HashSet<Term>();
     private Experiment experiment;
 
@@ -147,7 +146,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      * @param roles
      *            the roles this contact has on the experiment
      */
-    public ExperimentContact(Experiment experiment, AbstractContact contact,
+    public ExperimentContact(Experiment experiment, Person contact,
             Collection<Term> roles) {
         this.contact = contact;
         this.roles.addAll(roles);
@@ -164,7 +163,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      * @param role
      *            the role this contact has on the experiment
      */
-    public ExperimentContact(Experiment experiment, AbstractContact contact,
+    public ExperimentContact(Experiment experiment, Person contact,
             Term role) {
         this(experiment, contact, Arrays.asList(role));
     }
@@ -177,7 +176,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "experimentcontact_contact_fk")
-    public AbstractContact getContact() {
+    public Person getContact() {
         return contact;
     }
 
@@ -187,7 +186,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      * @param contactVal
      *            the contact
      */
-    public void setContact(final AbstractContact contactVal) {
+    public void setContact(final Person contactVal) {
         this.contact = contactVal;
     }
 
@@ -198,13 +197,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      */
     @Transient
     public Person getPerson() {
-        if (getContact() instanceof Person) {
-            return (Person) getContact();
-        } else if (getContact() == null) {
-            return null;
-        } else {
-            throw new IllegalStateException();
-        }
+        return this.contact;
     }
 
     /**

@@ -82,16 +82,16 @@
  */
 package gov.nih.nci.caarray.test.api.external.v1_0.grid;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataType;
+import gov.nih.nci.caarray.external.v1_0.data.File;
+import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact;
@@ -393,86 +393,6 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         assertEquals(count, sr.getResults().size());
     }
 
-    ////////////////////////////////////////////////////
-
-    @Test
-    public void testGetByReference_Experiment() throws RemoteException {
-        logForSilverCompatibility(TEST_NAME, "testGetByReference_Experiment");
-        try {
-            Experiment e = (Experiment) gridClient.getByReference(
-                    new CaArrayEntityReference(
-                            "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
-            assertEquals("test1", e.getTitle());
-        } catch (NoEntityMatchingReferenceFault e) {
-            e.printStackTrace();
-            fail("Couldn't retrieve by reference: " + e);
-        }
-
-        CaArrayEntityReference badRef = new CaArrayEntityReference(
-                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:10");
-        try {
-            gridClient.getByReference(badRef);
-            fail("Expected a NoEntityMatchingReferenceException");
-        } catch (NoEntityMatchingReferenceFault e) {
-            e.printStackTrace();
-            //assertEquals(badRef.getId(), e.getReference().getId());
-        }
-
-        badRef = new CaArrayEntityReference(
-                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.BfdsfdsVBD:11");
-        try {
-            gridClient.getByReference(badRef);
-            fail("Expected a NoEntityMatchingReferenceException");
-        } catch (NoEntityMatchingReferenceFault e) {
-            e.printStackTrace();
-            //assertEquals(badRef.getId(), e.getReference().getId());
-        }
-    }
-
-    /////////////////////////////////////////////////
-
-    @Test
-    public void testGetByReferences() throws RemoteException {
-        logForSilverCompatibility(TEST_NAME, "testGetByReferences");
-        CaArrayEntityReference[] refs = {
-                new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:1"),
-                new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:2")};
-        try {
-            AbstractCaArrayEntity[] entities = gridClient.getByReferences(refs);
-            assertEquals(2, entities.length);
-            assertTrue(entities[0] instanceof Biomaterial);
-            Biomaterial b = (Biomaterial) entities[0];
-            assertEquals("Cy3 labeled Pr111 reference_8kNewPr111_14v1p4m11", b.getName());
-            assertEquals(BiomaterialType.LABELED_EXTRACT, b.getType());
-        } catch (NoEntityMatchingReferenceFault e) {
-            e.printStackTrace();
-            fail("Couldnt retrieve by references: " + e);
-        }
-
-        CaArrayEntityReference badRef = new CaArrayEntityReference(
-        "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:10");
-        try {
-            CaArrayEntityReference[] arr = {badRef};
-            gridClient.getByReferences(arr);
-            fail("Expected a NoEntityMatchingReferenceException");
-        } catch (NoEntityMatchingReferenceFault e) {
-            e.printStackTrace();
-            //assertEquals(badRef.getId(), e.getReference().getId());
-        }
-
-        badRef = new CaArrayEntityReference(
-                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.BfdsfdsVBD:11");
-        try {
-            CaArrayEntityReference[] arr = {badRef};
-            gridClient.getByReferences(arr);
-            fail("Expected a NoEntityMatchingReferenceException");
-        } catch (NoEntityMatchingReferenceFault e) {
-            e.printStackTrace();
-            //assertEquals(badRef.getId(), e.getReference().getId());
-        }
-
-    }
-
     /////////////////////////////////////////////////
 
     @Test
@@ -664,7 +584,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
         crit.setHybridization(new CaArrayEntityReference(
                 "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1"));
-        crit.getFileTypeCategories().add(FileTypeCategory.DERIVED);
+        crit.getFileCategories().add(FileCategory.DERIVED_DATA);
         QuantitationType[] types = gridClient.searchForQuantitationTypes(crit);
         assertEquals(38, types.length);
     }
@@ -696,22 +616,22 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.setExperiment(new CaArrayEntityReference(
                 "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
-        crit.setCategories(EnumSet.of(FileTypeCategory.DERIVED));
-        List<DataFile> files = gridClient.searchForFiles(crit, null).getResults();
+        crit.setCategories(EnumSet.of(FileCategory.DERIVED_DATA));
+        List<File> files = gridClient.searchForFiles(crit, null).getResults();
         assertEquals(19, files.size());
 
-        logForSilverCompatibility(TEST_OUTPUT, "test DataFile transmission");
-        DataFile df = null;
-        for (DataFile f : files) {
-            if ("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:2".equals(f.getId())) {
+        logForSilverCompatibility(TEST_OUTPUT, "test File transmission");
+        File df = null;
+        for (File f : files) {
+            if ("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:2".equals(f.getId())) {
                 df = f;
                 break;
             }
         }
         assertNotNull(df);
-        assertEquals("fileType.name", "GENEPIX_GPR", df.getFileType().getName());
-        assertEquals("CompressedSize", 682885, df.getCompressedSize());
-        assertEquals("UncompressedSize", 1771373, df.getUncompressedSize());
+        assertEquals("fileType.name", "GENEPIX_GPR", df.getMetadata().getFileType().getName());
+        assertEquals("CompressedSize", 682885, df.getMetadata().getCompressedSize());
+        assertEquals("UncompressedSize", 1771373, df.getMetadata().getUncompressedSize());
     }
 
     @Test
@@ -720,7 +640,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.setExperiment(new CaArrayEntityReference(
                 "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
-        List<DataFile> files = gridClient.searchForFiles(crit, null).getResults();
+        List<File> files = gridClient.searchForFiles(crit, null).getResults();
         assertEquals(files.toString(), 19, files.size());
     }
 
@@ -739,7 +659,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         crit.getExperimentGraphNodes().add(new CaArrayEntityReference(
                 "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:112"));//Source
 
-        List<DataFile> files = gridClient.searchForFiles(crit, null).getResults();
+        List<File> files = gridClient.searchForFiles(crit, null).getResults();
         List<String> expectedNames = new ArrayList<String>(Arrays.asList(
                 "8kReversNew17_111_4601_m83.gpr",
                 "8kNew111_14v1p4m12.gpr",
@@ -748,8 +668,8 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
                 "8kNew111_14_4601_m84.gpr"));
         assertEquals(expectedNames.size(), files.size());
 
-        for (DataFile f : files) {
-            assertTrue(f.getName() + " not found ", expectedNames.remove(f.getName()));
+        for (File f : files) {
+            assertTrue(f.getMetadata().getName() + " not found ", expectedNames.remove(f.getMetadata().getName()));
         }
         assertTrue(expectedNames.toString(), expectedNames.isEmpty());
     }
@@ -759,10 +679,10 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Extention");
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.setExtension("gpr");
-        List<DataFile> files = gridClient.searchForFiles(crit, null).getResults();
+        List<File> files = gridClient.searchForFiles(crit, null).getResults();
         assertEquals(19, files.size());
-        for(DataFile f:files){
-            System.out.println("types  "+f.getFileType());
+        for(File f:files){
+            System.out.println("types  "+f.getMetadata().getFileType());
         }
     }
 
@@ -771,7 +691,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Type");
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.getTypes().add(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:GENEPIX_GPR"));
-        List<DataFile> files = gridClient.searchForFiles(crit, null).getResults();
+        List<File> files = gridClient.searchForFiles(crit, null).getResults();
         assertEquals(19, files.size());
     }
 
@@ -779,7 +699,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     public void testSearchForFiles_All() throws InvalidReferenceException, RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_All");
         FileSearchCriteria crit = new FileSearchCriteria();
-        List<DataFile> files = gridClient.searchForFiles(crit, null).getResults();
+        List<File> files = gridClient.searchForFiles(crit, null).getResults();
         assertEquals(19, files.size());
     }
 
@@ -787,7 +707,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     public void testSearchForFiles_Limit() throws InvalidReferenceException, RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Limit");
         FileSearchCriteria fsc = new FileSearchCriteria();
-        SearchResult<DataFile> sr = gridClient.searchForFiles(fsc, null);
+        SearchResult<File> sr = gridClient.searchForFiles(fsc, null);
         assertTrue(sr.isFullResult());
         int all = sr.getResults().size();
         int chunk = all/2 + 2; // somewhere near past the middle
@@ -893,18 +813,18 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testSearchByExample_DataFile() throws Exception {
-        logForSilverCompatibility(TEST_NAME, "testSearchByExample_DataFile");
-        testExampleProperty(new DataFile(), null, null, 24);
-        testExampleProperty(new DataFile(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:1", 1);
-        testExampleProperty(new DataFile(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:0", 0);
+    public void testSearchByExample_File() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_File");
+        testExampleProperty(new File(), null, null, 24);
+        testExampleProperty(new File(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:1", 1);
+        testExampleProperty(new File(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:0", 0);
 
-        testExampleProperty(new DataFile(), "compressedSize", 114521L, 1);
-        testExampleProperty(new DataFile(), "uncompressedSize", 114521L, 1);
-        testExampleProperty(new DataFile(), "name", "8kNew111_17_4601_m82.gpr", 1);
+        testExampleProperty(new File(), "compressedSize", 114521L, 1);
+        testExampleProperty(new File(), "uncompressedSize", 114521L, 1);
+        testExampleProperty(new File(), "name", "8kNew111_17_4601_m82.gpr", 1);
         FileType type = new FileType();
         type.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:MAGE_TAB_IDF");
-        testExampleProperty(new DataFile(), "fileType", type, 1);
+        testExampleProperty(new File(), "fileType", type, 1);
     }
 
     @Test
@@ -1078,8 +998,8 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         AssayType at = new AssayType("Gene Expression");
         at.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.AssayType:3");
         testExampleProperty(new ArrayDesign(), "assayTypes", Collections.singleton(at), 1);
-        DataFile df = new DataFile();
-        df.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:2");
+        File df = new File();
+        df.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:2");
         testExampleProperty(new ArrayDesign(), "files", Collections.singleton(df), 1);
         testExampleProperty(new ArrayDesign(), "lsid", "TODO", 0);
         testExampleProperty(new ArrayDesign(), "name", "Mm-Incyte-v1px_16Bx24Cx23R", 1);

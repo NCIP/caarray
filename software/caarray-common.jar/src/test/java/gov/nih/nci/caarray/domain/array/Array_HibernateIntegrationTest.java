@@ -83,21 +83,19 @@
 package gov.nih.nci.caarray.domain.array;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.junit.Test;
 
@@ -122,6 +120,8 @@ public class Array_HibernateIntegrationTest extends AbstractCaArrayEntity_Hibern
         design.setName(getUniqueStringValue());
         design.setTechnologyType(term);
         design.addDesignFile(new CaArrayFile());
+        design.getFirstDesignFile().setName("File 1");
+        design.getFirstDesignFile().setFileStatus(FileStatus.UPLOADED);
         design.setVersion(getUniqueStringValue());
         design.setProvider(new Organization());
         SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();

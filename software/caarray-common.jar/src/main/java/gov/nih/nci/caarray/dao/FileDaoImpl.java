@@ -84,24 +84,23 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.BlobHolder;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
@@ -199,47 +198,48 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
      * {@inheritDoc}
      */
     @SuppressWarnings({"unchecked", "PMD" })
-    public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {
-        // degenerate case: if no category selected:        
-        if (!criteria.isIncludeDerived() && !criteria.isIncludeRaw() && !criteria.isIncludeSupplemental()) {
-            return Collections.emptyList();
-        }
-        
+    public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {        
         Criteria c = HibernateUtil.getCurrentSession().createCriteria(CaArrayFile.class);
+
         if (criteria.getExperiment() != null) {
             c.add(Restrictions.eq("project", criteria.getExperiment().getProject()));
         }
+        
         if (!criteria.getTypes().isEmpty()) {
-            Set<String> typeNames = new HashSet<String>();
-            for (FileType ft : criteria.getTypes()) {
-                typeNames.add(ft.name());
-            }
-            c.add(Restrictions.in("type", typeNames));
+            c.add(Restrictions.in("type", CaArrayUtils.namesForEnums(criteria.getTypes())));
         }
+        
         if (criteria.getExtension() != null) {
             String extension = criteria.getExtension();
             if (!extension.startsWith(".")) {
                 extension = "." + extension;
             }
             c.add(Restrictions.ilike("name", "%" + extension));
-        }        
-        Set<String> includedTypes = new HashSet<String>();     
-        if (criteria.isIncludeDerived()) {
-            for (FileType ft : FileType.DERIVED_ARRAY_DATA_FILE_TYPES) {
-                includedTypes.add(ft.name());
+        }
+
+        if (!criteria.getCategories().isEmpty()) {
+            Disjunction categoryCriterion = Restrictions.disjunction();
+            if (criteria.getCategories().contains(FileCategory.DERIVED_DATA)) {
+                categoryCriterion.add(Restrictions.in("type", CaArrayUtils
+                        .namesForEnums(FileType.DERIVED_ARRAY_DATA_FILE_TYPES)));
             }
-        }
-        if (criteria.isIncludeRaw()) {            
-            for (FileType ft : FileType.RAW_ARRAY_DATA_FILE_TYPES) {
-                includedTypes.add(ft.name());
+            if (criteria.getCategories().contains(FileCategory.RAW_DATA)) {            
+                categoryCriterion.add(Restrictions.in("type", CaArrayUtils
+                        .namesForEnums(FileType.RAW_ARRAY_DATA_FILE_TYPES)));
             }
+            if (criteria.getCategories().contains(FileCategory.MAGE_TAB)) {            
+                categoryCriterion.add(Restrictions.in("type", CaArrayUtils
+                        .namesForEnums(FileType.MAGE_TAB_FILE_TYPES)));
+            }
+            if (criteria.getCategories().contains(FileCategory.ARRAY_DESIGN)) {
+                categoryCriterion.add(Restrictions.in("type", CaArrayUtils
+                        .namesForEnums(FileType.ARRAY_DESIGN_FILE_TYPES)));
+            }
+            if (criteria.getCategories().contains(FileCategory.OTHER)) {
+                categoryCriterion.add(Restrictions.isNull("type"));
+            }
+            c.add(categoryCriterion);            
         }
-        Criterion typeCriterion = Restrictions.in("type", includedTypes);
-        if (criteria.isIncludeSupplemental()) {
-            typeCriterion = Restrictions.disjunction().add(typeCriterion).add(
-                    Restrictions.eq("status", FileStatus.SUPPLEMENTAL.name()));
-        }
-        c.add(typeCriterion);
         
         if (!criteria.getExperimentNodes().isEmpty()) {
             Collection<Long> fileIds = new LinkedList<Long>();        
@@ -260,6 +260,7 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
             c.setMaxResults(params.getPageSize());
         }
         c.addOrder(toOrder(params));
+        
         return c.list();
     }
 }

@@ -83,7 +83,7 @@
 package caarray.client.examples.grid;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest;
@@ -225,7 +225,7 @@ public class DownloadSampleAnnotationsForHybridizations {
         HashSet<CaArrayEntityReference> setOfHybridizationRefs = new HashSet<CaArrayEntityReference>(hybridizationRefs);
         searchCriteria.setExperimentGraphNodes(setOfHybridizationRefs);
         searchCriteria.getTypes().add(chpFileTypeRef);
-        List<DataFile> dataFiles = (searchServiceHelper.filesByCriteria(searchCriteria)).list();
+        List<File> dataFiles = (searchServiceHelper.filesByCriteria(searchCriteria)).list();
         if (dataFiles == null || dataFiles.size() == 0) {
             return false;
         } else {

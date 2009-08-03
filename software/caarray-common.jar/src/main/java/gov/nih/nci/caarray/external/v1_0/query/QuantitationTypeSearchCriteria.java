@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.external.v1_0.query;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
+import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -97,7 +97,7 @@ public class QuantitationTypeSearchCriteria implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Set<CaArrayEntityReference> fileTypes = new HashSet<CaArrayEntityReference>();
-    private Set<FileTypeCategory> fileTypeCategories = new HashSet<FileTypeCategory>();
+    private Set<FileCategory> fileCategories = new HashSet<FileCategory>();
     private Set<CaArrayEntityReference> arrayDataTypes = new HashSet<CaArrayEntityReference>();
     private CaArrayEntityReference hybridization;
 
@@ -118,15 +118,15 @@ public class QuantitationTypeSearchCriteria implements Serializable {
     /**
      * @return the fileTypeCategories
      */
-    public Set<FileTypeCategory> getFileTypeCategories() {
-        return fileTypeCategories;
+    public Set<FileCategory> getFileCategories() {
+        return fileCategories;
     }
 
     /**
      * @param fileTypeCategories the fileTypeCategories to set
      */
-    public void setFileTypeCategories(Set<FileTypeCategory> fileTypeCategories) {
-        this.fileTypeCategories = fileTypeCategories;
+    public void setFileCategories(Set<FileCategory> fileTypeCategories) {
+        this.fileCategories = fileTypeCategories;
     }
 
     /**

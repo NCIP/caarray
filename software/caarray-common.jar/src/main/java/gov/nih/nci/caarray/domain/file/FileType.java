@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain.file;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -288,7 +289,13 @@ public enum FileType implements Comparable<FileType> {
     public static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CHP, AFFYMETRIX_EXP,
             AFFYMETRIX_TXT, AFFYMETRIX_RPT, ILLUMINA_DATA_CSV, ILLUMINA_DATA_TXT, GENEPIX_GPR, IMAGENE_TXT,
             AGILENT_DERIVED_TXT, NIMBLEGEN_GFF, NIMBLEGEN_TXT);
-    
+
+    /**
+     * The set of parsed array data file types.
+     */
+    public static final Set<FileType> MAGE_TAB_FILE_TYPES = EnumSet.of(MAGE_TAB_ADF, MAGE_TAB_DATA_MATRIX,
+            MAGE_TAB_IDF, MAGE_TAB_SDRF);
+
     /**
      * The set of array data file types that caArray can parse.
      */
@@ -380,5 +387,18 @@ public enum FileType implements Comparable<FileType> {
     public FileType getDerivedType() {
         FileType derivedType = RAW_TO_DERIVED_MAP.get(this);
         return (derivedType == null) ? this : derivedType;
+    }
+
+    /**
+     * Return the names of the given FileTypes.
+     * @param types the FileTypes whose names to return
+     * @return the names, e.g. the set of type.getName() for each type in types 
+     */
+    public static Set<String> namesForTypes(Iterable<FileType> types) {
+        Set<String> names = new HashSet<String>();
+        for (FileType type : types) {
+            names.add(type.getName());
+        }
+        return names;
     }
 }

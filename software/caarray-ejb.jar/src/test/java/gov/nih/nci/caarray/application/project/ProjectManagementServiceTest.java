@@ -393,9 +393,13 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     public void testSaveProjectWithImportingFiles() throws Exception {
         Project project = new Project();
         CaArrayFile file1 = new CaArrayFile();
+        file1.setName("File1");
+        file1.setFileStatus(FileStatus.UPLOADED);
         file1.setProject(project);
         project.getFiles().add(file1);
         CaArrayFile file2 = new CaArrayFile();
+        file2.setName("File2");
+        file2.setFileStatus(FileStatus.UPLOADED);
         file2.setProject(project);
         project.getFiles().add(file2);
         Source source = new Source();

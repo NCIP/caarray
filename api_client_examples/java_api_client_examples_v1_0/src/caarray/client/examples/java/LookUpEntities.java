@@ -88,7 +88,10 @@ import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.DataType;
+import gov.nih.nci.caarray.external.v1_0.data.File;
+import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
+import gov.nih.nci.caarray.external.v1_0.data.FileMetadata;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
@@ -98,6 +101,7 @@ import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.factor.Factor;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
@@ -169,8 +173,6 @@ public class LookUpEntities {
         lookupCharacteristicCategories();
         lookupTermsInCategory();
 
-        lookupEntityByReference();
-        lookupEntitiesByReference();
         lookupPersonsByMatchMode();
         lookupExperimentsPageByPage();
     }
@@ -236,10 +238,10 @@ public class LookUpEntities {
         Biomaterial exampleBiomaterial = new Biomaterial();
         criteria.setExample(exampleBiomaterial);
         startTime = System.currentTimeMillis();
-        List<Biomaterial> biomaterials = searchServiceHelper.byExample(criteria).list();
-        totalTime = System.currentTimeMillis() - startTime;
-        System.out.println("Found " + biomaterials.size() + " biomaterials in " + totalTime + " ms.");
-        for (Biomaterial biomaterial : biomaterials) {
+//        List<Biomaterial> biomaterials = searchServiceHelper.byExample(criteria).list();
+//        totalTime = System.currentTimeMillis() - startTime;
+//        System.out.println("Found " + biomaterials.size() + " biomaterials in " + totalTime + " ms.");
+        for (Biomaterial biomaterial : searchServiceHelper.byExample(criteria)) {
             System.out.print(biomaterial.getName() + "  ");
         }
         System.out.println("End of biomaterial lookup.");
@@ -260,15 +262,18 @@ public class LookUpEntities {
     }
 
     private void lookupFiles() throws InvalidReferenceException {
-        ExampleSearchCriteria<DataFile> criteria = new ExampleSearchCriteria<DataFile>();
-        DataFile exampleFile = new DataFile();
+        ExampleSearchCriteria<File> criteria = new ExampleSearchCriteria<File>();
+        File exampleFile = new File();
+        exampleFile.setMetadata(new FileMetadata());
+        exampleFile.getMetadata().setName("aml8_924_hu68_110200_ab.CEL");
         criteria.setExample(exampleFile);
+        criteria.setExcludeZeroes(true);
         startTime = System.currentTimeMillis();
-        List<DataFile> files = searchServiceHelper.byExample(criteria).list();
+        List<File> files = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + files.size() + " files in " + totalTime + " ms.");
-        for (DataFile file : files) {
-            System.out.print(file.getName() + "  ");
+        for (File file : files) {
+            System.out.print(file.getMetadata().getName() + "  ");
         }
         System.out.println("End of file lookup.");
     }
@@ -374,13 +379,14 @@ public class LookUpEntities {
     private void lookupQuantitationTypes() throws InvalidReferenceException {
         ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
         QuantitationType exampleQuantitationType = new QuantitationType();
+        exampleQuantitationType.setDataType(DataType.FLOAT);
         criteria.setExample(exampleQuantitationType);
         startTime = System.currentTimeMillis();
         List<QuantitationType> qtypes = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + qtypes.size() + " quantitation types in " + totalTime + " ms.");
         for (QuantitationType qtype : qtypes) {
-            System.out.print(qtype.getName() + "  ");
+            System.out.println(qtype);
         }
         System.out.println("End of quantitation type lookup.");
     }
@@ -446,39 +452,6 @@ public class LookUpEntities {
             System.out.print(term.getValue() + "  ");
         }
         System.out.println("End of terms in category lookup.");
-    }
-
-    private void lookupEntityByReference() throws RemoteException, NoEntityMatchingReferenceException {
-        CaArrayEntityReference organismRef = new CaArrayEntityReference(
-        "URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5");
-        startTime = System.currentTimeMillis();
-        Organism organism = (Organism) searchService.getByReference(organismRef);
-        totalTime = System.currentTimeMillis() - startTime;
-        if (organism == null) {
-            System.out.println("Could not find organism.");
-        } else {
-            System.out.println("Found organism " + organism.getScientificName() + " in " + totalTime + " ms.");
-        }
-    }
-
-    private void lookupEntitiesByReference() throws RemoteException, NoEntityMatchingReferenceException {
-        List<CaArrayEntityReference> organismRefs = new ArrayList<CaArrayEntityReference>();
-        organismRefs
-        .add(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5"));
-        organismRefs
-        .add(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:3"));
-        startTime = System.currentTimeMillis();
-        List<AbstractCaArrayEntity> organisms = searchService.getByReferences(organismRefs);
-        totalTime = System.currentTimeMillis() - startTime;
-        if (organisms == null || organisms.size() <= 0) {
-            System.out.println("Could not find organisms.");
-        } else {
-            for (AbstractCaArrayEntity entity : organisms) {
-                Organism organism = (Organism) entity;
-                System.out.println("Found organism: " + organism.getScientificName());
-            }
-            System.out.println("Found " + organisms.size() + " organisms in " + totalTime + " ms.");
-        }
     }
 
     private void lookupPersonsByMatchMode() throws InvalidReferenceException {

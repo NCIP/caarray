@@ -83,6 +83,7 @@
 
 package gov.nih.nci.caarray.external.v1_0;
 
+import gov.nih.nci.caarray.external.v1_0.data.FileMetadata;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -101,7 +102,7 @@ import static org.junit.Assert.*;
  *
  * @author gax
  */
-public class _AbstractCaArrayEntityTest {
+public class AbstractCaArrayEntityTest {
 
     private static final List<Class<? extends AbstractCaArrayEntity>> subclasses = new ArrayList<Class<? extends AbstractCaArrayEntity>>();
 
@@ -221,7 +222,11 @@ public class _AbstractCaArrayEntityTest {
                 return;
             }
 
-            System.out.println(a.getClass().getName()+"."+p.getName() + " = " + p.getPropertyType()+"   "+p.getPropertyType().getComponentType());
+            if (p.getPropertyType() == FileMetadata.class) {
+                p.getWriteMethod().invoke(a, new FileMetadata());
+                return;
+            }
+
         }
 
         throw new UnsupportedOperationException("did know how to set a property on " + a.getClass());

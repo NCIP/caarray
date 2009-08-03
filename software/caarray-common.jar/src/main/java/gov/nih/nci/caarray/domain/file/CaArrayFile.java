@@ -112,6 +112,7 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.NotNull;
 
 /**
  */
@@ -123,7 +124,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
 
     private String name;
     private String type;
-    private String status = FileStatus.UPLOADED.name();
+    private String status;
     private Project project;
     private FileValidationResult validationResult;
     private int uncompressedSize;
@@ -133,7 +134,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private transient MultiPartBlob multiPartBlob;
     private transient InputStream inputStreamToClose;
     private transient File fileToDelete;
-
+    
     /**
      * Gets the name.
      *
@@ -216,7 +217,14 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         return this.uncompressedSize;
     }
 
-    private void setUncompressedSize(int uncompressedSize) {
+    /**
+     * This method should generally not be called directly, as file size is calculated when
+     * data is written to the file. It is left public to support use in query by example
+     * and tooling relying on JavaBean property conventions
+     * 
+     * @param uncompressedSize the uncompressed size of the file, in bytes
+     */
+    public void setUncompressedSize(int uncompressedSize) {
         this.uncompressedSize = uncompressedSize;
     }
 
@@ -227,7 +235,14 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         return this.compressedSize;
     }
 
-    private void setCompressedSize(int compressedSize) {
+    /**
+     * This method should generally not be called directly, as file size is calculated when
+     * data is written to the file. It is left public to support use in query by example
+     * and tooling relying on JavaBean property conventions
+     * 
+     * @param compressedSize the compressed size of the file, in bytes
+     */
+    public void setCompressedSize(int compressedSize) {
         this.compressedSize = compressedSize;
     }
 
@@ -261,6 +276,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @return the status
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @NotNull
     public String getStatus() {
         return this.status;
     }

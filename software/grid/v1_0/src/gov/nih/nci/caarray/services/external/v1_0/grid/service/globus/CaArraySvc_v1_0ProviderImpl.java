@@ -38,18 +38,6 @@ public class CaArraySvc_v1_0ProviderImpl{
     return boxedResult;
   }
 
-    public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetByReferenceResponse getByReference(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetByReferenceRequest params) throws RemoteException {
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetByReferenceResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetByReferenceResponse();
-    boxedResult.setAbstractCaArrayEntity(impl.getByReference(params.getReference().getCaArrayEntityReference()));
-    return boxedResult;
-  }
-
-    public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetByReferencesResponse getByReferences(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetByReferencesRequest params) throws RemoteException {
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetByReferencesResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetByReferencesResponse();
-    boxedResult.setAbstractCaArrayEntity(impl.getByReferences(params.getReferences().getCaArrayEntityReference()));
-    return boxedResult;
-  }
-
     public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateExperimentsResponse enumerateExperiments(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateExperimentsRequest params) throws RemoteException {
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateExperimentsResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.EnumerateExperimentsResponse();
     boxedResult.setEnumerationResponseContainer(impl.enumerateExperiments(params.getExperimentSearchCriteria().getExperimentSearchCriteria()));

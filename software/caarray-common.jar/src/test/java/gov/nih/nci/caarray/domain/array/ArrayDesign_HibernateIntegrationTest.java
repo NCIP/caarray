@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -129,8 +130,9 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         cat.setName("catName");
         cat.setSource(ts);
         ArrayDesign arrayDesign = (ArrayDesign) caArrayObject;
-        CaArrayFile file1 = new CaArrayFile();
+        CaArrayFile file1 = new CaArrayFile();       
         file1.setName(getUniqueStringValue());
+        file1.setFileStatus(FileStatus.UPLOADED);
         arrayDesign.getDesignFiles().clear();
         arrayDesign.addDesignFile(file1);
         arrayDesign.setName(getUniqueStringValue());

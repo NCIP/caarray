@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.domain.contact.Address;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -129,7 +130,6 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
  */
 @SuppressWarnings("PMD")
 public class ProjectManagementServiceIntegrationTest extends AbstractServiceIntegrationTest {
-
     private ProjectManagementService projectManagementService;
     private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();
     private final GenericDataService genericDataService = new GenericDataServiceStub();
@@ -148,9 +148,6 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
     private static Organization DUMMY_ORGANIZATION = new Organization();
 
     private static AssayType DUMMY_ASSAY_TYPE;
-
-    private static CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
-    private static CaArrayFile DUMMY_FILE_2 = new CaArrayFile();
 
     @Before
     public void setUp() {
@@ -251,6 +248,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
         CaArrayFile caArrayFile1 = new CaArrayFile();
         caArrayFile1.setName("blob1.ext");
         caArrayFile1.setFileType(FileType.AFFYMETRIX_CDF);
+        caArrayFile1.setFileStatus(FileStatus.UPLOADED);
         ByteArrayInputStream in1 = new ByteArrayInputStream(caArrayFile1.getName().getBytes());
         caArrayFile1.writeContents(in1);
 
@@ -259,6 +257,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
         CaArrayFile caArrayFile2 = new CaArrayFile();
         caArrayFile2.setName("blob2.ext");
         caArrayFile2.setFileType(FileType.AFFYMETRIX_CDF);
+        caArrayFile2.setFileStatus(FileStatus.UPLOADED);
         ByteArrayInputStream in2 = new ByteArrayInputStream(caArrayFile2.getName().getBytes());
         caArrayFile2.writeContents(in2);
 

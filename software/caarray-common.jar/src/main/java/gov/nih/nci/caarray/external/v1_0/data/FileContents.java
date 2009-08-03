@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray2
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caArray2 Software License (the License) is between NCI and You. You (or 
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caArray2 Software to (i) use, install, access, operate, 
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray2 Software; (ii) distribute and 
- * have distributed to and by third parties the caArray2 Software and any 
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and 
+ * have distributed to and by third parties the caarray-common-jar Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,16 +80,63 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external.v1_0.grid.common;
+package gov.nih.nci.caarray.external.v1_0.data;
 
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
-import gov.nih.nci.caarray.services.grid.util.EnumFieldHandler;
+import java.io.Serializable;
 
 /**
+ * FileContents combines a file's metadata with its contents.
+ * 
  * @author dkokotov
  */
-public class FileTypeCategoryFieldHandler extends EnumFieldHandler<FileTypeCategory>{
-    public FileTypeCategoryFieldHandler() {
-        super (FileTypeCategory.class);
+public class FileContents implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
+    private FileMetadata metadata;
+    private byte[] contents;
+    private boolean compressed;
+
+    /**
+     * @return whether the contents have been compressed using the GZIP algorithm.
+     */
+    public boolean isCompressed() {
+        return compressed;
+    }
+
+    /**
+     * @param compressed whether the contents have been compressed using the GZIP algorithm.
+     */
+    public void setCompressed(boolean compressed) {
+        this.compressed = compressed;
+    }
+
+    /**
+     * @return the metadata for this file
+     */
+    public FileMetadata getMetadata() {
+        return metadata;
+    }
+
+    /**
+     * @param metadata the metadata for this file
+     */
+    public void setMetadata(FileMetadata metadata) {
+        this.metadata = metadata;
+    }
+
+    /**
+     * @return the contents. These will be either the raw byte contents, or the byte contents compressed using GZIP,
+     *         depending on the compressed property.
+     */
+    public byte[] getContents() {
+        return contents; // NOPMD
+    }
+
+    /**
+     * @param contents the byte content of this file. This should be either the raw byte contents, or the byte contents
+     *            compressed using GZIP, depending on the compressed property.
+     */
+    public void setContents(byte[] contents) { // NOPMD
+        this.contents = contents;
     }
 }

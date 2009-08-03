@@ -1218,6 +1218,7 @@
                 <include name="${commons-io.jar}" />
                 <include name="${commons-logging.jar}" />
                 <include name="${log4j.jar}" />
+                <include name="${javacsv.jar}"/>
             </fileset>
         </path>
 
@@ -1238,7 +1239,7 @@
                 <include name="${axis.jar}" />
                 <include name="${javaee.jar}"/>
                 <include name="${wsdl4j.jar}"/>
-		<include name="${google-collections.jar}"/>
+                <include name="${google-collections.jar}"/>
             </fileset>
         </path>
         <pathtofileset name="caarray-client.common.grid.dependencies.fileset" pathrefid="caarray-client.common.grid.dependencies.path" dir="${project.lib}"/>

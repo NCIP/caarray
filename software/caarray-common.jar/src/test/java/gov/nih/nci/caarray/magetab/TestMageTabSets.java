@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.magetab;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.adf.AdfDocument;
 import gov.nih.nci.caarray.magetab.data.DataMatrix;
@@ -635,6 +636,7 @@ public final class TestMageTabSets {
 
     private static void addFile(CaArrayFileSet fileSet, AbstractMageTabDocument mageTabDocument) {
         CaArrayFile caArrayFile = new CaArrayFile();
+        caArrayFile.setFileStatus(FileStatus.UPLOADED);
         caArrayFile.setName(mageTabDocument.getFile().getName());
         if (mageTabDocument instanceof IdfDocument) {
             caArrayFile.setFileType(FileType.MAGE_TAB_IDF);

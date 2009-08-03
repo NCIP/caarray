@@ -66,7 +66,7 @@
             <xs:element name="categories">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element ref="dat:FileTypeCategory" minOccurs="0" maxOccurs="unbounded" />
+                        <xs:element ref="dat:FileCategory" minOccurs="0" maxOccurs="unbounded" />
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -148,10 +148,10 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="fileTypeCategories">
+            <xs:element name="fileCategories">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element ref="dat:FileTypeCategory" minOccurs="0" maxOccurs="unbounded" />
+                        <xs:element ref="dat:FileCategory" minOccurs="0" maxOccurs="unbounded" />
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -204,6 +204,7 @@
             <xs:element name="matchMode" type="qry:MatchMode" minOccurs="0" maxOccurs="1" />
         </xs:sequence>
         <xs:attribute name="excludeNulls" type="xs:boolean" />
+        <xs:attribute name="excludeZeroes" type="xs:boolean" />
     </xs:complexType>
 
     <xs:element name="SearchResult" type="qry:SearchResult" />

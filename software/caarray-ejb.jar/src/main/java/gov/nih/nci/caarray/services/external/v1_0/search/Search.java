@@ -100,7 +100,7 @@ import com.google.common.base.Function;
  * @param <T> the type of the result entity
  * @author dkokotov
  */
-public class Search<T extends AbstractCaArrayEntity> {
+public class Search<T extends AbstractCaArrayEntity> implements Iterable<T> {
     private final Function<LimitOffset, SearchResult<T>> searchFunction;
     
     /**
@@ -123,7 +123,7 @@ public class Search<T extends AbstractCaArrayEntity> {
      * Get an iterator over all results for this search. 
      * @return an iterator over the full list of results for this search.
      */
-    public SearchResultIterator<T> iterate() {
+    public SearchResultIterator<T> iterator() {
         return new SearchResultIterator<T>(searchFunction);
     }   
 
@@ -132,7 +132,7 @@ public class Search<T extends AbstractCaArrayEntity> {
      * @param startIndex the index (0-based) of the result to start with.
      * @return an iterator over the results, starting with the result at the given index.
      */
-    public SearchResultIterator<T> iterate(int startIndex) {
+    public SearchResultIterator<T> iterator(int startIndex) {
         return new SearchResultIterator<T>(searchFunction, startIndex);
     }   
     

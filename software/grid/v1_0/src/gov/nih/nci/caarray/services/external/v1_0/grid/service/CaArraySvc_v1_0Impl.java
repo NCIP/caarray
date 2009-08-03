@@ -1,9 +1,7 @@
 package gov.nih.nci.caarray.services.external.v1_0.grid.service;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
@@ -26,16 +24,14 @@ import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEnti
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidReferenceFault;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.UnsupportedCategoryFault;
-import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.cagrid.wsenum.utils.EnumerateResponseFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -91,12 +87,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
     }
 
     @SuppressWarnings("unchecked")
-  public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchForExperiments(
-            gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria criteria,
-            gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException,
-            gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.UnsupportedCategoryFault,
-            gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault,
-            gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
+  public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchForExperiments(gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria criteria,gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.UnsupportedCategoryFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
         try {
             return caArrayServer.getSearchService().searchForExperiments(criteria, limitOffset);
         } catch (InvalidReferenceException e) {
@@ -111,28 +102,10 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
         return pis.toArray(new Person[pis.size()]);
     }
 
-  public gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity getByReference(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference reference) throws RemoteException {
-      try {
-            return caArrayServer.getSearchService().getByReference(reference);
-        } catch (InvalidReferenceException e) {
-            throw toFault(e);
-        }
-    }
-
-  public gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity[] getByReferences(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference[] references) throws RemoteException {
-        try {
-            List<AbstractCaArrayEntity> entities = caArrayServer.getSearchService().getByReferences(
-                    Arrays.asList(references));
-            return entities.toArray(new AbstractCaArrayEntity[entities.size()]);
-        } catch (InvalidReferenceException e) {
-            throw toFault(e);
-        }
-    }
-
   public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateExperiments(gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria experimentSearchCriteria) throws RemoteException {
         try {
             return EnumerateResponseFactory.createEnumerationResponse(new SearchEnumIterator<Experiment>(
-                    Experiment.class, searchUtils.experimentsByCriteria(experimentSearchCriteria).iterate()));
+                    Experiment.class, searchUtils.experimentsByCriteria(experimentSearchCriteria).iterator()));
         } catch (Exception e) {
             throw new RemoteException("Unable to create enumeration", e);
         }
@@ -140,7 +113,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
 
   public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getFileContentsZipTransfer(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compressIndividually) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
       try {
-            File file = dataUtils.downloadFileContentsZipToTempFile(fileDownloadRequest, compressIndividually);
+            java.io.File file = dataUtils.downloadFileContentsZipToTempFile(fileDownloadRequest, compressIndividually);
             return TransferServiceHelper.createTransferContext(file, null, true);
       } catch (InvalidReferenceException e) {
           throw toFault(e);
@@ -168,7 +141,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
             CaArrayEntityReference fileRef, boolean compress) throws InvalidReferenceFault, DataStagingFault {
       try {
           TransferServiceContextReference ref = null;
-          File retrievedFile = dataUtils.downloadFileContentsToTempFile(fileRef, compress);
+          java.io.File retrievedFile = dataUtils.downloadFileContentsToTempFile(fileRef, compress);
           if (retrievedFile != null) {
               ref = TransferServiceHelper.createTransferContext(retrievedFile, null, true);
           }
@@ -233,8 +206,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
 
   public gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet getMageTabExport(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
       try {
-          MageTabFileSet mageTabSet = caArrayServer.getDataService().exportMageTab(experimentRef);
-          return mageTabSet;
+          return caArrayServer.getDataService().exportMageTab(experimentRef);
       } catch (InvalidReferenceException e) {
           throw toFault(e);
       } catch (DataTransferException e) {
@@ -247,7 +219,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
         OutputStream fos = null;
         InputStream is = null;
         try {
-            File file = File.createTempFile("caarray_magetab_zip_transfer", null);
+            java.io.File file = java.io.File.createTempFile("caarray_magetab_zip_transfer", null);
             fos = FileUtils.openOutputStream(file);
             RemoteInputStream ris = caArrayServer.getDataService().streamMageTabZip(experimentRef, compressIndividually);
             is = RemoteInputStreamClient.wrap(ris);
@@ -344,7 +316,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
   public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateExperimentsByKeyword(gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria criteria) throws RemoteException {
       try {
           return EnumerateResponseFactory.createEnumerationResponse(new SearchEnumIterator<Experiment>(
-                  Experiment.class, searchUtils.experimentsByKeyword(criteria).iterate()));
+                  Experiment.class, searchUtils.experimentsByKeyword(criteria).iterator()));
       } catch (Exception e) {
           throw new RemoteException("Unable to create enumeration", e);
       }
@@ -353,7 +325,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
   public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateBiomaterials(gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria criteria) throws RemoteException {
       try {
           return EnumerateResponseFactory.createEnumerationResponse(new SearchEnumIterator<Biomaterial>(
-                  Biomaterial.class, searchUtils.biomaterialsByCriteria(criteria).iterate()));
+                  Biomaterial.class, searchUtils.biomaterialsByCriteria(criteria).iterator()));
       } catch (Exception e) {
           throw new RemoteException("Unable to create enumeration", e);
       }
@@ -362,7 +334,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
   public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateBiomaterialsByKeyword(gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria criteria) throws RemoteException {
       try {
           return EnumerateResponseFactory.createEnumerationResponse(new SearchEnumIterator<Biomaterial>(
-                  Biomaterial.class, searchUtils.biomaterialsByKeyword(criteria).iterate()));
+                  Biomaterial.class, searchUtils.biomaterialsByKeyword(criteria).iterator()));
       } catch (Exception e) {
           throw new RemoteException("Unable to create enumeration", e);
       }
@@ -371,7 +343,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
   public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateHybridizations(gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria criteria) throws RemoteException {
       try {
           return EnumerateResponseFactory.createEnumerationResponse(new SearchEnumIterator<Hybridization>(
-                  Hybridization.class, searchUtils.hybridizationsByCriteria(criteria).iterate()));
+                  Hybridization.class, searchUtils.hybridizationsByCriteria(criteria).iterator()));
       } catch (Exception e) {
           throw new RemoteException("Unable to create enumeration", e);
       }
@@ -379,8 +351,8 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
 
   public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateFiles(gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria criteria) throws RemoteException {
       try {
-          return EnumerateResponseFactory.createEnumerationResponse(new SearchEnumIterator<DataFile>(
-                  DataFile.class, searchUtils.filesByCriteria(criteria).iterate()));
+          return EnumerateResponseFactory.createEnumerationResponse(new SearchEnumIterator<File>(
+                  File.class, searchUtils.filesByCriteria(criteria).iterator()));
       } catch (Exception e) {
           throw new RemoteException("Unable to create enumeration", e);
       }
@@ -390,7 +362,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
   public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateByExample(gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria criteria) throws RemoteException {
       try {
           return EnumerateResponseFactory.createEnumerationResponse(new SearchEnumIterator(
-                  criteria.getExample().getClass(), searchUtils.byExample(criteria).iterate()));
+                  criteria.getExample().getClass(), searchUtils.byExample(criteria).iterator()));
       } catch (Exception e) {
           throw new RemoteException("Unable to create enumeration", e);
       }

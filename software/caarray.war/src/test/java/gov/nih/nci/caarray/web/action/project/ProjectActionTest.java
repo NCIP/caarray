@@ -247,7 +247,7 @@ public class ProjectActionTest extends AbstractCaarrayTest {
             if (UsernameHolder.getUser().equals("unauthorizeduser")) {
                 throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
             }
-            if (project.islocked()) {
+            if (project.isLocked()) {
                 throw new ProposalWorkflowException("Cannot delete unlocked project");
             }
             // assume success if the checks pass

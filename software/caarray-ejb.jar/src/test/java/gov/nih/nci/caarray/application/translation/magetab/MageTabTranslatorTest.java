@@ -410,8 +410,7 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         CaArrayTranslationResult result = this.translator.translate(documentSet, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         for (ExperimentContact contact : experiment.getExperimentContacts()) {
-            Person person = (Person) contact.getContact();
-            for (Organization organization : person.getAffiliations()) {
+            for (Organization organization : contact.getContact().getAffiliations()) {
                 assertNotNull(organization);
             }
         }

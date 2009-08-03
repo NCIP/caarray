@@ -131,7 +131,7 @@ public class GenericDataServiceTest extends AbstractServiceTest {
 
         obj = this.service.getPersistentObject(Project.class, 1l);
 
-        if(!((Project)obj).islocked())
+        if(!((Project)obj).isLocked())
         {
             assertEquals(SecurityLevel.NO_VISIBILITY, ((Project) obj).getPublicProfile().getSecurityLevel());
         }

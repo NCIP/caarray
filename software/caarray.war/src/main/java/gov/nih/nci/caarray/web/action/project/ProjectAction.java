@@ -131,7 +131,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
         try {
             ServiceLocatorFactory.getProjectManagementService().changeProjectLockStatus(getProject().getId(),
                     workflowStatus);
-            String msgKey = "project.workflowStatusUpdated." + (getProject().islocked() ? "locked" : "unlocked");
+            String msgKey = "project.workflowStatusUpdated." + (getProject().isLocked() ? "locked" : "unlocked");
             List<String> arg = Collections.singletonList(getProject().getExperiment().getTitle());
             ActionHelper.saveMessage(getText(msgKey, arg));
             return WORKSPACE_RESULT;

@@ -39,20 +39,6 @@ public interface CaArraySvc_v1_0I {
   public gov.nih.nci.caarray.external.v1_0.experiment.Person[] getAllPrincipalInvestigators() throws RemoteException ;
 
   /**
-   * return entity with given reference
-   *
-   * @param reference
-   */
-  public gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity getByReference(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference reference) throws RemoteException ;
-
-  /**
-   * get a list of entities for the given list of references
-   *
-   * @param references
-   */
-  public gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity[] getByReferences(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference[] references) throws RemoteException ;
-
-  /**
    * Begin an enumeration of experiments matching given criteria
    *
    * @param experimentSearchCriteria

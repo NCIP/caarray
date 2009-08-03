@@ -85,24 +85,33 @@ package gov.nih.nci.caarray.external.v1_0.data;
 
 /**
  * @author dkokotov
- *
  */
-public enum FileTypeCategory {
+public enum FileCategory {
     /**
-     * file type category for raw array data files.
+     * file type category for raw data array data files.
      */
-    RAW,
+    RAW_DATA,
     
     /**
-     * file type category for derived array data files.
+     * file type category for derived data array data files.
      */
-    DERIVED,
+    DERIVED_DATA,
  
     /**
-     * file type category for supplemental files.
+     * file type category for array design files.
      */
-    SUPPLEMENTAL;
-
+    ARRAY_DESIGN,
+    
+    /**
+     * file type category for mage tab files.
+     */
+    MAGE_TAB,
+    
+    /**
+     * file type category for all other types of files.
+     */
+    OTHER;
+    
     private static final long serialVersionUID = 1L;
     
     /**

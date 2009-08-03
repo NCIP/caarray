@@ -83,7 +83,7 @@
 package caarray.client.examples.java;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
@@ -138,7 +138,7 @@ public class DownloadMageTabExport {
         long totalTime = System.currentTimeMillis() - startTime;
         byte[] idfContents = fileSet.getIdf().getContents();
         byte[] sdrfContents = fileSet.getSdrf().getContents();
-        Set<DataFile> dataFiles = fileSet.getDataFiles();
+        Set<File> dataFiles = fileSet.getDataFiles();
         int bytesRetrieved = idfContents.length + sdrfContents.length;
         int numDataFileRefs = dataFiles == null || dataFiles.size() <= 0 ? 0 : dataFiles.size();
 

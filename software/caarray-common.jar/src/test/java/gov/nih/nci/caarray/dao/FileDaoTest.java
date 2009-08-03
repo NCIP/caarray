@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -396,10 +397,9 @@ public class FileDaoTest extends AbstractDaoTest {
         Experiment e = CaArrayDaoFactory.INSTANCE.getSearchDao().retrieve(Experiment.class, DUMMY_EXPERIMENT_1.getId());
         
         PageSortParams<CaArrayFile> params = new PageSortParams<CaArrayFile>(5, 0, new AdHocSortCriterion<CaArrayFile>("name"), false);
-        FileSearchCriteria criteria = new FileSearchCriteria();        
-        criteria.setIncludeDerived(true);
-        criteria.setIncludeRaw(true);
-        criteria.setIncludeSupplemental(false);
+        FileSearchCriteria criteria = new FileSearchCriteria();
+        criteria.getCategories().add(FileCategory.RAW_DATA);
+        criteria.getCategories().add(FileCategory.DERIVED_DATA);
 
         List<CaArrayFile> files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(3, files.size());
@@ -426,17 +426,12 @@ public class FileDaoTest extends AbstractDaoTest {
         assertEquals(file2.getName(), files.get(0).getName());
         assertEquals(file3.getName(), files.get(1).getName());
 
-        criteria.setIncludeDerived(false);
-        criteria.setIncludeRaw(false);
-        files = DAO_OBJECT.searchFiles(params, criteria);
-        assertEquals(0, files.size());
-
-        criteria.setIncludeDerived(true);
+        criteria.getCategories().remove(FileCategory.RAW_DATA);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
         assertEquals(file3.getName(), files.get(0).getName());
 
-        criteria.setIncludeSupplemental(true);
+        criteria.getCategories().add(FileCategory.OTHER);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(2, files.size());
         assertEquals(file3.getName(), files.get(0).getName());
@@ -448,7 +443,7 @@ public class FileDaoTest extends AbstractDaoTest {
         assertEquals(1, files.size());
         assertEquals(file3.getName(), files.get(0).getName());        
 
-        criteria.setIncludeRaw(true);
+        criteria.getCategories().add(FileCategory.RAW_DATA);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(2, files.size());
         assertEquals(file2.getName(), files.get(0).getName());

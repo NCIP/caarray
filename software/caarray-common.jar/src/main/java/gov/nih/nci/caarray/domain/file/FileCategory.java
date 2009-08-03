@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray2
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caArray2 Software License (the License) is between NCI and You. You (or 
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caArray2 Software to (i) use, install, access, operate, 
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray2 Software; (ii) distribute and 
- * have distributed to and by third parties the caArray2 Software and any 
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and 
+ * have distributed to and by third parties the caarray-common-jar Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,126 +80,47 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.external.v1_0.query;
+package gov.nih.nci.caarray.domain.file;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-
-import java.io.Serializable;
 
 /**
- * Criteria for searching by example.
+ * FileCategory classifies files according to the kind of data they contain. Currently this is only used
+ * in some query APIs.
  * 
  * @author dkokotov
- * @param <T> class of the example entity
  */
-public class ExampleSearchCriteria<T extends AbstractCaArrayEntity> implements Serializable {
+public enum FileCategory {
+    /**
+     * file type category for raw data array data files.
+     */
+    RAW_DATA,
+    
+    /**
+     * file type category for derived data array data files.
+     */
+    DERIVED_DATA,
+ 
+    /**
+     * file type category for array design files.
+     */
+    ARRAY_DESIGN,
+    
+    /**
+     * file type category for mage tab files.
+     */
+    MAGE_TAB,
+    
+    /**
+     * file type category for all other types of files.
+     */
+    OTHER;
+    
     private static final long serialVersionUID = 1L;
     
-    private T example;
-    private MatchMode matchMode = MatchMode.EXACT;
-    private boolean excludeNulls = true;
-    private boolean excludeZeroes = false;
-    
-    /** 
-     * Empty constructor.
-     */
-    public ExampleSearchCriteria() {
-        // empty
-    }    
-
-    /** 
-     * @param example the example
-     */
-    public ExampleSearchCriteria(T example) {
-        this.example = example;
-    }
-
-    /** 
-     * @param example the example
-     * @param matchMode the match mode
-     */
-    public ExampleSearchCriteria(T example, MatchMode matchMode) {
-        this.example = example;
-        this.matchMode = matchMode;
-    }
-
-    /** 
-     * @param example the example
-     * @param matchMode the match mode
-     * @param excludeNulls whether to exclude null properties from being used in the search
-     */
-    public ExampleSearchCriteria(T example, MatchMode matchMode, boolean excludeNulls) {
-        this.example = example;
-        this.matchMode = matchMode;
-        this.excludeNulls = excludeNulls;
-    }
-
-    /** 
-     * @param example the example
-     * @param matchMode the match mode
-     * @param excludeNulls whether to exclude null properties from being used in the search
-     * @param excludeZeroes whether to exclude zero-valued properties from being used in the search
-     */
-    public ExampleSearchCriteria(T example, MatchMode matchMode, boolean excludeNulls, boolean excludeZeroes) {
-        this.example = example;
-        this.matchMode = matchMode;
-        this.excludeNulls = excludeNulls;
-        this.excludeZeroes = excludeNulls;
-    }
-
     /**
-     * @return the example
+     * @return the name
      */
-    public T getExample() {
-        return example;
-    }
-
-    /**
-     * @param example the example to set
-     */
-    public void setExample(T example) {
-        this.example = example;
-    }
-
-    /**
-     * @return the matchMode
-     */
-    public MatchMode getMatchMode() {
-        return matchMode;
-    }
-
-    /**
-     * @param matchMode the matchMode to set
-     */
-    public void setMatchMode(MatchMode matchMode) {
-        this.matchMode = matchMode;
-    }
-
-    /**
-     * @return the excludeNulls
-     */
-    public boolean isExcludeNulls() {
-        return excludeNulls;
-    }
-
-    /**
-     * @param excludeNulls the excludeNulls to set
-     */
-    public void setExcludeNulls(boolean excludeNulls) {
-        this.excludeNulls = excludeNulls;
-    }
-
-    /**
-     * @return the excludeZeroes
-     */
-    public boolean isExcludeZeroes() {
-        return excludeZeroes;
-    }
-
-    /**
-     * @param excludeZeroes the excludeZeroes to set
-     */
-    public void setExcludeZeroes(boolean excludeZeroes) {
-        this.excludeZeroes = excludeZeroes;
+    public String getName() {
+        return name();
     }
 }

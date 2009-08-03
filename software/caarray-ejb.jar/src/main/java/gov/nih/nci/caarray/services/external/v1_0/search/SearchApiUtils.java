@@ -1,7 +1,7 @@
 package gov.nih.nci.caarray.services.external.v1_0.search;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
@@ -56,7 +56,7 @@ public interface SearchApiUtils {
      * @param criteria the search criteria.
      * @return the Search instance.
      */
-    Search<DataFile> filesByCriteria(FileSearchCriteria criteria);
+    Search<File> filesByCriteria(FileSearchCriteria criteria);
 
     /**
      * Returns a Search instance encapsulating a search for hybridizations by criteria. 

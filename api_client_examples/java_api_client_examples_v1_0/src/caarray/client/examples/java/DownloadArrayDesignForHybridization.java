@@ -84,7 +84,7 @@ package caarray.client.examples.java;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
@@ -157,10 +157,10 @@ public class DownloadArrayDesignForHybridization {
             System.err.println("No array design associated with the hybridization.");
             return;
         }
-        Set<DataFile> arrayDesignFiles = arrayDesign.getFiles();
+        Set<File> arrayDesignFiles = arrayDesign.getFiles();
 
-        for (DataFile arrayDesignFile : arrayDesignFiles) {
-            System.out.println("Downloading array design file " + arrayDesignFile.getName());
+        for (File arrayDesignFile : arrayDesignFiles) {
+            System.out.println("Downloading array design file " + arrayDesignFile.getMetadata().getName());
             downloadContents(arrayDesignFile.getReference());
         }
     }

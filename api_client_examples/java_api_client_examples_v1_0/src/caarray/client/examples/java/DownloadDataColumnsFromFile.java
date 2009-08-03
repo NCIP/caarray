@@ -85,11 +85,11 @@ package caarray.client.examples.java;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn;
 import gov.nih.nci.caarray.external.v1_0.data.BooleanColumn;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.DataType;
 import gov.nih.nci.caarray.external.v1_0.data.DesignElement;
 import gov.nih.nci.caarray.external.v1_0.data.DoubleColumn;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.FloatColumn;
 import gov.nih.nci.caarray.external.v1_0.data.HybridizationData;
@@ -237,7 +237,7 @@ public class DownloadDataColumnsFromFile {
         fileSearchCriteria.getTypes().add(chpFileTypeRef);
 
         System.out.println("SEARCHING FOR AFFY CHP FILES IN EXPERIMENT...");
-        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
+        List<File> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files == null || files.size() <= 0) {
             System.out.println("NO FILES FOUND...");
             return null;
@@ -245,7 +245,7 @@ public class DownloadDataColumnsFromFile {
 
         // The client application will typically let the user choose one out of the many files,
         // but we will just pick the first result here.
-        DataFile file = files.iterator().next();
+        File file = files.iterator().next();
         return file.getReference();
     }
 

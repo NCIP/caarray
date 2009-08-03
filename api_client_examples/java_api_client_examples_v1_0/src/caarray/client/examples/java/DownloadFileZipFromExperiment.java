@@ -83,15 +83,12 @@
 package caarray.client.examples.java;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.FileType;
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
+import gov.nih.nci.caarray.external.v1_0.data.File;
+import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
-import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
@@ -185,8 +182,7 @@ public class DownloadFileZipFromExperiment {
         // Search for all raw data files in the experiment. (Experiment ref is a mandatory parameter.)
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
-        fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
-        fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
+        fileSearchCriteria.getCategories().add(FileCategory.OTHER);
 
         // Alternatively, search for all AFFYMETRIX_CEL data files)
         // CaArrayEntityReference celFileTypeRef = getCelFileType();
@@ -196,28 +192,18 @@ public class DownloadFileZipFromExperiment {
         // fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
         // fileSearchCriteria.setExtension("CHP");
 
-        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
+        List<File> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files.size() <= 0) {
             return null;
         }
+        System.out.println("Matching files: " + files);
 
         // Return references to the files.
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
-        for (DataFile file : files) {
+        for (File file : files) {
             fileRefs.add(file.getReference());
         }
         return fileRefs;
-    }
-
-    private CaArrayEntityReference getCelFileType() {
-        ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
-        FileType exampleFileType = new FileType();
-        exampleFileType.setName("AFFYMETRIX_CEL");
-        criteria.setExample(exampleFileType);
-        SearchResult<FileType> results = searchService.searchByExample(criteria, null);
-        List<FileType> fileTypes = results.getResults();
-        FileType celFileType = fileTypes.iterator().next();
-        return celFileType.getReference();
     }
 
     /**

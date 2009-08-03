@@ -83,9 +83,9 @@
 package caarray.client.examples.java;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
+import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
@@ -229,17 +229,17 @@ public class SelectFiles {
             InvalidReferenceException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
-        fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
+        fileSearchCriteria.getCategories().add(FileCategory.RAW_DATA);
 
-        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
+        List<File> files = searchServiceHelper.filesByCriteria(fileSearchCriteria).list();
         if (files.size() <= 0) {
             return null;
         }
 
         // Return references to the files.
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
-        for (DataFile file : files) {
-            System.out.print(file.getName() + "  ");
+        for (File file : files) {
+            System.out.print(file.getMetadata().getName() + "  ");
             fileRefs.add(file.getReference());
         }
         return fileRefs;
@@ -256,15 +256,15 @@ public class SelectFiles {
         CaArrayEntityReference celFileTypeRef = getCelFileType();
         fileSearchCriteria.getTypes().add(celFileTypeRef);
 
-        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
+        List<File> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files.size() <= 0) {
             return null;
         }
 
         // Return references to the files.
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
-        for (DataFile file : files) {
-            System.out.print(file.getName() + "  ");
+        for (File file : files) {
+            System.out.print(file.getMetadata().getName() + "  ");
             fileRefs.add(file.getReference());
         }
         return fileRefs;
@@ -288,19 +288,17 @@ public class SelectFiles {
             InvalidReferenceException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
-
-        fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
         fileSearchCriteria.setExtension("CHP");
 
-        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
+        List<File> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files.size() <= 0) {
             return null;
         }
 
         // Return references to the files.
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
-        for (DataFile file : files) {
-            System.out.print(file.getName() + "  ");
+        for (File file : files) {
+            System.out.print(file.getMetadata().getName() + "  ");
             fileRefs.add(file.getReference());
         }
         return fileRefs;
@@ -314,17 +312,17 @@ public class SelectFiles {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         fileSearchCriteria.setExperimentGraphNodes(sampleRefs);
-        fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
+        fileSearchCriteria.getCategories().add(FileCategory.RAW_DATA);
 
-        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
+        List<File> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files.size() <= 0) {
             return null;
         }
 
         // Return references to the files.
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
-        for (DataFile file : files) {
-            System.out.print(file.getName() + "  ");
+        for (File file : files) {
+            System.out.print(file.getMetadata().getName() + "  ");
             fileRefs.add(file.getReference());
         }
         return fileRefs;

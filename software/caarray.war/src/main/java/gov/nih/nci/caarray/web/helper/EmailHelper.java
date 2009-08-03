@@ -173,7 +173,7 @@ public final class EmailHelper {
         String plainMailBodyPattern = config.getString(ConfigParamEnum.SUBMIT_EXPERIMENT_EMAIL_PLAIN_CONTENT.name());
         String htmlMailBodyPattern = config.getString(ConfigParamEnum.SUBMIT_EXPERIMENT_EMAIL_HTML_CONTENT.name());
 
-        Person pi = (Person) project.getExperiment().getPrimaryInvestigator().getContact();
+        Person pi = project.getExperiment().getPrimaryInvestigator().getContact();
         String plainMailBody =
                 MessageFormat.format(plainMailBodyPattern, pi.getName(), project.getExperiment().getTitle(),
                         projectLink);

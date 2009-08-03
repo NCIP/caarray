@@ -82,14 +82,18 @@
  */
 package gov.nih.nci.caarray.external.v1_0.data;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import java.io.Serializable;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * DataFile represents the metadata for a file within caarray. 
+ * FileMetadata describes the metadata for a file in caarray. 
  * 
  * @author dkokotov
  */
-public class DataFile extends AbstractCaArrayEntity {
+public class FileMetadata implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private long compressedSize;
@@ -151,5 +155,28 @@ public class DataFile extends AbstractCaArrayEntity {
      */
     public void setFileType(FileType fileType) {
         this.fileType = fileType;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

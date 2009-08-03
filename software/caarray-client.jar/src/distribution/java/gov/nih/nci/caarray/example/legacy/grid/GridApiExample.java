@@ -118,35 +118,27 @@ public class GridApiExample {
         }
         client.url = "http://" + client.hostname + ":" + client.port + "/wsrf/services/cagrid/CaArraySvc";
         System.out.println("Using URL: " + client.url);
-        client.runTest();
+        client.runExample();
     }
 
     /**
-     * Downloads data using the caArray Remote Java API.
+     * Executes example Grid API client code.
      */
-    public void runTest() {
+    public void runExample() {
         CaArraySvcClient client;
         try {
             client = new CaArraySvcClient(url);
             CQLQuery cqlQuery = new CQLQuery();
             Object target = new Object();
             cqlQuery.setTarget(target);
-//            target.setName(QuantitationType.class.getName());
-//            CQLQueryResults results = client.query(cqlQuery);
-//            CQLQueryResultsIterator iterator = new CQLQueryResultsIterator(results,
-//                    CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
-//            while (iterator.hasNext()) {
-//                QuantitationType type = (QuantitationType) iterator.next();
-//                System.out.println(type);
-//            }
             target.setName(Experiment.class.getName());
-          CQLQueryResults results = client.query(cqlQuery);
-          CQLQueryResultsIterator iterator = new CQLQueryResultsIterator(results,
-                  CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
-          while (iterator.hasNext()) {
-              Experiment e = (Experiment) iterator.next();
-              System.out.println("Experiment: " + e.getPublicIdentifier());
-          }
+            CQLQueryResults results = client.query(cqlQuery);
+            CQLQueryResultsIterator iterator = new CQLQueryResultsIterator(results, CaArraySvcClient.class
+                    .getResourceAsStream("client-config.wsdd"));
+            while (iterator.hasNext()) {
+                Experiment e = (Experiment) iterator.next();
+                System.out.println("Experiment: " + e.getPublicIdentifier());
+            }
         } catch (MalformedURIException e) {
             System.err.println("Received MalformedURIException");
             e.printStackTrace(System.err);
@@ -157,5 +149,4 @@ public class GridApiExample {
             System.exit(1);
         }
     }
-
 }

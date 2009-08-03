@@ -98,8 +98,8 @@
     <field name="technologyType" type="gov.nih.nci.caarray.external.v1_0.vocabulary.Term">
       <bind-xml name="arr:technologyType" node="element" />
     </field>
-    <field name="files" type="gov.nih.nci.caarray.external.v1_0.data.DataFile" collection="collection">
-      <bind-xml name="DataFile" location="files" node="element" />
+    <field name="files" type="gov.nih.nci.caarray.external.v1_0.data.File" collection="collection">
+      <bind-xml name="File" location="files" node="element" />
     </field>
   </class>  
   <class name="gov.nih.nci.caarray.external.v1_0.experiment.Organism" extends="gov.nih.nci.caarray.external.v1_0.vocabulary.Term">
@@ -177,20 +177,17 @@
       <bind-xml name="ArrayDesign" location="arrayDesigns" node="element" />
     </field>
   </class>
-  <class name="gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory" verify-constructable="false">
-    <map-to xml="FileTypeCategory" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" />
+  <class name="gov.nih.nci.caarray.external.v1_0.data.FileCategory" verify-constructable="false">
+    <map-to xml="FileCategory" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" />
   </class>    
   <class name="gov.nih.nci.caarray.external.v1_0.data.FileType" extends="gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity">
     <map-to xml="FileType" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
-    <field name="category" type="string" handler="gov.nih.nci.caarray.services.external.v1_0.grid.common.FileTypeCategoryFieldHandler">
-      <bind-xml name="category" node="element" />
-    </field>
   </class>
-  <class name="gov.nih.nci.caarray.external.v1_0.data.DataFile" extends="gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity">
-    <map-to xml="DataFile" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" />
+  <class name="gov.nih.nci.caarray.external.v1_0.data.FileMetadata">
+    <map-to xml="FileMetadata" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" />
     <field name="compressedSize" type="long">
       <bind-xml name="compressedSize" node="attribute" />
     </field>
@@ -204,28 +201,34 @@
       <bind-xml name="dat:fileType" node="element" />
     </field>
   </class>  
-  <class name="gov.nih.nci.caarray.external.v1_0.data.DataFileContents">
-    <map-to xml="DataFileContents" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" />
+  <class name="gov.nih.nci.caarray.external.v1_0.data.File" extends="gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity">
+    <map-to xml="File" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" />
+    <field name="metadata" type="gov.nih.nci.caarray.external.v1_0.data.FileMetadata">
+      <bind-xml name="dat:metadata" node="element" />
+    </field>
+  </class>  
+  <class name="gov.nih.nci.caarray.external.v1_0.data.FileContents">
+    <map-to xml="FileContents" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" />
     <field name="compressed" type="boolean">
       <bind-xml name="compressed" node="attribute" />
     </field>
     <field name="contents" type="bytes">
       <bind-xml name="contents" type="base64Binary" node="element" />
     </field>
-    <field name="fileMetadata" type="gov.nih.nci.caarray.external.v1_0.data.DataFile">
-      <bind-xml name="dat:fileMetadata" node="element" />
+    <field name="metadata" type="gov.nih.nci.caarray.external.v1_0.data.FileMetadata">
+      <bind-xml name="dat:metadata" node="element" />
     </field>
   </class>  
   <class name="gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet">
     <map-to xml="MageTabFileSet" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data" />
-    <field name="idf" type="gov.nih.nci.caarray.external.v1_0.data.DataFileContents">
+    <field name="idf" type="gov.nih.nci.caarray.external.v1_0.data.FileContents">
       <bind-xml name="dat:idf" node="element" />
     </field>
-    <field name="sdrf" type="gov.nih.nci.caarray.external.v1_0.data.DataFileContents">
+    <field name="sdrf" type="gov.nih.nci.caarray.external.v1_0.data.FileContents">
       <bind-xml name="dat:sdrf" node="element" />
     </field>
-    <field name="dataFiles" type="gov.nih.nci.caarray.external.v1_0.data.DataFile" collection="collection">
-      <bind-xml name="DataFile" location="dataFiles" node="element" />
+    <field name="dataFiles" type="gov.nih.nci.caarray.external.v1_0.data.File" collection="collection">
+      <bind-xml name="File" location="dataFiles" node="element" />
     </field>
   </class>      
   <class name="gov.nih.nci.caarray.external.v1_0.data.DataType" verify-constructable="false">
@@ -381,8 +384,8 @@
     <field name="types" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" collection="collection">
       <bind-xml name="CaArrayEntityReference" location="types" node="element" />
     </field>
-    <field name="categories" type="string" collection="collection" handler="gov.nih.nci.caarray.services.external.v1_0.grid.common.FileTypeCategoryFieldHandler">
-      <bind-xml name="FileTypeCategory" location="categories" node="element" />
+    <field name="categories" type="string" collection="collection" handler="gov.nih.nci.caarray.services.external.v1_0.grid.common.FileCategoryFieldHandler">
+      <bind-xml name="FileCategory" location="categories" node="element" />
     </field>
     <field name="experimentGraphNodes" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" collection="collection">
       <bind-xml name="CaArrayEntityReference" location="experimentGraphNodes" node="element" />
@@ -414,8 +417,8 @@
     <field name="fileTypes" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" collection="collection">
       <bind-xml name="CaArrayEntityReference" location="fileTypes" node="element" />
     </field>
-    <field name="fileTypeCategories" type="string" collection="collection" handler="gov.nih.nci.caarray.services.external.v1_0.grid.common.FileTypeCategoryFieldHandler">
-      <bind-xml name="FileTypeCategory" location="fileTypeCategories" node="element" />
+    <field name="fileCategories" type="string" collection="collection" handler="gov.nih.nci.caarray.services.external.v1_0.grid.common.FileCategoryFieldHandler">
+      <bind-xml name="FileCategory" location="fileCategories" node="element" />
     </field>
     <field name="arrayDataTypes" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" collection="collection">
       <bind-xml name="CaArrayEntityReference" location="arrayDataTypes" node="element" />
@@ -458,6 +461,9 @@
     </field>    
     <field name="excludeNulls" type="boolean">
       <bind-xml name="excludeNulls" node="attribute" />
+    </field>
+    <field name="excludeZeroes" type="boolean">
+      <bind-xml name="excludeZeroes" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.query.SearchResult">

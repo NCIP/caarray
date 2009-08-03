@@ -136,6 +136,4 @@ public abstract class AbstractValue implements Serializable {
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
-
-
 }

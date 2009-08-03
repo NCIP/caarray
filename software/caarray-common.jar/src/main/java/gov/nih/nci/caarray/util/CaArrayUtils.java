@@ -90,6 +90,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -552,5 +553,19 @@ public final class CaArrayUtils {
         } else {
             return Double.parseDouble(value);
         }
+    }
+    
+    /**
+     * Return the constant names of the given enum instances.
+     * @param <E> the type of the enum instances
+     * @param enums the enum instances whose constant names to return
+     * @return the names, e.g. the set of enum.name() for each enum in enums 
+     */
+    public static <E extends Enum<E>> Set<String> namesForEnums(Iterable<E> enums) {
+        Set<String> names = new HashSet<String>();
+        for (Enum<?> oneEnum : enums) {
+            names.add(oneEnum.name());
+        }
+        return names;
     }
 }

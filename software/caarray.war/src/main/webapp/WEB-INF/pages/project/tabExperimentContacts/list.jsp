@@ -16,12 +16,12 @@
             <display:setProperty name="pagination.sort.param" value="pagedItems.sortCriterion" />
             <display:setProperty name="pagination.sortdirection.param" value="pagedItems.sortDirection" />
             <display:setProperty name="pagination.pagenumber.param" value="pagedItems.pageNumber" />
-             <display:column titleKey="currentExperimentContact.person.firstName" sortable="true" sortProperty="FIRST_NAME">
-                 <caarray:projectListTabActionLink linkContent="${!empty row.person.firstName ? row.person.firstName : 'View'}" entityName="ExperimentContact" action="view" itemId="${row.id}" maxWidth="30"/>
+             <display:column titleKey="currentExperimentContact.contact.firstName" sortable="true" sortProperty="FIRST_NAME">
+                 <caarray:projectListTabActionLink linkContent="${!empty row.contact.firstName ? row.contact.firstName : 'View'}" entityName="ExperimentContact" action="view" itemId="${row.id}" maxWidth="30"/>
             </display:column>
-            <display:column property="person.lastName" sortProperty="LAST_NAME" titleKey="currentExperimentContact.person.lastName" sortable="true" maxLength="30"/>
-            <display:column property="person.email" sortProperty="EMAIL" titleKey="currentExperimentContact.person.email" sortable="true" maxLength="30"/>
-            <display:column property="person.phone" sortProperty="PHONE" titleKey="currentExperimentContact.person.phone" sortable="true" maxLength="30"/>
+            <display:column property="contact.lastName" sortProperty="LAST_NAME" titleKey="currentExperimentContact.contact.lastName" sortable="true" maxLength="30"/>
+            <display:column property="contact.email" sortProperty="EMAIL" titleKey="currentExperimentContact.contact.email" sortable="true" maxLength="30"/>
+            <display:column property="contact.phone" sortProperty="PHONE" titleKey="currentExperimentContact.contact.phone" sortable="true" maxLength="30"/>
             <display:column property="roleNames" titleKey="currentExperimentContact.roleNames" maxLength="30"/>
             <caarray:projectListTabActionColumns entityName="ExperimentContact" item="${row}" actions="!edit,!delete"
                 canWriteProject="${canWriteProject}"/>

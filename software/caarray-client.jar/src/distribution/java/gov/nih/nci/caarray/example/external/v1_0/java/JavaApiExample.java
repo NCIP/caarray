@@ -82,60 +82,18 @@
  */
 package gov.nih.nci.caarray.example.external.v1_0.java;
 
-import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
-import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
-import gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn;
-import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
-import gov.nih.nci.caarray.external.v1_0.data.HybridizationData;
-import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
-import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
-import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
-import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
-import gov.nih.nci.caarray.external.v1_0.experiment.Person;
-import gov.nih.nci.caarray.external.v1_0.query.AnnotationCriterion;
-import gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest;
-import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
-import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
-import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
-import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet;
-import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
-import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
-import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
-import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
-import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
-import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
 import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.AbstractSearchApiUtils;
-import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
+import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.time.StopWatch;
 
 /**
  * A simple class that connects to the remote Java API of a caArray server and retrieves and
@@ -155,18 +113,6 @@ public class JavaApiExample {
     private DataService dataService;
     private DataApiUtils dataUtils;
     
-    private static final String TEST_FILE_TYPE_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CEL";
-    private static final String TEST_ORGANISM_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:1";
-    private static final String TEST_EXPERIMENT_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1";
-//    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:89";
-//    private static final String TEST_HYB2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:93";
-//    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:230";
-//    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:246";
-    private static final String TEST_HYB1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1";
-    private static final String TEST_HYB2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:2";
-    private static final String TEST_BIOMATERIAL1_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:1";
-    private static final String TEST_BIOMATERIAL2_ID = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Biomaterial:2";
-
     public static void main(String[] args) {
         JavaApiExample client = new JavaApiExample();
         if (args.length == 2) {
@@ -178,7 +124,7 @@ public class JavaApiExample {
         }
         System.out.println("Using values: " + client.hostname + ":" + client.port);
         client.connectToServer();
-        client.runTest();
+        client.runExample();
     }
 
     public void connectToServer() {
@@ -198,229 +144,17 @@ public class JavaApiExample {
     }
     
     /**
-     * Downloads data using the caArray Remote Java API.
+     * Executes example Grid API client code.
      */
-    public void runTest() {
+    public void runExample() {
         try {
-            StopWatch sw = new StopWatch();
-
             List<FileType> fileTypes = searchUtils.byExample(new ExampleSearchCriteria<FileType>(new FileType()))
                     .list();
             System.out.println("File Types: " + fileTypes);
-            FileType exampleType = new FileType();
-            exampleType.setName("AFFYMETRIX");
-            List<FileType> chpTypes = searchUtils.byExample(
-                    new ExampleSearchCriteria<FileType>(exampleType, MatchMode.START)).list();
-            System.out.println("Affymetrix types: " + chpTypes);
-            exampleType.setCategory(FileTypeCategory.DERIVED);
-            List<FileType> derivedTypes = searchUtils.byExample(
-                    new ExampleSearchCriteria<FileType>(exampleType, MatchMode.START)).list();
-            System.out.println("Affy Derived types: " + derivedTypes);
-            FileType affyCel = (FileType) searchService.getByReference(new CaArrayEntityReference(TEST_FILE_TYPE_ID));
-            System.out.println("Retrieved file type by reference: " + affyCel);
-    
-            System.out.println("Experiment full list");
-            for (Experiment e : searchUtils.experimentsByCriteria(new ExperimentSearchCriteria()).list()) {
-                System.out.println("Next experiment: " + e);
-            }
-            
-            System.out.println("Experiment iteration");
-            for (Iterator<Experiment> expIt = searchUtils.experimentsByCriteria(new ExperimentSearchCriteria())
-                    .iterate(2); expIt.hasNext();) {
-                Experiment e = expIt.next();
-                System.out.println("Next experiment: " + e);
-            }
-            
-            List<Organism> organisms = searchUtils.byExample(new ExampleSearchCriteria<Organism>(new Organism()))
-                    .list();
-            System.out.println("Organism count " + organisms.size());
-            System.out.println("Organisms: " + organisms);
-            Organism exampleOrg = new Organism();
-            exampleOrg.setCommonName("house mouse");
-            List<Organism> mouseOrgs = searchUtils.byExample(
-                    new ExampleSearchCriteria<Organism>(exampleOrg, MatchMode.START)).list();
-            System.out.println("Mus orgs: " + mouseOrgs);
-            Organism o = (Organism) searchService.getByReference(new CaArrayEntityReference(
-                    TEST_ORGANISM_ID));
-            System.out.println("Retrieved organism by reference: " + o);
-            
-            List<ArrayDesign> designs = searchUtils
-                    .byExample(new ExampleSearchCriteria<ArrayDesign>(new ArrayDesign())).list();
-            System.out.println("Design count: " + designs.size());
-            System.out.println("Designs: " + designs);
-            
-            List<ArrayProvider> providers = searchUtils.byExample(
-                    new ExampleSearchCriteria<ArrayProvider>(new ArrayProvider())).list();
-            System.out.println("Providers: " + providers);
-            
-            Category exampleCat = new Category();
-            exampleCat.setName("DiseaseState");
-            List<Category> dsCats = searchUtils.byExample(new ExampleSearchCriteria<Category>(exampleCat)).list();
-            System.out.println("DiseaseState category matches: " + dsCats);
-            List<Term> terms = searchService.getTermsForCategory(dsCats.get(0).getReference(), null);
-            System.out.println("DiseaseState terms: " + terms);
-            
-            
-            List<Person> pis = searchService.getAllPrincipalInvestigators();
-            System.out.println("PIs: " + pis);            
-            
-            List<Category> categories = searchService.getAllCharacteristicCategories(null);
-            System.out.println("All Characteristic Categories: " + categories);            
-            categories = searchService.getAllCharacteristicCategories(new CaArrayEntityReference(TEST_EXPERIMENT_ID));
-            System.out.println("Experiment Characteristic Categories: " + categories);
-            
-            Experiment exampleExp = new Experiment();
-            exampleExp.setOrganism(exampleOrg);
-            List<Experiment> mouseExps = searchUtils.byExample(
-                    new ExampleSearchCriteria<Experiment>(exampleExp, MatchMode.START)).list();
-            System.out.println("Mus experiments: " + mouseExps);
-            
-            ExperimentSearchCriteria experimentCrit = new ExperimentSearchCriteria();
-            experimentCrit.setPrincipalInvestigator(new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Person:9"));
-            experimentCrit.getAnnotationCriterions().add(new AnnotationCriterion(dsCats.get(0).getReference(), "Glioblastoma Multiforme"));
-            experimentCrit.setOrganism(mouseOrgs.get(0).getReference());
-            List<Experiment> exps = searchUtils.experimentsByCriteria(experimentCrit).list();
-            System.out.println("Experiments by criteria: " + exps);
-            
-            KeywordSearchCriteria experimentKeywordCrit = new KeywordSearchCriteria();
-            experimentKeywordCrit.setKeyword("MDR");
-            List<Experiment> keywordExps = searchService.searchForExperimentsByKeyword(experimentKeywordCrit, new LimitOffset(5, 0)).getResults();
-            System.out.println("Experiments by keyword criteria: " + keywordExps); 
-            
-            BiomaterialKeywordSearchCriteria sampleKeywordCrit = new BiomaterialKeywordSearchCriteria();
-            sampleKeywordCrit.setKeyword("MDR");
-            List<Biomaterial> keywordSamples = searchUtils.biomaterialsByKeyword(sampleKeywordCrit).list();
-            System.out.println("Biomaterials by keyword: " + keywordSamples); 
-                                                
-            DataSetRequest dataRequest = new DataSetRequest();
-            FileDownloadRequest downloadRequest = new FileDownloadRequest();
-            
-            FileSearchCriteria fileCriteria = new FileSearchCriteria();
-            fileCriteria.setExperiment(new CaArrayEntityReference(TEST_EXPERIMENT_ID));
-            fileCriteria.getExperimentGraphNodes().add(new CaArrayEntityReference(TEST_HYB1_ID));
-            fileCriteria.getExperimentGraphNodes().add(new CaArrayEntityReference(TEST_BIOMATERIAL2_ID));
-            fileCriteria.getTypes().add(affyCel.getReference());
-            List<DataFile> files = searchUtils.filesByCriteria(fileCriteria).list();
-
-            for (DataFile file : files) {
-                downloadAndPrintFile(file);
-                dataRequest.getDataFiles().add(file.getReference());
-                downloadRequest.getFiles().add(file.getReference());
-            }
-            
-            downloadFileZip(downloadRequest, false);
-
-            HybridizationSearchCriteria hsc = new HybridizationSearchCriteria();
-            hsc.setExperiment(new CaArrayEntityReference(TEST_EXPERIMENT_ID));
-            hsc.getBiomaterials().add(
-                    new CaArrayEntityReference(
-                            TEST_BIOMATERIAL1_ID));
-            hsc.getBiomaterials().add(
-                    new CaArrayEntityReference(
-                            TEST_BIOMATERIAL2_ID));
-            List<Hybridization> hybs = searchUtils.hybridizationsByCriteria(hsc).list();
-            for (Hybridization hyb : hybs) {
-                System.out.println("hyb: " + hyb);
-                //dataRequest.getHybridizations().add(hyb.getReference());
-            }
-
-            BiomaterialSearchCriteria bsc = new BiomaterialSearchCriteria();
-            bsc.setExperiment(new CaArrayEntityReference(TEST_EXPERIMENT_ID));
-            //bsc.setTypes(EnumSet.of(BiomaterialType.SOURCE, BiomaterialType.SAMPLE));
-            bsc.getAnnotationCriterions().add(
-                    new AnnotationCriterion(dsCats.get(0).getReference(), "Glioblastoma Multiforme"));
-            List<Biomaterial> bms = searchUtils.biomaterialsByCriteria(bsc).list();
-            System.out.println("Biomaterials by criteria: " + bms);
-
-            ArrayDataType example = new ArrayDataType();
-            example.setName("Affymetrix CEL");
-            List<ArrayDataType> affyCelDataTypes = searchUtils.byExample(new ExampleSearchCriteria<ArrayDataType>(example)).list();
-            System.out.println("Affy array data types: " + affyCelDataTypes);
-            
-            QuantitationTypeSearchCriteria qtCriteria = new QuantitationTypeSearchCriteria();
-            qtCriteria.setHybridization(hybs.get(0).getReference());
-            //qtCriteria.getArrayDataTypes().add(affyCelDataTypes.get(0).getReference());
-            List<QuantitationType> quantitationTypes = searchService.searchForQuantitationTypes(qtCriteria);
-            System.out.println("Quantitation Types from search");
-            for (QuantitationType qt : quantitationTypes) {
-                System.out.println("QT: " + qt);
-                dataRequest.getQuantitationTypes().add(qt.getReference());
-            }
-
-            sw.reset();
-            sw.start();
-            DataSet dataSet = dataService.getDataSet(dataRequest);
-            sw.stop();
-            System.out.println("Time to retrieve parsed data set: " + sw.toString());
-            System.out.println("Design element list: " + dataSet.getDesignElements());
-            System.out.println("Quantitation types: " + dataSet.getQuantitationTypes());
-            for (HybridizationData hdata : dataSet.getDatas()) {
-                System.out.println("Data for hyb " + hdata.getHybridization().getName());
-                for (AbstractDataColumn dataColumn : hdata.getDataColumns()) {
-                    //System.out.println("Data column: " + dataColumn);
-                    System.out.println("Retrieved data column of type: " + dataColumn.getQuantitationType());
-                }
-            }
-            
-            MageTabFileSet mageTabSet = dataService.exportMageTab(new CaArrayEntityReference(
-                    TEST_EXPERIMENT_ID));
-            System.out.println("Exported IDF metadata: " + mageTabSet.getIdf().getFileMetadata() + ", Contents: \n");
-            IOUtils.write(mageTabSet.getIdf().getContents(), System.out);
-            System.out.println("Exported SDRF metadata: " + mageTabSet.getSdrf().getFileMetadata() + ", Contents: \n");
-            IOUtils.write(mageTabSet.getSdrf().getContents(), System.out);
-            System.out.println("\nAssociated Data Files:");
-            for (DataFile dataFile : mageTabSet.getDataFiles()) {
-                System.out.println(dataFile);
-            }
-            
-            downloadMageTabZip(new CaArrayEntityReference(TEST_EXPERIMENT_ID), false);                        
-            
-            AnnotationSetRequest asr = new AnnotationSetRequest();
-            asr.getExperimentGraphNodes().add(new CaArrayEntityReference(TEST_HYB1_ID));
-            asr.getExperimentGraphNodes().add(new CaArrayEntityReference(TEST_BIOMATERIAL2_ID));
-            asr.getCategories().add(dsCats.get(0).getReference());
-            AnnotationSet as = searchService.getAnnotationSet(asr);
-            System.out.println("AS categories: " + as.getCategories());
-            System.out.println("AS columns: " + as.getColumns());
-            
-            Biomaterial bm = new Biomaterial();
-            bm.setName("Sample");
-            bm.setType(BiomaterialType.SAMPLE);
-            List<Biomaterial> matchingBms = searchUtils.byExample(
-                    new ExampleSearchCriteria<Biomaterial>(bm, MatchMode.START)).list();
-            System.out.println("BMs example matches: " + matchingBms);
-
         } catch (Throwable t) {
-            System.out.println("Couldn't run query: " + t);
+            System.out.println("Received exception: " + t);
             t.printStackTrace(System.err);
             System.exit(1);
-        }
-    }
-    
-    private void downloadAndPrintFile(DataFile file) throws InvalidReferenceException, DataTransferException,
-            IOException {
-        System.out.println("File Metadata: " + file);
-        System.out.println("File Contents: ");
-        dataUtils.copyFileContentsToOutputStream(file.getReference(), false, System.out);
-    }
-
-    private void downloadFileZip(FileDownloadRequest downloadRequest, boolean compressIndividually)
-            throws InvalidReferenceException, DataTransferException, IOException {
-        System.out.println("Downloading file zip for: " + downloadRequest.getFiles());
-        File tempDir = dataUtils.downloadAndExtractFileContentsZipToTempDir(downloadRequest);
-        System.out.println("Downloaded and extracted zip to " + tempDir.getAbsolutePath());
-        for (File file : tempDir.listFiles()) {
-            System.out.println("File " + file.getName() + ", size " + file.length());
-        }
-    }
-
-    private void downloadMageTabZip(CaArrayEntityReference experimentRef, boolean compressIndividually)
-            throws InvalidReferenceException, DataTransferException, IOException {
-        System.out.println("Downloading mage tab zip for: " + experimentRef);
-        File tempDir = dataUtils.downloadAndExtractMageTabZipToTempDir(experimentRef);
-        System.out.println("Downloaded and extracted zip to " + tempDir.getAbsolutePath());
-        for (File file : tempDir.listFiles()) {
-            System.out.println("File " + file.getName() + ", size " + file.length());
         }
     }
 }

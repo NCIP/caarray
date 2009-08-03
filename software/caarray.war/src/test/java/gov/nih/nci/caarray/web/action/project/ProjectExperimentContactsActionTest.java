@@ -195,7 +195,6 @@ public class ProjectExperimentContactsActionTest extends AbstractCaarrayTest {
 
     @Test
     public void testSave() {
-
         ServletActionContext.setRequest(new MockHttpServletRequest());
         assertEquals(1,action.getProject().getOwners().size());
         ProjectExperimentContactsAction action = new ProjectExperimentContactsAction();
@@ -215,8 +214,7 @@ public class ProjectExperimentContactsActionTest extends AbstractCaarrayTest {
         assertEquals("submitter, investigator",action.getExperiment().getExperimentContacts().get(0).getRoleNames());
         assertEquals(1,action.getExperiment().getPrimaryInvestigatorCount());
         assertNotNull(action.getExperiment().getPrimaryInvestigator());
-        assertEquals("Administrator, caArray", action.getExperiment().getExperimentContacts().get(0).getPerson().getName());
-
+        assertEquals("Administrator, caArray", action.getExperiment().getExperimentContacts().get(0).getContact().getName());
     }
 
     @Test

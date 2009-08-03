@@ -87,7 +87,7 @@ import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
@@ -145,8 +145,8 @@ public class SearchEnumIterator<T extends AbstractCaArrayEntity> implements Enum
                 "gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample", "Biomaterial"));
         CLASS_TO_QNAME.put(Hybridization.class, new QName(
                 "gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample", "Hybridization"));
-        CLASS_TO_QNAME.put(DataFile.class, new QName(
-                "gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data", "DataFile"));
+        CLASS_TO_QNAME.put(File.class, new QName(
+                "gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data", "File"));
         CLASS_TO_QNAME.put(FileType.class, new QName(
                 "gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data", "FileType"));
         CLASS_TO_QNAME.put(QuantitationType.class, new QName(

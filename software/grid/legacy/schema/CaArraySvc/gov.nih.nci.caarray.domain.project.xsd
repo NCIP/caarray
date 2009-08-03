@@ -253,7 +253,7 @@
                         </xs:complexType>
                     </xs:element>
                     <xs:element name="contact" minOccurs="0" maxOccurs="1"
-                        type="gov.nih.nci.caarray.domain.contact:AbstractContact" />
+                        type="gov.nih.nci.caarray.domain.contact:Person" />
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>

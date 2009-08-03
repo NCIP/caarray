@@ -326,7 +326,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             return false;
         }
         Iterator<ExperimentContact> i = contacts.iterator();
-        Person person = (Person) i.next().getContact();
+        Person person = i.next().getContact();
         if (!DUMMY_PERSON.getFirstName().equals(person.getFirstName())) {
             return false;
         }

@@ -98,10 +98,11 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.DataFileContents;
+import gov.nih.nci.caarray.external.v1_0.data.File;
+import gov.nih.nci.caarray.external.v1_0.data.FileContents;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.DesignElement;
+import gov.nih.nci.caarray.external.v1_0.data.FileMetadata;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
@@ -123,7 +124,6 @@ import gov.nih.nci.caarray.services.external.v1_0.impl.BaseV1_0ExternalService;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -365,7 +365,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         RemoteInputStreamServer istream = null;
         TemporaryFileCache tempFileCache = TemporaryFileCacheLocator.newTemporaryFileCache();
         try {
-            File file = tempFileCache.getFile(caarrayFile, !compressed);
+            java.io.File file = tempFileCache.getFile(caarrayFile, !compressed);
             
             istream = new SimpleRemoteInputStream(new BufferedInputStream(new FileInputStream(file)),
                     new CacheClosingMonitor(tempFileCache));
@@ -396,7 +396,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         TemporaryFileCache tempFileCache = TemporaryFileCacheLocator.newTemporaryFileCache();
         RemoteInputStreamServer istream = null;
         try {
-            File zipFile = tempFileCache.createFile("contents.zip");
+            java.io.File zipFile = tempFileCache.createFile("contents.zip");
             FileOutputStream fos = FileUtils.openOutputStream(zipFile);
 
             List<CaArrayFile> files = new LinkedList<CaArrayFile>();
@@ -437,13 +437,13 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         try {
             MageTabFileSet mageTabSet = new MageTabFileSet();
             MageTabDocumentSet docSet = exportToMageTab(experiment);
-            mageTabSet.setIdf(toDataFileContents(docSet.getIdfDocuments().iterator().next().getFile(),
+            mageTabSet.setIdf(toFileContents(docSet.getIdfDocuments().iterator().next().getFile(),
                     FileType.MAGE_TAB_IDF));
-            mageTabSet.setSdrf(toDataFileContents(docSet.getSdrfDocuments().iterator().next().getFile(),
+            mageTabSet.setSdrf(toFileContents(docSet.getSdrfDocuments().iterator().next().getFile(),
                     FileType.MAGE_TAB_SDRF));
 
             List<CaArrayFile> dataFiles = getDataFilesReferencedByMageTab(docSet, experiment);
-            mapCollection(dataFiles, mageTabSet.getDataFiles(), DataFile.class);
+            mapCollection(dataFiles, mageTabSet.getDataFiles(), File.class);
 
             return mageTabSet;
         } catch (IOException e) {
@@ -458,8 +458,8 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         String baseFileName = experiment.getPublicIdentifier();
         String idfFileName = baseFileName + ".idf";
         String sdrfFileName = baseFileName + ".sdrf";
-        File idfFile = tempCache.createFile(idfFileName);
-        File sdrfFile = tempCache.createFile(sdrfFileName);
+        java.io.File idfFile = tempCache.createFile(idfFileName);
+        java.io.File sdrfFile = tempCache.createFile(sdrfFileName);
 
         // Translate the experiment and export to the temporary files.
         return ServiceLocatorFactory.getMageTabExporter().exportToMageTab(experiment, idfFile, sdrfFile);
@@ -498,7 +498,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         final TemporaryFileCache tempFileCache = TemporaryFileCacheLocator.newTemporaryFileCache();
         RemoteInputStreamServer istream = null;
         try {
-            File zipFile = tempFileCache.createFile("magetab_contents.zip");
+            java.io.File zipFile = tempFileCache.createFile("magetab_contents.zip");
             FileOutputStream fos = FileUtils.openOutputStream(zipFile);
             ZipOutputStream zos = new ZipOutputStream(fos);
 
@@ -533,7 +533,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         }
     }
     
-    private static void addMageTabFileToZip(ZipOutputStream zos, File file, boolean compressIndividually)
+    private static void addMageTabFileToZip(ZipOutputStream zos, java.io.File file, boolean compressIndividually)
             throws IOException {
         String name = file.getName();
         if (compressIndividually) {
@@ -543,9 +543,9 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         FileAccessUtils.writeZipEntry(zos, file, name, compressIndividually);
     }
     
-    private static File compressWithGzip(File file) throws IOException {
+    private static java.io.File compressWithGzip(java.io.File file) throws IOException {
         TemporaryFileCache cache = TemporaryFileCacheLocator.getTemporaryFileCache();
-        File tempFile = cache.createFile("gzip_" + file.getName());
+        java.io.File tempFile = cache.createFile("gzip_" + file.getName());
         FileOutputStream fos = FileUtils.openOutputStream(tempFile);
         FileInputStream fis = FileUtils.openInputStream(file);
         GZIPOutputStream gos = new GZIPOutputStream(fos);
@@ -555,17 +555,17 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         return tempFile;
     }
 
-    private DataFileContents toDataFileContents(File mageTabFile, FileType fileType) throws IOException {
-        DataFileContents dfc = new DataFileContents();
-        dfc.setContents(FileUtils.readFileToByteArray(mageTabFile));
-        dfc.setCompressed(false);
-        DataFile metadata = new DataFile();
+    private FileContents toFileContents(java.io.File mageTabFile, FileType fileType) throws IOException {
+        FileContents fc = new FileContents();
+        fc.setContents(FileUtils.readFileToByteArray(mageTabFile));
+        fc.setCompressed(false);
+        FileMetadata metadata = new FileMetadata();
         metadata.setName(mageTabFile.getName());
         metadata.setUncompressedSize(mageTabFile.length());
         metadata.setCompressedSize(-1);
         metadata.setFileType(mapEntity(fileType, gov.nih.nci.caarray.external.v1_0.data.FileType.class));
-        dfc.setFileMetadata(metadata);
-        return dfc;
+        fc.setMetadata(metadata);
+        return fc;
     }
     
     /**

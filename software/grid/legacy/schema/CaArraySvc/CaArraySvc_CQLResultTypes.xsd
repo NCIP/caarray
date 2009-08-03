@@ -74,27 +74,18 @@
 		<xs:element ref="ns0:AbstractBioMaterial" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample"/>
 		<xs:element ref="ns0:AbstractCharacteristic" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample"/>
 		<xs:element ref="ns0:TermBasedCharacteristic" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample"/>
-        <xs:element ref="ns0:UserDefinedCharacteristic" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample"/>
-        <xs:element ref="ns0:MeasurementCharacteristic" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample"/>
 		<xs:element ref="ns0:Extract" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample"/>
 		<xs:element ref="ns0:Sample" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample"/>
 		<xs:element ref="ns0:Source" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample"/>
+		<xs:element ref="ns0:MeasurementCharacteristic" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample"/>
 		<xs:element ref="ns0:LabeledExtract" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample"/>
 		<xs:element ref="ns0:Publication" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.publication"/>
 		<xs:element ref="ns0:ProtocolApplication" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.protocol"/>
 		<xs:element ref="ns0:Protocol" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.protocol"/>
 		<xs:element ref="ns0:Parameter" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.protocol"/>
-        <xs:element ref="ns0:AbstractParameterValue" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.protocol"/>
-        <xs:element ref="ns0:TermBasedParameterValue" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.protocol"/>
-        <xs:element ref="ns0:UserDefinedParameterValue" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.protocol"/>
-        <xs:element ref="ns0:MeasurementParameterValue" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.protocol"/>
 		<xs:element ref="ns0:ExperimentContact" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"/>
 		<xs:element ref="ns0:Experiment" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"/>
 		<xs:element ref="ns0:Factor" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"/>
-        <xs:element ref="ns0:AbstractFactorValue" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"/>
-        <xs:element ref="ns0:TermBasedFactorValue" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"/>
-        <xs:element ref="ns0:UserDefinedFactorValue" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"/>
-        <xs:element ref="ns0:MeasurementFactorValue" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"/>
 		<xs:element ref="ns0:Project" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"/>
 		<xs:element ref="ns0:Hybridization" xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.hybridization"/>
  

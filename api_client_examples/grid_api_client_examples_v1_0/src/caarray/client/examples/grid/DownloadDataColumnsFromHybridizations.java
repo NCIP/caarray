@@ -85,11 +85,12 @@ package caarray.client.examples.grid;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn;
 import gov.nih.nci.caarray.external.v1_0.data.BooleanColumn;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.DataType;
 import gov.nih.nci.caarray.external.v1_0.data.DesignElement;
 import gov.nih.nci.caarray.external.v1_0.data.DoubleColumn;
+import gov.nih.nci.caarray.external.v1_0.data.File;
+import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.FloatColumn;
 import gov.nih.nci.caarray.external.v1_0.data.HybridizationData;
@@ -104,6 +105,7 @@ import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
@@ -112,6 +114,7 @@ import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -161,7 +164,15 @@ public class DownloadDataColumnsFromHybridizations {
         dataSetRequest.setHybridizations(hybridizationRefs);
 
         // Select the quantitation types (columns) of interest.
-        Set<CaArrayEntityReference> quantitationTypeRefs = selectQuantitationTypes();
+        QuantitationTypeSearchCriteria qtCrit = new QuantitationTypeSearchCriteria();
+        qtCrit.setHybridization(hybridizationRefs.iterator().next());
+        qtCrit.getFileCategories().add(FileCategory.DERIVED_DATA);
+        QuantitationType[] qtypes = client.searchForQuantitationTypes(qtCrit);
+        Set<CaArrayEntityReference> quantitationTypeRefs = new HashSet<CaArrayEntityReference>();
+        for (QuantitationType qt : qtypes) {
+            quantitationTypeRefs.add(qt.getReference());
+        }
+        System.out.println("Retrieved quant types: " + Arrays.asList(qtypes));
         if (quantitationTypeRefs == null) {
             System.err.println("Could not find one or more of the requested quantitation types: " + QUANTITATION_TYPES_CSV_STRING);
             return;
@@ -232,7 +243,7 @@ public class DownloadDataColumnsFromHybridizations {
         CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CHP");
         searchCriteria.setExperimentGraphNodes(hybridizationRefs);
         searchCriteria.getTypes().add(chpFileTypeRef);
-        List<DataFile> dataFiles = (client.searchForFiles(searchCriteria, null)).getResults();
+        List<File> dataFiles = (client.searchForFiles(searchCriteria, null)).getResults();
         if (dataFiles == null || dataFiles.size() == 0) {
             return false;
         } else {

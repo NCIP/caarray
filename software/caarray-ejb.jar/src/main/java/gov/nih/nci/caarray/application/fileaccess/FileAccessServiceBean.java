@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.fileaccess;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
@@ -166,6 +167,7 @@ public class FileAccessServiceBean implements FileAccessService {
 
     private CaArrayFile createCaArrayFile(String filename) {
         CaArrayFile caArrayFile = new CaArrayFile();
+        caArrayFile.setFileStatus(FileStatus.UPLOADED);
         caArrayFile.setName(filename);
         setTypeFromExtension(caArrayFile, filename);
         return caArrayFile;

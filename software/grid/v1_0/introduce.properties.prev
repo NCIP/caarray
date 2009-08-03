@@ -1,8 +1,8 @@
 #Introduce Properties
-#Sat May 30 16:25:20 EDT 2009
+#Fri Jul 31 12:02:42 EDT 2009
 introduce.skeleton.services.list=CaArraySvc_v1_0,CaGridEnumeration
 introduce.skeleton.extensions=caGrid_Transfer,cagrid_wsEnum,cagrid_metadata
-introduce.skeleton.timestamp=1243551015963
+introduce.skeleton.timestamp=1248726850030
 introduce.skeleton.service.name=CaArraySvc_v1_0
 introduce.skeleton.resource.options=main,singleton,identifiable,resourcePropertyManagement
 introduce.skeleton.destination.dir=/Users/dkokotov/dev/checkouts/caarray2/software/grid/v1_0

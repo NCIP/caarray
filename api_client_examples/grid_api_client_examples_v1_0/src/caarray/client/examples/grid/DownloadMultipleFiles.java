@@ -83,9 +83,9 @@
 package caarray.client.examples.grid;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
+import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
@@ -175,7 +175,7 @@ public class DownloadMultipleFiles {
         // Search for all raw data files in the experiment. (Experiment ref is a mandatory parameter.)
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
-        fileSearchCriteria.getCategories().add(FileTypeCategory.RAW);
+        fileSearchCriteria.getCategories().add(FileCategory.RAW_DATA);
 
         // Alternatively, search for all AFFYMETRIX_CEL data files)
         // CaArrayEntityReference celFileTypeRef = getCelFileType();
@@ -185,14 +185,14 @@ public class DownloadMultipleFiles {
         // fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
         // fileSearchCriteria.setExtension("CHP");
 
-        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
+        List<File> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files == null || files.size() <= 0) {
             return null;
         }
 
         // Return references to the files.
         List<CaArrayEntityReference> fileRefs = new ArrayList<CaArrayEntityReference>();
-        for (DataFile file : files) {
+        for (File file : files) {
             fileRefs.add(file.getReference());
         }
         return fileRefs;

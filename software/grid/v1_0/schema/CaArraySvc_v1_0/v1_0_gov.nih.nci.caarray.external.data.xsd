@@ -175,12 +175,14 @@
         </xs:sequence>
     </xs:complexType>    
 
-    <xs:element name="FileTypeCategory" type="dat:FileTypeCategory" />
-    <xs:simpleType name="FileTypeCategory">
+    <xs:element name="FileCategory" type="dat:FileCategory" />
+    <xs:simpleType name="FileCategory">
         <xs:restriction base="xs:string">
-            <xs:enumeration value="RAW"/>
-            <xs:enumeration value="DERIVED"/>
-            <xs:enumeration value="SUPPLEMENTAL"/>
+            <xs:enumeration value="RAW_DATA"/>
+            <xs:enumeration value="DERIVED_DATA"/>
+            <xs:enumeration value="ARRAY_DESIGN"/>
+            <xs:enumeration value="MAGE_TAB"/>
+            <xs:enumeration value="OTHER"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -188,32 +190,36 @@
     <xs:complexType name="FileType">
         <xs:complexContent>
             <xs:extension base="car:AbstractCaArrayEntity">
-                <xs:sequence>
-                    <xs:element name="category" minOccurs="1" maxOccurs="1" type="dat:FileTypeCategory" />
-                </xs:sequence>
     		    <xs:attribute name="name" type="xs:string" />
-	    </xs:extension>
-	</xs:complexContent>
+	        </xs:extension>
+    	</xs:complexContent>
     </xs:complexType>
 
-    <xs:element name="DataFile" type="dat:DataFile" />
-    <xs:complexType name="DataFile">
+    <xs:element name="FileMetadata" type="dat:FileMetadata" />
+    <xs:complexType name="FileMetadata">
+        <xs:sequence>
+            <xs:element name="fileType" minOccurs="0" maxOccurs="1" type="dat:FileType" />
+        </xs:sequence>
+        <xs:attribute name="compressedSize" type="xs:long" />
+        <xs:attribute name="uncompressedSize" type="xs:long" />
+        <xs:attribute name="name" type="xs:string" />
+    </xs:complexType>
+
+    <xs:element name="File" type="dat:File" />
+    <xs:complexType name="File">
         <xs:complexContent>
             <xs:extension base="car:AbstractCaArrayEntity">
                 <xs:sequence>
-                    <xs:element name="fileType" minOccurs="0" maxOccurs="1" type="dat:FileType" />
+                    <xs:element name="metadata" minOccurs="1" maxOccurs="1" type="dat:FileMetadata" />
                 </xs:sequence>
-		<xs:attribute name="compressedSize" type="xs:long" />
-		<xs:attribute name="uncompressedSize" type="xs:long" />
-		<xs:attribute name="name" type="xs:string" />
-	    </xs:extension>
-	</xs:complexContent>
+    	    </xs:extension>
+	   </xs:complexContent>
     </xs:complexType>
 
-    <xs:element name="DataFileContents" type="dat:DataFileContents" />
-    <xs:complexType name="DataFileContents">
+    <xs:element name="FileContents" type="dat:FileContents" />
+    <xs:complexType name="FileContents">
     	<xs:sequence>
-        	<xs:element name="fileMetadata" minOccurs="1" maxOccurs="1" type="dat:DataFile" />
+        	<xs:element name="metadata" minOccurs="1" maxOccurs="1" type="dat:FileMetadata" />
 			<xs:element name="contents" minOccurs="1" maxOccurs="1" type="xs:base64Binary" />
         </xs:sequence>
 		<xs:attribute name="compressed" type="xs:boolean" />
@@ -222,12 +228,12 @@
     <xs:element name="MageTabFileSet" type="dat:MageTabFileSet" />
     <xs:complexType name="MageTabFileSet">
     	<xs:sequence>
-	    <xs:element name="idf" minOccurs="1" maxOccurs="1" type="dat:DataFileContents" />
-	    <xs:element name="sdrf" minOccurs="1" maxOccurs="1" type="dat:DataFileContents" />
-	    <xs:element name="dataFiles">        	
-	        <xs:complexType>            	
-		    <xs:sequence>
-		        <xs:element ref="dat:DataFile" minOccurs="0" maxOccurs="unbounded"/>
+	        <xs:element name="idf" minOccurs="1" maxOccurs="1" type="dat:FileContents" />
+	        <xs:element name="sdrf" minOccurs="1" maxOccurs="1" type="dat:FileContents" />
+	        <xs:element name="dataFiles">        	
+    	        <xs:complexType>            	
+        		    <xs:sequence>
+		                <xs:element ref="dat:File" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>

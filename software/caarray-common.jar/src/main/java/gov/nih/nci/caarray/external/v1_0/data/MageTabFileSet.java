@@ -95,49 +95,49 @@ import java.util.Set;
 public class MageTabFileSet implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private DataFileContents idf;
-    private DataFileContents sdrf;
-    private Set<DataFile> dataFiles = new HashSet<DataFile>();
+    private FileContents idf;
+    private FileContents sdrf;
+    private Set<File> dataFiles = new HashSet<File>();
 
     /**
      * @return the idf
      */
-    public DataFileContents getIdf() {
+    public FileContents getIdf() {
         return idf;
     }
 
     /**
      * @param idf the idf to set
      */
-    public void setIdf(DataFileContents idf) {
+    public void setIdf(FileContents idf) {
         this.idf = idf;
     }
 
     /**
      * @return the sdrf
      */
-    public DataFileContents getSdrf() {
+    public FileContents getSdrf() {
         return sdrf;
     }
 
     /**
      * @param sdrf the sdrf to set
      */
-    public void setSdrf(DataFileContents sdrf) {
+    public void setSdrf(FileContents sdrf) {
         this.sdrf = sdrf;
     }
 
     /**
      * @return the dataFiles
      */
-    public Set<DataFile> getDataFiles() {
+    public Set<File> getDataFiles() {
         return dataFiles;
     }
 
     /**
      * @param dataFiles the dataFiles to set
      */
-    public void setDataFiles(Set<DataFile> dataFiles) {
+    public void setDataFiles(Set<File> dataFiles) {
         this.dataFiles = dataFiles;
     }
 }

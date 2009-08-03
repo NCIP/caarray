@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.services.external.v1_0.search;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
@@ -186,10 +186,10 @@ public class JavaSearchApiUtils extends AbstractSearchApiUtils implements Search
      * {@inheritDoc}
      */
     @Override
-    protected Function<LimitOffset, SearchResult<DataFile>> getSearchFilesFunction(
+    protected Function<LimitOffset, SearchResult<File>> getSearchFilesFunction(
             final FileSearchCriteria criteria) {
-        return new Function<LimitOffset, SearchResult<DataFile>>() {
-            public SearchResult<DataFile> apply(LimitOffset from) {
+        return new Function<LimitOffset, SearchResult<File>>() {
+            public SearchResult<File> apply(LimitOffset from) {
                 try {
                     return searchService.searchForFiles(criteria, from);
                 } catch (InvalidReferenceException e) {

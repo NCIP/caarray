@@ -98,8 +98,8 @@ import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
+import gov.nih.nci.caarray.external.v1_0.data.File;
+import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
@@ -128,7 +128,6 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.impl.BaseV1_0ExternalService;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
@@ -302,45 +301,17 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-    public AbstractCaArrayEntity getByReference(CaArrayEntityReference reference)
-            throws NoEntityMatchingReferenceException {
-        Class<? extends AbstractCaArrayEntity> entityClass = 
-            (Class<? extends AbstractCaArrayEntity>) getClassFromExternalId(reference.getId());
-        java.lang.Object entity = getByExternalId(reference.getId());
-        if (entity == null) {
-            throw new NoEntityMatchingReferenceException(reference);
-        }
-        return mapEntity(entity, entityClass);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<AbstractCaArrayEntity> getByReferences(List<CaArrayEntityReference> references)
-            throws NoEntityMatchingReferenceException {
-        List<AbstractCaArrayEntity> results = new ArrayList<AbstractCaArrayEntity>();
-        for (CaArrayEntityReference reference : references) {
-            AbstractCaArrayEntity entity = getByReference(reference);
-            results.add(entity);
-        }
-        return results;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public SearchResult<DataFile> searchForFiles(FileSearchCriteria criteria, LimitOffset pagingParams)
+    public SearchResult<File> searchForFiles(FileSearchCriteria criteria, LimitOffset pagingParams)
             throws InvalidReferenceException {
-        List<DataFile> externalFiles = new ArrayList<DataFile>();
+        List<File> externalFiles = new ArrayList<File>();
         com.fiveamsolutions.nci.commons.data.search.PageSortParams<CaArrayFile> actualParams = 
             toInternalParams(defaultIfNull(pagingParams, MAX_FILE_RESULTS), "name", false);
         gov.nih.nci.caarray.domain.search.FileSearchCriteria internalCriteria = toInternalCriteria(criteria);
-        List<CaArrayFile> files = ServiceLocatorFactory.getProjectManagementService().searchFiles(actualParams,
+        List<CaArrayFile> files = getDaoFactory().getFileDao().searchFiles(actualParams,
                 internalCriteria);
-        mapCollection(files, externalFiles, DataFile.class);
+        mapCollection(files, externalFiles, File.class);
         HibernateUtil.getCurrentSession().clear();
-        return new SearchResult<DataFile>(externalFiles, MAX_FILE_RESULTS, actualParams.getIndex());
+        return new SearchResult<File>(externalFiles, MAX_FILE_RESULTS, actualParams.getIndex());
     };
 
     private gov.nih.nci.caarray.domain.search.FileSearchCriteria toInternalCriteria(FileSearchCriteria criteria)
@@ -348,13 +319,9 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         gov.nih.nci.caarray.domain.search.FileSearchCriteria intCriteria = 
             new gov.nih.nci.caarray.domain.search.FileSearchCriteria();
         intCriteria.setExtension(criteria.getExtension());
-        Set<FileTypeCategory> categories = new HashSet<FileTypeCategory>(criteria.getCategories());
-        if (categories.isEmpty()) {
-            categories.addAll(EnumSet.allOf(FileTypeCategory.class));
+        for (FileCategory category : criteria.getCategories()) {
+            intCriteria.getCategories().add(gov.nih.nci.caarray.domain.file.FileCategory.valueOf(category.name()));
         }
-        intCriteria.setIncludeRaw(categories.contains(FileTypeCategory.RAW));
-        intCriteria.setIncludeDerived(categories.contains(FileTypeCategory.DERIVED));
-        intCriteria.setIncludeSupplemental(categories.contains(FileTypeCategory.SUPPLEMENTAL));
         intCriteria.setExperiment(getByReference(criteria.getExperiment(),
                 gov.nih.nci.caarray.domain.project.Experiment.class));
         mapRequiredReferencesToEntities(criteria.getTypes(), intCriteria.getTypes(),
@@ -509,12 +476,9 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
             intCriteria.getFileTypes().add(gov.nih.nci.caarray.domain.file.FileType.valueOf(fileTypeName));
         }
         
-        Set<FileTypeCategory> categories = new HashSet<FileTypeCategory>(criteria.getFileTypeCategories());
-        if (categories.isEmpty()) {
-            categories.addAll(EnumSet.allOf(FileTypeCategory.class));
+        for (FileCategory category : criteria.getFileCategories()) {
+            intCriteria.getFileCategories().add(gov.nih.nci.caarray.domain.file.FileCategory.valueOf(category.name()));
         }
-        intCriteria.setIncludeRaw(categories.contains(FileTypeCategory.RAW));
-        intCriteria.setIncludeDerived(categories.contains(FileTypeCategory.DERIVED));
         
         return intCriteria;
     }

@@ -110,7 +110,6 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCategory;
 import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -269,7 +268,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             LogUtil.logSubsystemExit(LOG);
             throw new PermissionDeniedException(project, "WORKFLOW_CHANGE", UsernameHolder.getUser());
         }
-        if (project.islocked() == newStatus) {
+        if (project.isLocked() == newStatus) {
             LogUtil.logSubsystemExit(LOG);
             throw new ProposalWorkflowException("project already " + (newStatus ? " locked" : "unlocked"));
         }
@@ -320,7 +319,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             LogUtil.logSubsystemExit(LOG);
             throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
         }
-        if (project.islocked()) {
+        if (project.isLocked()) {
             LogUtil.logSubsystemExit(LOG);
             throw new ProposalWorkflowException("Cannot delete a locked project");
         }
@@ -402,7 +401,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     private void checkIfProjectSaveAllowed(Project project) throws ProposalWorkflowException,
             InconsistentProjectStateException {
-        if (project.islocked()) {
+        if (project.isLocked()) {
             LogUtil.logSubsystemExit(LOG);
             throw new ProposalWorkflowException("Cannot save a locked project");
         }
@@ -737,13 +736,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return this.daoFactory.getContactDao().getAllPrincipalInvestigators();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {
-        return getFileDao().searchFiles(params, criteria);
-    }
-    
     /**
      * {@inheritDoc}
      */

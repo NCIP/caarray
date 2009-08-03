@@ -288,6 +288,10 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         DUMMY_FILE_2.setFileStatus(FileStatus.SUPPLEMENTAL);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_2);
         DUMMY_FILE_2.setProject(DUMMY_PROJECT_1);
+        
+        DUMMY_DATA_FILE.setName("dummy.cel");
+        DUMMY_DATA_FILE.setFileStatus(FileStatus.UPLOADED);
+        DUMMY_DATA_FILE.setFileType(FileType.AFFYMETRIX_CEL);
     }
 
     protected static void setPublications() {

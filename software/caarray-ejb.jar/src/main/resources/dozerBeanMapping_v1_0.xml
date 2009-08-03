@@ -129,7 +129,6 @@
     	<field>
       		<a>contact</a>
      	 	<b>person</b>
-            <a-hint>gov.nih.nci.caarray.domain.contact.Person</a-hint>
     	</field>
   	</mapping>  
 	<mapping> 
@@ -309,11 +308,27 @@
     </mapping>    
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.file.CaArrayFile</class-a>
-    	<class-b>gov.nih.nci.caarray.external.v1_0.data.DataFile</class-b>   
-    	<field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.data.DataFile">
+    	<class-b>gov.nih.nci.caarray.external.v1_0.data.File</class-b>   
+    	<field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.data.File">
       		<a>id</a>
      	 	<b>id</b>
     	</field>
+        <field>
+            <a>name</a>
+            <b>metadata.name</b>
+        </field>
+        <field>
+            <a>compressedSize</a>
+            <b>metadata.compressedSize</b>
+        </field>
+        <field>
+            <a>uncompressedSize</a>
+            <b>metadata.uncompressedSize</b>
+        </field>
+        <field>
+            <a>fileType</a>
+            <b>metadata.fileType</b>
+        </field>
   	</mapping>    
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.hybridization.Hybridization</class-a>

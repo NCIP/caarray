@@ -83,7 +83,7 @@
 package caarray.client.examples.java;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
@@ -178,13 +178,13 @@ public class DownloadFile {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
 
-        List<DataFile> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
+        List<File> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
         if (files == null || files.size() <= 0) {
             return null;
         }
 
-        for (DataFile file : files) {
-            if (DATA_FILE_NAME.equals(file.getName())) {
+        for (File file : files) {
+            if (DATA_FILE_NAME.equals(file.getMetadata().getName())) {
                 return file.getReference();
             }
         }

@@ -100,6 +100,7 @@ public class ExampleSearchCriteria<T extends PersistentObject> {
     private T example;
     private MatchMode matchMode = MatchMode.EXACT;
     private boolean excludeNulls = true;
+    private boolean excludeZeroes = false;
     private Collection<String> excludeProperties = new HashSet<String>();
 
     /**
@@ -221,6 +222,27 @@ public class ExampleSearchCriteria<T extends PersistentObject> {
         excludeProperties.removeAll(Arrays.asList(properties));
         return this;
     }    
+    
+    /**
+     * Set this criteria to exclude zero-valued properties from comparison.
+     * 
+     * @return this
+     */
+    public ExampleSearchCriteria<T> excludeZeroes() {
+        setExcludeZeroes(true);
+        return this;
+    }    
+
+    /**
+     * Set this criteria to include zero-valued properties in the comparison.
+     * 
+     * @return this
+     */
+    public ExampleSearchCriteria<T> includeZeroes() {
+        setExcludeZeroes(false);
+        return this;
+    }    
+
 
     /**
      * @return the example
@@ -276,5 +298,19 @@ public class ExampleSearchCriteria<T extends PersistentObject> {
      */
     public void setExcludeProperties(Collection<String> excludeProperties) {
         this.excludeProperties = excludeProperties;
+    }
+
+    /**
+     * @return the excludeZeroes
+     */
+    public boolean isExcludeZeroes() {
+        return excludeZeroes;
+    }
+
+    /**
+     * @param excludeZeroes the excludeZeroes to set
+     */
+    public void setExcludeZeroes(boolean excludeZeroes) {
+        this.excludeZeroes = excludeZeroes;
     }
 }

@@ -88,16 +88,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		
 	}
 					
-	public static void authorizeGetByReference() throws RemoteException {
-		
-		
-	}
-					
-	public static void authorizeGetByReferences() throws RemoteException {
-		
-		
-	}
-					
 	public static void authorizeEnumerateExperiments() throws RemoteException {
 		
 		
@@ -263,22 +253,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		} else if(operation.getLocalPart().equals("getAllPrincipalInvestigators")){
 			try{
 				authorizeGetAllPrincipalInvestigators();
-				return true;
-			} catch (Exception e){
-				e.printStackTrace();
-				return false;
-			}
-		} else if(operation.getLocalPart().equals("getByReference")){
-			try{
-				authorizeGetByReference();
-				return true;
-			} catch (Exception e){
-				e.printStackTrace();
-				return false;
-			}
-		} else if(operation.getLocalPart().equals("getByReferences")){
-			try{
-				authorizeGetByReferences();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();

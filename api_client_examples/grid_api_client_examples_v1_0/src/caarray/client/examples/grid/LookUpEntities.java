@@ -88,7 +88,8 @@ import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.DataType;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
@@ -169,12 +170,10 @@ public class LookUpEntities {
         lookupTerms();
         lookupTermSources();
         lookupPrincipalInvestigators();
-//        lookupCharacteristicCategories();
+        lookupCharacteristicCategories();
         lookupTermsInCategory();
         enumerateExperiments();
 
-//        lookupEntityByReference();
-//        lookupEntitiesByReference();
         lookupPersonsByMatchMode();
         lookupExperimentsPageByPage();
     }
@@ -264,15 +263,15 @@ public class LookUpEntities {
     }
 
     private void lookupFiles() throws RemoteException, InvalidReferenceException {
-        ExampleSearchCriteria<DataFile> criteria = new ExampleSearchCriteria<DataFile>();
-        DataFile exampleFile = new DataFile();
+        ExampleSearchCriteria<File> criteria = new ExampleSearchCriteria<File>();
+        File exampleFile = new File();
         criteria.setExample(exampleFile);
         startTime = System.currentTimeMillis();
-        List<DataFile> files = searchServiceHelper.byExample(criteria).list();
+        List<File> files = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + files.size() + " files in " + totalTime + " ms.");
-        for (DataFile file : files) {
-            System.out.print(file.getName() + "  ");
+        for (File file : files) {
+            System.out.print(file.getMetadata().getName() + "  ");
         }
         System.out.println("End of file lookup.");
     }
@@ -378,13 +377,14 @@ public class LookUpEntities {
     private void lookupQuantitationTypes() throws RemoteException, InvalidReferenceException {
         ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
         QuantitationType exampleQuantitationType = new QuantitationType();
+        exampleQuantitationType.setDataType(DataType.FLOAT);
         criteria.setExample(exampleQuantitationType);
         startTime = System.currentTimeMillis();
         List<QuantitationType> qtypes = searchServiceHelper.byExample(criteria).list();
         totalTime = System.currentTimeMillis() - startTime;
         System.out.println("Found " + qtypes.size() + " quantitation types in " + totalTime + " ms.");
         for (QuantitationType qtype : qtypes) {
-            System.out.print(qtype.getName() + "  ");
+            System.out.println(qtype);
         }
         System.out.println("End of quantitation type lookup.");
     }
@@ -450,37 +450,6 @@ public class LookUpEntities {
             System.out.print(term.getValue() + "  ");
         }
         System.out.println("End of terms in category lookup.");
-    }
-
-    private void lookupEntityByReference() throws RemoteException {
-        CaArrayEntityReference organismRef = new CaArrayEntityReference(
-                "URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5");
-        startTime = System.currentTimeMillis();
-        Organism organism = (Organism) client.getByReference(organismRef);
-        totalTime = System.currentTimeMillis() - startTime;
-        if (organism == null) {
-            System.out.println("Could not find organism.");
-        } else {
-            System.out.println("Found organism " + organism.getScientificName() + " in " + totalTime + " ms.");
-        }
-    }
-
-    private void lookupEntitiesByReference() throws RemoteException {
-        CaArrayEntityReference[] organismRefs = new CaArrayEntityReference[2];
-        organismRefs[0] = new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5");
-        organismRefs[1] = new CaArrayEntityReference("URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:3");
-        startTime = System.currentTimeMillis();
-        AbstractCaArrayEntity[] organisms = client.getByReferences(organismRefs);
-        totalTime = System.currentTimeMillis() - startTime;
-        if (organisms == null || organisms.length <= 0) {
-            System.out.println("Could not find organisms.");
-        } else {
-            for (AbstractCaArrayEntity entity : organisms) {
-                Organism organism = (Organism) entity;
-                System.out.println("Found organism: " + organism.getScientificName());
-            }
-            System.out.println("Found " + organisms.length + " organisms in " + totalTime + " ms.");
-        }
     }
 
     private void enumerateExperiments() throws RemoteException, DeserializationException {

@@ -102,7 +102,7 @@ import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact;
@@ -157,7 +157,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
     public BaseV1_0ExternalService() {
         entityHandlerRegistry.addResolver(Organism.class, new PersistentObjectHandler<Organism>(
                 edu.georgetown.pir.Organism.class, Order.asc("scientificName")));
-        entityHandlerRegistry.addResolver(DataFile.class, new PersistentObjectHandler<DataFile>(CaArrayFile.class,
+        entityHandlerRegistry.addResolver(File.class, new PersistentObjectHandler<File>(CaArrayFile.class,
                 Order.asc("name")));
         entityHandlerRegistry.addResolver(QuantitationType.class, new PersistentObjectHandler<QuantitationType>(
                 gov.nih.nci.caarray.domain.data.QuantitationType.class, Order.asc("name")));
@@ -450,6 +450,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
                     .forEntity(toInternalExample(criteria.getExample()));
             intCriteria.setMatchMode(getHibernateMatchMode(criteria.getMatchMode().name()));
             intCriteria.setExcludeNulls(criteria.isExcludeNulls());
+            intCriteria.setExcludeZeroes(criteria.isExcludeZeroes());
             return intCriteria;
         }
         
@@ -523,9 +524,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
             List<gov.nih.nci.caarray.external.v1_0.data.FileType> results = 
                 new ArrayList<gov.nih.nci.caarray.external.v1_0.data.FileType>();
             for (FileType type : FileType.values()) {
-                boolean nameMatches = nameMatches(type, criteria);
-                boolean categoryMatches = categoryMatches(type, criteria);
-                if (nameMatches && categoryMatches) {
+                if (nameMatches(type, criteria)) {
                     results.add(mapEntity(type, gov.nih.nci.caarray.external.v1_0.data.FileType.class));
                 }
             }
@@ -539,24 +538,6 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
                 return criteria.isExcludeNulls();
             }
             return criteria.getMatchMode().matches(criteria.getExample().getName(), type.name());
-        }
-        
-        private boolean categoryMatches(FileType type,
-                ExampleSearchCriteria<gov.nih.nci.caarray.external.v1_0.data.FileType> criteria) {
-            if (criteria.getExample().getCategory() == null) {
-                // types never have null names
-                return criteria.isExcludeNulls();
-            }
-            switch (criteria.getExample().getCategory()) {
-            case RAW:
-                return type.isRawArrayData();
-            case DERIVED:
-                return type.isDerivedArrayData();
-            case SUPPLEMENTAL:
-                return false;
-            default:
-                throw new IllegalStateException("Invalid file type category: " + criteria.getExample().getCategory());
-            }
         }
     }
 

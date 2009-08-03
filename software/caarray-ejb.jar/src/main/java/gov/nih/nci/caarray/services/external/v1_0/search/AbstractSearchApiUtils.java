@@ -1,7 +1,7 @@
 package gov.nih.nci.caarray.services.external.v1_0.search;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialKeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
@@ -54,8 +54,8 @@ public abstract class AbstractSearchApiUtils implements SearchApiUtils {
     /**
      * {@inheritDoc}
      */
-    public Search<DataFile> filesByCriteria(FileSearchCriteria criteria) {
-        return new Search<DataFile>(getSearchFilesFunction(criteria));
+    public Search<File> filesByCriteria(FileSearchCriteria criteria) {
+        return new Search<File>(getSearchFilesFunction(criteria));
     }
 
     /**
@@ -100,7 +100,7 @@ public abstract class AbstractSearchApiUtils implements SearchApiUtils {
      * @return a Function that will execute the search using given criteria based on a LimitOffset
      * parameter specifying the subset of results to return.
      */
-    protected abstract Function<LimitOffset, SearchResult<DataFile>> getSearchFilesFunction(
+    protected abstract Function<LimitOffset, SearchResult<File>> getSearchFilesFunction(
             final FileSearchCriteria criteria);
 
     /**

@@ -50,7 +50,7 @@
                     <xs:element name="files">
                         <xs:complexType>
                             <xs:sequence>
-                                <xs:element ref="dat:DataFile" minOccurs="0" maxOccurs="unbounded" />
+                                <xs:element ref="dat:File" minOccurs="0" maxOccurs="unbounded" />
                             </xs:sequence>
                         </xs:complexType>
                     </xs:element>

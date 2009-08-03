@@ -87,12 +87,12 @@ import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -100,6 +100,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.MatchMode;
@@ -214,7 +215,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         Criteria c = HibernateUtil.getCurrentSession().createCriteria(getPersistentClass(entityToMatch.getClass()))
                 .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         c.add(createExample(entityToMatch, criteria.getMatchMode(), criteria.isExcludeNulls(), criteria
-                .getExcludeProperties()));
+                .isExcludeZeroes(), criteria.getExcludeProperties()));
         new SearchCriteriaHelper<T>(c, criteria).addCriteriaForAssociations();            
 
         return c;
@@ -267,25 +268,42 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         return params.isDesc() ? Order.desc(orderField) : Order.asc(orderField);
     }
     
-    static Example createExample(Object entity, MatchMode matchMode, boolean excludeNulls,
-            Collection<String> excludeProperties) {
+    static Criterion createExample(Object entity, MatchMode matchMode, boolean excludeNulls,
+            boolean excludeZeroes, Collection<String> excludeProperties) {
         Example example = Example.create(entity).enableLike(matchMode).ignoreCase();
-        if (!excludeNulls) {
+        if (excludeZeroes) {
+            example.excludeZeroes();
+        } else if (!excludeNulls) {
             example.excludeNone();
         }
         for (String property : excludeProperties) {
             example.excludeProperty(property);
         }
-        return example;
+        
+        // ID property is not handled by Example, so we have to special case it
+        PersistentClass pclass = getClassMapping(entity.getClass());
+        Object idVal = null;
+        if (pclass != null && pclass.hasIdentifierProperty()) {
+            try {
+                idVal = PropertyUtils.getProperty(entity, pclass.getIdentifierProperty().getName());
+            } catch (Exception e) {
+                LOG.warn("Could not retrieve identifier value in a by example query, ignoring it", e); 
+            }
+        }
+        if (idVal == null) {
+            return example;
+        } else {
+            return Restrictions.and(Restrictions.idEq(idVal), example);
+        }
     }
 
-    private PersistentClass getClassMapping(Class<? extends PersistentObject> exampleClass) {
+    private static PersistentClass getClassMapping(Class<?> exampleClass) {
         Class<?> persistentClass = getPersistentClass(exampleClass);
         return persistentClass == null ? null : HibernateUtil.getConfiguration().getClassMapping(
                 persistentClass.getName());
     }
 
-    private Class<?> getPersistentClass(Class<? extends PersistentObject> exampleClass) {
+    private static Class<?> getPersistentClass(Class<?> exampleClass) {
         Configuration hcfg = HibernateUtil.getConfiguration();
         for (Class<?> klass = exampleClass; !Object.class.equals(klass); klass = klass
                 .getSuperclass()) {
@@ -295,7 +313,6 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         }
         return null;
     }
-
     
     /**
      * Provides helper methods for search DAOs.
@@ -357,58 +374,35 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
          */
         private void addCriterionForAssociation(Property prop) throws IllegalAccessException, 
             InvocationTargetException {
-            Class<?> objClass = exampleCriteria.getExample().getClass();
-            String fieldName = prop.getName();
-            Method getterMethod = null;
-            String getterName = "get" + StringUtils.capitalize(fieldName);
-            while (objClass != null) {
-                try {
-                    LOG.debug("Checking class: " + objClass.getName() + " for method: " + getterName);
-                    getterMethod = objClass.getDeclaredMethod(getterName, (Class[]) null);
-                    break;
-                } catch (NoSuchMethodException nsme) {
-                    LOG.debug("Will check if it is a method in a superclass.");
-                }
-                objClass = objClass.getSuperclass();
-            }
-            if (getterMethod == null) {
-                LOG.error("No such method: " + getterName);
-            } else {
-                Object valueOfAssociation = getterMethod.invoke(exampleCriteria.getExample(), (Object[]) null);
-                addCriterion(fieldName, valueOfAssociation);
-            }
-        }
+            Object valueOfAssociation = null;
 
-        /**
-         * Add one search criterion based on the field name and the value to be matched.
-         * 
-         * @param hibCriteria the root Criteria to add to.
-         * @param fieldName the name of the field denoting the association.
-         * @param valueOfAssociation the value of the association that is to be matched.
-         */
-        private void addCriterion(String fieldName, Object valueOfAssociation) {
+            try {
+                valueOfAssociation = PropertyUtils.getProperty(exampleCriteria.getExample(), prop.getName());
+            } catch (NoSuchMethodException e) {
+                LOG.error("No getter method for property " + prop.getName(), e);
+            }
+            
             if (valueOfAssociation == null) {
                 return;
             }
-            if (valueOfAssociation instanceof Collection) {
+            if (valueOfAssociation instanceof Collection<?>) {
                 Collection<?> collValue = (Collection<?>) valueOfAssociation;
                 if (!collValue.isEmpty()) {
                     Disjunction or = Restrictions.disjunction();
                     for (Object value : collValue) {
                         or.add(createExample(value));
                     }
-                    hibCriteria.createCriteria(fieldName).add(or);
+                    hibCriteria.createCriteria(prop.getName()).add(or);
                 }
             } else {
-                Disjunction or = Restrictions.disjunction();
-                or.add(createExample(valueOfAssociation));
-                hibCriteria.createCriteria(fieldName).add(or);
+                hibCriteria.createCriteria(prop.getName()).add(createExample(valueOfAssociation));
             }                
+
         }
-        
-        private Example createExample(Object value) {
+
+        private Criterion createExample(Object value) {
             return AbstractCaArrayDaoImpl.createExample(value, exampleCriteria.getMatchMode(), exampleCriteria
-                    .isExcludeNulls(), exampleCriteria.getExcludeProperties());                            
+                    .isExcludeNulls(), exampleCriteria.isExcludeZeroes(), exampleCriteria.getExcludeProperties());
         }
     }
 }

@@ -101,6 +101,7 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -108,15 +109,14 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UnfilteredCallback;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -127,6 +127,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
@@ -217,7 +218,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         }
         queryStr.append("order by ad.name asc");
         return queryStr;
-    }
+     }
 
     /**
      * {@inheritDoc}
@@ -516,7 +517,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
     public List<QuantitationType> searchForQuantitationTypes(PageSortParams<QuantitationType> params,
             QuantitationTypeSearchCriteria criteria) {
         Criteria c = HibernateUtil.getCurrentSession().createCriteria(HybridizationData.class);
@@ -531,23 +532,28 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
             }
             c.createCriteria("ad.type").add(Restrictions.in("id", ids));
         }
-        
 
-        Set<FileType> fileTypes = new HashSet<FileType>();
-        if (criteria.isIncludeRaw()) {
-            fileTypes.addAll(FileType.RAW_ARRAY_DATA_FILE_TYPES);
+        if (!criteria.getFileTypes().isEmpty() || !criteria.getFileCategories().isEmpty()) {
+            c.createAlias("ad.dataFile", "df");
         }
-        if (criteria.isIncludeDerived()) {
-            fileTypes.addAll(FileType.DERIVED_ARRAY_DATA_FILE_TYPES);            
+        
+        if (!criteria.getFileTypes().isEmpty()) {
+            c.add(Restrictions.in("df.type", CaArrayUtils.namesForEnums(criteria.getFileTypes())));
         }
-        fileTypes.addAll(criteria.getFileTypes());
-        if (!fileTypes.isEmpty()) {
-            List<String> typeNames = new ArrayList<String>();
-            for (FileType type : fileTypes) {
-                typeNames.add(type.name());
+        
+        if (!criteria.getFileCategories().isEmpty()) {
+            Disjunction categoryCriterion = Restrictions.disjunction();
+            if (criteria.getFileCategories().contains(FileCategory.DERIVED_DATA)) {
+                categoryCriterion.add(Restrictions.in("df.type", CaArrayUtils
+                        .namesForEnums(FileType.DERIVED_ARRAY_DATA_FILE_TYPES)));
             }
-            c.createCriteria("ad.dataFile").add(Restrictions.in("type", typeNames));
+            if (criteria.getFileCategories().contains(FileCategory.RAW_DATA)) {
+                categoryCriterion.add(Restrictions.in("df.type", CaArrayUtils
+                        .namesForEnums(FileType.RAW_ARRAY_DATA_FILE_TYPES)));
+            }
+            c.add(categoryCriterion);            
         }
+        
         
         c.setFirstResult(params.getIndex());
         if (params.getPageSize() > 0) {

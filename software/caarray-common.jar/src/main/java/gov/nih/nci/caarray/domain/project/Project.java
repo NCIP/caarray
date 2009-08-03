@@ -180,7 +180,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @NotNull
     @Column(name = "locked")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
-    public boolean islocked() {
+    public boolean isLocked() {
         return this.locked;
     }
 
@@ -542,7 +542,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      * If the public id has been locked, then this method is a no-op.
      */
     public void recalculatePublicId() {
-        if (islocked()) {
+        if (isLocked()) {
             return;
         }
         if (getExperiment().getId() == null) {
@@ -551,7 +551,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         String lastName = "anonymous";
         final ExperimentContact primaryInvestigator = getExperiment().getPrimaryInvestigator();
         if (primaryInvestigator != null) {
-            Person pi = (Person) primaryInvestigator.getContact();
+            Person pi = primaryInvestigator.getContact();
             lastName = StringUtils.lowerCase(pi.getLastName());
         }        
         String piComponent = StringUtils.substring(

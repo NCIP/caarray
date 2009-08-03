@@ -159,15 +159,15 @@ public class ProjectExperimentContactsAction extends
     @Override
     @SuppressWarnings("PMD")
     @Validations(requiredStrings = {
-                   @RequiredStringValidator(fieldName = "currentExperimentContact.person.firstName",
+                   @RequiredStringValidator(fieldName = "currentExperimentContact.contact.firstName",
                     key = REQUIRED_STRING_KEY, message = ""),
-                   @RequiredStringValidator(fieldName = "currentExperimentContact.person.lastName",
+                   @RequiredStringValidator(fieldName = "currentExperimentContact.contact.lastName",
                     key = REQUIRED_STRING_KEY, message = ""),
-                   @RequiredStringValidator(fieldName = "currentExperimentContact.person.email",
+                   @RequiredStringValidator(fieldName = "currentExperimentContact.contact.email",
                     key = REQUIRED_STRING_KEY, message = "") },
                 fieldExpressions = { @FieldExpressionValidator(fieldName = "currentExperimentContact.roles",
                     message = "", key = REQUIRED_STRING_KEY, expression = "!currentExperimentContact.roles.isEmpty") },
-                    emails = @EmailValidator(fieldName = "currentExperimentContact.person.email",
+                    emails = @EmailValidator(fieldName = "currentExperimentContact.contact.email",
                     key = "struts.validator.email", message = ""))
     public String save() {
         if (!getCurrentExperimentContact().isPrimaryInvestigator()

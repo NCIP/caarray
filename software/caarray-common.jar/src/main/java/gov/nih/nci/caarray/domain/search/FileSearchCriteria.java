@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.domain.search;
 
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -98,9 +99,7 @@ public class FileSearchCriteria {
     private Experiment experiment;
     private String extension;
     private Set<FileType> types = new HashSet<FileType>();
-    private boolean includeRaw;
-    private boolean includeDerived;
-    private boolean includeSupplemental;
+    private Set<FileCategory> categories = new HashSet<FileCategory>();
     private Set<AbstractExperimentDesignNode> experimentNodes = new HashSet<AbstractExperimentDesignNode>();
     
     /**
@@ -160,44 +159,16 @@ public class FileSearchCriteria {
     }
 
     /**
-     * @return the includeSupplemental
+     * @return the categories
      */
-    public boolean isIncludeSupplemental() {
-        return includeSupplemental;
+    public Set<FileCategory> getCategories() {
+        return categories;
     }
 
     /**
-     * @param includeSupplemental the includeSupplemental to set
+     * @param categories the categories to set
      */
-    public void setIncludeSupplemental(boolean includeSupplemental) {
-        this.includeSupplemental = includeSupplemental;
-    }
-
-    /**
-     * @return the includeRaw
-     */
-    public boolean isIncludeRaw() {
-        return includeRaw;
-    }
-
-    /**
-     * @param includeRaw the includeRaw to set
-     */
-    public void setIncludeRaw(boolean includeRaw) {
-        this.includeRaw = includeRaw;
-    }
-
-    /**
-     * @return the includeDerived
-     */
-    public boolean isIncludeDerived() {
-        return includeDerived;
-    }
-
-    /**
-     * @param includeDerived the includeDerived to set
-     */
-    public void setIncludeDerived(boolean includeDerived) {
-        this.includeDerived = includeDerived;
+    public void setCategories(Set<FileCategory> categories) {
+        this.categories = categories;
     }
 }

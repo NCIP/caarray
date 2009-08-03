@@ -202,4 +202,12 @@ public final class QuantitationType extends AbstractCaArrayObject {
     public DataType getDataType() {
         return DataType.fromTypeClass(getTypeClass());
     }
+    
+    /**
+     * Set the data type of this quantitation type as a DataType constant.
+     * @param dataType the type to set
+     */    
+    public void setDataType(DataType dataType) {
+        setTypeClass(dataType.getTypeClass());
+    }
 }

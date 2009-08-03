@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.domain.search;
 
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
@@ -98,8 +99,7 @@ public class QuantitationTypeSearchCriteria {
     private Hybridization hybridization;
     private Set<FileType> fileTypes = new HashSet<FileType>();
     private Set<ArrayDataType> arrayDataTypes = new HashSet<ArrayDataType>();
-    private boolean includeRaw;
-    private boolean includeDerived;
+    private Set<FileCategory> fileCategories = new HashSet<FileCategory>();
 
     /**
      * @return the hybridization
@@ -142,32 +142,18 @@ public class QuantitationTypeSearchCriteria {
     public void setArrayDataTypes(Set<ArrayDataType> arrayDataTypes) {
         this.arrayDataTypes = arrayDataTypes;
     }
-
+    
     /**
-     * @return the includeRaw
+     * @return the fileCategories
      */
-    public boolean isIncludeRaw() {
-        return includeRaw;
+    public Set<FileCategory> getFileCategories() {
+        return fileCategories;
     }
 
     /**
-     * @param includeRaw the includeRaw to set
+     * @param fileCategories the fileCategories to set
      */
-    public void setIncludeRaw(boolean includeRaw) {
-        this.includeRaw = includeRaw;
-    }
-
-    /**
-     * @return the includeDerived
-     */
-    public boolean isIncludeDerived() {
-        return includeDerived;
-    }
-
-    /**
-     * @param includeDerived the includeDerived to set
-     */
-    public void setIncludeDerived(boolean includeDerived) {
-        this.includeDerived = includeDerived;
+    public void setFileCategories(Set<FileCategory> fileCategories) {
+        this.fileCategories = fileCategories;
     }
 }

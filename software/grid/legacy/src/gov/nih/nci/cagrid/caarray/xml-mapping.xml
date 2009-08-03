@@ -502,8 +502,8 @@
     <field name="roles" type="gov.nih.nci.caarray.domain.vocabulary.Term" collection="collection">
       <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="roles" node="element" />
     </field>
-    <field name="contact" type="gov.nih.nci.caarray.domain.contact.AbstractContact">
-      <bind-xml name="AbstractContact" type="gov.nih.nci.caarray.domain.contact.AbstractContact" location="contact" node="element" />
+    <field name="contact" type="gov.nih.nci.caarray.domain.contact.Person">
+      <bind-xml name="Person" type="gov.nih.nci.caarray.domain.contact.Person" location="contact" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.protocol.Parameter" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">

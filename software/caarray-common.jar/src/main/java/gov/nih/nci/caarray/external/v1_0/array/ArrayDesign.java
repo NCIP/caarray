@@ -86,7 +86,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
@@ -105,7 +105,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private Term technologyType;
     private Organism organism;
     private Set<AssayType> assayTypes = new HashSet<AssayType>();
-    private Set<DataFile> files = new HashSet<DataFile>();
+    private Set<File> files = new HashSet<File>();
 
     /**
      * @return the name of this array design.
@@ -195,14 +195,14 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      * @return the set of files which contain actual information about the layout of this array. The format of these
      * files is specific to each array provider.
      */
-    public Set<DataFile> getFiles() {
+    public Set<File> getFiles() {
         return files;
     }
 
     /**
      * @param files the files to set
      */
-    public void setFiles(Set<DataFile> files) {
+    public void setFiles(Set<File> files) {
         this.files = files;
     }
 

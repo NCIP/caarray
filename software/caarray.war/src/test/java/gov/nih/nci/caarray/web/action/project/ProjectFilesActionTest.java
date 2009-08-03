@@ -195,6 +195,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         Project project = new Project();
         project.getExperiment().setPublicIdentifier("publicId");
         CaArrayFile file = new CaArrayFile();
+        file.setFileStatus(FileStatus.UPLOADED);
         file.setName("testfile1.cel");
         file.setProject(project);
         project.getFiles().add(file);

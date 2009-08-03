@@ -374,6 +374,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         HibernateUtil.setFiltersEnabled(false);
         Transaction tx = null;
         CaArrayFile file = new CaArrayFile();
+        file.setFileStatus(FileStatus.UPLOADED);
         RawArrayData rawData = new RawArrayData();
         rawData.setDataFile(file);
         rawData.setName("test" + System.currentTimeMillis());
@@ -387,6 +388,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
             retrievedArrayData = DAO_OBJECT.getRawArrayData(file);
             assertEquals(rawData, retrievedArrayData);
             file = new CaArrayFile();
+            file.setFileStatus(FileStatus.UPLOADED);
             DAO_OBJECT.save(file);
             retrievedArrayData = DAO_OBJECT.getRawArrayData(file);
             assertNull(retrievedArrayData);
@@ -404,6 +406,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         HibernateUtil.setFiltersEnabled(false);
         Transaction tx = null;
         CaArrayFile file = new CaArrayFile();
+        file.setFileStatus(FileStatus.UPLOADED);
         DerivedArrayData derivedArrayData = new DerivedArrayData();
         derivedArrayData.setDataFile(file);
         derivedArrayData.setName("test" + System.currentTimeMillis());
@@ -415,6 +418,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
             DerivedArrayData retrievedArrayData = DAO_OBJECT.getDerivedArrayData(file);
             assertEquals(derivedArrayData, retrievedArrayData);
             file = new CaArrayFile();
+            file.setFileStatus(FileStatus.UPLOADED);
             DAO_OBJECT.save(file);
             retrievedArrayData = DAO_OBJECT.getDerivedArrayData(file);
             assertNull(retrievedArrayData);

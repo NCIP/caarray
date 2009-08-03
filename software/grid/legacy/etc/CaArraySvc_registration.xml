@@ -14,7 +14,7 @@
     <agg:AggregatorConfig xsi:type="agg:AggregatorConfig">
       <agg:GetMultipleResourcePropertiesPollType
 			xmlns:ns16="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery"
-			xmlns:ns8="gme://caArray.caBIG/2.1/edu.georgetown.pir"
+			xmlns:ns7="gme://caArray.caBIG/2.1/edu.georgetown.pir"
 			xmlns:ns22="http://transfer.cagrid.org/Transfer"
 			xmlns:ns15="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata"
 			xmlns:ns20="http://gov.nih.nci.cagrid.data/DataServiceExceptions"
@@ -26,7 +26,7 @@
 			xmlns:ns14="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security"
 			xmlns:ns5="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.array"
 			xmlns:ns4="gme://caArray.caBIG/2.1/gov.nih.nci.cabio.domain"
-			xmlns:ns10="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"
+			xmlns:ns9="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"
 			xmlns:ns3="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.protocol"
 			xmlns:ns12="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.contact"
 			xmlns:ns21="http://transfer.cagrid.org/TransferService/Context/types"
@@ -35,8 +35,8 @@
 			xmlns:ns11="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample"
 			xmlns:ns18="http://caarray.cagrid.nci.nih.gov/CaArraySvc/CQLResultTypes"
 			xmlns:ns6="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.publication"
-			xmlns:ns7="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.vocabulary"
-			xmlns:ns9="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain">
+			xmlns:ns8="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.vocabulary"
+			xmlns:ns10="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain">
         <!-- Specifies that the index should refresh information
             every 300000 milliseconds (once every 5 minutes) -->
         <agg:PollIntervalMillis>INDEX_REFRESH</agg:PollIntervalMillis>
