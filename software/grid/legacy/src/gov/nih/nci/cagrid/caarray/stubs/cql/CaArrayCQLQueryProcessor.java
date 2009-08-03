@@ -28,10 +28,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
     protected static Log LOG = LogFactory.getLog(CaArrayCQLQueryProcessor.class.getName());
-    private static final CaArraySearchService searchService;
+    private static CaArraySearchService searchService;
 
-    static {
-        CaArraySearchService svc = null;
+    private static synchronized CaArraySearchService getSearchService() {
         try {
             final Properties jndiProp = new Properties();
             jndiProp.load(CaArraySvcImpl.class.getResourceAsStream("/gov/nih/nci/cagrid/caarray/jndi.properties"));
@@ -43,11 +42,11 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
             }
 
             final Context context = new InitialContext(jndiProp);
-            svc = (CaArraySearchService) context.lookup(CaArraySearchService.JNDI_NAME);
+            searchService = (CaArraySearchService) context.lookup(CaArraySearchService.JNDI_NAME);
         } catch (final Exception e) {
-            LOG.error("Unable to init: " + e, e);
+            throw new RuntimeException(e);
         }
-        searchService = svc;
+        return searchService;
     }
 
     @Override
@@ -112,7 +111,7 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
      */
     protected List<?> queryCaArrayService(final CQLQuery cqlQuery) {
         LOG.debug("querying ....");
-        return searchService.search(cqlQuery);
+        return getSearchService().search(cqlQuery);
     }
 
     /**
