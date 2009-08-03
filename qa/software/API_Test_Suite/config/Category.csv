@@ -7,3 +7,5 @@ Test Case,API,Name,Term Source,Expected Results,Min Results
 228,grid,invalid#%!,,0,
 229,java,,MO,,200
 230,grid,,MO,,200
+320,java,DiseaseState,MO,1,
+321,grid,DiseaseState,MO,1,
