@@ -39,9 +39,12 @@ public class QuantitationTypeCriteriaTestSuite extends
     private static final String HYB = "Hybridization";
     private static final String HYB_REF = "Hybridization Reference";
     private static final String FILE_TYPE_REF = "File Type Reference"; 
+    private static final String FILE_TYPE_CATEGORY = "File Type Category";
+    private static final String ARRAY_DT_REF = " ArrayDataType Reference";
+    
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-            API, EXPECTED_RESULTS, FILE_TYPE_REF, HYB, HYB_REF };
+            API, EXPECTED_RESULTS, FILE_TYPE_REF, HYB, HYB_REF, FILE_TYPE_CATEGORY, ARRAY_DT_REF };
 
     /**
      * @param apiFacade
@@ -200,6 +203,15 @@ public class QuantitationTypeCriteriaTestSuite extends
             criteria.setHybridization(new CaArrayEntityReference(ref));
         }
         
+        if (headerIndexMap.get(FILE_TYPE_CATEGORY) < input.length && !input[headerIndexMap.get(FILE_TYPE_CATEGORY)].equals(""))
+        {
+            String file_type_category = input[headerIndexMap.get(FILE_TYPE_CATEGORY)];
+            if (file_type_category.startsWith(VAR_START))
+            	file_type_category = getVariableValue(file_type_category);
+            criteria.getFileTypeCategories().add(Enum.valueOf(FileTypeCategory.class, file_type_category));
+        }
+        if (headerIndexMap.get(ARRAY_DT_REF) < input.length && !input[headerIndexMap.get(ARRAY_DT_REF)].equals(""))
+//            criteria.s .setName(input[headerIndexMap.get(NAME)].trim());
         search.setSearchCriteria(criteria);    
     }
 
