@@ -56,7 +56,7 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
         int namedResults = 0;
         for (FileType fileType : fileResults)
         {
-            if (fileType.getName() != null)
+            if (fileType.getName() != null && fileType.getId() != null)
                 namedResults++;
         }
         if (fileTypeSearch.getExpectedResults() != null)

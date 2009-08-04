@@ -10,9 +10,11 @@ import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
+import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
@@ -162,9 +164,29 @@ public class CriteriaPerformanceTestSuite extends SearchByCriteriaTestSuite
                     + e.getClass()
                     + (e.getMessage() != null ? e.getMessage() : ""));
         }
+        if (isResultsEmpty(result))
+        {
+            setTestResultFailure(testResult, performanceSearch, "No results were returned for the search");
+        }
         return result;
     }
     
+    private boolean isResultsEmpty(Object result)
+    {
+        if (result == null)
+            return true;
+        
+        if (result instanceof SearchResult)
+        {
+            return ((SearchResult)result).getResults().isEmpty();
+        }
+        if (result instanceof List)
+        {
+            return ((List)result).isEmpty();
+        }
+        
+        return false;
+    }
 
     /* (non-Javadoc)
      * @see caarray.client.test.suite.SearchByCriteriaTestSuite#getCriteriaSearch()

@@ -11,6 +11,7 @@ import gov.nih.nci.caarray.external.v1_0.value.TermValue;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 
 import caarray.client.test.ApiFacade;
@@ -37,7 +38,7 @@ public class BiomaterialTestSuite extends SearchByExampleTestSuite
     private static final String EXPECTED_EXTERNAL_ID = "Expected External ID";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-            API, NAME, TYPE, TERM, MATCH_MODE, EXPECTED_RESULTS, MIN_RESULTS, EXPECTED_EXTERNAL_ID, EXPECTED_TYPE};
+            API, NAME, TYPE, TERM, MATCH_MODE, PAGES, EXPECTED_RESULTS, MIN_RESULTS, EXPECTED_EXTERNAL_ID, EXPECTED_TYPE};
     
     
     /**
@@ -152,6 +153,26 @@ public class BiomaterialTestSuite extends SearchByExampleTestSuite
                 }
             }
         }
+        if (bioSearch.getPages() != null)
+        {
+            boolean passed = true;
+            for (Iterator<Integer> iter = bioSearch.getPagesReturned().iterator(); iter.hasNext();)
+            {
+                int size = iter.next();
+                if (iter.hasNext() && size != bioSearch.getPages())
+                {
+                    String errorMessage = "Failed with unexpected page size: "
+                        + size;
+                    setTestResultFailure(testResult, bioSearch, errorMessage);  
+                    passed = false;
+                }
+            }
+            if (passed)
+            {
+                String detail = "Found expected page size: " + bioSearch.getPages();
+                testResult.addDetail(detail);
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -230,6 +251,10 @@ public class BiomaterialTestSuite extends SearchByExampleTestSuite
                 && !input[headerIndexMap.get(EXPECTED_RESULTS)].equals(""))
             search.setExpectedResults(Integer
                     .parseInt(input[headerIndexMap.get(EXPECTED_RESULTS)].trim()));
+        if (headerIndexMap.get(PAGES) < input.length
+                && !input[headerIndexMap.get(PAGES)].equals(""))
+            search.setPages(Integer.parseInt(input[headerIndexMap.get(PAGES)]
+                    .trim()));
         if (headerIndexMap.get(MIN_RESULTS) < input.length
                 && !input[headerIndexMap.get(MIN_RESULTS)].equals(""))
             search.setMinResults(Integer
