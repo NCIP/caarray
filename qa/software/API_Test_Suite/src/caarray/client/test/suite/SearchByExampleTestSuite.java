@@ -141,9 +141,9 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                 {
                     search.setTestCase(Float.parseFloat(input[headerIndexMap.get(TEST_CASE)]
                                                               .trim()));
-                    if (!excludeTests.isEmpty() && (excludeTests.contains(search.getTestCase()) || excludeTests.contains(Math.floor(search.getTestCase()))))
+                    if (!excludeTests.isEmpty() && (excludeTests.contains(search.getTestCase()) || excludeTests.contains((float)Math.floor(search.getTestCase()))))
                         skip = true;
-                    if (!includeTests.isEmpty() && (!includeTests.contains(search.getTestCase())&& !includeTests.contains(Math.floor(search.getTestCase()))))
+                    if (!includeTests.isEmpty() && (!includeTests.contains(search.getTestCase())&& !includeTests.contains((float)Math.floor(search.getTestCase()))))
                         skip = true;
                 }
                 if (!skip)
@@ -158,9 +158,9 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                 if (search == null)
                     throw new TestConfigurationException(
                             "No test case indicated for row: " + index);
-                if (!excludeTests.isEmpty() && (excludeTests.contains(search.getTestCase()) || excludeTests.contains(Math.floor(search.getTestCase()))))
+                if (!excludeTests.isEmpty() && (excludeTests.contains(search.getTestCase()) || excludeTests.contains((float)Math.floor(search.getTestCase()))))
                     skip = true;
-                if (!includeTests.isEmpty() && (!includeTests.contains(search.getTestCase())&& !includeTests.contains(Math.floor(search.getTestCase()))))
+                if (!includeTests.isEmpty() && (!includeTests.contains(search.getTestCase())&& !includeTests.contains((float)Math.floor(search.getTestCase()))))
                     skip = true;
                 if (!skip)
                 {
@@ -306,7 +306,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
             List<ExampleSearch> filteredSearches = new ArrayList<ExampleSearch>();
             for (ExampleSearch search : configuredSearches)
             {
-                if (includeTests.contains(search.getTestCase()) || includeTests.contains(Math.floor(search.getTestCase())))
+                if (includeTests.contains(search.getTestCase()) || includeTests.contains((float)Math.floor(search.getTestCase())))
                     filteredSearches.add(search);
             }
             configuredSearches = filteredSearches; 
