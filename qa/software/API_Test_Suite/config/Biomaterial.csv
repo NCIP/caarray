@@ -1,8 +1,8 @@
 Test Case,API,Name,Type,Term,Pages,Match Mode,Expected Results,Min Results,Expected External ID,Expected Type
 51,java,,,,,,,20000,,
-51.2,java,,,,10,,,20000,,
+51.2,java,,,Glioblastoma,10,,,100,,
 52,grid,,,,,,,20000,,
-52.2,gridd,,,,10,,,20000,,
+52.2,grid,,,Glioblastoma,10,,,100,,
 53,java,QaApiTestSample01,,,,,1,,QA_API_TEST_EXTERNAL_ID_01,SAMPLE
 54,grid,QaApiTestSample01,,,,,1,,QA_API_TEST_EXTERNAL_ID_01,SAMPLE
 318,java,TCGA,SAMPLE,,,START,,2000,,

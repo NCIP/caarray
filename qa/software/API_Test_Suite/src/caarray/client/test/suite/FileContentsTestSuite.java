@@ -100,6 +100,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
             if (fileSet.getDataFiles() != null)
                 numFiles = fileSet.getDataFiles().size();
             
+            size = idfBytes + sdrfBytes;
         }
         
         if (fileSearch.getExpectedBytes() != null)
@@ -174,7 +175,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
         if (fileSearch.getIdfBytes() != null)
         {
             
-            if (idfBytes > fileSearch.getIdfBytes())
+            if (idfBytes != fileSearch.getIdfBytes())
             {
                 String errorMessage = "Failed with unexpected number of IDF bytes, expected: "
                         + fileSearch.getIdfBytes()
@@ -191,7 +192,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
         if (fileSearch.getSdrfBytes() != null)
         {
             
-            if (sdrfBytes > fileSearch.getSdrfBytes())
+            if (sdrfBytes != fileSearch.getSdrfBytes())
             {
                 String errorMessage = "Failed with unexpected number of SDRF bytes, expected: "
                         + fileSearch.getSdrfBytes()
@@ -235,13 +236,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
         FileContentsSearch fileSearch = (FileContentsSearch)search;
         try
         {
-            if (fileSearch.isApiUtilsSearch())
-            {
-                if (fileSearch.isZip())
-                    return apiFacade.copyFileContentsZipUtils(search.getApi(), fileSearch.getFileReferences(), fileSearch.isCompressed());
-                
-                return apiFacade.copyFileContentsUtils(search.getApi(), fileSearch.getFileReferences(), fileSearch.isCompressed());
-            }
+            
             
             if (fileSearch.isMage())
             {
@@ -255,6 +250,13 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
                     
                 
                 return apiFacade.getMageTabExport(search.getApi(), fileSearch.getExperimentRef());
+            }
+            if (fileSearch.isApiUtilsSearch())
+            {
+                if (fileSearch.isZip())
+                    return apiFacade.copyFileContentsZipUtils(search.getApi(), fileSearch.getFileReferences(), fileSearch.isCompressed());
+                
+                return apiFacade.copyFileContentsUtils(search.getApi(), fileSearch.getFileReferences(), fileSearch.isCompressed());
             }
             if (fileSearch.isZip())
                 return apiFacade.getFileContentsZip(search.getApi(), fileSearch.getFileReferences(), fileSearch.isCompressed());

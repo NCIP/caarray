@@ -228,7 +228,7 @@ public class BiomaterialTestSuite extends SearchByExampleTestSuite
         }
         if (headerIndexMap.get(TERM) < input.length && !input[headerIndexMap.get(TERM)].equals(""))
         {
-            String term = input[headerIndexMap.get(TYPE)].trim();
+            String term = input[headerIndexMap.get(TERM)].trim();
             if (term.startsWith(VAR_START))
                 term = getVariableValue(term);
             TermValue value = new TermValue();
