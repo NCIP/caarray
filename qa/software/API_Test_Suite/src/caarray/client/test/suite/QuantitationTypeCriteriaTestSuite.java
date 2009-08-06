@@ -4,9 +4,11 @@
 package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
+import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
@@ -16,7 +18,9 @@ import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
@@ -40,7 +44,8 @@ public class QuantitationTypeCriteriaTestSuite extends
     private static final String HYB_REF = "Hybridization Reference";
     private static final String FILE_TYPE_REF = "File Type Reference"; 
     private static final String FILE_TYPE_CATEGORY = "File Type Category";
-    private static final String ARRAY_DT_REF = " ArrayDataType Reference";
+    private static final String ARRAY_DT_REF = "ArrayDataType Reference";
+    
     
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
@@ -210,8 +215,24 @@ public class QuantitationTypeCriteriaTestSuite extends
             	file_type_category = getVariableValue(file_type_category);
             criteria.getFileTypeCategories().add(Enum.valueOf(FileTypeCategory.class, file_type_category));
         }
-        if (headerIndexMap.get(ARRAY_DT_REF) < input.length && !input[headerIndexMap.get(ARRAY_DT_REF)].equals(""))
-//            criteria.s .setName(input[headerIndexMap.get(NAME)].trim());
+        if (headerIndexMap.get(ARRAY_DT_REF) < input.length && !input[headerIndexMap.get(ARRAY_DT_REF)].equals("")) {
+            String name = input[headerIndexMap.get(ARRAY_DT_REF)];
+            if (name.startsWith(VAR_START))
+                name = getVariableValue(name);
+            ArrayDataType adt = apiFacade.getArrayDataType(search.getApi(), name);
+            CaArrayEntityReference ref = new CaArrayEntityReference();
+            if (adt != null)
+            {
+                ref = adt.getReference();
+            }
+            else
+            {
+                ref.setId(name);
+            }
+            Set<CaArrayEntityReference> refs = new HashSet<CaArrayEntityReference> ();
+            refs.add(ref);
+            criteria.setArrayDataTypes(refs);        	
+        }
         search.setSearchCriteria(criteria);    
     }
 
