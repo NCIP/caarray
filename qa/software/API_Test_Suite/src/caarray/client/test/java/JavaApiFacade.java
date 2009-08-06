@@ -7,6 +7,7 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
+import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
@@ -323,6 +324,7 @@ public class JavaApiFacade implements ApiFacade
             QuantitationTypeSearchCriteria criteria, LimitOffset offset)
             throws Exception
     {
+    	System.out.println(javaSearchService.searchForQuantitationTypes(criteria));
         return javaSearchService.searchForQuantitationTypes(criteria);
     }
 
@@ -344,6 +346,20 @@ public class JavaApiFacade implements ApiFacade
         if (!hybs.getResults().isEmpty())
             return hybs.getResults().get(0);
         return null;
+    }
+
+    public ArrayDataType getArrayDataType(String api, String name)
+    throws Exception
+    {
+    	ExampleSearchCriteria<ArrayDataType> crit = new ExampleSearchCriteria<ArrayDataType>();
+    	ArrayDataType adt = new ArrayDataType();
+    	adt.setName(name);
+    	crit.setExample(adt);
+    	SearchResult<ArrayDataType> adts = (SearchResult<ArrayDataType>)searchByExample(api,
+    			crit, null);
+    	if (!adts.getResults().isEmpty())
+    		return adts.getResults().get(0);
+    	return null;
     }
 
     public Biomaterial getBiomaterial(String api, String name) throws Exception

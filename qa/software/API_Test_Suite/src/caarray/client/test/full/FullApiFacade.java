@@ -7,6 +7,7 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
+import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
@@ -268,6 +269,12 @@ public class FullApiFacade implements ApiFacade
             throws Exception
     {
         return getFacade(api).getHybridization(api, name);
+    }
+
+    public ArrayDataType getArrayDataType(String api, String name)
+    throws Exception
+    {
+    	return getFacade(api).getArrayDataType(api, name);
     }
 
     public Biomaterial getBiomaterial(String api, String name) throws Exception
