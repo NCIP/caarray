@@ -6,8 +6,10 @@ package caarray.client.test.suite;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
+import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
+import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
 
 import java.io.File;
 import java.util.Iterator;
@@ -33,9 +35,10 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
     private static final String ORG_SCI_NAME = "Organism Scientific Name";
     private static final String ARRAY_PROVIDER = "Array Provider";
     private static final String ASSAY_TYPE = "Assay Type";
+    private static final String MATCH_MODE = "Match Mode";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE, ENUMERATE,
-            API, TITLE, ORG_SCI_NAME, ARRAY_PROVIDER, ASSAY_TYPE,EXPECTED_RESULTS, MIN_RESULTS, PAGES, API_UTILS_SEARCH };
+            API, TITLE, ORG_SCI_NAME, ARRAY_PROVIDER, ASSAY_TYPE,EXPECTED_RESULTS, MIN_RESULTS, PAGES, API_UTILS_SEARCH, MATCH_MODE };
 
 
     /**
@@ -218,8 +221,14 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
             
         }
         
+        if (headerIndexMap.get(MATCH_MODE) < input.length && !input[headerIndexMap.get(MATCH_MODE)].equals(""))
+        {
+            String mm = input[headerIndexMap.get(MATCH_MODE)];
+            search.setMatchMode(Enum.valueOf(MatchMode.class, mm));
+        }
+
         search.setExperiment(example);
-        
+
         if (headerIndexMap.get(EXPECTED_RESULTS) < input.length
                 && !input[headerIndexMap.get(EXPECTED_RESULTS)].equals(""))
             search.setExpectedResults(Integer
