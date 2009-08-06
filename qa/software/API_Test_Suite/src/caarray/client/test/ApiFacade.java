@@ -7,6 +7,7 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
+import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
@@ -117,6 +118,8 @@ public interface ApiFacade
     
     public Hybridization getHybridization(String api, String name) throws Exception;
     
+    public ArrayDataType getArrayDataType(String api, String name) throws Exception;
+
     public Biomaterial getBiomaterial(String api, String name) throws Exception;
     
     public QuantitationType getQuantitationType(String api, String name) throws Exception;
