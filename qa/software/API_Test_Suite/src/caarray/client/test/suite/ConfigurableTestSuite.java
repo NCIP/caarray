@@ -114,6 +114,7 @@ public abstract class ConfigurableTestSuite
 
     protected static final String DELIMITER = ",";
     protected static final String TEST_CASE = "Test Case";
+    protected static final String ID = "Id";
     protected static final String API = "API";
     protected static final String EXPECTED_RESULTS = "Expected Results";
     protected static final String MIN_RESULTS = "Min Results";
@@ -122,6 +123,7 @@ public abstract class ConfigurableTestSuite
     protected static final String EMPTY_STRING_SPACE_VAR = "${empty_s}";
     protected static final String NULL_VAR = "${null}";
     protected static final String ENUMERATE = "Enumerate";
+    protected static final String EXCLUDE_ZERO = "Exclude Zero";
     protected static final String LOGIN= "Login";
     protected static final String API_UTILS_SEARCH = "API Utils";
     private static Map<String, String> varMap = new HashMap<String, String>();

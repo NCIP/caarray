@@ -9,6 +9,3 @@ Test Case,API,Principal Investigators Expected Results,Characteristic Categories
 ,,,,,ExternalSampleId,,,,,,
 13,java,,,,,OrganismPart,50,,,,
 14,grid,,,,,OrganismPart,50,,,,
-282,java,,,,,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5,1,,
-283,java,,,,,,,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5,2
-,,,,,,,,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:3,

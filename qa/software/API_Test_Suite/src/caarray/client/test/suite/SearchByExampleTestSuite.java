@@ -208,6 +208,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                 {
                    criteria.setMatchMode(search.getMatchMode()); 
                 }
+                criteria.setExcludeZeroes(search.isExcludeZeros());
                 List<AbstractCaArrayEntity> resultsList = new ArrayList<AbstractCaArrayEntity>();
                 long startTime = System.currentTimeMillis();
                 try

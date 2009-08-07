@@ -32,7 +32,7 @@ public class FileTestSuite extends SearchByExampleTestSuite
     private static final String FILE_TYPE = "File Type";
     
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-        API, NAME, FILE_TYPE, EXPECTED_RESULTS, MIN_RESULTS};
+        API, NAME, FILE_TYPE, EXPECTED_RESULTS, MIN_RESULTS, EXCLUDE_ZERO};
     
     /**
      * @param apiFacade
@@ -150,6 +150,10 @@ public class FileTestSuite extends SearchByExampleTestSuite
                 && !input[headerIndexMap.get(MIN_RESULTS)].equals(""))
             search.setMinResults(Integer
                     .parseInt(input[headerIndexMap.get(MIN_RESULTS)].trim()));
+        if (headerIndexMap.get(EXCLUDE_ZERO) < input.length
+                && !input[headerIndexMap.get(EXCLUDE_ZERO)].equals(""))
+            search.setExcludeZeros(Boolean
+                    .parseBoolean(input[headerIndexMap.get(EXCLUDE_ZERO)].trim()));
     }
 
     /* (non-Javadoc)

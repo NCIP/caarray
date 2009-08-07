@@ -103,7 +103,7 @@ public abstract class ExampleSearch
     protected Integer minResults = null, pages = null;
     protected List<Integer> pagesReturned = new ArrayList<Integer>();
     protected MatchMode matchMode;
-    protected boolean enumerate = false, apiUtil = false, login = false;
+    protected boolean enumerate = false, apiUtil = false, login = false, excludeZeros = false;
 
     protected ExampleSearch()
     {
@@ -215,6 +215,22 @@ public abstract class ExampleSearch
     public void setLogin(boolean login)
     {
         this.login = login;
+    }
+
+    /**
+     * @return the excludeZeros
+     */
+    public boolean isExcludeZeros()
+    {
+        return excludeZeros;
+    }
+
+    /**
+     * @param excludeZeros the excludeZeros to set
+     */
+    public void setExcludeZeros(boolean excludeZeros)
+    {
+        this.excludeZeros = excludeZeros;
     }
     
 

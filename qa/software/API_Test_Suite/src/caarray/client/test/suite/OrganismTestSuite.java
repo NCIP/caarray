@@ -34,7 +34,7 @@ public class OrganismTestSuite extends SearchByExampleTestSuite
     
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-            API, COMMON_NAME, MIN_RESULTS,EXPECTED_COMMON_NAME, SCIENTIFIC_NAME, EXPECTED_SCIENTIFIC_NAME, EXPECTED_RESULTS };
+            API, ID, COMMON_NAME, MIN_RESULTS,EXPECTED_COMMON_NAME, SCIENTIFIC_NAME, EXPECTED_SCIENTIFIC_NAME, EXPECTED_RESULTS };
 
     /**
      * @param apiFacade
@@ -214,6 +214,17 @@ public class OrganismTestSuite extends SearchByExampleTestSuite
         if (headerIndexMap.get(SCIENTIFIC_NAME) < input.length
                 && !input[headerIndexMap.get(SCIENTIFIC_NAME)].equals(""))
             example.setScientificName(input[headerIndexMap.get(SCIENTIFIC_NAME)].trim());
+        if (headerIndexMap.get(ID) < input.length
+                && !input[headerIndexMap.get(ID)].equals(""))
+        {
+            String id = input[headerIndexMap.get(ID)].trim();
+            if (id.startsWith(VAR_START))
+            {
+                id = getVariableValue(id);
+            }
+            example.setId(id);
+        }
+            
 
         search.setOrganism(example);
         if (headerIndexMap.get(TEST_CASE) < input.length

@@ -4,6 +4,7 @@
 package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
@@ -33,11 +34,12 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
     private static final String TITLE = "Title";
     private static final String ORG_SCI_NAME = "Organism Scientific Name";
     private static final String ARRAY_PROVIDER = "Array Provider";
+    private static final String ARRAY_DESIGN_REF = "Array Design Ref";
     private static final String ASSAY_TYPE = "Assay Type";
     private static final String MATCH_MODE = "Match Mode";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE, ENUMERATE,
-            API, TITLE, ORG_SCI_NAME, ARRAY_PROVIDER, ASSAY_TYPE,EXPECTED_RESULTS, MIN_RESULTS, PAGES, API_UTILS_SEARCH, MATCH_MODE };
+            API, TITLE, ORG_SCI_NAME, ARRAY_PROVIDER, ARRAY_DESIGN_REF,ASSAY_TYPE,EXPECTED_RESULTS, MIN_RESULTS, PAGES, API_UTILS_SEARCH, MATCH_MODE };
 
 
     /**
@@ -205,6 +207,17 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
                 System.out.println("ArrayProvider for Experiement test case: " + search.getTestCase() + " could not be found.");
             }
             
+        }
+        if (headerIndexMap.get(ARRAY_DESIGN_REF) < input.length && !input[headerIndexMap.get(ARRAY_DESIGN_REF)].equals(""))
+        {
+            String ref = input[headerIndexMap.get(ARRAY_DESIGN_REF)].trim();
+            if (ref.startsWith(VAR_START))
+            {
+                ref = getVariableValue(ref);
+            }
+            ArrayDesign ad = new ArrayDesign();
+            ad.setId(ref);
+            example.getArrayDesigns().add(ad);         
         }
         if (headerIndexMap.get(ASSAY_TYPE) < input.length && !input[headerIndexMap.get(ASSAY_TYPE)].equals(""))
         {
