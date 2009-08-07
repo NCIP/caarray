@@ -164,10 +164,10 @@ public class FullApiFacade implements ApiFacade
     
 
     public SearchResult<? extends AbstractCaArrayEntity> searchForExperiments(
-            String api, ExperimentSearchCriteria criteria, LimitOffset offset)
+            String api, ExperimentSearchCriteria criteria, LimitOffset offset, boolean login)
             throws Exception
     {
-        return getFacade(api).searchForExperiments(api, criteria, offset);
+        return getFacade(api).searchForExperiments(api, criteria, offset, login);
     }
 
     public SearchResult<Experiment> searchForExperimentByKeyword(String api,
@@ -401,7 +401,5 @@ public class FullApiFacade implements ApiFacade
     {
         return getFacade(api).copyMageTabZipApiUtils(api, experimentReference, compressed);
     }
-    
-    
 
 }

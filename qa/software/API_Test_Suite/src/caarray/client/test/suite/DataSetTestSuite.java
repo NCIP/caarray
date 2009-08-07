@@ -499,7 +499,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
                 String experimentId = input[headerIndexMap.get(FILE_EXPERIMENT_ID)].trim();
                 ExperimentSearchCriteria crit = new ExperimentSearchCriteria();
                 crit.setPublicIdentifier(experimentId);
-                SearchResult<Experiment> result = (SearchResult<Experiment>)apiFacade.searchForExperiments(search.getApi(), crit, null);
+                SearchResult<Experiment> result = (SearchResult<Experiment>)apiFacade.searchForExperiments(search.getApi(), crit, null, false);
                 if (!result.getResults().isEmpty())
                 {
                     Experiment exp = result.getResults().get(0);

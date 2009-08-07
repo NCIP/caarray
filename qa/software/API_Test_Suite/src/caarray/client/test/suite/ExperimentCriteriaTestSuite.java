@@ -51,7 +51,7 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
             API, TITLE, EXPECTED_TITLE, EXPECTED_RESULTS, MIN_RESULTS, PUBLIC_ID, ARRAY_PROVIDER, ORG_COMMON_NAME, ORG_SCI_NAME,
             ASSAY_TYPE, ANNO_CATEGORY, ANNO_VALUE, PI_REF,EXPECTED_ASSAY_TYPE, EXPECTED_PROVIDER, EXPECTED_ORG_SCI_NAME, API_UTILS_SEARCH,
-            ENUMERATE};
+            ENUMERATE, LOGIN};
 
     /**
      * @param apiFacade
@@ -280,6 +280,10 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
                 && !input[headerIndexMap.get(ENUMERATE)].equals(""))
             search.setEnumerate(Boolean.parseBoolean(input[headerIndexMap
                     .get(ENUMERATE)].trim()));
+        if (headerIndexMap.get(LOGIN) < input.length
+                && !input[headerIndexMap.get(LOGIN)].equals(""))
+            search.setLogin(Boolean.parseBoolean(input[headerIndexMap
+                    .get(LOGIN)].trim()));
         if (headerIndexMap.get(EXPECTED_TITLE) < input.length
                 && !input[headerIndexMap.get(EXPECTED_TITLE)].equals(""))
             search.addExpectedTitle(input[headerIndexMap.get(EXPECTED_TITLE)].trim());
@@ -490,26 +494,26 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
             {
                 resultsList.addAll(apiFacade.enumerateExperiments(search.getApi(), criteriaSearch.getExperimentSearchCriteria()));
             }
+            else if (search.isLogin())
+            {
+                List<Experiment> noLoginResults = getSearchResults(criteriaSearch, false);
+                resultsList.addAll(getSearchResults(criteriaSearch, true));
+                if (resultsList.size() <= noLoginResults.size())
+                {
+                    String errorMessage = "Login search did not return more results than non-login search. Login: " + resultsList.size() +
+                    ", no login: " + noLoginResults.size();
+                    setTestResultFailure(testResult, criteriaSearch, errorMessage);
+                }
+                else
+                {
+                    String detail = "Login search produced more results than non-login search.Login: " + resultsList.size() +
+                    ", no login: " + noLoginResults.size();
+                    testResult.addDetail(detail);
+                }
+            }
             else
             {
-                SearchResult<Experiment> results = (SearchResult<Experiment>) apiFacade
-                        .searchForExperiments(criteriaSearch.getApi(),
-                                criteriaSearch.getExperimentSearchCriteria(),
-                                null);
-                resultsList.addAll(results.getResults());
-                while (!results.isFullResult())
-                {
-                    LimitOffset offset = new LimitOffset(results
-                            .getMaxAllowedResults(), results.getResults()
-                            .size()
-                            + results.getFirstResultOffset());
-                    results = (SearchResult<Experiment>) apiFacade
-                            .searchForExperiments(criteriaSearch.getApi(),
-                                    criteriaSearch
-                                            .getExperimentSearchCriteria(),
-                                    offset);
-                    resultsList.addAll(results.getResults());
-                }
+                resultsList.addAll(getSearchResults(criteriaSearch, false));
             }
             
         }
@@ -523,5 +527,26 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
         
         return resultsList;
     }
+    
+    private List<Experiment> getSearchResults(ExperimentCriteriaSearch criteriaSearch, boolean login) throws Exception
+    {
+        List<Experiment> resultsList = new ArrayList<Experiment>();
+        SearchResult<Experiment> results = (SearchResult<Experiment>) apiFacade
+                .searchForExperiments(criteriaSearch.getApi(), criteriaSearch
+                        .getExperimentSearchCriteria(), null, login);
+        resultsList.addAll(results.getResults());
+        while (!results.isFullResult())
+        {
+            LimitOffset offset = new LimitOffset(
+                    results.getMaxAllowedResults(), results.getResults().size()
+                            + results.getFirstResultOffset());
+            results = (SearchResult<Experiment>) apiFacade
+                    .searchForExperiments(criteriaSearch.getApi(),
+                            criteriaSearch.getExperimentSearchCriteria(),
+                            offset, login);
+            resultsList.addAll(results.getResults());
+        }
+        return resultsList;
+}
 
 }

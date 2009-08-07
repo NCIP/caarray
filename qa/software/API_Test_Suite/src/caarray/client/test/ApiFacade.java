@@ -55,7 +55,7 @@ public interface ApiFacade
             ExampleSearchCriteria<T> criteria) throws Exception;
     
     public SearchResult<? extends AbstractCaArrayEntity> searchForExperiments(String api, ExperimentSearchCriteria criteria, 
-            LimitOffset offset) throws Exception;
+            LimitOffset offset, boolean login) throws Exception;
     
     public SearchResult<Experiment> searchForExperimentByKeyword(String api, KeywordSearchCriteria criteria, LimitOffset limitOffset) throws Exception;
 

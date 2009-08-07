@@ -496,7 +496,7 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
                 ExperimentSearchCriteria criteria = new ExperimentSearchCriteria();
                 CaArrayEntityReference ref = null;
                 criteria.setTitle(title);
-                SearchResult<Experiment> result = (SearchResult<Experiment>)apiFacade.searchForExperiments(api, criteria, null);
+                SearchResult<Experiment> result = (SearchResult<Experiment>)apiFacade.searchForExperiments(api, criteria, null, false);
                 if (result.getResults().isEmpty())
                 {
                     ref = new CaArrayEntityReference(title);

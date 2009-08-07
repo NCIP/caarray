@@ -237,7 +237,7 @@ public class GridApiFacade implements ApiFacade
         return null;
     }
     public SearchResult<? extends AbstractCaArrayEntity> searchForExperiments(
-            String api, ExperimentSearchCriteria criteria, LimitOffset offset)
+            String api, ExperimentSearchCriteria criteria, LimitOffset offset, boolean login)
             throws Exception
     {
         return gridClient.searchForExperiments(criteria, offset);
@@ -731,7 +731,5 @@ public class GridApiFacade implements ApiFacade
         dataApiUtils.copyMageTabZipToOutputStream(experimentReference, compressed, stream);
         return stream.toByteArray();
     }
-    
-    
 
 }

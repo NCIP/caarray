@@ -33,6 +33,7 @@ import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
+import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
 import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
@@ -46,6 +47,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.security.auth.login.FailedLoginException;
+
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
 
@@ -58,10 +61,11 @@ import caarray.client.test.TestProperties;
 public class JavaApiFacade implements ApiFacade
 {
     
-    private SearchService javaSearchService = null;
+    private SearchService javaSearchService = null, loginSearchService = null;
     private DataService dataService;
     private JavaSearchApiUtils apiUtils;
     private JavaDataApiUtils dataApiUtils;
+    
     
     public JavaApiFacade()
     {}
@@ -77,8 +81,17 @@ public class JavaApiFacade implements ApiFacade
         javaSearchService = server.getSearchService();
         dataService = server.getDataService();
         apiUtils = new JavaSearchApiUtils(javaSearchService);
-        dataApiUtils = new JavaDataApiUtils(dataService);
+        dataApiUtils = new JavaDataApiUtils(dataService);   
+    }
     
+    private void connectWithLogin() throws ServerConnectionException, FailedLoginException
+    {
+        String hostName = TestProperties.getJavaServerHostname();
+        int port = TestProperties.getJavaServerJndiPort();
+        System.out.println("Connecting to java server: " + hostName + ":" + port);
+        CaArrayServer server = new CaArrayServer(hostName, port);
+        server.connect("caarrayuser","Pass#1234");
+        loginSearchService = server.getSearchService();
     }
     
     public List<Person> getAllPrincipalInvestigators(String api)
@@ -187,9 +200,17 @@ public class JavaApiFacade implements ApiFacade
     }
 
     public SearchResult<? extends AbstractCaArrayEntity> searchForExperiments(
-            String api, ExperimentSearchCriteria criteria, LimitOffset offset)
+            String api, ExperimentSearchCriteria criteria, LimitOffset offset, boolean login)
             throws Exception
     {
+        if (login)
+        {
+            if (loginSearchService == null)
+            {
+                connectWithLogin();
+            }
+            return loginSearchService.searchForExperiments(criteria, offset);
+        }
         return javaSearchService.searchForExperiments(criteria, offset);
     }
 
@@ -218,6 +239,7 @@ public class JavaApiFacade implements ApiFacade
             return experiments.getResults().get(0);
         return null;
     }
+    
 
     public SearchResult<Biomaterial> searchForBiomaterialByKeyword(String api,
             BiomaterialKeywordSearchCriteria criteria, LimitOffset limitOffset)

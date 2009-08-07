@@ -100,7 +100,7 @@ public class CriteriaPerformanceTestSuite extends SearchByCriteriaTestSuite
             case EXPERIMENT:
                 if (offset != null)
                 {
-                    result = apiFacade.searchForExperiments(api, new ExperimentSearchCriteria(), offset);
+                    result = apiFacade.searchForExperiments(api, new ExperimentSearchCriteria(), offset, false);
                 }
                 else
                 {

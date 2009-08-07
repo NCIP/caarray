@@ -122,6 +122,7 @@ public abstract class ConfigurableTestSuite
     protected static final String EMPTY_STRING_SPACE_VAR = "${empty_s}";
     protected static final String NULL_VAR = "${null}";
     protected static final String ENUMERATE = "Enumerate";
+    protected static final String LOGIN= "Login";
     protected static final String API_UTILS_SEARCH = "API Utils";
     private static Map<String, String> varMap = new HashMap<String, String>();
     

@@ -267,7 +267,7 @@ public class HybridizationCriteriaTestSuite extends SearchByCriteriaTestSuite
                 id = getVariableValue(id);
             ExperimentSearchCriteria crit = new ExperimentSearchCriteria();
             crit.setPublicIdentifier(id);
-            List<Experiment> experiments = (List<Experiment>)apiFacade.searchForExperiments(search.getApi(), crit, null).getResults();
+            List<Experiment> experiments = (List<Experiment>)apiFacade.searchForExperiments(search.getApi(), crit, null, false).getResults();
             CaArrayEntityReference ref = new CaArrayEntityReference();
             if (!experiments.isEmpty())
             {

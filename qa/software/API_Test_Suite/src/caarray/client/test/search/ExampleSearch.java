@@ -83,7 +83,6 @@
 package caarray.client.test.search;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
 
 import java.util.ArrayList;
@@ -104,7 +103,7 @@ public abstract class ExampleSearch
     protected Integer minResults = null, pages = null;
     protected List<Integer> pagesReturned = new ArrayList<Integer>();
     protected MatchMode matchMode;
-    protected boolean enumerate = false, apiUtil = false;
+    protected boolean enumerate = false, apiUtil = false, login = false;
 
     protected ExampleSearch()
     {
@@ -200,6 +199,22 @@ public abstract class ExampleSearch
     public void setApiUtil(boolean apiUtil)
     {
         this.apiUtil = apiUtil;
+    }
+
+    /**
+     * @return the login
+     */
+    public boolean isLogin()
+    {
+        return login;
+    }
+
+    /**
+     * @param login the login to set
+     */
+    public void setLogin(boolean login)
+    {
+        this.login = login;
     }
     
 

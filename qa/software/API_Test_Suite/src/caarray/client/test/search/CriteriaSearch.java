@@ -15,7 +15,7 @@ public abstract class CriteriaSearch
     protected Float testCase = null;
     protected String api = null;
     protected Integer expectedResults = null, minResults = null;
-    protected boolean apiUtilsSearch = false, enumerate = false;
+    protected boolean apiUtilsSearch = false, enumerate = false, login = false;
     protected Long maxTime = null;
     
     protected CriteriaSearch(){}
@@ -88,6 +88,22 @@ public abstract class CriteriaSearch
     public void setMaxTime(Long minTime)
     {
         this.maxTime = minTime;
+    }
+
+    /**
+     * @return the login
+     */
+    public boolean isLogin()
+    {
+        return login;
+    }
+
+    /**
+     * @param login the login to set
+     */
+    public void setLogin(boolean login)
+    {
+        this.login = login;
     }
     
     
