@@ -8,8 +8,8 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
@@ -106,11 +106,11 @@ public class GridApiFacade implements ApiFacade
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#getByReference(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference)
      */
-    public AbstractCaArrayEntity getByReference(String api,
+    /*public AbstractCaArrayEntity getByReference(String api,
             CaArrayEntityReference reference) throws Exception
     {
         return gridClient.getByReference(reference);
-    }
+    }*/
 
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#getTermsForCategory(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, java.lang.String)
@@ -133,7 +133,7 @@ public class GridApiFacade implements ApiFacade
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#getbyReferences(java.lang.String, java.util.List)
      */
-    public List<AbstractCaArrayEntity> getByReferences(String api,
+    /*public List<AbstractCaArrayEntity> getByReferences(String api,
             List<CaArrayEntityReference> references) throws Exception
     {
         CaArrayEntityReference refs[] = new CaArrayEntityReference[references.size()];
@@ -148,7 +148,7 @@ public class GridApiFacade implements ApiFacade
             resultsList.add(result);
         }
         return resultsList;
-    }
+    }*/
 
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#searchByExample(java.lang.String, gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria, gov.nih.nci.caarray.external.v1_0.query.LimitOffset)
@@ -169,7 +169,7 @@ public class GridApiFacade implements ApiFacade
     {
         Search<T> search = apiUtils.byExample(criteria);
         List<T> resultsList = new ArrayList<T>();
-        for (Iterator<T> resultsIter = search.iterate(); resultsIter.hasNext();)
+        for (Iterator<T> resultsIter = search.iterator(); resultsIter.hasNext();)
         {
             resultsList.add(resultsIter.next());
         }
@@ -290,7 +290,7 @@ public class GridApiFacade implements ApiFacade
     {
         Search<Experiment> results = apiUtils.experimentsByCriteria(criteria);
         List<Experiment> resultsList = new ArrayList<Experiment>();
-        for (Iterator<Experiment> resultsIter = results.iterate(); resultsIter.hasNext();)
+        for (Iterator<Experiment> resultsIter = results.iterator(); resultsIter.hasNext();)
         {
             resultsList.add(resultsIter.next());
         }
@@ -301,7 +301,7 @@ public class GridApiFacade implements ApiFacade
     {
         Search<Biomaterial> results = apiUtils.biomaterialsByCriteria(criteria);
         List<Biomaterial> resultsList = new ArrayList<Biomaterial>();
-        for (Iterator<Biomaterial> resultsIter = results.iterate(); resultsIter.hasNext();)
+        for (Iterator<Biomaterial> resultsIter = results.iterator(); resultsIter.hasNext();)
         {
             resultsList.add(resultsIter.next());
         }
@@ -312,7 +312,7 @@ public class GridApiFacade implements ApiFacade
     {
         Search<Biomaterial> results = apiUtils.biomaterialsByKeyword(criteria);
         List<Biomaterial> resultsList = new ArrayList<Biomaterial>();
-        for (Iterator<Biomaterial> resultsIter = results.iterate(); resultsIter.hasNext();)
+        for (Iterator<Biomaterial> resultsIter = results.iterator(); resultsIter.hasNext();)
         {
             resultsList.add(resultsIter.next());
         }
@@ -323,18 +323,18 @@ public class GridApiFacade implements ApiFacade
     {
         Search<Experiment> results = apiUtils.experimentsByKeyword(criteria);
         List<Experiment> resultsList = new ArrayList<Experiment>();
-        for (Iterator<Experiment> resultsIter = results.iterate(); resultsIter.hasNext();)
+        for (Iterator<Experiment> resultsIter = results.iterator(); resultsIter.hasNext();)
         {
             resultsList.add(resultsIter.next());
         }
         return resultsList;
     }
-    public List<DataFile> filesByCriteriaSearchUtils(String api,
+    public List<File> filesByCriteriaSearchUtils(String api,
             FileSearchCriteria criteria) throws Exception
     {
-        Search<DataFile> results = apiUtils.filesByCriteria(criteria);
-        List<DataFile> resultsList = new ArrayList<DataFile>();
-        for (Iterator<DataFile> resultsIter = results.iterate(); resultsIter.hasNext();)
+        Search<File> results = apiUtils.filesByCriteria(criteria);
+        List<File> resultsList = new ArrayList<File>();
+        for (Iterator<File> resultsIter = results.iterator(); resultsIter.hasNext();)
         {
             resultsList.add(resultsIter.next());
         }
@@ -345,7 +345,7 @@ public class GridApiFacade implements ApiFacade
     {
         Search<Hybridization> results = apiUtils.hybridizationsByCriteria(criteria);
         List<Hybridization> resultsList = new ArrayList<Hybridization>();
-        for (Iterator<Hybridization> resultsIter = results.iterate(); resultsIter.hasNext();)
+        for (Iterator<Hybridization> resultsIter = results.iterator(); resultsIter.hasNext();)
         {
             resultsList.add(resultsIter.next());
         }
@@ -426,19 +426,19 @@ public class GridApiFacade implements ApiFacade
             return bios.getResults().get(0);
         return null;
     }
-    public List<DataFile> getFilesByName(String api, List<String> fileNames,
+    public List<File> getFilesByName(String api, List<String> fileNames,
             String experimentName) throws Exception
     {
-        List<DataFile> resultsList = new ArrayList<DataFile>();
+        List<File> resultsList = new ArrayList<File>();
         FileSearchCriteria crit = new FileSearchCriteria();
         Experiment experiment = getExperiment(api, experimentName);
         if (experiment != null)
         {
             crit.setExperiment(experiment.getReference());
-            List<DataFile> files = filesByCriteriaSearchUtils(api, crit);
-            for (DataFile file : files)
+            List<File> files = filesByCriteriaSearchUtils(api, crit);
+            for (File file : files)
             {
-                if (fileNames.contains(file.getName()))
+                if (fileNames.contains(file.getMetadata().getName()))
                 {
                     resultsList.add(file);
                 }
@@ -653,19 +653,19 @@ public class GridApiFacade implements ApiFacade
         return resultsList;
     
     }
-    public List<DataFile> enumerateFiles(String api, FileSearchCriteria criteria)
+    public List<File> enumerateFiles(String api, FileSearchCriteria criteria)
             throws Exception
     {
         EnumerationResponseContainer results = gridClient.enumerateFiles(criteria);
         ClientEnumIterator iter = EnumerationResponseHelper.createClientIterator(results,CaArraySvc_v1_0Client.class
                 .getResourceAsStream("client-config.wsdd"));
-        List<DataFile> resultsList = new ArrayList<DataFile>();
+        List<File> resultsList = new ArrayList<File>();
         
         while (iter.hasNext()) {
             try {
                 SOAPElement elem = (SOAPElement) iter.next();
                 if (elem != null) {
-                    DataFile entity = (DataFile) ObjectDeserializer.toObject(elem, DataFile.class);
+                    File entity = (File) ObjectDeserializer.toObject(elem, File.class);
                     resultsList.add(entity);
                 }
             } catch (NoSuchElementException e) {

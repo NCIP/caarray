@@ -8,8 +8,8 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
@@ -87,7 +87,7 @@ public class JavaApiFacade implements ApiFacade
         return javaSearchService.getAllPrincipalInvestigators();
     }
 
-    public AbstractCaArrayEntity getByReference(String api,
+    /*public AbstractCaArrayEntity getByReference(String api,
             CaArrayEntityReference reference) throws Exception
     {
         return javaSearchService.getByReference(reference);
@@ -97,7 +97,7 @@ public class JavaApiFacade implements ApiFacade
             List<CaArrayEntityReference> references) throws Exception
     {
         return javaSearchService.getByReferences(references);
-    }
+    }*/
 
     public List<Term> getTermsForCategory(String api,
             CaArrayEntityReference categoryRef, String valuePrefix)
@@ -123,7 +123,7 @@ public class JavaApiFacade implements ApiFacade
     {
         Search<T> search = apiUtils.byExample(criteria);
         List<T> resultsList = new ArrayList<T>();
-        for (Iterator<T> resultsIter = search.iterate(); resultsIter.hasNext();)
+        for (Iterator<T> resultsIter = search.iterator(); resultsIter.hasNext();)
         {
             resultsList.add(resultsIter.next());
         }
@@ -238,7 +238,7 @@ public class JavaApiFacade implements ApiFacade
     {
         Search<Experiment> results = apiUtils.experimentsByCriteria(criteria);
         List<Experiment> resultsList = new ArrayList<Experiment>();
-        for (Iterator<Experiment> resultsIter = results.iterate(); resultsIter.hasNext();)
+        for (Iterator<Experiment> resultsIter = results.iterator(); resultsIter.hasNext();)
         {
             resultsList.add(resultsIter.next());
         }
@@ -250,7 +250,7 @@ public class JavaApiFacade implements ApiFacade
     {
         Search<Biomaterial> results = apiUtils.biomaterialsByCriteria(criteria);
         List<Biomaterial> resultsList = new ArrayList<Biomaterial>();
-        for (Iterator<Biomaterial> resultsIter = results.iterate(); resultsIter.hasNext();)
+        for (Iterator<Biomaterial> resultsIter = results.iterator(); resultsIter.hasNext();)
         {
             resultsList.add(resultsIter.next());
         }
@@ -262,7 +262,7 @@ public class JavaApiFacade implements ApiFacade
     {
         Search<Biomaterial> results = apiUtils.biomaterialsByKeyword(criteria);
         List<Biomaterial> resultsList = new ArrayList<Biomaterial>();
-        for (Iterator<Biomaterial> resultsIter = results.iterate(); resultsIter.hasNext();)
+        for (Iterator<Biomaterial> resultsIter = results.iterator(); resultsIter.hasNext();)
         {
             resultsList.add(resultsIter.next());
         }
@@ -274,19 +274,19 @@ public class JavaApiFacade implements ApiFacade
     {
         Search<Experiment> results = apiUtils.experimentsByKeyword(criteria);
         List<Experiment> resultsList = new ArrayList<Experiment>();
-        for (Iterator<Experiment> resultsIter = results.iterate(); resultsIter.hasNext();)
+        for (Iterator<Experiment> resultsIter = results.iterator(); resultsIter.hasNext();)
         {
             resultsList.add(resultsIter.next());
         }
         return resultsList;
     }
 
-    public List<DataFile> filesByCriteriaSearchUtils(String api,
+    public List<File> filesByCriteriaSearchUtils(String api,
             FileSearchCriteria criteria) throws Exception
     {
-        Search<DataFile> results = apiUtils.filesByCriteria(criteria);
-        List<DataFile> resultsList = new ArrayList<DataFile>();
-        SearchResultIterator<DataFile> resultsIter = results.iterate();
+        Search<File> results = apiUtils.filesByCriteria(criteria);
+        List<File> resultsList = new ArrayList<File>();
+        SearchResultIterator<File> resultsIter = results.iterator();
         while ( resultsIter.hasNext())
         {
             resultsList.add(resultsIter.next());
@@ -299,7 +299,7 @@ public class JavaApiFacade implements ApiFacade
     {
         Search<Hybridization> results = apiUtils.hybridizationsByCriteria(criteria);
         List<Hybridization> resultsList = new ArrayList<Hybridization>();
-        for (Iterator<Hybridization> resultsIter = results.iterate(); resultsIter.hasNext();)
+        for (Iterator<Hybridization> resultsIter = results.iterator(); resultsIter.hasNext();)
         {
             resultsList.add(resultsIter.next());
         }
@@ -375,19 +375,19 @@ public class JavaApiFacade implements ApiFacade
         return null;
     }
 
-    public List<DataFile> getFilesByName(String api, List<String> fileNames,
+    public List<File> getFilesByName(String api, List<String> fileNames,
             String experimentName) throws Exception
     {
-        List<DataFile> resultsList = new ArrayList<DataFile>();
+        List<File> resultsList = new ArrayList<File>();
         FileSearchCriteria crit = new FileSearchCriteria();
         Experiment experiment = getExperiment(api, experimentName);
         if (experiment != null)
         {
             crit.setExperiment(experiment.getReference());
-            List<DataFile> files = filesByCriteriaSearchUtils(api, crit);
-            for (DataFile file : files)
+            List<File> files = filesByCriteriaSearchUtils(api, crit);
+            for (File file : files)
             {
-                if (fileNames.contains(file.getName()))
+                if (fileNames.contains(file.getMetadata().getName()))
                 {
                     resultsList.add(file);
                 }
@@ -493,7 +493,7 @@ public class JavaApiFacade implements ApiFacade
         return experimentsByKeywordSearchUtils(api, criteria);
     }
 
-    public List<DataFile> enumerateFiles(String api, FileSearchCriteria criteria)
+    public List<File> enumerateFiles(String api, FileSearchCriteria criteria)
             throws Exception
     {
         return filesByCriteriaSearchUtils(api, criteria);

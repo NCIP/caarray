@@ -83,7 +83,7 @@
 package caarray.client.test.search;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 
 /**
  * Bean encapsulating details of a search-by-example File search.
@@ -94,7 +94,7 @@ import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 public class FileSearch extends ExampleSearch
 {
 
-    private DataFile dataFile;
+    private File dataFile;
     
     /**
      * 
@@ -113,12 +113,12 @@ public class FileSearch extends ExampleSearch
         return getDataFile();
     }
 
-    public DataFile getDataFile()
+    public File getDataFile()
     {
         return dataFile;
     }
 
-    public void setDataFile(DataFile dataFile)
+    public void setDataFile(File dataFile)
     {
         this.dataFile = dataFile;
     }

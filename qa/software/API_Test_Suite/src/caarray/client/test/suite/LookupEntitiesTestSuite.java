@@ -82,10 +82,8 @@
  */
 package caarray.client.test.suite;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
-import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
@@ -183,13 +181,15 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
                 else if (headerIndexMap.get(REFERENCE) < input.length
                         && !input[headerIndexMap.get(REFERENCE)].equals(""))
                 {
-                    int expectedResults = Integer.parseInt(input[headerIndexMap.get(REFERENCE_EXPECTED_RESULTS)]);
+                    //TODO
+                    /*int expectedResults = Integer.parseInt(input[headerIndexMap.get(REFERENCE_EXPECTED_RESULTS)]);
                     String reference = input[headerIndexMap.get(REFERENCE)];
-                    test = new GetByReferenceTest(api,testCase,reference,expectedResults);
+                    test = new GetByReferenceTest(api,testCase,reference,expectedResults);*/
                 }
                 else if (headerIndexMap.get(REFERENCES) < input.length
                         && !input[headerIndexMap.get(REFERENCES)].equals(""))
-                {
+                {//TODO
+                    /*
                     int expectedResults = Integer.parseInt(input[headerIndexMap.get(REFERENCES_EXPECTED_RESULTS)]);
                     List<String> references = new ArrayList<String>();
                     references.add(input[headerIndexMap.get(REFERENCES)]);
@@ -210,7 +210,7 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
                         }
                     }
                     test = new GetByReferencesTest(api,testCase,references,expectedResults);
-                }
+                */}
                 else if (headerIndexMap.get(CC_EXPECTED_RESULTS) < input.length
                         && !input[headerIndexMap.get(CC_EXPECTED_RESULTS)].equals(""))
                 {
@@ -573,7 +573,7 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
         
         
     }
-    
+    /*
     class GetByReferenceTest implements ConfigurableTest
     {
         private String reference,api;
@@ -767,6 +767,6 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
         {
             return api;
         }
-    }
+    }*/
 
 }

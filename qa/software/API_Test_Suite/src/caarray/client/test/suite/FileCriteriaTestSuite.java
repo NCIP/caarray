@@ -4,8 +4,8 @@
 package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
+import gov.nih.nci.caarray.external.v1_0.data.File;
+import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
@@ -14,7 +14,6 @@ import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public class FileCriteriaTestSuite extends SearchByCriteriaTestSuite
 {
 
     private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
-            + File.separator + "FileCriteria.csv";
+            + java.io.File.separator + "FileCriteria.csv";
     
     private static final String EXPERIMENT_ID = "Experiment Id";
     private static final String EXPERIMENT_TITLE = "Experiment Name";
@@ -66,11 +65,11 @@ public class FileCriteriaTestSuite extends SearchByCriteriaTestSuite
             TestResult testResult)
     {
         FileCriteriaSearch fileSearch = (FileCriteriaSearch)search;
-        List<DataFile> fileResults = (List<DataFile>)resultsList;
+        List<File> fileResults = (List<File>)resultsList;
         int namedResults = 0;
-        for (DataFile file : fileResults)
+        for (File file : fileResults)
         {
-            if (file != null && file.getName() != null)
+            if (file != null && file.getMetadata().getName() != null)
                 namedResults++;
         }
         if (fileSearch.getExpectedResults() != null)
@@ -117,7 +116,7 @@ public class FileCriteriaTestSuite extends SearchByCriteriaTestSuite
             throws Exception
     {
         FileCriteriaSearch criteriaSearch = (FileCriteriaSearch)search;
-        List<DataFile> resultsList = new ArrayList<DataFile>();
+        List<File> resultsList = new ArrayList<File>();
         try
         {
             if (search.isApiUtilsSearch())
@@ -130,7 +129,7 @@ public class FileCriteriaTestSuite extends SearchByCriteriaTestSuite
             }
             else
             {
-                SearchResult<DataFile> results = (SearchResult<DataFile>) apiFacade
+                SearchResult<File> results = (SearchResult<File>) apiFacade
                         .searchForFiles(criteriaSearch.getApi(),
                                 criteriaSearch.getFileSearchCriteria(), null);
                 resultsList.addAll(results.getResults());
@@ -140,7 +139,7 @@ public class FileCriteriaTestSuite extends SearchByCriteriaTestSuite
                             .getMaxAllowedResults(), results.getResults()
                             .size()
                             + results.getFirstResultOffset());
-                    results = (SearchResult<DataFile>) apiFacade
+                    results = (SearchResult<File>) apiFacade
                             .searchForFiles(criteriaSearch.getApi(),
                                     criteriaSearch.getFileSearchCriteria(), offset);
                     resultsList.addAll(results.getResults());
@@ -190,7 +189,7 @@ public class FileCriteriaTestSuite extends SearchByCriteriaTestSuite
             if (name.startsWith(VAR_START))
                 name = getVariableValue(name);
             
-            criteria.getCategories().add(FileTypeCategory.valueOf(name.toUpperCase()));
+            criteria.getCategories().add(FileCategory.valueOf(name.toUpperCase()));
         }
         if (headerIndexMap.get(SAMPLE) < input.length && !input[headerIndexMap.get(SAMPLE)].equals(""))
         {
@@ -352,7 +351,7 @@ public class FileCriteriaTestSuite extends SearchByCriteriaTestSuite
             if (name.startsWith(VAR_START))
                 name = getVariableValue(name);
             
-            criteria.getCategories().add(FileTypeCategory.valueOf(name.toUpperCase()));
+            criteria.getCategories().add(FileCategory.valueOf(name.toUpperCase()));
         }
         if (headerIndexMap.get(SAMPLE) < input.length && !input[headerIndexMap.get(SAMPLE)].equals(""))
         {

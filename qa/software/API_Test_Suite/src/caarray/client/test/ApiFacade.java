@@ -8,8 +8,8 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
@@ -81,7 +81,7 @@ public interface ApiFacade
     
     public List<Biomaterial> biomaterialsByKeywordSearchUtils(String api, BiomaterialKeywordSearchCriteria criteria) throws Exception;
     
-    public List<DataFile> filesByCriteriaSearchUtils(String api, FileSearchCriteria criteria) throws Exception;
+    public List<File> filesByCriteriaSearchUtils(String api, FileSearchCriteria criteria) throws Exception;
     
     public List<Experiment> enumerateExperiments(String api, ExperimentSearchCriteria criteria) throws Exception;
 
@@ -93,12 +93,12 @@ public interface ApiFacade
     
     public List<Hybridization> enumerateHybridizations(String api, HybridizationSearchCriteria criteria) throws Exception;
     
-    public List<DataFile> enumerateFiles(String api, FileSearchCriteria criteria) throws Exception;
+    public List<File> enumerateFiles(String api, FileSearchCriteria criteria) throws Exception;
     
     public List<? extends AbstractCaArrayEntity> enumerateByExample(String api, 
             ExampleSearchCriteria<? extends AbstractCaArrayEntity> criteria, Class<? extends AbstractCaArrayEntity> clazz) throws Exception;
     
-    public List<DataFile> getFilesByName(String api, List<String> fileNames, String experimentName) throws Exception;
+    public List<File> getFilesByName(String api, List<String> fileNames, String experimentName) throws Exception;
     
     public List<Hybridization> hybridizationsByCriteriaSearchUtils(String api, HybridizationSearchCriteria criteria) throws Exception;
      
@@ -106,9 +106,9 @@ public interface ApiFacade
     
     public List<Term> getTermsForCategory(String api, CaArrayEntityReference categoryRef, String valuePrefix) throws Exception;
     
-    public AbstractCaArrayEntity getByReference(String api, CaArrayEntityReference reference) throws Exception;
+    //public AbstractCaArrayEntity getByReference(String api, CaArrayEntityReference reference) throws Exception;
     
-    public List<AbstractCaArrayEntity> getByReferences(String api, List<CaArrayEntityReference> references) throws Exception;
+    //public List<AbstractCaArrayEntity> getByReferences(String api, List<CaArrayEntityReference> references) throws Exception;
     
     public CaArrayEntityReference getCategoryReference(String api, String categoryName) throws Exception;
     

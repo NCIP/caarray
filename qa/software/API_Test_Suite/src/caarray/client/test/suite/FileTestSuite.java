@@ -4,10 +4,10 @@
 package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
+import gov.nih.nci.caarray.external.v1_0.data.FileMetadata;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 
-import java.io.File;
 import java.util.List;
 
 import caarray.client.test.ApiFacade;
@@ -26,7 +26,7 @@ public class FileTestSuite extends SearchByExampleTestSuite
 {
 
     private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
-    + File.separator + "File.csv";
+    + java.io.File.separator + "File.csv";
 
     private static final String NAME = "Name";
     private static final String FILE_TYPE = "File Type";
@@ -51,11 +51,11 @@ public class FileTestSuite extends SearchByExampleTestSuite
             ExampleSearch search, TestResult testResult)
     {
         FileSearch fileSearch = (FileSearch)search;
-        List<DataFile> fileResults = (List<DataFile>)resultsList;
+        List<File> fileResults = (List<File>)resultsList;
         int namedResults = 0;
-        for (DataFile fileType : fileResults)
+        for (File file : fileResults)
         {
-            if (fileType.getName() != null)
+            if (file.getMetadata() != null && file.getMetadata().getName() != null)
                 namedResults++;
         }
         if (fileSearch.getExpectedResults() != null)
@@ -119,7 +119,8 @@ public class FileTestSuite extends SearchByExampleTestSuite
     protected void populateSearch(String[] input, ExampleSearch exampleSearch)
     {
         FileSearch search = (FileSearch)exampleSearch;
-        DataFile example = new DataFile();
+        File example = new File();
+        example.setMetadata(new FileMetadata());
         if (headerIndexMap.get(API) < input.length
                 && !input[headerIndexMap.get(API)].equals(""))
         {
@@ -127,13 +128,13 @@ public class FileTestSuite extends SearchByExampleTestSuite
         }
 
         if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
-            example.setName(input[headerIndexMap.get(NAME)].trim());
+            example.getMetadata().setName(input[headerIndexMap.get(NAME)].trim());
         if (headerIndexMap.get(FILE_TYPE) < input.length && !input[headerIndexMap.get(FILE_TYPE)].equals(""))
         {
             String type = input[headerIndexMap.get(FILE_TYPE)].trim();
             FileType fileType = new FileType();
             fileType.setName(type);
-            example.setFileType(fileType);
+            example.getMetadata().setFileType(fileType);
         }
         
         search.setDataFile(example);

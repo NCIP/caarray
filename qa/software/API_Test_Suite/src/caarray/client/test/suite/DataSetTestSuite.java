@@ -6,11 +6,11 @@ package caarray.client.test.suite;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn;
 import gov.nih.nci.caarray.external.v1_0.data.BooleanColumn;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.DataType;
 import gov.nih.nci.caarray.external.v1_0.data.DesignElement;
 import gov.nih.nci.caarray.external.v1_0.data.DoubleColumn;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.FloatColumn;
 import gov.nih.nci.caarray.external.v1_0.data.HybridizationData;
 import gov.nih.nci.caarray.external.v1_0.data.IntegerColumn;
@@ -24,7 +24,6 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +40,7 @@ import caarray.client.test.search.DataSetSearch;
 public class DataSetTestSuite extends SearchByCriteriaTestSuite
 {
     private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
-            + File.separator + "DataSet.csv";
+            + java.io.File.separator + "DataSet.csv";
 
     private static final String FILE = "File";
     private static final String FILE_REF = "File Reference";
@@ -363,8 +362,8 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
                 name = getVariableValue(name);
             List<String> fileNames = new ArrayList<String>();
             fileNames.add(name);
-            List<DataFile> files = apiFacade.getFilesByName(search.getApi(), fileNames, search.getExperimentName());
-                for (DataFile file : files)
+            List<File> files = apiFacade.getFilesByName(search.getApi(), fileNames, search.getExperimentName());
+                for (File file : files)
                 {
                     criteria.getDataFiles().add(file.getReference());
                 }
@@ -489,8 +488,8 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             {
                 String experiment = input[headerIndexMap.get(FILE_EXPERIMENT)].trim();
                 search.setExperimentName(experiment);
-                List<DataFile> files = apiFacade.getFilesByName(search.getApi(), fileNames, experiment);
-                for (DataFile file : files)
+                List<File> files = apiFacade.getFilesByName(search.getApi(), fileNames, experiment);
+                for (File file : files)
                 {
                     criteria.getDataFiles().add(file.getReference());
                 }
@@ -505,8 +504,8 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
                 {
                     Experiment exp = result.getResults().get(0);
                     search.setExperimentName(exp.getTitle());
-                    List<DataFile> files = apiFacade.getFilesByName(search.getApi(), fileNames, exp.getTitle());
-                    for (DataFile file : files)
+                    List<File> files = apiFacade.getFilesByName(search.getApi(), fileNames, exp.getTitle());
+                    for (File file : files)
                     {
                         criteria.getDataFiles().add(file.getReference());
                     }

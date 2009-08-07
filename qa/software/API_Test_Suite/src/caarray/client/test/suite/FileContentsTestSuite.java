@@ -4,14 +4,13 @@
 package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
 {
 
     private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
-            + File.separator + "FileContents.csv";
+            + java.io.File.separator + "FileContents.csv";
 
                        
 
@@ -296,8 +295,8 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
                 name = getVariableValue(name);
             List<String> names = new ArrayList<String>();
             names.add(name);
-            List<DataFile> files = apiFacade.getFilesByName(search.getApi(), names, experimentName);
-            for (DataFile file : files)
+            List<File> files = apiFacade.getFilesByName(search.getApi(), names, experimentName);
+            for (File file : files)
             {
                 search.addFileReference(file.getReference());
             }
@@ -426,8 +425,8 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
                 name = getVariableValue(name);
             List<String> names = new ArrayList<String>();
             names.add(name);
-            List<DataFile> files = apiFacade.getFilesByName(search.getApi(), names, experimentName);
-            for (DataFile file : files)
+            List<File> files = apiFacade.getFilesByName(search.getApi(), names, experimentName);
+            for (File file : files)
             {
                 search.addFileReference(file.getReference());
             }
@@ -437,7 +436,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
             Hybridization hyb = apiFacade.getHybridization(search.getApi(), input[headerIndexMap.get(HYB)].trim());
             if (hyb != null && hyb.getArrayDesign() != null)
             {
-                for (DataFile file : hyb.getArrayDesign().getFiles())
+                for (File file : hyb.getArrayDesign().getFiles())
                 {
                     search.addFileReference(file.getReference());
                 }
@@ -463,7 +462,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
             FileSearchCriteria crit = new FileSearchCriteria();
             crit.setExtension(extension);
             crit.setExperiment(experimentReference);
-            List<DataFile> files = apiFacade.filesByCriteriaSearchUtils(search.getApi(), crit);
+            List<File> files = apiFacade.filesByCriteriaSearchUtils(search.getApi(), crit);
             for (int i = 0; i < files.size() && i < num; i++)
             {
                 search.addFileReference(files.get(i).getReference());

@@ -5,15 +5,9 @@ package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
-import gov.nih.nci.caarray.external.v1_0.data.FileTypeCategory;
+import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
-import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
-import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
-import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 
 import java.io.File;
@@ -213,7 +207,7 @@ public class QuantitationTypeCriteriaTestSuite extends
             String file_type_category = input[headerIndexMap.get(FILE_TYPE_CATEGORY)];
             if (file_type_category.startsWith(VAR_START))
             	file_type_category = getVariableValue(file_type_category);
-            criteria.getFileTypeCategories().add(Enum.valueOf(FileTypeCategory.class, file_type_category));
+            criteria.getFileCategories().add(Enum.valueOf(FileCategory.class, file_type_category));
         }
         if (headerIndexMap.get(ARRAY_DT_REF) < input.length && !input[headerIndexMap.get(ARRAY_DT_REF)].equals("")) {
             String name = input[headerIndexMap.get(ARRAY_DT_REF)];

@@ -8,8 +8,8 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
-import gov.nih.nci.caarray.external.v1_0.data.DataFile;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
@@ -92,11 +92,11 @@ public class FullApiFacade implements ApiFacade
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#getByReference(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference)
      */
-    public AbstractCaArrayEntity getByReference(String api,
+    /*public AbstractCaArrayEntity getByReference(String api,
             CaArrayEntityReference reference) throws Exception
     {
         return getFacade(api).getByReference(api, reference);
-    }
+    }*/
 
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#getTermsForCategory(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, java.lang.String)
@@ -110,11 +110,11 @@ public class FullApiFacade implements ApiFacade
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#getbyReferences(java.lang.String, java.util.List)
      */
-    public List<AbstractCaArrayEntity> getByReferences(String api,
+    /*public List<AbstractCaArrayEntity> getByReferences(String api,
             List<CaArrayEntityReference> references) throws Exception
     {
         return getFacade(api).getByReferences(api, references);
-    }
+    }*/
 
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#searchByExample(java.lang.String, gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria, gov.nih.nci.caarray.external.v1_0.query.LimitOffset)
@@ -225,7 +225,7 @@ public class FullApiFacade implements ApiFacade
         return getFacade(api).experimentsByKeywordSearchUtils(api, criteria);
     }
 
-    public List<DataFile> filesByCriteriaSearchUtils(String api,
+    public List<File> filesByCriteriaSearchUtils(String api,
             FileSearchCriteria criteria) throws Exception
     {
         return getFacade(api).filesByCriteriaSearchUtils(api, criteria);
@@ -282,7 +282,7 @@ public class FullApiFacade implements ApiFacade
         return getFacade(api).getBiomaterial(api, name);
     }
 
-    public List<DataFile> getFilesByName(String api, List<String> fileNames,
+    public List<File> getFilesByName(String api, List<String> fileNames,
             String experimentName) throws Exception
     {
         return getFacade(api).getFilesByName(api, fileNames, experimentName);
@@ -361,7 +361,7 @@ public class FullApiFacade implements ApiFacade
         return getFacade(api).enumerateExperimentsByKeyword(api, criteria);
     }
 
-    public List<DataFile> enumerateFiles(String api, FileSearchCriteria criteria)
+    public List<File> enumerateFiles(String api, FileSearchCriteria criteria)
             throws Exception
     {
         return getFacade(api).enumerateFiles(api, criteria);
