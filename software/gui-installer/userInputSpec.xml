@@ -158,6 +158,7 @@
         <variable name="jboss.server.rmi.port" value="31098"/>
 
         <variable name="jboss.ejbinvoker.port" value="33873"/>
+        <variable name="java.api.filestreaming.port" value="31522"/>
         <variable name="jboss.cobraorb.port" value="33528"/>
         <variable name="jboss.hajndi.port" value="31100"/>
         <variable name="jboss.hajrmi.port" value="31101"/>
