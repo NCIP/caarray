@@ -32,7 +32,6 @@ public class CaArraySvcImpl extends CaArraySvcImplBase {
     private FileRetrievalService fileRetrievalService;
     private InitialContext context;
 
-
     /**
      * Constructs the service implementation.
      *
@@ -92,8 +91,6 @@ public class CaArraySvcImpl extends CaArraySvcImplBase {
         }
         return fileRetrievalService;
     }
-
-
 
     /**
      * Returns complete details of all design elements and relationships for the

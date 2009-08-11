@@ -101,7 +101,7 @@ public class ExperimentSearchCriteria {
     private Organism organism;
     private Organization arrayProvider;
     private AssayType assayType;
-    private Person principalInvestigator;
+    private Set<Person> principalInvestigators = new HashSet<Person>();
     private Set<AnnotationCriterion> annotationCriterions = new HashSet<AnnotationCriterion>();
 
     /**
@@ -161,17 +161,17 @@ public class ExperimentSearchCriteria {
     }
 
     /**
-     * @return the principalInvestigator
+     * @return the Set of principal Investigators
      */
-    public Person getPrincipalInvestigator() {
-        return principalInvestigator;
+    public Set<Person> getPrincipalInvestigators() {
+        return principalInvestigators;
     }
 
     /**
-     * @param principalInvestigator the principalInvestigator to set
+     * @param principalInvestigators the set principal Investigators to set
      */
-    public void setPrincipalInvestigator(Person principalInvestigator) {
-        this.principalInvestigator = principalInvestigator;
+    public void setPrincipalInvestigators(Set<Person> principalInvestigators) {
+        this.principalInvestigators = principalInvestigators;
     }
 
     /**

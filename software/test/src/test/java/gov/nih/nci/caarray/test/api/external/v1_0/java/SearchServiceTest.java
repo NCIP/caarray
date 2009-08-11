@@ -14,6 +14,7 @@ import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataType;
 import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
+import gov.nih.nci.caarray.external.v1_0.data.FileMetadata;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
@@ -386,6 +387,22 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
             e.printStackTrace();
             fail("Couldn't search experiments: " + e);
         }
+
+        crit = new ExperimentSearchCriteria();
+        crit.getPrincipalInvestigators().add(new CaArrayEntityReference(
+                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:9"));
+        crit.getPrincipalInvestigators().add(new CaArrayEntityReference(
+                "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:14"));
+        try {
+            logForSilverCompatibility(TEST_OUTPUT, "2 Person refs");
+            List<Experiment> experiments = service.searchForExperiments(crit, null).getResults();
+            assertEquals(1, experiments.size());
+            assertEquals("test2", experiments.get(0).getTitle());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Couldn't search experiments: " + e);
+        }
+        
     }
 
     //////////////////////////
@@ -680,8 +697,14 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     private <T extends AbstractCaArrayEntity> void testExampleProperty(T example, String property, Object value, int count) throws Exception {
-        logForSilverCompatibility(TEST_NAME, "testSearchByExample " + example.getClass().getName()+ "." + property);
         ExampleSearchCriteria xsc = new ExampleSearchCriteria(example);
+        testExampleProperty(xsc, property, value, count);
+    }
+
+    private <T extends AbstractCaArrayEntity> void testExampleProperty(ExampleSearchCriteria<T> xsc, String property, Object value, int count) throws Exception {
+        T example = xsc.getExample();
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample " + example.getClass().getName()+ "." + property);
+    
         if (property != null) {
             PropertyUtils.setProperty(example, property, value);
         }
@@ -738,16 +761,32 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     @Test
     public void testSearchByExample_File() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testSearchByExample_File");
-        testExampleProperty(new File(), null, null, 24);
-        testExampleProperty(new File(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:1", 1);
-        testExampleProperty(new File(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:0", 0);
+        ExampleSearchCriteria<File> xsc = new ExampleSearchCriteria<File>();
+        xsc.setExcludeZeroes(true);
+        File file = new File();
+        xsc.setExample(file);
+        testExampleProperty(xsc, null, null, 22);
+        testExampleProperty(xsc, "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:1", 1);
+        testExampleProperty(xsc, "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:0", 0);
 
-        testExampleProperty(new File(), "compressedSize", 114521L, 1);
-        testExampleProperty(new File(), "uncompressedSize", 114521L, 1);
-        testExampleProperty(new File(), "name", "8kNew111_17_4601_m82.gpr", 1);
+        file = new File();
+        xsc.setExample(file);
+        FileMetadata fmd = new FileMetadata();
+        file.setMetadata(fmd);
+        testExampleProperty(xsc, "metadata.compressedSize", 114521L, 1);
+
+        file.setMetadata(new FileMetadata());
+        testExampleProperty(xsc, "metadata.uncompressedSize", 1830615L, 1);
+
+        file.setMetadata(new FileMetadata());
+        testExampleProperty(xsc, "metadata.name", "8kNew111_17_4601_m82.gpr", 1);
+
+        file.setMetadata(new FileMetadata());
         FileType type = new FileType();
         type.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:MAGE_TAB_IDF");
-        testExampleProperty(new File(), "fileType", type, 1);
+        testExampleProperty(xsc, "metadata.fileType", type, 1);
+        type.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CEL");
+        testExampleProperty(xsc, "metadata.fileType", type, 0);
     }
 
     @Test
@@ -921,9 +960,14 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         AssayType at = new AssayType("Gene Expression");
         at.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.AssayType:3");
         testExampleProperty(new ArrayDesign(), "assayTypes", Collections.singleton(at), 1);
+
         File df = new File();
-        df.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:2");
-        testExampleProperty(new ArrayDesign(), "files", Collections.singleton(df), 1);
+        df.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:1");
+        ExampleSearchCriteria<ArrayDesign> xsc = new ExampleSearchCriteria<ArrayDesign>();
+        xsc.setExcludeZeroes(true);
+        xsc.setExample(new ArrayDesign());
+        testExampleProperty(xsc, "files", Collections.singleton(df), 1);
+        
         testExampleProperty(new ArrayDesign(), "lsid", "TODO", 0);
         testExampleProperty(new ArrayDesign(), "name", "Mm-Incyte-v1px_16Bx24Cx23R", 1);
         Organism o = new Organism();

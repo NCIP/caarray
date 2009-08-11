@@ -17,6 +17,8 @@
         <field>
             <a>designFiles</a>
             <b>files</b>
+            <a-hint>gov.nih.nci.caarray.domain.file.CaArrayFile</a-hint>
+            <b-hint>gov.nih.nci.caarray.external.v1_0.data.File</b-hint>
         </field>
   	</mapping>  
     <mapping> 
@@ -186,6 +188,10 @@
             <a>id</a>
             <b>id</b>
         </field>
+        <field>
+      		<a>source</a>
+     	 	<b>termSource</b>
+    	</field>
     </mapping>  
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.data.QuantitationType</class-a>
@@ -325,7 +331,7 @@
             <a>uncompressedSize</a>
             <b>metadata.uncompressedSize</b>
         </field>
-        <field>
+        <field custom-converter="gov.nih.nci.caarray.services.external.EnumConverter">
             <a>fileType</a>
             <b>metadata.fileType</b>
         </field>
@@ -341,8 +347,8 @@
             <a>array.design</a>
             <b>arrayDesign</b>
         </field>
-  	</mapping>    
-    <mapping> 
+        </mapping>
+        <mapping>
         <class-a>gov.nih.nci.caarray.domain.sample.AbstractBioMaterial</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.sample.Biomaterial</class-b>   
         <field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.sample.Biomaterial">

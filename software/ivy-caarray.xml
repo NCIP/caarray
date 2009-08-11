@@ -58,13 +58,13 @@
 
         <dependency conf="project" name="c3p0" org="c3p0" rev="0.9.0"/>
 
-        <dependency conf="project" name="core" org="cagrid" rev="1.2"/>
+        <dependency conf="project" name="core" org="cagrid" rev="1.2.0.1"/>
 
-        <dependency conf="project" name="data" org="cagrid" rev="1.2"/>
+        <dependency conf="project" name="data" org="cagrid" rev="1.2.0.1"/>
 
-        <dependency conf="project" name="sdkQuery32" org="cagrid" rev="1.2"/>
+        <dependency conf="project" name="sdkQuery32" org="cagrid" rev="1.2.0.1"/>
 
-        <dependency conf="project" name="cql" org="cagrid" rev="1.0-1.2"/>
+        <dependency conf="project" name="cql" org="cagrid" rev="1.2.0.1"/>
 
         <dependency conf="project" name="cglib" org="cglib" rev="2.1_3"/>
 

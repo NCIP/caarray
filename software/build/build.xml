@@ -340,7 +340,7 @@
 
         <path id="caGrid-cql.jar.path">
             <fileset dir="${project.lib}" id="caGrid-cql.jar.fileset">
-                <include name="caGrid-cql-*.jar"/>
+                <include name="caGrid-CQL-cql.1.0-*.jar"/>
             </fileset>
         </path>
         <property name="caGrid-cql.jar" refid="caGrid-cql.jar.fileset" />
@@ -1058,8 +1058,8 @@
         <pathtofileset name="external.api.dependencies.fileset" pathrefid="external.api.dependencies.path" dir="${project.lib}"/>
 
         <path id="ejb.compile.dependencies.path">
-            <fileset refid="jboss.dependencies.fileset"/>
             <fileset refid="common.compile.dependencies.fileset"/>
+            <fileset refid="jboss.dependencies.fileset"/>            
             <fileset refid="external.api.dependencies.fileset"/>
             <fileset refid="ejb3-persistence.jar.fileset"/>
             <fileset refid="javassist.jar.fileset"/>
@@ -1187,10 +1187,8 @@
         </path>
 
         <path id="ejb.test.dependencies.path">
-            <fileset refid="common.compile.dependencies.fileset"/>
+            <path refid="ejb.compile.dependencies.path"/>
             <fileset refid="jboss-annotations-ejb3.jar.fileset"/>
-            <fileset refid="ejb3-persistence.jar.fileset"/>
-            <fileset refid="jboss.dependencies.fileset"/>
             <fileset refid="test.dependencies.fileset"/>
         </path>
 

@@ -327,11 +327,11 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             where.append(" AND m.id = :array_provider_id");
             queryParams.put("array_provider_id", criteria.getArrayProvider().getId());            
         }
-        if (criteria.getPrincipalInvestigator() != null) {
+        if (!criteria.getPrincipalInvestigators().isEmpty()) {
             from.append(" LEFT JOIN e.experimentContacts ec LEFT JOIN ec.roles r LEFT JOIN ec.contact p");
-            where.append(" AND r.value = :pi_role AND p.id = :pi_id");
-            queryParams.put("pi_role", ExperimentContact.PI_ROLE);            
-            queryParams.put("pi_id", criteria.getPrincipalInvestigator().getId());            
+            where.append(" AND r.value = :pi_role AND p in (:pis)");
+            queryParams.put("pi_role", ExperimentContact.PI_ROLE);
+            queryParams.put("pis", criteria.getPrincipalInvestigators());
         }
         if (!criteria.getAnnotationCriterions().isEmpty()) {
             List<String> diseaseStates = new LinkedList<String>();

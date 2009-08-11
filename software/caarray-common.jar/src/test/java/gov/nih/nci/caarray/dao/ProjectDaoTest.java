@@ -964,6 +964,13 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         assertEquals(1, experiments.size());
         assertEquals(DUMMY_EXPERIMENT_1, experiments.get(0));
 
+        // test principal investigator criteria
+        crit = new ExperimentSearchCriteria();
+        crit.getPrincipalInvestigators().add(DUMMY_PERSON);
+        experiments = DAO_OBJECT.searchByCriteria(psp, crit);
+        // DUMMY_PERSON is not a PI.
+        assertTrue(experiments.isEmpty());
+
         tx.commit();
     }
 

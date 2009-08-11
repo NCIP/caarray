@@ -360,8 +360,8 @@
     <field name="organism" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference">
       <bind-xml name="qry:organism" node="element" />
     </field>
-    <field name="principalInvestigator" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference">
-      <bind-xml name="qry:principalInvestigator" node="element" />
+    <field name="principalInvestigators" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" collection="collection">
+      <bind-xml name="PrincipalInvestigator" location="principalInvestigators" node="element" />
     </field>
     <field name="arrayProvider" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference">
       <bind-xml name="qry:arrayProvider" node="element" />

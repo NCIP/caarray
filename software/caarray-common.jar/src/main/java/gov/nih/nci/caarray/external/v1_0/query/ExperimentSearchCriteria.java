@@ -100,7 +100,7 @@ public class ExperimentSearchCriteria implements Serializable {
     private CaArrayEntityReference organism;
     private CaArrayEntityReference arrayProvider;
     private CaArrayEntityReference assayType;
-    private CaArrayEntityReference principalInvestigator;
+    private Set<CaArrayEntityReference> principalInvestigators = new HashSet<CaArrayEntityReference>();
     private Set<AnnotationCriterion> annotationCriterions = new HashSet<AnnotationCriterion>();
 
     /**
@@ -160,17 +160,17 @@ public class ExperimentSearchCriteria implements Serializable {
     }
 
     /**
-     * @return the principalInvestigator
+     * @return Set of principal Investigator references.
      */
-    public CaArrayEntityReference getPrincipalInvestigator() {
-        return principalInvestigator;
+    public Set<CaArrayEntityReference> getPrincipalInvestigators() {
+        return principalInvestigators;
     }
 
     /**
-     * @param principalInvestigator the principalInvestigator to set
+     * @param principalInvestigators the Set of principal Investigator to set
      */
-    public void setPrincipalInvestigator(CaArrayEntityReference principalInvestigator) {
-        this.principalInvestigator = principalInvestigator;
+    public void setPrincipalInvestigators(Set<CaArrayEntityReference> principalInvestigators) {
+        this.principalInvestigators = principalInvestigators;
     }
 
     /**

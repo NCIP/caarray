@@ -82,14 +82,19 @@
  */
 package gov.nih.nci.caarray.services.external;
 
-import gov.nih.nci.caarray.external.v1_0.data.FileType;
+import gov.nih.nci.caarray.domain.LSID;
+import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import net.sf.dozer.util.mapping.converters.CustomConverter;
 
 /**
- * @author dkokotov
- * 
+ *
+ * Convert an Enum instance to and from an AbstractCaArrayEntity.  AbstractCaArrayEntity use the name of the enum as
+ * the entity id's objectId.
+ *
+ * @author gax
+ *
  */
-public class FileTypeNameToExternalIdConverter implements CustomConverter {
+public class EnumConverter implements CustomConverter {
     /**
      * {@inheritDoc}
      */
@@ -97,10 +102,27 @@ public class FileTypeNameToExternalIdConverter implements CustomConverter {
     public Object convert(Object dest, Object src, Class destClass, Class srcClass) {
         if (src == null) {
             return null;
-        } else if (src instanceof String) {
-            return AbstractExternalService.makeExternalId(FileType.class, src);
-        } else {
-            throw new IllegalArgumentException("This converter cannot convert object of type " + srcClass);
         }
+
+        if (Enum.class.isAssignableFrom(destClass)) {
+            AbstractCaArrayEntity entity = (AbstractCaArrayEntity) src;
+            String name = new LSID(entity.getId()).getObjectId();
+            return Enum.valueOf(destClass, name);
+        } else if (AbstractCaArrayEntity.class.isAssignableFrom(destClass)) {
+            AbstractCaArrayEntity entity;
+            if (dest != null) {
+                entity = (AbstractCaArrayEntity) dest;
+            } else {
+                try {
+                    entity = (AbstractCaArrayEntity) destClass.newInstance();
+                } catch (Exception ex) {
+                    throw new IllegalArgumentException(ex);
+                }
+            }
+            entity.setId(AbstractExternalService.makeExternalId(destClass, src));
+            return entity;            
+        }
+
+        throw new IllegalArgumentException("don't know ow to convert " + src + " to a " + destClass.getName());
     }
 }

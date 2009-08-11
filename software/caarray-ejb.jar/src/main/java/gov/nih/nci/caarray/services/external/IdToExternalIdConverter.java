@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.services.external;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.LSID;
 import net.sf.dozer.util.mapping.converters.ConfigurableCustomConverter;
 
@@ -99,7 +98,7 @@ public class IdToExternalIdConverter implements ConfigurableCustomConverter {
         if (src == null) {
             return null;
         } else if (src instanceof Long) {
-            return new LSID(AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY, param, src.toString()).toString();
+            return AbstractExternalService.makeExternalId(param, src.toString());
         } else if (src instanceof String) {
             return Long.valueOf(new LSID(src.toString()).getObjectId());
         } else {

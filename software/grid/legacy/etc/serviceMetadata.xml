@@ -12,7 +12,7 @@
        <ns2:Output qName="ns4:ServiceSecurityMetadata" dimensionality="1" isArray="false" xmlns:ns4="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security"/>
        <ns2:faultCollection/>
       </ns2:Operation>
-      <ns2:Operation description="" name="query">
+      <ns2:Operation description="The standard caGrid Data Service query method." name="query">
        <ns2:inputParameterCollection>
         <ns2:InputParameter qName="ns5:CQLQuery" dimensionality="1" index="0" isArray="false" isRequired="false" name="cqlQuery" xmlns:ns5="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery"/>
        </ns2:inputParameterCollection>
@@ -43,7 +43,7 @@
        <ns2:Output qName="ns11:DataSet" dimensionality="1" isArray="false" xmlns:ns11="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data"/>
        <ns2:faultCollection/>
       </ns2:Operation>
-      <ns2:Operation description="" name="createFileTransfer">
+      <ns2:Operation description="Requests a Grid Transfer handle for the given file" name="createFileTransfer">
        <ns2:inputParameterCollection>
         <ns2:InputParameter qName="ns12:CaArrayFile" dimensionality="1" index="0" isArray="false" isRequired="false" name="caArrayFile" xmlns:ns12="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.file"/>
        </ns2:inputParameterCollection>

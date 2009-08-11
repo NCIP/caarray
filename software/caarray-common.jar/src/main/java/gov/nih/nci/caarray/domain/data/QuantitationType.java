@@ -151,10 +151,13 @@ public final class QuantitationType extends AbstractCaArrayObject {
      * @param typeClass the typeClass to set
      */
     public void setTypeClass(Class<?> typeClass) {
-        if (!SUPPORTED_TYPES.contains(typeClass)) {
-            throw new IllegalArgumentException("Unsupported data typeClass; allowed types are " + SUPPORTED_TYPES);
-        }
-        this.type = typeClass.getName();
+        if (typeClass == null) {
+            this.type = null;
+        } else if (SUPPORTED_TYPES.contains(typeClass)) {
+            this.type = typeClass.getName();
+        } else {
+            throw new IllegalArgumentException("typeClass " + typeClass.getName() + " not one of " + SUPPORTED_TYPES);
+        }        
     }
 
     /**
@@ -208,6 +211,6 @@ public final class QuantitationType extends AbstractCaArrayObject {
      * @param dataType the type to set
      */    
     public void setDataType(DataType dataType) {
-        setTypeClass(dataType.getTypeClass());
+        setTypeClass(dataType == null ? null : dataType.getTypeClass());
     }
 }

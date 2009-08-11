@@ -36,8 +36,13 @@
     <xs:complexType name="ExperimentSearchCriteria">
         <xs:sequence>
             <xs:element name="organism" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
-            <xs:element name="principalInvestigator" type="car:CaArrayEntityReference" minOccurs="0"
-                maxOccurs="1" />
+            <xs:element name="principalInvestigators">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="PrincipalInvestigator" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="arrayProvider" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
             <xs:element name="assayType" type="car:CaArrayEntityReference" minOccurs="0" maxOccurs="1" />
             <xs:element name="annotationCriterions">

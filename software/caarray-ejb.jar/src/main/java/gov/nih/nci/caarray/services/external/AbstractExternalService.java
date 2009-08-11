@@ -244,4 +244,23 @@ public abstract class AbstractExternalService {
     public CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
     }
+
+    /**
+     * @param namespaceClass external type.
+     * @param id internal entity id.
+     * @return LSID.
+     */
+    public static String makeExternalId(Class namespaceClass, Object id) {
+        return makeExternalId(namespaceClass.getName(), id.toString());
+    }
+
+    /**
+     * @param namespace external type name or LSID namespace.
+     * @param id internal entity id.
+     * @return LSID.
+     */
+    public static String makeExternalId(String namespace, String id) {
+        return new LSID(gov.nih.nci.caarray.domain.AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY, namespace, id)
+                .toString();
+    }
 }

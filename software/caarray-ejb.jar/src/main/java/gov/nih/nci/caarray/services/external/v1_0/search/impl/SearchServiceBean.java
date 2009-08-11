@@ -194,8 +194,8 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         intCriteria.setTitle(criteria.getTitle());
         intCriteria.setPublicIdentifier(criteria.getPublicIdentifier());
         intCriteria.setOrganism(getByReference(criteria.getOrganism(), edu.georgetown.pir.Organism.class));
-        intCriteria.setPrincipalInvestigator(getByReference(criteria.getPrincipalInvestigator(),
-                gov.nih.nci.caarray.domain.contact.Person.class));
+        mapRequiredReferencesToEntities(criteria.getPrincipalInvestigators(),
+                intCriteria.getPrincipalInvestigators(), gov.nih.nci.caarray.domain.contact.Person.class);
         intCriteria.setArrayProvider(getByReference(criteria.getArrayProvider(),
                 gov.nih.nci.caarray.domain.contact.Organization.class));
         intCriteria.setAssayType(getByReference(criteria.getAssayType(),
