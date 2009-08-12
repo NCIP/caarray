@@ -33,15 +33,15 @@ Test Case,API,File Reference,File Name,File Experiment,File Experiment Id,Experi
 189.1,grid,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,,,,,,TRUE,,,5611000,5612000
 189.2,grid,,MiaPaCa_panc_SS110884_HG-U133_Plus_2_HCHP-74914_.CEL,,woost-00041,,,,,,TRUE,,,5385000,5386000
 190,grid,,,,woost-00041,,,100,CEL,,,,,10000000,
-191.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,,,,5348,,
+191.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,,,,10696,,
 ,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,,
 191.2,grid,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,,,,,,,,,,,0,,
 ,,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:58,,,,,,,,,,,,,
 191.3,grid,${null},,,,,,,,,,,0,,
 ,,${null},,,,,,,,,,,,,
-192.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,TRUE,,,3263,,
+192.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,TRUE,,,6526,,
 ,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,,
-192.2,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,FALSE,,,5348,,
+192.2,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,FALSE,,,10696,,
 ,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,,
 193,grid,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,,,,,,,,13550438,,
 ,,,MiaPaCa_panc_SS110884_HG-U133_Plus_2_HCHP-74914_.CEL,,,,,,,,,,,,

@@ -20,6 +20,6 @@ Test Case,API,Keyword,Expected Results,Min Results,API Utils,Enumerate
 290,grid,Blood,,500
 291,grid,QA Illumina Experiment for API,1,
 330,java,solid_tumor,,1
-332,java,TJU,,1
+332,java,TJU,,10
 333,grid,solid_tumor,,1
-335,grid,TJU,,1
+335,grid,TJU,,10

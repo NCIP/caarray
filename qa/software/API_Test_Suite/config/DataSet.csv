@@ -41,14 +41,14 @@ Test Case,API,File Reference,File,File Experiment,File Experiment Id,Quantitatio
 ,,,,,,AVG_Signal,,,,AVG_Signal,FLOAT,10,,,
 176,grid,,ApiTestGenepixData.gpr,QA Genepix Experiment for API Testing,,F635 Mean,,,6528,F635 Mean,INTEGER,6528,,,
 ,,,,,,F635 Median,,,,F635 Median,INTEGER,6528,,,
-205,java,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,CELX,,,,,,,,,60000
+205,java,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,CELX,,,,,,,,10,60000
 ,,,MiaPaCa_panc_SS110884_HG-U133_Plus_2_HCHP-74914_.CEL,,,CELY,,,,,,,,,
 ,,,,,,CELintensity,,,,,,,,,
 ,,,,,,CELIntensityStdev,,,,,,,,,
 ,,,,,,CELMask,,,,,,,,,
 ,,,,,,CELOutlier,,,,,,,,,
 ,,,,,,CELPixels,,,,,,,,,
-206,grid,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,CELX,,,,,,,,,60000
+206,grid,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,CELX,,,,,,,,10,60000
 ,,,MiaPaCa_panc_SS110884_HG-U133_Plus_2_HCHP-74914_.CEL,,,CELY,,,,,,,,,
 ,,,,,,CELintensity,,,,,,,,,
 ,,,,,,CELIntensityStdev,,,,,,,,,
