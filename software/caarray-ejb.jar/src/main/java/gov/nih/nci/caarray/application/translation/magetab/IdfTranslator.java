@@ -316,12 +316,6 @@ final class IdfTranslator extends AbstractTranslator {
          */
         @Override
         public boolean equals(final Object obj) {
-            if (!(obj instanceof TermSourceKey)) {
-                return false;
-            }
-            if (this == obj) {
-                return true;
-            }
             return EqualsBuilder.reflectionEquals(this, obj);
         }
     }

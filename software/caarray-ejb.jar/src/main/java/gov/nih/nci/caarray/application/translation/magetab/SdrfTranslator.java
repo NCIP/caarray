@@ -466,15 +466,21 @@ final class SdrfTranslator extends AbstractTranslator {
         }
     }
 
+    @SuppressWarnings("PMD.EmptyCatchBlock")
     private AbstractFactorValue translateFactorValue(gov.nih.nci.caarray.magetab.sdrf.FactorValue sdrfFactorVal) {
         AbstractFactorValue factorValue = null;
         Term unit = getTerm(sdrfFactorVal.getUnit());
         if (sdrfFactorVal.getTerm() != null) {
             factorValue = new TermBasedFactorValue(getTerm(sdrfFactorVal.getTerm()), unit);
         } else {
-            try {
-                factorValue = new MeasurementFactorValue(Float.valueOf(sdrfFactorVal.getValue()), unit);                
-            } catch (NumberFormatException e) {
+            if (unit != null) {
+                try {
+                    factorValue = new MeasurementFactorValue(Float.valueOf(sdrfFactorVal.getValue()), unit);
+                } catch (NumberFormatException e) {
+                    // non-Float values that have Units will end up as UserDefined
+                }
+            }
+            if (factorValue == null) {
                 factorValue = new UserDefinedFactorValue(sdrfFactorVal.getValue(), unit);
             }
         }
@@ -601,6 +607,7 @@ final class SdrfTranslator extends AbstractTranslator {
         return p;
     }
 
+    @SuppressWarnings("PMD.EmptyCatchBlock")
     private ProtocolApplication getProtocolApplicationFromMageTabProtocolApplication(
             gov.nih.nci.caarray.magetab.ProtocolApplication mageTabProtocolApplication) {
         Protocol protocol = getProtocolFromMageTabProtocol(mageTabProtocolApplication.getProtocol());
@@ -613,9 +620,14 @@ final class SdrfTranslator extends AbstractTranslator {
             if (mageTabValue.getTerm() != null) {
                 value = new TermBasedParameterValue(getTerm(mageTabValue.getTerm()), unit);
             } else {
-                try {
-                    value = new MeasurementParameterValue(Float.valueOf(mageTabValue.getValue()), unit);                
-                } catch (NumberFormatException e) {
+                if (unit != null) {
+                    try {
+                        value = new MeasurementParameterValue(Float.valueOf(mageTabValue.getValue()), unit);
+                    } catch (NumberFormatException e) {
+                        // non-Float values that have Units will end up as UserDefined
+                    }
+                }
+                if (value == null) {
                     value = new UserDefinedParameterValue(mageTabValue.getValue(), unit);
                 }
             }
@@ -641,21 +653,28 @@ final class SdrfTranslator extends AbstractTranslator {
         return param;
     }
 
-    private AbstractCharacteristic translateCharacteristic(
-            Characteristic sdrfCharacteristic) {
+    @SuppressWarnings("PMD.EmptyCatchBlock")
+    private AbstractCharacteristic translateCharacteristic(Characteristic sdrfCharacteristic) {
         Category category = TermTranslator.getOrCreateCategory(this.vocabularyService, this.getTranslationResult(),
                 sdrfCharacteristic.getCategory());
         
         Term unit = getTerm(sdrfCharacteristic.getUnit());
+        AbstractCharacteristic chr = null;
         if (sdrfCharacteristic.getTerm() != null) {
-            return new TermBasedCharacteristic(category, getTerm(sdrfCharacteristic.getTerm()), unit);
+            chr = new TermBasedCharacteristic(category, getTerm(sdrfCharacteristic.getTerm()), unit);
         } else {
-            try {
-                return new MeasurementCharacteristic(category, Float.valueOf(sdrfCharacteristic.getValue()), unit);
-            } catch (NumberFormatException e) {
-                return new UserDefinedCharacteristic(category, sdrfCharacteristic.getValue(), unit);
+            if (unit != null) {
+                try {
+                    chr = new MeasurementCharacteristic(category, Float.valueOf(sdrfCharacteristic.getValue()), unit);
+                } catch (NumberFormatException e) {
+                    // non-Float values that have Units will end up as UserDefined
+                }
             }
+            if (chr == null) {
+                chr = new UserDefinedCharacteristic(category, sdrfCharacteristic.getValue(), unit);
+            }            
         }
+        return chr;
     }
 
     // Translates array designs to a linked array-array design pair in the caArray domain.

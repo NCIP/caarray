@@ -533,19 +533,19 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
                 "planting", "MO");
         verifyExtendedFactorValuesSampleParams(experiment.getSampleByName("Sample C"), "foo", null, "less", "mg",
                 "nothing", null);
-        verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb A"), 123, 5f, null, "years", "tissue",
+        verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb A"), "123", 5f, null, "years", "tissue",
                 "MO");
-        verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb B"), 234, null, "a lot", "months",
+        verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb B"), "234", null, "a lot", "months",
                 "tissue", "MO");
-        verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb C"), 345, 2.2f, null, "days", "unknown",
+        verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb C"), "345", 2.2f, null, "days", "unknown",
                 null);
     }
 
-    private void verifyExtendedFactorValuesHyb(Hybridization hyb, float fv1Value, Float fv2Num,
+    private void verifyExtendedFactorValuesHyb(Hybridization hyb, String fv1Value, Float fv2Num,
             String fv2String, String fv2Unit, String fv3Value, String fv3ts) {
         assertEquals(3, hyb.getFactorValues().size());
-        MeasurementFactorValue fv1 = (MeasurementFactorValue) hyb.getFactorValue("ExternalSampleId");
-        assertEquals(fv1Value, fv1.getValue().floatValue());
+        UserDefinedFactorValue fv1 = (UserDefinedFactorValue) hyb.getFactorValue("ExternalSampleId");
+        assertEquals(fv1Value, fv1.getValue());
         assertNull(fv1.getUnit());
         if (fv2Num != null) {
             MeasurementFactorValue fv2 = (MeasurementFactorValue) hyb.getFactorValue("Age");            
