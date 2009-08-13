@@ -111,6 +111,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
@@ -443,12 +444,12 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
               
             if (!diseaseStates.isEmpty() || !tissueSites.isEmpty() || !cellTypes.isEmpty() 
                     || !materialTypes.isEmpty()) {
-                Disjunction or = Restrictions.disjunction();
-                addAnnotationCriterionValues(c, or, diseaseStates, "diseaseState", "ds");
-                addAnnotationCriterionValues(c, or, tissueSites, "tissueSite", "ts");
-                addAnnotationCriterionValues(c, or, materialTypes, "materialType", "mt");
-                addAnnotationCriterionValues(c, or, cellTypes, "cellType", "ct");
-                c.add(or);
+                Junction and = Restrictions.conjunction();
+                addAnnotationCriterionValues(c, and, diseaseStates, "diseaseState", "ds");
+                addAnnotationCriterionValues(c, and, tissueSites, "tissueSite", "ts");
+                addAnnotationCriterionValues(c, and, materialTypes, "materialType", "mt");
+                addAnnotationCriterionValues(c, and, cellTypes, "cellType", "ct");
+                c.add(and);
             }
         }
         
@@ -476,11 +477,11 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         }
     }
 
-    private void addAnnotationCriterionValues(Criteria c, Disjunction or, Set<String> values, String assocPath,
+    private void addAnnotationCriterionValues(Criteria c, Junction junction, Set<String> values, String assocPath,
             String alias) {
         if (!values.isEmpty()) {
             c.createAlias(assocPath, alias);
-            or.add(Restrictions.in(alias + ".value", values));
+            junction.add(Restrictions.in(alias + ".value", values));
         }        
     }
 

@@ -536,6 +536,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DUMMY_SAMPLE.getCharacteristics().add(DUMMY_CHARACTERISTIC);
             DUMMY_SAMPLE.setExternalId("123");
             DUMMY_SAMPLE.setDiseaseState(DUMMY_NORMALIZATION_TYPE);
+            DUMMY_SAMPLE.setCellType(DUMMY_FACTOR_TYPE_1);
             
             saveSupportingObjects();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
@@ -591,7 +592,25 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc);
             assertEquals(1, results.size());
             assertTrue(compareSamples(results.get(0), DUMMY_SAMPLE));            
+
+            bsc.getAnnotationCriterions().add(new AnnotationCriterion(ds, DUMMY_FACTOR_TYPE_2.getValue()));
+            results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc);
+            assertEquals(1, results.size());
+            assertTrue(compareSamples(results.get(0), DUMMY_SAMPLE));            
+
             
+            Category ct = new Category();
+            ct.setName(ExperimentOntologyCategory.CELL_TYPE.getCategoryName());
+            AnnotationCriterion ac2 = new AnnotationCriterion(ct, DUMMY_FACTOR_TYPE_1.getValue());
+            bsc.getAnnotationCriterions().add(ac2);
+            results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc);
+            assertEquals(1, results.size());
+            assertTrue(compareSamples(results.get(0), DUMMY_SAMPLE));            
+
+            ac2.setValue("Fdsfdsfds");
+            results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc);
+            assertEquals(0, results.size());
+
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
