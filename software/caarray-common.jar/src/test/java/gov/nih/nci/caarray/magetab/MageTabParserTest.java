@@ -876,7 +876,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
             verifyExtendedFactorValuesSampleParams(sdrfDocument.getAllSamples().get(0), "Sample A", "foo", "planting", "MO",
                     "4", "kg");
             verifyExtendedFactorValuesSampleParams(sdrfDocument.getAllSamples().get(1), "Sample B", "baz", "planting",
-                    "MO", "4", "kg");
+                    "MO", "4", null);
             verifyExtendedFactorValuesSampleParams(sdrfDocument.getAllSamples().get(2), "Sample C", "foo", "nothing", null,
                     "less", "mg");
             assertEquals(3, sdrfDocument.getAllHybridizations().size());
@@ -884,7 +884,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
                     "tissue", "MO");
             verifyExtendedFactorValuesHyb(sdrfDocument.getAllHybridizations().get(1), "Hyb B", "234", "a lot", "months",
                     "tissue", "MO");
-            verifyExtendedFactorValuesHyb(sdrfDocument.getAllHybridizations().get(2), "Hyb C", "345", "2.2", "days",
+            verifyExtendedFactorValuesHyb(sdrfDocument.getAllHybridizations().get(2), "Hyb C", "345", "2.2", null,
                     "unknown", null);
         } catch (InvalidDataException e) {
             fail("Could not parse magetab: " + e.getValidationResult().toString());
@@ -902,9 +902,13 @@ public class MageTabParserTest extends AbstractCaarrayTest {
         assertEquals("Age", hyb.getFactorValues().get(1).getFactor().getName());
         assertEquals(fv2Value, hyb.getFactorValues().get(1).getValue());
         assertNull(hyb.getFactorValues().get(1).getTerm());
-        assertEquals(fv2Unit, hyb.getFactorValues().get(1).getUnit().getValue());
-        assertEquals("MO", hyb.getFactorValues().get(1).getUnit().getTermSource().getName());
-        assertEquals("time", hyb.getFactorValues().get(1).getUnit().getCategory());
+        if (fv2Unit == null)
+            assertNull(hyb.getFactorValues().get(1).getUnit());
+        else {
+            assertEquals(fv2Unit, hyb.getFactorValues().get(1).getUnit().getValue());
+            assertEquals("MO", hyb.getFactorValues().get(1).getUnit().getTermSource().getName());
+            assertEquals("time", hyb.getFactorValues().get(1).getUnit().getCategory());
+        }
         assertEquals("MaterialType", hyb.getFactorValues().get(2).getFactor().getName());
         if (fv3ts != null) {
             assertEquals(fv3ts, hyb.getFactorValues().get(2).getTerm().getTermSource().getName());            
@@ -969,9 +973,11 @@ public class MageTabParserTest extends AbstractCaarrayTest {
         assertEquals("p3", pa.getParameterValues().get(2).getParameter().getName());
         assertEquals(pv3Value, pa.getParameterValues().get(2).getValue());
         assertNull(pa.getParameterValues().get(2).getTerm());
-        assertEquals(pv3Unit, pa.getParameterValues().get(2).getUnit().getValue());
-        assertEquals("MO", pa.getParameterValues().get(2).getUnit().getTermSource().getName());
-        assertEquals("weight", pa.getParameterValues().get(2).getUnit().getCategory());
+        assertEquals(pv3Unit, pv3Unit == null ? pa.getParameterValues().get(2).getUnit() : pa.getParameterValues().get(2).getUnit().getValue());
+        if (pv3Unit != null){
+            assertEquals("MO", pa.getParameterValues().get(2).getUnit().getTermSource().getName());
+            assertEquals("weight", pa.getParameterValues().get(2).getUnit().getCategory());
+        }
     }
 
 }

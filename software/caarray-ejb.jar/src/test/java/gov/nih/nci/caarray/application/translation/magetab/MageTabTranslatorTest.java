@@ -529,7 +529,7 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
                 "unknown", null);
         verifyExtendedFactorValuesSampleParams(experiment.getSampleByName("Sample A"), "foo", 4f, null, "kg",
                 "planting", "MO");
-        verifyExtendedFactorValuesSampleParams(experiment.getSampleByName("Sample B"), "baz", 4f, null, "kg",
+        verifyExtendedFactorValuesSampleParams(experiment.getSampleByName("Sample B"), "baz", null, "4", null,
                 "planting", "MO");
         verifyExtendedFactorValuesSampleParams(experiment.getSampleByName("Sample C"), "foo", null, "less", "mg",
                 "nothing", null);
@@ -537,7 +537,7 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
                 "MO");
         verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb B"), "234", null, "a lot", "months",
                 "tissue", "MO");
-        verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb C"), "345", 2.2f, null, "days", "unknown",
+        verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb C"), "345", null, "2.2", null, "unknown",
                 null);
     }
 
@@ -550,13 +550,15 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         if (fv2Num != null) {
             MeasurementFactorValue fv2 = (MeasurementFactorValue) hyb.getFactorValue("Age");            
             assertEquals(fv2Num, fv2.getValue());
-            assertEquals(fv2Unit, fv2.getUnit().getValue());
-            assertEquals("MO", fv2.getUnit().getSource().getName());
+            assertEquals(fv2Unit, fv2Unit == null ? fv2.getUnit() : fv2.getUnit().getValue());
+            if (fv2Unit != null)
+                assertEquals("MO", fv2.getUnit().getSource().getName());
         } else {
             UserDefinedFactorValue fv2 = (UserDefinedFactorValue) hyb.getFactorValue("Age");
             assertEquals(fv2String, fv2.getValue());
-            assertEquals(fv2Unit, fv2.getUnit().getValue());
-            assertEquals("MO", fv2.getUnit().getSource().getName());
+            assertEquals(fv2Unit, fv2Unit == null ? fv2.getUnit() : fv2.getUnit().getValue());
+            if (fv2Unit != null)
+                assertEquals("MO", fv2.getUnit().getSource().getName());
         }
         if (fv3ts != null) {
             TermBasedFactorValue fv3 = (TermBasedFactorValue) hyb.getFactorValue("MaterialType");
@@ -610,13 +612,15 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         if (pv2Num != null) {
             MeasurementParameterValue pv2 = (MeasurementParameterValue) pa.getValue("p3");            
             assertEquals(pv2Num, pv2.getValue());
-            assertEquals(pv2Unit, pv2.getUnit().getValue());
-            assertEquals("MO", pv2.getUnit().getSource().getName());
+            assertEquals(pv2Unit, pv2Unit == null ? pv2.getUnit() : pv2.getUnit().getValue());
+            if (pv2Unit != null)
+                assertEquals("MO", pv2.getUnit().getSource().getName());
         } else {
             UserDefinedParameterValue pv2 = (UserDefinedParameterValue) pa.getValue("p3");
             assertEquals(pv2String, pv2.getValue());
-            assertEquals(pv2Unit, pv2.getUnit().getValue());
-            assertEquals("MO", pv2.getUnit().getSource().getName());
+            assertEquals(pv2Unit, pv2Unit == null ? pv2.getUnit() : pv2.getUnit().getValue());
+            if (pv2Unit != null)
+                assertEquals("MO", pv2.getUnit().getSource().getName());
         }
         if (pv3ts != null) {            
             TermBasedParameterValue pv3 = (TermBasedParameterValue) pa.getValue("p2");
