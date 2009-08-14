@@ -4,7 +4,13 @@
 package caarray.legacy.client.test.full;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.services.ServerConnectionException;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -27,7 +33,7 @@ public class FullApiFacade implements ApiFacade
     private GridApiFacade gridApiFacade;
     
     
-    public FullApiFacade() throws ServerConnectionException, RemoteException, MalformedURIException
+    public FullApiFacade()
     {
         javaApiFacade = new JavaApiFacade();
         gridApiFacade = new GridApiFacade();
@@ -57,4 +63,41 @@ public class FullApiFacade implements ApiFacade
     {
         return getFacade(api).searchByExample(api, example);
     }
+
+    /* (non-Javadoc)
+     * @see caarray.legacy.client.test.ApiFacade#query(java.lang.String, gov.nih.nci.cagrid.cqlquery.CQLQuery)
+     */
+    public Object query(String api, CQLQuery cqlQuery)
+            throws Exception
+    {
+        return getFacade(api).query(api, cqlQuery);
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.legacy.client.test.ApiFacade#getDataSet(java.lang.String, gov.nih.nci.caarray.domain.data.DataRetrievalRequest)
+     */
+    public DataSet getDataSet(String api, DataRetrievalRequest request)
+            throws Exception
+    {
+        return getFacade(api).getDataSet(api, request);
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.legacy.client.test.ApiFacade#getArrayDesignDetails(java.lang.String, gov.nih.nci.caarray.domain.array.ArrayDesign)
+     */
+    public ArrayDesignDetails getArrayDesignDetails(String api,
+            ArrayDesign arrayDesign) throws Exception
+    {
+        return getFacade(api).getArrayDesignDetails(api, arrayDesign);
+    }
+
+    /* (non-Javadoc)
+     * @see caarray.legacy.client.test.ApiFacade#readFile(java.lang.String, gov.nih.nci.caarray.domain.file.CaArrayFile)
+     */
+    public byte[] readFile(String api, CaArrayFile file) throws Exception
+    {
+        return getFacade(api).readFile(api, file);
+    }
+    
+    
 }

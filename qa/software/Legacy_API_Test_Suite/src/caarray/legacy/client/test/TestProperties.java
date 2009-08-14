@@ -21,9 +21,9 @@ public class TestProperties
     public static final String GRID_SERVER_PORT_KEY = "globoss.server.http.port";
 
     public static final String SERVER_HOSTNAME_DEFAULT = "array-stage.nci.nih.gov";
-    public static final String SERVER_JNDI_PORT_DEFAULT = "1099";
-    public static final String GRID_SERVER_HOSTNAME_DEFAULT = "localhost";
-    public static final String GRID_SERVER_PORT_DEFAULT = "8080";
+    public static final String SERVER_JNDI_PORT_DEFAULT = "8080";
+    public static final String GRID_SERVER_HOSTNAME_DEFAULT = "array-stage.nci.nih.gov";
+    public static final String GRID_SERVER_PORT_DEFAULT = "80";
     
     public static final String REPORT_DIR_KEY = "report.dir";
     public static final String REPORT_FILE_KEY = "report.file";
@@ -44,6 +44,8 @@ public class TestProperties
     public static final String CONFIG_DIR = "config";
     
     private static List<Float> excludedTests = Collections.synchronizedList(new ArrayList<Float>());
+    private static List<Float> includeOnlyTests = Collections.synchronizedList(new ArrayList<Float>());
+    
     
     
     public static String getJavaServerHostname() {
@@ -91,8 +93,45 @@ public class TestProperties
         excludedTests.addAll(tests);
     }
     
+    public static void setJavaServerHostname(String hostname)
+    {
+        System.setProperty(SERVER_HOSTNAME_KEY, hostname);
+    }
+    
+    public static void setJavaServerJndiPort(int port)
+    {
+        System.setProperty(SERVER_JNDI_PORT_KEY, Integer.toString(port));
+    }
+    
+    public static void setGridServerHostname(String hostname)
+    {
+        System.setProperty(GRID_SERVER_HOSTNAME_KEY, hostname);
+    }
+    
+    public static void setGridServerPort(int port)
+    {
+        System.setProperty(GRID_SERVER_PORT_KEY, Integer.toString(port));
+    }
+    
+    public static void setExcludedTests(List<Float> tests)
+    {
+        excludedTests.clear();
+        excludedTests.addAll(tests);
+    }
+    
     public static List<Float> getExcludedTests()
     {
         return new ArrayList<Float>(excludedTests);
+    }
+    
+    public static void setIncludeOnlyTests(List<Float> tests)
+    {
+        includeOnlyTests.clear();
+        includeOnlyTests.addAll(tests);
+    }
+    
+    public static List<Float> getIncludeOnlyTests()
+    {
+        return new ArrayList<Float>(includeOnlyTests);
     }
 }

@@ -36,6 +36,9 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
     {
         int index = 1;
         String row = spreadsheetRows.get(index);
+        List<Float> excludeTests = TestProperties.getExcludedTests();
+        List<Float> includeTests = TestProperties.getIncludeOnlyTests();
+        
         ExampleSearch search = null;
     
         // Iterate each row of spreadsheet input and construct individual search objects
@@ -45,17 +48,38 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
             //If the input row begins a new search, create a new object
             //otherwise, continue adding parameters to the existing object
             if (isNewSearch(input))
+            {search = getExampleSearch();
+            boolean skip = false;
+            if (headerIndexMap.get(TEST_CASE) < input.length
+            && !input[headerIndexMap.get(TEST_CASE)].equals(""))
             {
-                search = getExampleSearch();
-                populateSearch(input, search);  
+                search.setTestCase(Float.parseFloat(input[headerIndexMap.get(TEST_CASE)]
+                                                          .trim()));
+                if (!excludeTests.isEmpty() && (excludeTests.contains(search.getTestCase()) || excludeTests.contains((float)Math.floor(search.getTestCase()))))
+                    skip = true;
+                if (!includeTests.isEmpty() && (!includeTests.contains(search.getTestCase())&& !includeTests.contains((float)Math.floor(search.getTestCase()))))
+                    skip = true;
             }
+            if (!skip)
+            {
+                
+                populateSearch(input, search);  
+            }         }
             else
             {
+                boolean skip = false;
                 if (search == null)
                     throw new TestConfigurationException(
                             "No test case indicated for row: " + index);
-    
-                populateAdditionalSearchValues(input, search);
+                if (!excludeTests.isEmpty() && (excludeTests.contains(search.getTestCase()) || excludeTests.contains((float)Math.floor(search.getTestCase()))))
+                    skip = true;
+                if (!includeTests.isEmpty() && (!includeTests.contains(search.getTestCase())&& !includeTests.contains((float)Math.floor(search.getTestCase()))))
+                    skip = true;
+                if (!skip)
+                {
+                    populateAdditionalSearchValues(input, search);
+                }
+                
             }
     
             if (search != null)
@@ -148,10 +172,21 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
             List<ExampleSearch> filteredSearches = new ArrayList<ExampleSearch>();
             for (ExampleSearch search : configuredSearches)
             {
-                if (!excludedTests.contains(search.getTestCase()))
+                if (!excludedTests.contains(search.getTestCase()) && !excludedTests.contains(search.getTestCase()))
                     filteredSearches.add(search);
             }
             configuredSearches = filteredSearches;
+        }
+        List<Float> includeTests = TestProperties.getIncludeOnlyTests();
+        if (!includeTests.isEmpty())
+        {
+            List<ExampleSearch> filteredSearches = new ArrayList<ExampleSearch>();
+            for (ExampleSearch search : configuredSearches)
+            {
+                if (includeTests.contains(search.getTestCase()) || includeTests.contains((float)Math.floor(search.getTestCase())))
+                    filteredSearches.add(search);
+            }
+            configuredSearches = filteredSearches; 
         }
     }
 
